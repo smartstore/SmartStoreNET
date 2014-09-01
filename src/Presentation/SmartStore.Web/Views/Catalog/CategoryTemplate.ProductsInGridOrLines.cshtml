@@ -154,7 +154,8 @@
     @Html.Widget("categorydetails_before_filters")
 
     @*filtering*@
-	@if (Model.Products.Count > 0) {
+	@if (Model.Products.Count > 0 && Model.DisplayFilter)
+    {
 		<div id="product-filter" class="block block-bordered product-filter-block">
 			<form class="filter-product-form" method="GET" action="@Url.RouteUrl("ProductFilters")" data-multiselecturl="@Url.RouteUrl("ProductsMultiSelect")">
 				<input type="hidden" name="categoryID" value="@Model.Id" />

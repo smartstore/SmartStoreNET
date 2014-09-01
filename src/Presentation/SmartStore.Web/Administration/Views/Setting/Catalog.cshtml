@@ -328,6 +328,16 @@
                     @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
                 </td>
             </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.FilterEnabled)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.FilterEnabled)
+                    @Html.ValidationMessageFor(model => model.FilterEnabled)
+                </td>
+            </tr>
+
         </table>
     </fieldset>
     

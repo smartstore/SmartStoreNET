@@ -1,4 +1,4 @@
-﻿#Release Notes#
+#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -22,6 +22,8 @@
 * #164 Add multistore support for polls
 * #170 Multistore support for Newsletters
 * #266 Update Pending Order in Admin Panel
+* #331 Show CommentBox in checkout (optional) 
+* Option to turn off the filter for products in categories
 
 ###Improvements###
 * Task Scheduler:

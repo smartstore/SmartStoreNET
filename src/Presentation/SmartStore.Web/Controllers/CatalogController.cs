@@ -1771,7 +1771,8 @@ namespace SmartStore.Web.Controllers
 				model.CategoryBreadcrumb = GetCategoryBreadCrumb(category.Id, 0);
             }
 
-
+            model.DisplayFilter = _catalogSettings.FilterEnabled;
+            
 			var customerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
 

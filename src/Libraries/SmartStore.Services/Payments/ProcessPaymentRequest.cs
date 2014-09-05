@@ -35,6 +35,11 @@ namespace SmartStore.Services.Payments
         /// </summary>
         public decimal OrderTotal { get; set; }
 
+		/// <summary>
+		/// Gets or sets an order tax total
+		/// </summary>
+		public decimal OrderTax { get; set; }
+
         /// <summary>
         /// Gets or sets a payment method identifier
         /// </summary>

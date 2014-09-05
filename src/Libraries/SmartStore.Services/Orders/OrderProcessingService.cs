@@ -773,6 +773,7 @@ namespace SmartStore.Services.Orders
                     //VAT number
                     vatNumber = initialOrder.VatNumber;
                 }
+				processPaymentRequest.OrderTax = orderTaxTotal;
 
                 //order total (and applied discounts, gift cards, reward points)
                 decimal? orderTotal = null;

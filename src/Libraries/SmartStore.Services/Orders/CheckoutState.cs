@@ -14,7 +14,7 @@ namespace SmartStore.Services.Orders
 		/// <summary>
 		/// Whether the one page checkout is enabled for a particular session
 		/// </summary>
-		public bool OnePageCkeckoutEnabled { get; set; }
+		public bool OnePageCheckoutEnabled { get; set; }
 
 		/// <summary>
 		/// Use that dictionary for any custom data required along checkout flow

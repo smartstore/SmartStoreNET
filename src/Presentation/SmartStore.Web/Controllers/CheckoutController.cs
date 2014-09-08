@@ -384,7 +384,7 @@ namespace SmartStore.Web.Controllers
 
 			var checkoutState = _httpContext.GetCheckoutState();
 
-			if (checkoutState != null && !checkoutState.OnePageCkeckoutEnabled)
+			if (checkoutState != null && !checkoutState.OnePageCheckoutEnabled)
 				return false;
 
             return true;
@@ -1669,12 +1669,13 @@ namespace SmartStore.Web.Controllers
                         Order = placeOrderResult.PlacedOrder
                     };
 
-
                     var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(placeOrderResult.PlacedOrder.PaymentMethodSystemName);
                     if (paymentMethod != null)
                     {
                         if (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
                         {
+							_httpContext.RemoveCheckoutState();
+
                             //Redirection will not work because it's AJAX request.
                             //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
 
@@ -1684,17 +1685,12 @@ namespace SmartStore.Web.Controllers
                         else
                         {
                             _paymentService.PostProcessPayment(postProcessPaymentRequest);
-                            //success
-                            return Json(new { success = 1 });
                         }
                     }
-                    else
-                    {
-                        //payment method could be null if order total is 0
 
-                        //success
-                        return Json(new { success = 1 });
-                    }
+					_httpContext.RemoveCheckoutState();
+
+					return Json(new { success = 1 });
                 }
                 else
                 {

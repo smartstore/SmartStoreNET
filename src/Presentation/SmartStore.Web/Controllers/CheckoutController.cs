@@ -28,6 +28,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
@@ -383,7 +384,7 @@ namespace SmartStore.Web.Controllers
 
 			var checkoutState = _httpContext.GetCheckoutState();
 
-			if (checkoutState != null && !checkoutState.OnePageCkeckoutEnabled)
+			if (checkoutState != null && !checkoutState.OnePageCheckoutEnabled)
 				return false;
 
             return true;
@@ -914,7 +915,7 @@ namespace SmartStore.Web.Controllers
         }
         [HttpPost, ActionName("Confirm")]
         [ValidateInput(false)]
-        public ActionResult ConfirmOrder()
+        public ActionResult ConfirmOrder(FormCollection form)
         {
             //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -953,7 +954,10 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderExtraData = new Dictionary<string, string>();
+                placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
+
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 
                 if (placeOrderResult.Success)
                 {
@@ -1656,7 +1660,7 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, new Dictionary<string,string>());
                 if (placeOrderResult.Success)
                 {
                     _httpContext.Session["OrderPaymentInfo"] = null;
@@ -1665,12 +1669,13 @@ namespace SmartStore.Web.Controllers
                         Order = placeOrderResult.PlacedOrder
                     };
 
-
                     var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(placeOrderResult.PlacedOrder.PaymentMethodSystemName);
                     if (paymentMethod != null)
                     {
                         if (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
                         {
+							_httpContext.RemoveCheckoutState();
+
                             //Redirection will not work because it's AJAX request.
                             //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
 
@@ -1680,17 +1685,12 @@ namespace SmartStore.Web.Controllers
                         else
                         {
                             _paymentService.PostProcessPayment(postProcessPaymentRequest);
-                            //success
-                            return Json(new { success = 1 });
                         }
                     }
-                    else
-                    {
-                        //payment method could be null if order total is 0
 
-                        //success
-                        return Json(new { success = 1 });
-                    }
+					_httpContext.RemoveCheckoutState();
+
+					return Json(new { success = 1 });
                 }
                 else
                 {

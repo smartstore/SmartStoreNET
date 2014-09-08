@@ -179,6 +179,10 @@
     <Compile Include="Migrations\201408071158147_MultistorePoll.Designer.cs">
       <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.cs" />
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.Designer.cs">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -367,6 +371,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408071158147_MultistorePoll.resx">
       <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408291450443_CheckoutCommmentBox.resx">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

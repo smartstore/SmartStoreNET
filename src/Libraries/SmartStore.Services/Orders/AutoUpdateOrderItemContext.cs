@@ -1,4 +1,5 @@
 ﻿using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Orders
@@ -41,14 +42,9 @@ namespace SmartStore.Services.Orders
 		public int QuantityNew { get; set; }
 
 		/// <summary>
-		/// [OUT] Inventory old
+		/// [OUT] Inventory changes
 		/// </summary>
-		public int InventoryOld { get; set; }
-
-		/// <summary>
-		/// [OUT] Inventory new
-		/// </summary>
-		public int InventoryNew { get; set; }
+		public AdjustInventoryResult Inventory { get; set; }
 
 		/// <summary>
 		/// [OUT] Reward points old
@@ -86,11 +82,20 @@ namespace SmartStore.Services.Orders
 
 		public string ToString(ILocalizationService localizationService)
 		{
-			if (InventoryOld == 0 && InventoryNew == 0 && RewardPointsOld == 0 && RewardPointsNew == 0)
+			if (Inventory == null && RewardPointsOld == 0 && RewardPointsNew == 0)
 				return "";
 
+			string stockOld = null;
+			string stockNew = null;
+
+			if (Inventory != null && Inventory.HasClearStockQuantityResult)
+			{
+				stockOld = Inventory.StockQuantityOld.ToString();
+				stockNew = Inventory.StockQuantityNew.ToString();
+			}
+
 			string result = localizationService.GetResource("Admin.Orders.OrderItem.Update.Info").FormatWith(
-				InventoryOld, InventoryNew, RewardPointsOld, RewardPointsNew
+				stockOld.NaIfEmpty(), stockNew.NaIfEmpty(), RewardPointsOld, RewardPointsNew
 			);
 
 			return result;

@@ -69,5 +69,9 @@ namespace SmartStore.Admin.Models.Settings
 
 		[SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity")]
 		public bool ShowLinkedAttributeValueQuantity { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox")]
+        public bool ShowCommentBox { get; set; }
+        
     }
 }

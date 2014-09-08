@@ -616,6 +616,7 @@ namespace SmartStore.Web.Controllers
                 _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
                 model.DiscountBox.CurrentCode = discount.CouponCode;
             model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
+            model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 
             //cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);

@@ -222,6 +222,8 @@ namespace SmartStore.Admin.Models.Orders
 		[SmartResourceDisplayName("Common.UpdatedOn")]
 		public DateTime UpdatedOn { get; set; }
 
+        public string CustomerComment { get; set; }
+
         //checkout attributes
         public string CheckoutAttributeInfo { get; set; }
 

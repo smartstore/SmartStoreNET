@@ -227,7 +227,7 @@ namespace SmartStore.Services.Messages
         /// <param name="privateMessage">Private message</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        int SendPrivateMessageNotification(PrivateMessage privateMessage, int languageId);
+        int SendPrivateMessageNotification(Customer customer, PrivateMessage privateMessage, int languageId);
 
         #endregion
 

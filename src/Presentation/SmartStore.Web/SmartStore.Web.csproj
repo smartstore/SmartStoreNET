@@ -1934,6 +1934,8 @@
     <Content Include="Views\Checkout\BillingAddress.cshtml">
       <SubType>Code</SubType>
     </Content>
+    <Content Include="Views\ShoppingCart\_CommentBox.cshtml" />
+    <Content Include="Views\ShoppingCart\_CommentBox.Mobile.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

@@ -1117,6 +1117,15 @@ table.cart .cart-item-row .qty-input {
 	&:hover { color: @linkColorHover }
 }
 
+.comment-box.cart-box {
+    margin-left: 10px;
+
+    textarea {
+        width: 97%;
+        height: 125px;
+    }
+}
+
 /* ONE PAGE CHECKOUT */
 .opc .buttons{margin-top:0;padding-top:2em;}
 .opc .buttons.disabled button{display:none;}
@@ -2536,13 +2545,16 @@ table.cart .cart-item-row .qty-input {
 }
 
 
-.checkout-confirm-page .order-summary-content form {
+.checkout-confirm-page .order-summary-content form,
+#opc-confirm_order .order-summary-content form {
     border: 1px solid #bbb;
     background: #efefef;
-    border-bottom: none;
     margin: 0 !important;
     padding-bottom: 20px;
     .border-radius(@baseBlockRadius @baseBlockRadius 0 0);
+}
+.checkout-confirm-page .order-summary-content form {
+    border-bottom: none;
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
     border: 1px solid #bbb;

@@ -24,6 +24,7 @@ namespace SmartStore.Core.Domain.Catalog
 			RecentlyAddedProductsNumber = 10;
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
+            FilterEnabled = true;
 			ProductSearchAutoCompleteEnabled = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
@@ -139,6 +140,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether category breadcrumb is enabled
         /// </summary>
         public bool CategoryBreadcrumbEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether filter is enabled
+        /// </summary>
+        public bool FilterEnabled { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether a 'Share button' is enabled

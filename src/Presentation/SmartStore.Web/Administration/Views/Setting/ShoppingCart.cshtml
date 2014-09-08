@@ -249,5 +249,14 @@
                 @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCommentBox)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowCommentBox)
+                @Html.ValidationMessageFor(model => model.ShowCommentBox)
+            </td>
+        </tr>
     </table>
 }

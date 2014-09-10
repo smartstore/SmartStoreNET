@@ -104,9 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FiftyOne.Foundation, Version=2.1.19.4, Culture=neutral, processorArchitecture=MSIL">
+    <Reference Include="FiftyOne.Foundation, Version=3.1.4.5, Culture=neutral, PublicKeyToken=e967ae578dabd98e, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\51Degrees.mobi.2.1.19.4\lib\NET40\FiftyOne.Foundation.dll</HintPath>
+      <HintPath>..\..\packages\51Degrees.mobi.3.1.4.5\lib\NET40\FiftyOne.Foundation.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -577,6 +577,7 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\fonts\Fontastic.svg" />
+    <Content Include="51Degrees.config" />
     <None Include="Config\BundleTransformer.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -711,7 +712,6 @@
     <Content Include="Content\x-editable\bootstrap-editable.js" />
     <Content Include="Content\x-editable\bootstrap-editable.min.js" />
     <Content Include="favicon.ico" />
-    <Content Include="51Degrees.mobi.config" />
     <Content Include="App_Data\Pdf\OpenSans-Regular.ttf" />
     <Content Include="Content\install\install.less" />
     <Content Include="Content\install\variables.custom.less" />

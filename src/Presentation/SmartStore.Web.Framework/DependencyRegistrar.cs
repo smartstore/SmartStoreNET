@@ -326,8 +326,11 @@ namespace SmartStore.Web.Framework
 
 			registration.Activated += (sender, e) =>
 			{
-				var querySettings = e.Context.Resolve<DbQuerySettings>();
-				querySettingsProperty.SetValue(e.Instance, querySettings, null);
+				if (DataSettings.DatabaseIsInstalled())
+				{
+					var querySettings = e.Context.Resolve<DbQuerySettings>();
+					querySettingsProperty.SetValue(e.Instance, querySettings, null);
+				}
 			};
 		}
 
@@ -429,8 +432,11 @@ namespace SmartStore.Web.Framework
 
 			registration.Activated += (sender, e) =>
 			{
-				Localizer localizer = e.Context.Resolve<IText>().Get;
-				userProperty.SetValue(e.Instance, localizer, null);
+				if (DataSettings.DatabaseIsInstalled())
+				{
+					Localizer localizer = e.Context.Resolve<IText>().Get;
+					userProperty.SetValue(e.Instance, localizer, null);
+				}
 			};
 		}
 
@@ -623,6 +629,9 @@ namespace SmartStore.Web.Framework
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)
 		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+			
 			var baseType = typeof(WebApiEntityController<,>);
 			var type = registration.Activator.LimitType;
 			Type implementingType;

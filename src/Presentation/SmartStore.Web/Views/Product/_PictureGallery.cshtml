@@ -11,7 +11,7 @@
     <div class="sg-image-wrapper">
         <img alt="@Model.DefaultPictureModel.AlternateText"
             title="@Model.DefaultPictureModel.Title"  
-            src="@Model.DefaultPictureModel.ImageUrl" @Html.Attr("data-zoom-image", Model.DefaultPictureModel.FullSizeImageUrl, zoomEnabled) 
+            src="@Model.DefaultPictureModel.ImageUrl"
             itemprop="image" />   
         
     </div>
@@ -26,7 +26,7 @@
                         var picture = Model.PictureModels[i];
                         
                         <li data-picture-id="@picture.PictureId">
-							<a href="@picture.ImageUrl" @Html.Attr("data-zoom-image", picture.FullSizeImageUrl, zoomEnabled) title="@Model.Name" data-gallery="default">
+							<a href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default">
 								<img src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
 							</a>
                         </li>
@@ -36,7 +36,7 @@
                 else 
                 {     
                     <li data-picture-id="@Model.DefaultPictureModel.PictureId">
-						<a href="@Model.DefaultPictureModel.ImageUrl" @Html.Attr("data-zoom-image", Model.DefaultPictureModel.FullSizeImageUrl, zoomEnabled) title="@Model.Name" data-gallery="default">
+						<a href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">
 							<img src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
 						</a>
                     </li>

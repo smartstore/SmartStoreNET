@@ -1086,6 +1086,12 @@
     <Content Include="Scripts\globalize\cultures\globalize.culture.zu.js" />
     <Content Include="Scripts\globalize\cultures\globalize.cultures.js" />
     <Content Include="Scripts\globalize\globalize.js" />
+    <Content Include="Content\fonts\segoeui-semibold.eot" />
+    <Content Include="Content\fonts\segoeui-semibold.ttf" />
+    <Content Include="Content\fonts\segoeui-semibold.woff" />
+    <Content Include="Content\fonts\segoeui-semilight.eot" />
+    <Content Include="Content\fonts\segoeui-semilight.ttf" />
+    <Content Include="Content\fonts\segoeui-semilight.woff" />
     <None Include="Scripts\jquery-2.1.1.intellisense.js" />
     <Content Include="Scripts\jquery-2.1.1.js" />
     <Content Include="Scripts\jquery-2.1.1.min.js" />
@@ -1849,12 +1855,6 @@
     <Content Include="Themes\Web.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semibold.eot" />
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semibold.ttf" />
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semibold.woff" />
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semilight.eot" />
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semilight.ttf" />
-    <Content Include="Themes\Alpha\Content\fonts\segoeui-semilight.woff" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Content\x-editable\css\" />

@@ -20,7 +20,7 @@ using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Themes;
-using SmartStore.Web.Framework.Validators; 
+using SmartStore.Web.Framework.Validators;
 
 
 namespace SmartStore.Web

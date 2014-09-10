@@ -244,7 +244,7 @@
 			
 			thumbs.each( function(i) {
 				var link = $(this);
-				var imageSrc = link.attr('href');
+				var imageSrc = link.data('medium-image');
 				var thumb = link.find('img');
 				var linkSize = self.options.thumbSize + 2;
 
@@ -300,7 +300,7 @@
 				
 				self.images[i] = { thumb: thumb.attr('src'), 
 				                   image: imageSrc,
-                                   zoom: link.data("zoom-image"),
+                                   zoom: link.attr("href"),
 								   error: false,
 				                   preloaded: false, 
 				                   desc: desc, 
@@ -309,8 +309,6 @@
 				                   link: href
 				};
 			});
-
-			console.log(thumbWrapperWidth);
 			
 			// Wait until all thumbs are loaded, and then set the width of the ul
 			var list = self.nav.find('.sg-thumb-list');

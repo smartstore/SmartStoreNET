@@ -11,6 +11,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -26,6 +27,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ISettingService _settingService;
         private readonly IPermissionService _permissionService;
 		private readonly ILocalizationService _localizationService;
+		private readonly PluginMediator _pluginMediator;
 
 	    #endregion
 
@@ -37,7 +39,8 @@ namespace SmartStore.Admin.Controllers
 			TaxSettings taxSettings,
             ISettingService settingService, 
 			IPermissionService permissionService,
-			ILocalizationService localizationService)
+			ILocalizationService localizationService,
+			PluginMediator pluginMediator)
 		{
             this._taxService = taxService;
             this._taxCategoryService = taxCategoryService;
@@ -45,6 +48,7 @@ namespace SmartStore.Admin.Controllers
             this._settingService = settingService;
             this._permissionService = permissionService;
 			this._localizationService = localizationService;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
@@ -68,9 +72,9 @@ namespace SmartStore.Admin.Controllers
             }
 			
             var taxProviderModels = _taxService.LoadAllTaxProviders()
-				.Select(x => { 
-					var model = x.ToModel(); 
-					model.FriendlyName = x.Metadata.GetLocalizedFriendlyName(_localizationService); 
+				.Select(x => 
+				{
+					var model = _pluginMediator.ToProviderModel<ITaxProvider, TaxProviderModel>(x);
 					return model; 
 				})
 				.ToList();
@@ -87,55 +91,6 @@ namespace SmartStore.Admin.Controllers
             };
 
             return View(gridModel);
-        }
-
-        [HttpPost]
-        public ActionResult Providers()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
-
-            var taxProvidersModel = _taxService.LoadAllTaxProviders()
-                .Select(x => x.ToModel())
-                .ToList();
-
-			foreach (var tpm in taxProvidersModel)
-			{
-				tpm.IsPrimaryTaxProvider = tpm.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
-			}
-
-            var gridModel = new GridModel<TaxProviderModel>
-            {
-                Data = taxProvidersModel,
-                Total = taxProvidersModel.Count()
-            };
-
-			return View(gridModel);
-        }
-
-        public ActionResult ConfigureProvider(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
-
-            var taxProvider = _taxService.LoadTaxProviderBySystemName(systemName);
-            if (taxProvider == null)
-                //No tax provider found with the specified id
-                return RedirectToAction("Providers");
-
-            var model = taxProvider.ToModel();
-
-			if (taxProvider.Metadata.IsConfigurable)
-			{
-				string actionName, controllerName;
-				RouteValueDictionary routeValues;
-				((IConfigurable)taxProvider.Value).GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-				model.ConfigurationActionName = actionName;
-				model.ConfigurationControllerName = controllerName;
-				model.ConfigurationRouteValues = routeValues;
-			}
-
-            return View(model);
         }
 
         #endregion

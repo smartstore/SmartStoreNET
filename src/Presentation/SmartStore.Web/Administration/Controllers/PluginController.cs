@@ -23,6 +23,9 @@ using SmartStore.Services.Configuration;
 using System.IO;
 using SmartStore.Services.Stores;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Localization;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -43,6 +46,8 @@ namespace SmartStore.Admin.Controllers
         private readonly TaxSettings _taxSettings;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly WidgetSettings _widgetSettings;
+		private readonly IProviderManager _providerManager;
+		private readonly PluginMediator _pluginMediator;
 
 	    #endregion
 
@@ -59,7 +64,9 @@ namespace SmartStore.Admin.Controllers
 			ShippingSettings shippingSettings,
             TaxSettings taxSettings, 
 			ExternalAuthenticationSettings externalAuthenticationSettings, 
-            WidgetSettings widgetSettings)
+            WidgetSettings widgetSettings,
+			IProviderManager providerManager,
+			PluginMediator pluginMediator)
 		{
             this._pluginFinder = pluginFinder;
             this._localizationService = localizationService;
@@ -73,11 +80,16 @@ namespace SmartStore.Admin.Controllers
             this._taxSettings = taxSettings;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._widgetSettings = widgetSettings;
+			this._providerManager = providerManager;
+			this._pluginMediator = pluginMediator;
+			T = NullLocalizer.Instance;
 		}
 
 		#endregion 
 
         #region Utilities
+
+		public Localizer T { get; set; }
 
         [NonAction]
         protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)
@@ -315,6 +327,37 @@ namespace SmartStore.Admin.Controllers
             
             return View(model);
         }
+
+		public ActionResult ConfigureProvider(string systemName, string listUrl)
+		{
+			var provider = _providerManager.GetProvider(systemName);
+			if (provider == null || !provider.Metadata.IsConfigurable)
+			{
+				return HttpNotFound();
+			}
+
+			PermissionRecord requiredPermission = StandardPermissionProvider.AccessAdminPanel;
+			var listUrl2 = Url.Action("List");
+
+			var metadata = provider.Metadata;
+
+			if (metadata.ProviderType == typeof(ITaxProvider))
+			{
+				requiredPermission = StandardPermissionProvider.ManageTaxSettings;
+				listUrl2 = Url.Action("Providers", "Tax");
+			}
+
+			if (!_permissionService.Authorize(requiredPermission))
+			{
+				return AccessDeniedView();
+			}
+
+			var model = _pluginMediator.ToProviderModel(provider);
+
+			ViewBag.ListUrl = listUrl.NullEmpty() ?? listUrl2;
+
+			return View(model);
+		}
 
         //edit
         public ActionResult EditPopup(string systemName)

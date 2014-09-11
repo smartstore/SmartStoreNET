@@ -19,12 +19,5 @@ namespace SmartStore.Services.Tax
             return result;
         }
 
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-        {
-            actionName = null;
-            controllerName = null;
-            routeValues = null;
-        }
-
     }
 }

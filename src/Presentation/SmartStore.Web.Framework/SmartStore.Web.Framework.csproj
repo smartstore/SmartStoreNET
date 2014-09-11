@@ -241,6 +241,8 @@
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
+    <Compile Include="Mvc\ProviderModel.cs" />
+    <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
     <Compile Include="UI\HtmlAttributeExtensions.cs" />

@@ -23,7 +23,6 @@
                     {
                         columns.Bound(x => x.FriendlyName).Width(250);
                         columns.Bound(x => x.IsPrimaryTaxProvider)
-                            .Template(item => @Html.SymbolForBool(item.IsPrimaryTaxProvider))
 							.Template(					    
 								@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider) title='@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider").Text'>
 									@if (item.IsPrimaryTaxProvider)
@@ -33,19 +32,18 @@
 									@T("Admin.Telerik.GridLocalization.Select")
 								</a>
 							)
-                            .ClientTemplate(@Html.SymbolForBool("IsPrimaryTaxProvider"))
                             .Centered()
                             .Width(100)
-                            .ReadOnly();
-                        columns.Template(
-                                @<div>
-                                    @Html.ActionLink(T("Admin.Configuration.Tax.Providers.Configure").Text, "ConfigureProvider", new { systemName = item.SystemName })
+							.ReadOnly();
+						columns
+							.Template(
+                                @<div @Html.Attr("class", "hide", !item.IsConfigurable)>
+                                    @Html.ActionLink(T("Admin.Common.Configure").Text, "ConfigureProvider", "Plugin", new { systemName = item.SystemName }, null)
                                 </div>
                             )
-                            .ClientTemplate("<a href=\"ConfigureProvider?systemName=<#= SystemName #>\">" + T("Admin.Configuration.Tax.Providers.Configure").Text + "</a>")
-                            .Width(100)
-                            .Centered()
-                            .Title(T("Admin.Configuration.Tax.Providers.Configure").Text);
+							.Title(T("Admin.Common.Configure").Text)                    
+							.Width(100)
+                            .Centered();
                         columns.Bound(x => x.SystemName).Width(250);
                     }))
         </td>

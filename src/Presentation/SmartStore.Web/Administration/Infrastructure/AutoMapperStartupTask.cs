@@ -371,14 +371,6 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<MeasureDimension, MeasureDimensionModel>()
                 .ForMember(dest => dest.IsPrimaryDimension, mo => mo.Ignore());
             Mapper.CreateMap<MeasureDimensionModel, MeasureDimension>();
-            //tax providers
-            Mapper.CreateMap<Provider<ITaxProvider>, TaxProviderModel>()
-                .ForMember(dest => dest.FriendlyName, mo => mo.MapFrom(src => src.Metadata.FriendlyName))
-				.ForMember(dest => dest.SystemName, mo => mo.MapFrom(src => src.Metadata.SystemName))
-                .ForMember(dest => dest.IsPrimaryTaxProvider, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationActionName, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationControllerName, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationRouteValues, mo => mo.Ignore());
             //tax categories
             Mapper.CreateMap<TaxCategory, TaxCategoryModel>();
             Mapper.CreateMap<TaxCategoryModel, TaxCategory>();

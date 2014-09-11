@@ -6,7 +6,7 @@ namespace SmartStore.Services.Tax
     /// <summary>
     /// Provides an interface for creating tax providers
     /// </summary>
-    public partial interface ITaxProvider : IProvider, IConfigurable
+    public partial interface ITaxProvider : IProvider
     {
         /// <summary>
         /// Gets tax rate

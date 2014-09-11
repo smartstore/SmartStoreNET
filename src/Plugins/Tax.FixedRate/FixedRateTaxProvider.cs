@@ -9,7 +9,7 @@ namespace SmartStore.Plugin.Tax.FixedRate
 	[SystemName("Tax.FixedRate")]
 	[FriendlyName("Fixed tax rate provider")]
 	[DisplayOrder(5)]
-    public class FixedRateTaxProvider : BasePlugin, ITaxProvider
+	public class FixedRateTaxProvider : BasePlugin, ITaxProvider, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly ILocalizationService _localizationService;

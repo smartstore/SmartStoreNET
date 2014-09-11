@@ -35,7 +35,7 @@ namespace SmartStore.Data.Migrations
 				"You can use ECB (European central bank) exchange rate provider only when exchange rate currency code is set to EURO",
 				"Der EZB-Wechselkursdienst kann nur genutzt werden, wenn der Wechselkurs-Währungscode auf EUR gesetzt ist.");
 
-			builder.AddOrUpdate("Providers.Tax.Free.FriendlyName",
+			builder.AddOrUpdate("Providers.FriendlyName.Tax.Free",
 				"Free tax rate provider",
 				"Steuerbefreit");
 
@@ -100,6 +100,13 @@ namespace SmartStore.Data.Migrations
 				.Value("Activates the filter function for products within categories")
 				.Value("de", "Aktiviert die Filterfunktion für Produkte in Warengruppen.");
 
+			// Adding some new common provider resources & removing obsolete ones
+			builder.AddOrUpdate("Common.SystemName").Value("System name").Value("de", "Systemname");
+			builder.AddOrUpdate("Common.DisplayOrder").Value("Display order").Value("de", "Reihenfolge");
+
+			// Tax providers
+			string prefix = "Admin.Configuration.Tax.Providers.";
+			builder.Delete(prefix + "Configure", prefix + "Fields", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName");
 		}
     }
 }

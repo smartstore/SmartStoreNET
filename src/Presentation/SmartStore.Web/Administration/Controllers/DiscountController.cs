@@ -17,6 +17,7 @@ using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 using SmartStore.Core.ComponentModel;
 using System.Collections.Generic;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -35,6 +36,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IProductService _productService;
         private readonly CurrencySettings _currencySettings;
         private readonly IPermissionService _permissionService;
+		private readonly PluginMediator _pluginMediator;
 
         #endregion
 
@@ -45,7 +47,8 @@ namespace SmartStore.Admin.Controllers
             ICategoryService categoryService, IProductService productService,
             IWebHelper webHelper, IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService, CurrencySettings currencySettings,
-            IPermissionService permissionService)
+            IPermissionService permissionService,
+			PluginMediator pluginMediator)
         {
             this._discountService = discountService;
             this._localizationService = localizationService;
@@ -57,6 +60,7 @@ namespace SmartStore.Admin.Controllers
             this._customerActivityService = customerActivityService;
             this._currencySettings = currencySettings;
             this._permissionService = permissionService;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -89,7 +93,7 @@ namespace SmartStore.Admin.Controllers
             {
 				model.AvailableDiscountRequirementRules.Add(new SelectListItem()
                 {
-					Text = discountRule.Metadata.GetLocalizedFriendlyName(_localizationService),
+					Text = _pluginMediator.GetLocalizedFriendlyName(discountRule.Metadata),
                     Value = discountRule.Metadata.SystemName
                 });
             }
@@ -132,7 +136,7 @@ namespace SmartStore.Admin.Controllers
                         model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo()
                         {
                             DiscountRequirementId = dr.Id,
-							RuleName = drr.Metadata.GetLocalizedFriendlyName(_localizationService),
+							RuleName = _pluginMediator.GetLocalizedFriendlyName(drr.Metadata),
                             ConfigurationUrl = GetRequirementUrlInternal(drr.Value, discount, dr.Id)
                         });
                     }
@@ -362,7 +366,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentException("Discount requirement rule could not be loaded");
 
             string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
-			string ruleName = discountRequirementRule.Metadata.GetLocalizedFriendlyName(_localizationService);
+			string ruleName = _pluginMediator.GetLocalizedFriendlyName(discountRequirementRule.Metadata);
 
             return Json(new { url = url, ruleName = ruleName }, JsonRequestBehavior.AllowGet);
         }

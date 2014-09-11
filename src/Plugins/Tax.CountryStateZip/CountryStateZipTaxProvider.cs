@@ -12,7 +12,7 @@ namespace SmartStore.Plugin.Tax.CountryStateZip
 	[SystemName("Tax.CountryStateZip")]
 	[FriendlyName("Tax by country, state & zip")]
 	[DisplayOrder(10)]
-    public class CountryStateZipTaxProvider : BasePlugin, ITaxProvider
+	public class CountryStateZipTaxProvider : BasePlugin, ITaxProvider, IConfigurable
     {
         private readonly ITaxRateService _taxRateService;
         private readonly TaxRateObjectContext _objectContext;

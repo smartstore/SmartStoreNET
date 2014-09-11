@@ -62,7 +62,7 @@ namespace SmartStore.Core.Plugins
 
 		public string GetSettingKey(string name)
 		{
-			return "PluginSetting.{0}.{1}".FormatWith(SystemName, name);
+			return SettingKeyPattern.FormatWith(SystemName, name);
 		}
 
 		public override string ToString()

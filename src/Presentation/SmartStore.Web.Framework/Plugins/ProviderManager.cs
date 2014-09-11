@@ -87,15 +87,6 @@ namespace SmartStore.Web.Framework.Plugins
 			return providers.Select(x => new Provider<IProvider>(x));
 		}
 
-		public void SetDisplayOrder(ProviderMetadata metadata, int displayOrder, int storeId = 0)
-		{
-			Guard.ArgumentNotNull(() => metadata);
-
-			metadata.DisplayOrder = displayOrder;
-			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, "DisplayOrder");
-			_services.Settings.SetSetting<int>(settingKey, displayOrder, storeId, false);
-		}
-
 		protected virtual IEnumerable<Provider<TProvider>> SortProviders<TProvider>(IEnumerable<Provider<TProvider>> providers, int storeId = 0) where TProvider : IProvider
 		{
 			string cacheKey = "sm.providers.displayorder." + typeof(TProvider).Name;
@@ -103,8 +94,8 @@ namespace SmartStore.Web.Framework.Plugins
 				// cache serves just as a sort of static initializer
 				foreach (var m in providers.Select(x => x.Metadata))
 				{
-					var settingKey = m.SettingKeyPattern.FormatInvariant(m.SystemName, "DisplayOrder");
-					var userDisplayOrder = _services.Settings.GetSettingByKey<int?>(settingKey);
+					var mediator = _ctx.Resolve<PluginMediator>();
+					var userDisplayOrder = mediator.GetSetting<int?>(m, "DisplayOrder");
 					if (userDisplayOrder.HasValue)
 					{
 						m.DisplayOrder = userDisplayOrder.Value;

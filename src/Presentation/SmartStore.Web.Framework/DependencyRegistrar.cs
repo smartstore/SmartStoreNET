@@ -81,6 +81,7 @@ namespace SmartStore.Web.Framework
 			// plugins
 			var pluginFinder = new PluginFinder();
 			builder.RegisterInstance(pluginFinder).As<IPluginFinder>().SingleInstance();
+			builder.RegisterType<PluginMediator>();
 			
 			// modules
 			builder.RegisterModule(new DbModule(typeFinder));

@@ -434,6 +434,7 @@
     </Content>
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
+    <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -1067,9 +1068,7 @@
   <ItemGroup>
     <Content Include="Views\Widget\WidgetsByZone.cshtml" />
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="Models\PromotionFeeds\" />
-  </ItemGroup>
+  <ItemGroup />
   <ItemGroup>
     <Content Include="Views\DeliveryTime\List.cshtml" />
   </ItemGroup>

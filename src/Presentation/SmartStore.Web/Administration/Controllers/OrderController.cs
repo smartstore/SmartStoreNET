@@ -2708,12 +2708,12 @@ namespace SmartStore.Admin.Controllers
                 return new OrderAverageReportLineSummaryModel()
                 {
                     OrderStatus = x.OrderStatus.GetLocalizedEnum(_localizationService, _workContext),
-                    CountTodayOrders = x.CountTodayOrders, // codehint: sm-add
-                    SumTodayOrders = _priceFormatter.FormatPrice(x.SumTodayOrders, false /*true*/, false),
-                    SumThisWeekOrders = _priceFormatter.FormatPrice(x.SumThisWeekOrders, false /*true*/, false),
-                    SumThisMonthOrders = _priceFormatter.FormatPrice(x.SumThisMonthOrders, false /*true*/, false),
-                    SumThisYearOrders = _priceFormatter.FormatPrice(x.SumThisYearOrders, false /*true*/, false),
-                    SumAllTimeOrders = _priceFormatter.FormatPrice(x.SumAllTimeOrders, false /*true*/, false),
+                    CountTodayOrders = x.CountTodayOrders,
+                    SumTodayOrders = _priceFormatter.FormatPrice(x.SumTodayOrders, true, false),
+                    SumThisWeekOrders = _priceFormatter.FormatPrice(x.SumThisWeekOrders, true, false),
+                    SumThisMonthOrders = _priceFormatter.FormatPrice(x.SumThisMonthOrders, true, false),
+                    SumThisYearOrders = _priceFormatter.FormatPrice(x.SumThisYearOrders, true, false),
+                    SumAllTimeOrders = _priceFormatter.FormatPrice(x.SumAllTimeOrders, true, false),
                 };
             }).ToList();
 

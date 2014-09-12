@@ -316,7 +316,7 @@ namespace SmartStore.Services.Catalog
 				decimal price = decimal.Add(product.Price, priceAdjustment);
 				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
-				string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
+				string basePrice = priceFormatter.FormatPrice(basePriceValue, true, false);
 				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 
 				if (languageIndependent)

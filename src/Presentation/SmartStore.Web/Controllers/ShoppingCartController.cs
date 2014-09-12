@@ -1927,13 +1927,13 @@ namespace SmartStore.Web.Controllers
                             displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
                             displayTax = !displayTaxRates;
 
-                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, false /*true*/, false);
+                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
                             foreach (var tr in taxRates)
                             {
                                 model.TaxRates.Add(new OrderTotalsModel.TaxRate()
                                     {
                                         Rate = _priceFormatter.FormatTaxRate(tr.Key),
-                                        Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), false /*true*/, false),
+                                        Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), true, false),
                                     });
                             }
                         }
@@ -1955,14 +1955,14 @@ namespace SmartStore.Web.Controllers
                 if (shoppingCartTotalBase.HasValue)
                 {
                     decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _workContext.WorkingCurrency);
-                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, false /*true*/, false);
+                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
                 }
 
                 //discount
                 if (orderTotalDiscountAmountBase > decimal.Zero)
                 {
                     decimal orderTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotalDiscountAmountBase, _workContext.WorkingCurrency);
-                    model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderTotalDiscountAmount, false /*true*/, false);
+                    model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderTotalDiscountAmount, true, false);
                     model.AllowRemovingOrderTotalDiscount = orderTotalAppliedDiscount != null && orderTotalAppliedDiscount.RequiresCouponCode &&
                         !String.IsNullOrEmpty(orderTotalAppliedDiscount.CouponCode) && model.IsEditable;
                 }
@@ -1978,11 +1978,11 @@ namespace SmartStore.Web.Controllers
                                 CouponCode =  appliedGiftCard.GiftCard.GiftCardCouponCode,
                             };
                         decimal amountCanBeUsed = _currencyService.ConvertFromPrimaryStoreCurrency(appliedGiftCard.AmountCanBeUsed, _workContext.WorkingCurrency);
-                        gcModel.Amount = _priceFormatter.FormatPrice(-amountCanBeUsed, false /*true*/, false);
+                        gcModel.Amount = _priceFormatter.FormatPrice(-amountCanBeUsed, true, false);
 
                         decimal remainingAmountBase = appliedGiftCard.GiftCard.GetGiftCardRemainingAmount() - appliedGiftCard.AmountCanBeUsed;
                         decimal remainingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(remainingAmountBase, _workContext.WorkingCurrency);
-                        gcModel.Remaining = _priceFormatter.FormatPrice(remainingAmount, false /*true*/, false);
+                        gcModel.Remaining = _priceFormatter.FormatPrice(remainingAmount, true, false);
                         
                         model.GiftCards.Add(gcModel);
                     }
@@ -1993,7 +1993,7 @@ namespace SmartStore.Web.Controllers
                 {
                     decimal redeemedRewardPointsAmountInCustomerCurrency = _currencyService.ConvertFromPrimaryStoreCurrency(redeemedRewardPointsAmount, _workContext.WorkingCurrency);
                     model.RedeemedRewardPoints = redeemedRewardPoints;
-                    model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, false /*true*/, false);
+                    model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
             }
 

@@ -182,12 +182,12 @@ namespace SmartStore.Services.Catalog
 
                                         if (priceAdjustmentBase > 0)
                                         {
-                                            string priceAdjustmentStr = _priceFormatter.FormatPrice(priceAdjustment, false, false);
+                                            string priceAdjustmentStr = _priceFormatter.FormatPrice(priceAdjustment, true, false);
                                             pvaAttribute += string.Format(" [+{0}]", priceAdjustmentStr);
                                         }
                                         else if (priceAdjustmentBase < decimal.Zero)
                                         {
-                                            string priceAdjustmentStr = _priceFormatter.FormatPrice(-priceAdjustment, false, false);
+                                            string priceAdjustmentStr = _priceFormatter.FormatPrice(-priceAdjustment, true, false);
                                             pvaAttribute += string.Format(" [-{0}]", priceAdjustmentStr);
                                         }
                                     }

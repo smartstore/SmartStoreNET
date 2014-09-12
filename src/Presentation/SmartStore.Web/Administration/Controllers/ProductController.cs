@@ -604,7 +604,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				decimal basePriceValue = Convert.ToDecimal((product.Price / basePriceAmount) * basePriceBaseAmount);
 
-				string basePriceFormatted = _priceFormatter.FormatPrice(basePriceValue, false, false);
+				string basePriceFormatted = _priceFormatter.FormatPrice(basePriceValue, true, false);
 				string unit = "{0} {1}".FormatWith(basePriceBaseAmount, basePriceMeasureUnit);
 
 				basePrice = _localizationService.GetResource("Admin.Catalog.Products.Fields.BasePriceInfo").FormatWith(

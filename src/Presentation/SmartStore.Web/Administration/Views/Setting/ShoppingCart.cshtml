@@ -204,6 +204,15 @@
                 @Html.ValidationMessageFor(model => model.ShowCommentBox)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.RoundPricesDuringCalculation)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.RoundPricesDuringCalculation)
+                @Html.ValidationMessageFor(model => model.RoundPricesDuringCalculation)
+            </td>
+        </tr>
     </table>
 }
 

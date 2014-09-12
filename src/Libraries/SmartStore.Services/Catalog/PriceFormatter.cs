@@ -55,10 +55,13 @@ namespace SmartStore.Services.Catalog
         {
             string result = string.Empty;
 
-			IFormatProvider fmt = NumberFormatInfo.CurrentInfo;
+			var fmt = NumberFormatInfo.CurrentInfo;
 			try
 			{
-				fmt = CultureInfo.CreateSpecificCulture(targetCurrency.DisplayLocale);
+				fmt = CultureInfo.CreateSpecificCulture(targetCurrency.DisplayLocale).NumberFormat;
+
+				if (!showCurrency)
+					fmt.CurrencySymbol = "";
 			}
 			catch { }
 
@@ -94,10 +97,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Price</returns>
         public string FormatPrice(decimal price)
         {
-            // codehint: sm-edit
-            bool showCurrency = false; //true;
-            var targetCurrency = _workContext.WorkingCurrency;
-            return FormatPrice(price, showCurrency, targetCurrency);
+            return FormatPrice(price, true, _workContext.WorkingCurrency);
         }
 
         /// <summary>

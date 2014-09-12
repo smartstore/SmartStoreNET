@@ -48,7 +48,16 @@
     
 	@Html.Action("StoreScopeConfiguration", "Setting")
 	@Html.ValidationSummary(false)
+    
+    @(Html.SmartStore().TabStrip().Name("catalogsettings-edit").Items(x =>
+	{
+		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
+		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
+    }))
+}
 
+@helper TabCartSettings()
+{
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -61,38 +70,11 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.DisplayWishlistAfterAddingProduct)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.DisplayWishlistAfterAddingProduct)
-                @Html.ValidationMessageFor(model => model.DisplayWishlistAfterAddingProduct)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
-                @Html.ValidationMessageFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.MaximumShoppingCartItems)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.MaximumShoppingCartItems)
                 @Html.ValidationMessageFor(model => model.MaximumShoppingCartItems)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MaximumWishlistItems)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MaximumWishlistItems)
-                @Html.ValidationMessageFor(model => model.MaximumWishlistItems)
             </td>
         </tr>
         <tr>
@@ -111,24 +93,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ShowProductBundleImagesOnShoppingCart)
                 @Html.ValidationMessageFor(model => model.ShowProductBundleImagesOnShoppingCart)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowProductImagesOnWishList)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowProductImagesOnWishList)
-                @Html.ValidationMessageFor(model => model.ShowProductImagesOnWishList)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowProductBundleImagesOnWishList)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowProductBundleImagesOnWishList)
-                @Html.ValidationMessageFor(model => model.ShowProductBundleImagesOnWishList)
             </td>
         </tr>
         <tr>
@@ -158,24 +122,6 @@
                 @Html.ValidationMessageFor(model => model.CrossSellsNumber)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.EmailWishlistEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.EmailWishlistEnabled)
-                @Html.ValidationMessageFor(model => model.EmailWishlistEnabled)
-            </td>
-        </tr>
-        <tr id="pnlAllowAnonymousUsersToEmailWishlist">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailWishlist)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.AllowAnonymousUsersToEmailWishlist)
-                @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailWishlist)
-            </td>
-        </tr>        
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
@@ -258,5 +204,74 @@
                 @Html.ValidationMessageFor(model => model.ShowCommentBox)
             </td>
         </tr>
+    </table>
+}
+
+@helper TabWishlistSettings()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayWishlistAfterAddingProduct)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.DisplayWishlistAfterAddingProduct)
+                @Html.ValidationMessageFor(model => model.DisplayWishlistAfterAddingProduct)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
+                @Html.ValidationMessageFor(model => model.AllowOutOfStockItemsToBeAddedToWishlist)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MaximumWishlistItems)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MaximumWishlistItems)
+                @Html.ValidationMessageFor(model => model.MaximumWishlistItems)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductImagesOnWishList)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductImagesOnWishList)
+                @Html.ValidationMessageFor(model => model.ShowProductImagesOnWishList)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductBundleImagesOnWishList)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductBundleImagesOnWishList)
+                @Html.ValidationMessageFor(model => model.ShowProductBundleImagesOnWishList)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EmailWishlistEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.EmailWishlistEnabled)
+                @Html.ValidationMessageFor(model => model.EmailWishlistEnabled)
+            </td>
+        </tr>
+        <tr id="pnlAllowAnonymousUsersToEmailWishlist">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AllowAnonymousUsersToEmailWishlist)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AllowAnonymousUsersToEmailWishlist)
+                @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailWishlist)
+            </td>
+        </tr>        
     </table>
 }

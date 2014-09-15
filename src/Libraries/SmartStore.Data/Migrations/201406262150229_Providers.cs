@@ -100,6 +100,22 @@ namespace SmartStore.Data.Migrations
 				.Value("Activates the filter function for products within categories")
 				.Value("de", "Aktiviert die Filterfunktion für Produkte in Warengruppen.");
 
+			// Misc
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.CartSettings")
+				.Value("Shopping cart")
+				.Value("de", "Warenkorb");
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.WishlistSettings")
+				.Value("Wishlist")
+				.Value("de", "Wunschzettel");
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation")
+				.Value("Round prices during calculation")
+				.Value("de", "Preise bei der Berechnung runden");
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation.Hint")
+				.Value("Determines whether the shop calculates with rounded price values (recommended for B2B)")
+				.Value("de", "Bestimmt, ob der Shop bei Berechnungen gerundete Werte der Preise benutzt (empfohlen für B2B)");
+
+
+
 			// Adding some new common provider resources & removing obsolete ones
 			builder.AddOrUpdate("Common.SystemName").Value("System name").Value("de", "Systemname");
 			builder.AddOrUpdate("Common.DisplayOrder").Value("Display order").Value("de", "Reihenfolge");

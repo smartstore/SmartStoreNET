@@ -10,15 +10,6 @@ namespace SmartStore.Data.Migrations
         {
 			AddColumn("dbo.Order", "UpdatedOnUtc", c => c.DateTime(nullable: false, defaultValue: DateTime.UtcNow));
 			AddColumn("dbo.Order", "RewardPointsRemaining", c => c.Int());
-
-			//try
-			//{
-			//	Sql("Update [dbo].[Order] Set UpdatedOnUtc = CreatedOnUtc");
-			//}
-			//catch (Exception exc)
-			//{
-			//	exc.Dump();
-			//}
         }
         
         public override void Down()
@@ -35,6 +26,8 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+			context.Execute("Update [dbo].[Order] Set UpdatedOnUtc = CreatedOnUtc");
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)

@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.Shipping.FixedRate
     /// <summary>
     /// Fixed rate shipping computation method
     /// </summary>
-    public class FixedRateShippingComputationMethod : BasePlugin, IShippingRateComputationMethod
+	public class FixedRateShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
     {
         #region Fields
 

@@ -598,15 +598,15 @@ namespace SmartStore.Services.Orders
                     shippingAddress = customer.ShippingAddress;
 
 				var shippingRateComputationMethods = _shippingService.LoadActiveShippingRateComputationMethods(_storeContext.CurrentStore.Id);
-                if (shippingRateComputationMethods == null || shippingRateComputationMethods.Count == 0)
+                if (!shippingRateComputationMethods.Any())
                     throw new SmartException("Shipping rate computation method could not be loaded");
 
-                if (shippingRateComputationMethods.Count == 1)
+                if (shippingRateComputationMethods.Count() == 1)
                 {
                     var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress);
 
-                    var shippingRateComputationMethod = shippingRateComputationMethods[0];
-                    decimal? fixedRate = shippingRateComputationMethod.GetFixedRate(getShippingOptionRequest);
+                    var shippingRateComputationMethod = shippingRateComputationMethods.First();
+                    decimal? fixedRate = shippingRateComputationMethod.Value.GetFixedRate(getShippingOptionRequest);
                     if (fixedRate.HasValue)
                     {
                         //adjust shipping rate

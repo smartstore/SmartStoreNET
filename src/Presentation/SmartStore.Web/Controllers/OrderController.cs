@@ -321,11 +321,9 @@ namespace SmartStore.Web.Controllers
             //tracking number and shipment information
             model.TrackingNumber = shipment.TrackingNumber;
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
-            if (srcm != null &&
-                srcm.PluginDescriptor.Installed &&
-                srcm.IsShippingRateComputationMethodActive(_shippingSettings))
+            if (srcm != null && srcm.IsShippingRateComputationMethodActive(_shippingSettings))
             {
-                var shipmentTracker = srcm.ShipmentTracker;
+                var shipmentTracker = srcm.Value.ShipmentTracker;
                 if (shipmentTracker != null)
                 {
                     model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);

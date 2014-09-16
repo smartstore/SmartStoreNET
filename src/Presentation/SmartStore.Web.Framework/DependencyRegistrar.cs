@@ -762,6 +762,7 @@ namespace SmartStore.Web.Framework
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
+					m.For(em => em.GroupName, ProviderTypeToKnownGroupName(type));
 					m.For(em => em.SystemName, systemName);
 					m.For(em => em.ResourceKeyPattern, resPattern);
 					m.For(em => em.SettingKeyPattern, settingPattern);
@@ -775,6 +776,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<ITaxProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IDiscountRequirementRule>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExchangeRateProvider>(type, systemName, registration);
+				RegisterAsSpecificProvider<IShippingRateComputationMethod>(type, systemName, registration);
 			}
 
 		}
@@ -847,6 +849,41 @@ namespace SmartStore.Web.Framework
 			}
 
 			return new Tuple<string, string>(name, description);
+		}
+
+
+		private string ProviderTypeToKnownGroupName(Type implType)
+		{
+			if (typeof(ITaxProvider).IsAssignableFrom(implType))
+			{
+				return "Tax";
+			}
+			else if (typeof(IDiscountRequirementRule).IsAssignableFrom(implType))
+			{
+				return "Marketing";
+			}
+			else if (typeof(IExchangeRateProvider).IsAssignableFrom(implType))
+			{
+				return "Payment";
+			}
+			else if (typeof(IShippingRateComputationMethod).IsAssignableFrom(implType))
+			{
+				return "Shipping";
+			}
+			else if (typeof(IPaymentMethod).IsAssignableFrom(implType))
+			{
+				return "Payment";
+			}
+			else if (typeof(IExternalAuthenticationMethod).IsAssignableFrom(implType))
+			{
+				return "Security";
+			}
+			else if (typeof(IWidget).IsAssignableFrom(implType))
+			{
+				return "CMS";
+			}
+
+			return null;
 		}
 
 		#endregion

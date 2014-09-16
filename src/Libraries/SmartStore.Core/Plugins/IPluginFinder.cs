@@ -31,7 +31,6 @@ namespace SmartStore.Core.Plugins
 		/// <returns>Plugin descriptors</returns>
 		IEnumerable<PluginDescriptor> GetPluginDescriptors<T>(bool installedOnly = true) where T : class, IPlugin;
 
-        // codehint: sm-add
         PluginDescriptor GetPluginDescriptorByAssembly(Assembly assembly, bool installedOnly = true);
 
 		/// <summary>

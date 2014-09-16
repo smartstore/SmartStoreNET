@@ -14,7 +14,7 @@ using SmartStore.Services.Shipping.Tracking;
 
 namespace SmartStore.Plugin.Shipping.ByWeight
 {
-    public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod
+	public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
     {
         #region Fields
 

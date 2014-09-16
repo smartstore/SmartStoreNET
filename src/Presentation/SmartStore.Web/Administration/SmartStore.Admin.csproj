@@ -212,6 +212,7 @@
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
+    <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
     <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
@@ -435,6 +436,7 @@
     <Content Include="Views\Product\_CreateOrUpdate.Inventory.cshtml" />
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
+    <Content Include="Views\Shared\_Providers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -538,9 +540,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Tax\Providers.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Tax\ConfigureProvider.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Tax\Categories.cshtml" />

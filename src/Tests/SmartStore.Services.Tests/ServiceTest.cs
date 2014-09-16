@@ -29,6 +29,7 @@ namespace SmartStore.Services.Tests
 		private void InitProviders()
 		{
 			_providerManager.RegisterProvider("FixedTaxRateTest", new FixedRateTestTaxProvider());
+			_providerManager.RegisterProvider("FixedRateTestShippingRateComputationMethod", new FixedRateTestShippingRateComputationMethod());
 			_providerManager.RegisterProvider("TestDiscountRequirementRule", new TestDiscountRequirementRule());
 			_providerManager.RegisterProvider("CurrencyExchange.TestProvider", new TestExchangeRateProvider());
 		}

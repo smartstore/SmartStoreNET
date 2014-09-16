@@ -455,9 +455,9 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            //shipping rate coputation methods
+            // shipping rate coputation methods
             if (_shippingService.LoadActiveShippingRateComputationMethods()
-                .Where(x => x.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+                .Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
                 .Count() > 1)
                 model.Add(new SystemWarningModel()
                 {

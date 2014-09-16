@@ -46,7 +46,6 @@ namespace SmartStore.Core.Plugins
             }
         }
 
-        // codehint: sm-add
         /// <summary>
         /// Gets the file name of the brand image (without path)
         /// or an empty string if no image is specified

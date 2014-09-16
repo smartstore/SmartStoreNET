@@ -117,15 +117,7 @@ namespace SmartStore.Admin.Controllers
 				.ToList();
 			pluginModel.SelectedStoreIds = _settingService.GetSettingByKey<string>(pluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArray();
 			pluginModel.LimitedToStores = pluginModel.SelectedStoreIds.Count() > 0;
-
-            if (System.IO.File.Exists(Path.Combine(pluginDescriptor.PhysicalPath, "Content", "icon.png")))
-            {
-                pluginModel.IconUrl = "~/Plugins/{0}/Content/icon.png".FormatInvariant(pluginDescriptor.SystemName);
-            }
-            else
-            {
-                pluginModel.IconUrl = GetDefaultPluginUrl(pluginDescriptor);
-            }
+			pluginModel.IconUrl = _pluginMediator.GetIconUrl(pluginDescriptor);
             
             if (pluginDescriptor.Installed)
             {
@@ -146,13 +138,13 @@ namespace SmartStore.Admin.Controllers
                     canChangeEnabled = true;
                     isEnabled = ((IPaymentMethod)pluginInstance).IsPaymentMethodActive(_paymentSettings);
                 }
-                else if (pluginInstance is IShippingRateComputationMethod)
-                {
-                    //shipping rate computation method
-                    configurationUrl = Url.Action("ConfigureProvider", "Shipping", new { systemName = pluginDescriptor.SystemName });
-                    canChangeEnabled = true;
-                    isEnabled = ((IShippingRateComputationMethod)pluginInstance).IsShippingRateComputationMethodActive(_shippingSettings);
-                }
+				//else if (pluginInstance is IShippingRateComputationMethod)
+				//{
+				//	//shipping rate computation method
+				//	configurationUrl = Url.Action("ConfigureProvider", "Shipping", new { systemName = pluginDescriptor.SystemName });
+				//	canChangeEnabled = true;
+				//	isEnabled = ((IShippingRateComputationMethod)pluginInstance).IsShippingRateComputationMethodActive(_shippingSettings);
+				//}
                 else if (pluginInstance is ITaxProvider)
                 {
                     //tax provider
@@ -185,18 +177,6 @@ namespace SmartStore.Admin.Controllers
 
             }
             return pluginModel;
-        }
-
-        private string GetDefaultPluginUrl(PluginDescriptor plugin)
-        {
-            string path = "~/Administration/Content/images/icon-plugin-{0}.png".FormatInvariant(plugin.Group.ToLower());
-
-            if (System.IO.File.Exists(Server.MapPath(path)))
-            {
-                return path;
-            }
-
-            return "~/Administration/Content/images/icon-plugin-default.png";
         }
 
         [NonAction]
@@ -346,6 +326,11 @@ namespace SmartStore.Admin.Controllers
 				requiredPermission = StandardPermissionProvider.ManageTaxSettings;
 				listUrl2 = Url.Action("Providers", "Tax");
 			}
+			else if (metadata.ProviderType == typeof(IShippingRateComputationMethod))
+			{
+				requiredPermission = StandardPermissionProvider.ManageShippingSettings;
+				listUrl2 = Url.Action("Providers", "Shipping");
+			}
 
 			if (!_permissionService.Authorize(requiredPermission))
 			{
@@ -436,29 +421,29 @@ namespace SmartStore.Admin.Controllers
                             }
                         }
                     }
-                    else if (pluginInstance is IShippingRateComputationMethod)
-                    {
-                        //shipping rate computation method
-                        var srcm = (IShippingRateComputationMethod)pluginInstance;
-                        if (srcm.IsShippingRateComputationMethodActive(_shippingSettings))
-                        {
-                            if (!model.IsEnabled)
-                            {
-                                //mark as disabled
-                                _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_shippingSettings);
-                            }
-                        }
-                        else
-                        {
-                            if (model.IsEnabled)
-                            {
-                                //mark as active
-                                _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_shippingSettings);
-                            }
-                        }
-                    }
+					//else if (pluginInstance is IShippingRateComputationMethod)
+					//{
+					//	//shipping rate computation method
+					//	var srcm = (IShippingRateComputationMethod)pluginInstance;
+					//	if (srcm.IsShippingRateComputationMethodActive(_shippingSettings))
+					//	{
+					//		if (!model.IsEnabled)
+					//		{
+					//			//mark as disabled
+					//			_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_shippingSettings);
+					//		}
+					//	}
+					//	else
+					//	{
+					//		if (model.IsEnabled)
+					//		{
+					//			//mark as active
+					//			_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_shippingSettings);
+					//		}
+					//	}
+					//}
                     else if (pluginInstance is ITaxProvider)
                     {
                         //tax provider

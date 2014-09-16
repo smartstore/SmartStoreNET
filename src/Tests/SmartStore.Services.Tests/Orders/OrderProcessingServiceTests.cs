@@ -130,7 +130,8 @@ namespace SmartStore.Services.Tests.Orders
                 _localizationService,
                 _shippingSettings, pluginFinder, 
                 _eventPublisher, _shoppingCartSettings,
-				_settingService);
+				_settingService,
+				this.ProviderManager);
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
 

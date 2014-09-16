@@ -1,0 +1,88 @@
+﻿@model ProviderModelList
+@using SmartStore.Core
+
+@helper ActiveLabel(ProviderModel item) 
+{ 
+	var activatable = item as IActivatable;
+	if (activatable == null)
+	{
+		return;
+	}
+	if (activatable.IsActive)
+	{
+		<span class="label label-success">@T("Common.Active")</span>
+	}
+	else
+	{
+		<span class="label label">@T("Common.Inactive")</span>
+	}
+}
+
+@functions {
+	private object RenderTemplate(object template)
+	{
+		var result = template as HelperResult;
+		if (result != null)
+		{
+			result.WriteTo(Html.ViewContext.Writer);
+		}
+		return null;
+	}
+
+	private string GetColumnWidth()
+	{
+		return "{0}%".FormatInvariant(100 / (Model.ExtraColumns.Count + 1));
+	}
+}
+
+<table class="table plugins-table">
+	<colgroup>
+		<col style="width: 48px" />
+		<col style="width:@GetColumnWidth()" />
+		@foreach (var col in Model.ExtraColumns)
+		{
+			<col style="width:@GetColumnWidth()" />
+		}
+	</colgroup>
+	<tbody>
+		@foreach (var item in Model.Data)
+		{
+			<tr class="plugin-item" data-system-name="@item.SystemName" data-friendly-name="@item.FriendlyName">
+				<td class="cell-icon">
+					<img class="icon" src="@Url.Content(item.IconUrl)" />
+				</td>
+				<td class="cell-data" style="width:initial">
+					<div>
+						@ActiveLabel(item)
+						<span class="plugin-name">
+							@item.FriendlyName
+						</span>
+					</div>
+					<div class="plugin-data">
+						<span class="attr-name">@T("Common.SystemName"):</span>
+						<span class="attr-value">@item.SystemName</span>
+						<span class="attr-name">@T("Common.DisplayOrder"):</span>
+						<span class="attr-value">@item.DisplayOrder</span>
+					</div>
+					<div class="plugin-actions">
+						<i class="fa fa-pencil-square-o"></i>
+						<a class="plugin-edit" href="#" data-systemname="@item.SystemName">@T("Common.Edit")</a>
+						@if (item.IsConfigurable)
+						{
+							<i class="fa fa-cog"></i>
+							<a class="plugin-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })" data-systemname="@item.SystemName">@T("Admin.Common.Configure")</a>
+						}
+					</div>
+				</td>
+				@foreach (var col in Model.ExtraColumns)
+				{
+					<td class="cell-install" style="width:initial">
+						@RenderTemplate(col(item))
+					</td>
+				}
+			</tr>
+		}
+		<tr></tr>
+	</tbody>
+</table>
+

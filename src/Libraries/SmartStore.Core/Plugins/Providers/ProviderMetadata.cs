@@ -12,7 +12,12 @@ namespace SmartStore.Core.Plugins
 		/// Gets or sets the provider type
 		/// </summary>
 		public Type ProviderType { get; set; }
-		
+
+		/// <summary>
+		/// Gets or sets the provider's group name
+		/// </summary>
+		public string GroupName { get; set; }
+
 		/// <summary>
 		/// Gets or sets the provider system name
 		/// </summary>

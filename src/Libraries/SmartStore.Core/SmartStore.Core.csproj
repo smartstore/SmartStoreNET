@@ -151,6 +151,7 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="IActivatable.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IProvider.cs" />

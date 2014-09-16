@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -10,12 +11,14 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins
 {
 	public class PluginMediator
 	{
+		//private static readonly ConcurrentDictionary<Tuple<PluginDescriptor, string>, string> _iconsMap = new ConcurrentDictionary<Tuple<PluginDescriptor, string>, string>();
 		private static readonly ConcurrentDictionary<string, RouteInfo> _routesCache = new ConcurrentDictionary<string, RouteInfo>();
 		private readonly ICommonServices _services;
 
@@ -135,6 +138,7 @@ namespace SmartStore.Web.Framework.Plugins
 			model.FriendlyName = GetLocalizedFriendlyName(metadata);
 			model.Description = GetLocalizedDescription(metadata);
 			model.DisplayOrder = metadata.DisplayOrder;
+			model.IconUrl = GetIconUrl(metadata);
 			if (metadata.IsConfigurable)
 			{
 				var routeInfo = _routesCache.GetOrAdd(model.SystemName, (key) =>
@@ -170,5 +174,60 @@ namespace SmartStore.Web.Framework.Plugins
 
 			return model;
 		}
+
+		public string GetIconUrl(ProviderMetadata metadata)
+		{
+			var plugin = metadata.PluginDescriptor;
+
+			if (plugin == null)
+			{
+				return GetDefaultIconUrl(metadata.GroupName);
+			}
+
+			return GetIconUrl(plugin, metadata.SystemName);
+		}
+
+		/// <summary>
+		/// Returns the absolute path of a plugin/provider icon
+		/// </summary>
+		/// <param name="plugin">The plugin descriptor. Used to resolve the physical path</param>
+		/// <param name="providerSystemName">Optional system name of provider. If passed, an icon with this name gets being tried to resolve first.</param>
+		/// <returns>The icon's absolute path</returns>
+		public string GetIconUrl(PluginDescriptor plugin, string providerSystemName = null)
+		{
+			//var cacheKey = new Tuple<PluginDescriptor, string>(plugin, providerSystemName);
+			
+			if (providerSystemName.HasValue())
+			{
+				if (File.Exists(Path.Combine(plugin.PhysicalPath, "Content", "icon-{0}.png".FormatInvariant(providerSystemName))))
+				{
+					return "~/Plugins/{0}/Content/icon-{1}.png".FormatInvariant(plugin.SystemName, providerSystemName);
+				}
+			}
+			
+			if (File.Exists(Path.Combine(plugin.PhysicalPath, "Content", "icon.png")))
+			{
+				return "~/Plugins/{0}/Content/icon.png".FormatInvariant(plugin.SystemName);
+			}
+			else
+			{
+				return GetDefaultIconUrl(plugin.Group);
+			}
+		}
+
+		public string GetDefaultIconUrl(string groupName)
+		{
+			if (groupName.HasValue())
+			{
+				string path = "~/Administration/Content/images/icon-plugin-{0}.png".FormatInvariant(groupName.ToLower());
+				if (File.Exists(CommonHelper.MapPath(path, false)))
+				{
+					return path;
+				}
+			}
+
+			return "~/Administration/Content/images/icon-plugin-default.png";
+		}
+
 	}
 }

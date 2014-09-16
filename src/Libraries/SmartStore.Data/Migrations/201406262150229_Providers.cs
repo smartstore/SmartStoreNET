@@ -69,6 +69,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.PromotionFeeds", "Promotion feeds", "Promotion Feeds");
 
 			// some admin menu renaming / new entries
+			builder.AddOrUpdate("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider").Value("de", "Als Standard festlegen");
+			builder.AddOrUpdate("Admin.Common.Activate").Value("de", "Aktivieren");
 			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLog").Value("de", "Aktivitätslog");
 			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLogTy pe").Value("de", "Aktivitätstypen");
 			builder.AddOrUpdate("Admin.Configuration.RegionalSettings",
@@ -113,16 +115,28 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation.Hint")
 				.Value("Determines whether the shop calculates with rounded price values (recommended for B2B)")
 				.Value("de", "Bestimmt, ob der Shop bei Berechnungen gerundete Werte der Preise benutzt (empfohlen für B2B)");
-
+			builder.AddOrUpdate("ShoppingCart.Weight")
+				.Value("Weight")
+				.Value("de", "Gewicht");
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowWeight")
+				.Value("Show product weight in shopping cart")
+				.Value("de", "Zeige Produktgewicht im Warenkorb");
+			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowWeight.Hint")
+				.Value("Determines whether the product weight is shown in shopping cart")
+				.Value("de", "Legt fest ob das Produktgewicht im Warenkorb angezeigt wird.");
 
 
 			// Adding some new common provider resources & removing obsolete ones
 			builder.AddOrUpdate("Common.SystemName").Value("System name").Value("de", "Systemname");
 			builder.AddOrUpdate("Common.DisplayOrder").Value("Display order").Value("de", "Reihenfolge");
+			builder.AddOrUpdate("Admin.Common.Deactivate").Value("Deactivate").Value("de", "Deaktivieren");
 
 			// Tax providers
 			string prefix = "Admin.Configuration.Tax.Providers.";
 			builder.Delete(prefix + "Configure", prefix + "Fields", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName");
+			// Shipping methods
+			prefix = "Admin.Configuration.Shipping.Providers.";
+			builder.Delete(prefix + "DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "IsActive");
 		}
     }
 }

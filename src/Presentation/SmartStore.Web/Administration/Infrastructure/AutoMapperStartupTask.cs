@@ -379,15 +379,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
                 .ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore());
-            //shipping rate computation methods
-            Mapper.CreateMap<IShippingRateComputationMethod, ShippingRateComputationMethodModel>()
-                .ForMember(dest => dest.FriendlyName, mo => mo.MapFrom(src => src.PluginDescriptor.FriendlyName))
-                .ForMember(dest => dest.SystemName, mo => mo.MapFrom(src => src.PluginDescriptor.SystemName))
-                .ForMember(dest => dest.DisplayOrder, mo => mo.MapFrom(src => src.PluginDescriptor.DisplayOrder))
-                .ForMember(dest => dest.IsActive, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationActionName, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationControllerName, mo => mo.Ignore())
-                .ForMember(dest => dest.ConfigurationRouteValues, mo => mo.Ignore());
             //payment methods
             Mapper.CreateMap<IPaymentMethod, PaymentMethodModel>()
                 .ForMember(dest => dest.FriendlyName, mo => mo.MapFrom(src => src.PluginDescriptor.FriendlyName))

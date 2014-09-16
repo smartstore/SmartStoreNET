@@ -84,13 +84,7 @@ namespace SmartStore.Admin.Controllers
 				tpm.IsPrimaryTaxProvider = tpm.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
 			}
 
-            var gridModel = new GridModel<TaxProviderModel>
-            {
-                Data = taxProviderModels,
-                Total = taxProviderModels.Count()
-            };
-
-            return View(gridModel);
+			return View(taxProviderModels);
         }
 
         #endregion

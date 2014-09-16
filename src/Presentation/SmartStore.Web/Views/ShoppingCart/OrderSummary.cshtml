@@ -75,6 +75,13 @@
 				</div>
 			}
 		</td>
+
+        @if (Model.DisplayWeight)
+		{
+        <td class="weight nobr">
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
+        </td>
+        }
 		<td class="unit-price nobr">
 			<span class="product-unit-price">@item.UnitPrice</span>
 		</td>
@@ -267,6 +274,13 @@
 					<th>
 						@T("ShoppingCart.Product(s)")
 					</th>
+
+                    @if (Model.DisplayWeight)
+					{
+                    <th>
+                        @T("ShoppingCart.Weight")
+                    </th>
+                    }
 					<th class="unit-price">
 						@T("ShoppingCart.UnitPrice")
 					</th>

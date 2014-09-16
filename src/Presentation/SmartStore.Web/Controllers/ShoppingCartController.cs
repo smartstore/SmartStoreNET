@@ -232,7 +232,8 @@ namespace SmartStore.Web.Controllers
 				IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter)
+                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter),
+                Weight = product.Weight
 			};
 
 			if (item.BundleItem != null)
@@ -589,6 +590,7 @@ namespace SmartStore.Web.Controllers
             model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
             model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
             model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
+            model.DisplayWeight = _shoppingCartSettings.ShowWeight;
             model.IsEditable = isEditable;
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
@@ -1848,7 +1850,16 @@ namespace SmartStore.Web.Controllers
             model.IsEditable = isEditable;
 
             if (cart.Count > 0)
-            {              
+            {             
+ 
+                //weight
+                model.Weight = decimal.Zero;
+
+                foreach (var sci in cart) 
+                {
+                    model.Weight += sci.Item.Product.Weight * sci.Item.Quantity;
+                }
+
                 //subtotal
                 decimal subtotalBase = decimal.Zero;
                 decimal orderSubTotalDiscountAmountBase = decimal.Zero;
@@ -1940,6 +1951,8 @@ namespace SmartStore.Web.Controllers
                 }
                 model.DisplayTaxRates = displayTaxRates;
                 model.DisplayTax = displayTax;
+
+                model.DisplayWeight = _shoppingCartSettings.ShowWeight;
 
                 //total
                 decimal orderTotalDiscountAmountBase = decimal.Zero;

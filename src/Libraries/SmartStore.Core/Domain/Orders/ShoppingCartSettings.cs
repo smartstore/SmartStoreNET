@@ -143,6 +143,11 @@ namespace SmartStore.Core.Domain.Orders
         public bool ShowShortDesc { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to show the product weight in the order summary
+        /// </summary>
+        public bool ShowWeight { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether to show the product short description in the order summary
         /// </summary>
         public bool ShowBasePrice { get; set; }

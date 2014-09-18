@@ -98,9 +98,8 @@
 
         // sticky section-header
         var navbar = $("#navbar");
-        var navbarHeight = navbar.outerHeight() || 0;
+        var navbarHeight = navbar.height() || 1;
         var sectionHeader = $('.section-header');
-        var sectionHeaderTop = sectionHeader.offset().top - parseFloat(sectionHeader.css('margin-top').replace(/auto/, 0));
         var sectionHeaderHasButtons = undefined;
 
         $(window).on("scroll resize", function (e) {
@@ -108,10 +107,12 @@
                 sectionHeaderHasButtons = sectionHeader.find(".options").children().length > 0;
             }
             if (sectionHeaderHasButtons === true) {
-                var y = $(this).scrollTop();
-                sectionHeader.toggleClass("sticky", y >= sectionHeaderTop - navbarHeight);
+            	var y = $(this).scrollTop();
+                sectionHeader.toggleClass("sticky", y >= navbarHeight);
             }
         });
+
+        $(window).trigger('resize');
 
         $(window).load(function () {
 

@@ -135,21 +135,23 @@
 			</div>
 		}
 
-        @if (IsSectionDefined("navbar"))
-        {
-            @RenderSection("navbar")
-        }
-        else
-        {
-            @Html.Widget("admin_navbar_before")
-            @Html.Partial("Navbar")
-            @Html.Widget("admin_navbar_after")
-        }
+		<header>
+			@if (IsSectionDefined("navbar"))
+			{
+				@RenderSection("navbar")
+			}
+			else
+			{
+				@Html.Widget("admin_navbar_before")
+				@Html.Partial("Navbar")
+				@Html.Widget("admin_navbar_after")
+			}
 
-        <div id="breadcrumb">
-            <!-- SiteMapPath here-->
-            @Html.Widget("admin_breadcrumb").ToString().Trim()
-        </div>
+			<div id="breadcrumb">
+				<!-- SiteMapPath here-->
+				@Html.Widget("admin_breadcrumb").ToString().Trim()
+			</div>
+		</header>
 
         @Html.Widget("admin_content_before")
         <div id="content">

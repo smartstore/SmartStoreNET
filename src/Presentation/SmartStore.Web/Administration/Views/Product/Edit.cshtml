@@ -8,7 +8,7 @@
     <div class="section-header">
         <div class="title">
             @if (!String.IsNullOrEmpty(Model.PictureThumbnailUrl)) {
-                <img src="@Url.Content(Model.PictureThumbnailUrl)" class="img-polaroid" />
+                <img src="@Url.Content(Model.PictureThumbnailUrl)" />
 			}
             @T("Admin.Catalog.Products.EditProductDetails") - <span title="@Model.Name">@Model.Name.Truncate(45, "...")</span> @Html.ActionLink("(" + T("Admin.Catalog.Products.BackToList") + ")", "List")
         </div>

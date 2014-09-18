@@ -12,7 +12,7 @@
 @black:                 #000;
 @grayDarker:            #222;
 @grayDark:              #333;
-@gray:                  #555;
+@gray:                  #444;
 @grayLight:             #999;
 @grayLighter:           #eee;
 @white:                 #fff;
@@ -25,7 +25,7 @@
 @green:                 #46a546;
 @red:                   #9d261d;
 @yellow:                #ffc40d;
-@orange:                #f89406;
+@orange:                #ffa726; //#f89406;
 @pink:                  #c3325f;
 @purple:                #7a43b6;
 
@@ -38,7 +38,7 @@
 
 // Links
 // -------------------------
-@linkColor:             #3276b1; //#08c; // #21759b; // #0057a3;
+@linkColor:             #15c; //#3276b1; //#08c;
 @linkColorHover:        darken(@linkColor, 15%);
 
 
@@ -89,8 +89,8 @@
 @btnBackgroundHighlight:            darken(@white, 10%);
 @btnBorder:                         #c6c6c6; //#ccc;
 
-@btnPrimaryBackground:              @linkColor;
-@btnPrimaryBackgroundHighlight:     spin(@btnPrimaryBackground, 15%); //darken(@btnPrimaryBackground, 10%);
+@btnWarningBackground:              #3b50ce; //@linkColor;
+@btnWarningBackgroundHighlight:     spin(@btnPrimaryBackground, 15%); //darken(@btnPrimaryBackground, 10%);
 
 @btnInfoBackground:                 #5bc0de;
 @btnInfoBackgroundHighlight:        #2f96b4;
@@ -98,10 +98,10 @@
 @btnSuccessBackground:              #62c462;
 @btnSuccessBackgroundHighlight:     #51a351;
 
-@btnWarningBackground:              lighten(@orange, 15%);
-@btnWarningBackgroundHighlight:     @orange;
+@btnPrimaryBackground:              @orange;
+@btnPrimaryBackgroundHighlight:     darken(@orange, 8%);
 
-@btnDangerBackground:               #ee5f5b;
+@btnDangerBackground:               #e84e40; //#ee5f5b;
 @btnDangerBackgroundHighlight:      #bd362f;
 
 @btnInverseBackground:              #444;
@@ -179,7 +179,7 @@
 @navbarCollapseWidth:             979px;
 @navbarCollapseDesktopWidth:      @navbarCollapseWidth + 1;
 
-@navbarHeight:                    54px;
+@navbarHeight:                    70px;
 @navbarBackground:                #58ace0; //darken(@navbarBackgroundHighlight, 5%);
 @navbarBackgroundHighlight:       darken(@navbarBackground, 16%); //#ffffff;
 @navbarBorder:                    darken(@navbarBackground, 12%);
@@ -194,12 +194,12 @@
 @navbarBrandColor:                #fff; //@navbarLinkColor;
 
 // Inverted navbar
-@navbarInverseBackground:                #222;
-@navbarInverseBackgroundHighlight:       #666;
-@navbarInverseBorder:                    #555;
+@navbarInverseBackground:                #3b50ce;
+@navbarInverseBackgroundHighlight:       #3b50ce;
+@navbarInverseBorder:                    transparent;
 
-@navbarInverseText:                      #fff; // @grayLight;
-@navbarInverseLinkColor:                 #fff; // @grayLight;
+@navbarInverseText:                      #fff;
+@navbarInverseLinkColor:                 #fff;
 @navbarInverseLinkColorHover:            @white;
 @navbarInverseLinkColorActive:           @navbarInverseLinkColorHover;
 @navbarInverseLinkBackgroundHover:       transparent;

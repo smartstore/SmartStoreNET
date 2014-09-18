@@ -60,7 +60,6 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li class="divider-vertical"></li>
         <li data-id="@item.Id" @Html.Attr("class", "dropdown", node.HasChildren)>
 			<a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
 				@if (item.Icon.HasValue())
@@ -81,7 +80,6 @@
         
     }   
 }
-    <li class="divider-vertical"></li>
 
 </ul>
 

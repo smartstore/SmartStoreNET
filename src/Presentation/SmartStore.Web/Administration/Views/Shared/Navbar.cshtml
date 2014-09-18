@@ -13,7 +13,7 @@
 		"http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
 }
 
-<div id="navbar" class="navbar navbar-inverse navbar-fixed-top">
+<div id="navbar" class="navbar navbar-inverse">
 <div class="navbar-inner">
     
     <a class="brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
@@ -26,101 +26,95 @@
     @Html.Action("Menu", "Common", new { area = "Admin" })
     @Html.Widget("admin_menu_before")
 
-    <div id="navbar-tools" class="btn-toolbar">
-        
-        @if (currentCustomer != null && currentCustomer.IsRegistered())
-        {
-            <text>
-                <div class="btn-group pull-right">
-                    <a id="current-user" class="btn btn-inverse navbar-tool" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
-                        <i class="fa fa-user"></i>
-                        <span>@userName</span>
-                     </a>
-                    <a class="btn btn-inverse dropdown-toggle navbar-tool" data-toggle="dropdown" href="javascript:void(0)">
-                        <i class="fa fa-caret-down"></i>
-                    </a>
-                    <ul class="dropdown-menu">
-                        <li>
-							<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
-								<i class="fa fa-user"></i>
-								Account
-							</a>
-						</li>
-                        <li>
-							<a href="@Url.Action("Logout", "Customer", new { area = "" })" class="disabled">
-								<i class="fa fa-sign-out"></i>
-								@T("Admin.Header.Logout")
-							</a>
-						</li>
-                    </ul>
-                </div>
-            </text>
-        }
+    <div id="navbar-tools" class="pull-right">
 
-        <div class="btn-group pull-right navbar-tools-group" style="margin-right: 5px">
-            
-            <div class="btn-group pull-right">
-                <button class="btn btn-inverse dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
-                    <i class="fa fa-cogs"></i>
-                </button>
-                <ul class="dropdown-menu">
-					@foreach (var store in stores)
-					{
-						<li>
-							<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
-								<i class="fa fa-globe"></i>
-								@store.Name.Truncate(32, "...")
-							</a>
-						</li>
-					}
-					@if (stores.Count > 1)
-					{
-						<li class="divider"></li>
-					}
-                    <li>
-                        <a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-                            <i class="fa fa-trash-o"></i>
-                            @T("Admin.Header.ClearCache")
-                        </a>
-                    </li>
-                    <li>
-                        <a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-                            <i class="fa fa-power-off"></i>
-                            @T("Admin.Header.RestartApplication")
-                        </a>
-                    </li>
-                </ul>
-            </div>
-
-            @Html.Action("LanguageSelector", "Common", new { area = "Admin" })
-
-            <div class="btn-group pull-right">
-                <button class="btn btn-inverse dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
-                    <i class="fa fa-question-circle"></i>
-                </button>
-                <ul class="dropdown-menu">
-                    @*<li>
-						<a href="https://smartstore.zendesk.com/forums/22347533-Tipps-und-Tricks" data-lang="@currentLanguageCode">
-							<i class="fa fa-file"></i>
-							@T("Admin.Help.Topics")
-						</a>
-					</li>*@
-                    <li>
-						<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
-							<i class="fa fa-comment"></i>
-							@T("Admin.Help.Forums")
+		@if (currentCustomer != null && currentCustomer.IsRegistered())
+		{
+			<div class="btn-group pull-right">
+				<a id="current-user" class="btn navbar-tool dropdown-toggle" data-toggle="dropdown" title="@userName" href='@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })'>
+					<em class="fa-stack fa-lg">
+						<i class="fa fa-circle fa-stack-2x" style="x-color: #afbfff"></i>
+						<i class="fa fa-user fa-stack-1x fa-inverse" style="color: #3b50ce"></i>
+					</em>
+				</a>
+				<ul class="dropdown-menu">
+					<li>
+						<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
+							<i class="fa fa-user"></i>
+							Account
 						</a>
 					</li>
 					<li>
-						<a href="@Url.Action("About", "Home", new { area = "Admin" })">
-							<i class="fa fa-info-circle"></i>
-							@T("Admin.Common.About") SmartStore.NET
+						<a href="@Url.Action("Logout", "Customer", new { area = "" })" class="disabled">
+							<i class="fa fa-sign-out"></i>
+							@T("Admin.Header.Logout")
 						</a>
 					</li>
-                </ul>
-            </div>
-           
-        </div>
+				</ul>
+			</div>
+		}	
+
+		<div class="btn-group toppad pull-right">
+			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
+				<i class="fa fa-question-circle"></i>
+			</button>
+			<ul class="dropdown-menu">
+				@*<li>
+					<a href="https://smartstore.zendesk.com/forums/22347533-Tipps-und-Tricks" data-lang="@currentLanguageCode">
+						<i class="fa fa-file"></i>
+						@T("Admin.Help.Topics")
+					</a>
+				</li>*@
+				<li>
+					<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
+						<i class="fa fa-comment"></i>
+						@T("Admin.Help.Forums")
+					</a>
+				</li>
+				<li>
+					<a href="@Url.Action("About", "Home", new { area = "Admin" })">
+						<i class="fa fa-info-circle"></i>
+						@T("Admin.Common.About") SmartStore.NET
+					</a>
+				</li>
+			</ul>
+		</div> 
+
+		@Html.Action("LanguageSelector", "Common", new { area = "Admin" })
+
+		<div class="btn-group toppad pull-right">
+			<button class="btn dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
+				<i class="fa fa-gear"></i>
+			</button>
+			<ul class="dropdown-menu">
+				@foreach (var store in stores)
+				{
+					<li>
+						<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
+							<i class="fa fa-globe"></i>
+							@store.Name.Truncate(32, "...")
+						</a>
+					</li>
+				}
+				@if (stores.Count > 1)
+				{
+					<li class="divider"></li>
+				}
+				<li>
+					<a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-trash-o"></i>
+						@T("Admin.Header.ClearCache")
+					</a>
+				</li>
+				<li>
+					<a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
+						<i class="fa fa-power-off"></i>
+						@T("Admin.Header.RestartApplication")
+					</a>
+				</li>
+			</ul>
+		</div>
+
     </div>
 
 </div>

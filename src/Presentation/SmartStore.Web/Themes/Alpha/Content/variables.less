@@ -33,7 +33,7 @@
 // Scaffolding
 // -------------------------
 @bodyBackground:        @var_BodyBackground; //@white;
-@textColor:             @var_TextColor; //#555;
+@textColor:             @var_TextColor; //#444;
 
 
 // Links
@@ -67,9 +67,10 @@
 @fontSizeSmall:         @baseFontSize * 0.85; // ~12px
 @fontSizeMini:          @baseFontSize * 0.75; // ~11px
 
-@paddingLarge:          11px 19px; // 44px
-@paddingSmall:          2px 10px;  // 26px
-@paddingMini:           1px 6px;   // 24px
+@paddingDefault:		6px 12px; // 34px
+@paddingLarge:          10px 16px; // 42px
+@paddingSmall:          4px 10px;  // 30px
+@paddingMini:           2px 6px;   // 26px
 
 @baseBorderRadius:      3px;
 @borderRadiusLarge:     5px;
@@ -87,26 +88,26 @@
 // Buttons
 // -------------------------
 @btnBackground:                     @var_BtnBackground;
-@btnBackgroundHighlight:            @var_BtnBackgroundHighlight;
+@btnBackgroundHighlight:            darken(@btnBackground, 5%);
 @btnBorder:                         #ccc; //#c6c6c6;
 
 @btnPrimaryBackground:              @var_BtnPrimaryBackground;
-@btnPrimaryBackgroundHighlight:     @var_BtnPrimaryBackgroundHighlight;
+@btnPrimaryBackgroundHighlight:     darken(@btnPrimaryBackground, 10%);
 
 @btnInfoBackground:                 @var_BtnInfoBackground;
-@btnInfoBackgroundHighlight:        @var_BtnInfoBackgroundHighlight;
+@btnInfoBackgroundHighlight:        darken(@btnInfoBackground, 10%);
 
 @btnSuccessBackground:              @var_BtnSuccessBackground;
-@btnSuccessBackgroundHighlight:     @var_BtnSuccessBackgroundHighlight;
+@btnSuccessBackgroundHighlight:     darken(@btnSuccessBackground, 10%);
 
 @btnWarningBackground:              @var_BtnWarningBackground;
-@btnWarningBackgroundHighlight:     @var_BtnWarningBackgroundHighlight;
+@btnWarningBackgroundHighlight:     darken(@btnWarningBackground, 10%);
 
 @btnDangerBackground:               @var_BtnDangerBackground;
-@btnDangerBackgroundHighlight:      @var_BtnDangerBackgroundHighlight;
+@btnDangerBackgroundHighlight:      darken(@btnDangerBackground, 10%);
 
 @btnInverseBackground:              @var_BtnInverseBackground;
-@btnInverseBackgroundHighlight:     @var_BtnInverseBackgroundHighlight;
+@btnInverseBackgroundHighlight:     darken(@btnInverseBackground, 10%);
 
 
 // Forms
@@ -276,19 +277,19 @@
 // -------------------------
 @warningText:             #c09853; // #404040;
 @warningBackground:       #fcf8e3; // #EEDC94
-@warningBorder:           darken(spin(@warningBackground, -10), 3%);  // darken(spin(@warningBackground, -10), 6%);
+@warningBorder:           darken(spin(@warningBackground, -10), 3%); 
 
 @errorText:               #b94a48; // @white; 
 @errorBackground:         #f2dede; // #C43C35; 
-@errorBorder:             darken(spin(@errorBackground, -10), 3%); // darken(spin(@errorBackground, -10), 6%); 
+@errorBorder:             darken(spin(@errorBackground, -10), 3%);
 
 @successText:             #468847; // @white;
 @successBackground:       #dff0d8; // #57a957; 
-@successBorder:           darken(spin(@successBackground, -10), 3%); // darken(spin(@successBackground, -10), 6%);
+@successBorder:           darken(spin(@successBackground, -10), 3%);
 
 @infoText:                #3a87ad; // @white;
 @infoBackground:          #d9edf7; // #339BB9;
-@infoBorder:              darken(spin(@infoBackground, -10), 3%); // darken(spin(@infoBackground, -10), 6%); 
+@infoBorder:              darken(spin(@infoBackground, -10), 3%);
 
 
 // Tooltips and popovers

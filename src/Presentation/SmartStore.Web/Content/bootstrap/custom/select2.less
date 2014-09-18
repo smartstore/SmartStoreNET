@@ -45,16 +45,10 @@ Source: https://github.com/ivaynberg/select2
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    height: @baseLineHeight + 8;
-    line-height: @baseLineHeight + 8;
+    height: @baseLineHeight + 10;
+    line-height: @baseLineHeight + 10;
     padding: 0 0 0 8px;
     text-decoration: none;
-    
-	// Hover state
-	&:hover {
-		@inputHoverBorderColor: darken(@inputBorder, 8%);
-		border: 1px solid @inputHoverBorderColor;
-	}
 }
 
 .select2-container.select2-drop-above .select2-choice
@@ -145,7 +139,7 @@ Source: https://github.com/ivaynberg/select2
   display: inline-block;
   white-space: nowrap;
   z-index: 10000;
-  min-height: 26px;
+  min-height: 28px;
   width: 100%;
   margin: 0;
   padding-left: 4px;
@@ -163,7 +157,7 @@ Source: https://github.com/ivaynberg/select2
     width:100%;
     margin:0;
     height:auto !important;
-    min-height: 26px;
+    min-height: 28px;
     .box-shadow(none);
     .border-radius(0);
 }
@@ -321,7 +315,7 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-container-multi .select2-choices {
-    min-height: 26px;
+    min-height: 28px;
 }
 
 .select2-container-multi.select2-container-active .select2-choices {

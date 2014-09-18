@@ -22,54 +22,7 @@ a:hover {
 }
 
 .btn {
-	background: @btnBackground;
-	.box-shadow(inset 0 -2px 0 rgba(0,0,0,.05));
-	text-shadow: none;
-	padding: 6px 12px;
-}
-
-.btn:active {
-	position: relative;
-	left: 1px;
-	top: 1px;
-}
-
-.btn-large {
-	padding: 10px 16px;
-}
-
-.btn-small {
-	padding: 4px 10px;
-}
-
-.btn-mini {
-	padding: 2px 8px;
-}
-
-.btn-link {
-	background: transparent;
-	border: none;
-	.box-shadow(none);
-}
-
-.btn-primary {
-	background: @btnPrimaryBackground;
-}
-
-.btn-warning {
-	background: @btnWarningBackground;
-}
-
-.btn-info {
-	background: @btnInfoBackground;
-}
-
-.btn-success {
-	background: @btnSuccessBackground;
-}
-
-.btn-danger {
-	background: @btnDangerBackground;
+	text-transform: uppercase;
 }
 
 .dropdown-menu .fa,
@@ -85,6 +38,14 @@ a:hover {
 .dropdown-menu li > a {
 	padding: 8px 30px 8px 20px;
 	text-shadow: none;
+}
+
+.dropdown-menu li > a > .fa {
+	color: #6d6d6d;
+}
+
+.dropdown-menu li > a:hover > .fa {
+	color: #444;
 }
 
 .dropdown-menu li > a:hover, 
@@ -183,6 +144,10 @@ header {
 	.btn-group {
 		margin-top: 0;
 	}
+
+	.open .navbar-tool {
+		.active-tool();
+	}
 	
 	.toppad {
 		margin-top: 8px;
@@ -239,7 +204,9 @@ header {
 }
 
 #navbar .dropdown-menu .fa {
-	color: inherit;
+	margin-right: 6px;
+	font-size: 17px;
+	vertical-align: bottom;
 }
 
 #navbar .nav-header {

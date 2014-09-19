@@ -91,9 +91,8 @@
     }
     &.active,
     &.active:hover {
-      .buttonBackground(@btnPrimaryBackground, spin(@btnPrimaryBackground, 20));
+      .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
       color: #fff;
-      text-shadow: 0 -1px 0 rgba(0,0,0,.25);
     }
     &.disabled,
     &.disabled:hover {
@@ -114,9 +113,8 @@
         background: @grayLighter;
       }
       &.active {
-        .buttonBackground(@btnPrimaryBackground, spin(@btnPrimaryBackground, 20));
+        .buttonBackground(@btnPrimaryBackground, @btnPrimaryBackgroundHighlight);
         color: #fff;
-        text-shadow: 0 -1px 0 rgba(0,0,0,.25);
       }
       &.old {
         color: @grayLight;

@@ -183,11 +183,12 @@ body.popup {
 .shopbar-flyout {
 	.transition(opacity 0.15s ease-in-out);
 	background-color: @dropdownBackground;
-	border: 1px solid #bbb;
+	border: 1px solid @dropdownBorder;
+	border-color: rgba(0,0,0, 0.15);
 	*border-right-width: 2px;
 	*border-bottom-width: 2px;
-	.border-radius(@borderRadiusLarge);
-	.box-shadow(0 5px 10px rgba(0,0,0,.2));
+	.border-radius(@baseBorderRadius);
+	.box-shadow(0 2px 8px rgba(0,0,0,.2));
 	
 	.shopbar-tool.loading & {
 		background-image: url('images/loading.gif');
@@ -419,7 +420,7 @@ form.form-search {
 
     &:hover {
         border: 1px solid @var_ItemBoxBoxShadowColor;
-        .box-shadow(0px 0px 8px fade(@var_ItemBoxBoxShadowColor, 60%));
+        .box-shadow(0px 0px 6px fade(@var_ItemBoxBoxShadowColor, 40%));
     }
 }
 
@@ -1296,15 +1297,9 @@ table.cart .cart-item-row .qty-input {
 	margin-bottom: 20px;
 }
 .product-list-options { 
-	padding: 6px;
-	margin-bottom: 20px;
-	border: 1px solid lighten(@navbarBorder, 5%);
-	.border-radius(@baseBorderRadius);
-	@stopColor1: mix(@navbarBackground, @navbarBackgroundHighlight, 35%);
-	@stopColor2: darken(@stopColor1, 1.5%);
-	#gradient > .glossy(@navbarBackgroundHighlight, @stopColor1, @stopColor2, @navbarBackground);
+	// removed in V2.1
 }
-.product-list-options label { margin: 5px 7px 0 0 }
+.product-list-options label { margin: 6px 7px 0 0 }
 .product-list-options .btn-group {
 	&.pull-left { margin-right: 18px }
 }

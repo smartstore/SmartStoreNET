@@ -437,6 +437,7 @@
     <Content Include="Views\Product\_Create.SaveFirst.cshtml" />
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
     <Content Include="Views\Shared\_Providers.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -789,9 +790,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Country\List.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\MessageTemplate\_CreateOrUpdate.cshtml" />

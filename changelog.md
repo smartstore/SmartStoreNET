@@ -1,4 +1,4 @@
-#Release Notes#
+﻿#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -74,6 +74,7 @@
 * #434 Shipping.ByTotal: Make grid pageable
 * #419 email account password hidden
 * #424 Localize return reasons & return actions
+* #479 Product filter: Wrong count of manufacturers if products of sub-categories are included
 
 
 ##SmartStore.NET 2.0.2#

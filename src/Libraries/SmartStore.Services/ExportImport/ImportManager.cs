@@ -14,6 +14,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 using System.Text;
 using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -32,6 +33,7 @@ namespace SmartStore.Services.ExportImport
 		private readonly IRepository<Product> _rsProduct;
 		private readonly IRepository<ProductCategory> _rsProductCategory;
 		private readonly IRepository<ProductManufacturer> _rsProductManufacturer;
+        private readonly IRepository<Picture> _rsPicture;
 		private readonly IRepository<ProductPicture> _rsProductPicture;
 		private readonly IRepository<UrlRecord> _rsUrlRecord;
 
@@ -46,6 +48,7 @@ namespace SmartStore.Services.ExportImport
 			IRepository<Product> rsProduct,
 			IRepository<ProductCategory> rsProductCategory,
 			IRepository<ProductManufacturer> rsProductManufacturer,
+            IRepository<Picture> rsPicture,
 			IRepository<ProductPicture> rsProductPicture,
 			IRepository<UrlRecord> rsUrlRecord)
         {
@@ -61,6 +64,7 @@ namespace SmartStore.Services.ExportImport
 			this._rsProductManufacturer = rsProductManufacturer;
 			this._rsProductPicture = rsProductPicture;
 			this._rsUrlRecord = rsUrlRecord;
+            this._rsPicture = rsPicture;
         }
 
 		public virtual string CreateTextReport(ImportResult result)
@@ -611,8 +615,8 @@ namespace SmartStore.Services.ExportImport
 						if (picture.IsEmpty() || !File.Exists(picture))
 							continue;
 
-						var currentPictures = _rsProductPicture.TableUntracked.Where(x => x.ProductId == row.Entity.Id);
-						var pictureBinary = FindEqualPicture(picture, currentPictures);
+                        var currentPictures = _rsProductPicture.Expand(_rsProductPicture.TableUntracked, x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
+                        var pictureBinary = FindEqualPicture(picture, currentPictures);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
@@ -677,15 +681,15 @@ namespace SmartStore.Services.ExportImport
         /// <param name="path">The picture to find a duplicate for</param>
         /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
         /// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-        private byte[] FindEqualPicture(string path, IEnumerable<ProductPicture> productPictures)
+        private byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures)
         {
             try
             {
                 var myBuffer = File.ReadAllBytes(path);
 
-                foreach (var pictureMap in productPictures.Where(x => x.Id > 0))
+                foreach (var picture in productPictures)
                 {
-                    var otherBuffer = _pictureService.LoadPictureBinary(pictureMap.Picture);
+                    var otherBuffer = _pictureService.LoadPictureBinary(picture);
                     using (var myStream = new MemoryStream(myBuffer))
                     {
                         using (var otherStream = new MemoryStream(otherBuffer))

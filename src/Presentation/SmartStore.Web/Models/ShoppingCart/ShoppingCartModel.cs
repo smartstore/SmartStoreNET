@@ -43,6 +43,7 @@ namespace SmartStore.Web.Models.ShoppingCart
 		public int BundleThumbSize { get; set; }
         public bool DisplayDeliveryTime { get; set; }
         public bool DisplayShortDesc { get; set; }
+        public bool DisplayWeight { get; set; }
         public bool DisplayBasePrice { get; set; }
 
 		public ButtonPaymentMethodModel ButtonPaymentMethods { get; set; }
@@ -91,6 +92,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public IList<string> Warnings { get; set; }
 
+            public decimal Weight { get; set; }
+
             public bool IsShipEnabled { get; set; }
 
             public string DeliveryTimeName { get; set; }
@@ -98,7 +101,7 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string DeliveryTimeHexValue { get; set; }
 
             public string ShortDesc { get; set; }
-
+            
             public string BasePrice { get; set; }
 
 			public bool BundlePerItemPricing { get; set; }

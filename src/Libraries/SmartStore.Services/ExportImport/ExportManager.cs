@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
@@ -33,6 +34,7 @@ namespace SmartStore.Services.ExportImport
         private readonly IProductService _productService;
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        private readonly ILanguageService _languageService;
 
         #endregion
 
@@ -42,13 +44,15 @@ namespace SmartStore.Services.ExportImport
             IManufacturerService manufacturerService,
             IProductService productService,
             IPictureService pictureService,
-            INewsLetterSubscriptionService newsLetterSubscriptionService)
+            INewsLetterSubscriptionService newsLetterSubscriptionService,
+            ILanguageService languageService)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
             this._productService = productService;
             this._pictureService = pictureService;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
+            this._languageService = languageService;
         }
 
         #endregion
@@ -606,7 +610,7 @@ namespace SmartStore.Services.ExportImport
                     "Picture1",
                     "Picture2",
                     "Picture3",
-					"DeliveryTimeId",	// codehint: sm-add (following)
+					"DeliveryTimeId",
 					"BasePriceEnabled",
 					"BasePriceMeasureUnit",
 					"BasePriceAmount",
@@ -617,8 +621,27 @@ namespace SmartStore.Services.ExportImport
 					"BundlePerItemShoppingCart",
 					"BundleItemSkus"
                 };
-                for (int i = 0; i < properties.Length; i++)
+
+                //BEGIN: add headers for languages 
+                var languages = _languageService.GetAllLanguages(true);
+                var headlines = new string[properties.Length + languages.Count * 3];
+                var languageFields = new string[languages.Count * 3];
+                var j = 0;
+
+                foreach (var lang in languages)
                 {
+                    languageFields.SetValue("Name[" + lang.UniqueSeoCode + "]", j++);
+                    languageFields.SetValue("ShortDescription[" + lang.UniqueSeoCode + "]", j++);
+                    languageFields.SetValue("FullDescription[" + lang.UniqueSeoCode + "]", j++);
+                }
+
+                properties.CopyTo(headlines, 0);
+                languageFields.CopyTo(headlines, properties.Length);
+                //END: add headers for languages 
+
+                for (int i = 0; i < headlines.Length; i++)
+                {
+                    worksheet.Cells[1, i + 1].Value = headlines[i];
                     cells[1, i + 1].Value = properties[i];
                     cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
@@ -921,6 +944,20 @@ namespace SmartStore.Services.ExportImport
 
 					cells[row, col].Value = bundleItemSkus;
 					col++;
+
+                    //BEGIN: export localized values
+                    foreach (var lang in languages)
+                    {
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.Name, lang.Id, false, false);
+                        col++;
+
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.ShortDescription, lang.Id, false, false);
+                        col++;
+
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.FullDescription, lang.Id, false, false); ;
+                        col++;
+                    }
+                    //END: export localized values
 
                     row++;
                 }

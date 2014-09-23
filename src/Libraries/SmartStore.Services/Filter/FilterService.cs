@@ -21,14 +21,20 @@ namespace SmartStore.Services.Filter
 		private readonly IProductService _productService;
 		private readonly ICategoryService _categoryService;
 		private readonly IStoreContext _storeContext;
+		private readonly CatalogSettings _catalogSettings;
+
 		private IQueryable<Product> _products;
 		private bool? _includeFeatured;
 
-		public FilterService(IProductService productService, ICategoryService categoryService, IStoreContext storeContext)
+		public FilterService(IProductService productService,
+			ICategoryService categoryService,
+			IStoreContext storeContext,
+			CatalogSettings catalogSettings)
 		{
 			_productService = productService;
 			_categoryService = categoryService;
 			_storeContext = storeContext;
+			_catalogSettings = catalogSettings;
 		}
 
 		public static int MaxDisplayCriteria { get { return 4; } }
@@ -306,6 +312,30 @@ namespace SmartStore.Services.Filter
 			if (criteria != null && criteria.Count > 0)
 				return JsonConvert.SerializeObject(criteria);
 			return "";
+		}
+
+		public virtual FilterProductContext CreateFilterProductContext(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
+		{
+			var context = new FilterProductContext()
+			{
+				Filter = filter,
+				ParentCategoryID = categoryID,
+				CategoryIds = new List<int> { categoryID },
+				Path = path,
+				PageSize = pagesize ?? 12,
+				ViewMode = viewmode,
+				OrderBy = orderby,
+				Criteria = Deserialize(filter)
+			};
+
+			if (_catalogSettings.ShowProductsFromSubcategories)
+			{
+				context.CategoryIds.AddRange(
+					_categoryService.GetAllCategoriesByParentCategoryId(categoryID).Select(x => x.Id)
+				);
+			}
+
+			return context;
 		}
 
 		public virtual bool ToWhereClause(FilterSql context)

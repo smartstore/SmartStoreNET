@@ -75,6 +75,13 @@
 				</div>
 			}
 		</td>
+
+        @if (Model.DisplayWeight)
+		{
+        <td class="weight nobr">
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
+        </td>
+        }
 		<td class="unit-price nobr">
 			<span class="product-unit-price">@item.UnitPrice</span>
 		</td>
@@ -267,6 +274,13 @@
 					<th>
 						@T("ShoppingCart.Product(s)")
 					</th>
+
+                    @if (Model.DisplayWeight)
+					{
+                    <th>
+                        @T("ShoppingCart.Weight")
+                    </th>
+                    }
 					<th class="unit-price">
 						@T("ShoppingCart.UnitPrice")
 					</th>
@@ -312,35 +326,33 @@
 		}
         
 		<div class="cart-footer row-fluid">
-			
-            @if (Model.IsEditable)
-			{
-                <!-- Discount Code, Gift Cards, Estimate shipping -->
-			    <div class="span8">
 
-					    @Html.Partial("_DiscountBox", Model.DiscountBox)
-					    @Html.Partial("_GiftCardBox", Model.GiftCardBox)
-					    @Html.Widget("order_summary_content_deals")
-				
-			    </div>
+			<div class="span16 order-totals-left">
+				@Html.Widget("order_summary_content_totals")
 
-			    <!-- Checkout attributes -->
-			    <div class="span8">
-				
-					    @Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
-					    @Html.Partial("EstimateShipping", Model.EstimateShipping)
-				
-			    </div>
-            }
-            else
-            {
-                if (Model.DisplayCommentBox)
-                { 
-                    <div class="span16">
-                        @Html.Partial("_CommentBox", Model)
-                    </div>
-                }
-            }
+				@if (Model.IsEditable)
+				{
+					<!-- Discount Code, Gift Cards, Estimate shipping -->
+					<div class="column">
+						@Html.Partial("_DiscountBox", Model.DiscountBox)
+						@Html.Partial("_GiftCardBox", Model.GiftCardBox)
+						@Html.Widget("order_summary_content_deals")
+					</div>
+
+					<!-- Checkout attributes -->
+					<div class="column">
+						@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
+						@Html.Partial("EstimateShipping", Model.EstimateShipping)
+					</div>
+				}
+				else
+				{
+					if (Model.DisplayCommentBox)
+					{
+						@Html.Partial("_CommentBox", Model)
+					}
+				}
+			</div>
 
 			<!-- Totals -->
 			<div class="span8">

@@ -183,6 +183,10 @@
     <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.Designer.cs">
       <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.cs" />
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.Designer.cs">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -374,6 +378,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201408291450443_CheckoutCommmentBox.resx">
       <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409150936394_CustomerNameFormat.resx">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

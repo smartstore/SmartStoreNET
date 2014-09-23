@@ -4,6 +4,17 @@
 <div class="total-info">
     <table class="cart-total table">
         <tbody>
+            @if (Model.DisplayWeight)
+		    {
+            <tr>
+                <td class="cart-total-left">
+                    <span class="nobr">@T("ShoppingCart.Totals.Weight"):</span>
+                </td>
+                <td class="cart-total-right">
+                    <span class="product-weight">@(Model.Weight.ToString("N2")) kg</span>
+                </td>
+            </tr>
+            }
             <tr>
                 <td class="cart-total-left">
                     <span class="nobr">@T("ShoppingCart.Totals.SubTotal"):</span>

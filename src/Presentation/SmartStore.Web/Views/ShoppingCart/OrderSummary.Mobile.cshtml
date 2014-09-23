@@ -212,6 +212,9 @@
             </div>
             <div class="totals">
                 @Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
+
+				@Html.Widget("mobile_order_summary_content_totals")
+
                 @if (Model.IsEditable)
                 {
                     @*if (Model.TermsOfServiceEnabled)

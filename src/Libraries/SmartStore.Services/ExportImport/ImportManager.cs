@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Data;
 using SmartStore.Services.Catalog;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
@@ -36,6 +37,8 @@ namespace SmartStore.Services.ExportImport
         private readonly IRepository<Picture> _rsPicture;
 		private readonly IRepository<ProductPicture> _rsProductPicture;
 		private readonly IRepository<UrlRecord> _rsUrlRecord;
+        private readonly ILanguageService _languageService;
+        private readonly ILocalizedEntityService _localizedEntityService;
 
         public ImportManager(
 			IProductService productService, 
@@ -50,7 +53,9 @@ namespace SmartStore.Services.ExportImport
 			IRepository<ProductManufacturer> rsProductManufacturer,
             IRepository<Picture> rsPicture,
 			IRepository<ProductPicture> rsProductPicture,
-			IRepository<UrlRecord> rsUrlRecord)
+            IRepository<UrlRecord> rsUrlRecord,
+            ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService)
         {
             this._productService = productService;
             this._categoryService = categoryService;
@@ -65,6 +70,8 @@ namespace SmartStore.Services.ExportImport
 			this._rsProductPicture = rsProductPicture;
 			this._rsUrlRecord = rsUrlRecord;
             this._rsPicture = rsPicture;
+            this._languageService = languageService;
+            this._localizedEntityService = localizedEntityService;
         }
 
 		public virtual string CreateTextReport(ImportResult result)
@@ -199,8 +206,23 @@ namespace SmartStore.Services.ExportImport
 								_rsProduct.Context.AutoDetectChangesEnabled = false;
 							}
 
+                            // ===========================================================================
+                            // 3.) Import Localizations
+                            // ===========================================================================
+                            if (batch.Any(x => x.ContainsKey("CategoryIds")))
+                            {
+                                try
+                                {
+                                    await ProcessLocalizations(batch, result);
+                                }
+                                catch (Exception ex)
+                                {
+                                    result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
+                                }
+                            }
+
 							// ===========================================================================
-							// 3.) Import product category mappings
+							// 4.) Import product category mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("CategoryIds")))
 							{
@@ -215,7 +237,7 @@ namespace SmartStore.Services.ExportImport
 							}
 
 							// ===========================================================================
-							// 4.) Import product manufacturer mappings
+							// 5.) Import product manufacturer mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("ManufacturerIds")))
 							{
@@ -230,7 +252,7 @@ namespace SmartStore.Services.ExportImport
 							}
 
 							// ===========================================================================
-							// 5.) Import product picture mappings
+							// 6.) Import product picture mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("Picture1") || x.ContainsKey("Picture2") || x.ContainsKey("Picture3")))
 							{
@@ -485,6 +507,79 @@ namespace SmartStore.Services.ExportImport
 
 			return t;
 		}
+
+        private async Task<int> ProcessLocalizations(ICollection<ImportRow<Product>> batch, ImportResult result)
+        {
+            //_rsProductManufacturer.AutoCommitEnabled = false;
+
+            //string lastInserted = null;
+
+            var languages = _languageService.GetAllLanguages(true);
+
+            foreach (var row in batch)
+            {
+
+                Product product = null;
+
+                //get product
+                try
+                {
+                    object key;
+
+                    // try get by int ID
+                    if (row.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+                    {
+                        product = _productService.GetProductById(key.ToString().ToInt());
+                    }
+
+                    // try get by SKU
+                    if (product == null && row.TryGetValue("SKU", out key))
+                    {
+                        product = _productService.GetProductBySku(key.ToString());
+                    }
+
+                    // try get by GTIN
+                    if (product == null && row.TryGetValue("Gtin", out key))
+                    {
+                        product = _productService.GetProductByGtin(key.ToString());
+                    }
+                }
+                catch (Exception ex)
+                {
+                    result.AddWarning(ex.Message, row.GetRowInfo(), "ProcessLocalizations Product");
+                }
+
+                foreach (var lang in languages)
+                {
+                    string localizedName = row.GetValue<string>("Name[" + lang.UniqueSeoCode + "]");
+                    string localizedShortDescription = row.GetValue<string>("ShortDescription[" + lang.UniqueSeoCode + "]");
+                    string localizedFullDescription = row.GetValue<string>("FullDescription[" + lang.UniqueSeoCode + "]");
+
+                    if (localizedName.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.Name, localizedName, lang.Id);
+                    }
+                    if (localizedShortDescription.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.ShortDescription, localizedShortDescription, lang.Id);
+                    }
+                    if (localizedFullDescription.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localizedFullDescription, lang.Id);
+                    }
+                }
+            }
+
+            // commit whole batch at once
+            var t = await _rsProductManufacturer.Context.SaveChangesAsync();
+
+            // Perf: notify only about LAST insertion and update
+            //if (lastInserted != null)
+            //    _eventPublisher.EntityInserted(lastInserted);
+
+            return t;
+        }
+
 
 		private async Task<int> ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{

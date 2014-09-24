@@ -328,7 +328,7 @@
 		<div class="cart-footer row-fluid">
 
 			<div class="span16 order-totals-left">
-				@Html.Widget("order_summary_content_totals")
+				@Html.Widget("order_summary_content_totals_left")
 
 				@if (Model.IsEditable)
 				{
@@ -364,6 +364,8 @@
 				}
 
 				@Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
+
+				@Html.Widget("order_summary_content_totals_bottom")
 
 				@if (Model.IsEditable)
 				{

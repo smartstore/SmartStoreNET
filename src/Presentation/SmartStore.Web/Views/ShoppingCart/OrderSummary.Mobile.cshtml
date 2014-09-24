@@ -213,7 +213,8 @@
             <div class="totals">
                 @Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
 
-				@Html.Widget("mobile_order_summary_content_totals")
+				@Html.Widget("mobile_order_summary_content_totals_bottom")
+				@Html.Widget("mobile_order_summary_content_totals_left")
 
                 @if (Model.IsEditable)
                 {

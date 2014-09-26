@@ -3,7 +3,7 @@ using SmartStore.Core.Domain.Cms;
 
 namespace SmartStore.Services.Cms	
 {
-    public static class WidgetExtentions
+    public static class WidgetExtensions
     {
         public static bool IsWidgetActive(this IWidgetPlugin widget, WidgetSettings widgetSettings)
         {

@@ -5,7 +5,7 @@
 }
 
 @{    
-    ViewBag.Title = T("Admin.Configuration.Plugins.EditDetails").Text;
+    ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
 }
 
 @if (ViewBag.RefreshPage == true)
@@ -21,7 +21,8 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Configuration.Plugins.EditDetails")
+			<img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+			@ViewBag.Title
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">

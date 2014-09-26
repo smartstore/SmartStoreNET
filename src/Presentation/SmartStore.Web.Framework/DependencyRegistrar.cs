@@ -71,6 +71,7 @@ using SmartStore.Core.Packaging;
 using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework
 {
@@ -849,7 +850,8 @@ namespace SmartStore.Web.Framework
 			}
 			else
 			{
-				throw Error.Application("The 'FriendlyNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
+				name = Inflector.Titleize(type.Name);
+				//throw Error.Application("The 'FriendlyNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
 			}
 
 			return new Tuple<string, string>(name, description);

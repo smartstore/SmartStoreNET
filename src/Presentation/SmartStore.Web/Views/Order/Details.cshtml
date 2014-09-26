@@ -600,6 +600,8 @@
             </div>
         </div>
 
+		@Html.Widget("orderdetails_page_aftertotal")
+
         @if (!Model.PrintMode)
         {
             if (Model.Shipments.Count > 0)

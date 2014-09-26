@@ -40,7 +40,7 @@ namespace SmartStore.Admin.Models.Plugins
         [AllowHtml]
         public string Author { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.DisplayOrder")]
+        [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.DisplayOrder")] 
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
@@ -49,7 +49,6 @@ namespace SmartStore.Admin.Models.Plugins
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Installed")]
         public bool Installed { get; set; }
 
-        // codehint: sm-add
         public string IconUrl { get; set; }
 
         public bool CanChangeEnabled { get; set; }

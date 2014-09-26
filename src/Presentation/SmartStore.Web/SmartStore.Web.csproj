@@ -1005,6 +1005,7 @@
     <Content Include="Content\image-gallery\js\jquery.blueimp-gallery.js" />
     <Content Include="Content\image-gallery\js\jquery.blueimp-gallery.min.js" />
     <Content Include="Content\Images\default-image.jpg" />
+    <Content Include="Content\Images\grippy.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />
     <Content Include="Content\Images\smartstore.net-200-white.png" />
     <Content Include="Content\install\images\bg.png" />
@@ -1478,6 +1479,7 @@
     <Content Include="Scripts\jquery.mobile-1.3.2.min.js" />
     <Content Include="Scripts\jquery-2.1.1.min.map" />
     <None Include="Scripts\jquery.validate-vsdoc.js" />
+    <Content Include="Scripts\jquery.sortable.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
@@ -2228,8 +2230,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="Content\x-editable\css\" />
-    <Folder Include="Content\x-editable\js\" />
     <Folder Include="Scripts\select2\" />
   </ItemGroup>
   <ItemGroup>

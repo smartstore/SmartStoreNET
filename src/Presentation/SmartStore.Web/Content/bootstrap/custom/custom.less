@@ -435,6 +435,35 @@ th label {
 }
 
 
+/* Sortable lists
+-------------------------------------------------------------- */
+
+.sortable-grip {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100%;
+	width: 5px;
+	cursor: move;
+	display: none;
+	background: transparent url('../../images/grippy.png') 0 0 repeat;
+}
+
+.sortable-item:hover .sortable-grip {
+	display: block;
+}
+
+.sortable-dragging {
+	/*border: 1px dashed #CCC;
+	background: none;*/
+}
+
+.sortable-placeholder {
+	border: 1px dotted #ccc;
+	background: #f5f5f5;
+}
+
+
 // 'summernote' html editor tweaks
 // -------------------------
 

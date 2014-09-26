@@ -47,7 +47,7 @@
   &.disabled,
   &[disabled] {
     cursor: default;
-    background-color: @btnBackground;
+    //background-color: @btnBackground;
 	.opacity(50);
     background-image: none;
     .box-shadow(none);
@@ -208,17 +208,27 @@ input[type="submit"].btn {
 .btn-link {
   border-color: transparent;
   cursor: pointer;
+  text-transform: none !important;
   color: @linkColor;
   .border-radius(0);
 }
 .btn-link:hover {
   color: @linkColorHover;
   border-color: transparent;
-  text-decoration: underline;
-  background-color: transparent;
+  text-decoration: none;
+  background-color: #fafafa;
+  background-color: rgba(0,0,0, 0.02);
 }
 .btn-link[disabled]:hover {
   color: @grayDark;
   border-color: transparent;
   text-decoration: none;
+}
+.btn-link:active {
+  background-color: #f7f7f7;
+  background-color: rgba(0,0,0, 0.04);
+}
+
+.btn-link .fa {
+	color: #6d6d6d;
 }

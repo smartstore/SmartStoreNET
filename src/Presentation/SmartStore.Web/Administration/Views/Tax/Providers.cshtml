@@ -12,12 +12,16 @@
     <tr>
         <td>
 			@Html.ProviderList(Model, 
-				@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
+				@<a href='@Url.Action("Providers", new { systemName = item.SystemName })' class="btn@(item.IsPrimaryTaxProvider ? " btn-info" : "")" @Html.Attr("disabled", "disabled", item.IsPrimaryTaxProvider)>
 					@if (item.IsPrimaryTaxProvider)
 					{
 						<i class="fa fa-check"></i>
+						@T("Admin.Configuration.Tax.Providers.Fields.IsPrimaryTaxProvider")
 					}
-					@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider")
+					else
+					{
+						@T("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider")
+					}
 				</a>)
         </td>
     </tr>

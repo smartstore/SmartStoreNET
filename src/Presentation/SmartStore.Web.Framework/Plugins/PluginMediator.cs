@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
+using SmartStore.Services.Shipping;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Mvc;
 
@@ -63,7 +64,6 @@ namespace SmartStore.Web.Framework.Plugins
 			Guard.ArgumentNotNull(() => metadata);
 			Guard.ArgumentIsPositive(languageId, "languageId");
 			Guard.ArgumentNotEmpty(() => propertyName);
-			Guard.ArgumentNotEmpty(() => value);
 
 			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 			var resource = _services.Localization.GetLocaleStringResourceByName(resourceName, languageId, false);
@@ -81,6 +81,7 @@ namespace SmartStore.Web.Framework.Plugins
 					resource.ResourceValue = value;
 					_services.Localization.UpdateLocaleStringResource(resource);
 				}
+				_services.Localization.ClearCache();
 			}
 			else
 			{
@@ -94,39 +95,55 @@ namespace SmartStore.Web.Framework.Plugins
 						ResourceValue = value,
 					};
 					_services.Localization.InsertLocaleStringResource(resource);
+					_services.Localization.ClearCache();
 				}
 			}
 		}
 
-		public T GetSetting<T>(ProviderMetadata metadata, string propertyName, int storeId = 0)
+		public int? GetUserDisplayOrder(ProviderMetadata metadata)
 		{
-			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, "DisplayOrder");
+			return GetSetting<int?>(metadata, "DisplayOrder");
+		}
+
+		public T GetSetting<T>(ProviderMetadata metadata, string propertyName)
+		{
+			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
 			return _services.Settings.GetSettingByKey<T>(settingKey);
 		}
 
-		public void SetDisplayOrder(ProviderMetadata metadata, int displayOrder, int storeId = 0)
+		public void SetUserDisplayOrder(ProviderMetadata metadata, int displayOrder)
 		{
 			Guard.ArgumentNotNull(() => metadata);
 
 			metadata.DisplayOrder = displayOrder;
-			SetSetting(metadata, "DisplayOrder", displayOrder, storeId);
+			SetSetting(metadata, "DisplayOrder", displayOrder);
 		}
 
-		public void SetSetting<T>(ProviderMetadata metadata, string propertyName, T value, int storeId = 0)
+		public void SetSetting<T>(ProviderMetadata metadata, string propertyName, T value)
 		{
 			Guard.ArgumentNotNull(() => metadata);
 			Guard.ArgumentNotEmpty(() => propertyName);
 
 			var settingKey = metadata.SettingKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
-			_services.Settings.SetSetting<T>(settingKey, value, storeId, false);
+
+			if (value != null)
+			{
+				_services.Settings.SetSetting<T>(settingKey, value, 0, false);
+			}
+			else
+			{
+				_services.Settings.DeleteSetting(settingKey);
+			}
+			
+			_services.Settings.ClearCache();
 		}
 
-		public ProviderModel ToProviderModel(Provider<IProvider> provider, Action<Provider<IProvider>, ProviderModel> enhancer = null)
+		public ProviderModel ToProviderModel(Provider<IProvider> provider, bool forEdit = false, Action<Provider<IProvider>, ProviderModel> enhancer = null)
 		{
-			return ToProviderModel<IProvider, ProviderModel>(provider, enhancer);
+			return ToProviderModel<IProvider, ProviderModel>(provider, forEdit, enhancer);
 		}
 
-		public TModel ToProviderModel<TProvider, TModel>(Provider<TProvider> provider, Action<Provider<TProvider>, TModel> enhancer = null)
+		public TModel ToProviderModel<TProvider, TModel>(Provider<TProvider> provider, bool forEdit = false, Action<Provider<TProvider>, TModel> enhancer = null)
 			where TModel : ProviderModel, new()
 			where TProvider : IProvider
 		{
@@ -135,10 +152,12 @@ namespace SmartStore.Web.Framework.Plugins
 			var metadata = provider.Metadata;
 			var model = new TModel();
 			model.SystemName = metadata.SystemName;
-			model.FriendlyName = GetLocalizedFriendlyName(metadata);
-			model.Description = GetLocalizedDescription(metadata);
+			model.FriendlyName = forEdit ? metadata.FriendlyName : GetLocalizedFriendlyName(metadata);
+			model.Description = forEdit ? metadata.Description : GetLocalizedDescription(metadata);
 			model.DisplayOrder = metadata.DisplayOrder;
+			model.IsEditable = metadata.IsEditable;
 			model.IconUrl = GetIconUrl(metadata);
+
 			if (metadata.IsConfigurable)
 			{
 				var routeInfo = _routesCache.GetOrAdd(model.SystemName, (key) =>

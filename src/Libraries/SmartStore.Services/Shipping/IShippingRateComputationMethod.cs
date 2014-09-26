@@ -7,7 +7,7 @@ namespace SmartStore.Services.Shipping
     /// <summary>
     /// Provides an interface of shipping rate computation method
     /// </summary>
-    public partial interface IShippingRateComputationMethod : IProvider
+    public partial interface IShippingRateComputationMethod : IProvider, IUserEditable
     {
         /// <summary>
         /// Gets a shipping rate computation method type

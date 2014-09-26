@@ -438,6 +438,7 @@
     <Content Include="Views\Plugin\ConfigureProvider.cshtml" />
     <Content Include="Views\Shared\_Providers.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
+    <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

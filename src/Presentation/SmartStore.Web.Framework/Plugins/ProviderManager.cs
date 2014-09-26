@@ -14,11 +14,13 @@ namespace SmartStore.Web.Framework.Plugins
 	{
 		private readonly IComponentContext _ctx;
 		private readonly ICommonServices _services;
+		private readonly PluginMediator _pluginMediator;
 
-		public ProviderManager(IComponentContext ctx, ICacheManager cacheManager, ICommonServices services)
+		public ProviderManager(IComponentContext ctx, ICommonServices services, PluginMediator pluginMediator)
 		{
 			this._ctx = ctx;
 			this._services = services;
+			this._pluginMediator = pluginMediator;
 		}
 
 		public Provider<TProvider> GetProvider<TProvider>(string systemName, int storeId = 0) where TProvider : IProvider
@@ -36,6 +38,7 @@ namespace SmartStore.Web.Framework.Plugins
 						return null;
 					}
 				}
+				SetUserData(provider.Metadata);
 				return new Provider<TProvider>(provider);
 			}
 			return null;
@@ -56,6 +59,7 @@ namespace SmartStore.Web.Framework.Plugins
 						return null;
 					}
 				}
+				SetUserData(provider.Metadata);
 				return new Provider<IProvider>(provider);
 			}
 			return null;
@@ -84,27 +88,42 @@ namespace SmartStore.Web.Framework.Plugins
 							where d == null || _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true)
 							select p;
 			}
-			return providers.Select(x => new Provider<IProvider>(x));
+			return SortProviders(providers.Select(x => new Provider<IProvider>(x)));
 		}
 
-		protected virtual IEnumerable<Provider<TProvider>> SortProviders<TProvider>(IEnumerable<Provider<TProvider>> providers, int storeId = 0) where TProvider : IProvider
+		protected virtual IEnumerable<Provider<TProvider>> SortProviders<TProvider>(IEnumerable<Provider<TProvider>> providers) where TProvider : IProvider
 		{
-			string cacheKey = "sm.providers.displayorder." + typeof(TProvider).Name;
-			_services.Cache.Get(cacheKey, () => {
-				// cache serves just as a sort of static initializer
-				foreach (var m in providers.Select(x => x.Metadata))
-				{
-					var mediator = _ctx.Resolve<PluginMediator>();
-					var userDisplayOrder = mediator.GetSetting<int?>(m, "DisplayOrder");
-					if (userDisplayOrder.HasValue)
-					{
-						m.DisplayOrder = userDisplayOrder.Value;
-					}
-				}
-				return true;
-			});
+			foreach (var m in providers.Select(x => x.Metadata))
+			{
+				SetUserData(m);
+			}
 
-			return providers.OrderBy(x => x.Metadata.DisplayOrder);
+			return providers.OrderBy(x => x.Metadata.DisplayOrder).ThenBy(x => x.Metadata.FriendlyName);
+		}
+
+		protected virtual void SetUserData(ProviderMetadata metadata)
+		{
+			if (!metadata.IsEditable)
+				return;
+
+			var displayOrder = _pluginMediator.GetUserDisplayOrder(metadata);
+			var name = _pluginMediator.GetSetting<string>(metadata, "FriendlyName");
+			var description = _pluginMediator.GetSetting<string>(metadata, "Description");
+
+			if (displayOrder.HasValue)
+			{
+				metadata.DisplayOrder = displayOrder.Value;
+			}
+
+			if (name != null)
+			{
+				metadata.FriendlyName = name;
+			}
+
+			if (description != null)
+			{
+				metadata.Description = description;
+			}
 		}
 
 	}

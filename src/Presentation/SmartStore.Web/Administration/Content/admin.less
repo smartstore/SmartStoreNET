@@ -332,7 +332,7 @@ td.adminData > input[type="checkbox"] {
 -------------------------------------------------------------- */
 
 .select2-container:not(.autowidth) {
-    min-width: 264px; /* ensures more clean look & feel */
+    min-width: 314px; /* ensures more clean look & feel */
 }
 
 
@@ -627,7 +627,7 @@ table.adminContent {
 }
 td.adminTitle {
     padding: 4px;
-    width: 280px;
+    width: 300px;
 }
 .modal td.adminTitle {
     width: auto;
@@ -674,10 +674,10 @@ td.adminTitle:hover a.hint {
 }
 
 .well td.adminTitle {
-    width: 260px;
+    width: 280px;
 }
 .well.well-small td.adminTitle {
-    width: 270px;
+    width: 290px;
 }
 
 td.adminData {
@@ -685,7 +685,7 @@ td.adminData {
     vertical-align: middle;
 }
 td.adminData .text-box.single-line {
-    width: 250px;
+    width: 300px;
 }
 td.adminData input[type=text].input-large,
 td.adminData textarea.input-large {
@@ -696,10 +696,10 @@ td.adminData textarea.input-large {
     /* ... */
 }
 td.adminData textarea {
-    width: 250px;
+    width: 300px;
 }
 td.adminData .t-combobox {
-    width: 256px;
+    width: 306px;
 }
 
 tr.adminSeparator hr {
@@ -1093,74 +1093,97 @@ table.order-edit td {
 }
 
 
-/* Plugins
+/* Plugins & Providers
 -------------------------------------------------------------- */
 
-.plugins-group h3 {
+.sortable-grip {
+	left: 52px;
+	width: 9px;
+}
+
+.module-list, .module-item {
+	position: relative;
+}
+
+.module-list > h3 {
     font-family: @headingsFontFamily;
     font-weight: @headingsFontWeight;
     color: inherit; 
     font-size: 18px;
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 12px;
+	margin-top: 30px;
 }
 
-.plugins-table {
-    thead > tr {
-        font-size: 16px;
-        color: #bbb;
-    }
-
-    tr.uninstalled {
-        background-color: #fcfcfc;
-    }
-
-    td.cell-icon {
-        text-align: center;
-        width: 48px;
-        min-width: 48px;
-        max-width: 48px;
-
-        .icon {
-            max-width: 48px;
-        }
-    }
-
-    td.cell-data {
-        width: 50%;
-
-        .plugin-name {
-            font-weight: bold;
-        }
-
-        .attr-value {
-            color: #bbb;
-        }
-    }
-
-        td.cell-data .plugin-data {
-            margin-top: 2px;
-        }
-
-        td.cell-data .plugin-description {
-            margin: 4px 0;
-        }
-
-        td.cell-data .plugin-actions {
-            margin-top: 6px;
-
-            .fa {
-                color: #bbb;
-            }
-
-            a {
-                margin-right: 10px;
-            }
-        }
-
-    td.cell-install {
-        width: 50%;
-        vertical-align: middle;
-    }
+.module-item {
+	margin-top: 20px;
 }
+.module-item.inactive .module-icon {
+	.opacity(40);
+}
+
+.module-icon {
+	float: left;
+	width: 48px;
+	text-align: center;
+
+	.icon, .fa {
+		max-width: 48px;
+	}
+}
+
+.module-data {
+	box-sizing: border-box;
+	margin-left: 70px;
+	padding-bottom: 10px;
+	//margin-bottom: 20px;
+	border-bottom: 1px solid #ddd;
+}
+.module-item:last-child .module-data {
+	border-bottom: none;
+}
+
+.module-col {
+	float: left;
+	display: block;
+	box-sizing: border-box;
+	min-height: 1px;
+	position: relative;
+	padding: 0 15px;
+
+	&:first-child {
+		padding-left: 0;
+	}
+}
+
+.module-data-cols-1 .module-col { width: 100%; }
+.module-data-cols-2 .module-col { width: 50%; }
+.module-data-cols-3 .module-col { width: 33.3332%; }
+.module-data-cols-4 .module-col { width: 25%; }
+
+.module-name {
+	font-weight: bold;
+	margin-right: 5px;
+}
+
+.module-info {
+	margin-top: 3px;
+	.attr-name { }
+	.attr-value {
+		color: #bbb;
+		padding-right: 5px;
+	}
+}
+
+.module-description {
+	margin: 4px 0;
+}
+
+.module-actions {
+	margin-top: 6px;
+	margin-left: -12px;
+}
+
 
 /* Special icons */
 .icon-active-true {

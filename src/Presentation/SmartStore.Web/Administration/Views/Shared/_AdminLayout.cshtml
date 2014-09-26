@@ -97,7 +97,7 @@
         "~/Scripts/jquery.pnotify.js",
         "~/Scripts/jquery.scrollTo.js",
         "~/Scripts/jquery.serialScroll.js",
-		//"~/Scripts/smartstore.globalize.adapter.js",
+		"~/Scripts/jquery.sortable.js",
         // Admin
         "~/Administration/Scripts/admin.common.js",
         "~/Administration/Scripts/admin.globalinit.js");
@@ -134,7 +134,7 @@
                 @Html.Raw(ViewData["warning.panel.message"])
 			</div>
 		}
-
+		
 		<header>
 			@if (IsSectionDefined("navbar"))
 			{
@@ -163,6 +163,8 @@
         @Html.Widget("admin_content_after")
 
     </div>
+
+	@RenderSection("foot", required: false)
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)

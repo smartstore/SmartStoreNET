@@ -3914,8 +3914,8 @@ Editableform based on Twitter Bootstrap
     });    
     
     //buttons
-    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="fa-check"></i></button>'+
-                                '<button type="button" class="btn editable-cancel"><i class="fa-times"></i></button>';         
+    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="fa fa-check"></i></button>'+
+                                '<button type="button" class="btn editable-cancel"><i class="fa fa-times"></i></button>';         
     
     //error classes
     $.fn.editableform.errorGroupClass = 'error';

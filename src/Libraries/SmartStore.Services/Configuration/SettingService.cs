@@ -551,7 +551,6 @@ namespace SmartStore.Services.Configuration
 			DeleteSetting(key, storeId);
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void DeleteSetting(string key, int storeId = 0)
 		{
 			if (key.HasValue())

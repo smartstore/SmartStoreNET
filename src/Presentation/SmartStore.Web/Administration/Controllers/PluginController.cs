@@ -26,6 +26,7 @@ using System.Collections.Generic;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Localization;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -189,6 +190,11 @@ namespace SmartStore.Admin.Controllers
 
             var model = new LocalPluginsModel();
 
+			model.AvailableStores = _storeService
+				.GetAllStores()
+				.Select(s => s.ToModel())
+				.ToList();
+
             var groupedPlugins = from p in plugins
                                  group p by p.Group into g
                                  select g;
@@ -344,7 +350,6 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-        //edit
         public ActionResult EditPopup(string systemName)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
@@ -360,23 +365,69 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        public ActionResult EditPopup(string btnId, string formId, PluginModel model)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
-                return AccessDeniedView();
+		public ActionResult EditProviderPopup(string systemName)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
 
-            var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(model.SystemName, false);
-            if (pluginDescriptor == null)
-                return RedirectToAction("List");
+			var provider = _providerManager.GetProvider(systemName);
+			if (provider == null)
+				return HttpNotFound();
 
-            if (ModelState.IsValid)
-            {
-                pluginDescriptor.FriendlyName = model.FriendlyName;
+			var model = _pluginMediator.ToProviderModel(provider, true);
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
+				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
+			});
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditProviderPopup(string btnId, ProviderModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var provider = _providerManager.GetProvider(model.SystemName);
+			if (provider == null)
+				return HttpNotFound();
+
+			var metadata = provider.Metadata;
+
+			_pluginMediator.SetSetting(metadata, "FriendlyName", model.FriendlyName);
+			_pluginMediator.SetSetting(metadata, "Description", model.Description);
+
+			foreach (var localized in model.Locales)
+			{
+				_pluginMediator.SaveLocalizedValue(metadata, localized.LanguageId, "FriendlyName", localized.FriendlyName);
+				_pluginMediator.SaveLocalizedValue(metadata, localized.LanguageId, "Description", localized.Description);
+			}
+
+			ViewBag.RefreshPage = true;
+			ViewBag.btnId = btnId;
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult EditPopup(string btnId, string formId, PluginModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(model.SystemName, false);
+			if (pluginDescriptor == null)
+				return RedirectToAction("List");
+
+			if (ModelState.IsValid)
+			{
+				pluginDescriptor.FriendlyName = model.FriendlyName;
 				pluginDescriptor.Description = model.Description;
-                pluginDescriptor.DisplayOrder = model.DisplayOrder;
+				pluginDescriptor.DisplayOrder = model.DisplayOrder;
 
-                PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
+				PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
 
 				string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
 				if (model.LimitedToStores && model.SelectedStoreIds != null && model.SelectedStoreIds.Count() > 0)
@@ -384,7 +435,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_settingService.DeleteSetting(settingKey);
 
-                // reset string resources cache
+				// reset string resources cache
 				_localizationService.ClearCache();
 
 				var pluginInstance = pluginDescriptor.Instance();
@@ -395,32 +446,32 @@ namespace SmartStore.Admin.Controllers
 					pluginInstance.SaveLocalizedValue(_localizationService, localized.LanguageId, "Description", localized.Description);
 				}
 
-                //enabled/disabled
-                if (pluginDescriptor.Installed)
-                {
-                    if (pluginInstance is IPaymentMethod)
-                    {
-                        //payment plugin
-                        var pm = (IPaymentMethod)pluginInstance;
-                        if (pm.IsPaymentMethodActive(_paymentSettings))
-                        {
-                            if (!model.IsEnabled)
-                            {
-                                //mark as disabled
-                                _paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_paymentSettings);
-                            }
-                        }
-                        else
-                        {
-                            if (model.IsEnabled)
-                            {
-                                //mark as active
-                                _paymentSettings.ActivePaymentMethodSystemNames.Add(pm.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_paymentSettings);
-                            }
-                        }
-                    }
+				//enabled/disabled
+				if (pluginDescriptor.Installed)
+				{
+					if (pluginInstance is IPaymentMethod)
+					{
+						//payment plugin
+						var pm = (IPaymentMethod)pluginInstance;
+						if (pm.IsPaymentMethodActive(_paymentSettings))
+						{
+							if (!model.IsEnabled)
+							{
+								//mark as disabled
+								_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_paymentSettings);
+							}
+						}
+						else
+						{
+							if (model.IsEnabled)
+							{
+								//mark as active
+								_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_paymentSettings);
+							}
+						}
+					}
 					//else if (pluginInstance is IShippingRateComputationMethod)
 					//{
 					//	//shipping rate computation method
@@ -444,77 +495,137 @@ namespace SmartStore.Admin.Controllers
 					//		}
 					//	}
 					//}
-                    else if (pluginInstance is ITaxProvider)
-                    {
-                        //tax provider
-                        if (model.IsEnabled)
-                        {
-                            _taxSettings.ActiveTaxProviderSystemName = model.SystemName;
-                            _settingService.SaveSetting(_taxSettings);
-                        }
-                        else
-                        {
-                            _taxSettings.ActiveTaxProviderSystemName = "";
-                            _settingService.SaveSetting(_taxSettings);
-                        }
-                    }
-                    else if (pluginInstance is IExternalAuthenticationMethod)
-                    {
-                        //external auth method
-                        var eam = (IExternalAuthenticationMethod)pluginInstance;
-                        if (eam.IsMethodActive(_externalAuthenticationSettings))
-                        {
-                            if (!model.IsEnabled)
-                            {
-                                //mark as disabled
-                                _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(eam.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_externalAuthenticationSettings);
-                            }
-                        }
-                        else
-                        {
-                            if (model.IsEnabled)
-                            {
-                                //mark as active
-                                _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(eam.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_externalAuthenticationSettings);
-                            }
-                        }
-                    }
-                    else if (pluginInstance is IWidgetPlugin)
-                    {
-                        //Misc plugins
-                        var widget = (IWidgetPlugin)pluginInstance;
-                        if (widget.IsWidgetActive(_widgetSettings))
-                        {
-                            if (!model.IsEnabled)
-                            {
-                                //mark as disabled
-                                _widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_widgetSettings);
-                            }
-                        }
-                        else
-                        {
-                            if (model.IsEnabled)
-                            {
-                                //mark as active
-                                _widgetSettings.ActiveWidgetSystemNames.Add(widget.PluginDescriptor.SystemName);
-                                _settingService.SaveSetting(_widgetSettings);
-                            }
-                        }
-                    }
-                }
+					else if (pluginInstance is ITaxProvider)
+					{
+						//tax provider
+						if (model.IsEnabled)
+						{
+							_taxSettings.ActiveTaxProviderSystemName = model.SystemName;
+							_settingService.SaveSetting(_taxSettings);
+						}
+						else
+						{
+							_taxSettings.ActiveTaxProviderSystemName = "";
+							_settingService.SaveSetting(_taxSettings);
+						}
+					}
+					else if (pluginInstance is IExternalAuthenticationMethod)
+					{
+						//external auth method
+						var eam = (IExternalAuthenticationMethod)pluginInstance;
+						if (eam.IsMethodActive(_externalAuthenticationSettings))
+						{
+							if (!model.IsEnabled)
+							{
+								//mark as disabled
+								_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(eam.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_externalAuthenticationSettings);
+							}
+						}
+						else
+						{
+							if (model.IsEnabled)
+							{
+								//mark as active
+								_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(eam.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_externalAuthenticationSettings);
+							}
+						}
+					}
+					else if (pluginInstance is IWidgetPlugin)
+					{
+						//Misc plugins
+						var widget = (IWidgetPlugin)pluginInstance;
+						if (widget.IsWidgetActive(_widgetSettings))
+						{
+							if (!model.IsEnabled)
+							{
+								//mark as disabled
+								_widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_widgetSettings);
+							}
+						}
+						else
+						{
+							if (model.IsEnabled)
+							{
+								//mark as active
+								_widgetSettings.ActiveWidgetSystemNames.Add(widget.PluginDescriptor.SystemName);
+								_settingService.SaveSetting(_widgetSettings);
+							}
+						}
+					}
+				}
 
-                ViewBag.RefreshPage = true;
-                ViewBag.btnId = btnId;
-                ViewBag.formId = formId;
-                return View(model);
-            }
+				ViewBag.RefreshPage = true;
+				ViewBag.btnId = btnId;
+				ViewBag.formId = formId;
+				return View(model);
+			}
 
-            //If we got this far, something failed, redisplay form
-            return View(model);
-        }
+			//If we got this far, something failed, redisplay form
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult SetSelectedStores(string pk /* SystemName */, string name, FormCollection form)
+		{
+			// gets called from x-editable 
+			try 
+			{
+				var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName(pk, false);
+				if (pluginDescriptor == null)
+				{
+					return HttpNotFound("The plugin does not exist");
+				}
+				
+				string settingKey = pluginDescriptor.GetSettingKey("LimitedToStores");
+				var storeIds = (form["value[]"] ?? "0").Split(',').Select(x => x.ToInt()).Where(x => x > 0).ToList();
+				if (storeIds.Count > 0)
+				{
+					_settingService.SetSetting<string>(settingKey, string.Join(",", storeIds));
+				}
+				else
+				{
+					_settingService.DeleteSetting(settingKey);
+				}
+			}
+			catch (Exception ex)
+			{
+				return new HttpStatusCodeResult(501, ex.Message);
+			}
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			return new HttpStatusCodeResult(200);
+		}
+
+		[HttpPost]
+		public ActionResult SortProviders(string providers)
+		{
+			try
+			{
+				var arr = providers.Split(',');
+				int ordinal = 5;
+				foreach (var systemName in arr)
+				{
+					var provider = _providerManager.GetProvider(systemName);
+					if (provider != null)
+					{
+						_pluginMediator.SetUserDisplayOrder(provider.Metadata, ordinal);
+					}
+					ordinal += 5;
+				}
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex.Message);
+				return new HttpStatusCodeResult(501, ex.Message);
+			}
+
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+			return new HttpStatusCodeResult(200);
+		}
 
 		public ActionResult UpdateStringResources(string systemName)
 		{

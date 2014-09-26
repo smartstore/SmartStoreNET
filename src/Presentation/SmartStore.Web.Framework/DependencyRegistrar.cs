@@ -752,24 +752,28 @@ namespace SmartStore.Web.Framework
 			foreach (var type in providerTypes)
 			{
 				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(type.Assembly);
+				var groupName = ProviderTypeToKnownGroupName(type);
 				var systemName = GetSystemName(type, pluginDescriptor);
 				var friendlyName = GetFriendlyName(type, pluginDescriptor);
+				var displayOrder = GetDisplayOrder(type, pluginDescriptor);
 				var resPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{1}.{0}"; // e.g. Plugins.FriendlyName.MySystemName
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
+				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
 
 				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest();
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
-					m.For(em => em.GroupName, ProviderTypeToKnownGroupName(type));
+					m.For(em => em.GroupName, groupName);
 					m.For(em => em.SystemName, systemName);
 					m.For(em => em.ResourceKeyPattern, resPattern);
 					m.For(em => em.SettingKeyPattern, settingPattern);
 					m.For(em => em.FriendlyName, friendlyName.Item1);
 					m.For(em => em.Description, friendlyName.Item2);
-					m.For(em => em.DisplayOrder, GetDisplayOrder(type, pluginDescriptor));
+					m.For(em => em.DisplayOrder, displayOrder);
 					m.For(em => em.IsConfigurable, isConfigurable);
+					m.For(em => em.IsEditable, isEditable);
 				});
 
 				// register specific provider type

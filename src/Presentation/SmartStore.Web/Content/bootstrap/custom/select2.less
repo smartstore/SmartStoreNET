@@ -3,8 +3,10 @@ Version: 3.2 Timestamp: Mon Sep 10 10:38:04 PDT 2012
 Source: https://github.com/ivaynberg/select2
 */
 
-@dropFocusBorderColor: rgba(82,168,236, .8);
-@dropFocusShadowColor: rgba(82,168,236, .4);
+/*@dropFocusBorderColor: rgba(82,168,236, .8);
+@dropFocusShadowColor: rgba(82,168,236, .4);*/
+@dropFocusBorderColor: rgba(0,0,0, 0.2);
+@dropFocusShadowColor: rgba(0,0,0, 0.15);
 
 .select2-container {
     position: relative;
@@ -37,7 +39,7 @@ Source: https://github.com/ivaynberg/select2
     border: 1px solid @inputBorder;
     color: @gray;
     .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-	.transition(~"border linear .2s, box-shadow linear .2s");
+	//.transition(~"border linear .2s, box-shadow linear .2s");
     .border-radius(@inputBorderRadius);
     .background-clip(padding-box);
 
@@ -45,14 +47,13 @@ Source: https://github.com/ivaynberg/select2
     overflow: hidden;
     white-space: nowrap;
     position: relative;
-    height: @baseLineHeight + 10;
-    line-height: @baseLineHeight + 10;
+    height: @baseLineHeight + 12;
+    line-height: @baseLineHeight + 12;
     padding: 0 0 0 8px;
     text-decoration: none;
 }
 
-.select2-container.select2-drop-above .select2-choice
-{
+.select2-container.select2-drop-above .select2-choice {
 	.border-radius(0 0 @inputBorderRadius @inputBorderRadius);
 }
 
@@ -63,44 +64,46 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-container .select2-choice abbr {
-  display: block;
-  position: absolute;
-  right: 22px;
-  top: 7px;
-  width: 12px;
-  height: 12px;
-  font-size: 1px;
-  background: url('images/select2.png') right top no-repeat;
-  background-color: @inputBackground;
-  cursor: pointer;
-  text-decoration: none;
-  border:0;
-  outline: 0;
+	display: block;
+	position: absolute;
+	right: 22px;
+	top: 7px;
+	width: 12px;
+	height: 12px;
+	font-size: 1px;
+	background: url('images/select2.png') right top no-repeat;
+	background-color: @inputBackground;
+	cursor: pointer;
+	text-decoration: none;
+	border:0;
+	outline: 0;
 }
 .select2-container .select2-choice abbr:hover {
-  background-position: right -11px;
-  cursor: pointer;
+	background-position: right -11px;
+	cursor: pointer;
 }
 
 .select2-drop {
     background: #fff;
+	border: 1px solid #ccc;
     border: 1px solid @dropFocusBorderColor;
     border-top: 0;
     position: absolute;
     top: 100%;
     z-index: 9999;
-    width:100%;
+    width: 100%;
     margin-top:-1px;
-    .box-shadow(0 4px 5px @dropFocusShadowColor);
+    .box-shadow(0 4px 4px @dropFocusShadowColor);
     .border-radius(0 0 @inputBorderRadius @inputBorderRadius);
 	.smaller();
 }
 
 .select2-drop.select2-drop-above {
 	margin-top:1px;
+	border-top: 1px solid #ccc;
 	border-top: 1px solid @dropFocusBorderColor;
 	border-bottom: 0;
-	.box-shadow(0 -4px 5px @dropFocusShadowColor);
+	.box-shadow(0 -2px 4px @dropFocusShadowColor);
 	.border-radius(@inputBorderRadius @inputBorderRadius 0px 0px);
 }
 
@@ -153,7 +156,6 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-search input {
-    border: 1px solid @dropFocusBorderColor;
     width:100%;
     margin:0;
     height:auto !important;
@@ -166,13 +168,8 @@ Source: https://github.com/ivaynberg/select2
 	.box-shadow(none);
 }
 
-.select2-search input:hover {
-	border-color: @dropFocusBorderColor !important;
-}
-
-.select2-drop.select2-drop-above .select2-search input
-{
-    margin-top:4px;
+.select2-drop.select2-drop-above .select2-search input {
+    margin-top: 4px;
 }
 
 .select2-search input.select2-active {
@@ -181,23 +178,26 @@ Source: https://github.com/ivaynberg/select2
 
 .select2-container-active .select2-choice,
 .select2-container-active .select2-choices {
-    .box-shadow(0 0 5px @dropFocusShadowColor);
-    border: 1px solid @dropFocusBorderColor;
+    //.box-shadow(0 2px 4px @dropFocusShadowColor);
+    border: 1px solid @blue;
     outline: none;
 }
 
 .select2-dropdown-open .select2-choice {
     color: @grayLight !important;
     text-shadow: none !important;
+	border-color: #ccc;
+	border-color: rgba(0,0,0, 0.2);
+	.box-shadow(0 2px 4px @dropFocusShadowColor);
 	.border-radius(@inputBorderRadius @inputBorderRadius 0 0);
 }
 
 .select2-dropdown-open .select2-choice div {
-  background: transparent;
-  border-left: none;
+	background: transparent;
+	border-left: none;
 }
 .select2-dropdown-open .select2-choice div b {
-  background-position: -18px 1px;
+	background-position: -18px 1px;
 }
 
 /* results */
@@ -319,9 +319,10 @@ disabled look for already selected choices in the results dropdown
 }
 
 .select2-container-multi.select2-container-active .select2-choices {
+	border: 1px solid #ccc;
     border: 1px solid @dropFocusBorderColor;
     outline: none;
-    .box-shadow(0 0 5px @dropFocusShadowColor);
+    .box-shadow(0 0 4px @dropFocusShadowColor);
 }
 .select2-container-multi .select2-choices li {
   float: left;

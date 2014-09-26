@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 namespace SmartStore.Core.Plugins
 {
 	public class ProviderMetadata
-	{
+	{	
 		/// <summary>
 		/// Gets or sets the provider type
 		/// </summary>
@@ -58,6 +58,14 @@ namespace SmartStore.Core.Plugins
 		/// Gets or sets a value indicating whether the provider is configurable (by implementing <see cref="IConfigurable"/>)
 		/// </summary>
 		public bool IsConfigurable { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the provider is editable by the user (by implementing <see cref="IUserEditable"/>)
+		/// </summary>
+		/// <remarks>
+		/// A provider is editable if the user is allowed to change display order and/or localize display name
+		/// </remarks>
+		public bool IsEditable { get; set; }
 
 		/// <summary>
 		/// Gets or sets the <see cref="PluginDescriptor"/> instance in which the provider is implemented

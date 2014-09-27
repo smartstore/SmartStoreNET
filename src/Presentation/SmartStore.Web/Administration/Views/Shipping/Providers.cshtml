@@ -1,8 +1,6 @@
 ﻿@model IEnumerable<ShippingRateComputationMethodModel>
-@*@using Telerik.Web.Mvc.UI*@
 
 @{    
-    //page title
     ViewBag.Title = T("Admin.Configuration.Shipping.Providers").Text;
 }
 <div class="section-header">
@@ -11,12 +9,13 @@
         @T("Admin.Configuration.Shipping.Providers")
     </div>
 </div>
+
 <table class="adminContent">
     <tr>
         <td>
 			@Html.ProviderList(Model, 
 				@<div>
-					<a class='btn plugin-uninstall@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+					<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
 						@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
 					</a>
 				</div>)

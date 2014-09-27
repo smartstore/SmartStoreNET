@@ -90,13 +90,13 @@ namespace SmartStore.Admin.Controllers
 
             var shippingProvidersModel = new List<ShippingRateComputationMethodModel>();
             var shippingProviders = _shippingService.LoadAllShippingRateComputationMethods();
-			var activeMethods = _shippingSettings.ActiveShippingRateComputationMethodSystemNames ?? new List<string>();
             foreach (var shippingProvider in shippingProviders)
             {
-				var tmp1 = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
-				tmp1.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
-                shippingProvidersModel.Add(tmp1);
+				var model = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
+				model.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
+                shippingProvidersModel.Add(model);
             }
+
 			return View(shippingProvidersModel);
         }
 

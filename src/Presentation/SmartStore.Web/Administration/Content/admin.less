@@ -222,17 +222,6 @@ header {
 	border-left-color: #ccc;
 }
 
-#navbar .nav > li {
-	background: rgba(255,255,255, 0);
-	.opacity(90);
-	.transition(opacity 0.1s linear);
-}
-
-#navbar .nav > li:hover {
-	background: rgba(255,255,255, .15);
-	.opacity(100);
-}
-
 #navbar .nav > li > a {
 	max-height: @navbarHeight - 12;
 	min-width: 40px;
@@ -241,6 +230,9 @@ header {
 	padding: 12px 6px !important;
 	text-align: center;
 	background: transparent;
+	background: rgba(255,255,255, 0);
+	.opacity(90);
+	.transition(~'opacity 0.1s linear, background-color 0.1s linear');
 
 	.fa {
 		position: relative;
@@ -264,6 +256,11 @@ header {
 		line-height: 20px;
 		margin: 0;
 	}
+}
+
+#navbar .nav > li:hover > a {
+	background: rgba(255,255,255, .15);
+	.opacity(100);
 }
 
 /* SM additions
@@ -1170,7 +1167,7 @@ table.order-edit td {
 	margin-top: 3px;
 	.attr-name { }
 	.attr-value {
-		color: #bbb;
+		color: #aaa;
 		padding-right: 5px;
 	}
 }

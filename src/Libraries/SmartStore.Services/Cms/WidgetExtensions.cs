@@ -1,11 +1,13 @@
 ﻿using System;
+using System.Linq;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Cms	
 {
     public static class WidgetExtensions
     {
-        public static bool IsWidgetActive(this IWidgetPlugin widget, WidgetSettings widgetSettings)
+        public static bool IsWidgetActive(this Provider<IWidget> widget, WidgetSettings widgetSettings)
         {
 			Guard.ArgumentNotNull(() => widget);
 			Guard.ArgumentNotNull(() => widgetSettings);
@@ -15,13 +17,7 @@ namespace SmartStore.Services.Cms
 				return false;
 			}
 
-			foreach (string systemName in widgetSettings.ActiveWidgetSystemNames)
-			{
-				if (widget.PluginDescriptor.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-					return true;
-			}
-
-            return false;
+			return widgetSettings.ActiveWidgetSystemNames.Contains(widget.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
     }
 }

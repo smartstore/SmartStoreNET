@@ -10,7 +10,7 @@ namespace SmartStore.Plugin.Widgets.TrustedShopsSeal
     /// <summary>
     /// Trusted Shops seal provider
     /// </summary>
-    public class TrustedShopsSealPlugin : BasePlugin, IWidgetPlugin
+	public class TrustedShopsSealPlugin : BasePlugin, IWidget, IConfigurable
     {
         private readonly TrustedShopsSealSettings _trustedShopsSealSettings;
         private readonly ILocalizationService _localizationService;

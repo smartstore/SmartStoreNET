@@ -28,7 +28,7 @@ namespace SmartStore.Web.Infrastructure
 
 			builder.RegisterType<CatalogHelper>().InstancePerRequest();
 
-			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().WithStaticCache().InstancePerRequest();
+			builder.RegisterType<DefaultWidgetSelector>().As<IWidgetSelector>().InstancePerRequest();
             
             // installation localization service
             builder.RegisterType<InstallationLocalizationService>().As<IInstallationLocalizationService>().InstancePerRequest();

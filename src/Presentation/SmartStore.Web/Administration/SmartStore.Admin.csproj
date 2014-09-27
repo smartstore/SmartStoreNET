@@ -472,7 +472,6 @@
     </Content>
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Navbar.cshtml" />
-    <Content Include="Views\Widget\ConfigureWidget.cshtml" />
     <Content Include="Views\ScheduleTask\List.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
   </ItemGroup>
@@ -992,7 +991,7 @@
     <Content Include="Views\Measure\EditorTemplates\Decimal8.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Widget\List.cshtml" />
+    <Content Include="Views\Widget\Providers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ExternalAuthentication\ConfigureMethod.cshtml" />

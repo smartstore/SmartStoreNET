@@ -699,13 +699,6 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
 
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
-
-			// Register simple (code) widgets
-			var widgetTypes = _typeFinder.FindClassesOfType<IWidget>(ignoreInactivePlugins: true).Where(x => !typeof(IWidgetPlugin).IsAssignableFrom(x));
-			foreach (var widgetType in widgetTypes)
-			{
-				builder.RegisterType(widgetType).Named<IWidget>(widgetType.FullName).InstancePerRequest();
-			}
 		}
 	}
 
@@ -782,6 +775,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IDiscountRequirementRule>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExchangeRateProvider>(type, systemName, registration);
 				RegisterAsSpecificProvider<IShippingRateComputationMethod>(type, systemName, registration);
+				RegisterAsSpecificProvider<IWidget>(type, systemName, registration);
 			}
 
 		}
@@ -813,7 +807,8 @@ namespace SmartStore.Web.Framework
 				return descriptor.SystemName;
 			}
 
-			throw Error.Application("The 'SystemNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
+			return type.FullName;
+			//throw Error.Application("The 'SystemNameAttribute' must be applied to a provider type if the provider does not implement 'IPlugin' (provider type: {0}, plugin: {1})".FormatInvariant(type.FullName, descriptor != null ? descriptor.SystemName : "-"));
 		}
 
 		private int GetDisplayOrder(Type type, PluginDescriptor descriptor)

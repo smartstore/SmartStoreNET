@@ -10,6 +10,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -24,20 +25,26 @@ namespace SmartStore.Admin.Controllers
         private readonly ISettingService _settingService;
         private readonly WidgetSettings _widgetSettings;
 	    private readonly IPluginFinder _pluginFinder;
+		private readonly PluginMediator _pluginMediator;
 
 	    #endregion
 
 		#region Constructors
 
-        public WidgetController(IWidgetService widgetService,
-            IPermissionService permissionService, ISettingService settingService,
-            WidgetSettings widgetSettings, IPluginFinder pluginFinder)
+        public WidgetController(
+			IWidgetService widgetService,
+            IPermissionService permissionService, 
+			ISettingService settingService,
+            WidgetSettings widgetSettings, 
+			IPluginFinder pluginFinder,
+			PluginMediator pluginMediator)
 		{
             this._widgetService = widgetService;
             this._permissionService = permissionService;
             this._settingService = settingService;
             this._widgetSettings = widgetSettings;
             this._pluginFinder = pluginFinder;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
@@ -46,10 +53,10 @@ namespace SmartStore.Admin.Controllers
         
         public ActionResult Index()
         {
-            return RedirectToAction("List");
+            return RedirectToAction("Providers");
         }
 
-        public ActionResult List()
+		public ActionResult Providers()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
                 return AccessDeniedView();
@@ -58,107 +65,45 @@ namespace SmartStore.Admin.Controllers
             var widgets = _widgetService.LoadAllWidgets();
             foreach (var widget in widgets)
             {
-                var tmp1 = widget.ToModel();
-                tmp1.IsActive = widget.IsWidgetActive(_widgetSettings);
-                widgetsModel.Add(tmp1);
+                var model = _pluginMediator.ToProviderModel<IWidget, WidgetModel>(widget);
+                model.IsActive = widget.IsWidgetActive(_widgetSettings);
+                widgetsModel.Add(model);
             }
 
-            var gridModel = new GridModel<WidgetModel>
-            {
-                Data = widgetsModel,
-                Total = widgetsModel.Count()
-            };
-            return View(gridModel);
-
+			return View(widgetsModel);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
-                return AccessDeniedView();
+		public ActionResult ActivateProvider(string systemName, bool activate)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
+				return AccessDeniedView();
 
-            var widgetsModel = new List<WidgetModel>();
-            var widgets = _widgetService.LoadAllWidgets();
-            foreach (var widget in widgets)
-            {
-                var tmp1 = widget.ToModel();
-                tmp1.IsActive = widget.IsWidgetActive(_widgetSettings);
-                widgetsModel.Add(tmp1);
-            }
+			var widget = _widgetService.LoadWidgetBySystemName(systemName);
+			if (widget.IsWidgetActive(_widgetSettings))
+			{
+				if (!activate)
+				{
+					// mark as disabled
+					_widgetSettings.ActiveWidgetSystemNames.Remove(widget.Metadata.SystemName);
+					_settingService.SaveSetting(_widgetSettings);
+				}
+			}
+			else
+			{
+				if (activate)
+				{
+					// mark as active
+					_widgetSettings.ActiveWidgetSystemNames.Add(widget.Metadata.SystemName);
+					_settingService.SaveSetting(_widgetSettings);
+				}
+			}
 
-            widgetsModel = widgetsModel.ForCommand(command).ToList();
-            var gridModel = new GridModel<WidgetModel>
-            {
-                Data = widgetsModel,
-                Total = widgetsModel.Count()
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult WidgetUpdate(WidgetModel model, GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
-                return AccessDeniedView();
-
-            var widget = _widgetService.LoadWidgetBySystemName(model.SystemName);
-            if (widget.IsWidgetActive(_widgetSettings))
-            {
-                if (!model.IsActive)
-                {
-                    //mark as disabled
-                    _widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_widgetSettings);
-                }
-            }
-            else
-            {
-                if (model.IsActive)
-                {
-                    //mark as active
-                    _widgetSettings.ActiveWidgetSystemNames.Add(widget.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_widgetSettings);
-                }
-            }
-
-            var pluginDescriptor = widget.PluginDescriptor;
-            //display order
-            pluginDescriptor.DisplayOrder = model.DisplayOrder;
-            PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
-
-            return List(command);
-        }
-
-        public ActionResult ConfigureWidget(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
-                return AccessDeniedView();
-
-            var widget = _widgetService.LoadWidgetBySystemName(systemName);
-            if (widget == null)
-                //No widget found with the specified id
-                return RedirectToAction("List");
-
-            var model = widget.ToModel();
-            
-            string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            widget.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-            model.ConfigurationActionName = actionName;
-            model.ConfigurationControllerName = controllerName;
-            model.ConfigurationRouteValues = routeValues;
-
-            return View(model);
-        }
+			return RedirectToAction("Providers");
+		}
         
         [ChildActionOnly]
         public ActionResult WidgetsByZone(string widgetZone)
         {
-            //model
             var model = new List<RenderWidgetModel>();
  
             var widgets = _widgetService.LoadActiveWidgetsByWidgetZone(widgetZone);
@@ -169,7 +114,7 @@ namespace SmartStore.Admin.Controllers
                 string actionName;
                 string controllerName;
                 RouteValueDictionary routeValues;
-                widget.GetDisplayWidgetRoute(widgetZone, null, 0, out actionName, out controllerName, out routeValues);
+                widget.Value.GetDisplayWidgetRoute(widgetZone, null, 0, out actionName, out controllerName, out routeValues);
                 widgetModel.ActionName = actionName;
                 widgetModel.ControllerName = controllerName;
                 widgetModel.RouteValues = routeValues;

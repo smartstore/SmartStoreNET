@@ -533,15 +533,6 @@ namespace SmartStore.Admin
 
         #endregion
 
-        #region Widgets
-
-        public static WidgetModel ToModel(this IWidgetPlugin entity)
-        {
-            return Mapper.Map<IWidgetPlugin, WidgetModel>(entity);
-        }
-        
-        #endregion
-
         #region Address
 
         public static AddressModel ToModel(this Address entity)

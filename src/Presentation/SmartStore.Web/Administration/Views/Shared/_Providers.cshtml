@@ -65,8 +65,12 @@
 						@ActiveLabel(item)
 					</div>
 					<div class="module-info">
+						@{
+							string tip = item.PluginDescriptor != null ? T("Admin.Providers.ProvidingPlugin") + ": " + item.PluginDescriptor.FriendlyName : "";
+						}
 						<span class="attr-name">@T("Common.SystemName"):</span>
-						<span class="attr-value">@item.SystemName</span>
+						<span class="attr-value" @Html.Attr("title", tip, tip.HasValue())>@item.SystemName</span>
+
 					</div>
 					@if (item.Description.HasValue())
 					{

@@ -1,12 +1,13 @@
 ﻿using System.Collections.Generic;
 using System.Web.Routing;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Cms
 {
     /// <summary>
     /// Provides an interface for creating widgets
     /// </summary>
-    public partial interface IWidget
+    public partial interface IWidget : IProvider, IUserEditable
     {
         /// <summary>
         /// Gets widget zones where this widget should be rendered
@@ -19,7 +20,7 @@ namespace SmartStore.Services.Cms
         /// </summary>
         /// <param name="widgetZone">Widget zone where it's displayed</param>
 		/// <param name="model">The model of the parent view context</param>
-		/// <param name="storeId">The of the current store</param>
+		/// <param name="storeId">The id of the current store</param>
         /// <param name="actionName">Action name</param>
         /// <param name="controllerName">Controller name</param>
         /// <param name="routeValues">Route values</param>

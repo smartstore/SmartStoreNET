@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core.Plugins;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Mvc
@@ -31,6 +32,8 @@ namespace SmartStore.Web.Framework.Mvc
 		public bool IsConfigurable { get; set; }
 
 		public RouteInfo ConfigurationRoute { get; set; }
+
+		public PluginDescriptor PluginDescriptor { get; set; }
 
 		/// <summary>
 		/// Returns the absolute path of the provider's icon url. 

@@ -160,13 +160,13 @@ namespace SmartStore.Admin.Controllers
                     canChangeEnabled = true;
                     isEnabled = ((IExternalAuthenticationMethod)pluginInstance).IsMethodActive(_externalAuthenticationSettings);
                 }
-                else if (pluginInstance is IWidgetPlugin)
-                {
-                    // Widgets plugins
-                    configurationUrl = Url.Action("ConfigureWidget", "Widget", new { systemName = pluginDescriptor.SystemName });
-                    canChangeEnabled = true;
-                    isEnabled = ((IWidgetPlugin)pluginInstance).IsWidgetActive(_widgetSettings);
-                }
+				//else if (pluginInstance is IWidgetPlugin)
+				//{
+				//	// Widgets plugins
+				//	configurationUrl = Url.Action("ConfigureWidget", "Widget", new { systemName = pluginDescriptor.SystemName });
+				//	canChangeEnabled = true;
+				//	isEnabled = ((IWidgetPlugin)pluginInstance).IsWidgetActive(_widgetSettings);
+				//}
                 else if (pluginInstance is IMiscPlugin)
                 {
                     //Misc plugins
@@ -336,6 +336,11 @@ namespace SmartStore.Admin.Controllers
 			{
 				requiredPermission = StandardPermissionProvider.ManageShippingSettings;
 				listUrl2 = Url.Action("Providers", "Shipping");
+			}
+			else if (metadata.ProviderType == typeof(IWidget))
+			{
+				requiredPermission = StandardPermissionProvider.ManageWidgets;
+				listUrl2 = Url.Action("Providers", "Widget");
 			}
 
 			if (!_permissionService.Authorize(requiredPermission))
@@ -532,29 +537,29 @@ namespace SmartStore.Admin.Controllers
 							}
 						}
 					}
-					else if (pluginInstance is IWidgetPlugin)
-					{
-						//Misc plugins
-						var widget = (IWidgetPlugin)pluginInstance;
-						if (widget.IsWidgetActive(_widgetSettings))
-						{
-							if (!model.IsEnabled)
-							{
-								//mark as disabled
-								_widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_widgetSettings);
-							}
-						}
-						else
-						{
-							if (model.IsEnabled)
-							{
-								//mark as active
-								_widgetSettings.ActiveWidgetSystemNames.Add(widget.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_widgetSettings);
-							}
-						}
-					}
+					//else if (pluginInstance is IWidgetPlugin)
+					//{
+					//	//Misc plugins
+					//	var widget = (IWidgetPlugin)pluginInstance;
+					//	if (widget.IsWidgetActive(_widgetSettings))
+					//	{
+					//		if (!model.IsEnabled)
+					//		{
+					//			//mark as disabled
+					//			_widgetSettings.ActiveWidgetSystemNames.Remove(widget.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_widgetSettings);
+					//		}
+					//	}
+					//	else
+					//	{
+					//		if (model.IsEnabled)
+					//		{
+					//			//mark as active
+					//			_widgetSettings.ActiveWidgetSystemNames.Add(widget.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_widgetSettings);
+					//		}
+					//	}
+					//}
 				}
 
 				ViewBag.RefreshPage = true;
@@ -627,7 +632,7 @@ namespace SmartStore.Admin.Controllers
 			return new HttpStatusCodeResult(200);
 		}
 
-		public ActionResult UpdateStringResources(string systemName)
+		public ActionResult UpdateStringResources(string systemName, string returnUrl = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
 				return AccessDeniedView();
@@ -643,10 +648,15 @@ namespace SmartStore.Admin.Controllers
 			else
 			{
 				_localizationService.ImportPluginResourcesFromXml(pluginDescriptor, null, false);
-
 				NotifySuccess(_localizationService.GetResource("Admin.Configuration.Plugins.Resources.UpdateSuccess"));
 			}
-			return RedirectToAction("List");
+
+			if (returnUrl.IsEmpty())
+			{
+				return RedirectToAction("List");
+			}
+
+			return Redirect(returnUrl);
 		}
 
 		public ActionResult UpdateAllStringResources()

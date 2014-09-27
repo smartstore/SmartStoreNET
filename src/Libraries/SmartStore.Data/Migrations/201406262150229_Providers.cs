@@ -66,6 +66,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.KnownGroup.Design", "Design", "Design");
 			builder.AddOrUpdate("Admin.Plugins.KnownGroup.Misc", "Miscellaneous", "Sonstige");
 
+			builder.AddOrUpdate("Admin.Providers.ProvidingPlugin", "Providing plugin", "Bereitstellendes Plugin");
+
 			builder.AddOrUpdate("Admin.PromotionFeeds", "Promotion feeds", "Promotion Feeds");
 
 			// some admin menu renaming / new entries

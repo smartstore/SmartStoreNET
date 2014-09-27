@@ -208,7 +208,6 @@
     <Compile Include="Cms\IWidgetService.cs" />
     <Compile Include="Cms\WidgetExtensions.cs" />
     <Compile Include="Cms\WidgetService.cs" />
-    <Compile Include="Cms\IWidgetPlugin.cs" />
     <Compile Include="CommonServices.cs" />
     <Compile Include="Common\AddressService.cs" />
     <Compile Include="Common\AddressExtentions.cs" />

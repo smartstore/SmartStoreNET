@@ -8,6 +8,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Topics;
@@ -29,12 +30,8 @@ namespace SmartStore.Web.Infrastructure
         private readonly ICacheManager _cacheManager;
         private readonly IWorkContext _workContext;
         private readonly IDbContext _dbContext;
-        private readonly Lazy<IEnumerable<IWidget>> _simpleWidgets;
 		private readonly IWidgetProvider _widgetProvider;
-
-        private static ConcurrentDictionary<string, IEnumerable<string>> s_simpleWidgetsMap;
-        private static bool? s_hasSimpleWidgets;
-        private static readonly object _lock = new object();
+		private readonly ICommonServices _services;
 
         #endregion
 
@@ -45,8 +42,8 @@ namespace SmartStore.Web.Infrastructure
             ICacheManager cacheManager, 
             IWorkContext workContext, 
             IDbContext dbContext,
-            Lazy<IEnumerable<IWidget>> simpleWidgets,
-			IWidgetProvider widgetProvider)
+			IWidgetProvider widgetProvider,
+			ICommonServices services)
         {
             this._widgetService = widgetService;
             this._topicService = topicService;
@@ -54,8 +51,8 @@ namespace SmartStore.Web.Infrastructure
             this._cacheManager = cacheManager;
             this._workContext = workContext;
             this._dbContext = dbContext;
-            this._simpleWidgets = simpleWidgets;
 			this._widgetProvider = widgetProvider;
+			this._services = services;
         }
 
         public virtual IEnumerable<WidgetRouteInfo> GetWidgets(string widgetZone, object model)
@@ -70,7 +67,7 @@ namespace SmartStore.Web.Infrastructure
 			var widgets = _widgetService.LoadActiveWidgetsByWidgetZone(widgetZone, storeId);
             foreach (var widget in widgets)
             {
-                widget.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
+                widget.Value.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
 
                 yield return new WidgetRouteInfo 
                 { 
@@ -82,11 +79,13 @@ namespace SmartStore.Web.Infrastructure
 
             #endregion
 
+
             #region Topic Widgets
 
             // add special "topic widgets" to the list
 			var allTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_ALL_MODEL_KEY, storeId, _workContext.WorkingLanguage.Id);
-            var topicWidgets = _cacheManager.Get(allTopicsCacheKey, () =>
+            // get topic widgets from STATIC cache
+			var topicWidgets = _services.Cache.Get(allTopicsCacheKey, () =>
             {
 				using (var scope = new DbContextScope(forceNoTracking: true))
 				{
@@ -103,47 +102,92 @@ namespace SmartStore.Web.Infrastructure
 							WidgetZones = t.GetWidgetZones().ToArray(),
 							Priority = t.Priority
 						})
+						.OrderBy(t => t.Priority)
 						.ToList();
 					return stubs;
 				}
             });
 
-            var byZoneTopicsCacheKey = string.Format(ModelCacheEventConsumer.TOPIC_WIDGET_BYZONE_MODEL_KEY, widgetZone, _storeContext.CurrentStore.Id, _workContext.WorkingLanguage.Id);
-            var topicsByZone = _cacheManager.Get(byZoneTopicsCacheKey, () =>
+            var byZoneTopicsCacheKey = "SmartStore.TopicWidgets.ZoneMapped";
+            // save widgets to zones map in request cache
+			var topicsByZone = _cacheManager.Get(byZoneTopicsCacheKey, () =>
             {
-                var result = from t in topicWidgets 
-                             where t.WidgetZones.Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
-                             orderby t.Priority
-                             select new WidgetRouteInfo
-                             {
-                                 ControllerName = "Topic",
-                                 ActionName = "TopicWidget",
-                                 RouteValues = new RouteValueDictionary()
-                                 {
-                                    {"Namespaces", "SmartStore.Web.Controllers"},
-                                    {"area", null},
-                                    {"widgetZone", widgetZone},
-                                    {"model", new TopicWidgetModel 
-                                    { 
-                                        Id = t.Id,
-                                        SystemName = t.SystemName,
-                                        ShowTitle = t.ShowTitle,
-                                        IsBordered = t.Bordered,
-                                        Title = t.Title,
-                                        Html = t.Body
-                                    } }
-                                 }
-                             };
+				var map = new Multimap<string, WidgetRouteInfo>();
 
-                return result.ToList(); 
-            });
+				foreach (var widget in topicWidgets)
+				{
+					var zones = widget.WidgetZones;
+					if (zones != null && zones.Any())
+					{
+						foreach (var zone in zones.Select(x => x.ToLower()))
+						{
+							var routeInfo = new WidgetRouteInfo
+							{
+								ControllerName = "Topic",
+								ActionName = "TopicWidget",
+								RouteValues = new RouteValueDictionary()
+								{
+									{"Namespaces", "SmartStore.Web.Controllers"},
+									{"area", null},
+									{"widgetZone", zone},
+									{"model", new TopicWidgetModel 
+									{ 
+										Id = widget.Id,
+										SystemName = widget.SystemName,
+										ShowTitle = widget.ShowTitle,
+										IsBordered = widget.Bordered,
+										Title = widget.Title,
+										Html = widget.Body
+									} }
+								}
+							};
+							map.Add(zone, routeInfo);
+						}
+					}
+				}
 
-            foreach (var topicWidget in topicsByZone)
-            {
-                yield return topicWidget;
-            }
+				return map;
+
+				#region Obsolete
+				//var result = from t in topicWidgets 
+				//			 where t.WidgetZones.Contains(widgetZone, StringComparer.InvariantCultureIgnoreCase)
+				//			 orderby t.Priority
+				//			 select new WidgetRouteInfo
+				//			 {
+				//				 ControllerName = "Topic",
+				//				 ActionName = "TopicWidget",
+				//				 RouteValues = new RouteValueDictionary()
+				//				 {
+				//					{"Namespaces", "SmartStore.Web.Controllers"},
+				//					{"area", null},
+				//					{"widgetZone", widgetZone},
+				//					{"model", new TopicWidgetModel 
+				//					{ 
+				//						Id = t.Id,
+				//						SystemName = t.SystemName,
+				//						ShowTitle = t.ShowTitle,
+				//						IsBordered = t.Bordered,
+				//						Title = t.Title,
+				//						Html = t.Body
+				//					} }
+				//				 }
+				//			 };
+
+				//return result.ToList(); 
+				#endregion
+			});
+
+			if (topicsByZone.ContainsKey(widgetZone.ToLower()))
+			{
+				var zoneWidgets = topicsByZone[widgetZone.ToLower()];
+				foreach (var topicWidget in zoneWidgets)
+				{
+					yield return topicWidget;
+				}
+			}
 
             #endregion
+
 
 			#region Request scoped widgets (provided by IWidgetProvider)
 
@@ -157,97 +201,6 @@ namespace SmartStore.Web.Infrastructure
 			}
 
 			#endregion
-
-			#region Simple Widgets
-
-			if (s_hasSimpleWidgets.HasValue && s_hasSimpleWidgets.Value == false)
-            {
-                yield break;
-            }
-
-            if (!s_hasSimpleWidgets.HasValue)
-            {
-                InitSimpleWidgetsMap(_simpleWidgets.Value);
-                if (s_hasSimpleWidgets.Value == false)
-                {
-                    yield break;
-                }
-            }
-
-            if (s_simpleWidgetsMap.ContainsKey(widgetZone))
-            {
-                var widgetNames = s_simpleWidgetsMap[widgetZone];
-                foreach (var widgetName in widgetNames)
-                {
-                    // Simple widgets has been registered with their type full names before
-                    var simpleWidget = EngineContext.Current.Resolve<IWidget>(widgetName);
-                    if (simpleWidget != null)
-                    {
-                        simpleWidget.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
-						
-                        yield return new WidgetRouteInfo
-                        {
-                            ActionName = actionName,
-                            ControllerName = controllerName,
-                            RouteValues = routeValues
-                        };
-                    }
-                }
-            }
-
-            #endregion
-        }
-
-        #region Simple Widgets
-
-        private static void InitSimpleWidgetsMap(IEnumerable<IWidget> widgets)
-        {
-            lock (_lock)
-            {
-                if (!s_hasSimpleWidgets.HasValue) // double check
-                {
-                    if (!widgets.Any())
-                    {
-                        s_hasSimpleWidgets = false;
-                        return;
-                    }
-                    
-                    var map = new Multimap<string, SimpleWidgetStub>();
-
-                    foreach (var widget in widgets)
-                    {
-                        var zones = widget.GetWidgetZones();
-                        if (zones != null & zones.Any())
-                        {
-                            foreach (var zone in zones.Select(x => x.ToLower()))
-                            {
-                                int ordinal = 0;
-                                var ordered = widget as IOrdered;
-                                if (ordered != null)
-                                {
-                                    ordinal = ordered.Ordinal;
-                                }
-                                map.Add(zone, new SimpleWidgetStub { Widget = widget, Ordinal = ordinal });
-                            }
-                        }
-                    }
-
-                    var orderedMap = from x in map
-                                     select new KeyValuePair<string, IEnumerable<string>>(
-                                         x.Key, 
-                                         x.Value.OrderBy(w => w.Ordinal).Select(w => w.Widget.GetType().FullName));
-
-                    s_simpleWidgetsMap = new ConcurrentDictionary<string, IEnumerable<string>>(orderedMap.ToList(), StringComparer.InvariantCultureIgnoreCase);
-
-                    s_hasSimpleWidgets = s_simpleWidgetsMap.Count > 0;
-                }
-            }
-        }
-
-        class SimpleWidgetStub
-        {
-            public IWidget Widget { get; set; }
-            public int Ordinal { get; set; }
         }
 
 		class TopicWidgetStub
@@ -261,8 +214,6 @@ namespace SmartStore.Web.Infrastructure
 			public string Body { get; set; }
 			public int Priority { get; set; }
 		}
-
-        #endregion
 
     }
 

@@ -1,0 +1,25 @@
+﻿@model IEnumerable<WidgetModel>
+
+@{    
+   ViewBag.Title = T("Admin.ContentManagement.Widgets").Text;
+}
+
+<div class="section-header">
+   <div class="title">
+       <i class="fa fa-plus-square"></i>
+       @T("Admin.ContentManagement.Widgets")
+   </div>
+</div>
+
+<table class="adminContent">
+	<tr>
+		<td>
+			@Html.ProviderList(Model,
+			@<div>
+				<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+					@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+				</a>
+			</div>)
+		</td>
+	</tr>
+</table>

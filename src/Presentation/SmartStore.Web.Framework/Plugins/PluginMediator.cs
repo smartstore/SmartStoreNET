@@ -157,6 +157,7 @@ namespace SmartStore.Web.Framework.Plugins
 			model.DisplayOrder = metadata.DisplayOrder;
 			model.IsEditable = metadata.IsEditable;
 			model.IconUrl = GetIconUrl(metadata);
+			model.PluginDescriptor = metadata.PluginDescriptor;
 
 			if (metadata.IsConfigurable)
 			{

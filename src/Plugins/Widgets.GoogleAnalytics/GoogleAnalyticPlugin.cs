@@ -10,7 +10,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
     /// <summary>
     /// Live person provider
     /// </summary>
-    public class GoogleAnalyticPlugin : BasePlugin, IWidgetPlugin
+	public class GoogleAnalyticPlugin : BasePlugin, IWidget, IConfigurable
     {
         private readonly ISettingService _settingService;
         private readonly GoogleAnalyticsSettings _googleAnalyticsSettings;

@@ -161,18 +161,16 @@ namespace SmartStore.Services.Payments
         }
 
         /// <summary>
-        /// Post process payment (used by payment gateways that require redirecting to a third-party URL)
+        /// Post process payment (e.g. used by payment gateways to redirect to a third-party URL).
+		/// Called after an order has been placed or when customer re-post the payment.
         /// </summary>
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         public virtual void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
-            //already paid or order.OrderTotal == decimal.Zero
-            if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
-                return;
-
             var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");
+
             paymentMethod.PostProcessPayment(postProcessPaymentRequest);
         }
 

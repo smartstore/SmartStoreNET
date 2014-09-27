@@ -199,6 +199,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
+			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
+				return;
+
 			var builder = new StringBuilder();
 			builder.Append(GetPaypalUrl());
 

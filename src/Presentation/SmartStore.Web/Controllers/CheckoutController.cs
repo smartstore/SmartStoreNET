@@ -961,13 +961,13 @@ namespace SmartStore.Web.Controllers
 
                 if (placeOrderResult.Success)
                 {
-                    _httpContext.Session["OrderPaymentInfo"] = null;
                     var postProcessPaymentRequest = new PostProcessPaymentRequest()
                     {
                         Order = placeOrderResult.PlacedOrder
                     };
                     _paymentService.PostProcessPayment(postProcessPaymentRequest);
 
+					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
                     if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
@@ -1663,7 +1663,6 @@ namespace SmartStore.Web.Controllers
                 var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, new Dictionary<string,string>());
                 if (placeOrderResult.Success)
                 {
-                    _httpContext.Session["OrderPaymentInfo"] = null;
                     var postProcessPaymentRequest = new PostProcessPaymentRequest()
                     {
                         Order = placeOrderResult.PlacedOrder
@@ -1674,6 +1673,7 @@ namespace SmartStore.Web.Controllers
                     {
                         if (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
                         {
+							_httpContext.Session["OrderPaymentInfo"] = null;
 							_httpContext.RemoveCheckoutState();
 
                             //Redirection will not work because it's AJAX request.
@@ -1688,6 +1688,7 @@ namespace SmartStore.Web.Controllers
                         }
                     }
 
+					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
 					return Json(new { success = 1 });

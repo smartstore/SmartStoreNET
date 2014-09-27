@@ -28,7 +28,8 @@ namespace SmartStore.Services.Payments
         ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest);
 
         /// <summary>
-        /// Post process payment (used by payment gateways that require redirecting to a third-party URL)
+		/// Post process payment (e.g. used by payment gateways to redirect to a third-party URL).
+		/// Called after an order has been placed or when customer re-post the payment.
         /// </summary>
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest);

@@ -384,7 +384,7 @@ namespace SmartStore.Web.Controllers
 
 			var checkoutState = _httpContext.GetCheckoutState();
 
-			if (checkoutState != null && !checkoutState.OnePageCheckoutEnabled)
+			if (checkoutState != null && checkoutState.OnePageCheckoutDisabled)
 				return false;
 
             return true;

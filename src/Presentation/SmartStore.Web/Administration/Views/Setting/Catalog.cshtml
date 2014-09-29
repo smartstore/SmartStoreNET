@@ -481,7 +481,6 @@
 @helper TabUserSettings()
 {
     <table>
-        <!-- codehint: sm-add begin -->
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowProductReviewsInProductLists)
@@ -491,7 +490,6 @@
                 @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductLists)
             </td>
         </tr>
-        <!-- codehint: sm-add end -->
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductReviewsMustBeApproved)

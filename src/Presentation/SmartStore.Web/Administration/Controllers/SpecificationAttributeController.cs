@@ -417,9 +417,30 @@ namespace SmartStore.Admin.Controllers
 
             var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(Convert.ToInt32(attributeId));
             var result = (from o in options
-                          select new { id = o.Id, name = o.Name }).ToList();
+                          select new { id = o.Id, name = o.Name, text = o.Name }).ToList();
             return Json(result, JsonRequestBehavior.AllowGet);
         }
+
+        [HttpPost]
+        public ActionResult SetAttributeValue(string pk, string value, string name, FormCollection form)
+        {
+            try
+            {
+                //name is the entity id of product specification attribute mapping
+                var specificationAttribute = _specificationAttributeService.GetProductSpecificationAttributeById(Convert.ToInt32(name));
+                specificationAttribute.SpecificationAttributeOptionId = Convert.ToInt32(value);
+                _specificationAttributeService.UpdateProductSpecificationAttribute(specificationAttribute);
+                Response.StatusCode = 200;
+
+                // we give back the name to xeditable to overwrite the grid data in success event when a grid element got updated
+                return Json(new { name = specificationAttribute.SpecificationAttributeOption.Name });
+            }
+            catch (Exception ex)
+            {
+                return new HttpStatusCodeResult(501, ex.Message);
+            }
+        }
+
 
         #endregion
     }

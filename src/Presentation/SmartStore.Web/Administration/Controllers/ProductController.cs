@@ -40,6 +40,8 @@ using SmartStore.Utilities;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.IO;
 using System.Net.Mime;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -2205,7 +2207,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ProductSpecAttrList(GridCommand command, int productId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+                return AccessDeniedView();  
 
             var productrSpecs = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
 
@@ -2217,6 +2219,8 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
                         SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
+                        SpecificationAttributeOptionAttributeId = x.SpecificationAttributeOption.SpecificationAttributeId,
+                        SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
                         AllowFiltering = x.AllowFiltering,
                         ShowOnProductPage = x.ShowOnProductPage,
                         DisplayOrder = x.DisplayOrder
@@ -2224,6 +2228,23 @@ namespace SmartStore.Admin.Controllers
                     return psaModel;
                 })
                 .ToList();
+
+            foreach(var attr in productrSpecsModel) {
+
+                var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attr.SpecificationAttributeOptionAttributeId);
+
+                foreach(var option in options) {
+
+                    attr.SpecificationAttributeOptions.Add(new ProductSpecificationAttributeModel.SpecificationAttributeOption()
+                    {
+                        id = option.Id,
+                        name = option.Name,
+                        text = option.Name
+                    });
+                }
+
+                attr.SpecificationAttributeOptionsJsonString = JsonConvert.SerializeObject(attr.SpecificationAttributeOptions);
+            }
 
             var model = new GridModel<ProductSpecificationAttributeModel>
             {

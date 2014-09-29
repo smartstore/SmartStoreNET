@@ -557,7 +557,9 @@ namespace SmartStore.Web.Controllers
 				model.Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id));
 				model.ShowSku = _catalogSettings.ShowProductSku;
                 model.ShowWeight = _catalogSettings.ShowWeight;
-                model.ShowDimensions = _catalogSettings.ShowDimensions;
+                model.ShowDimensions = _catalogSettings.ShowDimensions
+                    && (minPriceProduct.Width != 0 || minPriceProduct.Height != 0 || minPriceProduct.Length != 0);
+
 				model.Sku = minPriceProduct.Sku;
 				model.Dimensions = T("Products.DimensionsValue").Text.FormatCurrent(
 					minPriceProduct.Width.ToString("F2"),

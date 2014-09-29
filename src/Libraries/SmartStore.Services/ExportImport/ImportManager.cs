@@ -209,16 +209,13 @@ namespace SmartStore.Services.ExportImport
                             // ===========================================================================
                             // 3.) Import Localizations
                             // ===========================================================================
-                            if (batch.Any(x => x.ContainsKey("CategoryIds")))
+                            try
                             {
-                                try
-                                {
-                                    await ProcessLocalizations(batch, result);
-                                }
-                                catch (Exception ex)
-                                {
-                                    result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
-                                }
+                                await ProcessLocalizations(batch, result);
+                            }
+                            catch (Exception ex)
+                            {
+                                result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
                             }
 
 							// ===========================================================================

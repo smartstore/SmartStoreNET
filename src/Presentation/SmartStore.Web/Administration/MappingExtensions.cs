@@ -524,15 +524,6 @@ namespace SmartStore.Admin
 
         #endregion
 
-        #region External authentication methods
-
-        public static AuthenticationMethodModel ToModel(this IExternalAuthenticationMethod entity)
-        {
-            return Mapper.Map<IExternalAuthenticationMethod, AuthenticationMethodModel>(entity);
-        }
-
-        #endregion
-
         #region Address
 
         public static AddressModel ToModel(this Address entity)

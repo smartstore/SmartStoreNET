@@ -9,6 +9,7 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -22,26 +23,31 @@ namespace SmartStore.Admin.Controllers
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly ISettingService _settingService;
         private readonly IPermissionService _permissionService;
+		private readonly PluginMediator _pluginMediator;
 
 		#endregion
 
 		#region Constructors
 
-        public ExternalAuthenticationController(IOpenAuthenticationService openAuthenticationService, 
+        public ExternalAuthenticationController(
+			IOpenAuthenticationService openAuthenticationService, 
             ExternalAuthenticationSettings externalAuthenticationSettings,
-            ISettingService settingService, IPermissionService permissionService)
+            ISettingService settingService, 
+			IPermissionService permissionService,
+			PluginMediator pluginMediator)
 		{
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._settingService = settingService;
             this._permissionService = permissionService;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
 
         #region Methods
 
-        public ActionResult Methods()
+        public ActionResult Providers()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
                 return AccessDeniedView();
@@ -50,92 +56,41 @@ namespace SmartStore.Admin.Controllers
             var methods = _openAuthenticationService.LoadAllExternalAuthenticationMethods();
             foreach (var method in methods)
             {
-                var tmp1 = method.ToModel();
-                tmp1.IsActive = method.IsMethodActive(_externalAuthenticationSettings);
-                methodsModel.Add(tmp1);
+				var model = _pluginMediator.ToProviderModel<IExternalAuthenticationMethod, AuthenticationMethodModel>(method);
+				model.IsActive = method.IsMethodActive(_externalAuthenticationSettings);
+				methodsModel.Add(model);
             }
-            var gridModel = new GridModel<AuthenticationMethodModel>
-            {
-                Data = methodsModel,
-                Total = methodsModel.Count()
-            };
-            return View(gridModel);
+
+			return View(methodsModel);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult Methods(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
-                return AccessDeniedView();
+		public ActionResult ActivateProvider(string systemName, bool activate)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
+				return AccessDeniedView();
 
-            var methodsModel = new List<AuthenticationMethodModel>();
-            var methods = _openAuthenticationService.LoadAllExternalAuthenticationMethods();
-            foreach (var method in methods)
-            {
-                var tmp1 = method.ToModel();
-                tmp1.IsActive = method.IsMethodActive(_externalAuthenticationSettings);
-                methodsModel.Add(tmp1);
-            }
-            methodsModel = methodsModel.ForCommand(command).ToList();
-            var gridModel = new GridModel<AuthenticationMethodModel>
-            {
-                Data = methodsModel,
-                Total = methodsModel.Count()
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
+			var method = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(systemName);
+			if (method.IsMethodActive(_externalAuthenticationSettings))
+			{
+				if (!activate)
+				{
+					// mark as disabled
+					_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(method.Metadata.SystemName);
+					_settingService.SaveSetting(_externalAuthenticationSettings);
+				}
+			}
+			else
+			{
+				if (activate)
+				{
+					// mark as active
+					_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(method.Metadata.SystemName);
+					_settingService.SaveSetting(_externalAuthenticationSettings);
+				}
+			}
 
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult MethodUpdate(AuthenticationMethodModel model, GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
-                return AccessDeniedView();
-
-            var eam = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(model.SystemName);
-            if (eam.IsMethodActive(_externalAuthenticationSettings))
-            {
-                if (!model.IsActive)
-                {
-                    //mark as disabled
-                    _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(eam.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_externalAuthenticationSettings);
-                }
-            }
-            else
-            {
-                if (model.IsActive)
-                {
-                    //mark as active
-                    _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(eam.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_externalAuthenticationSettings);
-                }
-            }
-            
-            return Methods(command);
-        }
-
-        public ActionResult ConfigureMethod(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
-                return AccessDeniedView();
-
-            var eam = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(systemName);
-            if (eam == null)
-                //No authentication method found with the specified id
-                return RedirectToAction("Methods");
-
-            var model = eam.ToModel();
-            string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            eam.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-            model.ConfigurationActionName = actionName;
-            model.ConfigurationControllerName = controllerName;
-            model.ConfigurationRouteValues = routeValues;
-            return View(model);
-        }
+			return RedirectToAction("Providers");
+		}
 
         #endregion
     }

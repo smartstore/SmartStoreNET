@@ -480,7 +480,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(sb.ToString());
         }
 
-		// codehint: sm-add
 		public static MvcHtmlString TableFormattedVariantAttributes(this HtmlHelper helper, string formattedVariantAttributes, string separatorLines = "<br />", string separatorValues = ": ") {
 			var sb = new StringBuilder();
 			string name, value;
@@ -507,7 +506,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(sb.ToString());
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static MvcHtmlString SettingOverrideCheckbox<TModel, TValue>(this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
 		{
@@ -543,7 +541,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper,
 			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
 		{

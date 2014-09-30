@@ -8,7 +8,7 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId
     /// <summary>
     /// OpenId externalAuth processor
     /// </summary>
-    public class OpenIdExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod
+	public class OpenIdExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod
     {
 
         private readonly ILocalizationService _localizationService;
@@ -19,20 +19,6 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId
         }
 
         #region Methods
-        
-        /// <summary>
-        /// Gets a route for provider configuration
-        /// </summary>
-        /// <param name="actionName">Action name</param>
-        /// <param name="controllerName">Controller name</param>
-        /// <param name="routeValues">Route values</param>
-        public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-        {
-            //configuration is not required
-            actionName = null;
-            controllerName = null;
-            routeValues = null;
-        }
 
         /// <summary>
         /// Gets a route for displaying plugin in public store

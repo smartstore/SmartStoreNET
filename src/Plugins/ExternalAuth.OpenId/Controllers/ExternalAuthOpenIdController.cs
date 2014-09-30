@@ -40,13 +40,11 @@ namespace SmartStore.Plugin.ExternalAuth.OpenId.Controllers
 
         public ActionResult Login(string returnUrl)
         {
-            var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.OpenId");
-            if (processor == null ||
-                !processor.IsMethodActive(_externalAuthenticationSettings) ||
-				!processor.PluginDescriptor.Installed ||
-				!(_storeContext.CurrentStore.Id == 0 ||
-				_settingService.GetSettingByKey<string>(processor.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
-                throw new SmartException("OpenID module cannot be loaded");
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.OpenId", _storeContext.CurrentStore.Id);
+			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
+			{
+				throw new SmartException("OpenID module cannot be loaded");
+			}
 
             if (!_openIdProviderAuthorizer.IsOpenIdCallback)
             {

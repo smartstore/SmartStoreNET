@@ -153,13 +153,13 @@ namespace SmartStore.Admin.Controllers
                     canChangeEnabled = true;
                     isEnabled = pluginDescriptor.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
                 }
-                else if (pluginInstance is IExternalAuthenticationMethod)
-                {
-                    //external auth method
-                    configurationUrl = Url.Action("ConfigureMethod", "ExternalAuthentication", new { systemName = pluginDescriptor.SystemName });
-                    canChangeEnabled = true;
-                    isEnabled = ((IExternalAuthenticationMethod)pluginInstance).IsMethodActive(_externalAuthenticationSettings);
-                }
+				//else if (pluginInstance is IExternalAuthenticationMethod)
+				//{
+				//	//external auth method
+				//	configurationUrl = Url.Action("ConfigureMethod", "ExternalAuthentication", new { systemName = pluginDescriptor.SystemName });
+				//	canChangeEnabled = true;
+				//	isEnabled = ((IExternalAuthenticationMethod)pluginInstance).IsMethodActive(_externalAuthenticationSettings);
+				//}
 				//else if (pluginInstance is IWidgetPlugin)
 				//{
 				//	// Widgets plugins
@@ -342,6 +342,11 @@ namespace SmartStore.Admin.Controllers
 				requiredPermission = StandardPermissionProvider.ManageWidgets;
 				listUrl2 = Url.Action("Providers", "Widget");
 			}
+			else if (metadata.ProviderType == typeof(IExternalAuthenticationMethod))
+			{
+				requiredPermission = StandardPermissionProvider.ManageExternalAuthenticationMethods;
+				listUrl2 = Url.Action("Providers", "ExternalAuthentication");
+			}
 
 			if (!_permissionService.Authorize(requiredPermission))
 			{
@@ -514,29 +519,29 @@ namespace SmartStore.Admin.Controllers
 							_settingService.SaveSetting(_taxSettings);
 						}
 					}
-					else if (pluginInstance is IExternalAuthenticationMethod)
-					{
-						//external auth method
-						var eam = (IExternalAuthenticationMethod)pluginInstance;
-						if (eam.IsMethodActive(_externalAuthenticationSettings))
-						{
-							if (!model.IsEnabled)
-							{
-								//mark as disabled
-								_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(eam.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_externalAuthenticationSettings);
-							}
-						}
-						else
-						{
-							if (model.IsEnabled)
-							{
-								//mark as active
-								_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(eam.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_externalAuthenticationSettings);
-							}
-						}
-					}
+					//else if (pluginInstance is IExternalAuthenticationMethod)
+					//{
+					//	//external auth method
+					//	var eam = (IExternalAuthenticationMethod)pluginInstance;
+					//	if (eam.IsMethodActive(_externalAuthenticationSettings))
+					//	{
+					//		if (!model.IsEnabled)
+					//		{
+					//			//mark as disabled
+					//			_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(eam.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_externalAuthenticationSettings);
+					//		}
+					//	}
+					//	else
+					//	{
+					//		if (model.IsEnabled)
+					//		{
+					//			//mark as active
+					//			_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(eam.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_externalAuthenticationSettings);
+					//		}
+					//	}
+					//}
 					//else if (pluginInstance is IWidgetPlugin)
 					//{
 					//	//Misc plugins

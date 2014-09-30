@@ -994,10 +994,7 @@
     <Content Include="Views\Widget\Providers.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\ExternalAuthentication\ConfigureMethod.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\ExternalAuthentication\Methods.cshtml" />
+    <Content Include="Views\ExternalAuthentication\Providers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ShoppingCart\CurrentWishlists.cshtml" />

@@ -23,7 +23,7 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found Shipping rate computation method</returns>
-        Provider<IShippingRateComputationMethod> LoadShippingRateComputationMethodBySystemName(string systemName);
+		Provider<IShippingRateComputationMethod> LoadShippingRateComputationMethodBySystemName(string systemName, int storeId = 0);
 
         /// <summary>
         /// Load all shipping rate computation methods

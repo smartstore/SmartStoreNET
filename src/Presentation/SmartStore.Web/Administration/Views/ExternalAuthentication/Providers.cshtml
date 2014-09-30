@@ -1,0 +1,27 @@
+﻿@model IEnumerable<AuthenticationMethodModel>
+
+@{
+    //page title
+    ViewBag.Title = T("Admin.Configuration.ExternalAuthenticationMethods").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="fa fa-lock"></i>
+        @T("Admin.Configuration.ExternalAuthenticationMethods")
+    </div>
+</div>
+
+<table class="adminContent">
+	<tr>
+		<td>
+			@Html.ProviderList(Model,
+			@<div>
+				<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+					@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+				</a>
+			</div>)
+		</td>
+	</tr>
+</table>
+

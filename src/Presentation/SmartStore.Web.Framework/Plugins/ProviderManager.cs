@@ -33,7 +33,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (storeId > 0)
 				{
 					var d = provider.Metadata.PluginDescriptor;
-					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false))
 					{
 						return null;
 					}
@@ -54,7 +54,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (storeId > 0)
 				{
 					var d = provider.Metadata.PluginDescriptor;
-					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false))
 					{
 						return null;
 					}
@@ -72,7 +72,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				providers = from p in providers
 							let d = p.Metadata.PluginDescriptor
-							where d == null || _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true)
+							where d == null || !_services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false)
 							select p;
 			}
 			return SortProviders(providers.Select(x => new Provider<TProvider>(x)));
@@ -85,7 +85,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				providers = from p in providers
 							let d = p.Metadata.PluginDescriptor
-							where d == null || _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true)
+							where d == null || !_services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false)
 							select p;
 			}
 			return SortProviders(providers.Select(x => new Provider<IProvider>(x)));

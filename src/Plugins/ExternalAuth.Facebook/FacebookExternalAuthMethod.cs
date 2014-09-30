@@ -8,7 +8,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
     /// <summary>
     /// Facebook externalAuth processor
     /// </summary>
-    public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod
+    public class FacebookExternalAuthMethod : BasePlugin, IExternalAuthenticationMethod, IConfigurable
     {
         #region Fields
         private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;

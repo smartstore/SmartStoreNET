@@ -514,6 +514,7 @@ namespace SmartStore
 				return new string[0];
 			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 		}
+
 		/// <summary>Splits a string into two strings</summary>
 		/// <remarks>codehint: sm-add</remarks>
 		/// <returns>true: success, false: failure</returns>
@@ -981,9 +982,11 @@ namespace SmartStore
 			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v));
 		}
 
-		[DebuggerStepThrough]
+		//[DebuggerStepThrough]
 		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
 		{
+			if (s == null)
+				return defaultValue;
 			var arr = s.ToIntArray();
 			if (arr == null || arr.Count() <= 0)
 				return defaultValue;

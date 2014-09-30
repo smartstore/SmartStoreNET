@@ -138,7 +138,13 @@ namespace SmartStore.Data.Migrations
 			builder.Delete(prefix + "Configure", prefix + "Fields", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName");
 			// Shipping methods
 			prefix = "Admin.Configuration.Shipping.Providers.";
-			builder.Delete(prefix + "DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "IsActive");
+			builder.Delete(prefix + "DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "IsActive", prefix + "Fields.IsActive");
+			// Widgets
+			prefix = "Admin.ContentManagement.Widgets.";
+			builder.Delete(prefix + "BackToList", prefix + "Configure", prefix + "Fields", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "Fields.IsActive", prefix + "Fields.DisplayOrder");
+			// ExternalAuth
+			prefix = "Admin.Configuration.ExternalAuthenticationMethods.";
+			builder.Delete(prefix + "Fields.DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "Fields.IsActive");
 		}
     }
 }

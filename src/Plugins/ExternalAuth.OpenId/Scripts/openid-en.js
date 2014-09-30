@@ -6,10 +6,10 @@
 */
 
 var providers_large = {
-	/*google : {
+	google : {
 		name : 'Google',
 		url : 'https://www.google.com/accounts/o8/id'
-	},*/
+	},
 	yahoo : {
 		name : 'Yahoo',
 		url : 'http://me.yahoo.com/'

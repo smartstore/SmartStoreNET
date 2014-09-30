@@ -38,6 +38,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using SmartStore.Core.Events;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -79,6 +80,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AddressSettings _addressSettings;
 		private readonly IStoreService _storeService;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly PluginMediator _pluginMediator;
 
         #endregion
 
@@ -105,7 +107,8 @@ namespace SmartStore.Admin.Controllers
             IEmailAccountService emailAccountService, ForumSettings forumSettings,
             IForumService forumService, IOpenAuthenticationService openAuthenticationService,
 			AddressSettings addressSettings, IStoreService storeService,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			PluginMediator pluginMediator)
         {
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -140,6 +143,7 @@ namespace SmartStore.Admin.Controllers
             this._addressSettings = addressSettings;
 			this._storeService = storeService;
 			this._eventPublisher = eventPublisher;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -209,7 +213,7 @@ namespace SmartStore.Admin.Controllers
                     Id = record.Id,
                     Email = record.Email,
                     ExternalIdentifier = record.ExternalIdentifier,
-                    AuthMethodName = method.PluginDescriptor.FriendlyName
+					AuthMethodName = _pluginMediator.GetLocalizedFriendlyName(method.Metadata, _workContext.WorkingLanguage.Id)
                 });
             }
 

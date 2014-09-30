@@ -130,9 +130,9 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found Shipping rate computation method</returns>
-        public virtual Provider<IShippingRateComputationMethod> LoadShippingRateComputationMethodBySystemName(string systemName)
+		public virtual Provider<IShippingRateComputationMethod> LoadShippingRateComputationMethodBySystemName(string systemName, int storeId = 0)
         {
-			return _providerManager.GetProvider<IShippingRateComputationMethod>(systemName);
+			return _providerManager.GetProvider<IShippingRateComputationMethod>(systemName, storeId);
         }
 
         /// <summary>

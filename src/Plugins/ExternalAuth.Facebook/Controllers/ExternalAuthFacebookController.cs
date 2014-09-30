@@ -81,13 +81,11 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
 		[NonAction]
 		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
         {
-            var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.Facebook");
-            if (processor == null ||
-                !processor.IsMethodActive(_externalAuthenticationSettings) ||
-				!processor.PluginDescriptor.Installed ||
-				!(_storeContext.CurrentStore.Id == 0 || 
-				_settingService.GetSettingByKey<string>(processor.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
-                throw new SmartException("Facebook module cannot be loaded");
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.Facebook", _storeContext.CurrentStore.Id);
+			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
+			{
+				throw new SmartException("Facebook module cannot be loaded");
+			}
 
             var viewModel = new LoginModel();
             TryUpdateModel(viewModel);

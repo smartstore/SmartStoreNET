@@ -521,25 +521,7 @@ namespace SmartStore.Services.ExportImport
                 //get product
                 try
                 {
-                    object key;
-
-                    // try get by int ID
-                    if (row.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
-                    {
-                        product = _productService.GetProductById(key.ToString().ToInt());
-                    }
-
-                    // try get by SKU
-                    if (product == null && row.TryGetValue("SKU", out key))
-                    {
-                        product = _productService.GetProductBySku(key.ToString());
-                    }
-
-                    // try get by GTIN
-                    if (product == null && row.TryGetValue("Gtin", out key))
-                    {
-                        product = _productService.GetProductByGtin(key.ToString());
-                    }
+                    product = _productService.GetProductById(row.Entity.Id); 
                 }
                 catch (Exception ex)
                 {

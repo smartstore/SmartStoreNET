@@ -2180,7 +2180,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                             Published = true,
                             Text = "mehr...",
                             Type = "btn-primary",
-                            Url = "~/apple-iphone-5-32-gb",
+                            Url = "~/apple-iphone-6",
                            
                         },
                         Button2 = new ContentSliderButtonSettings
@@ -2188,7 +2188,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                             Published = true,
                             Text = "Jetzt Kaufen",
                             Type = "btn-danger",
-                            Url = "~/apple-iphone-5-32-gb"
+                            Url = "~/apple-iphone-6"
                         },
                         Button3 = new ContentSliderButtonSettings
                         {
@@ -2929,12 +2929,21 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("Game", x =>
 				{
 					x.Name = "Spiel";
+				})
+				.Alter("iPhone color", x =>
+				{
+					x.Name = "Farbe";
+				})
+				.Alter("Memory capacity", x =>
+				{
+					x.Name = "Speicherkapazität";
 				});
         }
 
 		protected override void Alter(IList<ProductVariantAttribute> entities)
 		{
 			base.Alter(entities);
+			
 
 			entities.WithKey(x => x.ProductAttribute.Alias)
 				.Alter("Color", x =>
@@ -2942,6 +2951,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 						x.ProductVariantAttributeValues.First(v => v.Alias == "black").Name = "Schwarz";
 						x.ProductVariantAttributeValues.First(v => v.Alias == "white").Name = "Weiß";
 					})
+				.Alter("iPhone color", x =>
+				{
+					x.ProductVariantAttributeValues.First(v => v.Alias == "silver").Name = "Silber";
+					x.ProductVariantAttributeValues.First(v => v.Alias == "spacegray").Name = "Space-Grau";
+				})
 				.Alter("Game", x =>
 					{
 						x.ProductVariantAttributeValues.First(v => v.Alias == "Prince of Persia \"The Forgotten Sands\"").Name = "Prince of Persia \"Die vergessene Zeit\"";
@@ -3425,11 +3439,13 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion computer
 
 				#region SmartPhones
-				#region Apple iPhone 5 32 GB
-.Alter("Apple iPhone 5 32 GB", x =>
+				
+				#region Apple iPhone
+				
+				.Alter("Apple iPhone 6", x =>
 				{
-					x.ShortDescription = "Apple iPhone 5 32 GB Simlock frei Neu Schwarz/Graphit";
-					x.FullDescription = "<p> Neues Design.<br> Mit 7,6 mm und 112 g2 hat das iPhone 5 ein bemerkenswert dünnes und leichtes Design. Es ist aus eloxiertem Aluminium gefertigt. Die abgeschrägten Kanten wurden präzise mit einem Diamanten geschnitten.  </p>  <p>  Brillantes 4\" Retina Display.<br> Jetzt siehst du alles noch lebendiger und detailreicher. Und obwohl das Display größer ist, hat es die gleiche Breite wie das iPhone 4S und lässt sich daher ebenso leicht mit einer Hand bedienen.  </p>  <p>  Leistungsstarker A6 Chip.   <br> Verglichen mit dem A5 Chip hat er die bis zu doppelte CPU- und Grafikleistung. Und trotz seiner Geschwindigkeit hat das iPhone 5 eine fantastische Batterielaufzeit.  </p>";
+					x.ShortDescription = "Apple iPhone 6 Simlock frei Neu";
+					x.FullDescription = "<p>Das iPhone 6 ist nicht einfach nur größer. Es ist wirklich in allem besser. Es ist länger und breiter, aber deutlich dünner. Leistungsstärker, aber unglaublich energieeffizient. Seine glatte Oberfläche aus Metall schließt nahtlos an das neue Retina HD Display an. So entsteht eine durchgehende Form, in der Hardware und Software in perfekter Einheit zusammenarbeiten – für eine neue iPhone Generation, die nach allen Maßstäben besser ist.</p><p>Das iPhone 6 kommt mit einem A8 Chip auf Basis einer 64 Bit Desktoparchitektur der zweiten Generation. Seine unglaubliche Leistung wird durch einen M8 Motion Coprozessor erweitert, der Aktivität mit fortschrittlichen Sensoren ermittelt, darunter auch ein neues Barometer.</p><p>Mit keiner anderen Kamera werden von so vielen Menschen so viele Fotos gemacht wie mit dem iPhone. Jetzt hat die iSight Kamera einen neuen Sensor mit Focus Pixels und neue Videofunktionen wie 1080p HD Videos mit 60 Bildern pro Sekunde, Zeitlupenvideos mit 240 Bildern pro Sekunde und Zeitraffervideo.</p><p><ul><li>Abmessungen (HxBxT)	138.1 x 67 x 6.9 Millimeter</li><li>Gewicht	129 Gramm</li><li>Strahlungswert (SAR-Wert)	unbekannt</li><li>Erscheinungstermin	09/2014</li><li>Betriebssystem	Apple iOS</li><li>Systemversion	8.0</li><li>Netzstandards	GSM1800 GSM1900 GSM850 GSM900W-CDMA (UMTS)</li><li>Flugzeugmodus	ja</li><li>Akku-Typ	Li-Ionen</li><li>Akkuleistung	1810 mAh</li><li>max. Bereitschaftszeit	250 Stunden</li><li>max. Sprechzeit	840 Minuten</li></ul></p>";
 					x.Price = 579.00M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
@@ -3451,16 +3467,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
-					//x.ProductReviews.Add(new ProductReview()
-					//{
-					//    Rating = 5,
-					//    Title = "Das original ist immer noch das Beste!!!",
-					//    IsApproved = true,
-					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-					//});
-
 				})
-				#endregion Apple iPhone 5 32 GB
+				#endregion Apple iPhone
+
 				#endregion SmartPhones
 
 				#region Instant Downloads
@@ -3477,15 +3486,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
-					//x.ProductReviews.Add(new ProductReview()
-					//{
-					//    Rating = 5,
-					//    Title = "Das original ist immer noch das Beste!!!",
-					//    IsApproved = true,
-					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-					//});
-
-
 				})
 
 				#endregion Antonio Vivildi: then spring
@@ -3503,15 +3503,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 						DisplayOrder = 1,
 					});
 					x.ProductReviews.Clear();
-					//x.ProductReviews.Add(new ProductReview()
-					//{
-					//    Rating = 5,
-					//    Title = "Das original ist immer noch das Beste!!!",
-					//    IsApproved = true,
-					//    ReviewText = "<p>Das iPhone 5 ist das beste iPhone aller Zeiten. Es hat alle Funktionen die ein Smartphone braucht, und ist dabei noch schön handlich."
-					//});
-
-
 				})
 
 				#endregion Beethoven für Elise

@@ -1,49 +1,13 @@
-﻿.foo{}
-/*~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*
+﻿
+/* Facebook
+================================================ */
 
-	FACEBOOK
-
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~*/
-
-.oauth-login-facebook
-{
-    display: inline;
-    float: left;
-    margin-right: 20px;
+.btn.btn-facebook {
+	background: #405e94;
 }
-
-.facebook_large_btn {
-	width: 100px;
-	height: 40px;
-/* fix for IE 6 only: http://en.wikipedia.org/wiki/CSS_filter#Underscore_hack */
-	_width: 102px;
-	_height: 42px;
-
-	border: 1px solid #DDD;
-	margin: 3px;
-	float: left;
+.btn.btn-facebook:hover {
+	background: #3a5587;
 }
-
-.facebook_small_btn {
-	width: 24px;
-	height: 24px;
-/* fix for IE 6 only: http://en.wikipedia.org/wiki/CSS_filter#Underscore_hack */
-	_width: 26px;
-	_height: 26px;
-
-	border: 1px solid #DDD;
-	margin: 3px;
-	float: left;
-}
-
-a.facebook_large_btn:focus {
-	outline: none;
-}
-
-a.facebook_large_btn:focus {
-	-moz-outline-style: none;
-}
-
-.facebook_selected {
-	border: 4px solid #DDD;
+.btn.btn-facebook:active {
+	background: #344c79;
 }

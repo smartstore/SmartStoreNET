@@ -11,7 +11,7 @@
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="Login">
-    <Value>Loggen Sie sich mit Ihrem Facebook-Account ein</Value>
+    <Value>Mit Facebook anmelden</Value>
   </LocaleResource>
   <LocaleResource Name="ClientKeyIdentifier">
     <Value>Benutzer-Schlüssel-Identifikator (App ID)</Value>

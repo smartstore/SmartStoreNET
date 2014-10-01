@@ -89,11 +89,8 @@
                                 <div class="control-group">
                                     @Html.LabelFor(model => model.Username, new { @class = "control-label", @for = "Username" })
                                     <div class="controls">
-                                        <div class="input-prepend">
-                                            <span class="add-on"><i class="fa fa-user"></i></span>
-                                            @Html.TextBoxFor(m => m.Username, new { @class = "username"})
-                                        </div>
-                                        @Html.ValidationMessageFor(m => m.Username)
+										@Html.TextBoxFor(m => m.Username, new { @class = "username input-block-level" })
+										@Html.ValidationMessageFor(m => m.Username)
                                     </div>
                                 </div>
                             }
@@ -102,38 +99,42 @@
                                 <div class="control-group">
                                     @Html.LabelFor(model => model.Email, new { @class = "control-label", @for = "Email" })
                                     <div class="controls">
-                                        <div class="input-prepend">
-                                            <span class="add-on"><i class="fa fa-envelope"></i></span>
-                                            @Html.TextBoxFor(m => m.Email, new { @class = "email" })
-                                        </div>
-                                        @Html.ValidationMessageFor(m => m.Email)
+										@Html.TextBoxFor(m => m.Email, new { @class = "email input-block-level" })
+										@Html.ValidationMessageFor(m => m.Email)
                                     </div>
                                 </div>
                             }
                                         
-                            <div class="control-group">
+                            <div class="control-group pwd">
                                 @Html.LabelFor(model => model.Password, new { @class = "control-label", @for = "Password" })
                                 <div class="controls">
-                                    <div class="input-prepend">
-                                        <span class="add-on"><i class="fa fa-lock"></i></span>
-                                       @* @Html.PasswordFor(m => m.Password, new { @class = "password", autocomplete = "off", value = Model.Password })*@
-                                        <input type="password" 
-                                            class="password" 
-                                            autocomplete="off"
-                                            id="@Html.FieldIdFor(m => m.Password)"
-                                            name="@Html.FieldNameFor(m => m.Password)"  
-                                            value="@(Model.Password.HasValue() ? Model.Password : null)" />
-                                    </div>
-                                    @Html.ValidationMessageFor(m => m.Password)
-                                    <label class="checkbox" style="margin-top: 8px">
-                                        @Html.CheckBoxFor(m => m.RememberMe)
-                                        @T("Account.Login.Fields.RememberMe")
-                                    </label>
-                                    <div class="forgot-password" style="margin-top: 8px">
-                                        @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
-                                    </div>
+									<input type="password"
+										   class="password input-block-level"
+										   autocomplete="off"
+										   id="@Html.FieldIdFor(m => m.Password)"
+										   name="@Html.FieldNameFor(m => m.Password)"
+										   value="@(Model.Password.HasValue() ? Model.Password : null)" />
+									@Html.ValidationMessageFor(m => m.Password)
+									<div class="forgot-password">
+										@Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
+									</div>
                                 </div>
                             </div>
+
+							<div class="control-group signin">
+								<div class="controls clearfix">
+									<label class="checkbox inline">
+										@Html.CheckBoxFor(m => m.RememberMe)
+										@T("Account.Login.Fields.RememberMe")
+									</label>
+									<div class="pull-right">
+										<button type="submit" class="btn login-button">
+											<i class="fa fa-sign-in hide"></i>
+											@T("Account.Login.LoginButton")
+										</button>
+									</div>
+								</div>
+							</div>
                             
                             <div class="control-group">
                                 <div class="controls">
@@ -144,13 +145,8 @@
                                             @Html.Raw(Html.GenerateCaptcha())
                                         </div>
                                     }
-                            
-                                    <div class="buttons">  
-                                        <button type="submit" class="btn login-button">
-                                            <i class="fa fa-sign-in"></i>&nbsp;
-                                            @T("Account.Login.LoginButton")
-                                        </button>
-                                    </div>  
+
+									<div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
                                 </div>
                             </div> 
                         
@@ -160,10 +156,6 @@
                 </div>
 
             </div>
-        </div>
-
-        <div class="externalauthentication clearfix">
-            @Html.Action("ExternalMethods", "ExternalAuthentication")
         </div>
 
     </div>

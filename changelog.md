@@ -53,6 +53,7 @@
 	- Made extra bundles for frequently used resources (like sequence js, fileupload, image gallery etc.). This way they always come compressed.
 * #384 Web API: Inserting sluged recources like products require an URL record
 * Promotion feed plugins: Asynchronous feed creation
+* Removed _OpenID_ plugin from core
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error

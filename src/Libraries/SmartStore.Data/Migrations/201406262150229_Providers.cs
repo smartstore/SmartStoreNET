@@ -126,6 +126,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowWeight.Hint")
 				.Value("Determines whether the product weight is shown in shopping cart")
 				.Value("de", "Legt fest ob das Produktgewicht im Warenkorb angezeigt wird.");
+			builder.AddOrUpdate("Plugins.ExternalAuth.Facebook.Login")
+				.Value("Sign in with Facebook")
+				.Value("de", "Mit Facebook anmelden");
+			builder.AddOrUpdate("Plugins.ExternalAuth.Twitter.Login")
+				.Value("Sign in with Twitter")
+				.Value("de", "Mit Twitter anmelden");
 
 
 			// Adding some new common provider resources & removing obsolete ones

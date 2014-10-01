@@ -11,7 +11,7 @@
 		</Value>
 	</LocaleResource>
   <LocaleResource Name="Login">
-    <Value>Login using Facebook account</Value>
+    <Value>Sign in with Facebook</Value>
   </LocaleResource>
   <LocaleResource Name="ClientKeyIdentifier">
     <Value>Client key identifier (App ID)</Value>

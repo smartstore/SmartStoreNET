@@ -298,7 +298,9 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1,
 				Published = true,
 			};
+
 			#region US Regions
+
 			cUsa.StateProvinces.Add(new StateProvince()
 			{
 				Name = "AA (Armed Forces Americas)",
@@ -733,6 +735,9 @@ namespace SmartStore.Data.Setup
 				Published = true,
 				DisplayOrder = 1,
 			});
+
+            #endregion
+
 			var cCanada = new Country
 			{
 				Name = "Canada",
@@ -745,7 +750,10 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 2,
 				Published = true,
 			};
-			cCanada.StateProvinces.Add(new StateProvince()
+
+            #region CA Regions
+
+            cCanada.StateProvinces.Add(new StateProvince()
 			{
 				Name = "Alberta",
 				Abbreviation = "AB",
@@ -877,7 +885,7 @@ namespace SmartStore.Data.Setup
 					DisplayOrder = -1,
 					Published = true
 				},
-				cUsa,
+			    cUsa,
 				cCanada,
 
 				//other countries
@@ -3722,20 +3730,21 @@ namespace SmartStore.Data.Setup
 				SystemName = SystemCustomerRoleNames.Guests,
 			};
 			var entities = new List<CustomerRole>
-								{
-									crAdministrators,
-									crForumModerators,
-									crRegistered,
-									crGuests
-								};
+			{
+				crAdministrators,
+				crForumModerators,
+				crRegistered,
+				crGuests
+			};
 			this.Alter(entities);
 			return entities;
 		}
 
 		public Address AdminAddress()
 		{
-			string addressThreeLetterIsoCode = "USA";
-			var cCountry = this.Countries().Where(x => x.ThreeLetterIsoCode == addressThreeLetterIsoCode);
+            var cCountry = _ctx.Set<Country>()
+                .Where(x => x.ThreeLetterIsoCode == "USA")
+                .FirstOrDefault();
 
 			var entity = new Address()
 			{
@@ -3748,10 +3757,8 @@ namespace SmartStore.Data.Setup
 				Address1 = "1234 Main Road",
 				Address2 = "",
 				City = "New York",
-				StateProvince = cCountry.FirstOrDefault().StateProvinces.FirstOrDefault(),
-
-				//StateProvince = _stateProvinceRepository.Table.Where(sp => sp.Name == "New York").FirstOrDefault(),
-				Country = cCountry.FirstOrDefault(),
+				StateProvince = cCountry.StateProvinces.FirstOrDefault(),
+				Country = cCountry,
 				ZipPostalCode = "12212",
 				CreatedOnUtc = DateTime.UtcNow,
 			};
@@ -6092,6 +6099,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooks = new Category
 			{
 				Name = "Books",
+                Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6107,6 +6115,7 @@ namespace SmartStore.Data.Setup
 			var categoryComputers = new Category
 			{
 				Name = "Computers",
+                Alias = "Computers",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6138,6 +6147,7 @@ namespace SmartStore.Data.Setup
 			var categoryCellPhones = new Category
 			{
 				Name = "Cell phones",
+                Alias = "Cell phones",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6155,6 +6165,7 @@ namespace SmartStore.Data.Setup
 			var categoryDigitalDownloads = new Category
 			{
 				Name = "Instant music",
+                Alias = "Instant music",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6170,6 +6181,7 @@ namespace SmartStore.Data.Setup
 			var categoryGiftCards = new Category
 			{
 				Name = "Gift Cards",
+                Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6185,6 +6197,7 @@ namespace SmartStore.Data.Setup
 			var categoryWatches = new Category
 			{
 				Name = "Watches",
+                Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6223,6 +6236,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooksSpiegel = new Category
 			{
 				Name = "SPIEGEL-Bestseller",
+                Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6239,6 +6253,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooksCookAndEnjoy = new Category
 			{
 				Name = "Cook and enjoy",
+                Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6255,6 +6270,7 @@ namespace SmartStore.Data.Setup
 			var categoryDesktops = new Category
 			{
 				Name = "Desktops",
+                Alias = "Desktops",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6272,6 +6288,7 @@ namespace SmartStore.Data.Setup
 			var categoryNotebooks = new Category
 			{
 				Name = "Notebooks",
+                Alias = "Notebooks",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6318,22 +6335,6 @@ namespace SmartStore.Data.Setup
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Games"
 			};
-
-			//var categorySoftware = new Category
-			//{
-			//    Name = "Software",
-			//    CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-			//    PageSize = 12,
-			//    AllowCustomersToSelectPageSize = true,
-			//    PageSizeOptions = "12,18,36,72,150",
-			//    ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle =="Computers" ).FirstOrDefault().Id,
-			//    PictureId = pictureService.InsertPicture(File.ReadAllBytes(sampleImagesPath + "category_software.jpg"), "image/pjpeg", pictureService.GetPictureSeName("Software"), true, false).Id,
-			//    Published = true,
-			//    DisplayOrder = 2,
-			//    CreatedOnUtc = DateTime.UtcNow,
-			//    UpdatedOnUtc = DateTime.UtcNow,
-			//    MetaTitle = "Software"
-			//};
 
 			#endregion category definitions
 
@@ -6715,6 +6716,8 @@ namespace SmartStore.Data.Setup
 
 			#region category Gift Cards
 
+            var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
+
 			#region product5GiftCard
 
 			var product5GiftCard = new Product()
@@ -6742,6 +6745,7 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product5GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
 			//var productTag = _productTagRepository.Table.Where(pt => pt.Name == "gift").FirstOrDefault();
 			//productTag.ProductCount++;
@@ -6783,6 +6787,8 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product25GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_25giftcart.jpeg"), "image/jpeg", GetSeName(product25GiftCard.Name)),
@@ -6818,6 +6824,8 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product50GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_50giftcart.jpeg"), "image/jpeg", GetSeName(product50GiftCard.Name)),
@@ -6829,6 +6837,10 @@ namespace SmartStore.Data.Setup
 			#endregion category Gift Cards
 
 			#region category books
+
+            var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
+            var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
+            var categoryBooks = this._ctx.Set<Category>().First(c => c.Alias == "Books");
 
 			#region productBooksUberMan
 
@@ -6856,6 +6868,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true
 			};
 
+            productBooksUberMan.ProductCategories.Add(new ProductCategory() { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+
 			//pictures
 			productBooksUberMan.ProductPictures.Add(new ProductPicture()
 			{
@@ -6869,7 +6883,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Edition -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
 			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
@@ -6877,7 +6890,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Category -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
 			});
 			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
@@ -6885,7 +6897,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Language -> German
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
 			#endregion productBooksUberMan
@@ -6917,6 +6928,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory() { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+
 			//pictures
 			productBooksGefangeneDesHimmels.ProductPictures.Add(new ProductPicture()
 			{
@@ -6933,6 +6946,7 @@ namespace SmartStore.Data.Setup
 				// Edition -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
+
 			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
@@ -6979,6 +6993,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory() { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
+            
 			//pictures
 			productBooksBestGrillingRecipes.ProductPictures.Add(new ProductPicture()
 			{
@@ -7040,6 +7056,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
 			};
+
+            productBooksCookingForTwo.ProductCategories.Add(new ProductCategory() { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
 
 			//pictures
 			productBooksCookingForTwo.ProductPictures.Add(new ProductPicture()
@@ -7103,6 +7121,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
 
+            productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+            
 			//pictures
 			productBooksAutosDerSuperlative.ProductPictures.Add(new ProductPicture()
 			{
@@ -7166,6 +7186,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksBildatlasMotorraeder.ProductPictures.Add(new ProductPicture()
 			{
@@ -7227,6 +7249,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productBooksAutoBuch.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
 
 			//pictures
 			productBooksAutoBuch.ProductPictures.Add(new ProductPicture()
@@ -7290,6 +7314,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksFastCars.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksFastCars.ProductPictures.Add(new ProductPicture()
 			{
@@ -7352,6 +7378,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
 			};
 
+            productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksMotorradAbenteuer.ProductPictures.Add(new ProductPicture()
 			{
@@ -7391,6 +7419,10 @@ namespace SmartStore.Data.Setup
 
 			#region computer
 
+            var categoryComputer = this._ctx.Set<Category>().First(c => c.Alias == "Computers");
+            var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Alias == "Notebooks");
+            var categoryDesktops = this._ctx.Set<Category>().First(c => c.Alias == "Desktops");
+
 			#region productComputerDellInspiron23
 
 			var productComputerDellInspiron23 = new Product()
@@ -7417,6 +7449,9 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7522,6 +7557,9 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7635,6 +7673,9 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryNotebooks, DisplayOrder = 1 });
+
 			#region manufacturer
 
 			//manufacturer
@@ -7690,6 +7731,8 @@ namespace SmartStore.Data.Setup
 
 			#region Smartphones
 
+            var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
+
 			#region productSmartPhonesAppleIphone
 
 			var productSmartPhonesAppleIphone = new Product()
@@ -7717,6 +7760,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
+
+            productSmartPhonesAppleIphone.ProductCategories.Add(new ProductCategory() { Category = categoryCellPhones, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7796,6 +7841,8 @@ namespace SmartStore.Data.Setup
 
 			#region Instant Download Music
 
+            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Instant music");
+
 			#region Antonio Vivaldi: then spring
 
 			var productInstantDownloadVivaldi = new Product()
@@ -7832,6 +7879,8 @@ namespace SmartStore.Data.Setup
 				}
 			};
 
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+            
 			#region pictures
 
 			//pictures
@@ -7903,6 +7952,8 @@ namespace SmartStore.Data.Setup
 				}
 			};
 
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+
 			#region pictures
 
 			//pictures
@@ -7936,9 +7987,12 @@ namespace SmartStore.Data.Setup
 			#endregion SpecificationAttributes
 
 			#endregion Beethoven für Elise
+
 			#endregion Instant Download Music
 
 			#region watches
+
+            var categoryWatches = this._ctx.Set<Category>().First(c => c.Alias == "Watches");
 
 			#region productWatchesCertinaDSPodiumBigSize
 
@@ -7967,6 +8021,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
+
+            productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory() { Category = categoryWatches, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -8518,7 +8574,6 @@ namespace SmartStore.Data.Setup
 			#endregion Ps3PlusOneGame
 
 			#endregion gaming
-
 
 			var entities = new List<Product>
 			{

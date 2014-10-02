@@ -1115,7 +1115,6 @@ namespace SmartStore.Web.Controllers
             var product = _productService.GetProductById(productId);
 			if (product == null)
 			{
-				//no product found
 				return Json(new
 				{
 					success = false,
@@ -1123,23 +1122,14 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			// filter out product types that cannot be add to cart
-			if (product.ProductType == ProductType.GroupedProduct)
+			// filter out cases where a product cannot be added to cart
+			if (product.ProductType == ProductType.GroupedProduct || product.CustomerEntersPrice || product.IsGiftCard)
 			{
 				return Json(new
 				{
 					redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
 				});
 			}
-
-            if (product.CustomerEntersPrice)
-            {
-                //cannot be added to the cart (requires a customer to enter price)
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
-                });
-            }
 
             //quantity to add
 			var qtyToAdd = product.OrderMinimumQuantity > 0 ? product.OrderMinimumQuantity : 1;

@@ -232,9 +232,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                 LastActivityDateUtc = DateTime.UtcNow,
             };
 
-            adminUser.Addresses.Add(_data.AdminAddress());
-            adminUser.BillingAddress = _data.AdminAddress();
-            adminUser.ShippingAddress = _data.AdminAddress();
+            var adminAddress = _data.AdminAddress();
+
+            adminUser.Addresses.Add(adminAddress);
+            adminUser.BillingAddress = adminAddress;
+            adminUser.ShippingAddress = adminAddress;
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Administrators));
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.ForumModerators));
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));

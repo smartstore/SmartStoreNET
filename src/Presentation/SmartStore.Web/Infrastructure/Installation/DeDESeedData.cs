@@ -367,8 +367,7 @@ namespace SmartStore.Web.Infrastructure.Installation
         protected override void Alter(Address entity)
         {
             base.Alter(entity);
-            string addressThreeLetterIsoCode = "DEU";
-			var cCountry = base.DbContext.Set<Country>().Where(x => x.ThreeLetterIsoCode == addressThreeLetterIsoCode);
+            var cCountry = base.DbContext.Set<Country>().Where(x => x.ThreeLetterIsoCode == "DEU");
             
             entity.FirstName = "Max";
             entity.LastName ="Mustermann";
@@ -3063,24 +3062,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#region variables
 
 				string ps3FullDescription = "<table cellspacing=\"0\" cellpadding=\"1\"><tbody><tr><td>Prozessortyp&nbsp;</td><td>Cell Processor&nbsp;</td></tr><tr><td>Arbeitsspeicher (RAM)nbsp;</td><td>256 MB&nbsp;</td></tr><tr><td>Grafikchipsatz&nbsp;</td><td>nVidia RSX&nbsp;</td></tr><tr><td>Taktfrequenz&nbsp;</td><td>3.200 MHz&nbsp;</td></tr><tr><td>Abmessungen&nbsp;</td><td>290 x 60 x 230 mm&nbsp;</td></tr><tr><td>Gewicht&nbsp;</td><td>2.100 g&nbsp;</td></tr><tr><td>Speichermedium&nbsp;</td><td>Blu-ray&nbsp;</td></tr><tr><td>Stromverbrauch in Betrieb&nbsp;</td><td>190 Watt&nbsp;</td></tr><tr><td>Plattform&nbsp;</td><td>Playstation 3 (PS3)&nbsp;</td></tr><tr><td>Akku-Laufzeit&nbsp;</td><td>0 h&nbsp;</td></tr><tr><td>Anschlüsse&nbsp;</td><td>2x USB 2.0, AV-Ausgang, digitaler optischer Ausgang (SPDIF), HDMI&nbsp;</td></tr><tr><td>Soundmodi&nbsp;</td><td>AAC, Dolby igital, Dolby Digital Plus, Dolby TrueHD, DTS, DTS-HD, LPCM 7.1-Kanal&nbsp;</td></tr><tr><td>Unterstützte Auflösungen&nbsp;</td><td>576i, 576p, 720p, 1080i, 1080p Full HD&nbsp;</td></tr><tr><td>Serie&nbsp;</td><td>Sony Playstation 3&nbsp;</td></tr><tr><td>Veröffentlichungsjahr&nbsp;</td><td>2012&nbsp;</td></tr><tr><td>Mitgelieferte Hardware&nbsp;</td><td>Dual Shock 3-Controller&nbsp;</td></tr><tr><td>Farbe&nbsp;</td><td>schwarz&nbsp;</td></tr><tr><td>USK-Freigabe&nbsp;</td><td>0 Jahre&nbsp;</td></tr><tr><td>PEGI-Freigabe&nbsp;</td><td>3 Jahre&nbsp;</td></tr><tr><td>RAM-Typ&nbsp;</td><td>XDR-DRAM&nbsp;</td></tr><tr><td>Controller-Akku-Laufzeit&nbsp;</td><td>30 h&nbsp;</td></tr><tr><td>WLAN-Standard&nbsp;</td><td>IEEE 802.11 b/g&nbsp;</td></tr><tr><td>LAN-Standard&nbsp;</td><td>Gigabit Ethernet (10/100/1000 Mbit/s)&nbsp;</td></tr><tr><td>Daten-Kommunikation&nbsp;</td><td>Bluetooth 2.0 + EDR, Netzwerk (Ethernet), WLAN (Wi-Fi)&nbsp;</td></tr><tr><td>Controller-Eigenschaften&nbsp;</td><td>Beschleunigungssensor, Lagesensor (Gyrosensor), Headset-nschluss, Vibration&nbsp;</td></tr><tr><td>Spielsteuerungen&nbsp;</td><td>Bewegungssteuerung, Controller&nbsp;</td></tr><tr><td>Spielfunktionen&nbsp;</td><td>Community, Kindersicherung, Plattformübergreifendes Spielen, Remote Gaming, Sony PlayStation Network, Sony PlayStation Plus, Streaming (DLNA), Streaming (PlayStation Now/Gaikai)&nbsp;</td></tr><tr><td>Marketplace&nbsp;</td><td>Sony PlayStation Store&nbsp;</td></tr><tr><td>Internetfunktionen&nbsp;</td><td>Chat, Video Chat, Voice Chat, Webbrowser&nbsp;</td></tr><tr><td>Multimedia-Funktionen&nbsp;</td><td>Audio-CD-Wiedergabe, Blu-ray-Wiedergabe, DVD-Wiedergabe, Internet-Radio, Video-Wiedergabe&nbsp;</td></tr><tr><td>Streaming-ienste&nbsp;</td><td>Animax, Lovefilm, Maxdome, Mubi, Music on Demand, Sony Music Unlimited, Sony Video Unlimited, TuneIn, VidZone, Video on Demand, Watchever, YouTube&nbsp;</td></tr><tr><td>Ausstattung</td><td>onlinefähig/eingebautes Netzteil/3D-Ready</td></tr><tr><td>Sonstiges</td><td>bis zu 7 kabellose lageempfindliche Controller (Bluetooth) / PSP-Connectivity / keine Abwärtskompatibilität zu PlayStation 2-Spielen / Herunterladen von Filmen von Hollywood Studios aus dem Playstation Network, übertragbar auf PSP / Toploader-Laufwerk / Cross-Plattform-Funktionen (PS3 und PS Vita): Remote Play (Zugriff auf kompatible Inhalte auf PS3), Cross Buy (Spiel für anderes System kostenlos oder günstiger (online) dazukaufen), Cross-Goods (In-Game-Objekte für beide Systeme), Cross-Save (gespeichertes Spiel auf anderem System weiterspielen), Cross-Controller (PS Vita als Controller), Cross-Play (PSV vs. PS3), PlayStation Network-Konto erforderlich / 256 MB GDDR3 Grafikspeicher&nbsp;</td></tr></tbody></table>";
-
 				string ps4FullDescription = "<ul><li>PlayStation 4, die neueste Generation des Entertainment Systems, definiert reichhaltiges und beeindruckendes Gameplay, völlig neu.</li><li>Den Kern der PS4 bilden ein leistungsstarker, eigens entwickelter Chip mit acht x86-Kernen (64 bit) sowie ein hochmoderner optimierter Grafikprozessor.</li><li>Ein neuer, hochsensibler SIXAXIS-Sensor ermöglicht mit dem DualShock 4 Wireless Controller eine erstklassige Bewegungssteuerung.</li><li>Der DualShock 4 bietet als Neuerungen ein Touchpad, eine Share-Taste, einen eingebauten Lautsprecher und einen Headset-Anschluss.</li><li>PS4 integriert Zweitbildschirme, darunter PS Vita, Smartphones und Tablets, damit Spieler ihre Lieblingsinhalte überall hin mitnehmen können.</li></ul>";
 
 				#endregion variables
 
 				entities.WithKey(x => x.MetaTitle)
+
 				# region category Gift Cards
-.Alter("$5 Virtual Gift Card", x =>
+                .Alter("$5 Virtual Gift Card", x =>
 				{
 					x.Name = "5 € Geschenkgutschein";
 					x.ShortDescription = "5 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("$25 Virtual Gift Card", x =>
@@ -3088,12 +3081,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "25 € Geschenkgutschein";
 					x.ShortDescription = "25 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("$50 Virtual Gift Card", x =>
@@ -3101,12 +3088,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.Name = "50 € Geschenkgutschein";
 					x.ShortDescription = "50 € Geschenkgutschein. Eine ideale Geschenkidee.";
 					x.FullDescription = "<p>Wenn in letzter Minute mal wieder ein Geschenk fehlt oder man nicht weiß, was man schenken soll, dann bietet sich der Kauf eines Geschenkgutscheins an.</p>";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Geschenkgutscheine").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				#endregion
@@ -3114,7 +3095,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#region Bücher
 
 				#region SPIEGEL-Bestseller
-.Alter("Überman: The novel", x =>
+                .Alter("Überman: The novel", x =>
 				{
 					x.Name = "Überman: Der Roman";
 					x.ShortDescription = "Gebundene Ausgabe";
@@ -3132,28 +3113,15 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "SPIEGEL-Bestseller").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				#endregion SPIEGEL-Bestseller
 
 				#region Kochen & Genießen
 
-.Alter("Best Grilling Recipes", x =>
+                .Alter("Best Grilling Recipes", x =>
 				{
 					x.ShortDescription = "Mehr als 100 regionale Favoriten Grill-Rezepte getestet und und für den Freiluft-Koch perfektioniert";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Kochen und Genießen").Single(),
-						DisplayOrder = 1,
-					});
 					x.Price = 16.99M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == TaxNameBooks).Single().Id;
@@ -3188,19 +3156,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Kochen und Genießen").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				#endregion Kochen & Genießen
 
 				#region Books : cars and motorcycles
-.Alter("Car of superlatives", x =>
+                .Alter("Car of superlatives", x =>
 				{
 					x.Name = "Autos der Superlative: Die Stärksten, die Ersten, die Schönsten, Die Schnellsten";
 					x.ShortDescription = "Gebundene Ausgabe";
@@ -3218,13 +3179,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("Picture Atlas Motorcycles", x =>
@@ -3245,13 +3199,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("The Car Book", x =>
@@ -3272,13 +3219,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("Fast Cars", x =>
@@ -3299,13 +3239,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				.Alter("Motorcycle Adventures", x =>
@@ -3326,13 +3259,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Bücher").Single(),
-						DisplayOrder = 1,
-					});
 				})
 
 				#endregion Books : cars and motorcycles
@@ -3344,7 +3270,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#region computer-desktops
 
 				#region Dell Inspiron One 23
-.Alter("Dell Inspiron One 23", x =>
+                .Alter("Dell Inspiron One 23", x =>
 				{
 					x.ShortDescription = "Dieser 58 cm (23'')-All-in-One-PC mit Full HD, Windows 8 und leistungsstarken Intel® Core™ Prozessoren der dritten Generation ermöglicht eine praktische Interaktion mit einem Touchscreen.";
 					x.FullDescription = "<p>Extrem leistungsstarker All-in-One PC mit Windows 8, Intel® Core™ i7 Prozessor, riesiger 2TB Festplatte und Blu-Ray Laufwerk.  </p>  <p>  Intel® Core™ i7-3770S Prozessor ( 3,1 GHz, 6 MB Cache) Windows 8 64bit , Deutsch<br> 8 GB1 DDR3 SDRAM bei 1600 MHz<br> 2 TB-Serial ATA-Festplatte (7.200 U/min)<br> 1GB AMD Radeon HD 7650<br> </p>";
@@ -3361,18 +3287,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Desktop Computer").Single(),
-						DisplayOrder = 1,
-					});
 				})
 				#endregion Dell Inspiron One 23
 
 				#region Dell Optiplex 3010 DT Base
-.Alter("Dell Optiplex 3010 DT Base", x =>
+                .Alter("Dell Optiplex 3010 DT Base", x =>
 				{
 					x.ShortDescription = "SONDERANGEBOT: Zusätzliche 50 € Rabatt auf alle Dell OptiPlex Desktops ab einem Wert von 549 €. Online-Coupon: W8DWQ0ZRKTM1, gültig bis 4.12.2013";
 					x.FullDescription = "<p>Ebenfalls im Lieferumfang dieses Systems enthalten</p> <p> 1 Jahr Basis-Service - Vor-Ort-Service am nächsten Arbeitstag - kein Upgrade ausgewählt Keine Asset-Tag erforderlich</p> <p> Die folgenden Optionen sind in Ihren Auftrag aufgenommene Standardauswahlen.<br> German (QWERTZ) Dell KB212-B QuietKey USB Keyboard Black<br> X11301001<br> WINDOWS LIVE<br> OptiPlex™ Bestellung - Deutschland<br> OptiPlex™ Intel® Core™ i3 Aufkleber<br> Optische Software nicht erforderlich, Betriebssystemsoftware ausreichend<br> </p>";
@@ -3389,27 +3308,18 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Desktop Computer").Single(),
-						DisplayOrder = 1,
-					});
 				})
 				#endregion Dell Optiplex 3010 DT Base
-
 
 				#endregion computer-desktops
 
 				#region Notebooks
 				#region Acer Aspire One 8.9
-.Alter("Acer Aspire One 8.9", x =>
+                .Alter("Acer Aspire One 8.9", x =>
 				{
 					x.Name = "Acer Aspire One 8.9\" Mini-Notebook Case - (Schwarz)";
 					x.ShortDescription = "Acer definiert mit dem Aspire One mobile Konnektivität neu, dem revolutionären Spaß und Power Netbook in der zierlichen 8.9\" Größe. ";
-					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie        <br> Systemtyp: Netbook       <br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1                <br> Leere Steckplätze: 0, 1                <br> Display                                    <br> Typ: 22.6 cm ( 8.9\" )                          <br> Auflösung: 1024 x 600 ( WSVGA )                    <br> Breitwand: Ja                                          <br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite                                         <br> Batterie                                                                 <br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden                             <br> Kapazität: 2600 mAh, 2200 mAh                                                    <br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen           <br> Herstellergarantie                                                                       <br> Service & Support:                                                                           <br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr            <br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr                                                  <br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr                                                 <br> Reisegarantie - 1 Jahr                                                                                       <br> Navigation                                                                                                       <br> Empfänger: GPS                                                                                                       <br> </p>";
-
+					x.FullDescription = "<p> Von der Betätigung des Powerknopfes an, ist das Aspire One in nur wenigen Sekunden betriebsbereit. Sobald an, ist die Arbeit sehr einfach: ein Heimarbeitsplatz der die heute benötigten vier Bereiche abdeckt, verbunden bleiben, arbeiten, spielen und Ihr Leben unterwegs organisieren. Und der Aspire One ist etwas Besonderes, Sie können alles so individualisieren das es für Sie das Richtige ist. Schnell, einfach und unbeschreiblich schick. Ihr Style ist Ihre Unterschrift. Es ist Ihre Identität, Ihre Persönlichkeit und Ihre Visitenkarte. Ihr Style zeigt Ihrer Umwelt wie Sie sind und wie Sie Ihr Leben leben, online und offline. Das alles benötigen Sie, um Sie selbst zu sein. Ihr Style kommt in verschiedenen Farben, jede mit einem individuellen Charakter. Kleiner als ein durchschnittliches Tagebuch, das Aspire One bringt Freiheit in Ihre Hände. </p> <p> Allgemein<br> Betriebssystem: Microsoft Windows XP Home Edition, Linux Linpus Lite <br> Herstellergarantie: 1 Jahr Garantie<br> Systemtyp: Netbook<br> MPN: LU.S080B.069, LU.S050B.081, LU.S040B.079, LU.S090B.079, LU.S040B.198, LU.S040A.048, LU.S050A.050, LU.S050B.080, LU.S040B.078, 099915639, LU.S050A.074, LU.S360A.203, LU.S450B.030, LU.S050B.159<br> Speicher<br> RAM: 1 GB ( 1 x 512 MB + 512 MB (integriert) ), 1 GB<br> Max. unterstützter RAM-Speicher: 1.5 GB<br> Technologie: DDR2 SDRAM<br> Geschwindigkeit: 533 MHz   <br> Formfaktor: SO DIMM 200-polig  <br> Anz. Steckplätze: 1<br> Leere Steckplätze: 0, 1<br> Display<br> Typ: 22.6 cm ( 8.9\" )<br> Auflösung: 1024 x 600 ( WSVGA )<br> Breitwand: Ja<br> LCD-Hintergrundbeleuchtung: LED-Hintergrundbeleuchtung     <br> Farbunterstützung: 262.144 Farben, 24 Bit (16,7 Millionen Farben)<br> Besonderheiten: CrystalBrite<br> Batterie<br> Betriebszeit: Bis zu 7 Stunden, Bis zu 3 Stunden<br> Kapazität: 2600 mAh, 2200 mAh<br> Technologie: 6 Zellen Lithium-Ionen, 3 Zellen Lithium-Ionen, Lithium-Ionen<br> Herstellergarantie<br> Service & Support:<br> Reisegarantie - 1 Jahr, Begrenzte Garantie - 1 Jahr, Internationale Garantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Reisegarantie - 1 Jahr<br> Begrenzte Garantie - 1 Jahr, Begrenzte Garantie - 1 Jahr<br> Reisegarantie - 1 Jahr<br> Navigation<br>Empfänger: GPS<br></p>";
 					x.Price = 210.60M;
 					x.DeliveryTime = base.DbContext.Set<DeliveryTime>().Where(dt => dt.DisplayOrder == 0).Single();
 					x.TaxCategoryId = base.DbContext.Set<TaxCategory>().Where(tc => tc.Name == "Normal").Single().Id;
@@ -3423,18 +3333,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Notebook").Single(),
-						DisplayOrder = 1,
-					});
 				})
 				#endregion Acer Aspire One 8.9
 
 				#endregion Notebooks
-
 
 				#endregion computer
 
@@ -3459,13 +3361,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Smartphones").Single(),
-						DisplayOrder = 1,
-					});
 					x.ProductReviews.Clear();
 				})
 				#endregion Apple iPhone
@@ -3473,35 +3368,25 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion SmartPhones
 
 				#region Instant Downloads
-				#region Antonio Vivildi: then spring
-.Alter("Antonio Vivaldi: spring", x =>
+				
+                #region Antonio Vivildi: then spring
+                
+                .Alter("Antonio Vivaldi: spring", x =>
 				{
 					x.Name = "Antonio Vivaldi: Der Frühling";
 					x.ShortDescription = "MP3, 320 kbit/s";
 					x.FullDescription = "<p>Antonio Vivaldi: Der Fr&uuml;hling</p> <p><b>Antonio Lucio Vivaldi</b><span>&nbsp;(*&nbsp;</span>4. M&auml;rz<span>&nbsp;</span>1678<span>&nbsp;in&nbsp;</span>Venedig<span>; &dagger;&nbsp;</span>28. Juli<span>&nbsp;</span>1741<span>&nbsp;in&nbsp;</span>Wien<span>) war ein venezianischer&nbsp;</span>Komponist<span>&nbsp;und&nbsp;</span>Violinist<span>&nbsp;im&nbsp;</span>Barock<span>.</span></p> <p><b>Die vier Jahreszeiten</b>&nbsp;(italienisch&nbsp;<span lang=\"it\" class=\"lang\"><i>Le quattro stagioni</i></span>) hei&szlig;t das wohl bekannteste Werk&nbsp;Antonio Vivaldis. Es handelt sich um vier&nbsp;Violinkonzerte&nbsp;mit au&szlig;ermusikalischen&nbsp;Programmen; jedes Konzert portr&auml;tiert eine&nbsp;Jahreszeit. Dazu ist den einzelnen Konzerten jeweils ein &ndash; vermutlich von Vivaldi selbst geschriebenes &ndash;&nbsp;Sonett&nbsp;vorangestellt; fortlaufende Buchstaben vor den einzelnen Zeilen und an den entsprechenden Stellen in der&nbsp;Partitur&nbsp;ordnen die verbale Beschreibung der Musik zu.</p> <p>Vivaldi hatte bereits zuvor immer wieder mit au&szlig;ermusikalischen Programmen experimentiert, die sich h&auml;ufig in seinen Titeln niederschlagen; die genaue Ausdeutung von Einzelstellen der Partitur ist aber f&uuml;r ihn ungew&ouml;hnlich. Seine Erfahrung als virtuoser Geiger erlaubte ihm den Zugriff auf besonders wirkungsvolle Spieltechniken; als Opernkomponist hatte er einen starken Sinn f&uuml;r Effekte entwickelt; beides kam ihm hier zugute.</p> <p>Wie der Titel bereits nahelegt, werden vor allem Naturerscheinungen imitiert &ndash; sanfte Winde, heftige St&uuml;rme und Gewitter sind Elemente, die in allen vier Konzerten auftreten. Hinzu kommen verschiedene Vogelstimmen und sogar ein Hund, weiter menschliche Bet&auml;tigungen wie etwa die Jagd, ein Bauerntanz, das Schlittschuhlaufen einschlie&szlig;lich Stolpern und Hinfallen bis hin zum schweren Schlaf eines Betrunkenen.</p> <p>Das Werk stammt aus dem Jahre 1725 und ist in zwei Druckausgaben erhalten, die offenbar mehr oder weniger zeitgleich in Amsterdam und Paris erschienen.</p> <p><span><br /></span></p>";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
-						DisplayOrder = 1,
-					});
 					x.ProductReviews.Clear();
 				})
 
 				#endregion Antonio Vivildi: then spring
 
 				#region Beethoven für Elise
-.Alter("Ludwig van Beethoven: Für Elise", x =>
+                .Alter("Ludwig van Beethoven: Für Elise", x =>
 				{
 					x.Name = "Ludwig van Beethoven: Für Elise";
 					x.ShortDescription = "Ludwig van Beethoven: Für Elise. Eine von Beethovens populärsten Kompositionen.";
 					x.FullDescription = "<p> Die früheste, 1973 bekannt gewordene Fassung der „Kernmelodie“[5] notierte Beethoven 1808 in ein Skizzenbuch zur Pastorale. Einige aus dem Skizzenbuch herausgelöste Seiten bilden heute das Autograph Mus. ms. autograph. Beethoven Landsberg 10 der Staatsbibliothek Preußischer Kulturbesitz in Berlin. Die Melodie, die eindeutig als Kern des Klavierstückes WoO 59 zu erkennen ist,[2] befindet sich in den Zeilen 6 und 7 der Seite 149. Es handelt sich um eine einstimmige, sechzehntaktige Melodie, die sich besonders bei den Auftakten des Mittelteiles und bei den Schlusswendungen der Takte 7 und 15 sowie durch das Fehlen des zweitaktigen Orgelpunktes auf E von späteren Fassungen unterscheidet.[2] Diese Melodie nahm Beethoven 1810 wieder auf, modifizierte sie und fügte ihr weitere Teile hinzu. Das geschah in Beethovens Handschrift BH 116[6] und vermutlich auch in dem Autograph, das zu Babette Bredl gelangte und von Ludwig Nohl abgeschrieben und 1867 erstmals veröffentlicht wurde.[7][8] </p> <p> In BH 116 lassen sich drei Arbeitsphasen erkennen: eine erste Niederschrift im Jahre 1810, Korrekturen daran von 1810 und eine Bearbeitung aus dem Jahre 1822. Die Bearbeitung von 1822 hatte das Ziel, das Klavierstück in eine für eine Veröffentlichung taugliche Fassung zu bringen. Es sollte als No 12 den Schluss eines Zyklus von Bagatellen bilden. Dieser Plan wurde allerdings nicht ausgeführt.[9] 1822 überschrieb Beethoven das Klavierstück mit „molto grazioso“. Er verschob die Begleitfiguren des A-Teils in der linken Hand um ein Sechzehntel nach rechts und entlastete dabei den Taktanfang. Außerdem führte er die Begleitfigur teilweise in eine tiefere Lage und weitete damit den Klang aus.[10] Im Teil B kehrte Beethoven zu einer melodisch und rhythmisch komplizierteren, 1810 verworfenen Fassung zurück. Den vermutlichen Gesamtaufbau des Klavierstückes ließ er nicht völlig unangetastet und fügte vier bisher ungenutzte Takte als Überleitung zum Teil B ein. Vier 1822 notierte Einleitungstakte, die zum A-Teil passen, strich er dagegen wieder.[11] Bei der Anweisung für die Reprise des letztmals wiederkehrenden Teiles A schrieb er „una corda“ vor, was sich auf diesen Teil selbst beziehen kann oder nur auf den neu entworfenen, dreitaktigen, wahrscheinlich akkordisch gedachten, aber nur einstimmig notierten Schluss.[12] Eine vollständige Fassung als Resultat der Bearbeitung von 1822 stellte Beethoven nicht her.[13][14] </p>";
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Musik kaufen & sofort herunterladen").Single(),
-						DisplayOrder = 1,
-					});
 					x.ProductReviews.Clear();
 				})
 
@@ -3510,8 +3395,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 				#endregion Instant Downloads
 
 				#region watches
+
 				#region Certina DS Podium Big Size
-.Alter("Certina DS Podium Big Size", x =>
+                .Alter("Certina DS Podium Big Size", x =>
 				{
 					x.Name = "Certina DS Podium Big Size Herrenchronograph";
 					x.ShortDescription = "C001.617.26.037.00";
@@ -3529,18 +3415,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 					x.CreatedOnUtc = DateTime.UtcNow;
 					x.UpdatedOnUtc = DateTime.UtcNow;
 					x.IsShipEnabled = true;
-
-					x.ProductCategories.Clear();
-					x.ProductCategories.Add(new ProductCategory()
-					{
-						Category = base.DbContext.Set<Category>().Where(c => c.Name == "Uhren").Single(),
-						DisplayOrder = 1,
-					});
 					x.ProductReviews.Clear();
 				})
 
 				#endregion Certina DS Podium Big Size
-				#endregion watches
+				
+                #endregion watches
 
 				#region gaming
 

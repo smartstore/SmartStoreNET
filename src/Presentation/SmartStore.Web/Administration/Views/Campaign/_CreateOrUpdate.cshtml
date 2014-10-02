@@ -20,7 +20,7 @@
                 @Html.ValidationMessageFor(model => model.TestEmail)
 
                 <button type="submit" name="send-test-email" value="send-test-email" class="btn">
-					<i class="icon-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendTestEmail")
+					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendTestEmail")
 				</button>
             </td>
         </tr>
@@ -29,7 +29,7 @@
             </td>
             <td class="adminData">
                 <button type="submit" name="send-mass-email" value="send-mass-email" class="btn btn-warning" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-					<i class="icon-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendMassEmail")
+					<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Promotions.Campaigns.SendMassEmail")
 				</button>
             </td>
         </tr>

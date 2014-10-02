@@ -25,7 +25,7 @@ namespace SmartStore.Data.Migrations
         {
             // add or update resources
             builder.AddOrUpdate("ShoppingCart.CommentBox")
-                .Value("Do you want to says something regarding this order?")
+                .Value("Do you want to tell us something regarding this order?")
                 .Value("de", "Möchten Sie uns etwas Wichtiges zu Ihrer Bestellung mitteilen?");
 
             builder.AddOrUpdate("Admin.Order.CustomerComment.Heading")
@@ -38,7 +38,7 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Settings.ShoppingCart.ShowCommentBox.Hint")
                 .Value("Determines whether comment box is displayed on confirm order page")
-                .Value("de", "Legt fest ob der Kunden auf der Bestellabschlussseite einen Kommentar zu seiner Bestellung hinterlegen kann.");
+                .Value("de", "Legt fest ob der Kunde auf der Bestellabschlussseite einen Kommentar zu seiner Bestellung hinterlegen kann.");
         }
 
         public bool RollbackOnFailure

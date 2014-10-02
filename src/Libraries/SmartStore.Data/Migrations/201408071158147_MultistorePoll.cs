@@ -55,7 +55,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser",
 				"Truncate long texts",
 				"Langtexte kürzen",
-				"Option to truncate long texts and to only shown on click in full length.",
+				"Option to truncate long texts and to only show on click in full length.",
 				"Option, bei der Langtexte gekürzt und erst auf Klick in voller Länge angezeigt werden.");
 
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight",

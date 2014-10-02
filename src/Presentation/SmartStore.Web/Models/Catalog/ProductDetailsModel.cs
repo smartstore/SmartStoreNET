@@ -78,8 +78,6 @@ namespace SmartStore.Web.Models.Catalog
 		public string AttributeInfo { get; set; }
 
         public bool DisplayAdminLink { get; set; }
-        public bool EnableHtmlTextCollapser { get; set; }
-        public string HtmlTextCollapsedHeight { get; set; }
 		public bool ShowLegalInfo { get; set; }
 		public string LegalInfo { get; set; }
 		public bool ShowWeight { get; set; }

@@ -38,7 +38,8 @@ namespace SmartStore.Admin.Models.Catalog
         public string GoDirectlyToSku { get; set; }
 
         public bool DisplayProductPictures { get; set; }
-        public bool DisplayPdfDownloadCatalog { get; set; }
+        public bool DisplayPdfExport { get; set; }
+		public int GridPageSize { get; set; }
 
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

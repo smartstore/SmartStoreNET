@@ -86,6 +86,23 @@ namespace SmartStore.Services.Payments
 			return activeMethods;
         }
 
+		/// <summary>
+		/// Determines whether a payment method is active\enabled for a shop
+		/// </summary>
+		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
+		{
+			var method = LoadActivePaymentMethods()
+				.FirstOrDefault(x => x.PluginDescriptor.SystemName == systemName && x.PluginDescriptor.Installed);
+
+			if (method != null)
+			{
+				if (storeId == 0 || _settingService.GetSettingByKey<string>(method.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
+					return true;
+			}
+
+			return false;
+		}
+
         /// <summary>
         /// Load payment provider by system name
         /// </summary>
@@ -165,15 +182,12 @@ namespace SmartStore.Services.Payments
         }
 
         /// <summary>
-        /// Post process payment (used by payment gateways that require redirecting to a third-party URL)
+        /// Post process payment (e.g. used by payment gateways to redirect to a third-party URL).
+		/// Called after an order has been placed or when customer re-post the payment.
         /// </summary>
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         public virtual void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
-            //already paid or order.OrderTotal == decimal.Zero
-            if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
-                return;
-
             var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
             if (paymentMethod == null)
                 throw new SmartException("Payment method couldn't be loaded");

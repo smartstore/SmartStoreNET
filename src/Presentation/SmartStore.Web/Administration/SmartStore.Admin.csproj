@@ -8,7 +8,7 @@
     </ProductVersion>
     <SchemaVersion>2.0</SchemaVersion>
     <ProjectGuid>{152C761A-DD2E-4C1F-AF89-DFB2547A3BCA}</ProjectGuid>
-    <ProjectTypeGuids>{E53F8FEA-EAE0-44A6-8774-FFD645390401};{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
+    <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Admin</RootNamespace>
@@ -125,6 +125,10 @@
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
       <HintPath>..\..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
     </Reference>
+    <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+    </Reference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="..\..\..\AssemblySharedInfo.cs">
@@ -211,6 +215,8 @@
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
+    <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
+    <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
@@ -1210,6 +1216,9 @@
     <Content Include="Content\Web.config">
       <SubType>Designer</SubType>
     </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="Views\Order\_AutoUpdateOrderItem.cshtml" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>

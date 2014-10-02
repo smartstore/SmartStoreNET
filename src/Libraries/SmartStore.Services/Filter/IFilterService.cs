@@ -12,6 +12,8 @@ namespace SmartStore.Services.Filter
 		List<FilterCriteria> Deserialize(string jsonData);
 		string Serialize(List<FilterCriteria> criteria);
 
+		FilterProductContext CreateFilterProductContext(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode);
+
 		bool ToWhereClause(FilterSql context);
 		bool ToWhereClause(FilterSql context, List<FilterCriteria> findIn, Predicate<FilterCriteria> match);
 

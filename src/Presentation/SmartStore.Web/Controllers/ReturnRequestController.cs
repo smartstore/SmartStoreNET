@@ -64,6 +64,72 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
+
+        #region Utilities
+
+        [NonAction]
+        protected SubmitReturnRequestModel PrepareReturnRequestModel(SubmitReturnRequestModel model, Order order)
+        {
+            if (order == null)
+                throw new ArgumentNullException("order");
+
+            if (model == null)
+                throw new ArgumentNullException("model");
+
+            model.OrderId = order.Id;
+
+			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
+			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
+
+            //return reasons
+            foreach (var rrr in returnRequestReasons.SplitSafe(","))
+            {
+                model.AvailableReturnReasons.Add(new SelectListItem() { Text = rrr, Value = rrr });
+            }
+
+            //return actions
+            foreach (var rra in returnRequestActions.SplitSafe(","))
+            {
+                model.AvailableReturnActions.Add(new SelectListItem() { Text = rra, Value = rra });
+            }
+
+            //products
+            var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+            foreach (var orderItem in orderItems)
+            {
+                var orderItemModel = new SubmitReturnRequestModel.OrderItemModel()
+                {
+                    Id = orderItem.Id,
+                    ProductId = orderItem.Product.Id,
+					ProductName = orderItem.Product.GetLocalized(x => x.Name),
+                    ProductSeName = orderItem.Product.GetSeName(),
+                    AttributeInfo = orderItem.AttributeDescription,
+                    Quantity = orderItem.Quantity
+                };
+                model.Items.Add(orderItemModel);
+
+                //unit price
+                switch (order.CustomerTaxDisplayType)
+                {
+                    case TaxDisplayType.ExcludingTax:
+                        {
+                            var unitPriceExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceExclTax, order.CurrencyRate);
+                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+                        }
+                        break;
+                    case TaxDisplayType.IncludingTax:
+                        {
+                            var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
+                            orderItemModel.UnitPrice = _priceFormatter.FormatPrice(unitPriceInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+                        }
+                        break;
+                }
+            }
+
+            return model;
+        }
+
+        #endregion
         
         #region Return requests
 

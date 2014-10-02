@@ -66,6 +66,7 @@ namespace SmartStore.Plugin.Api.WebApi
 			m.EntitySet<Download>(WebApiOdataEntitySet.Downloads);
 			m.EntitySet<GenericAttribute>(WebApiOdataEntitySet.GenericAttributes);
 			m.EntitySet<Language>(WebApiOdataEntitySet.Languages);
+			m.EntitySet<LocalizedProperty>(WebApiOdataEntitySet.LocalizedPropertys);
 			m.EntitySet<Manufacturer>(WebApiOdataEntitySet.Manufacturers);
 			m.EntitySet<OrderNote>(WebApiOdataEntitySet.OrderNotes);
 			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
@@ -115,6 +116,7 @@ namespace SmartStore.Plugin.Api.WebApi
 		public static string Downloads { get { return "Downloads"; } }
 		public static string GenericAttributes { get { return "GenericAttributes"; } }
 		public static string Languages { get { return "Languages"; } }
+		public static string LocalizedPropertys { get { return "LocalizedPropertys"; } }
 		public static string Manufacturers { get { return "Manufacturers"; } }
 		public static string OrderNotes { get { return "OrderNotes"; } }
 		public static string Orders { get { return "Orders"; } }

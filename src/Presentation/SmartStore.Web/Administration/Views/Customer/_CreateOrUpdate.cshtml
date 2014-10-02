@@ -441,7 +441,8 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id);
-						columns.Bound(x => x.OrderTotal);
+						columns.Bound(x => x.OrderTotal)
+							.RightAlign();
 						columns.Bound(x => x.OrderStatus);
 						columns.Bound(x => x.PaymentStatus);
 						columns.Bound(x => x.ShippingStatus);
@@ -593,8 +594,8 @@
 									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                                 columns.Bound(sci => sci.Quantity).Centered().Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(120);
-                                columns.Bound(sci => sci.Total).Width(120);
+                                columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+                                columns.Bound(sci => sci.Total).RightAlign().Width(120);
 								columns.Bound(sci => sci.Store).Width(300);
                                 columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
@@ -622,8 +623,8 @@
 									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                                 columns.Bound(sci => sci.Quantity).Centered().Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(120);
-                                columns.Bound(sci => sci.Total).Width(120);
+                                columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+                                columns.Bound(sci => sci.Total).RightAlign().Width(120);
 								columns.Bound(sci => sci.Store).Width(300);
                                 columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })

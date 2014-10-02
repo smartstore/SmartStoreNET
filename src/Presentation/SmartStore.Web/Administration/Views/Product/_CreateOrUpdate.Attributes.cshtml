@@ -27,14 +27,13 @@
                 dataBinding.Ajax()
                     .Select("ProductVariantAttributeList", "Product", new { productId = Model.Id })
                     .Insert("ProductVariantAttributeInsert", "Product", new { productId = Model.Id })
-                    .Update("ProductVariantAttributeUpdate", "Product") // codehint: sm-edit
+                    .Update("ProductVariantAttributeUpdate", "Product")
                     .Delete("ProductVariantAttributeDelete", "Product");
             })
             .Columns(columns =>
             {
                 columns.Bound(x => x.ProductAttribute)
-                    .Width(150)
-                    .Centered();
+                    .Width(150);
                 columns.Bound(x => x.TextPrompt)
                     .Width(150)
                     .Centered();
@@ -47,7 +46,7 @@
                     .Width(150)
                     .Centered();
                 columns.Bound(x => x.DisplayOrder1)
-                    .Width(150)
+                    .Width(100)
                     .Centered();
                 columns.Bound(x => x.ViewEditUrl)
                     .Width(200)
@@ -64,6 +63,17 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
             .EnableCustomBinding(true))
+
+            <script type="text/javascript">
+                function onProductVariantAttributeEdit(e) {
+                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+
+                    if (parseInt(e.dataItem['Id']) === 0) {
+                    	$(e.form).find('#IsRequired').prop('checked', true);
+                    }
+                }
+            </script>
         }
         else
         {
@@ -180,6 +190,7 @@
                             .ClientTemplate("<a href=\"<#= ProductUrl #>\" target=\"_blank\"><#= ProductUrlTitle #></a>");
                         columns.Bound(x => x.Sku);
 						columns.Bound(x => x.Price)
+							.Format("{0:0.00}")
 							.RightAlign();
                         columns.Bound(x => x.StockQuantity)
                             .Width(160)

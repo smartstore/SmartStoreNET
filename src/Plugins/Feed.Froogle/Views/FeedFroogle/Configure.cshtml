@@ -56,12 +56,15 @@
 			<td class="adminData">
 				@foreach (var group in Model.GeneratedFiles.GroupBy(x => x.StoreId))
 				{
+					var firstFile = group.First();
 					<p>
-						@(group.First().StoreName):
+						<strong>@(firstFile.StoreName)</strong>:
 						@foreach (var file in group)
 						{
-							<br /><a href="@file.FileUrl" target="_blank">@file.FileUrl</a>
+							<br /><a href="@file.FileUrl" download>@file.FileUrl</a>
 						}
+						<br /><a href="@firstFile.LogUrl" download>@T("Admin.Configuration.ActivityLog")</a>,
+						@T("Common.UpdatedOn"): @(firstFile.LastWriteTime)
 					</p>
 				}
 			</td>
@@ -145,6 +148,15 @@
 		<td class="adminData">
 			@Html.DropDownListFor(model => model.StoreId, Model.AvailableStores)
 			@Html.ValidationMessageFor(model => model.StoreId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.LanguageId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.LanguageId, Model.AvailableLanguages)
+			@Html.ValidationMessageFor(model => model.LanguageId)
 		</td>
 	</tr>
 	<tr>
@@ -399,6 +411,15 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(m => m.ConvertNetToGrossPrices)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(m => m.ConvertNetToGrossPrices)
+            @Html.ValidationMessageFor(m => m.ConvertNetToGrossPrices)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(m => m.TaskEnabled)
         </td>
         <td class="adminData">
@@ -445,7 +466,23 @@
 				</td>
 				<td class="adminData">
 					@Html.EditorFor(m => m.SearchProductName)
-
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(m => m.SearchIsTouched)
+				</td>
+				<td class="adminData">
+					@Html.DropDownList("SearchIsTouched", new List<SelectListItem> {
+						new SelectListItem { Text = Model.Helper.GetResource("Common.Unspecified"), Value = "" },
+						new SelectListItem { Text = Model.Helper.GetResource("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
+						new SelectListItem { Text = Model.Helper.GetResource("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+					})
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">&nbsp;</td>
+				<td class="adminData">
 					<button type="submit" id="search-products" value="search-product" class="btn">
 						<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
 					</button>
@@ -457,9 +494,6 @@
 	</tr>
     <tr>
         <td>
-			@{
-                var gridPageSize = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-			}
             @(Html.Telerik().Grid<GoogleProductModel>()
 				.Name("froogleproducts-grid")
 				.DataKeys(keys => {
@@ -467,12 +501,18 @@
 				})
 				.Columns(c => {
 					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
-					c.Bound(x => x.ProductName).ReadOnly().Visible(true).Width(440);
-					c.Bound(x => x.GoogleCategory).ClientTemplate(Html.XEditableLink("GoogleCategory", "typeahead"));
+					c.Bound(x => x.Name)
+						.ReadOnly().Visible(true).Width(420)
+						.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+						.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+					c.Bound(x => x.SKU).ReadOnly().Visible(true);
+					c.Bound(x => x.Taxonomy).ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
 					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
 					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);
 					c.Bound(x => x.Color).ClientTemplate(Html.XEditableLink("Color", "text"));
-					c.Bound(x => x.GoogleSize).ClientTemplate(Html.XEditableLink("GoogleSize", "text"));
+					c.Bound(x => x.Size).ClientTemplate(Html.XEditableLink("Size", "text"));
+					c.Bound(x => x.Material).ClientTemplate(Html.XEditableLink("Material", "text"));
+					c.Bound(x => x.Pattern).ClientTemplate(Html.XEditableLink("Pattern", "text"));
 				})
 				.ClientEvents(e => {
 					e.OnDataBound("OnGridDataBound");
@@ -482,7 +522,7 @@
 					dataBinding.Ajax()
 						.Select("GoogleProductList", "FeedFroogle");
 				})
-				.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.EnableCustomBinding(true)
 			)
         </td>
@@ -514,7 +554,8 @@
 
     	function OnGridDataBinding(e) {
     		e.data = {
-    			searchProductName: $('#SearchProductName').val()
+    			searchProductName: $('#SearchProductName').val(),
+				touched: $('#SearchIsTouched').val()
     		};
     	}
 
@@ -530,7 +571,7 @@
     				allowClear: true
     			};
 
-    		grid.find('a.edit-link-googlecategory').editable($.extend(options, {
+    		grid.find('a.edit-link-taxonomy').editable($.extend(options, {
     			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)
     		}));
 
@@ -553,7 +594,11 @@
 
     		grid.find('a.edit-link-color').editable(options);
 
-    		grid.find('a.edit-link-googlesize').editable(options);
+    		grid.find('a.edit-link-size').editable(options);
+
+    		grid.find('a.edit-link-material').editable(options);
+
+    		grid.find('a.edit-link-pattern').editable(options);
 		}
     </script>
 }

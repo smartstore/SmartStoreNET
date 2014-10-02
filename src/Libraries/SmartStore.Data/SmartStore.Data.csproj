@@ -175,6 +175,22 @@
     <Compile Include="Migrations\201406262150229_Providers.Designer.cs">
       <DependentUpon>201406262150229_Providers.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.cs" />
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.Designer.cs">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408071158147_MultistorePoll.cs" />
+    <Compile Include="Migrations\201408071158147_MultistorePoll.Designer.cs">
+      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.cs" />
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.Designer.cs">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.cs" />
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.Designer.cs">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -360,6 +376,18 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201406262150229_Providers.resx">
       <DependentUpon>201406262150229_Providers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407191010096_BetterReturnRequest.resx">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071158147_MultistorePoll.resx">
+      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408291450443_CheckoutCommmentBox.resx">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409150936394_CustomerNameFormat.resx">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

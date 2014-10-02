@@ -38,6 +38,10 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
+using SmartStore.Core.IO;
+using System.Net.Mime;
+using Newtonsoft.Json.Linq;
+using Newtonsoft.Json;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -613,6 +617,8 @@ namespace SmartStore.Admin.Controllers
 
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
+
+				model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 			}
 
 			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
@@ -709,7 +715,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//specification attributes
-			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes();
+			var specificationAttributes = _specificationAttributeService.GetSpecificationAttributes().ToList();
 			for (int i = 0; i < specificationAttributes.Count; i++)
 			{
 				var sa = specificationAttributes[i];
@@ -810,7 +816,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				decimal basePriceValue = Convert.ToDecimal((product.Price / basePriceAmount) * basePriceBaseAmount);
 
-				string basePriceFormatted = _priceFormatter.FormatPrice(basePriceValue, false, false);
+				string basePriceFormatted = _priceFormatter.FormatPrice(basePriceValue, true, false);
 				string unit = "{0} {1}".FormatWith(basePriceBaseAmount, basePriceMeasureUnit);
 
 				basePrice = _localizationService.GetResource("Admin.Catalog.Products.Fields.BasePriceInfo").FormatWith(
@@ -845,7 +851,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = new ProductListModel();
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
-            model.DisplayPdfDownloadCatalog = _pdfSettings.Enabled;
+            model.DisplayPdfExport = _pdfSettings.Enabled;
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
             model.Products = new GridModel<ProductModel>
             {
@@ -1552,6 +1559,7 @@ namespace SmartStore.Admin.Controllers
             ctx.ManufacturerId = model.SearchManufacturerId;
 			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
+			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageIndex = command.Page - 1;
@@ -1732,9 +1740,11 @@ namespace SmartStore.Admin.Controllers
 
             if (model.SearchCategoryId > 0)
                 ctx.CategoryIds.Add(model.SearchCategoryId);
+
             ctx.ManufacturerId = model.SearchManufacturerId;
 			ctx.StoreId = model.SearchStoreId;
             ctx.Keywords = model.SearchProductName;
+			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
             ctx.PageIndex = command.Page - 1;
@@ -1920,6 +1930,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
@@ -2231,6 +2242,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
@@ -2438,7 +2450,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult ProductSpecAttrList(GridCommand command, int productId)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
+                return AccessDeniedView();  
 
             var productrSpecs = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId);
 
@@ -2450,6 +2462,8 @@ namespace SmartStore.Admin.Controllers
                         Id = x.Id,
                         SpecificationAttributeName = x.SpecificationAttributeOption.SpecificationAttribute.Name,
                         SpecificationAttributeOptionName = x.SpecificationAttributeOption.Name,
+                        SpecificationAttributeOptionAttributeId = x.SpecificationAttributeOption.SpecificationAttributeId,
+                        SpecificationAttributeOptionId = x.SpecificationAttributeOptionId,
                         AllowFiltering = x.AllowFiltering,
                         ShowOnProductPage = x.ShowOnProductPage,
                         DisplayOrder = x.DisplayOrder
@@ -2457,6 +2471,23 @@ namespace SmartStore.Admin.Controllers
                     return psaModel;
                 })
                 .ToList();
+
+            foreach(var attr in productrSpecsModel) {
+
+                var options = _specificationAttributeService.GetSpecificationAttributeOptionsBySpecificationAttribute(attr.SpecificationAttributeOptionAttributeId);
+
+                foreach(var option in options) {
+
+                    attr.SpecificationAttributeOptions.Add(new ProductSpecificationAttributeModel.SpecificationAttributeOption()
+                    {
+                        id = option.Id,
+                        name = option.Name,
+                        text = option.Name
+                    });
+                }
+
+                attr.SpecificationAttributeOptionsJsonString = JsonConvert.SerializeObject(attr.SpecificationAttributeOptions);
+            }
 
             var model = new GridModel<ProductSpecificationAttributeModel>
             {
@@ -2617,37 +2648,6 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
-        public ActionResult DownloadCatalogAsPdf()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-            try
-            {
-
-                var ctx = new ProductSearchContext();
-                ctx.LanguageId = _workContext.WorkingLanguage.Id;
-                ctx.OrderBy = ProductSortingEnum.Position;
-                ctx.PageSize = int.MaxValue;
-                ctx.ShowHidden = true;
-
-                var products = _productService.SearchProducts(ctx);
-				
-				byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _pdfService.PrintProductsToPdf(stream, products, _workContext.WorkingLanguage);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "application/pdf", "pdfcatalog.pdf");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
-        }
-
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2677,6 +2677,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2732,6 +2733,7 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		[HttpPost]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
@@ -2758,6 +2760,46 @@ namespace SmartStore.Admin.Controllers
 				return File(bytes, "text/xls", "products.xlsx");
 			}
         }
+
+		public ActionResult ExportPdfAll()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			var ctx = new ProductSearchContext();
+			ctx.LanguageId = _workContext.WorkingLanguage.Id;
+			ctx.OrderBy = ProductSortingEnum.Position;
+			ctx.PageSize = int.MaxValue;
+			ctx.ShowHidden = true;
+
+			var products = _productService.SearchProducts(ctx);
+
+			if (products.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+		}
+
+		[HttpPost]
+		public ActionResult ExportPdfSelected(string selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			int[] ids = selectedIds.ToIntArray();
+			var products = _productService.GetProductsByIds(ids);
+
+			if (products.Count <= 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+		}
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)
@@ -3643,6 +3685,7 @@ namespace SmartStore.Admin.Controllers
 				ManufacturerId = model.SearchManufacturerId,
 				StoreId = model.SearchStoreId,
 				Keywords = model.SearchProductName,
+				SearchSku = !_catalogSettings.SuppressSkuSearch,
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,

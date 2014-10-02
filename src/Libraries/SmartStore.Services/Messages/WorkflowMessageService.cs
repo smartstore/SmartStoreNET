@@ -947,11 +947,13 @@ namespace SmartStore.Services.Messages
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
-            var toEmail = returnRequest.Customer.Email;
+            var toEmail = returnRequest.Customer.FindEmail();
             var toName = returnRequest.Customer.GetFullName();
-            return SendNotification(messageTemplate, emailAccount,
-                languageId, tokens,
-                toEmail, toName);
+
+			if (toEmail.IsNullOrEmpty())
+				return 0;
+
+            return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);
         }
 
         #endregion
@@ -985,6 +987,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
+            _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
 			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum);
 
@@ -1029,6 +1032,7 @@ namespace SmartStore.Services.Messages
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
+            _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic,
 				friendlyForumTopicPageIndex, forumPost.Id);
 			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum);
@@ -1049,7 +1053,7 @@ namespace SmartStore.Services.Messages
         /// <param name="privateMessage">Private message</param>
         /// <param name="languageId">Message language identifier</param>
         /// <returns>Queued email identifier</returns>
-        public int SendPrivateMessageNotification(PrivateMessage privateMessage, int languageId)
+        public int SendPrivateMessageNotification(Customer customer, PrivateMessage privateMessage, int languageId)
         {
             if (privateMessage == null)
             {
@@ -1067,6 +1071,7 @@ namespace SmartStore.Services.Messages
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
+            _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddPrivateMessageTokens(tokens, privateMessage);
 
             //event notification

@@ -94,13 +94,34 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #region Methods
+		#region Utilities
 
-        /// <summary>
+		private void DeleteAllCategories(IList<Category> categories, bool delete)
+		{
+			foreach (var category in categories)
+			{				
+				if (delete)
+					category.Deleted = true;
+				else
+					category.ParentCategoryId = 0;
+
+				UpdateCategory(category);
+
+				var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
+				DeleteAllCategories(childCategories, delete);
+			}
+		}
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
         /// Delete category
         /// </summary>
         /// <param name="category">Category</param>
-        public virtual void DeleteCategory(Category category)
+		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
+		public virtual void DeleteCategory(Category category, bool deleteChilds = false)
         {
             if (category == null)
                 throw new ArgumentNullException("category");
@@ -108,13 +129,8 @@ namespace SmartStore.Services.Catalog
             category.Deleted = true;
             UpdateCategory(category);
 
-			//reset a "Parent category" property of all child subcategories
-            var subcategories = GetAllCategoriesByParentCategoryId(category.Id, true);
-            foreach (var subcategory in subcategories)
-            {
-                subcategory.ParentCategoryId = 0;
-                UpdateCategory(subcategory);
-            }
+			var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
+			DeleteAllCategories(childCategories, deleteChilds);
         }
         
         /// <summary>

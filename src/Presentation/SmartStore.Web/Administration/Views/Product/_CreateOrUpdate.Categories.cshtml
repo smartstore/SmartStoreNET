@@ -28,16 +28,15 @@
             })
             .Columns(columns =>
             {
-                columns.Bound(x => x.Category)
-                    .Width(500)
-                    .Centered();
+                columns.Bound(x => x.Category);
                 columns.Bound(x => x.IsFeaturedProduct)
-                    .Width(50)
+                    .Width(100)
                     .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))
                     .ClientTemplate(@Html.SymbolForBool("IsFeaturedProduct"))
                     .Centered();
-                columns.Bound(x => x.DisplayOrder)
-                    .Width(50);
+				columns.Bound(x => x.DisplayOrder)
+					.Centered()
+                    .Width(100);
                 columns.Command(commands =>
                 {
                     commands.Edit().Localize(T);

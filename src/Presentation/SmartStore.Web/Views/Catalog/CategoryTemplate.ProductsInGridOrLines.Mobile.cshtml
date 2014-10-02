@@ -21,7 +21,7 @@
         @if (!String.IsNullOrWhiteSpace(Model.Description))
         {
             <div class="category-description">
-                @Html.Raw(Model.Description)
+                @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
         }
         @Html.Widget("mobile_categorydetails_before_subcategories")

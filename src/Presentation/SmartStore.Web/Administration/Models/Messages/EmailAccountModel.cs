@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.ComponentModel.DataAnnotations;
+using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
@@ -30,6 +31,7 @@ namespace SmartStore.Admin.Models.Messages
 
         [SmartResourceDisplayName("Admin.Configuration.EmailAccounts.Fields.Password")]
         [AllowHtml]
+		[DataType(DataType.Password)]
         public string Password { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.EmailAccounts.Fields.EnableSsl")]

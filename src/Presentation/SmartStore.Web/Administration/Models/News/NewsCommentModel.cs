@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.News
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerName { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.News.Comments.Fields.IPAddress")]
         public string IpAddress { get; set; }

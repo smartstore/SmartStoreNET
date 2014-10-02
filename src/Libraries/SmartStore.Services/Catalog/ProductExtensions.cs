@@ -199,10 +199,8 @@ namespace SmartStore.Services.Catalog
 				}
 				else
 				{
-					if (product.BackorderMode == BackorderMode.NoBackorders)
+					if (product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0)
 						stockMessage = localizationService.GetResource("Products.Availability.OutOfStock");
-					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0)
-						stockMessage = localizationService.GetResource("Products.Availability.InStock");
 					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
 						stockMessage = localizationService.GetResource("Products.Availability.Backordering");
 				}
@@ -224,36 +222,10 @@ namespace SmartStore.Services.Catalog
 
             bool displayDeliveryTime = true;
 
-            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-            {
-                switch (product.BackorderMode)
-                {
-                    case BackorderMode.NoBackorders:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                displayDeliveryTime = true;
-                            }
-                            else
-                            {
-                                displayDeliveryTime = false;
-                            }
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
+			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+			{
+				return (product.StockQuantity > 0);
+			}
 
             return displayDeliveryTime;
         }
@@ -344,7 +316,7 @@ namespace SmartStore.Services.Catalog
 				decimal price = decimal.Add(product.Price, priceAdjustment);
 				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
-				string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
+				string basePrice = priceFormatter.FormatPrice(basePriceValue, true, false);
 				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 
 				if (languageIndependent)

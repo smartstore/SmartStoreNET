@@ -91,11 +91,18 @@
 
 		    //delivery time
 		    var deliveryTime = priceBlock.find(".delivery-time");
-		    deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
-			deliveryTime.find(".delivery-time-color")
-				.css("background-color", data.Delivery.Color)
-				.attr("title", data.Delivery.Name)
-				.toggle(data.Stock.Availability.Available);
+
+		    if (data.Delivery.DisplayAccordingToStock) {
+		    	deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
+		    	deliveryTime.find(".delivery-time-color")
+					.css("background-color", data.Delivery.Color)
+					.attr("title", data.Delivery.Name)
+					.toggle(data.Stock.Availability.Available);
+		    }
+		    else {
+		    	deliveryTime.find(".delivery-time-value").html(data.Stock.Availability.Text);
+		    	deliveryTime.find(".delivery-time-color").toggle(false);
+		    }
 		     
 		    //attributes
 		    var attributesBlock = $(context).find('.attributes').addBack();

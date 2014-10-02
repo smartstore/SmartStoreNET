@@ -175,7 +175,6 @@
             </td>
         </tr>
 
-        @*codehint: sm-add begin*@
         <tr id="pnlDisplayWeight">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowWeight)
@@ -267,6 +266,24 @@
                 @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EnableHtmlTextCollapser)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.EnableHtmlTextCollapser)
+                @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight)
+                @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+        </tr>
     </table>
 }
         
@@ -311,6 +328,16 @@
                     @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
                 </td>
             </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.FilterEnabled)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.FilterEnabled)
+                    @Html.ValidationMessageFor(model => model.FilterEnabled)
+                </td>
+            </tr>
+
         </table>
     </fieldset>
     
@@ -454,7 +481,6 @@
 @helper TabUserSettings()
 {
     <table>
-        <!-- codehint: sm-add begin -->
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowProductReviewsInProductLists)
@@ -464,7 +490,6 @@
                 @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductLists)
             </td>
         </tr>
-        <!-- codehint: sm-add end -->
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductReviewsMustBeApproved)

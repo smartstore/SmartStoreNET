@@ -44,6 +44,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.CategoryBreadcrumbEnabled")]
         public bool CategoryBreadcrumbEnabled { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.FilterEnabled")]
+        public bool FilterEnabled { get; set; }
+        
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShareButton")]
         public bool ShowShareButton { get; set; }
 
@@ -106,6 +109,12 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.NumberOfBestsellersOnHomepage")]
         public int NumberOfBestsellersOnHomepage { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser")]
+		public bool EnableHtmlTextCollapser { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight")]
+		public int HtmlTextCollapsedHeight { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SearchPageProductsPerPage")]
         public int SearchPageProductsPerPage { get; set; }

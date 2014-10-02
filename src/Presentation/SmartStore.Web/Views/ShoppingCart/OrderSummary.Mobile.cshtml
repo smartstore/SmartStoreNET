@@ -211,6 +211,10 @@
             </div>
             <div class="totals">
                 @Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
+
+				@Html.Widget("mobile_order_summary_content_totals_bottom")
+				@Html.Widget("mobile_order_summary_content_totals_left")
+
                 @if (Model.IsEditable)
                 {
                     @*if (Model.TermsOfServiceEnabled)
@@ -258,8 +262,11 @@
         if (Model.IsEditable)
         {
         <div class="addon-buttons">
-            @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express)*@
-            @Html.Partial("_ButtonPaymentMethod", Model)
+            @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+			@foreach(var item in Model.ButtonPaymentMethods.Items)
+			{
+				@Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
+			}
         </div>
         }
     }

@@ -56,5 +56,16 @@ namespace SmartStore.Plugin.Shipping.ByWeight.Domain
         /// Gets or sets the shipping charge amount
         /// </summary>
         public decimal ShippingChargeAmount { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shipping charge amount
+        /// </summary>
+        public decimal SmallQuantitySurcharge { get; set; }
+
+        /// <summary>
+        /// Gets or sets the shipping charge percentage
+        /// </summary>
+        public decimal SmallQuantityThreshold { get; set; }
+
     }
 }

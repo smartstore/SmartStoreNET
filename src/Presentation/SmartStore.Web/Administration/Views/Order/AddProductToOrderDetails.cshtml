@@ -3,7 +3,6 @@
 @model OrderModel.AddOrderProductModel.ProductDetailsModel
 
 @{
-    //page title
     ViewBag.Title = string.Format(T("Admin.Orders.Products.AddNew.Title2").Text, Model.Name, Model.OrderId);
 }
 
@@ -12,11 +11,6 @@
 		$('#ProductAddAttributeContainer').find('select').selectWrapper();
 	});
 </script>
-
-<div class="alert alert-info fade in">
-	<button class="close" data-dismiss="alert">&#215;</button>
-	@T("Admin.Orders.Products.AddNew.Note2")
-</div>
 
 @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
 @using (Html.BeginForm("AddProductToOrderDetails", "Order",
@@ -111,10 +105,40 @@
             }
             
 			<div class="clear"></div>
+			<p></p>
 
 			<div style="margin-top: 10px;">
 				<button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
 			</div>
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.AdjustInventory)
+					</td>
+					<td class="adminData">
+						@Html.EditorFor(model => model.AdjustInventory)
+						@Html.ValidationMessageFor(model => model.AdjustInventory)
+					</td>
+				</tr>
+				@if(Model.ShowUpdateTotals)
+				{
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(model => model.UpdateTotals)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(model => model.UpdateTotals)
+							@Html.ValidationMessageFor(model => model.UpdateTotals)
+						</td>
+					</tr>
+				}
+				<tr>
+					<td class="adminTitle">&nbsp;</td>
+					<td class="adminData">
+						<button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
+					</td>
+				</tr>
+			</table>
         </div>
     }
     else if (Model.ProductType == ProductType.GroupedProduct)

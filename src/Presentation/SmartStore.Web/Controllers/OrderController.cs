@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -492,13 +493,8 @@ namespace SmartStore.Web.Controllers
 
             var orders = new List<Order>();
             orders.Add(order);
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", string.Format("order_{0}.pdf", order.Id));
+
+			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
         }
 
         public ActionResult ReOrder(int id)

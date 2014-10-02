@@ -23,6 +23,8 @@ namespace SmartStore.Web.Framework.Plugins
 		public bool UseOwnProductNo { get; set; }
 		public int StoreId { get; set; }
 		public string ExportFormat { get; set; }
+		public bool ConvertNetToGrossPrices { get; set; }
+		public int LanguageId { get; set; }
 	}
 
 
@@ -43,6 +45,7 @@ namespace SmartStore.Web.Framework.Plugins
 		[SmartResourceDisplayName("Admin.PromotionFeeds")]
 		public List<FeedFileData> GeneratedFiles { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
+		public List<SelectListItem> AvailableLanguages { get; set; }
 	}
 
 
@@ -50,9 +53,12 @@ namespace SmartStore.Web.Framework.Plugins
 	{
 		public int StoreId { get; set; }
 		public string StoreName { get; set; }
+		public string FileTempPath { get; set; }
 		public string FilePath { get; set; }
 		public string FileUrl { get; set; }
 		public string LogPath { get; set; }
+		public string LogUrl { get; set; }
+		public string LastWriteTime { get; set; }
 	}
 
 

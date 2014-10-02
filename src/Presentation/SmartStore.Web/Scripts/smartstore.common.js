@@ -179,6 +179,10 @@
 			}
 		);
 
+		// html text collapser
+		if ($({}).moreLess) {
+			$('.more-less').moreLess();
+		}
     });
 
 })( jQuery, this, document );

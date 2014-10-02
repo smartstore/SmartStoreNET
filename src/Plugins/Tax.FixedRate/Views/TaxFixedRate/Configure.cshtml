@@ -12,12 +12,15 @@
                     .DataKeys(keys => keys.Add(x => x.TaxCategoryId).RouteKey("TaxCategoryId"))
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.TaxCategoryName).Width(300).ReadOnly();
-                        columns.Bound(x => x.Rate).Width(100).Format("{0:G29}");
+                        columns.Bound(x => x.TaxCategoryName)
+							.ReadOnly();
+                        columns.Bound(x => x.Rate)
+							.Width(400)
+							.Format("{0:0.00}");
                         columns.Command(commands =>
                         {
                             commands.Edit();
-                        }).Width(100);
+                        }).Width(120);
 
                     })
                     .Editable(x =>

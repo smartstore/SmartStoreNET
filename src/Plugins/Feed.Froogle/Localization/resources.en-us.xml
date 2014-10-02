@@ -10,8 +10,7 @@
 	</LocaleResource>
 	<LocaleResource Name="GridEditNote">
 		<Value>
-			<![CDATA[You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.
-<br>Note: The data entered here are deleted when you uninstall the Google Merchant Center plugin!]]>
+			<![CDATA[You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingDefaultCategory">
@@ -61,6 +60,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Size">
 		<Value>Size</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Material">
+		<Value>Material</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Pattern">
+		<Value>Pattern</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled">
 		<Value>Automatically generate feed</Value>
@@ -234,10 +239,22 @@
 		<Value>Empty</Value>
 	</LocaleResource>
 	<LocaleResource Name="SearchProductName">
-		<Value>Product search</Value>
+		<Value>Product name</Value>
 	</LocaleResource>
 	<LocaleResource Name="SearchProductName.Hint">
-		<Value>Search products by keywords.</Value>
+		<Value>Search product names.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched">
+		<Value>Edited</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Hint">
+		<Value>Searches for records which have or have not been edited yet.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Touched">
+		<Value>Edited</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Untouched">
+		<Value>Not edited yet</Value>
 	</LocaleResource>
 	<LocaleResource Name="Store">
 		<Value>Store</Value>
@@ -265,5 +282,17 @@
 	</LocaleResource>
 	<LocaleResource Name="ExportBasePrice.Hint">
 		<Value>Activate this option if you want to export the base price of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices">
+		<Value>Convert net into gross prices</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices.Hint">
+		<Value>Determines to convert net into gross prices.</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId">
+		<Value>Language</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId.Hint">
+		<Value>Determines which language to use to export language dependent values (for instance the product name).</Value>
 	</LocaleResource>
 </Language>

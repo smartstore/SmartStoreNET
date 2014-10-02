@@ -10,7 +10,9 @@
 <div class="page product-reviews-page">
     <h4 class="muted">@T("Reviews.ProductReviewsFor")</h4>
     <div class="page-title">
-        <h1><a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })">@Model.ProductName</a></h1>
+        <h2>
+			<a href="@Url.RouteUrl("Product", new { SeName = Model.ProductSeName })" style="text-decoration: none;">@Model.ProductName</a>
+		</h2>
     </div>
 
     <div class="page-body">
@@ -42,6 +44,19 @@
                         }
                         <div class="forms-box">
                             <div class="inputs">
+                                @Html.LabelFor(model => model.AddProductReview.Rating)
+                                <div class="input-box review-rating star-rating star-rating-large">
+                                    @{
+                                        var srName = Html.FieldNameFor(x => x.AddProductReview.Rating);
+                                    }
+                                    <input type="radio" id="@(srName)5" name="@srName" value="5" checked="@(5 == Model.AddProductReview.Rating)" /><label for="@(srName)5" class="tooltip-toggle" title="@T("Reviews.Fields.Rating.Excellent")"></label>
+                                    <input type="radio" id="@(srName)4" name="@srName" value="4" checked="@(4 == Model.AddProductReview.Rating)" /><label for="@(srName)4"></label>
+                                    <input type="radio" id="@(srName)3" name="@srName" value="3" checked="@(3 == Model.AddProductReview.Rating)" /><label for="@(srName)3"></label>
+                                    <input type="radio" id="@(srName)2" name="@srName" value="2" checked="@(2 == Model.AddProductReview.Rating)" /><label for="@(srName)2"></label>
+                                    <input type="radio" id="@(srName)1" name="@srName" value="1" checked="@(1 == Model.AddProductReview.Rating)" /><label for="@(srName)1" class="tooltip-toggle" title="@T("Reviews.Fields.Rating.Bad")"></label>
+                                </div>
+                            </div>
+                            <div class="inputs">
                                 @Html.LabelFor(model => model.AddProductReview.Title)
                                 <div class="input-box">
                                     @Html.TextBoxFor(model => model.AddProductReview.Title, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-title" }) : (object)(new { @class = "review-title", disabled = "disabled" }))
@@ -54,19 +69,6 @@
                                     @Html.TextAreaFor(model => model.AddProductReview.ReviewText, Model.AddProductReview.CanCurrentCustomerLeaveReview ? (object)(new { @class = "review-text" }) : (object)(new { @class = "review-text", disabled = "disabled" }))
                                 </div>
                                 @Html.ValidationMessageFor(model => model.AddProductReview.ReviewText)
-                            </div>
-                            <div class="inputs">
-                                @Html.LabelFor(model => model.AddProductReview.Rating)
-                                <div class="input-box review-rating star-rating star-rating-large">
-                                    @{
-                                        var srName = Html.FieldNameFor(x => x.AddProductReview.Rating);
-                                    }
-                                    <input type="radio" id="@(srName)5" name="@srName" value="5" /><label for="@(srName)5" class="tooltip-toggle" title="@T("Reviews.Fields.Rating.Excellent")"></label>
-                                    <input type="radio" id="@(srName)4" name="@srName" value="4" /><label for="@(srName)4"></label>
-                                    <input type="radio" id="@(srName)3" name="@srName" value="3" /><label for="@(srName)3"></label>
-                                    <input type="radio" id="@(srName)2" name="@srName" value="2" /><label for="@(srName)2"></label>
-                                    <input type="radio" id="@(srName)1" name="@srName" value="1" /><label for="@(srName)1" class="tooltip-toggle" title="@T("Reviews.Fields.Rating.Bad")"></label>
-                                </div>
                             </div>
                             @if (Model.AddProductReview.DisplayCaptcha)
                             {

@@ -27,7 +27,7 @@
                             .ClientTemplate("<a href=\"EditForumGroup/<#= Id #>\"><#= Name #></a>");
 
                     columns.Bound(x => x.DisplayOrder).Width(150).Centered();
-                    columns.Bound(x => x.CreatedOn).Width(200).Centered();
+                    columns.Bound(x => x.CreatedOn).Width(200);
                     columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()
@@ -46,7 +46,7 @@
                                     .ClientTemplate("<a href=\"EditForum/<#= Id #>\"><#= Name #></a>");
 
                                 columns.Bound(x => x.DisplayOrder).Width(150).Centered();
-                                columns.Bound(x => x.CreatedOn).Width(200).Centered();
+                                columns.Bound(x => x.CreatedOn).Width(200);
                                 columns.Bound(x => x.Id)
                                         .Width(50)
                                         .Centered()

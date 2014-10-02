@@ -14,7 +14,8 @@ namespace SmartStore.Services.Catalog
         /// Delete category
         /// </summary>
         /// <param name="category">Category</param>
-        void DeleteCategory(Category category);
+		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
+		void DeleteCategory(Category category, bool deleteChilds = false);
 
         /// <summary>
         /// Gets all categories

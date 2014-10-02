@@ -6,25 +6,34 @@
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
+
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Records)
+            @(Html.Telerik().Grid<ShippingByWeightModel>()
                     .Name("Grid")
                     .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
                     .Columns(columns =>
                     {
 						columns.Bound(x => x.StoreName).ReadOnly();
-                        columns.Bound(x => x.CountryName).Width(200).ReadOnly();
-                        columns.Bound(x => x.ShippingMethodName).Width(200).ReadOnly();
-                        columns.Bound(x => x.From).Width(100);
-                        columns.Bound(x => x.To).Width(100);
+                        columns.Bound(x => x.CountryName).ReadOnly();
+                        columns.Bound(x => x.ShippingMethodName).ReadOnly();
+						columns.Bound(x => x.From)
+							.Format("{0:0.00}");
+						columns.Bound(x => x.To)
+							.Format("{0:0.00}");
                         columns.Bound(x => x.UsePercentage)
                             .Centered()
                             .Template(item => @Html.SymbolForBool(item.UsePercentage))
                             .ClientTemplate(@Html.SymbolForBool("UsePercentage"));
-                        columns.Bound(x => x.ShippingChargePercentage).Width(100);
-                        columns.Bound(x => x.ShippingChargeAmount).Width(100);
+						columns.Bound(x => x.ShippingChargePercentage)
+							.Format("{0:0.00}");
+						columns.Bound(x => x.ShippingChargeAmount)
+							.Format("{0:0.00}");
+						columns.Bound(x => x.SmallQuantitySurcharge)
+							.Format("{0:0.00}");
+						columns.Bound(x => x.SmallQuantityThreshold)
+							.Format("{0:0.00}");
                         columns.Command(commands =>
                         {
                             commands.Edit();
@@ -43,12 +52,13 @@
 							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
 							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } });
                     })
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
-<p>
-</p>
+<p></p>
+
 @using (Html.BeginForm())
 {
     
@@ -147,6 +157,26 @@
                 @Html.ValidationMessageFor(model => model.AddShippingChargeAmount)
             </td>
         </tr>
+
+        <tr id="pnlSmallQuantitySurcharge">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SmallQuantitySurcharge)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SmallQuantitySurcharge) [@Model.PrimaryStoreCurrencyCode]
+                @Html.ValidationMessageFor(model => model.SmallQuantitySurcharge)
+            </td>
+        </tr>
+        <tr id="pnlSmallQuantityThreshold">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SmallQuantityThreshold)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.SmallQuantityThreshold)
+                @Html.ValidationMessageFor(model => model.SmallQuantityThreshold)
+            </td>
+        </tr>
+
         <tr>
 			<td class="adminTitle">
 				&nbsp;

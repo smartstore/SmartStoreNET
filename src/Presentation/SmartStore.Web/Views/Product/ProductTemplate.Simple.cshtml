@@ -304,7 +304,7 @@
                     if (!String.IsNullOrWhiteSpace(Model.FullDescription))
                     {
                         x.Add().Text(@T("Products.Details"))
-                                .Content(Html.Raw("<div class='more-less'><div class='more-block' itemprop='description'>" + Model.FullDescription + "</div></div>").ToString())
+								.Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
                                 .Selected(true);
                     }
 
@@ -322,7 +322,7 @@
                                 .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
                                 .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
                     }
-                    
+
                     //generate an event
                     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "product-detail", this.Html, this.Model));
                 })
@@ -347,51 +347,8 @@
     </div>
 </div>
 
-@{Html.SmartStore().Window()
-    .Name("productquestion-window")
-    .Title(T("Admin.Customers.Customers.SendEmail").Text)
-    .Content(@<text>
-        @using (Html.BeginForm("ProductQuestionSend", "Catalog", new { id = Model.Id }))
-        {
-            @*<table style="text-align: left;">
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.SendEmail.Subject)
-                    </td>
-                    <td class="adminData">
-                        @Html.EditorFor(model => model.SendEmail.Subject)
-                        @Html.ValidationMessageFor(model => model.SendEmail.Subject)
-                    </td>
-                </tr>
-                <tr>
-                    <td class="adminTitle">
-                        @Html.SmartLabelFor(model => model.SendEmail.Body)
-                    </td>
-                    <td class="adminData">
-                        @Html.TextAreaFor(model => model.SendEmail.Body, new { style = "Width: 450px; Height: 350px;" })
-                        @Html.ValidationMessageFor(model => model.SendEmail.Body)
-                    </td>
-                </tr>
-            </table>*@
-        }
-        </text>)
-    .FooterContent(@<text>
-        <button id="sendquestion" type="button" class="btn btn-primary">@T("Admin.Customers.Customers.SendEmail")</button>
-        <a href="#" class="btn btn-link" data-dismiss="modal" aria-hidden="true" rel="nofollow">@T("Common.Close")</a>
-    </text>)
-    .Width(600)
-    .Height(460)
-    .Modal(true)
-    .Visible(false)
-    .Render();
-}
 <script type="text/javascript">
     $(function () {
-        $("#sendquestion").click(function (e) {
-            e.preventDefault();
-            $("#productquestion-window").find("form").submit();
-        });
-
         var settings = {
             galleryWidth: 318,
             galleryHeight: 250,
@@ -401,14 +358,6 @@
             zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
         };
 
-        $('#product-details-form').productDetail(settings);
-
-        if( toBool('@(Model.EnableHtmlTextCollapser)') )
-        {
-            var moreLess = $('.more-less');
-            if (moreLess.height() > parseInt(@(Model.HtmlTextCollapsedHeight))) {
-                $('.more-less').moreLess({ adjustheight: parseInt(@(Model.HtmlTextCollapsedHeight))});
-            }
-        }
+    	$('#product-details-form').productDetail(settings);
     });
 </script>

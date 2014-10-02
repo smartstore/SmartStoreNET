@@ -14,7 +14,6 @@ using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
 using System.Web.Http.OData;
 using SmartStore.Plugin.Api.WebApi.Services;
-using System.Web.Http.OData.Query;
 
 namespace SmartStore.Plugin.Api.WebApi.Controllers.OData
 {

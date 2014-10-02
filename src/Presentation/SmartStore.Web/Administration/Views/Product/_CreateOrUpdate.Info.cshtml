@@ -185,7 +185,7 @@
     }
 </script>
 
-<div style="margin-bottom: 30px;overflow:hidden">
+<div style="margin-bottom: 30px; overflow: hidden;">
 	<table class="adminContent">
 		@if (Model.Id > 0)
 		{
@@ -196,6 +196,14 @@
 				<td class="adminData">
 					@Model.Id.ToString()
 					@Html.ValidationMessageFor(model => model.Id)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ProductUrl)
+				</td>
+				<td class="adminData">
+					<a href="@Model.ProductUrl">@Model.ProductUrl</a>
 				</td>
 			</tr>
 		}

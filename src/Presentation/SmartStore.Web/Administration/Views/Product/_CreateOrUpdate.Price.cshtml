@@ -240,14 +240,14 @@
             })
             .Columns(columns =>
             {
-                columns.Bound(x => x.Store)
-                        .Centered();
-                columns.Bound(x => x.CustomerRole)
-                    .Centered();
                 columns.Bound(x => x.Quantity)
-                    .Centered();
-                columns.Bound(x => x.Price1)
-                    .Format("{0:G29}");
+                    .Centered()
+					.Width(120);
+				columns.Bound(x => x.Price1)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(x => x.Store);
+				columns.Bound(x => x.CustomerRole);
                 columns.Command(commands =>
                 {
                     commands.Edit().Localize(T);
@@ -258,6 +258,13 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onTierPriceEdit"))
             .EnableCustomBinding(true))
+
+            <script type="text/javascript">
+                function onTierPriceEdit(e) {
+                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
+                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                }
+            </script>
         }
         else
         {

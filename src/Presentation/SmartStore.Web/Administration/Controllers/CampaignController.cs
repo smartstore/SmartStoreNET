@@ -4,12 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -26,13 +26,17 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IMessageTokenProvider _messageTokenProvider;
         private readonly IPermissionService _permissionService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
 
         public CampaignController(ICampaignService campaignService,
             IDateTimeHelper dateTimeHelper, IEmailAccountService emailAccountService,
             EmailAccountSettings emailAccountSettings,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILocalizationService localizationService, IMessageTokenProvider messageTokenProvider,
-            IPermissionService permissionService)
+            IPermissionService permissionService,
+			IStoreService storeService,
+			IStoreMappingService storeMappingService)
 		{
             this._campaignService = campaignService;
             this._dateTimeHelper = dateTimeHelper;
@@ -42,21 +46,28 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._messageTokenProvider = messageTokenProvider;
             this._permissionService = permissionService;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
 		}
 
-        private string FormatTokens(string[] tokens)
-        {
-            var sb = new StringBuilder();
-            for (int i = 0; i < tokens.Length; i++)
-            {
-                string token = tokens[i];
-                sb.Append(token);
-                if (i != tokens.Length - 1)
-                    sb.Append(", ");
-            }
+		private void PrepareCampaignModel(CampaignModel model, Campaign campaign, bool excludeProperties)
+		{
+			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
+			model.AllowedTokens = string.Join(", ", _messageTokenProvider.GetListOfCampaignAllowedTokens());
 
-            return sb.ToString();
-        }
+			if (!excludeProperties)
+			{
+				if (campaign != null)
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(campaign);
+				else
+					model.SelectedStoreIds = new int[0];
+			}
+
+			if (campaign != null)
+			{
+				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(campaign.CreatedOnUtc, DateTimeKind.Utc);
+			}
+		}
         
         public ActionResult Index()
         {
@@ -111,7 +122,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new CampaignModel();
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, null, false);
             return View(model);
         }
 
@@ -127,12 +138,15 @@ namespace SmartStore.Admin.Controllers
                 campaign.CreatedOnUtc = DateTime.UtcNow;
                 _campaignService.InsertCampaign(campaign);
 
+				_storeMappingService.SaveStoreMappings<Campaign>(campaign, model.SelectedStoreIds);
+
                 NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, null, true);
+
             return View(model);
         }
 
@@ -143,11 +157,11 @@ namespace SmartStore.Admin.Controllers
 
             var campaign = _campaignService.GetCampaignById(id);
             if (campaign == null)
-                //No campaign found with the specified id
                 return RedirectToAction("List");
 
             var model = campaign.ToModel();
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, campaign, false);
+
             return View(model);
 		}
 
@@ -161,7 +175,6 @@ namespace SmartStore.Admin.Controllers
 
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
-                //No campaign found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -169,12 +182,15 @@ namespace SmartStore.Admin.Controllers
                 campaign = model.ToEntity(campaign);
                 _campaignService.UpdateCampaign(campaign);
 
+				_storeMappingService.SaveStoreMappings<Campaign>(campaign, model.SelectedStoreIds);
+
                 NotifySuccess(_localizationService.GetResource("Admin.Promotions.Campaigns.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = campaign.Id }) : RedirectToAction("List");
             }
 
             //If we got this far, something failed, redisplay form
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, campaign, true);
+
             return View(model);
 		}
 
@@ -187,18 +203,15 @@ namespace SmartStore.Admin.Controllers
 
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
-                //No campaign found with the specified id
                 return RedirectToAction("List");
 
-
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, campaign, false);
 
             try
             {
                 var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
-
 
                 var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.TestEmail);
                 if (subscription != null)
@@ -235,11 +248,9 @@ namespace SmartStore.Admin.Controllers
 
             var campaign = _campaignService.GetCampaignById(model.Id);
             if (campaign == null)
-                //No campaign found with the specified id
                 return RedirectToAction("List");
 
-
-            model.AllowedTokens = FormatTokens(_messageTokenProvider.GetListOfCampaignAllowedTokens());
+			PrepareCampaignModel(model, campaign, false);
 
             try
             {
@@ -247,8 +258,9 @@ namespace SmartStore.Admin.Controllers
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
 
-                var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0 ,int.MaxValue, false);
+                var subscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(null, 0 , int.MaxValue, false);
                 var totalEmailsSent = _campaignService.SendCampaign(campaign, emailAccount, subscriptions);
+
                 NotifySuccess(string.Format(_localizationService.GetResource("Admin.Promotions.Campaigns.MassEmailSentToCustomers"), totalEmailsSent), false);
                 return View(model);
             }
@@ -269,7 +281,6 @@ namespace SmartStore.Admin.Controllers
 
             var campaign = _campaignService.GetCampaignById(id);
             if (campaign == null)
-                //No campaign found with the specified id
                 return RedirectToAction("List");
 
             _campaignService.DeleteCampaign(campaign);

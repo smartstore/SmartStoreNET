@@ -216,6 +216,5 @@ namespace SmartStore.Services.Orders
         /// <param name="amount">Amount</param>
         /// <returns>Converted value</returns>
         int ConvertAmountToRewardPoints(decimal amount);
-
     }
 }

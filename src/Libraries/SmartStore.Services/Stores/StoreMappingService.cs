@@ -27,6 +27,7 @@ namespace SmartStore.Services.Stores
 
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly IStoreContext _storeContext;
+		private readonly IStoreService _storeService;
 		private readonly ICacheManager _cacheManager;
 
 		#endregion
@@ -39,11 +40,14 @@ namespace SmartStore.Services.Stores
 		/// <param name="cacheManager">Cache manager</param>
 		/// <param name="storeContext">Store context</param>
 		/// <param name="storeMappingRepository">Store mapping repository</param>
-		public StoreMappingService(ICacheManager cacheManager, IStoreContext storeContext,
+		public StoreMappingService(ICacheManager cacheManager,
+			IStoreContext storeContext,
+			IStoreService storeService,
 			IRepository<StoreMapping> storeMappingRepository)
 		{
 			this._cacheManager = cacheManager;
 			this._storeContext = storeContext;
+			this._storeService = storeService;
 			this._storeMappingRepository = storeMappingRepository;
 
 			this.QuerySettings = DbQuerySettings.Default;
@@ -106,6 +110,32 @@ namespace SmartStore.Services.Stores
 			return storeMappings;
 		}
 
+		/// <summary>
+		/// Save the store napping for an entity
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="entity">The entity</param>
+		/// <param name="selectedStoreIds">Array of selected store ids</param>
+		public virtual void SaveStoreMappings<T>(T entity, int[] selectedStoreIds) where T : BaseEntity, IStoreMappingSupported
+		{
+			var existingStoreMappings = GetStoreMappings(entity);
+			var allStores = _storeService.GetAllStores();
+
+			foreach (var store in allStores)
+			{
+				if (selectedStoreIds != null && selectedStoreIds.Contains(store.Id))
+				{
+					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
+						InsertStoreMapping(entity, store.Id);
+				}
+				else
+				{
+					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
+					if (storeMappingToDelete != null)
+						DeleteStoreMapping(storeMappingToDelete);
+				}
+			}
+		}
 
 		/// <summary>
 		/// Inserts a store mapping record

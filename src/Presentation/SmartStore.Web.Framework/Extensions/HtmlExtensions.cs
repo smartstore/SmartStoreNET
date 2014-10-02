@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Web;
+using System.Threading;
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
@@ -14,15 +16,13 @@ using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.UI;
+using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
-using System.Web;
-using System.Threading;
-using SmartStore.Web.Framework.Settings; // codehint: sm-add
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Web.Framework
 {
-    
-    // codehint: sm-add
+
     public enum InputEditorType
     {   TextBox,
         Password,
@@ -185,7 +185,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(result.ToString());
         }
 
-        // codehint: sm-add
         public static MvcHtmlString SmartLabel<TModel>(this HtmlHelper<TModel> helper, string resourceKey, bool displayHint = true)
         {
             return null;
@@ -397,14 +396,12 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create("");
 		}
 
-        // codehint: sm-add
         public static IHtmlString MetaAcceptLanguage(this HtmlHelper html)
         {
             var acceptLang = HttpUtility.HtmlAttributeEncode(Thread.CurrentThread.CurrentUICulture.ToString());
             return new HtmlString(string.Format("<meta name=\"accept-language\" content=\"{0}\"/>", acceptLang));
         }
 
-        // codehint: sm-add
         public static MvcHtmlString ControlGroupFor<TModel, TValue>(
             this HtmlHelper<TModel> html, 
             Expression<Func<TModel, TValue>> expression, 
@@ -550,6 +547,26 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}
 
+		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)
+		{
+			if (text.IsNullOrEmpty())
+				return MvcHtmlString.Empty;
+
+			var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();
+
+			if (!catalogSettings.EnableHtmlTextCollapser)
+				return MvcHtmlString.Create(text);
+
+			string options = "{{\"adjustheight\":{0}}}".FormatWith(
+				catalogSettings.HtmlTextCollapsedHeight
+			);
+
+			string result = "<div class='more-less' data-options='{0}'><div class='more-block'>{1}</div></div>".FormatWith(
+				options, text
+			);
+
+			return MvcHtmlString.Create(result);
+		}
     }
 }
 

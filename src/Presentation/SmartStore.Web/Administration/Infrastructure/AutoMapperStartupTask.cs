@@ -600,20 +600,15 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.PointsForPurchases_OverrideForStore, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettingsModel, RewardPointsSettings>();
             Mapper.CreateMap<OrderSettings, OrderSettingsModel>()
-                .ForMember(dest => dest.ReturnRequestReasonsParsed, mo => mo.Ignore())
-                .ForMember(dest => dest.ReturnRequestActionsParsed, mo => mo.Ignore())
                 .ForMember(dest => dest.GiftCards_Activated_OrderStatuses, mo => mo.Ignore())
                 .ForMember(dest => dest.GiftCards_Deactivated_OrderStatuses, mo => mo.Ignore())
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
                 .ForMember(dest => dest.OrderIdent, mo => mo.Ignore());
             Mapper.CreateMap<OrderSettingsModel, OrderSettings>()
                 .ForMember(dest => dest.OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab, mo => mo.Ignore())
-                .ForMember(dest => dest.ReturnRequestReasons, mo => mo.Ignore())
-                .ForMember(dest => dest.ReturnRequestActions, mo => mo.Ignore())
                 .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore());
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
-				.ForMember(dest => dest.RoundPricesDuringCalculation, mo => mo.Ignore())
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
                 .ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())

@@ -4,6 +4,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Polls;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Polls
@@ -19,8 +20,10 @@ namespace SmartStore.Services.Polls
         private readonly IRepository<Poll> _pollRepository;
         private readonly IRepository<PollAnswer> _pollAnswerRepository;
         private readonly IRepository<PollVotingRecord> _pollVotingRecords;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
+		private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -29,20 +32,58 @@ namespace SmartStore.Services.Polls
         public PollService(IRepository<Poll> pollRepository, 
             IRepository<PollAnswer> pollAnswerRepository,
             IRepository<PollVotingRecord> pollVotingRecords,
-            ICacheManager cacheManager, IEventPublisher eventPublisher)
+			IRepository<StoreMapping> storeMappingRepository,
+            ICacheManager cacheManager, IEventPublisher eventPublisher,
+			IStoreContext storeContext)
         {
             this._pollRepository = pollRepository;
             this._pollAnswerRepository = pollAnswerRepository;
             this._pollVotingRecords = pollVotingRecords;
+			this._storeMappingRepository = storeMappingRepository;
             this._cacheManager = cacheManager;
             this._eventPublisher = eventPublisher;
+			this._storeContext = storeContext;
+
+			this.QuerySettings = DbQuerySettings.Default;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
-        #region Methods
+		#region Utilities
 
-        /// <summary>
+		private IQueryable<Poll> Filter(IQueryable<Poll> query, bool showHidden)
+		{
+			if (!showHidden)
+			{
+				var utcNow = DateTime.UtcNow;
+				query = query.Where(p => p.Published);
+				query = query.Where(p => !p.StartDateUtc.HasValue || p.StartDateUtc <= utcNow);
+				query = query.Where(p => !p.EndDateUtc.HasValue || p.EndDateUtc >= utcNow);
+
+				if (!QuerySettings.IgnoreMultiStore)
+				{
+					var currentStoreId = _storeContext.CurrentStore.Id;
+
+					query =
+						from p in query
+						join sm in _storeMappingRepository.Table
+						on new { c1 = p.Id, c2 = "Poll" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into p_sm
+						from sm in p_sm.DefaultIfEmpty()
+						where !p.LimitedToStores || currentStoreId == sm.StoreId
+						select p;
+				}
+			}
+
+			return query;
+		}
+
+		#endregion Utilities
+
+		#region Methods
+
+		/// <summary>
         /// Gets a poll
         /// </summary>
         /// <param name="pollId">The poll identifier</param>
@@ -60,15 +101,20 @@ namespace SmartStore.Services.Polls
         /// </summary>
         /// <param name="systemKeyword">The poll system keyword</param>
         /// <param name="languageId">Language identifier. 0 if you want to get all polls</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Poll</returns>
-        public virtual Poll GetPollBySystemKeyword(string systemKeyword, int languageId)
+		public virtual Poll GetPollBySystemKeyword(string systemKeyword, int languageId, bool showHidden = false)
         {
             if (String.IsNullOrWhiteSpace(systemKeyword))
                 return null;
 
-            var query = from p in _pollRepository.Table
-                        where p.SystemKeyword == systemKeyword && p.LanguageId == languageId
-                        select p;
+            var query = 
+				from p in _pollRepository.Table
+				where p.SystemKeyword == systemKeyword && p.LanguageId == languageId
+				select p;
+
+			query = Filter(query, showHidden);
+
             var poll = query.FirstOrDefault();
             return poll;
         }
@@ -82,26 +128,22 @@ namespace SmartStore.Services.Polls
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Poll collection</returns>
-        public virtual IPagedList<Poll> GetPolls(int languageId, bool loadShownOnHomePageOnly,
-            int pageIndex, int pageSize, bool showHidden = false)
+        public virtual IPagedList<Poll> GetPolls(int languageId, bool loadShownOnHomePageOnly, int pageIndex, int pageSize, bool showHidden = false)
         {
             var query = _pollRepository.Table;
-            if (!showHidden)
-            {
-                var utcNow = DateTime.UtcNow;
-                query = query.Where(p => p.Published);
-                query = query.Where(p => !p.StartDateUtc.HasValue || p.StartDateUtc <= utcNow);
-                query = query.Where(p => !p.EndDateUtc.HasValue || p.EndDateUtc >= utcNow);
-            }
-            if (loadShownOnHomePageOnly)
+			query = Filter(query, showHidden);
+            
+			if (loadShownOnHomePageOnly)
             {
                 query = query.Where(p => p.ShowOnHomePage);
             }
-            if (languageId > 0)
+            
+			if (languageId > 0)
             {
                 query = query.Where(p => p.LanguageId == languageId);
             }
-            query = query.OrderBy(p => p.DisplayOrder);
+            
+			query = query.OrderBy(p => p.DisplayOrder);
 
             var polls = new PagedList<Poll>(query, pageIndex, pageSize);
             return polls;

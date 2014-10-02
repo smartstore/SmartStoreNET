@@ -62,18 +62,14 @@
 							.HeaderHtmlAttributes(new { style = "text-align:center" });
 
                         columns.Bound(x => x.ProductName)
-							.Width(200)
 							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                         columns.Bound(x => x.CustomerId)
-                            .Width(50)
-							.Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\">" + T("Admin.Common.View").Text + "</a>");
-                        columns.Bound(x => x.Title)
-                            .Width(150);
+                            .Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+						columns.Bound(x => x.Title);
                         columns.Bound(x => x.ReviewText)
-                            .Width(350)
+                            .Width(500)
                             .Encoded(false);
                         columns.Bound(x => x.Rating)
                             .Width(50)
@@ -84,8 +80,8 @@
                             .ClientTemplate(@Html.SymbolForBool("IsApproved"))
                             .Centered();
                         columns.Bound(x => x.CreatedOn)
-                            .Width(100)
-                            .Centered();
+                            .Centered()
+							.Width(140);
                         columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()

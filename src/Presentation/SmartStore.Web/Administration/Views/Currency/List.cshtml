@@ -61,8 +61,9 @@
                         columns.Bound(x => x.CurrencyCode)
                             .Centered();
                         columns.Bound(x => x.Rate)
-                            .Centered()
-							.Format("{0:G29}");
+							.RightAlign()
+							.Format("{0:0.00000000}")
+							.Width(180);
                         columns.Bound(x => x.DomainEndings);
                         columns.Bound(x => x.IsPrimaryExchangeRateCurrency)
                             .Centered()

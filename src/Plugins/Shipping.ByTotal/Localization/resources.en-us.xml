@@ -88,6 +88,9 @@
   <LocaleResource Name="Fields.SmallQuantitySurcharge">
     <Value>Surcharge for small quantities</Value>
   </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantitySurcharge.Hint">
+    <Value>Surcharge for small quantities</Value>
+  </LocaleResource>
 	<LocaleResource Name="Fields.Store">
 		<Value>Store</Value>
 	</LocaleResource>

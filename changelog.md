@@ -1,4 +1,4 @@
-#Release Notes#
+﻿#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -16,6 +16,17 @@
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
 * #393 Web API: Implement OData actions for simpler working with product attributes
+* #431 Web API: Add support for localized properties
+* ShippingByWeight: new settings to configure a small quantity surcharge
+* #216 Better return request support
+* #90 Directly set order status to completed
+* #413 Orders: Add a PDF export\download of selected orders
+* #69 Award reward points for product reviews
+* #164 Add multistore support for polls
+* #170 Multistore support for Newsletters
+* #266 Update Pending Order in Admin Panel
+* #331 Show CommentBox in checkout (optional) 
+* Option to turn off the filter for products in categories
 
 ###Improvements###
 * New backend design and cleaner frontend theme
@@ -52,7 +63,13 @@
 	- Html.Add[Script|CssFile]Parts() now can handle already bundled resources correctly (no attempt is made to bundle them, the bundle's virtual url is returned instead)
 	- Made extra bundles for frequently used resources (like sequence js, fileupload, image gallery etc.). This way they always come compressed.
 * #384 Web API: Inserting sluged recources like products require an URL record
-* Promotion feed plugins: Asynchronous feed creation
+* #382 Promotion feed plugins: Asynchronous feed creation, more options and improvements
+* #433 GMC feed: Option to filter config records that have not been edited
+* #362 Display 'from {0}' for products with variant attributes
+* #239 Categories: Ask merchant if he want a cascading or a non cascading deletion
+* HTML text collapser: Make it usable for all long texts
+* #375 Implement SKU search for 'related products picker'
+* #391 Admin: allow searching/filtering for specification attributes
 * Removed _OpenID_ plugin from core
 
 ###Bugfixes###
@@ -70,6 +87,15 @@
 * Shipping.ByTotal: Fixed matching of rates by choosing the more specific over the common rate
 * A grouped product only shows up to 12 associated products
 * #405 Billiger feed: Wrong base price exported
+* #437 Mobile devices: Cannot add a product to the cart when it is grouped
+* PayPal Standard: Costs for checkout attributes were double charged
+* Paging of return request grid did not work
+* #428 Multiline checkout attributes aren't rendered correctly
+* #434 Shipping.ByTotal: Make grid pageable
+* #419 email account password hidden
+* #424 Localize return reasons & return actions
+* #479 Product filter: Wrong count of manufacturers if products of sub-categories are included
+
 
 ##SmartStore.NET 2.0.2#
 

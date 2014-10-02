@@ -198,6 +198,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(OrganizedShoppingCartItem shoppingCartItem, out Discount appliedDiscount);
 
+
 		/// <summary>
 		/// Gets the price adjustment of a variant attribute value
 		/// </summary>

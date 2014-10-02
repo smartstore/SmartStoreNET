@@ -149,6 +149,7 @@
     </Compile>
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
     <Compile Include="Directory\McExchangeRateProvider.cs" />
+    <Compile Include="Catalog\AdjustInventoryResult.cs" />
     <Compile Include="Hooks\SoftDeletablePreUpdateHook.cs" />
     <Compile Include="Affiliates\AffiliateService.cs" />
     <Compile Include="Affiliates\IAffiliateService.cs" />
@@ -318,6 +319,7 @@
     <Compile Include="Messages\Tokenizer.cs" />
     <Compile Include="Messages\Token.cs" />
     <Compile Include="Messages\WorkflowMessageService.cs" />
+    <Compile Include="Orders\AutoUpdateOrderItemContext.cs" />
     <Compile Include="Orders\AppliedGiftCard.cs" />
     <Compile Include="Orders\CheckoutAttributeFormatter.cs" />
     <Compile Include="Orders\CheckoutAttributeParser.cs" />

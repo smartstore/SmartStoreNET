@@ -14,7 +14,8 @@ namespace SmartStore.Core.Domain.Customers
 			UserRegistrationType = UserRegistrationType.Standard;
 			AvatarMaximumSizeBytes = 20000;
 			DefaultAvatarEnabled = true;
-			CustomerNameFormat = CustomerNameFormat.ShowUsernames;
+			CustomerNameFormat = CustomerNameFormat.ShowFirstName;
+			CustomerNameFormatMaxLength = 64;
 			GenderEnabled = true;
 			DateOfBirthEnabled = true;
 			CompanyEnabled = true;
@@ -112,6 +113,11 @@ namespace SmartStore.Core.Domain.Customers
         /// Customer name formatting
         /// </summary>
         public CustomerNameFormat CustomerNameFormat { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating the maximum length of a formatted customer name
+		/// </summary>
+		public int CustomerNameFormatMaxLength { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether 'Newsletter' form field is enabled

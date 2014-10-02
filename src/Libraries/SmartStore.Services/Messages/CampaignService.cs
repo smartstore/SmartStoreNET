@@ -7,6 +7,7 @@ using SmartStore.Core.Events;
 using SmartStore.Services.Customers;
 using SmartStore.Core;
 using SmartStore.Core.Email;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
@@ -19,23 +20,15 @@ namespace SmartStore.Services.Messages
         private readonly IQueuedEmailService _queuedEmailService;
         private readonly ICustomerService _customerService;
 		private readonly IStoreContext _storeContext;
+		private readonly IStoreMappingService _storeMappingService;
         private readonly IEventPublisher _eventPublisher;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="campaignRepository">Campaign repository</param>
-        /// <param name="emailSender">Email sender</param>
-        /// <param name="messageTokenProvider">Message token provider</param>
-        /// <param name="tokenizer">Tokenizer</param>
-        /// <param name="queuedEmailService">Queued email service</param>
-        /// <param name="customerService">Customer service</param>
-		/// <param name="storeContext">Store context</param>
-        /// <param name="eventPublisher">Event published</param>
         public CampaignService(IRepository<Campaign> campaignRepository,
             IEmailSender emailSender, IMessageTokenProvider messageTokenProvider,
             ITokenizer tokenizer, IQueuedEmailService queuedEmailService,
-			ICustomerService customerService, IStoreContext storeContext, 
+			ICustomerService customerService,
+			IStoreContext storeContext, 
+			IStoreMappingService storeMappingService,
 			IEventPublisher eventPublisher)
         {
             this._campaignRepository = campaignRepository;
@@ -45,6 +38,7 @@ namespace SmartStore.Services.Messages
             this._queuedEmailService = queuedEmailService;
             this._customerService = customerService;
 			this._storeContext = storeContext;
+			this._storeMappingService = storeMappingService;
             this._eventPublisher = eventPublisher;
         }
 
@@ -114,10 +108,10 @@ namespace SmartStore.Services.Messages
         /// <returns>Campaign collection</returns>
         public virtual IList<Campaign> GetAllCampaigns()
         {
-
             var query = from c in _campaignRepository.Table
                         orderby c.CreatedOnUtc
                         select c;
+
             var campaigns = query.ToList();
 
             return campaigns;
@@ -130,8 +124,7 @@ namespace SmartStore.Services.Messages
         /// <param name="emailAccount">Email account</param>
         /// <param name="subscriptions">Subscriptions</param>
         /// <returns>Total emails sent</returns>
-        public virtual int SendCampaign(Campaign campaign, EmailAccount emailAccount,
-            IEnumerable<NewsLetterSubscription> subscriptions)
+        public virtual int SendCampaign(Campaign campaign, EmailAccount emailAccount, IEnumerable<NewsLetterSubscription> subscriptions)
         {
             if (campaign == null)
                 throw new ArgumentNullException("campaign");
@@ -139,13 +132,23 @@ namespace SmartStore.Services.Messages
             if (emailAccount == null)
                 throw new ArgumentNullException("emailAccount");
 
+			if (subscriptions == null || subscriptions.Count() <= 0)
+				return 0;
+
             int totalEmailsSent = 0;
 
-            foreach (var subscription in subscriptions)
+			var subscriptionData = subscriptions
+				.Where(x => _storeMappingService.Authorize<Campaign>(campaign, x.StoreId))
+				.GroupBy(x => x.Email);
+
+			foreach (var group in subscriptionData)
             {
+				var subscription = group.First();	// only one email per email address
+
                 var tokens = new List<Token>();
 				_messageTokenProvider.AddStoreTokens(tokens, _storeContext.CurrentStore);
                 _messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, subscription);
+
                 var customer = _customerService.GetCustomerByEmail(subscription.Email);
                 if (customer != null)
                     _messageTokenProvider.AddCustomerTokens(tokens, customer);
@@ -164,6 +167,7 @@ namespace SmartStore.Services.Messages
                     CreatedOnUtc = DateTime.UtcNow,
                     EmailAccountId = emailAccount.Id
                 };
+
                 _queuedEmailService.InsertQueuedEmail(email);
                 totalEmailsSent++;
             }
@@ -186,6 +190,7 @@ namespace SmartStore.Services.Messages
 
             var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, _storeContext.CurrentStore);
+
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer != null)
                 _messageTokenProvider.AddCustomerTokens(tokens, customer);

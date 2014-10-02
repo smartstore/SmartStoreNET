@@ -95,5 +95,21 @@ namespace SmartStore.Core.Data
 		/// </summary>
 		/// <returns>The count of detached entities</returns>
 		int DetachAll();
+
+		/// <summary>
+		/// Change the state of an entity object
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <param name="newState">The new state</param>
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState);
+
+		/// <summary>
+		/// Changes the object state to unchanged
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <returns>true on success, false on failure</returns>
+		bool SetToUnchanged<TEntity>(TEntity entity);
     }
 }

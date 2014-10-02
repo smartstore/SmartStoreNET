@@ -171,7 +171,7 @@ namespace SmartStore.Web.Controllers
             model.HideRewardPoints = !_rewardPointsSettings.Enabled;
             model.HideForumSubscriptions = !_forumSettings.ForumsEnabled || !_forumSettings.AllowCustomersToManageSubscriptions;
             model.HideReturnRequests = !_orderSettings.ReturnRequestsEnabled ||
-				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null).Count == 0;
+				_orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, 1).Count == 0;
             model.HideDownloadableProducts = _customerSettings.HideDownloadableProductsTab;
             model.HideBackInStockSubscriptions = _customerSettings.HideBackInStockSubscriptionsTab;
             return model;
@@ -242,7 +242,7 @@ namespace SmartStore.Web.Controllers
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
 
                 //newsletter
-                var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
+                var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
                 model.Newsletter = newsletter != null && newsletter.Active;
 
                 model.Signature = customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature);
@@ -614,7 +614,7 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.NewsletterEnabled)
                     {
                         //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email);
+                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
                             if (model.Newsletter)
@@ -637,7 +637,8 @@ namespace SmartStore.Web.Controllers
                                     NewsLetterSubscriptionGuid = Guid.NewGuid(),
                                     Email = model.Email,
                                     Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow
+                                    CreatedOnUtc = DateTime.UtcNow,
+									StoreId = _storeContext.CurrentStore.Id
                                 });
                             }
                         }
@@ -1037,16 +1038,18 @@ namespace SmartStore.Web.Controllers
                     if (_customerSettings.NewsletterEnabled)
                     {
                         //save newsletter value
-                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
+                        var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
                         if (newsletter != null)
                         {
-                            if (model.Newsletter)
-                            {
-                                newsletter.Active = true;
-                                _newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
-                            }
-                            else
-                                _newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
+							if (model.Newsletter)
+							{
+								newsletter.Active = true;
+								_newsLetterSubscriptionService.UpdateNewsLetterSubscription(newsletter);
+							}
+							else
+							{
+								_newsLetterSubscriptionService.DeleteNewsLetterSubscription(newsletter);
+							}
                         }
                         else
                         {
@@ -1057,7 +1060,8 @@ namespace SmartStore.Web.Controllers
                                     NewsLetterSubscriptionGuid = Guid.NewGuid(),
                                     Email = customer.Email,
                                     Active = true,
-                                    CreatedOnUtc = DateTime.UtcNow
+                                    CreatedOnUtc = DateTime.UtcNow,
+									StoreId = _storeContext.CurrentStore.Id
                                 });
                             }
                         }
@@ -1298,7 +1302,9 @@ namespace SmartStore.Web.Controllers
             var model = new CustomerReturnRequestsModel();
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.ReturnRequests;
-			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null);
+			
+			var returnRequests = _orderService.SearchReturnRequests(_storeContext.CurrentStore.Id, customer.Id, 0, null, 0, int.MaxValue);
+
             foreach (var returnRequest in returnRequests)
             {
                 var orderItem = _orderService.GetOrderItemById(returnRequest.OrderItemId);

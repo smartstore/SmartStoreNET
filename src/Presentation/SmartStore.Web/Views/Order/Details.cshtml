@@ -431,20 +431,23 @@
                 @if (!Model.PrintMode)
                 {
                     <div class="actions clearfix">
-                        @if (Model.IsReOrderAllowed)
-                        {
-                            <a class="btn btn-primary re-order-button pull-right" href="@Url.Action("ReOrder", new { id = Model.Id })">
-								<i class="fa fa-shopping-cart"></i>
-                                @T("Order.Reorder")
-                            </a>
-                        }
-                        @if (Model.IsReturnRequestAllowed)
-                        {
-                            <a class="btn return-items-button pull-right" href="@Url.RouteUrl("ReturnRequest", new { id = Model.Id })">
-								<i class="fa fa-reply"></i>
-                                @T("Order.ReturnItems")
-                            </a>
-                        }
+						<div class="pull-right">
+							@if (Model.IsReturnRequestAllowed)
+							{
+								<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })">
+									<i class="fa fa-reply"></i>
+									@T("Order.ReturnItems")
+								</a>
+							}
+
+							@if (Model.IsReOrderAllowed)
+							{
+								<a class="btn btn-primary re-order-button" href="@Url.RouteUrl("ReOrder", new { orderId = Model.Id })">
+									<i class="fa fa-shopping-cart"></i>
+									@T("Order.Reorder")
+								</a>
+							}
+						</div>
                     </div>
                 }
             </div>
@@ -596,6 +599,8 @@
                 </table>
             </div>
         </div>
+
+		@Html.Widget("orderdetails_page_aftertotal")
 
         @if (!Model.PrintMode)
         {

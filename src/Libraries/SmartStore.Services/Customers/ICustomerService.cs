@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 
@@ -201,5 +202,17 @@ namespace SmartStore.Services.Customers
         void UpdateCustomerRole(CustomerRole customerRole);
 
         #endregion
-    }
+
+		#region Reward points
+
+		/// <summary>
+		/// Add or remove reward points for a product review
+		/// </summary>
+		/// <param name="customer">The customer</param>
+		/// <param name="product">The product</param>
+		/// <param name="add">Whether to add or remove points</param>
+		void RewardPointsForProductReview(Customer customer, Product product, bool add);
+
+		#endregion Reward points
+	}
 }

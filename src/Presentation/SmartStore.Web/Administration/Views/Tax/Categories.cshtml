@@ -21,8 +21,10 @@
                     })
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Name).Width(200);
-                        columns.Bound(x => x.DisplayOrder).Width(100);
+                        columns.Bound(x => x.Name);
+                        columns.Bound(x => x.DisplayOrder)
+							.Centered()
+							.Width(120);
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);

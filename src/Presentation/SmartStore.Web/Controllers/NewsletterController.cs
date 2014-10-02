@@ -16,19 +16,21 @@ namespace SmartStore.Web.Controllers
         private readonly IWorkContext _workContext;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly IWorkflowMessageService _workflowMessageService;
+		private readonly IStoreContext _storeContext;
 
         private readonly CustomerSettings _customerSettings;
 
         public NewsletterController(ILocalizationService localizationService,
             IWorkContext workContext, INewsLetterSubscriptionService newsLetterSubscriptionService,
-            IWorkflowMessageService workflowMessageService, CustomerSettings customerSettings)
+            IWorkflowMessageService workflowMessageService, CustomerSettings customerSettings,
+			IStoreContext storeContext)
         {
             this._localizationService = localizationService;
             this._workContext = workContext;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._workflowMessageService = workflowMessageService;
-
             this._customerSettings = customerSettings;
+			this._storeContext = storeContext;
         }
 
         [ChildActionOnly]
@@ -54,7 +56,7 @@ namespace SmartStore.Web.Controllers
                 //subscribe/unsubscribe
                 email = email.Trim();
 
-                var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(email);
+                var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(email, _storeContext.CurrentStore.Id);
                 if (subscription != null)
                 {
                     if (subscribe)
@@ -81,7 +83,8 @@ namespace SmartStore.Web.Controllers
                         NewsLetterSubscriptionGuid = Guid.NewGuid(),
                         Email = email,
                         Active = false,
-                        CreatedOnUtc = DateTime.UtcNow
+                        CreatedOnUtc = DateTime.UtcNow,
+						StoreId = _storeContext.CurrentStore.Id
                     };
                     _newsLetterSubscriptionService.InsertNewsLetterSubscription(subscription);
                     _workflowMessageService.SendNewsLetterSubscriptionActivationMessage(subscription, _workContext.WorkingLanguage.Id);

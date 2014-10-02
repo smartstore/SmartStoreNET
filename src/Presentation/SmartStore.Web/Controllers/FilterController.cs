@@ -1,36 +1,10 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
-using System.Linq.Dynamic;
 using System.Web.Mvc;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Filter;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Models.Filter;
-using SmartStore.Web.Framework.Mvc;
-using System.Net.Mime;
-using SmartStore.Web.Models.Catalog;
-using System;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Security;
-using System.Diagnostics;
-using SmartStore.Web.Infrastructure.Cache;
-using SmartStore.Core;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Domain.Tax;
-using SmartStore.Services.Directory;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Tax;
-using SmartStore.Services.Media;
-using SmartStore.Core.Domain.Media;
-using SmartStore.Web.Models.Media;
-using SmartStore.Core.Caching;
-using SmartStore.Services.Seo;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public partial class FilterController : Controller		// not BaseController cause of performance
     {
 		private readonly IFilterService _filterService;
@@ -42,17 +16,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult Products(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
 		{
-			var context = new FilterProductContext()
-			{
-				Filter = filter,
-				ParentCategoryID = categoryID,
-				CategoryIds = new List<int> { categoryID },
-				Path = path,
-				PageSize = pagesize ?? 12,
-				ViewMode = viewmode,
-				OrderBy = orderby,
-				Criteria = _filterService.Deserialize(filter)
-			};
+			var context = _filterService.CreateFilterProductContext(filter, categoryID, path, pagesize, orderby, viewmode);
 		
 			_filterService.ProductFilterable(context);
 
@@ -96,22 +60,11 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult ProductsMultiSelect(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode, string filterMultiSelect)
 		{
-			var context = new FilterProductContext()
-			{
-				Filter = filter,
-				ParentCategoryID = categoryID,
-				CategoryIds = new List<int> { categoryID },
-				Path = path,
-				PageSize = pagesize ?? 12,
-				ViewMode = viewmode,
-				OrderBy = orderby,
-				Criteria = _filterService.Deserialize(filter)
-			};
+			var context = _filterService.CreateFilterProductContext(filter, categoryID, path, pagesize, orderby, viewmode);
 
 			_filterService.ProductFilterableMultiSelect(context, filterMultiSelect);
 
 			return PartialView(new ProductFilterModel { Context = context });
 		}
-
-    }	// class
+    }
 }

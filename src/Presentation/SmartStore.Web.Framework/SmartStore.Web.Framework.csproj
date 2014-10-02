@@ -312,6 +312,7 @@
     <Compile Include="Mvc\SmartMetadataProvider.cs" />
     <Compile Include="Mvc\SmartModelBinder.cs" />
     <Compile Include="Localization\SmartResourceDisplayName.cs" />
+    <Compile Include="Validators\SmartBaseValidator.cs" />
     <Compile Include="Validators\SmartValidatorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Controllers\RssActionResult.cs" />

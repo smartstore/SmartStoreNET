@@ -142,6 +142,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
+			req.UserAgent = HttpContext.Current.Request.UserAgent;
 
 			string formContent = string.Format("{0}&cmd=_notify-validate", formString);
 			req.ContentLength = formContent.Length;
@@ -199,6 +200,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 		/// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
 		public override void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
 		{
+			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
+				return;
+
 			var builder = new StringBuilder();
 			builder.Append(GetPaypalUrl());
 
@@ -213,9 +217,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 
 				int index = 0;
 				decimal cartTotal = decimal.Zero;
-				var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(postProcessPaymentRequest.Order.CheckoutAttributesXml);
+				//var caValues = _checkoutAttributeParser.ParseCheckoutAttributeValues(postProcessPaymentRequest.Order.CheckoutAttributesXml);
 
-				var lineItems = _payPalStandardService.GetLineItems(postProcessPaymentRequest, caValues, out cartTotal);
+				var lineItems = _payPalStandardService.GetLineItems(postProcessPaymentRequest, out cartTotal);
 
 				_payPalStandardService.AdjustLineItemAmounts(lineItems, postProcessPaymentRequest);
 

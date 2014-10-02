@@ -1,10 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using SmartStore.Core.Caching;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Plugin.Shipping.ByTotal.Domain;
+using SmartStore.Plugin.Shipping.ByTotal.Models;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Services
@@ -14,17 +17,13 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
     /// </summary>
     public partial class ShippingByTotalService : IShippingByTotalService
     {
-        #region Constants
-
-        private const string SHIPPINGBYTOTAL_ALL_KEY = "SmartStore.shippingbytotal.all";
-        private const string SHIPPINGBYTOTAL_PATTERN_KEY = "SmartStore.shippingbytotal.";
-
-        #endregion
-
         #region Fields
 
         private readonly IRepository<ShippingByTotalRecord> _sbtRepository;
-        private readonly ICacheManager _cacheManager;
+		private readonly IStoreService _storeService;
+		private readonly IShippingService _shippingService;
+		private readonly ICountryService _countryService;
+		private readonly IStateProvinceService _stateProvinceService;
 
         #endregion
 
@@ -33,37 +32,94 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
         /// <summary>
         /// Ctor
         /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="sbtRepository">ShippingByTotal Repository</param>
-        public ShippingByTotalService(ICacheManager cacheManager,
-            IRepository<ShippingByTotalRecord> sbtRepository)
+        public ShippingByTotalService(
+            IRepository<ShippingByTotalRecord> sbtRepository,
+			IStoreService storeService,
+			IShippingService shippingService,
+			ICountryService countryService,
+			IStateProvinceService stateProvinceService)
         {
-            this._cacheManager = cacheManager;
-            this._sbtRepository = sbtRepository;
+            _sbtRepository = sbtRepository;
+			_storeService = storeService;
+			_shippingService = shippingService;
+			_countryService = countryService;
+			_stateProvinceService = stateProvinceService;
         }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Gets all the ShippingByTotalRecords
-        /// </summary>
-        /// <returns>ShippingByTotalRecord collection</returns>
-        public virtual IList<ShippingByTotalRecord> GetAllShippingByTotalRecords()
-        {
-            string key = SHIPPINGBYTOTAL_ALL_KEY;
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from sbt in _sbtRepository.Table
-                            orderby sbt.StoreId, sbt.CountryId, sbt.StateProvinceId, sbt.Zip, sbt.ShippingMethodId, sbt.From
-                            select sbt;
+		/// <summary>
+		/// Get queryable shipping by total records
+		/// </summary>
+		public virtual IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords()
+		{
+			var query =
+				from x in _sbtRepository.Table
+				orderby x.StoreId, x.CountryId, x.StateProvinceId, x.Zip, x.ShippingMethodId, x.From
+				select x;
 
-                var records = query.ToList();
+			return query;
+		}
 
-                return records;
-            });
-        }
+		/// <summary>
+		/// Get paged shipping by total records
+		/// </summary>
+		public virtual IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize)
+		{
+			var result = new PagedList<ShippingByTotalRecord>(GetShippingByTotalRecords(), pageIndex, pageSize);
+			return result;
+		}
+
+		/// <summary>
+		/// Get models for shipping by total records
+		/// </summary>
+		public virtual IList<ShippingByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount)
+		{
+			// data join would be much better but not possible here cause ShippingByTotalObjectContext cannot be shared across repositories
+			var records = GetShippingByTotalRecords(pageIndex, pageSize);
+			totalCount = records.TotalCount;
+
+			if (records.Count <= 0)
+				return new List<ShippingByTotalModel>();
+
+			var allStores = _storeService.GetAllStores();
+
+			var result = records.Select(x =>
+				{
+					var store = allStores.FirstOrDefault(y => y.Id == x.StoreId);
+					var shippingMethod = _shippingService.GetShippingMethodById(x.ShippingMethodId);
+					var country = _countryService.GetCountryById(x.CountryId ?? 0);
+					var stateProvince = _stateProvinceService.GetStateProvinceById(x.StateProvinceId ?? 0);
+
+					var model = new ShippingByTotalModel()
+					{
+						Id = x.Id,
+						StoreId = x.StoreId,
+						ShippingMethodId = x.ShippingMethodId,
+						CountryId = x.CountryId,
+						StateProvinceId = x.StateProvinceId,
+						Zip = (x.Zip.HasValue() ? x.Zip : "*"),
+						From = x.From,
+						To = x.To,
+						UsePercentage = x.UsePercentage,
+						ShippingChargePercentage = x.ShippingChargePercentage,
+						ShippingChargeAmount = x.ShippingChargeAmount,
+						BaseCharge = x.BaseCharge,
+						MaxCharge = x.MaxCharge,
+						StoreName = (store == null ? "*" : store.Name),
+						ShippingMethodName = (shippingMethod == null ? "".NaIfEmpty() : shippingMethod.Name),
+						CountryName = (country == null ? "*" : country.Name),
+						StateProvinceName = (stateProvince ==null ? "*" : stateProvince.Name)
+					};
+
+					return model;
+				})
+				.ToList();
+
+			return result;
+		}
 
         /// <summary>
         /// Finds the ShippingByTotalRecord by its identifier
@@ -103,7 +159,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             }
 
             //filter by shipping method and subtotal
-            var existingRates = GetAllShippingByTotalRecords()
+            var existingRates = GetShippingByTotalRecords()
                 .Where(sbt => sbt.ShippingMethodId == shippingMethodId && subtotal >= sbt.From && (sbt.To == null || subtotal <= sbt.To.Value))
                 .ToList();
 
@@ -180,8 +236,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             }
 
             _sbtRepository.Delete(shippingByTotalRecord);
-
-            _cacheManager.RemoveByPattern(SHIPPINGBYTOTAL_PATTERN_KEY);
         }
 
         /// <summary>
@@ -196,8 +250,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             }
 
             _sbtRepository.Insert(shippingByTotalRecord);
-
-            _cacheManager.RemoveByPattern(SHIPPINGBYTOTAL_PATTERN_KEY);
         }
 
         /// <summary>
@@ -212,8 +264,6 @@ namespace SmartStore.Plugin.Shipping.ByTotal.Services
             }
 
             _sbtRepository.Update(shippingByTotalRecord);
-
-            _cacheManager.RemoveByPattern(SHIPPINGBYTOTAL_PATTERN_KEY);
         }
 
         #endregion

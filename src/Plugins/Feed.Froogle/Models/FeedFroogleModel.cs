@@ -6,12 +6,14 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Plugin.Feed.Froogle.Models
 {
 	public class FeedFroogleModel : PromotionFeedConfigModel
 	{
 		public string GridEditUrl { get; set; }
+		public int GridPageSize { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ProductPictureSize")]
 		public int ProductPictureSize { get; set; }
@@ -94,6 +96,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchProductName")]
 		public string SearchProductName { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.SearchIsTouched")]
+		public string SearchIsTouched { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Store")]
 		public int StoreId { get; set; }
 
@@ -105,6 +110,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.ExportBasePrice")]
 		public bool ExportBasePrice { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.ConvertNetToGrossPrices")]
+		public bool ConvertNetToGrossPrices { get; set; }
+
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.LanguageId")]
+		public int LanguageId { get; set; }
 
 		public void Copy(FroogleSettings settings, bool fromSettings)
 		{
@@ -137,6 +148,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				ExpirationDays = settings.ExpirationDays;
 				ExportShipping = settings.ExportShipping;
 				ExportBasePrice = settings.ExportBasePrice;
+				ConvertNetToGrossPrices = settings.ConvertNetToGrossPrices;
+				LanguageId = settings.LanguageId;
 			}
 			else
 			{
@@ -167,6 +180,8 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 				settings.ExpirationDays = ExpirationDays;
 				settings.ExportShipping = ExportShipping;
 				settings.ExportBasePrice = ExportBasePrice;
+				settings.ConvertNetToGrossPrices = ConvertNetToGrossPrices;
+				settings.LanguageId = LanguageId;
 			}
 		}
 	}
@@ -174,18 +189,43 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 	public class GoogleProductModel : ModelBase
 	{
+		public int TotalCount { get; set; }
+
 		//this attribute is required to disable editing
 		[ScaffoldColumn(false)]
-		public int ProductId { get; set; }
+		public int ProductId { get { return Id; } }
+		public int Id { get; set; }
 
 		//this attribute is required to disable editing
 		[ReadOnly(true)]
 		[ScaffoldColumn(false)]
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.ProductName")]
-		public string ProductName { get; set; }
+		public string Name { get; set; }
+
+		public string SKU { get; set; }
+		public int ProductTypeId { get; set; }
+		public ProductType ProductType { get { return (ProductType)ProductTypeId; } }
+		public string ProductTypeName { get; set; }
+		public string ProductTypeLabelHint
+		{
+			get
+			{
+				switch (ProductType)
+				{
+					case ProductType.SimpleProduct:
+						return "smnet-hide";
+					case ProductType.GroupedProduct:
+						return "success";
+					case ProductType.BundledProduct:
+						return "info";
+					default:
+						return "";
+				}
+			}
+		}
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
-		public string GoogleCategory { get; set; }
+		public string Taxonomy { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Gender")]
 		public string Gender { get; set; }
@@ -197,12 +237,12 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		public string Color { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Size")]
-		public string GoogleSize { get; set; }
+		public string Size { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Material")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Material")]
 		public string Material { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Pattern")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Pattern")]
 		public string Pattern { get; set; }
 
 		public string GenderLocalize { get; set; }

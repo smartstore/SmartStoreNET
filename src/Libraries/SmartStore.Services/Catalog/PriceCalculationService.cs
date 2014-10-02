@@ -322,6 +322,19 @@ namespace SmartStore.Services.Catalog
 				lowestPrice = product.LowestAttributeCombinationPrice.Value;
 				displayFromMessage = true;
 			}
+
+			if (!displayFromMessage)
+			{
+				foreach (var attribute in product.ProductVariantAttributes)
+				{
+					if (attribute.ProductVariantAttributeValues.Any(x => x.PriceAdjustment != decimal.Zero))
+					{
+						displayFromMessage = true;
+						break;
+					}
+				}
+			}
+
 			return lowestPrice;
 		}
 
@@ -620,6 +633,7 @@ namespace SmartStore.Services.Catalog
 				totalDiscountAmount = Math.Round(totalDiscountAmount, 2);
 			return totalDiscountAmount;
         }
+
 
 		/// <summary>
 		/// Gets the price adjustment of a variant attribute value

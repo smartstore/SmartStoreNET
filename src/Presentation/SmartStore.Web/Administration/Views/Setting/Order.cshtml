@@ -1,10 +1,11 @@
 ﻿@model OrderSettingsModel
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Orders;
+
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.Order").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -19,8 +20,6 @@
 	@Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
 
-    
-     
     @Html.SmartStore().TabStrip().Name("ordersettings-edit").Items(x =>
     {
         x.Add().Text(T("Admin.Configuration.Settings.Order.OrderSettings").Text).Content(TabOrderSettings()).Selected(true);
@@ -30,8 +29,9 @@
         EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "ordersettings-edit", this.Html, this.Model));
     })
 }
+
 @helper TabOrderSettings()
-    {
+{
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -127,16 +127,17 @@
         }
     </table>
 }
+
 @helper TabReturnRequestSettings()
-    {
+{
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">&#215;</button>
+		@T("Admin.Configuration.Settings.Order.ReturnRequestsDescription1")
+		<br />
+		@T("Admin.Configuration.Settings.Order.ReturnRequestsDescription2")
+	</div>
+
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle" colspan="2">
-                @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription1")
-                <br />
-                @T("Admin.Configuration.Settings.Order.ReturnRequestsDescription2")
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ReturnRequestsEnabled)
@@ -155,23 +156,56 @@
                 @Html.ValidationMessageFor(model => model.NumberOfDaysReturnRequestAvailable)
             </td>
         </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ReturnRequestReasonsParsed)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ReturnRequestReasonsParsed)
-                @Html.ValidationMessageFor(model => model.ReturnRequestReasonsParsed)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ReturnRequestActionsParsed)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.ReturnRequestActionsParsed)
-                @Html.ValidationMessageFor(model => model.ReturnRequestActionsParsed)
-            </td>
-        </tr>
     </table>
+	
+	<p></p>
+	
+	@(Html.LocalizedEditor<OrderSettingsModel, OrderSettingsLocalizedModel>("setting-order-localized",
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].ReturnRequestReasons)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => Model.Locales[item].ReturnRequestReasons, new { style = "min-width: 800px;" })
+					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestReasons)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].ReturnRequestActions)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.Locales[item].ReturnRequestActions, new { style = "min-width: 800px;" })
+					@Html.ValidationMessageFor(model => model.Locales[item].ReturnRequestActions)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+		,
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ReturnRequestReasons)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(model => model.ReturnRequestReasons, new { style = "min-width: 800px;" })
+					@Html.ValidationMessageFor(model => model.ReturnRequestReasons)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ReturnRequestActions)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(x => x.ReturnRequestActions, new { style = "min-width: 800px;" })
+					@Html.ValidationMessageFor(model => model.ReturnRequestActions)
+				</td>
+			</tr>
+		</table>
+	))
 }

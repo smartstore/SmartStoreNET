@@ -1,15 +1,27 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
+using SmartStore.Core;
 using SmartStore.Plugin.Shipping.ByTotal.Domain;
+using SmartStore.Plugin.Shipping.ByTotal.Models;
 
 namespace SmartStore.Plugin.Shipping.ByTotal.Services
 {
     public partial interface IShippingByTotalService
     {
-        /// <summary>
-        /// Gets all the ShippingByTotalRecords
-        /// </summary>
-        /// <returns>ShippingByTotalRecord collection</returns>
-        IList<ShippingByTotalRecord> GetAllShippingByTotalRecords();
+		/// <summary>
+		/// Get queryable shipping by total records
+		/// </summary>
+		IQueryable<ShippingByTotalRecord> GetShippingByTotalRecords();
+
+		/// <summary>
+		/// Get paged shipping by total records
+		/// </summary>
+		IPagedList<ShippingByTotalRecord> GetShippingByTotalRecords(int pageIndex, int pageSize);
+
+		/// <summary>
+		/// Get models for shipping by total records
+		/// </summary>
+		IList<ShippingByTotalModel> GetShippingByTotalModels(int pageIndex, int pageSize, out int totalCount);
 
         /// <summary>
         /// Finds the ShippingByTotalRecord by its identifier

@@ -736,6 +736,7 @@ namespace SmartStore.Services.Catalog
                         where (p.Name.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
+							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
                               (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
 							//localized values
                               (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
@@ -953,22 +954,26 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="sci">Shopping cart item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
 		{
 			if (sci == null)
 				throw new ArgumentNullException("cartItem");
 
 			if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShoppingCart)
 			{
-				if (sci.ChildItems == null)
-					return;
-
-				foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
-					AdjustInventory(child, decrease);
+				if (sci.ChildItems != null)
+				{
+					foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
+					{
+						AdjustInventory(child.Item.Product, decrease, sci.Item.Quantity * child.Item.Quantity, child.Item.AttributesXml);
+					}
+				}
+				return new AdjustInventoryResult();
 			}
 			else
 			{
-				AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
+				return AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
 			}
 		}
 
@@ -977,7 +982,9 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(OrderItem orderItem, bool decrease)
+		/// <param name="quantity">Quantity</param>
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(OrderItem orderItem, bool decrease, int quantity)
 		{
 			if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -995,14 +1002,15 @@ namespace SmartStore.Services.Catalog
 						{
 							var product = products.FirstOrDefault(x => x.Id == item.ProductId);
 							if (product != null)
-								AdjustInventory(product, decrease, item.Quantity, item.AttributesXml);
+								AdjustInventory(product, decrease, quantity * item.Quantity, item.AttributesXml);
 						}
 					}
 				}
+				return new AdjustInventoryResult();
 			}
 			else
 			{
-				AdjustInventory(orderItem.Product, decrease, orderItem.Quantity, orderItem.AttributesXml);
+				return AdjustInventory(orderItem.Product, decrease, quantity, orderItem.AttributesXml);
 			}
 		}
 
@@ -1013,27 +1021,28 @@ namespace SmartStore.Services.Catalog
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-		public virtual void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			var prevStockQuantity = product.StockQuantity;
+			var result = new AdjustInventoryResult();
 
 			switch (product.ManageInventoryMethod)
             {
                 case ManageInventoryMethod.DontManageStock:
                     {
                         //do nothing
-                        return;
                     }
+					break;
                 case ManageInventoryMethod.ManageStock:
                     {
-                        int newStockQuantity = 0;
+						result.StockQuantityOld = product.StockQuantity;
                         if (decrease)
-							newStockQuantity = product.StockQuantity - quantity;
+							result.StockQuantityNew = product.StockQuantity - quantity;
 						else
-							newStockQuantity = product.StockQuantity + quantity;
+							result.StockQuantityNew = product.StockQuantity + quantity;
 
 						bool newPublished = product.Published;
 						bool newDisableBuyButton = product.DisableBuyButton;
@@ -1043,22 +1052,23 @@ namespace SmartStore.Services.Catalog
                         switch (product.LowStockActivity)
                         {
                             case LowStockActivity.DisableBuyButton:
-                                newDisableBuyButton = product.MinStockQuantity >= newStockQuantity;
-                                newDisableWishlistButton = product.MinStockQuantity >= newStockQuantity;
+								newDisableBuyButton = product.MinStockQuantity >= result.StockQuantityNew;
+								newDisableWishlistButton = product.MinStockQuantity >= result.StockQuantityNew;
                                 break;
                             case LowStockActivity.Unpublish:
-                                newPublished = product.MinStockQuantity <= newStockQuantity;
+								newPublished = product.MinStockQuantity <= result.StockQuantityNew;
                                 break;
                         }
 
-						product.StockQuantity = newStockQuantity;
+						product.StockQuantity = result.StockQuantityNew;
 						product.DisableBuyButton = newDisableBuyButton;
 						product.DisableWishlistButton = newDisableWishlistButton;
 						product.Published = newPublished;
+
 						UpdateProduct(product);
 
                         //send email notification
-                        if (decrease && product.NotifyAdminForQuantityBelow > newStockQuantity)
+						if (decrease && product.NotifyAdminForQuantityBelow > result.StockQuantityNew)
                             _workflowMessageService.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
                     }
                     break;
@@ -1067,13 +1077,13 @@ namespace SmartStore.Services.Catalog
                         var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
                         if (combination != null)
                         {
-                            int newStockQuantity = 0;
+							result.StockQuantityOld = combination.StockQuantity;
                             if (decrease)
-                                newStockQuantity = combination.StockQuantity - quantity;
+								result.StockQuantityNew = combination.StockQuantity - quantity;
                             else
-                                newStockQuantity = combination.StockQuantity + quantity;
+								result.StockQuantityNew = combination.StockQuantity + quantity;
 
-                            combination.StockQuantity = newStockQuantity;
+							combination.StockQuantity = result.StockQuantityNew;
                             _productAttributeService.UpdateProductVariantAttributeCombination(combination);
                         }
                     }
@@ -1094,17 +1104,7 @@ namespace SmartStore.Services.Catalog
 					AdjustInventory(linkedProduct, decrease, quantity * x.Quantity, "");
 			});
 
-            //TODO send back in stock notifications?
-            //if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
-            //    product.BackorderMode == BackorderMode.NoBackorders &&
-            //    product.AllowBackInStockSubscriptions &&
-            //    product.StockQuantity > 0 &&
-            //    prevStockQuantity <= 0 &&
-            //    product.Published &&
-            //    !product.Deleted)
-            //{
-            //    //_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
-            //}
+			return result;
         }
         
         /// <summary>

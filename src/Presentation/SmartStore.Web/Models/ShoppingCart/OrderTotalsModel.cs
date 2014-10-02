@@ -27,8 +27,8 @@ namespace SmartStore.Web.Models.ShoppingCart
         public IList<TaxRate> TaxRates { get; set; }
         public bool DisplayTax { get; set; }
         public bool DisplayTaxRates { get; set; }
-
-
+        public bool DisplayWeight { get; set; }
+        
         public IList<GiftCard> GiftCards { get; set; }
 
         public string OrderTotalDiscount { get; set; }
@@ -36,6 +36,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         public int RedeemedRewardPoints { get; set; }
         public string RedeemedRewardPointsAmount { get; set; }
         public string OrderTotal { get; set; }
+        public decimal Weight { get; set; }
 
         #region Nested classes
 

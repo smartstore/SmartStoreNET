@@ -28,6 +28,7 @@ using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
@@ -195,28 +196,17 @@ namespace SmartStore.Web.Controllers
         {
             var model = new CheckoutShippingMethodModel();
 
-			var getShippingOptionResponse = _shippingService
-				  .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
+			var getShippingOptionResponse = _shippingService .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
 				  "", _storeContext.CurrentStore.Id);
-            if (getShippingOptionResponse.Success)
-            {
-                //performance optimization. cache returned shipping options.
-                //we'll use them later (after a customer has selected an option).
+
+			if (getShippingOptionResponse.Success)
+			{
+				//performance optimization. cache returned shipping options.
+				//we'll use them later (after a customer has selected an option).
 				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-					SystemCustomerAttributeNames.OfferedShippingOptions,
-					getShippingOptionResponse.ShippingOptions,
-					_storeContext.CurrentStore.Id);
+					SystemCustomerAttributeNames.OfferedShippingOptions, getShippingOptionResponse.ShippingOptions, _storeContext.CurrentStore.Id);
 
 				var shippingMethods = _shippingService.GetAllShippingMethods();
-            
-                foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
-                {
-                    var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
-                    {
-                        Name = shippingOption.Name,
-                        Description = shippingOption.Description,
-                        ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
-                    };
 
                     // codehint: sm-add (determine brand image of shipping method)
                     var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
@@ -224,41 +214,58 @@ namespace SmartStore.Web.Controllers
                     {
                         soModel.BrandUrl = "~/Plugins/{0}/Content/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
                     }
+				foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
+				{
+					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
+					{
+						Name = shippingOption.Name,
+						Description = shippingOption.Description,
+						ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
+					};
 
-                    //adjust rate
-                    Discount appliedDiscount = null;
-                    var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
+					// codehint: sm-add (determine brand image of shipping method)
+					var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
+					if (plugin != null && plugin.BrandImageFileName.HasValue())
+					{
+						soModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
+					}
+
+					//adjust rate
+					Discount appliedDiscount = null;
+					var shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
 						shippingOption.Rate, cart, shippingOption.Name, shippingMethods, out appliedDiscount);
 
-                    decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
-                    decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                    soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
+					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
+					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
+					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
 
-                    model.ShippingMethods.Add(soModel);
-                }
+					model.ShippingMethods.Add(soModel);
+				}
 
-                //find a selected (previously) shipping method
+				//find a selected (previously) shipping method
 				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
 				if (selectedShippingOption != null)
-                {
-                    var shippingOptionToSelect = model.ShippingMethods.ToList()
+				{
+					var shippingOptionToSelect = model.ShippingMethods.ToList()
 						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
-						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) && 
+						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
 						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
-                    if (shippingOptionToSelect != null)
-                        shippingOptionToSelect.Selected = true;
-                }
-                //if no option has been selected, let's do it for the first one
-                if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
-                {
-                    var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
-                    if (shippingOptionToSelect != null)
-                        shippingOptionToSelect.Selected = true;
-                }
-            }
-            else
-                foreach (var error in getShippingOptionResponse.Errors)
-                    model.Warnings.Add(error);
+					if (shippingOptionToSelect != null)
+						shippingOptionToSelect.Selected = true;
+				}
+				//if no option has been selected, let's do it for the first one
+				if (model.ShippingMethods.Where(so => so.Selected).FirstOrDefault() == null)
+				{
+					var shippingOptionToSelect = model.ShippingMethods.FirstOrDefault();
+					if (shippingOptionToSelect != null)
+						shippingOptionToSelect.Selected = true;
+				}
+			}
+			else
+			{
+				foreach (var error in getShippingOptionResponse.Errors)
+					model.Warnings.Add(error);
+			}
 
             return model;
         }
@@ -382,7 +389,7 @@ namespace SmartStore.Web.Controllers
 
 			var checkoutState = _httpContext.GetCheckoutState();
 
-			if (checkoutState != null && !checkoutState.OnePageCkeckoutEnabled)
+			if (checkoutState != null && checkoutState.OnePageCheckoutDisabled)
 				return false;
 
             return true;
@@ -910,7 +917,7 @@ namespace SmartStore.Web.Controllers
         }
         [HttpPost, ActionName("Confirm")]
         [ValidateInput(false)]
-        public ActionResult ConfirmOrder()
+        public ActionResult ConfirmOrder(FormCollection form)
         {
             //validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
@@ -949,17 +956,20 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderExtraData = new Dictionary<string, string>();
+                placeOrderExtraData["CustomerComment"] = form["customercommenthidden"];
+
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, placeOrderExtraData);
 
                 if (placeOrderResult.Success)
                 {
-                    _httpContext.Session["OrderPaymentInfo"] = null;
                     var postProcessPaymentRequest = new PostProcessPaymentRequest()
                     {
                         Order = placeOrderResult.PlacedOrder
                     };
                     _paymentService.PostProcessPayment(postProcessPaymentRequest);
 
+					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
                     if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
@@ -978,8 +988,6 @@ namespace SmartStore.Web.Controllers
                 {
                     foreach (var error in placeOrderResult.Errors)
                         model.Warnings.Add(error);
-
-					_httpContext.RemoveCheckoutState();
                 }
             }
             catch (Exception exc)
@@ -1643,21 +1651,22 @@ namespace SmartStore.Web.Controllers
 				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest);
+                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, new Dictionary<string,string>());
                 if (placeOrderResult.Success)
                 {
-                    _httpContext.Session["OrderPaymentInfo"] = null;
                     var postProcessPaymentRequest = new PostProcessPaymentRequest()
                     {
                         Order = placeOrderResult.PlacedOrder
                     };
-
 
                     var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(placeOrderResult.PlacedOrder.PaymentMethodSystemName);
                     if (paymentMethod != null)
                     {
                         if (paymentMethod.Value.PaymentMethodType == PaymentMethodType.Redirection)
                         {
+							_httpContext.Session["OrderPaymentInfo"] = null;
+							_httpContext.RemoveCheckoutState();
+
                             //Redirection will not work because it's AJAX request.
                             //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
 
@@ -1667,17 +1676,13 @@ namespace SmartStore.Web.Controllers
                         else
                         {
                             _paymentService.PostProcessPayment(postProcessPaymentRequest);
-                            //success
-                            return Json(new { success = 1 });
                         }
                     }
-                    else
-                    {
-                        //payment method could be null if order total is 0
 
-                        //success
-                        return Json(new { success = 1 });
-                    }
+					_httpContext.Session["OrderPaymentInfo"] = null;
+					_httpContext.RemoveCheckoutState();
+
+					return Json(new { success = 1 });
                 }
                 else
                 {

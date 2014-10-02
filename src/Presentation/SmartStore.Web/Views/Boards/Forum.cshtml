@@ -12,21 +12,19 @@
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
     Html.AddTitleParts(Model.Name);
+    Html.AddMetaDescriptionParts(Model.Name);
 }
 <script type="text/javascript">
     function handleForumWatch(context) {
-        // codehint: sm-edit
         var btn = $('#watch-forum');
         btn.text(context.Text);
         setButtonWatchState(btn, context.Subscribed);
     }
-    // codehint: sm-add
     function setButtonWatchState(btn, subscribed) {
         subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
         btn.find("i").remove(); // remove icon
         btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
     }
-    // codehint: sm-add
     $(function () {
         setButtonWatchState($('#watch-forum'));
     });

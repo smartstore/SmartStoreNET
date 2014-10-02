@@ -69,34 +69,11 @@
                             <div>@Html.SymbolForBool(item.SupportVoid)  @Html.LabelFor(model => item.SupportVoid, new { style = "display:inline" })</div>
                         </text>).Title("Features");
                 
-                        //columns.Bound(x => x.SupportCapture)
-                        //    .Template(item => @Html.SymbolForBool(item.SupportCapture))
-                        //    .ClientTemplate(@Html.SymbolForBool("SupportCapture"))
-                        //    .Centered()
-                        //    .Width(100)
-                        //    .ReadOnly();
-                        //columns.Bound(x => x.SupportRefund)
-                        //    .Template(item => @Html.SymbolForBool(item.SupportRefund))
-                        //    .ClientTemplate(@Html.SymbolForBool("SupportRefund"))
-                        //    .Centered()
-                        //    .Width(100)
-                        //    .ReadOnly();
-                        //columns.Bound(x => x.SupportPartiallyRefund)
-                        //    .Template(item => @Html.SymbolForBool(item.SupportPartiallyRefund))
-                        //    .ClientTemplate(@Html.SymbolForBool("SupportPartiallyRefund"))
-                        //    .Centered()
-                        //    .Width(100)
-                        //    .ReadOnly();
-                        //columns.Bound(x => x.SupportVoid)
-                        //    .Template(item => @Html.SymbolForBool(item.SupportVoid))
-                        //    .ClientTemplate(@Html.SymbolForBool("SupportVoid"))
-                        //    .Centered()
-                        //    .Width(100)
-                        //    .ReadOnly();
                         columns.Bound(x => x.RecurringPaymentType)
                             .Width(100)
                             .ReadOnly();
                         columns.Bound(x => x.DisplayOrder)
+							.Centered()
                             .Width(100);
                         columns.Bound(x => x.IsActive)
                             .Template(item => @Html.SymbolForBool(item.IsActive))

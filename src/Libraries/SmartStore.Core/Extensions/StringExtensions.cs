@@ -713,8 +713,6 @@ namespace SmartStore
             return value;
         }
 
-		// codehint: sm-add (begin)
-
 		/// <summary>Debug.WriteLine</summary>
 		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
@@ -1002,7 +1000,19 @@ namespace SmartStore
 			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);
 		}
 
-		// codehint: sm-add (end)
+		[DebuggerStepThrough]
+		public static string ReplaceCsvChars(this string s)
+		{
+			if (s.HasValue())
+			{
+				s = s.Replace(';', ',');
+				s = s.Replace('\r', ' ');
+				s = s.Replace('\n', ' ');
+				return s.Replace("'", "");
+			}
+			return "";
+		}
+
 		#endregion
 
         #region Helper

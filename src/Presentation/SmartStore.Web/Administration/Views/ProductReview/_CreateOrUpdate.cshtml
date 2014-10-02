@@ -16,7 +16,7 @@
             @Html.SmartLabelFor(model => model.CustomerId)
         </td>
         <td class="adminData">
-            @Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+            @Html.ActionLink(Model.CustomerName, "Edit", "Customer", new { id = Model.CustomerId }, new { })
         </td>
     </tr>
     <tr>

@@ -17,6 +17,11 @@ namespace SmartStore.Services.Payments
         /// <returns>Payment methods</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0);
 
+		/// <summary>
+		/// Determines whether a payment method is active\enabled for a shop
+		/// </summary>
+		bool IsPaymentMethodActive(string systemName, int storeId = 0);
+
         /// <summary>
         /// Load payment provider by system name
         /// </summary>

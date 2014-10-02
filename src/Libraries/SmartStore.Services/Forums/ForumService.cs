@@ -1019,7 +1019,7 @@ namespace SmartStore.Services.Forums
             //Email notification
             if (_forumSettings.NotifyAboutPrivateMessages)
             {
-                _workflowMessageService.SendPrivateMessageNotification(privateMessage, _workContext.WorkingLanguage.Id);                
+                _workflowMessageService.SendPrivateMessageNotification(customerTo, privateMessage, _workContext.WorkingLanguage.Id);                
             }
         }
 

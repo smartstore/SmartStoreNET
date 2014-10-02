@@ -375,8 +375,8 @@ namespace SmartStore.Services.Orders
                     decimal minimumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MinimumCustomerEnteredPrice, _workContext.WorkingCurrency);
                     decimal maximumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MaximumCustomerEnteredPrice, _workContext.WorkingCurrency);
                     warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.CustomerEnteredPrice.RangeError"),
-                        _priceFormatter.FormatPrice(minimumCustomerEnteredPrice, false, false),
-                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, false, false)));
+                        _priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
+                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false)));
                 }
             }
 

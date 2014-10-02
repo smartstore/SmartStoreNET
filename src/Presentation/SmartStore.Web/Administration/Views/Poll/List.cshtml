@@ -25,8 +25,7 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Name)
-                            .Width(350)
-                            .Centered()
+                            .Width(400)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
                         columns.Bound(x => x.LanguageName)
@@ -44,16 +43,10 @@
                             .Template(item => @Html.SymbolForBool(item.ShowOnHomePage))
                             .ClientTemplate(@Html.SymbolForBool("ShowOnHomePage"))
                             .Centered();
-                        columns.Bound(x => x.StartDate)
-                            .Centered();
+						columns.Bound(x => x.StartDate)
+							.Width(180);
                         columns.Bound(x => x.EndDate)
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(50)
-                            .Centered()
-                            .HeaderTemplate(T("Admin.Common.Edit").Text);
+							.Width(180);
                     })
                     .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Poll"))

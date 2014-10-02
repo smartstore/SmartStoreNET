@@ -235,7 +235,8 @@ namespace SmartStore.Web.Controllers
 				IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter)
+                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter),
+                Weight = product.Weight
 			};
 
 			if (item.BundleItem != null)
@@ -530,6 +531,34 @@ namespace SmartStore.Web.Controllers
 			return model;
 		}
 
+		private void PrepareButtonPaymentMethodModel(ButtonPaymentMethodModel model, IList<OrganizedShoppingCartItem> cart)
+		{
+			model.Items.Clear();
+
+			var boundPaymentMethods = _paymentService
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
+				.Where(pm => pm.PaymentMethodType == PaymentMethodType.Button || pm.PaymentMethodType == PaymentMethodType.StandardAndButton)
+				.ToList();
+
+			foreach (var pm in boundPaymentMethods)
+			{
+				if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
+					continue;
+
+				string actionName;
+				string controllerName;
+				RouteValueDictionary routeValues;
+				pm.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
+
+				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem()
+				{
+					ActionName = actionName,
+					ControllerName = controllerName,
+					RouteValues = routeValues
+				});
+			}
+		}
+
         /// <summary>
         /// Prepare shopping cart model
         /// </summary>
@@ -564,6 +593,7 @@ namespace SmartStore.Web.Controllers
             model.DisplayDeliveryTime = _shoppingCartSettings.ShowDeliveryTimes;
             model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
             model.DisplayBasePrice = _shoppingCartSettings.ShowBasePrice;
+            model.DisplayWeight = _shoppingCartSettings.ShowWeight;
             model.IsEditable = isEditable;
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
@@ -591,6 +621,7 @@ namespace SmartStore.Web.Controllers
                 _discountService.IsDiscountValid(discount, _workContext.CurrentCustomer))
                 model.DiscountBox.CurrentCode = discount.CouponCode;
             model.GiftCardBox.Display = _shoppingCartSettings.ShowGiftCardBox;
+            model.DisplayCommentBox = _shoppingCartSettings.ShowCommentBox;
 
             //cart warnings
 			var cartWarnings = _shoppingCartService.GetShoppingCartWarnings(cart, checkoutAttributesXml, validateCheckoutAttributes);
@@ -815,6 +846,8 @@ namespace SmartStore.Web.Controllers
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
             }
             #endregion
+
+			PrepareButtonPaymentMethodModel(model.ButtonPaymentMethods, cart);
         }
 
         [NonAction]
@@ -1109,7 +1142,6 @@ namespace SmartStore.Web.Controllers
             var product = _productService.GetProductById(productId);
 			if (product == null)
 			{
-				//no product found
 				return Json(new
 				{
 					success = false,
@@ -1117,23 +1149,14 @@ namespace SmartStore.Web.Controllers
 				});
 			}
 
-			// filter out product types that cannot be add to cart
-			if (product.ProductType == ProductType.GroupedProduct)
+			// filter out cases where a product cannot be added to cart
+			if (product.ProductType == ProductType.GroupedProduct || product.CustomerEntersPrice || product.IsGiftCard)
 			{
 				return Json(new
 				{
 					redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
 				});
 			}
-
-            if (product.CustomerEntersPrice)
-            {
-                //cannot be added to the cart (requires a customer to enter price)
-                return Json(new
-                {
-                    redirect = Url.RouteUrl("Product", new { SeName = product.GetSeName() }),
-                });
-            }
 
             //quantity to add
 			var qtyToAdd = product.OrderMinimumQuantity > 0 ? product.OrderMinimumQuantity : 1;
@@ -1844,7 +1867,16 @@ namespace SmartStore.Web.Controllers
             model.IsEditable = isEditable;
 
             if (cart.Count > 0)
-            {              
+            {             
+ 
+                //weight
+                model.Weight = decimal.Zero;
+
+                foreach (var sci in cart) 
+                {
+                    model.Weight += sci.Item.Product.Weight * sci.Item.Quantity;
+                }
+
                 //subtotal
                 decimal subtotalBase = decimal.Zero;
                 decimal orderSubTotalDiscountAmountBase = decimal.Zero;
@@ -1923,19 +1955,21 @@ namespace SmartStore.Web.Controllers
                             displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
                             displayTax = !displayTaxRates;
 
-                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, false /*true*/, false);
+                            model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
                             foreach (var tr in taxRates)
                             {
                                 model.TaxRates.Add(new OrderTotalsModel.TaxRate()
                                     {
                                         Rate = _priceFormatter.FormatTaxRate(tr.Key),
-                                        Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), false /*true*/, false),
+                                        Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), true, false),
                                     });
                             }
                         }
                 }
                 model.DisplayTaxRates = displayTaxRates;
                 model.DisplayTax = displayTax;
+
+                model.DisplayWeight = _shoppingCartSettings.ShowWeight;
 
                 //total
                 decimal orderTotalDiscountAmountBase = decimal.Zero;
@@ -1951,14 +1985,14 @@ namespace SmartStore.Web.Controllers
                 if (shoppingCartTotalBase.HasValue)
                 {
                     decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _workContext.WorkingCurrency);
-                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, false /*true*/, false);
+                    model.OrderTotal = _priceFormatter.FormatPrice(shoppingCartTotal, true, false);
                 }
 
                 //discount
                 if (orderTotalDiscountAmountBase > decimal.Zero)
                 {
                     decimal orderTotalDiscountAmount = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotalDiscountAmountBase, _workContext.WorkingCurrency);
-                    model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderTotalDiscountAmount, false /*true*/, false);
+                    model.OrderTotalDiscount = _priceFormatter.FormatPrice(-orderTotalDiscountAmount, true, false);
                     model.AllowRemovingOrderTotalDiscount = orderTotalAppliedDiscount != null && orderTotalAppliedDiscount.RequiresCouponCode &&
                         !String.IsNullOrEmpty(orderTotalAppliedDiscount.CouponCode) && model.IsEditable;
                 }
@@ -1974,11 +2008,11 @@ namespace SmartStore.Web.Controllers
                                 CouponCode =  appliedGiftCard.GiftCard.GiftCardCouponCode,
                             };
                         decimal amountCanBeUsed = _currencyService.ConvertFromPrimaryStoreCurrency(appliedGiftCard.AmountCanBeUsed, _workContext.WorkingCurrency);
-                        gcModel.Amount = _priceFormatter.FormatPrice(-amountCanBeUsed, false /*true*/, false);
+                        gcModel.Amount = _priceFormatter.FormatPrice(-amountCanBeUsed, true, false);
 
                         decimal remainingAmountBase = appliedGiftCard.GiftCard.GetGiftCardRemainingAmount() - appliedGiftCard.AmountCanBeUsed;
                         decimal remainingAmount = _currencyService.ConvertFromPrimaryStoreCurrency(remainingAmountBase, _workContext.WorkingCurrency);
-                        gcModel.Remaining = _priceFormatter.FormatPrice(remainingAmount, false /*true*/, false);
+                        gcModel.Remaining = _priceFormatter.FormatPrice(remainingAmount, true, false);
                         
                         model.GiftCards.Add(gcModel);
                     }
@@ -1989,7 +2023,7 @@ namespace SmartStore.Web.Controllers
                 {
                     decimal redeemedRewardPointsAmountInCustomerCurrency = _currencyService.ConvertFromPrimaryStoreCurrency(redeemedRewardPointsAmount, _workContext.WorkingCurrency);
                     model.RedeemedRewardPoints = redeemedRewardPoints;
-                    model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, false /*true*/, false);
+                    model.RedeemedRewardPointsAmount = _priceFormatter.FormatPrice(-redeemedRewardPointsAmountInCustomerCurrency, true, false);
                 }
             }
 
@@ -2041,6 +2075,9 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             var model = PrepareMiniShoppingCartModel();
+
+			_httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, new CheckoutState());
+
             return PartialView(model);
         }
 

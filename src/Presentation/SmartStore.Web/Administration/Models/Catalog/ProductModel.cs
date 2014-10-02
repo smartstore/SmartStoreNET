@@ -47,6 +47,9 @@ namespace SmartStore.Admin.Models.Catalog
 		public string ProductTypeName { get; set; }
 		public string ProductTypeLabelHint { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.ProductUrl")]
+		public string ProductUrl { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]
 		public int AssociatedToProductId { get; set; }
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AssociatedToProductName")]

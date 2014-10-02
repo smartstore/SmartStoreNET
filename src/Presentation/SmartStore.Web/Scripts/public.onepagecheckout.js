@@ -134,8 +134,6 @@ var Billing = {
         if (Checkout.loadWaiting != false) return;
 
         Checkout.setLoadWaiting('billing');
-        
-        console.log(this.saveUrl);
 
         $.ajax({
             url: this.saveUrl,

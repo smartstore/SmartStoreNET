@@ -63,7 +63,25 @@
 		<Value>If an asterisk is selected, then this shipping rate will apply to all stores.</Value>
 	</LocaleResource>
 
-  <LocaleResource Name="AddNewRecordTitle">
+  <LocaleResource Name="Fields.SmallQuantitySurcharge">
+    <Value>Surcharge for small quantities</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantitySurcharge.Hint">
+    <Value>Determines the value of the small quantity surcharge.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold">
+    <Value>Threshold for small quantities</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold.Hint">
+    <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SmallQuantitySurchargeNotReachedt">
+    <Value>
+      <![CDATA[<br>You're charged with a surcharge of <b class=\"text-success\">{0}</b> because the total of your order hasn't reached <b class=\"text-warning\">{1}</b>.]]>
+    </Value>
+  </LocaleResource>
+
+    <LocaleResource Name="AddNewRecordTitle">
     <Value>Add new record</Value>
   </LocaleResource>
   <LocaleResource Name="SettingsTitle">

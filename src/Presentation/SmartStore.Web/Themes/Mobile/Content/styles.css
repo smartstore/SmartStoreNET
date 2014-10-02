@@ -656,7 +656,7 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 	max-width: 100% !important;
 	width: 100% !important;
 }
-.full-description div[style],
+.full-description > div[style],
 .full-description img[style] {
 	height: auto !important;
 }

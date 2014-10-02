@@ -63,7 +63,7 @@
         @*description*@
         @if (!String.IsNullOrWhiteSpace(Model.Description)) {
             <div class="category-description">
-                @Html.Raw(Model.Description)
+                @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
 		}
         @Html.Widget("categorydetails_before_subcategories")
@@ -75,13 +75,11 @@
 				@<article class="item-box equalized-column" data-equalized-column-name="subcat">
                     <div class="category-item sub-category-item">
                         <h2 class="category-title">
-                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                @item.Name</a>
+                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
                         </h2>
                         <div class="picture">
                             <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl"
-                                    title="@item.PictureModel.Title" /></a>
+                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" /></a>
                         </div>
                     </div>
                 </article>
@@ -117,30 +115,6 @@
         @if (ShowListOptions()) {
             @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
 		}
-
-        @*filtering*@
-@*        @Html.Widget("categorydetails_before_filters")
-        @if (Model.PagingFilteringContext.PriceRangeFilter.Enabled ||
-        Model.PagingFilteringContext.SpecificationFilter.Enabled)
-        {
-            <div class="product-filters">
-                <div class="filter-title">
-                    <span>@T("Filtering.FilterResults")</span>
-                </div>
-                @if (Model.PagingFilteringContext.PriceRangeFilter.Enabled)
-                {
-                    <div class="filter-item">
-                        @Html.Partial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary())
-                    </div>
-                }
-                @if (Model.PagingFilteringContext.SpecificationFilter.Enabled)
-                {
-                    <div class="filter-item" style="max-height: 200px; overflow: hidden; position: relative /* MC: TEMP */">
-                        @Html.Partial("_FilterSpecsBox", Model.PagingFilteringContext.SpecificationFilter, new ViewDataDictionary())
-                    </div>
-                }
-            </div>
-        }*@
 
         @Html.Widget("categorydetails_before_product_list")
         @*product list*@
@@ -178,8 +152,9 @@
 @section right_top {
     @Html.Widget("categorydetails_before_filters")
 
-    @*filtering... codehint: sm-add*@
-	@if (Model.Products.Count > 0) {
+    @*filtering*@
+	@if (Model.Products.Count > 0 && Model.DisplayFilter)
+    {
 		<div id="product-filter" class="block block-bordered product-filter-block">
 			<form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
 				<input type="hidden" name="categoryID" value="@Model.Id" />
@@ -214,5 +189,4 @@
 			});
 		</script>
 	}
-
 }

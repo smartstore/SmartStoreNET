@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -34,7 +35,7 @@ namespace SmartStore.Services.Discounts
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
 
         #endregion
 
@@ -70,7 +71,7 @@ namespace SmartStore.Services.Discounts
 			this._genericAttributeService = genericAttributeService;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
         }
 
         #endregion
@@ -331,6 +332,8 @@ namespace SmartStore.Services.Discounts
 
             //check date range
             DateTime now = DateTime.UtcNow;
+			int storeId = _storeContext.CurrentStore.Id;
+
             if (discount.StartDateUtc.HasValue)
             {
                 DateTime startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
@@ -354,8 +357,8 @@ namespace SmartStore.Services.Discounts
                 var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName);
                 if (requirementRule == null)
                     continue;
-				if (!(_storeContext.CurrentStore.Id == 0 || 
-					_settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+
+				if (!(storeId == 0 || _settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true)))
 					continue;
 
                 var request = new CheckDiscountRequirementRequest()
@@ -364,9 +367,20 @@ namespace SmartStore.Services.Discounts
                     Customer = customer,
 					Store = _storeContext.CurrentStore
                 };
+
                 if (!requirementRule.CheckRequirement(request))
                     return false;
             }
+
+			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
+			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
+			{
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+
+				if (cart.Any(x => x.Item.Product.IsGiftCard))
+					return false;
+			}
+
             return true;
         }
 

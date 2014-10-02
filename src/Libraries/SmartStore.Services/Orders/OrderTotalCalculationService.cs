@@ -341,12 +341,17 @@ namespace SmartStore.Services.Orders
 
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToOrderSubTotal);
             var allowedDiscounts = new List<Discount>();
-            if (allDiscounts != null)
-                foreach (var discount in allDiscounts)
-                    if (_discountService.IsDiscountValid(discount, customer) &&
-                               discount.DiscountType == DiscountType.AssignedToOrderSubTotal &&
-                               !allowedDiscounts.ContainsDiscount(discount))
-                        allowedDiscounts.Add(discount);
+			if (allDiscounts != null)
+			{
+				foreach (var discount in allDiscounts)
+				{
+					if (_discountService.IsDiscountValid(discount, customer) && discount.DiscountType == DiscountType.AssignedToOrderSubTotal &&
+						!allowedDiscounts.ContainsDiscount(discount))
+					{
+						allowedDiscounts.Add(discount);
+					}
+				}
+			}
 
             appliedDiscount = allowedDiscounts.GetPreferredDiscount(orderSubTotal);
             if (appliedDiscount != null)

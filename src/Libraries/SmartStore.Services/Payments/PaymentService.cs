@@ -91,16 +91,8 @@ namespace SmartStore.Services.Payments
 		/// </summary>
 		public virtual bool IsPaymentMethodActive(string systemName, int storeId = 0)
 		{
-			var method = LoadActivePaymentMethods()
-				.FirstOrDefault(x => x.PluginDescriptor.SystemName == systemName && x.PluginDescriptor.Installed);
-
-			if (method != null)
-			{
-				if (storeId == 0 || _settingService.GetSettingByKey<string>(method.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
-					return true;
-			}
-
-			return false;
+			var method = LoadPaymentMethodBySystemName(systemName, true, storeId);
+			return method != null;
 		}
 
         /// <summary>

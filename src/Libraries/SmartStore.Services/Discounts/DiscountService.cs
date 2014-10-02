@@ -338,15 +338,11 @@ namespace SmartStore.Services.Discounts
 
             // discount requirements
             var requirements = discount.DiscountRequirements;
-			int storeId = _storeContext.CurrentStore.Id;
             foreach (var req in requirements)
             {
 				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, storeId);
                 if (requirementRule == null)
                     continue;
-
-				if (!(storeId == 0 || _settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true)))
-					continue;
 
                 var request = new CheckDiscountRequirementRequest()
                 {

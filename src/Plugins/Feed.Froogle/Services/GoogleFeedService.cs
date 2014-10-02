@@ -1,6 +1,5 @@
-using Autofac;
-using Telerik.Web.Mvc;
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -9,33 +8,20 @@ using System.Web;
 using System.Web.Mvc;
 using System.Xml;
 using Autofac;
-using SmartStore.Core;
-using System.Web;
-using System.Web.Mvc;
-using System.Collections.Generic;
-using System.Globalization;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.Plugin.Feed.Froogle.Domain;
-using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Catalog;
 using SmartStore.Plugin.Feed.Froogle.Domain;
 using SmartStore.Plugin.Feed.Froogle.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Stores;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
-using SmartStore.Services.Tasks;
-using System.Collections.Generic;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Data;
-using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Plugin.Feed.Froogle.Services
 {

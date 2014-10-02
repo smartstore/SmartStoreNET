@@ -48,7 +48,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
 			var entity = _googleService.GetGoogleProductRecord(model.ProductId);
 			var insert = (entity == null);
-			var delete = model.GoogleCategory.IsEmpty() && model.AgeGroup.IsEmpty() && model.Color.IsEmpty() && model.Gender.IsEmpty() && model.GoogleSize.IsEmpty() && model.Pattern.IsEmpty() && model.Material.IsEmpty();
+			var delete = model.Taxonomy.IsEmpty() && model.AgeGroup.IsEmpty() && model.Color.IsEmpty() && model.Gender.IsEmpty() && model.Size.IsEmpty() && model.Pattern.IsEmpty() && model.Material.IsEmpty();
 
 			if (insert && delete)
 			{
@@ -76,8 +76,8 @@ namespace SmartStore.Plugin.Feed.Froogle
 			entity.AgeGroup = model.AgeGroup;
 			entity.Color = model.Color;
 			entity.Gender = model.Gender;
-			entity.Size = model.GoogleSize;
-			entity.Taxonomy = model.GoogleCategory;
+			entity.Size = model.Size;
+			entity.Taxonomy = model.Taxonomy;
 			entity.Material = model.Material;
 			entity.Pattern = model.Pattern;
 

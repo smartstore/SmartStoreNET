@@ -51,11 +51,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Controllers
 
 			if (entity != null)
 			{
-				model.GoogleCategory = entity.Taxonomy;
+				model.Taxonomy = entity.Taxonomy;
 				model.Gender = entity.Gender;
 				model.AgeGroup = entity.AgeGroup;
 				model.Color = entity.Color;
-				model.GoogleSize = entity.Size;
+				model.Size = entity.Size;
 				model.Material = entity.Material;
 				model.Pattern = entity.Pattern;
 			}

@@ -191,13 +191,12 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-        [NonAction]
+		[NonAction]
 		protected CheckoutShippingMethodModel PrepareShippingMethodModel(IList<OrganizedShoppingCartItem> cart)
-        {
-            var model = new CheckoutShippingMethodModel();
+		{
+			var model = new CheckoutShippingMethodModel();
 
-			var getShippingOptionResponse = _shippingService .GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress,
-				  "", _storeContext.CurrentStore.Id);
+			var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, "", _storeContext.CurrentStore.Id);
 
 			if (getShippingOptionResponse.Success)
 			{
@@ -208,12 +207,6 @@ namespace SmartStore.Web.Controllers
 
 				var shippingMethods = _shippingService.GetAllShippingMethods();
 
-                    // codehint: sm-add (determine brand image of shipping method)
-                    var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
-                    if (plugin != null && plugin.BrandImageFileName.HasValue())
-                    {
-                        soModel.BrandUrl = "~/Plugins/{0}/Content/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
-                    }
 				foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
 				{
 					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
@@ -223,11 +216,10 @@ namespace SmartStore.Web.Controllers
 						ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
 					};
 
-					// codehint: sm-add (determine brand image of shipping method)
-					var plugin = PluginManager.ReferencedPlugins.Where(p => p.SystemName == shippingOption.ShippingRateComputationMethodSystemName).FirstOrDefault();
-					if (plugin != null && plugin.BrandImageFileName.HasValue())
+					var srcmProvider = _shippingService.LoadShippingRateComputationMethodBySystemName(shippingOption.ShippingRateComputationMethodSystemName);
+					if (srcmProvider != null)
 					{
-						soModel.BrandUrl = "~/Plugins/{0}/{1}".FormatInvariant(plugin.SystemName, plugin.BrandImageFileName);
+						soModel.BrandUrl = _pluginMediator.GetBrandImageUrl(srcmProvider.Metadata);
 					}
 
 					//adjust rate
@@ -267,8 +259,8 @@ namespace SmartStore.Web.Controllers
 					model.Warnings.Add(error);
 			}
 
-            return model;
-        }
+			return model;
+		}
 
         [NonAction]
 		protected CheckoutPaymentMethodModel PreparePaymentMethodModel(IList<OrganizedShoppingCartItem> cart)

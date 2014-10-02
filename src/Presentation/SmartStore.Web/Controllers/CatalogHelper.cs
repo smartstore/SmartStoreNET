@@ -160,8 +160,8 @@ namespace SmartStore.Web.Controllers
 				Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
 				ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-				EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
-				HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
+				//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
+				//HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
 				ShowSku = _catalogSettings.ShowProductSku,
 				Sku = product.Sku,
 				ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,

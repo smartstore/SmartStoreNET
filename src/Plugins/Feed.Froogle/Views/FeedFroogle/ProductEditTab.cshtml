@@ -8,7 +8,7 @@
 	$(function () {
 		var googCategories;
 
-		$('#@Html.IdFor(m => m.GoogleCategory)').typeahead({
+		$('#@Html.IdFor(m => m.Taxonomy)').typeahead({
 			items: 18,
 			source: function (query, process) {
 				if (googCategories === undefined) {
@@ -38,11 +38,11 @@
 <table class="adminContent">
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.GoogleCategory)
+			@Html.SmartLabelFor(m => m.Taxonomy)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(m => m.GoogleCategory, new { data_provide = "typeahead", placeholder = ViewBag.DefaultCategory, style = "width: 97%", autocomplete = "off" })
-			@Html.ValidationMessageFor(m => m.GoogleCategory)
+			@Html.TextBoxFor(m => m.Taxonomy, new { data_provide = "typeahead", placeholder = ViewBag.DefaultCategory, style = "width: 97%", autocomplete = "off" })
+			@Html.ValidationMessageFor(m => m.Taxonomy)
 		</td>
 	</tr>
 	<tr>
@@ -74,11 +74,11 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.GoogleSize)
+			@Html.SmartLabelFor(m => m.Size)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(m => m.GoogleSize, new { placeholder = ViewBag.DefaultSize })
-			@Html.ValidationMessageFor(m => m.GoogleSize)
+			@Html.TextBoxFor(m => m.Size, new { placeholder = ViewBag.DefaultSize })
+			@Html.ValidationMessageFor(m => m.Size)
 		</td>
 	</tr>	
 	<tr>

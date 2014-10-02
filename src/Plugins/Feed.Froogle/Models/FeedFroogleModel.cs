@@ -193,7 +193,11 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 
 		//this attribute is required to disable editing
 		[ScaffoldColumn(false)]
-		public int ProductId { get { return Id; } }
+		public int ProductId 
+		{ 
+			get { return Id; }
+			set { Id = value; }
+		}
 		public int Id { get; set; }
 
 		//this attribute is required to disable editing
@@ -227,16 +231,16 @@ namespace SmartStore.Plugin.Feed.Froogle.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.GoogleCategory")]
 		public string Taxonomy { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Gender")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Gender")]
 		public string Gender { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.AgeGroup")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.AgeGroup")]
 		public string AgeGroup { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Color")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Color")]
 		public string Color { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Feed.Froogle.Size")]
+		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Size")]
 		public string Size { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Material")]

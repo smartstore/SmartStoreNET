@@ -142,6 +142,7 @@ namespace SmartStore.Plugin.Payments.PayPalStandard
 			var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
+			req.UserAgent = HttpContext.Current.Request.UserAgent;
 
 			string formContent = string.Format("{0}&cmd=_notify-validate", formString);
 			req.ContentLength = formContent.Length;

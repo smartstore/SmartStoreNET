@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
 {
@@ -14,21 +15,21 @@ namespace SmartStore.Services.Payments
         /// <param name="filterByCustomerId">Filter payment methods by customer; null to load all records</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment methods</returns>
-		IList<IPaymentMethod> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0);
+		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0);
 
         /// <summary>
         /// Load payment provider by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found payment provider</returns>
-        IPaymentMethod LoadPaymentMethodBySystemName(string systemName);
+		Provider<IPaymentMethod> LoadPaymentMethodBySystemName(string systemName, bool onlyWhenActive = false, int storeId = 0);
 
         /// <summary>
         /// Load all payment providers
         /// </summary>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment providers</returns>
-		IList<IPaymentMethod> LoadAllPaymentMethods(int storeId = 0);
+		IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0);
 
 
 

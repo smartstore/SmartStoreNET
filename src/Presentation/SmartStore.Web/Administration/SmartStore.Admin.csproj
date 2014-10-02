@@ -577,10 +577,7 @@
     <Content Include="Views\Setting\Shipping.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Payment\ConfigureMethod.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Payment\Methods.cshtml" />
+    <Content Include="Views\Payment\Providers.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CustomerRole\_CreateOrUpdate.cshtml" />

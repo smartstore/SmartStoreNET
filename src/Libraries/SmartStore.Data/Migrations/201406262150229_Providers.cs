@@ -151,6 +151,9 @@ namespace SmartStore.Data.Migrations
 			// ExternalAuth
 			prefix = "Admin.Configuration.ExternalAuthenticationMethods.";
 			builder.Delete(prefix + "Fields.DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "Fields.IsActive");
+			// Payment
+			prefix = "Admin.Configuration.Payment.Methods.";
+			builder.Delete(prefix + "Fields.DisplayOrder", prefix + "Fields.FriendlyName", prefix + "Fields.SystemName", prefix + "Fields.IsActive");
 		}
     }
 }

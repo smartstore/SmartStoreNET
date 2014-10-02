@@ -1,16 +1,52 @@
-﻿@model Telerik.Web.Mvc.GridModel<PaymentMethodModel>
-@using Telerik.Web.Mvc.UI
+﻿@model IEnumerable<PaymentMethodModel>
+
 @{    
-    //page title
-    ViewBag.Title = T("Admin.Configuration.Payment.Methods").Text;
+	ViewBag.Title = T("Admin.Configuration.Payment.Methods").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-credit-card"></i>
         @T("Admin.Configuration.Payment.Methods")
     </div>
 </div>
+
 <table class="adminContent">
+	<tr>
+		<td>
+			@Html.ProviderList(Model,
+			@<div>
+				<table class="payment-method-features">
+					<tr><td>@T("Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType"):</td><td>@item.RecurringPaymentType</td></tr>
+					<tr><td>@Html.DisplayNameFor(model => model.SupportCapture):</td><td>@YesNoLabel(item.SupportCapture)</td></tr>
+					<tr><td>@Html.DisplayNameFor(model => model.SupportRefund):</td><td>@YesNoLabel(item.SupportRefund)</td></tr>
+					<tr><td>@Html.DisplayNameFor(model => model.SupportPartiallyRefund):</td><td>@YesNoLabel(item.SupportPartiallyRefund)</td></tr>
+					<tr><td>@Html.DisplayNameFor(model => model.SupportVoid):</td><td>@YesNoLabel(item.SupportVoid)</td></tr>
+				</table>
+			</div>,
+			@<div>
+				<a class='btn@(item.IsActive ? "" : " btn-success")' href='@Url.Action("ActivateProvider", new { systemName = item.SystemName, activate = !item.IsActive })'>
+					@T("Admin.Common.{0}".FormatInvariant(item.IsActive ? "Deactivate" : "Activate"))
+				</a>
+			</div>)
+		</td>
+	</tr>
+</table>
+
+@helper YesNoLabel(bool value)
+{ 
+	if (value)
+	{
+		<span class="label label-success">@T("Common.Yes")</span>
+	}
+	else
+	{
+		<span class="label">@T("Common.No")</span>
+	}
+}
+
+
+@*<table class="adminContent">
     <tr>
         <td>
             @(Html.Telerik().Grid<PaymentMethodModel>()
@@ -89,4 +125,4 @@
                     .EnableCustomBinding(true))
         </td>
     </tr>
-</table>
+</table>*@

@@ -42,7 +42,7 @@ namespace SmartStore.Admin.Controllers
         public ShippingController(IShippingService shippingService, ShippingSettings shippingSettings,
             ISettingService settingService, ICountryService countryService,
             ILocalizationService localizationService, IPermissionService permissionService,
-             ILocalizedEntityService localizedEntityService, ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService, ILanguageService languageService,
             IPluginFinder pluginFinder,
 			PluginMediator pluginMediator)
 		{

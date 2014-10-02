@@ -1,7 +1,9 @@
 using System;
+using System.Linq;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Payments
@@ -14,7 +16,8 @@ namespace SmartStore.Services.Payments
         /// <param name="paymentMethod">Payment method</param>
         /// <param name="paymentSettings">Payment settings</param>
         /// <returns>Result</returns>
-        public static bool IsPaymentMethodActive(this IPaymentMethod paymentMethod,
+        public static bool IsPaymentMethodActive(
+			this Provider<IPaymentMethod> paymentMethod,
             PaymentSettings paymentSettings)
         {
             if (paymentMethod == null)
@@ -25,10 +28,8 @@ namespace SmartStore.Services.Payments
 
             if (paymentSettings.ActivePaymentMethodSystemNames == null)
                 return false;
-            foreach (string activeMethodSystemName in paymentSettings.ActivePaymentMethodSystemNames)
-                if (paymentMethod.PluginDescriptor.SystemName.Equals(activeMethodSystemName, StringComparison.InvariantCultureIgnoreCase))
-                    return true;
-            return false;
+
+			return paymentSettings.ActivePaymentMethodSystemNames.Contains(paymentMethod.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
 
         /// <summary>
@@ -41,11 +42,14 @@ namespace SmartStore.Services.Payments
         /// <param name="usePercentage">Is fee amount specified as percentage or fixed value?</param>
         /// <returns>Result</returns>
         public static decimal CalculateAdditionalFee(this IPaymentMethod paymentMethod,
-			IOrderTotalCalculationService orderTotalCalculationService, IList<OrganizedShoppingCartItem> cart,
-            decimal fee, bool usePercentage)
+			IOrderTotalCalculationService orderTotalCalculationService, 
+			IList<OrganizedShoppingCartItem> cart,
+            decimal fee, 
+			bool usePercentage)
         {
             if (paymentMethod == null)
                 throw new ArgumentNullException("paymentMethod");
+
             if (fee <= 0)
                 return fee;
 

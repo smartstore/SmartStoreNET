@@ -777,6 +777,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IShippingRateComputationMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IWidget>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExternalAuthenticationMethod>(type, systemName, registration);
+				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
 			}
 
 		}

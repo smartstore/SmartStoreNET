@@ -126,8 +126,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			Dictionary<string, string> values;
 			string response;
 
-			var processor = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard") as PayPalStandardPaymentProcessor;
-			if (processor == null || !processor.IsPaymentMethodActive(_paymentSettings) || !processor.PluginDescriptor.Installed)
+			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
+			var processor = provider != null ? provider.Value as PayPalStandardPaymentProcessor : null;
+			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
 			if (processor.GetPDTDetails(tx, out values, out response))
@@ -241,8 +242,9 @@ namespace SmartStore.Plugin.Payments.PayPalStandard.Controllers
 			string strRequest = Encoding.ASCII.GetString(param);
 			Dictionary<string, string> values;
 
-			var processor = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard") as PayPalStandardPaymentProcessor;
-			if (processor == null || !processor.IsPaymentMethodActive(_paymentSettings) || !processor.PluginDescriptor.Installed)
+			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
+			var processor = provider != null ? provider.Value as PayPalStandardPaymentProcessor : null;
+			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
 			if (processor.VerifyIPN(strRequest, out values))

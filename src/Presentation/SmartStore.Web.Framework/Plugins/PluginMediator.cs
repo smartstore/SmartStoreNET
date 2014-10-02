@@ -195,6 +195,32 @@ namespace SmartStore.Web.Framework.Plugins
 			return model;
 		}
 
+		public string GetBrandImageUrl(ProviderMetadata metadata)
+		{
+			var plugin = metadata.PluginDescriptor;
+
+			if (plugin != null)
+			{
+				var filesToCheck = (new string[] { "branding.{0}.png", "branding.{0}.gif", "branding.{0}.jpg", "branding.{0}.jpeg" }).Select(x => x.FormatInvariant(metadata.SystemName));
+				var dir = plugin.PhysicalPath;
+				foreach (var file in filesToCheck)
+				{
+					if (File.Exists(Path.Combine(dir, "Content", file)))
+					{
+						return "~/Plugins/{0}/Content/{1}".FormatInvariant(plugin.SystemName, file);
+					}
+				}
+
+				var fallback = plugin.BrandImageFileName;
+				if (fallback.HasValue())
+				{
+					return "~/Plugins/{0}/Content/{1}".FormatInvariant(plugin.SystemName, fallback);
+				}
+			}
+
+			return null;
+		}
+
 		public string GetIconUrl(ProviderMetadata metadata)
 		{
 			var plugin = metadata.PluginDescriptor;

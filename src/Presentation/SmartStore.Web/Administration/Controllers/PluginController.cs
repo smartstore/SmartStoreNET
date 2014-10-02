@@ -132,13 +132,13 @@ namespace SmartStore.Admin.Controllers
                 bool canChangeEnabled = false;
                 bool isEnabled = false;
 
-                if (pluginInstance is IPaymentMethod)
-                {
-                    //payment plugin
-                    configurationUrl = Url.Action("ConfigureMethod", "Payment", new { systemName = pluginDescriptor.SystemName });
-                    canChangeEnabled = true;
-                    isEnabled = ((IPaymentMethod)pluginInstance).IsPaymentMethodActive(_paymentSettings);
-                }
+				//if (pluginInstance is IPaymentMethod)
+				//{
+				//	//payment plugin
+				//	configurationUrl = Url.Action("ConfigureMethod", "Payment", new { systemName = pluginDescriptor.SystemName });
+				//	canChangeEnabled = true;
+				//	isEnabled = ((IPaymentMethod)pluginInstance).IsPaymentMethodActive(_paymentSettings);
+				//}
 				//else if (pluginInstance is IShippingRateComputationMethod)
 				//{
 				//	//shipping rate computation method
@@ -146,13 +146,13 @@ namespace SmartStore.Admin.Controllers
 				//	canChangeEnabled = true;
 				//	isEnabled = ((IShippingRateComputationMethod)pluginInstance).IsShippingRateComputationMethodActive(_shippingSettings);
 				//}
-                else if (pluginInstance is ITaxProvider)
-                {
-                    //tax provider
-                    configurationUrl = Url.Action("ConfigureProvider", "Tax", new { systemName = pluginDescriptor.SystemName });
-                    canChangeEnabled = true;
-                    isEnabled = pluginDescriptor.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
-                }
+				//else if (pluginInstance is ITaxProvider)
+				//{
+				//	//tax provider
+				//	configurationUrl = Url.Action("ConfigureProvider", "Tax", new { systemName = pluginDescriptor.SystemName });
+				//	canChangeEnabled = true;
+				//	isEnabled = pluginDescriptor.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
+				//}
 				//else if (pluginInstance is IExternalAuthenticationMethod)
 				//{
 				//	//external auth method
@@ -167,7 +167,7 @@ namespace SmartStore.Admin.Controllers
 				//	canChangeEnabled = true;
 				//	isEnabled = ((IWidgetPlugin)pluginInstance).IsWidgetActive(_widgetSettings);
 				//}
-                else if (pluginInstance is IMiscPlugin)
+                if (pluginInstance is IMiscPlugin)
                 {
                     //Misc plugins
                     configurationUrl = Url.Action("ConfigureMiscPlugin", "Plugin", new { systemName = pluginDescriptor.SystemName });
@@ -327,6 +327,11 @@ namespace SmartStore.Admin.Controllers
 
 			var metadata = provider.Metadata;
 
+			if (metadata.ProviderType == typeof(IPaymentMethod))
+			{
+				requiredPermission = StandardPermissionProvider.ManagePaymentMethods;
+				listUrl2 = Url.Action("Providers", "Payment");
+			}
 			if (metadata.ProviderType == typeof(ITaxProvider))
 			{
 				requiredPermission = StandardPermissionProvider.ManageTaxSettings;
@@ -459,29 +464,29 @@ namespace SmartStore.Admin.Controllers
 				//enabled/disabled
 				if (pluginDescriptor.Installed)
 				{
-					if (pluginInstance is IPaymentMethod)
-					{
-						//payment plugin
-						var pm = (IPaymentMethod)pluginInstance;
-						if (pm.IsPaymentMethodActive(_paymentSettings))
-						{
-							if (!model.IsEnabled)
-							{
-								//mark as disabled
-								_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_paymentSettings);
-							}
-						}
-						else
-						{
-							if (model.IsEnabled)
-							{
-								//mark as active
-								_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.PluginDescriptor.SystemName);
-								_settingService.SaveSetting(_paymentSettings);
-							}
-						}
-					}
+					//if (pluginInstance is IPaymentMethod)
+					//{
+					//	//payment plugin
+					//	var pm = (IPaymentMethod)pluginInstance;
+					//	if (pm.IsPaymentMethodActive(_paymentSettings))
+					//	{
+					//		if (!model.IsEnabled)
+					//		{
+					//			//mark as disabled
+					//			_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_paymentSettings);
+					//		}
+					//	}
+					//	else
+					//	{
+					//		if (model.IsEnabled)
+					//		{
+					//			//mark as active
+					//			_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.PluginDescriptor.SystemName);
+					//			_settingService.SaveSetting(_paymentSettings);
+					//		}
+					//	}
+					//}
 					//else if (pluginInstance is IShippingRateComputationMethod)
 					//{
 					//	//shipping rate computation method
@@ -505,20 +510,20 @@ namespace SmartStore.Admin.Controllers
 					//		}
 					//	}
 					//}
-					else if (pluginInstance is ITaxProvider)
-					{
-						//tax provider
-						if (model.IsEnabled)
-						{
-							_taxSettings.ActiveTaxProviderSystemName = model.SystemName;
-							_settingService.SaveSetting(_taxSettings);
-						}
-						else
-						{
-							_taxSettings.ActiveTaxProviderSystemName = "";
-							_settingService.SaveSetting(_taxSettings);
-						}
-					}
+					//else if (pluginInstance is ITaxProvider)
+					//{
+					//	//tax provider
+					//	if (model.IsEnabled)
+					//	{
+					//		_taxSettings.ActiveTaxProviderSystemName = model.SystemName;
+					//		_settingService.SaveSetting(_taxSettings);
+					//	}
+					//	else
+					//	{
+					//		_taxSettings.ActiveTaxProviderSystemName = "";
+					//		_settingService.SaveSetting(_taxSettings);
+					//	}
+					//}
 					//else if (pluginInstance is IExternalAuthenticationMethod)
 					//{
 					//	//external auth method

@@ -27,6 +27,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Controllers
 {
@@ -54,13 +55,14 @@ namespace SmartStore.Web.Controllers
         private readonly IWebHelper _webHelper;
         private readonly HttpContextBase _httpContext;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
 
         private readonly OrderSettings _orderSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly PaymentSettings _paymentSettings;
         private readonly AddressSettings _addressSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
+		private readonly PluginMediator _pluginMediator;
 
         #endregion
 
@@ -80,7 +82,8 @@ namespace SmartStore.Web.Controllers
             OrderSettings orderSettings, RewardPointsSettings rewardPointsSettings,
             PaymentSettings paymentSettings, AddressSettings addressSettings,
             ShoppingCartSettings shoppingCartSettings,
-			ISettingService settingService)
+			ISettingService settingService,
+			PluginMediator pluginMediator)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -101,13 +104,14 @@ namespace SmartStore.Web.Controllers
             this._webHelper = webHelper;
             this._httpContext = httpContext;
             this._mobileDeviceHelper = mobileDeviceHelper;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
 
             this._orderSettings = orderSettings;
             this._rewardPointsSettings = rewardPointsSettings;
             this._paymentSettings = paymentSettings;
             this._addressSettings = addressSettings;
             this._shoppingCartSettings = shoppingCartSettings;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -280,28 +284,24 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Standard || pm.PaymentMethodType == PaymentMethodType.Redirection)
+				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
             foreach (var pm in boundPaymentMethods)
             {
-                if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
+				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
                     continue;
                 
                 var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel()
                 {
-					Name = pm.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id),
-					Description = pm.GetLocalizedValue(_localizationService, "Description", _workContext.WorkingLanguage.Id),
-                    PaymentMethodSystemName = pm.PluginDescriptor.SystemName,
+					Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
+					Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
+                    PaymentMethodSystemName = pm.Metadata.SystemName,
                 };
-
-                // codehint: sm-add
-                if (pm.PluginDescriptor.BrandImageFileName.HasValue())
-                {
-					pmModel.BrandUrl = "~/Plugins/{0}/Content/{1}".FormatInvariant(pm.PluginDescriptor.SystemName, pm.PluginDescriptor.BrandImageFileName);
-                }
+				
+				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
                 //payment method additional fee
-                decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.PluginDescriptor.SystemName);
+				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
                 decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                 if (rate > decimal.Zero)
@@ -787,11 +787,8 @@ namespace SmartStore.Web.Controllers
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
-            var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-			if (paymentMethodInst == null ||
-				!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-				!(_storeContext.CurrentStore.Id == 0 ||
-				_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+			var paymentMethodProvider = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, _storeContext.CurrentStore.Id);
+			if (paymentMethodProvider == null)
                 return PaymentMethod();
 
             //save
@@ -831,18 +828,18 @@ namespace SmartStore.Web.Controllers
             if (paymentMethod == null)
 				return RedirectToAction("PaymentMethod");
 
-            RouteInfo routeinfo = paymentMethod.GetPaymentInfoHandlerRoute();
+            RouteInfo routeinfo = paymentMethod.Value.GetPaymentInfoHandlerRoute();
             if (routeinfo != null)
             {
                 return new RedirectToRouteResult(routeinfo.RouteValues);
             }
 
-			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod, new FormCollection()))
+			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod.Value, new FormCollection()))
 			{
 				return RedirectToAction("Confirm");
 			}
 
-			var model = PreparePaymentInfoModel(paymentMethod);
+			var model = PreparePaymentInfoModel(paymentMethod.Value);
 
             return View(model);
         }
@@ -878,14 +875,14 @@ namespace SmartStore.Web.Controllers
             if (paymentMethod == null)
 				return RedirectToAction("PaymentMethod");
 
-			if (IsValidPaymentForm(paymentMethod, form))
+			if (IsValidPaymentForm(paymentMethod.Value, form))
 			{
 				return RedirectToAction("Confirm");
 			}
 
             //If we got this far, something failed, redisplay form
             //model
-            var model = PreparePaymentInfoModel(paymentMethod);
+            var model = PreparePaymentInfoModel(paymentMethod.Value);
             return View(model);
         }
         
@@ -1184,15 +1181,11 @@ namespace SmartStore.Web.Controllers
 								SystemCustomerAttributeNames.SelectedPaymentMethod,
 								selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
-							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
-							if (paymentMethodInst == null ||
-								!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-								!(_storeContext.CurrentStore.Id == 0 ||
-								_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName, true, _storeContext.CurrentStore.Id);
+							if (paymentMethodInst == null)
                                 throw new Exception("Selected payment method can't be parsed");
 
-
-                            var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst);
+                            var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
                             return Json(new
                             {
                                 update_section = new UpdateSectionJsonModel()
@@ -1411,15 +1404,11 @@ namespace SmartStore.Web.Controllers
 						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
 							SystemCustomerAttributeNames.SelectedPaymentMethod, selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
 
-						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
-						if (paymentMethodInst == null ||
-							!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-							!(_storeContext.CurrentStore.Id == 0 ||
-							_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName, true, _storeContext.CurrentStore.Id);
+						if (paymentMethodInst == null)
                             throw new Exception("Selected payment method can't be parsed");
 
-
-                        var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst);
+                        var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
                         return Json(new
                         {
                             update_section = new UpdateSectionJsonModel()
@@ -1523,18 +1512,15 @@ namespace SmartStore.Web.Controllers
                     });
                 }
 
-                var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod);
-				if (paymentMethodInst == null ||
-					!paymentMethodInst.IsPaymentMethodActive(_paymentSettings) ||
-					!(_storeContext.CurrentStore.Id == 0 ||
-					_settingService.GetSettingByKey<string>(paymentMethodInst.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
+				var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, _storeContext.CurrentStore.Id);
+				if (paymentMethodInst == null)
                     throw new Exception("Selected payment method can't be parsed");
 
                 //save
 				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);                
 
-                var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst);
+                var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
                 return Json(new
                 {
                     update_section = new UpdateSectionJsonModel()
@@ -1576,7 +1562,7 @@ namespace SmartStore.Web.Controllers
 				if (paymentMethod == null)
                     throw new Exception("Payment method is not selected");
 
-                var paymentControllerType = paymentMethod.GetControllerType();
+                var paymentControllerType = paymentMethod.Value.GetControllerType();
                 var paymentController =
                     DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
                 var warnings = paymentController.ValidatePaymentForm(form);
@@ -1602,7 +1588,7 @@ namespace SmartStore.Web.Controllers
                 }
 
                 //If we got this far, something failed, redisplay form
-                var paymenInfoModel = PreparePaymentInfoModel(paymentMethod);
+                var paymenInfoModel = PreparePaymentInfoModel(paymentMethod.Value);
                 return Json(new
                 {
                     update_section = new UpdateSectionJsonModel()
@@ -1670,7 +1656,7 @@ namespace SmartStore.Web.Controllers
                     var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(placeOrderResult.PlacedOrder.PaymentMethodSystemName);
                     if (paymentMethod != null)
                     {
-                        if (paymentMethod.PaymentMethodType == PaymentMethodType.Redirection)
+                        if (paymentMethod.Value.PaymentMethodType == PaymentMethodType.Redirection)
                         {
                             //Redirection will not work because it's AJAX request.
                             //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
@@ -1736,11 +1722,10 @@ namespace SmartStore.Web.Controllers
 				if (order == null)
 					return HttpNotFound();
 
-
                 var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
                 if (paymentMethod == null)
 					return HttpNotFound();
-                if (paymentMethod.PaymentMethodType != PaymentMethodType.Redirection)
+                if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection)
 					return HttpNotFound();
 
                 //ensure that order has been just placed

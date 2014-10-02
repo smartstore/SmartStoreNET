@@ -9,7 +9,7 @@ namespace SmartStore.Services.Payments
     /// <summary>
     /// Provides an interface for creating payment gateways and methods
     /// </summary>
-    public partial interface IPaymentMethod : IPlugin
+    public partial interface IPaymentMethod : IProvider, IUserEditable
     {
         #region Methods
 
@@ -81,14 +81,6 @@ namespace SmartStore.Services.Payments
         /// <param name="order">Order</param>
         /// <returns>Result</returns>
         bool CanRePostProcessPayment(Order order);
-
-        /// <summary>
-        /// Gets a route for provider configuration
-        /// </summary>
-        /// <param name="actionName">Action name</param>
-        /// <param name="controllerName">Controller name</param>
-        /// <param name="routeValues">Route values</param>
-        void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
 
         /// <summary>
         /// Gets a route for payment info

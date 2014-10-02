@@ -1,25 +1,14 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Payments
 {
-    public class PaymentMethodModel : ModelBase
+    public class PaymentMethodModel : ProviderModel, IActivatable
     {
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.FriendlyName")]
-        [AllowHtml]
-        public string FriendlyName { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.SystemName")]
-        [AllowHtml]
-        public string SystemName { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.DisplayOrder")]
-        public int DisplayOrder { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.IsActive")]
         public bool IsActive { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.SupportCapture")]
@@ -36,12 +25,5 @@ namespace SmartStore.Admin.Models.Payments
 
         [SmartResourceDisplayName("Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType")]
         public string RecurringPaymentType { get; set; }
-        
-
-
-
-        public string ConfigurationActionName { get; set; }
-        public string ConfigurationControllerName { get; set; }
-        public RouteValueDictionary ConfigurationRouteValues { get; set; }
     }
 }

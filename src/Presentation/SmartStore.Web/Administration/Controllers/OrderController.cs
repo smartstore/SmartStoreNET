@@ -311,7 +311,7 @@ namespace SmartStore.Admin.Controllers
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
             var pm = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-            if (pm != null && pm.PluginDescriptor.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+            if (pm != null && pm.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
             {
                 model.DisplayPurchaseOrderNumber = true;
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;
@@ -326,7 +326,7 @@ namespace SmartStore.Admin.Controllers
 			model.CaptureTransactionResult = order.CaptureTransactionResult;
 
             //payment method info
-            model.PaymentMethod = pm != null ? pm.PluginDescriptor.FriendlyName : order.PaymentMethodSystemName;
+            model.PaymentMethod = pm != null ? pm.Metadata.FriendlyName : order.PaymentMethodSystemName;
             model.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext);
 
             //payment method buttons

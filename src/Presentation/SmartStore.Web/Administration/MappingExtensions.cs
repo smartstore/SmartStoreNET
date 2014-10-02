@@ -514,15 +514,6 @@ namespace SmartStore.Admin
         }
 
         #endregion
-        
-        #region Payment methods
-
-        public static PaymentMethodModel ToModel(this IPaymentMethod entity)
-        {
-            return Mapper.Map<IPaymentMethod, PaymentMethodModel>(entity);
-        }
-
-        #endregion
 
         #region Address
 

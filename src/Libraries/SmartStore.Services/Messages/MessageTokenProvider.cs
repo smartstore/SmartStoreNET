@@ -32,6 +32,8 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Plugins;
+using System.Linq.Expressions;
 
 namespace SmartStore.Services.Messages
 {
@@ -756,7 +758,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.ShippingCountry", order.ShippingAddress != null && order.ShippingAddress.Country != null ? order.ShippingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-			var paymentMethodName = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : order.PaymentMethodSystemName;
+			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
 
@@ -784,6 +786,23 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.EntityTokensAdded(order, tokens);
         }
+
+		private string GetLocalizedValue(ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
+		{
+			// TODO: (mc) this actually belongs to PluginMediator, but we simply cannot add a dependency to framework from here. Refactor later!
+			
+			Guard.ArgumentNotNull(() => metadata);
+
+			string systemName = metadata.SystemName;
+			var languageId = _workContext.WorkingLanguage.Id;
+			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
+			string result = _localizationService.GetResource(resourceName, languageId, false, "", true);
+
+			if (result.IsEmpty())
+				result = fallback.Compile()(metadata);
+
+			return result;
+		}
 
         public virtual void AddShipmentTokens(IList<Token> tokens, Shipment shipment, int languageId)
         {

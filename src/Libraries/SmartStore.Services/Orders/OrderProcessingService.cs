@@ -31,6 +31,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Services.Seo;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Orders
 {
@@ -854,7 +855,7 @@ namespace SmartStore.Services.Orders
                     skipPaymentWorkflow = true;
 
                 //payment workflow
-                IPaymentMethod paymentMethod = null;
+                Provider<IPaymentMethod> paymentMethod = null;
                 if (!skipPaymentWorkflow)
                 {
                     paymentMethod = _paymentService.LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);

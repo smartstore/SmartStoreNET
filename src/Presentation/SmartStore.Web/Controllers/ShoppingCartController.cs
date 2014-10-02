@@ -39,6 +39,7 @@ using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
 using SmartStore.Core.Logging;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Controllers
 {
@@ -89,6 +90,7 @@ namespace SmartStore.Web.Controllers
         private readonly TaxSettings _taxSettings;
         private readonly CaptchaSettings _captchaSettings;
         private readonly AddressSettings _addressSettings;
+		private readonly PluginMediator _pluginMediator;
 
         #endregion
 
@@ -118,7 +120,8 @@ namespace SmartStore.Web.Controllers
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
-			HttpContextBase httpContext)
+			HttpContextBase httpContext,
+			PluginMediator pluginMediator)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -163,6 +166,7 @@ namespace SmartStore.Web.Controllers
             this._taxSettings = taxSettings;
             this._captchaSettings = captchaSettings;
             this._addressSettings = addressSettings;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -759,18 +763,18 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-                .Where(pm => pm.PaymentMethodType == PaymentMethodType.Button || pm.PaymentMethodType == PaymentMethodType.StandardAndButton)
+                .Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Button || pm.Value.PaymentMethodType == PaymentMethodType.StandardAndButton)
                 .ToList();
 
             foreach (var pm in boundPaymentMethods)
             {
-                if (cart.IsRecurring() && pm.RecurringPaymentType == RecurringPaymentType.NotSupported)
+				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
                     continue;
 
                 string actionName;
                 string controllerName;
                 RouteValueDictionary routeValues;
-                pm.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
+				pm.Value.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
 
                 model.ButtonPaymentMethodActionNames.Add(actionName);
                 model.ButtonPaymentMethodControllerNames.Add(controllerName);
@@ -808,7 +812,7 @@ namespace SmartStore.Web.Controllers
 				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
 				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
-				model.OrderReviewData.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : "";
+				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
             }
             #endregion
         }

@@ -94,7 +94,9 @@ namespace SmartStore.DiscountRules
 			decimal taxRate = decimal.Zero;
 			foreach (var sci in cartItems)
 			{
-				spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
+				// stackoverflow!
+				//spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
+				spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate);
 			}
 
 			return spentAmount >= request.DiscountRequirement.SpentAmount;

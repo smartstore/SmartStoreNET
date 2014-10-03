@@ -747,7 +747,9 @@ namespace SmartStore.Plugin.Feed.Froogle.Services
 			model.AvailableGoogleCategories = GetTaxonomyList();
 
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-			model.GridEditUrl = urlHelper.Action("GoogleProductEdit", "FeedFroogle", new  { Namespaces = "SmartStore.Plugin.Feed.Froogle.Controllers", area = "" });
+			model.GridEditUrl = urlHelper.Action("GoogleProductEdit", "FeedFroogle",
+				new { Namespaces = "SmartStore.Plugin.Feed.Froogle.Controllers", area = "PromotionFeed.Froogle" });
+
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 		}
     }

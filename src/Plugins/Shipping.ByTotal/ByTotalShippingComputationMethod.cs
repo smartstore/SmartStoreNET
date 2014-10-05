@@ -170,17 +170,19 @@ namespace SmartStore.Plugin.Shipping.ByTotal
                 response.AddError("No shipment items");
                 return response;
             }
-            if (getShippingOptionRequest.ShippingAddress == null)
-            {
-                response.AddError("Shipping address is not set");
-                return response;
-            }
 
-			var storeId = _storeContext.CurrentStore.Id;
-            int countryId = getShippingOptionRequest.ShippingAddress.CountryId.HasValue ? getShippingOptionRequest.ShippingAddress.CountryId.Value : 0;
-            int stateProvinceId = getShippingOptionRequest.ShippingAddress.StateProvinceId.HasValue ? getShippingOptionRequest.ShippingAddress.StateProvinceId.Value : 0;
-            string zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
+            int countryId = 0;
+            int stateProvinceId = 0;
+            string zip = null;
             decimal subTotal = decimal.Zero;
+			int storeId = _storeContext.CurrentStore.Id;
+
+			if (getShippingOptionRequest.ShippingAddress != null)
+			{
+				countryId = getShippingOptionRequest.ShippingAddress.CountryId ?? 0;
+				stateProvinceId = getShippingOptionRequest.ShippingAddress.StateProvinceId ?? 0;
+				zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
+			}
 
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {

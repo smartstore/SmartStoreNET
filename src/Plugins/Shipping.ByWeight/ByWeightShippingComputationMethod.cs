@@ -123,16 +123,16 @@ namespace SmartStore.Plugin.Shipping.ByWeight
                 response.AddError("No shipment items");
                 return response;
             }
-            if (getShippingOptionRequest.ShippingAddress == null)
-            {
-                response.AddError("Shipping address is not set");
-                return response;
-            }
 
-			var storeId = _storeContext.CurrentStore.Id;
-            int countryId = getShippingOptionRequest.ShippingAddress.CountryId.HasValue ? getShippingOptionRequest.ShippingAddress.CountryId.Value : 0;
+			int storeId = _storeContext.CurrentStore.Id;
+			decimal subTotal = decimal.Zero;
+            int countryId = 0;
+
+			if (getShippingOptionRequest.ShippingAddress != null)
+			{
+				countryId = getShippingOptionRequest.ShippingAddress.CountryId ?? 0;
+			}
             
-            decimal subTotal = decimal.Zero;
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
             {
                 if (shoppingCartItem.Item.IsFreeShipping || !shoppingCartItem.Item.IsShipEnabled)

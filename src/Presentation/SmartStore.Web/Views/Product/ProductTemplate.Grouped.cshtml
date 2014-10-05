@@ -92,8 +92,8 @@
                         }
 
                         <div class="quick-links line">
-                            @Html.Action("EmailAFriendButton", new { productId = Model.Id })
-                            @Html.Action("ProductAskQuestionButton", new { productId = Model.Id })
+                            @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                            @Html.Action("AskQuestionButton", new { id = Model.Id })
                             @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
                         </div>
 

@@ -788,11 +788,15 @@ namespace SmartStore.Web.Framework
 		{
 			if (typeof(T).IsAssignableFrom(implType))
 			{
-				registration.As<T>().Named<T>(systemName);
-				registration.WithMetadata<ProviderMetadata>(m =>
+				try
 				{
-					m.For(em => em.ProviderType, typeof(T));
-				});
+					registration.As<T>().Named<T>(systemName);
+					registration.WithMetadata<ProviderMetadata>(m =>
+					{
+						m.For(em => em.ProviderType, typeof(T));
+					});
+				}
+				catch (Exception) { }
 			}
 		}
 

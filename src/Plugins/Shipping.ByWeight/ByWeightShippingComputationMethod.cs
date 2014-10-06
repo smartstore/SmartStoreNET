@@ -214,7 +214,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);
 
-			_localizationService.DeletePluginStringResources(this.PluginDescriptor);
+			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
             
             base.Uninstall();
         }

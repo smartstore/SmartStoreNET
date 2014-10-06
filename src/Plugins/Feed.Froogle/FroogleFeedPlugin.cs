@@ -69,7 +69,7 @@ namespace SmartStore.Plugin.Feed.Froogle
 
             _settingService.DeleteSetting<FroogleSettings>();
 
-			_localizationService.DeletePluginStringResources(this.PluginDescriptor);
+			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

@@ -27,12 +27,6 @@ namespace SmartStore.Services.Localization
 		/// <returns>Number of deleted string resources</returns>
 		int DeleteLocaleStringResources(string key, bool keyIsRootKey = true);
 
-		/// <summary>
-		/// Deletes all string resources of a plugin
-		/// </summary>
-		/// <param name="pluginDescriptor">Plugin descriptor</param>
-		void DeletePluginStringResources(PluginDescriptor pluginDescriptor);
-
         /// <summary>
         /// Gets a locale string resource
         /// </summary>

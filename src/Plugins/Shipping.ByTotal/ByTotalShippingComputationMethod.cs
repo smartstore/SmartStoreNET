@@ -280,7 +280,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         {
             _settingService.DeleteSetting<ShippingByTotalSettings>();
 
-			_localizationService.DeletePluginStringResources(this.PluginDescriptor);
+			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

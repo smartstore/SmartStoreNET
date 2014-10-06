@@ -128,21 +128,6 @@ namespace SmartStore.Services.Localization
 			return result;
 		}
 
-		/// <summary>
-		/// Deletes all string resources of a plugin
-		/// </summary>
-		/// <param name="pluginDescriptor">Plugin descriptor</param>
-		public virtual void DeletePluginStringResources(PluginDescriptor pluginDescriptor)
-		{
-			if (pluginDescriptor != null && pluginDescriptor.ResourceRootKey.HasValue() && pluginDescriptor.SystemName.HasValue())
-			{
-				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
-
-				DeleteLocaleStringResources("Plugins.FriendlyName." + pluginDescriptor.SystemName, false);
-				DeleteLocaleStringResources("Plugins.Description." + pluginDescriptor.SystemName, false);
-			}
-		}
-
         /// <summary>
         /// Gets a locale string resource
         /// </summary>

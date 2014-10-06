@@ -346,6 +346,7 @@
     <Compile Include="Orders\ShoppingCartExtensions.cs" />
     <Compile Include="Orders\ShoppingCartService.cs" />
     <Compile Include="Payments\PaymentMethodBase.cs" />
+    <Compile Include="Payments\PaymentPluginBase.cs" />
     <Compile Include="Payments\PreProcessPaymentResult.cs" />
     <Compile Include="Payments\ProcessPaymentResultBase.cs" />
     <Compile Include="Payments\RefundPaymentResult.cs" />

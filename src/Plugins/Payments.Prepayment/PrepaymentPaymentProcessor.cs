@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.Prepayment
     /// <summary>
     /// Prepayment payment processor
     /// </summary>
-    public class PrepaymentPaymentProcessor : PaymentMethodBase
+	public class PrepaymentPaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
 

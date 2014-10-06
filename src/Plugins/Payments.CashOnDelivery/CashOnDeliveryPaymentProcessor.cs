@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.CashOnDelivery
     /// <summary>
     /// CashOnDelivery payment processor
     /// </summary>
-    public class CashOnDeliveryPaymentProcessor : PaymentMethodBase
+	public class CashOnDeliveryPaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
 

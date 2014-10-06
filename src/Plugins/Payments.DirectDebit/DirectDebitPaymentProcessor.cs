@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.DirectDebit
     /// <summary>
     /// DirectDebit payment processor
     /// </summary>
-    public class DirectDebitPaymentProcessor : PaymentMethodBase
+	public class DirectDebitPaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
 

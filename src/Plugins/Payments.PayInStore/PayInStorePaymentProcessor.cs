@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.PayInStore
     /// <summary>
     /// PayInStore payment processor
     /// </summary>
-    public class PayInStorePaymentProcessor : PaymentMethodBase
+	public class PayInStorePaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
         private readonly PayInStorePaymentSettings _payInStorePaymentSettings;

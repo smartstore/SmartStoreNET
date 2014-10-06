@@ -16,7 +16,7 @@ namespace SmartStore.Plugin.Payments.Manual
     /// <summary>
     /// Manual payment processor
     /// </summary>
-    public class ManualPaymentProcessor : PaymentMethodBase
+	public class ManualPaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
 

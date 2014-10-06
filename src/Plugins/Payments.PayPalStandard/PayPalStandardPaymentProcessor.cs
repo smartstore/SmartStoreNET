@@ -21,13 +21,14 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Tax;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Plugin.Payments.PayPalStandard
 {
 	/// <summary>
 	/// PayPalStandard payment processor
 	/// </summary>
-	public class PayPalStandardPaymentProcessor : PaymentMethodBase
+	public class PayPalStandardPaymentProcessor : PaymentPluginBase, IConfigurable
 	{
 		#region Fields
 

@@ -15,7 +15,7 @@ namespace SmartStore.Plugin.Payments.Invoice
     /// <summary>
     /// Invoice payment processor
     /// </summary>
-    public class InvoicePaymentProcessor : PaymentMethodBase
+	public class InvoicePaymentProcessor : PaymentPluginBase, IConfigurable
     {
         #region Fields
 

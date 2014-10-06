@@ -11,7 +11,7 @@ namespace SmartStore.Services.Payments
 	/// <summary>
 	/// Base class for payment methods
 	/// </summary>
-	public abstract class PaymentMethodBase : BasePlugin, IPaymentMethod, IConfigurable
+	public abstract class PaymentMethodBase : IPaymentMethod
 	{
 
 		#region Methods

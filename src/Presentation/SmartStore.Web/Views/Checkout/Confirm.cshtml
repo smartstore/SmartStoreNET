@@ -20,7 +20,7 @@
         <h1>@T("Checkout.ConfirmYourOrder")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginForm(new { id = "confirm-order-form" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
         {
             @Html.Widget("checkout_confirm_top")
             <div class="page-intro">

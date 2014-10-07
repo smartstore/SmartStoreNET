@@ -442,7 +442,7 @@
 
 							@if (Model.IsReOrderAllowed)
 							{
-								<a class="btn btn-primary re-order-button" href="@Url.RouteUrl("ReOrder", new { orderId = Model.Id })">
+								<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })">
 									<i class="fa fa-shopping-cart"></i>
 									@T("Order.Reorder")
 								</a>

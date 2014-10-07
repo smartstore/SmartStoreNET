@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Localization;
 using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Plugins

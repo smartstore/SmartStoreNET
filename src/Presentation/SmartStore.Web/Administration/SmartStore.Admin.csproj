@@ -1024,7 +1024,7 @@
     <Content Include="Views\Shipping\_CreateOrUpdateMethod.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Plugin\ConfigureMiscPlugin.cshtml" />
+    <Content Include="Views\Plugin\ConfigurePlugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\AddProductToOrder.cshtml" />
@@ -1049,12 +1049,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Order\ShipmentList.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Plugin\EditPopup.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Plugin\_CreateOrUpdatePlugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\EditProductTag.cshtml" />

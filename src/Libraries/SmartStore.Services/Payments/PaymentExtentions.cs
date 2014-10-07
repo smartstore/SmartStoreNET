@@ -16,9 +16,7 @@ namespace SmartStore.Services.Payments
         /// <param name="paymentMethod">Payment method</param>
         /// <param name="paymentSettings">Payment settings</param>
         /// <returns>Result</returns>
-        public static bool IsPaymentMethodActive(
-			this Provider<IPaymentMethod> paymentMethod,
-            PaymentSettings paymentSettings)
+        public static bool IsPaymentMethodActive(this Provider<IPaymentMethod> paymentMethod, PaymentSettings paymentSettings)
         {
             if (paymentMethod == null)
                 throw new ArgumentNullException("paymentMethod");

@@ -70,23 +70,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var method = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(systemName);
-			if (method.IsMethodActive(_externalAuthenticationSettings))
+			bool dirty = method.IsMethodActive(_externalAuthenticationSettings) != activate;
+			if (dirty)
 			{
 				if (!activate)
-				{
-					// mark as disabled
 					_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Remove(method.Metadata.SystemName);
-					_settingService.SaveSetting(_externalAuthenticationSettings);
-				}
-			}
-			else
-			{
-				if (activate)
-				{
-					// mark as active
+				else
 					_externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Add(method.Metadata.SystemName);
-					_settingService.SaveSetting(_externalAuthenticationSettings);
-				}
+
+				_settingService.SaveSetting(_externalAuthenticationSettings);
+				_pluginMediator.ActivateDependentWidgets(method.Metadata, activate);
 			}
 
 			return RedirectToAction("Providers");

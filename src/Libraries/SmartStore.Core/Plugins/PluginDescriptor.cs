@@ -161,6 +161,15 @@ namespace SmartStore.Core.Plugins
 		public bool Installed { get; set; }
 
 		/// <summary>
+		/// Gets or sets the value indicating whether the plugin is configurable
+		/// </summary>
+		/// <remarks>
+		/// A plugin is configurable when it implements the <see cref="IConfigurable"/> interface
+		/// </remarks>
+		[DataMember]
+		public bool IsConfigurable { get; set; }
+
+		/// <summary>
 		/// Gets or sets the root key of string resources.
 		/// </summary>
 		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.

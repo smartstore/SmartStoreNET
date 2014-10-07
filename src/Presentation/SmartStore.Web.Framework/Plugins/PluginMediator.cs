@@ -1,17 +1,16 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Linq.Expressions;
-using System.Text;
-using System.Threading.Tasks;
 using System.Web.Routing;
+using Autofac;
+using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
-using SmartStore.Services.Shipping;
+using SmartStore.Services.Cms;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Mvc;
 
@@ -19,13 +18,15 @@ namespace SmartStore.Web.Framework.Plugins
 {
 	public class PluginMediator
 	{
-		//private static readonly ConcurrentDictionary<Tuple<PluginDescriptor, string>, string> _iconsMap = new ConcurrentDictionary<Tuple<PluginDescriptor, string>, string>();
 		private static readonly ConcurrentDictionary<string, RouteInfo> _routesCache = new ConcurrentDictionary<string, RouteInfo>();
 		private readonly ICommonServices _services;
+		private readonly IComponentContext _ctx;
 
-		public PluginMediator(ICommonServices services)
+		public PluginMediator(ICommonServices services, IComponentContext ctx)
 		{
 			this._services = services;
+			this._ctx = ctx;
+
 			T = NullLocalizer.Instance;
 		}
 
@@ -273,6 +274,40 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 
 			return "~/Administration/Content/images/icon-plugin-default.png";
+		}
+
+		public void ActivateDependentWidgets(ProviderMetadata parent, bool activate)
+		{
+			Guard.ArgumentNotNull(() => parent);
+
+			if (parent.DependentWidgets == null || parent.DependentWidgets.Length == 0)
+				return;
+
+			foreach (var systemName in parent.DependentWidgets)
+			{
+				var widget = _ctx.ResolveOptionalNamed<Lazy<IWidget, ProviderMetadata>>(systemName);
+				if (widget != null)
+				{
+					var widgetSettings = _ctx.Resolve<WidgetSettings>();
+					
+					if (widget.IsWidgetActive(widgetSettings))
+					{
+						if (!activate)
+						{
+							widgetSettings.ActiveWidgetSystemNames.Remove(systemName);
+							_services.Settings.SaveSetting(widgetSettings);
+						}
+					}
+					else
+					{
+						if (activate)
+						{
+							widgetSettings.ActiveWidgetSystemNames.Add(systemName);
+							_services.Settings.SaveSetting(widgetSettings);
+						}
+					}
+				}
+			}
 		}
 
 	}

@@ -750,6 +750,7 @@ namespace SmartStore.Web.Framework
 				var systemName = GetSystemName(type, pluginDescriptor);
 				var friendlyName = GetFriendlyName(type, pluginDescriptor);
 				var displayOrder = GetDisplayOrder(type, pluginDescriptor);
+				var dependentWidgets = GetDependentWidgets(type);
 				var resPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{1}.{0}"; // e.g. Plugins.FriendlyName.MySystemName
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
@@ -766,6 +767,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.FriendlyName, friendlyName.Item1);
 					m.For(em => em.Description, friendlyName.Item2);
 					m.For(em => em.DisplayOrder, displayOrder);
+					m.For(em => em.DependentWidgets, dependentWidgets);
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
 				});
@@ -858,6 +860,20 @@ namespace SmartStore.Web.Framework
 			return new Tuple<string, string>(name, description);
 		}
 
+		private string[] GetDependentWidgets(Type type)
+		{
+			if (!typeof(IWidget).IsAssignableFrom(type))
+			{
+				// don't let widgets depend on other widgets
+				var attr = type.GetAttribute<DependentWidgetsAttribute>(false);
+				if (attr != null)
+				{
+					return attr.WidgetSystemNames;
+				}
+			}
+
+			return new string[] {};
+		}
 
 		private string ProviderTypeToKnownGroupName(Type implType)
 		{

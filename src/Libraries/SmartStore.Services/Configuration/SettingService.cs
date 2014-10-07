@@ -234,7 +234,7 @@ namespace SmartStore.Services.Configuration
 				var settingsByKey = settings[key];
 				var setting = settingsByKey.FirstOrDefault(x => x.StoreId == storeId);
 
-				//load shared value?
+				// load shared value?
 				if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
 					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
 

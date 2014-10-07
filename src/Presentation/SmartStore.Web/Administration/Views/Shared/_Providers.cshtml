@@ -66,7 +66,7 @@
 					</div>
 					<div class="module-info">
 						@{
-							string tip = item.PluginDescriptor != null ? T("Admin.Providers.ProvidingPlugin") + ": " + item.PluginDescriptor.FriendlyName : "";
+							string tip = item.ProvidingPluginFriendlyName.HasValue() ? T("Admin.Providers.ProvidingPlugin") + ": " + item.ProvidingPluginFriendlyName : "";
 						}
 						<span class="attr-name">@T("Common.SystemName"):</span>
 						<span class="attr-value" @Html.Attr("title", tip, tip.HasValue())>@item.SystemName</span>

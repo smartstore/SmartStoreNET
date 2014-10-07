@@ -35,6 +35,11 @@ namespace SmartStore.Core.Plugins
 			get { return _lazy.IsValueCreated; }
 		}
 
+		public Lazy<TProvider, ProviderMetadata> ToLazy()
+		{
+			return _lazy;
+		}
+
 		public override string ToString()
 		{
 			return _lazy.Metadata.SystemName;

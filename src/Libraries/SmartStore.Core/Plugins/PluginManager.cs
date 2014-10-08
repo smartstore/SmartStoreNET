@@ -143,10 +143,12 @@ namespace SmartStore.Core.Plugins
 									  where !x.IsMatch("bin") && !x.IsMatch("_Backup")
 									  select Path.Combine(pluginFolderPath, x);
 
+					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
+					
 					// now activate all plugins
 					foreach (var pluginPath in pluginPaths)
 					{
-						var result = LoadPluginFromFolder(pluginPath);
+						var result = LoadPluginFromFolder(pluginPath, installedPluginSystemNames);
 						if (result != null)
 						{
 							if (result.IsIncompatible)
@@ -179,14 +181,6 @@ namespace SmartStore.Core.Plugins
 
             }
         }
-
-		public static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath)
-		{
-			using (Locker.GetWriteLock())
-			{
-				return LoadPluginFromFolder(pluginFolderPath, null);
-			}
-		}
 
 		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, ICollection<string> installedPluginSystemNames)
 		{
@@ -241,7 +235,7 @@ namespace SmartStore.Core.Plugins
 			}
 
 			// set 'Installed' property
-			descriptor.Installed = installedPluginSystemNames.Any(x => x.Equals(descriptor.SystemName, StringComparison.InvariantCultureIgnoreCase));
+			descriptor.Installed = installedPluginSystemNames.Contains(descriptor.SystemName);
 
 			try
 			{

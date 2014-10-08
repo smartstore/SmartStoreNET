@@ -247,6 +247,8 @@ namespace SmartStore.Core.Packaging
 				{ "DiscountRequirement.PurchasedAllProducts", "SmartStore.DiscountRules.PurchasedProducts" },
 				{ "DiscountRequirement.PurchasedOneProduct", "SmartStore.DiscountRules.PurchasedProducts" },
 				{ "PromotionFeed.Froogle", "SmartStore.GoogleMerchantCenter" },
+				{ "Payments.AccardaKar", "SmartStore.AccardaKar" },
+				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
 			};
 
 			foreach (var name in installedPlugins)

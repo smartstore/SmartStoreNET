@@ -452,6 +452,7 @@ namespace SmartStore.Web.Controllers
 					// save settings
 					var dataProvider = model.DataProvider;
 					var settings = DataSettings.Current;
+					settings.AppVersion = SmartStoreVersion.Version;
 					settings.DataProvider = dataProvider;
 					settings.DataConnectionString = connectionString;
 					settings.Save();

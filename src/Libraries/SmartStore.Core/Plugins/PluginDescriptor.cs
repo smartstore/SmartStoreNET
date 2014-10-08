@@ -19,7 +19,7 @@ namespace SmartStore.Core.Plugins
         public PluginDescriptor()
         {
             this.Version = new Version("1.0");
-            this.MinAppVersion = SmartStoreVersion.FullVersion;
+            this.MinAppVersion = SmartStoreVersion.Version;
         }
 
         public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)

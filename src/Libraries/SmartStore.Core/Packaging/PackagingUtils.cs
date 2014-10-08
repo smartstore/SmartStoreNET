@@ -95,7 +95,7 @@ namespace SmartStore.Core.Packaging
 				Location = "~/Themes",
 				Id = themeManifest.ThemeName,
 				Author = themeManifest.Author.HasValue() ? themeManifest.Author : "[Unknown]",
-				MinAppVersion = SmartStoreVersion.FullVersion, // TODO: (pkg) Add SupportedVersion to theme manifests
+				MinAppVersion = SmartStoreVersion.Version, // TODO: (pkg) Add SupportedVersion to theme manifests
 				Version = new Version(themeManifest.Version),
 				Name = themeManifest.ThemeTitle,
 				Description = string.Empty, // TODO: (pkg) Add description to theme manifests

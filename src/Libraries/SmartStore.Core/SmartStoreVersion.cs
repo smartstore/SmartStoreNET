@@ -55,12 +55,11 @@ namespace SmartStore.Core
             }
         }
 
-        internal static Version FullVersion
+        public static Version Version
         {
             get
             {
-                //return s_version;
-                return s_infoVersion; // MC: (???)
+                return s_infoVersion;
             }
         }
 

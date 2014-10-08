@@ -44,21 +44,25 @@ namespace SmartStore.Core.Plugins
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
 
+		public readonly static string InstalledPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
 
-        public static IList<string> ParseInstalledPluginsFile(string filePath)
+        public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
         {
-            //read and parse the file
+			filePath = filePath ?? InstalledPluginsFilePath;
+
+			var lines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			// read and parse the file
             if (!File.Exists(filePath))
-                return new List<string>();
+				return lines;
 
             var text = File.ReadAllText(filePath);
             if (String.IsNullOrEmpty(text))
-                return new List<string>();
+				return lines;
             
             //Old way of file reading. This leads to unexpected behavior when a user's FTP program transfers these files as ASCII (\r\n becomes \n).
             //var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             
-            var lines = new List<string>();
             using (var reader = new StringReader(text))
             {
                 string str;
@@ -72,10 +76,12 @@ namespace SmartStore.Core.Plugins
             return lines;
         }
 
-        public static void SaveInstalledPluginsFile(IList<String> pluginSystemNames, string filePath)
+        public static void SaveInstalledPluginsFile(ICollection<String> pluginSystemNames, string filePath = null)
         {
             if (pluginSystemNames == null || pluginSystemNames.Count == 0)
                 return;
+
+			filePath = filePath ?? InstalledPluginsFilePath;
 
             string result = "";
             foreach (var sn in pluginSystemNames)

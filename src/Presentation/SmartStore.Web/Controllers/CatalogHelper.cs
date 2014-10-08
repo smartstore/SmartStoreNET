@@ -156,9 +156,9 @@ namespace SmartStore.Web.Controllers
 				SeName = product.GetSeName(),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually,
-				//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),  /* codehint: sm-edit */
+				//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),
 				Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
-				ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
+				ReviewCount = product.ApprovedTotalReviews,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
 				//HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
@@ -505,9 +505,9 @@ namespace SmartStore.Web.Controllers
 								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
 
 								if (priceAdjustmentBase > decimal.Zero)
-									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, false, false);
+									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
 								else if (priceAdjustmentBase < decimal.Zero)
-									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, false, false);
+									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
 
 								if (pvaValueModel.IsPreSelected)
 								{
@@ -676,7 +676,7 @@ namespace SmartStore.Web.Controllers
 			string additionalShippingCosts = "";
 			if (addShippingPrice > 0)
 			{
-				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, false, false)) + ", ";
+				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false)) + ", ";
 			}
 
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
@@ -868,8 +868,8 @@ namespace SmartStore.Web.Controllers
 
 				model.AddToCart.CustomerEnteredPrice = minimumCustomerEnteredPrice;
 				model.AddToCart.CustomerEnteredPriceRange = string.Format(T("Products.EnterProductPrice.Range"),
-					_priceFormatter.FormatPrice(minimumCustomerEnteredPrice, false, false),
-					_priceFormatter.FormatPrice(maximumCustomerEnteredPrice, false, false));
+					_priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
+					_priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false));
 			}
 			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();
@@ -1272,7 +1272,7 @@ namespace SmartStore.Web.Controllers
 
 				if (addShippingPrice > 0)
 				{
-					model.TransportSurcharge = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, false, false));
+					model.TransportSurcharge = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
 				}
 
 				if (minPriceProduct.Weight > 0)
@@ -1493,7 +1493,7 @@ namespace SmartStore.Web.Controllers
 							? command.ViewMode
 							: _catalogSettings.DefaultViewMode;
 
-			model.ViewMode = viewMode; // codehint: sm-add
+			model.ViewMode = viewMode;
 
 			if (model.AllowProductViewModeChanging)
 			{
@@ -1611,7 +1611,7 @@ namespace SmartStore.Web.Controllers
 				{
 					item.PictureModel = new PictureModel()
 					{
-						PictureId = pic.Id, // codehint: sm-add
+						PictureId = pic.Id,
 						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Manufacturer.Name),
 						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Manufacturer.Name),
 						ImageUrl = _pictureService.GetPictureUrl(manufacturer.Manufacturer.PictureId.GetValueOrDefault()),

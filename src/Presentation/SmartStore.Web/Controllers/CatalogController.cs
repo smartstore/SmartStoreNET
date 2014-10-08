@@ -149,7 +149,7 @@ namespace SmartStore.Web.Controllers
 				_services.StoreContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0)
-                command.PageNumber = 1; // codehint: sm-edit
+                command.PageNumber = 1;
 
             var model = category.ToModel();
 
@@ -184,6 +184,7 @@ namespace SmartStore.Web.Controllers
 				model.CategoryBreadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0);
             }
 
+			model.DisplayFilter = _catalogSettings.FilterEnabled;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
@@ -264,7 +265,7 @@ namespace SmartStore.Web.Controllers
 
             // Products
             if (filter.HasValue())
-            {	// codehint: sm-add (new filter)
+            {
                 var context = new FilterProductContext
                 {
                     ParentCategoryID = category.Id,
@@ -314,7 +315,7 @@ namespace SmartStore.Web.Controllers
 				model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
                 model.PagingFilteringContext.LoadPagedList(products);
-                //model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete
+                //model.PagingFilteringContext.ViewMode = viewMode;
 
                 //specs
                 model.PagingFilteringContext.SpecificationFilter.PrepareSpecsFilters(alreadyFilteredSpecOptionIds,
@@ -456,7 +457,7 @@ namespace SmartStore.Web.Controllers
 				_services.StoreContext.CurrentStore.Id);
 
             if (command.PageNumber <= 0)
-                command.PageNumber = 1; // codehint: sm-edit
+                command.PageNumber = 1;
 
             var model = manufacturer.ToModel();
 
@@ -540,7 +541,7 @@ namespace SmartStore.Web.Controllers
 			model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
             model.PagingFilteringContext.LoadPagedList(products);
-            //model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete
+            //model.PagingFilteringContext.ViewMode = viewMode;
 
 
             //template
@@ -680,7 +681,6 @@ namespace SmartStore.Web.Controllers
 			var model = new HomePageProductsModel()
 			{
 				UseSmallProductBox = false, //_catalogSettings.UseSmallProductBoxOnHomePage,
-				//codehint: sm-edit
 				//Products = PrepareProductOverviewModels(products, 
 				//    !_catalogSettings.UseSmallProductBoxOnHomePage, true, productThumbPictureSize)
 				//    .ToList()
@@ -749,7 +749,6 @@ namespace SmartStore.Web.Controllers
 				TagName = productTag.GetLocalized(y => y.Name)
 			};
 
-			// codehint: sm-edit (replaced)
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
 				AllowCustomersToSelectPageSize = _catalogSettings.ProductsByTagAllowCustomersToSelectPageSize,
@@ -775,7 +774,7 @@ namespace SmartStore.Web.Controllers
 			model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
 
 			model.PagingFilteringContext.LoadPagedList(products);
-			//model.PagingFilteringContext.ViewMode = viewMode; // codehint: sm-delete
+			//model.PagingFilteringContext.ViewMode = viewMode;
 			return View(model);
 		}
 
@@ -836,8 +835,6 @@ namespace SmartStore.Web.Controllers
 		[RequireHttpsByConfigAttribute(SslRequirement.No)]
 		public ActionResult RecentlyAddedProducts(CatalogPagingFilteringModel command)
 		{
-
-			//codehint: sm-edit (Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen)
 			var model = new RecentlyAddedProductsModel();
 
 			if (_catalogSettings.RecentlyAddedProductsEnabled)
@@ -846,13 +843,11 @@ namespace SmartStore.Web.Controllers
 
 				var ctx = new ProductSearchContext();
 				ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-				//codehint: sm-edit begin 
 				//ctx.OrderBy = (ProductSortingEnum)command.OrderBy;
 				ctx.OrderBy = ProductSortingEnum.CreatedOn;
 				//ctx.PageSize = command.PageSize;
 				ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
 				//ctx.PageIndex = command.PageNumber - 1;
-				//codehint: sm-edit end
 				ctx.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
 				ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
 				ctx.VisibleIndividuallyOnly = true;
@@ -862,8 +857,6 @@ namespace SmartStore.Web.Controllers
 				//var products = _productService.SearchProducts(ctx).Take(_catalogSettings.RecentlyAddedProductsNumber).OrderBy((ProductSortingEnum)command.OrderBy);
 
 				model.Products.AddRange(_helper.PrepareProductOverviewModels(products));
-
-				//codehint: sm-add
 				//model.PagingFilteringContext.LoadPagedList(products);
 			}
 			return View(model);
@@ -1034,21 +1027,15 @@ namespace SmartStore.Web.Controllers
 			return PartialView("CompareProductsButton", model);
 		}
 
-		// Ajax
-		// codehint: sm-add
-		[HttpPost]
 		public ActionResult CompareSummary()
 		{
 			return Json(new
 			{
 				Count = _compareProductsService.GetComparedProducts().Count
-			});
+			},
+			JsonRequestBehavior.AllowGet);
 		}
 
-		/// <summary>
-		/// <remarks>codehint: sm-add</remarks>
-		/// </summary>
-		/// <returns></returns>
 		public ActionResult FlyoutCompare()
 		{
 			var model = new CompareProductsModel()
@@ -1086,14 +1073,12 @@ namespace SmartStore.Web.Controllers
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
 
-			// codehint: sm-edit
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
 				AllowCustomersToSelectPageSize = _catalogSettings.ProductSearchAllowCustomersToSelectPageSize,
 				PageSize = _catalogSettings.SearchPageProductsPerPage,
 				PageSizeOptions = _catalogSettings.ProductSearchPageSizeOptions
 			});
-			// codehint: sm-edit
 
 			if (model.Q == null)
 				model.Q = "";
@@ -1207,7 +1192,7 @@ namespace SmartStore.Web.Controllers
 					ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
 					ctx.SearchProductTags = searchInProductTags;
 					ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-					ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position; // codehint: sm-edit
+					ctx.OrderBy = (ProductSortingEnum)command.OrderBy; // ProductSortingEnum.Position;
 					ctx.PageIndex = command.PageNumber - 1;
 					ctx.PageSize = command.PageSize;
 					ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;

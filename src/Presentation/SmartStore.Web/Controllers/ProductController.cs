@@ -44,6 +44,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly ICustomerContentService _customerContentService;
+		private readonly ICustomerService _customerService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
 		private readonly IWorkflowMessageService _workflowMessageService;
@@ -75,6 +76,7 @@ namespace SmartStore.Web.Controllers
 			IPriceCalculationService priceCalculationService, 
 			IPriceFormatter priceFormatter,
 			ICustomerContentService customerContentService, 
+			ICustomerService customerService,
 			IShoppingCartService shoppingCartService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
 			IWorkflowMessageService workflowMessageService, 
@@ -101,6 +103,7 @@ namespace SmartStore.Web.Controllers
 			this._priceCalculationService = priceCalculationService;
 			this._priceFormatter = priceFormatter;
 			this._customerContentService = customerContentService;
+			this._customerService = customerService;
 			this._shoppingCartService = shoppingCartService;
 			this._recentlyViewedProductsService = recentlyViewedProductsService;
 			this._workflowMessageService = workflowMessageService;
@@ -185,20 +188,28 @@ namespace SmartStore.Web.Controllers
 		[ValidateInput(false)]
 		public ActionResult AddProductToCart(int productId, FormCollection form)
 		{
-			var product = _productService.GetProductById(productId);
-			if (product == null || product.Deleted || !product.Published)
-				return HttpNotFound();
-
-			//manually process form
-			ShoppingCartType cartType = ShoppingCartType.ShoppingCart;
+			var parentProductId = productId;
+			var cartType = ShoppingCartType.ShoppingCart;
 
 			foreach (string formKey in form.AllKeys)
 			{
 				if (formKey.StartsWith("addtocartbutton-"))
+				{
 					cartType = ShoppingCartType.ShoppingCart;
+					int.TryParse(formKey.Replace("addtocartbutton-", ""), out productId);
+				}
 				else if (formKey.StartsWith("addtowishlistbutton-"))
+				{
 					cartType = ShoppingCartType.Wishlist;
+					int.TryParse(formKey.Replace("addtowishlistbutton-", ""), out productId);
+				}
 			}
+
+			var product = _productService.GetProductById(productId);
+			if (product == null || product.Deleted || !product.Published)
+				return RedirectToRoute("HomePage");
+
+			var parentProduct = (parentProductId == productId ? product : _productService.GetProductById(parentProductId));
 
 			decimal customerEnteredPrice = decimal.Zero;
 			decimal customerEnteredPriceConverted = decimal.Zero;
@@ -220,7 +231,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (string formKey in form.AllKeys)
 			{
-				if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					int.TryParse(form[formKey], out quantity);
 					break;
@@ -245,7 +256,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the wishlist" notification message
-								var model = _helper.PrepareProductDetailsPageModel(product);
+								var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(T("Products.ProductHasBeenAddedToTheWishlist"), false);
 
 								//activity log
@@ -266,7 +277,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the cart" notification message
-								var model = _helper.PrepareProductDetailsPageModel(product);
+								var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(T("Products.ProductHasBeenAddedToTheCart"), false);
 
 								//activity log
@@ -285,7 +296,7 @@ namespace SmartStore.Web.Controllers
 					ModelState.AddModelError("", error);
 
 				//If we got this far, something failed, redisplay form
-				var model = _helper.PrepareProductDetailsPageModel(product);
+				var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 
 				return View(model.ProductTemplateViewPath, model);
 			}
@@ -397,7 +408,7 @@ namespace SmartStore.Web.Controllers
 					decimal taxRate = decimal.Zero;
 					decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, decimal.Zero, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity), out taxRate);
 					decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _services.WorkContext.WorkingCurrency);
-					m.Price = _priceFormatter.FormatPrice(price, false, false);
+					m.Price = _priceFormatter.FormatPrice(price, true, false);
 					return m;
 				})
 				.ToList();
@@ -649,7 +660,8 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = 0,
 					Name = m.DeliveryTimeName,
-					Color = m.DeliveryTimeHexValue
+					Color = m.DeliveryTimeHexValue,
+					DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
 				},
 				Measure = new
 				{
@@ -787,12 +799,14 @@ namespace SmartStore.Web.Controllers
 				int rating = model.AddProductReview.Rating;
 				if (rating < 1 || rating > 5)
 					rating = _catalogSettings.DefaultProductRatingValue;
+
 				bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
+				var customer = _services.WorkContext.CurrentCustomer;
 
 				var productReview = new ProductReview()
 				{
 					ProductId = product.Id,
-					CustomerId = _services.WorkContext.CurrentCustomer.Id,
+					CustomerId = customer.Id,
 					IpAddress = _services.WebHelper.GetCurrentIpAddress(),
 					Title = model.AddProductReview.Title,
 					ReviewText = model.AddProductReview.ReviewText,
@@ -815,6 +829,8 @@ namespace SmartStore.Web.Controllers
 				//activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
+				if (isApproved)
+					_customerService.RewardPointsForProductReview(customer, product, true);
 
 				_helper.PrepareProductReviewsModel(model, product);
 				model.AddProductReview.Title = null;
@@ -845,7 +861,7 @@ namespace SmartStore.Web.Controllers
 			{
 				return Json(new
 				{
-					Success = false, // codehint: sm-add
+					Success = false,
 					Result = T("Reviews.Helpfulness.OnlyRegistered").Text,
 					TotalYes = productReview.HelpfulYesTotal,
 					TotalNo = productReview.HelpfulNoTotal
@@ -857,7 +873,7 @@ namespace SmartStore.Web.Controllers
 			{
 				return Json(new
 				{
-					Success = false, // codehint: sm-add
+					Success = false,
 					Result = T("Reviews.Helpfulness.YourOwnReview").Text,
 					TotalYes = productReview.HelpfulYesTotal,
 					TotalNo = productReview.HelpfulNoTotal
@@ -898,7 +914,7 @@ namespace SmartStore.Web.Controllers
 
 			return Json(new
 			{
-				Success = true, // codehint: sm-add
+				Success = true,
 				Result = T("Reviews.Helpfulness.SuccessfullyVoted").Text,
 				TotalYes = productReview.HelpfulYesTotal,
 				TotalNo = productReview.HelpfulNoTotal

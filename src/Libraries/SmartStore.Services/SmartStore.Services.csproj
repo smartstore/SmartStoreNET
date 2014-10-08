@@ -222,7 +222,6 @@
     <Compile Include="Common\GenericAttributeExtentions.cs" />
     <Compile Include="Common\MaintenanceService.cs" />
     <Compile Include="Common\MobileDeviceHelper.cs" />
-    <Compile Include="Common\IMiscPlugin.cs" />
     <Compile Include="Common\IPdfService.cs" />
     <Compile Include="Common\PdfService.cs" />
     <Compile Include="Common\IAddressService.cs" />

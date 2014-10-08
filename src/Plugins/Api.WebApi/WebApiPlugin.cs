@@ -9,7 +9,7 @@ using SmartStore.Plugin.Api.WebApi.Security;
 
 namespace SmartStore.Plugin.Api.WebApi
 {
-	public class WebApiPlugin : BasePlugin, IMiscPlugin
+	public class WebApiPlugin : BasePlugin, IConfigurable
 	{
 		private readonly IPermissionService _permissionService;
 		private readonly ILocalizationService _localizationService;

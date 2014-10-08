@@ -13,7 +13,7 @@ namespace SmartStore.Plugin.SMS.Clickatell
     /// <summary>
     /// Represents the Clickatell SMS provider
     /// </summary>
-    public class ClickatellSmsProvider : BasePlugin, IMiscPlugin
+	public class ClickatellSmsProvider : BasePlugin, IConfigurable
     {
         private readonly ILogger _logger;
         private readonly ClickatellSettings _clickatellSettings;

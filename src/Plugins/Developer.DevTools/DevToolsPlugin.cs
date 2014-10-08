@@ -9,7 +9,7 @@ using SmartStore.Services.Configuration;
 namespace SmartStore.Plugin.Developer.DevTools
 {
 
-	public class DevToolsPlugin : BasePlugin, IMiscPlugin
+	public class DevToolsPlugin : BasePlugin, IConfigurable
     {
 		private readonly ISettingService _settingService;
 

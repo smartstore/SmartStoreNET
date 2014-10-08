@@ -10,7 +10,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Plugin.Feed.Froogle
 {
-    public class FroogleFeedPlugin : BasePlugin, IMiscPlugin
+    public class FroogleFeedPlugin : BasePlugin, IConfigurable
     {
         private readonly IGoogleFeedService _googleService;
         private readonly ISettingService _settingService;

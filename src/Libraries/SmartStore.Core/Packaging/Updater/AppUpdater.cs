@@ -245,7 +245,8 @@ namespace SmartStore.Core.Packaging
 				{ "DiscountRequirement.HasPaymentMethod", "SmartStore.DiscountRules.HasPaymentMethod" },	
 				{ "DiscountRequirement.HasShippingOption", "SmartStore.DiscountRules.HasShippingOption" },	
 				{ "DiscountRequirement.PurchasedAllProducts", "SmartStore.DiscountRules.PurchasedProducts" },
-				{ "DiscountRequirement.PurchasedOneProduct", "SmartStore.DiscountRules.PurchasedProducts" },	
+				{ "DiscountRequirement.PurchasedOneProduct", "SmartStore.DiscountRules.PurchasedProducts" },
+				{ "PromotionFeed.Froogle", "SmartStore.GoogleMerchantCenter" },
 			};
 
 			foreach (var name in installedPlugins)

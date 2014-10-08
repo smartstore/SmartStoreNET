@@ -71,6 +71,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.PromotionFeeds", "Promotion feeds", "Promotion Feeds");
 
 			// some admin menu renaming / new entries
+			builder.AddOrUpdate("Admin.Promotions").Value("de", "Marketing");
 			builder.AddOrUpdate("Admin.Configuration.Tax.Providers.Fields.MarkAsPrimaryProvider").Value("de", "Als Standard festlegen");
 			builder.AddOrUpdate("Admin.Common.Activate").Value("de", "Aktivieren");
 			builder.AddOrUpdate("Admin.Configuration.ActivityLog.ActivityLog").Value("de", "Aktivitätslog");

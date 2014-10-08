@@ -32,6 +32,7 @@ using Telerik.Web.Mvc;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
 using System.Reflection;
+using Autofac;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -141,67 +142,73 @@ namespace SmartStore.Admin.Controllers
         {
             XmlSiteMap siteMap = new XmlSiteMap();
 			siteMap.LoadFrom("~/Administration/sitemap.config");
-			
-			//if (!SiteMapManager.SiteMaps.TryGetValue("admin", out siteMap))
-			//{
-			//	SiteMapManager.SiteMaps.Register<XmlSiteMap>("admin", x => x.LoadFrom("~/Administration/sitemap.config"));
-			//	siteMap = SiteMapManager.SiteMaps["admin"];
-			//}
             
             var rootNode = ConvertSitemapNodeToMenuItemNode(siteMap.RootNode);
 
             TreeNode<MenuItem> pluginNode = null;
 
             // "collect" menus from plugins
-            if (!_securitySettings.HideAdminMenuItemsBasedOnPermissions || _permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+            var providers = new List<IMenuProvider>();
+			var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);
+
+            foreach (var type in providerTypes)
             {
-                var providers = new List<IMenuProvider>();
-				var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);
-
-                foreach (var type in providerTypes)
+                try
                 {
-                    try
-                    {
-                        var provider = Activator.CreateInstance(type) as IMenuProvider;
-                        providers.Add(provider);
-                    }
-                    catch { }
+                    var provider = Activator.CreateInstance(type) as IMenuProvider;
+                    providers.Add(provider);
                 }
-
-                if (providers.Any())
-                {
-                    var pluginItem = new MenuItem().ToBuilder()
-						.Id("plugins")
-                        .Text("Plugins")
-                        .ResKey("Admin.Plugins")
-						.Icon("puzzle-piece")
-                        .PermissionNames("ManagePlugins")
-                        .ToItem();
-                    pluginNode = rootNode.Append(pluginItem);
-
-                    providers.Each(x => x.BuildMenu(pluginNode));
-                }
+                catch { }
             }
 
-            // hide based on permissions
+            if (providers.Any())
+            {
+                var pluginItem = new MenuItem().ToBuilder()
+					.Id("plugins")
+                    .Text("Plugins")
+                    .ResKey("Admin.Plugins")
+					.Icon("puzzle-piece")
+                    .PermissionNames("ManagePlugins")
+                    .ToItem();
+                pluginNode = rootNode.Append(pluginItem);
+
+                providers.Each(x => x.BuildMenu(pluginNode));
+            }
+
+			// hide based on permissions
             rootNode.TraverseTree(x => {
                 if (!x.IsRoot)
                 {
-                    if (!MenuItemAccessPermitted(x.Value))
+					if (!MenuItemAccessPermitted(x.Value))
                     {
                         x.Value.Visible = false;
                     }
                 }
             });
 
-            // hide plugins node when no child is visible
-            if (pluginNode != null)
-            {
-                if (!pluginNode.Children.Any(x => x.Value.Visible))
-                {
-                    pluginNode.Value.Visible = false;
-                }
-            }
+            // hide dropdown nodes when no child is visible
+			rootNode.TraverseTree(x =>
+			{
+				if (!x.IsRoot)
+				{
+					var item = x.Value;
+					if (!item.IsGroupHeader && !item.HasRoute())
+					{
+						if (!x.Children.Any(child => child.Value.Visible))
+						{
+							item.Visible = false;
+						}
+					}
+				}
+			});
+
+			//if (pluginNode != null)
+			//{
+			//	if (!pluginNode.Children.Any(x => x.Value.Visible))
+			//	{
+			//		pluginNode.Value.Visible = false;
+			//	}
+			//}
 
             return rootNode;
         }

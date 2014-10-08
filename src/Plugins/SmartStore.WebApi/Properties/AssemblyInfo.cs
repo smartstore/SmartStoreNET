@@ -1,2 +1,2 @@
 ﻿using System.Reflection;
-[assembly: AssemblyTitle("SmartStore.Plugin.Api.WebApi")]
+[assembly: AssemblyTitle("SmartStore.WebApi")]

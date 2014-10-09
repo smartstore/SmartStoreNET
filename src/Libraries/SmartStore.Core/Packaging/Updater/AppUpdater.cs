@@ -249,6 +249,7 @@ namespace SmartStore.Core.Packaging
 				{ "PromotionFeed.Froogle", "SmartStore.GoogleMerchantCenter" },
 				{ "Payments.AccardaKar", "SmartStore.AccardaKar" },
 				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
+				{ "Developer.DevTools", "SmartStore.DevTools" },
 			};
 
 			foreach (var name in installedPlugins)

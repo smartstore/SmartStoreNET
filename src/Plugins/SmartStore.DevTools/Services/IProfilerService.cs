@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 
-namespace SmartStore.Plugin.Developer.DevTools.Services
+namespace SmartStore.DevTools.Services
 {
 	public interface IProfilerService
 	{

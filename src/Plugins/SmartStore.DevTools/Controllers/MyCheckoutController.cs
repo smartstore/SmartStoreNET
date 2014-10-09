@@ -6,7 +6,7 @@
 //using SmartStore.Web.Controllers;
 //using SmartStore.Web.Framework.Controllers;
 
-//namespace SmartStore.Plugin.Developer.DevTools.Controllers
+//namespace SmartStore.DevTools.Controllers
 //{
 //	public class MyCheckoutController : PublicControllerBase
 //	{

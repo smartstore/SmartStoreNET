@@ -18,8 +18,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartStore.Plugin.Developer.DevTools</RootNamespace>
-    <AssemblyName>SmartStore.Plugin.Developer.DevTools</AssemblyName>
+    <RootNamespace>SmartStore.DevTools</RootNamespace>
+    <AssemblyName>SmartStore.DevTools</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <TargetFrameworkProfile />
@@ -40,7 +40,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\Developer.DevTools\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SmartStore.DevTools\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -49,7 +49,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\Developer.DevTools\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SmartStore.DevTools\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -218,7 +218,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>63704</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:52742/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

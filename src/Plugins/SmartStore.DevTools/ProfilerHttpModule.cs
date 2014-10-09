@@ -7,7 +7,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using StackExchange.Profiling;
 
-namespace SmartStore.Plugin.Developer.DevTools
+namespace SmartStore.DevTools
 {
 
 	public class ProfilerStarter : IPreApplicationStart

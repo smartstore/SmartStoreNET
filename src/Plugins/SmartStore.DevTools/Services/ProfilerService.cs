@@ -3,7 +3,7 @@ using System.Collections.Concurrent;
 using System.Diagnostics;
 using StackExchange.Profiling;
 
-namespace SmartStore.Plugin.Developer.DevTools.Services
+namespace SmartStore.DevTools.Services
 {
 	public class ProfilerService : IProfilerService, IDisposable
 	{

@@ -8,7 +8,7 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Web.Framework.Mvc;
 
-namespace SmartStore.Plugin.Developer.DevTools.Filters
+namespace SmartStore.DevTools.Filters
 {
 	public class SampleResultFilter : IResultFilter
 	{

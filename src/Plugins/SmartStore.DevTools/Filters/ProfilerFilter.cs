@@ -8,13 +8,13 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Localization;
-using SmartStore.Plugin.Developer.DevTools.Services;
+using SmartStore.DevTools.Services;
 using SmartStore.Core;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
 using SmartStore.Web.Framework.UI;
 
-namespace SmartStore.Plugin.Developer.DevTools.Filters
+namespace SmartStore.DevTools.Filters
 {
 	public class ProfilerFilter : IActionFilter, IResultFilter
 	{
@@ -79,7 +79,7 @@ namespace SmartStore.Plugin.Developer.DevTools.Filters
 					"head_html_tag",
 					"MiniProfiler",
 					"DevTools",
-					new { Namespaces = "SmartStore.Plugin.Developer.DevTools.Controllers", area = "Developer.DevTools" });
+					new { Namespaces = "SmartStore.DevTools.Controllers", area = "SmartStore.DevTools" });
 			}
 
 			this._profiler.Value.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));

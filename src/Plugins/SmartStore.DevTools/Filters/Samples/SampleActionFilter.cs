@@ -9,7 +9,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Localization;
 
-namespace SmartStore.Plugin.Developer.DevTools.Filters
+namespace SmartStore.DevTools.Filters
 {
 	public class SampleActionFilter : IActionFilter
 	{

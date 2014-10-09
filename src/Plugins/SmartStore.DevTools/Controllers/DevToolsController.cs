@@ -10,7 +10,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Settings;
 
-namespace SmartStore.Plugin.Developer.DevTools.Controllers
+namespace SmartStore.DevTools.Controllers
 {
 
 	public class DevToolsController : SmartController

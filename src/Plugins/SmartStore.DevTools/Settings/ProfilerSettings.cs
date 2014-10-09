@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web;
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Plugin.Developer.DevTools
+namespace SmartStore.DevTools
 {
 	public class ProfilerSettings : ISettings
 	{

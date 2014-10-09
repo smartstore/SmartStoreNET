@@ -11,7 +11,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Localization;
 using SmartStore.Utilities;
 
-namespace SmartStore.Plugin.Developer.DevTools.Filters
+namespace SmartStore.DevTools.Filters
 {
 	public class SampleCheckoutFilter : IActionFilter
 	{

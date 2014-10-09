@@ -6,9 +6,8 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 
-namespace SmartStore.Plugin.Developer.DevTools
+namespace SmartStore.DevTools
 {
-
 	public class DevToolsPlugin : BasePlugin, IConfigurable
     {
 		private readonly ISettingService _settingService;
@@ -25,7 +24,7 @@ namespace SmartStore.Plugin.Developer.DevTools
         {
             actionName = "Configure";
             controllerName = "DevTools";
-			routeValues = new RouteValueDictionary(new { area = "Developer.DevTools" });
+			routeValues = new RouteValueDictionary() { { "area", "SmartStore.DevTools" } };
         }
 
         public override void Install()

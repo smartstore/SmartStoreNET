@@ -163,15 +163,7 @@ namespace SmartStore.Admin.Controllers
 
             if (providers.Any())
             {
-                var pluginItem = new MenuItem().ToBuilder()
-					.Id("plugins")
-                    .Text("Plugins")
-                    .ResKey("Admin.Plugins")
-					.Icon("puzzle-piece")
-                    .PermissionNames("ManagePlugins")
-                    .ToItem();
-                pluginNode = rootNode.Append(pluginItem);
-
+				pluginNode = rootNode.Children.FirstOrDefault(x => x.Value.Id == "plugins");
                 providers.Each(x => x.BuildMenu(pluginNode));
             }
 
@@ -201,14 +193,6 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			});
-
-			//if (pluginNode != null)
-			//{
-			//	if (!pluginNode.Children.Any(x => x.Value.Visible))
-			//	{
-			//		pluginNode.Value.Visible = false;
-			//	}
-			//}
 
             return rootNode;
         }

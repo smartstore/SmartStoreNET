@@ -13,7 +13,7 @@ namespace SmartStore.GoogleMerchantCenter
     {
         public void BuildMenu(TreeNode<MenuItem> pluginsNode)
         {
-			var root = pluginsNode.Root.SelectNode(x => x.Value.Id == "promotion-feeds");
+			var root = pluginsNode.SelectNode(x => x.Value.Id == "promotion-feeds");
 			if (root == null)
 				return;
 			

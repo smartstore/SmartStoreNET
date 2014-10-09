@@ -10,11 +10,11 @@ using SmartStore.Core.Plugins;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Plugin.Developer.DevTools.Filters;
-using SmartStore.Plugin.Developer.DevTools.Services;
+using SmartStore.DevTools.Filters;
+using SmartStore.DevTools.Services;
 using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Plugin.Developer.DevTools
+namespace SmartStore.DevTools
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {

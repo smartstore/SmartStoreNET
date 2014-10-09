@@ -18,8 +18,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartStore.Plugin.SMS.Clickatell</RootNamespace>
-    <AssemblyName>SmartStore.Plugin.SMS.Clickatell</AssemblyName>
+    <RootNamespace>SmartStore.Clickatell</RootNamespace>
+    <AssemblyName>SmartStore.Clickatell</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -47,7 +47,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SMS.Clickatell\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SmartStore.Clickatell\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -56,7 +56,7 @@
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
     <DebugType>pdbonly</DebugType>
     <Optimize>true</Optimize>
-    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SMS.Clickatell\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SmartStore.Clickatell\</OutputPath>
     <DefineConstants>TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -127,6 +127,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="AdminMenu.cs" />
     <Compile Include="ClickatellSmsProvider.cs" />
     <Compile Include="Controllers\SmsClickatellController.cs" />
     <Compile Include="Models\SmsClickatellModel.cs" />
@@ -200,7 +201,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Notes.txt" />
   </ItemGroup>
   <PropertyGroup>
     <VisualStudioVersion Condition="'$(VisualStudioVersion)' == ''">10.0</VisualStudioVersion>
@@ -217,7 +217,7 @@
         <WebProjectProperties>
           <UseIIS>False</UseIIS>
           <AutoAssignPort>True</AutoAssignPort>
-          <DevelopmentServerPort>0</DevelopmentServerPort>
+          <DevelopmentServerPort>65206</DevelopmentServerPort>
           <DevelopmentServerVPath>/</DevelopmentServerVPath>
           <IISUrl>http://localhost:53086/</IISUrl>
           <NTLMAuthentication>False</NTLMAuthentication>

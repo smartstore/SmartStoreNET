@@ -1,7 +1,7 @@
 ﻿using SmartStore.Web.Framework;
 using System.ComponentModel.DataAnnotations;
 
-namespace SmartStore.Plugin.Sms.Clickatell.Models
+namespace SmartStore.Clickatell.Models
 {
     public class SmsClickatellModel
     {

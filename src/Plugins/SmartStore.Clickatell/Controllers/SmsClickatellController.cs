@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Core.Plugins;
-using SmartStore.Plugin.Sms.Clickatell.Models;
-using SmartStore.Plugin.SMS.Clickatell;
+using SmartStore.Clickatell.Models;
+using SmartStore.Clickatell;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Plugin.Sms.Clickatell.Controllers
+namespace SmartStore.Clickatell.Controllers
 {
 
     public class SmsClickatellController : PluginControllerBase
@@ -70,7 +70,7 @@ namespace SmartStore.Plugin.Sms.Clickatell.Controllers
                 }
                 else
                 {
-                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("Mobile.SMS.Clickatell");
+                    var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.Clickatell");
                     if (pluginDescriptor == null)
                         throw new Exception("Cannot load the plugin");
                     var plugin = pluginDescriptor.Instance() as ClickatellSmsProvider;

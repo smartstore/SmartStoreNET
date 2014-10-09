@@ -6,7 +6,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Core;
 using SmartStore.Services.Configuration;
 
-namespace SmartStore.Plugin.SMS.Clickatell
+namespace SmartStore.Clickatell
 {
     public class OrderPlacedEventConsumer : IConsumer<OrderPlacedEvent>
     {
@@ -40,7 +40,7 @@ namespace SmartStore.Plugin.SMS.Clickatell
                 return;
 
             //is plugin installed?
-            var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("Mobile.SMS.Clickatell");
+            var pluginDescriptor = _pluginFinder.GetPluginDescriptorBySystemName("SmartStore.Clickatell");
             if (pluginDescriptor == null)
                 return;
 

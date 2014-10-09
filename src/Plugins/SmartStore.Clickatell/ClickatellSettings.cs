@@ -1,7 +1,7 @@
 ﻿
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Plugin.SMS.Clickatell
+namespace SmartStore.Clickatell
 {
     public class ClickatellSettings : ISettings
     {

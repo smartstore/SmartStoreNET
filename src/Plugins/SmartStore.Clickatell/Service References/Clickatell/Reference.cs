@@ -8,7 +8,7 @@
 // </auto-generated>
 //------------------------------------------------------------------------------
 
-namespace SmartStore.Plugin.SMS.Clickatell.Clickatell {
+namespace SmartStore.Clickatell.Clickatell {
     
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
@@ -180,12 +180,12 @@ namespace SmartStore.Plugin.SMS.Clickatell.Clickatell {
     }
     
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal interface PushServerWSPortTypeChannel : SmartStore.Plugin.SMS.Clickatell.Clickatell.PushServerWSPortType, System.ServiceModel.IClientChannel {
+    internal interface PushServerWSPortTypeChannel : SmartStore.Clickatell.Clickatell.PushServerWSPortType, System.ServiceModel.IClientChannel {
     }
     
     [System.Diagnostics.DebuggerStepThroughAttribute()]
     [System.CodeDom.Compiler.GeneratedCodeAttribute("System.ServiceModel", "4.0.0.0")]
-    internal partial class PushServerWSPortTypeClient : System.ServiceModel.ClientBase<SmartStore.Plugin.SMS.Clickatell.Clickatell.PushServerWSPortType>, SmartStore.Plugin.SMS.Clickatell.Clickatell.PushServerWSPortType {
+    internal partial class PushServerWSPortTypeClient : System.ServiceModel.ClientBase<SmartStore.Clickatell.Clickatell.PushServerWSPortType>, SmartStore.Clickatell.Clickatell.PushServerWSPortType {
         
         public PushServerWSPortTypeClient() {
         }

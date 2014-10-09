@@ -3,12 +3,12 @@ using System.ServiceModel;
 using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Plugins;
-using SmartStore.Plugin.SMS.Clickatell.Clickatell;
+using SmartStore.Clickatell.Clickatell;
 using SmartStore.Services.Common; 
 using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Plugin.SMS.Clickatell
+namespace SmartStore.Clickatell
 {
     /// <summary>
     /// Represents the Clickatell SMS provider
@@ -76,7 +76,7 @@ namespace SmartStore.Plugin.SMS.Clickatell
         {
             actionName = "Configure";
             controllerName = "SmsClickatell";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.SMS.Clickatell.Controllers" }, { "area", "SMS.Clickatell" } };
+			routeValues = new RouteValueDictionary() { { "area", "SmartStore.Clickatell" } };
         }
 
         /// <summary>

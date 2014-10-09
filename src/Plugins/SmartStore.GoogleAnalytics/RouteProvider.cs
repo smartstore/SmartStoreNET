@@ -2,18 +2,18 @@
 using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc.Routes;
 
-namespace SmartStore.Plugin.Widgets.GoogleAnalytics
+namespace SmartStore.GoogleAnalytics
 {
     public partial class RouteProvider : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Widgets.GoogleAnalytics",
-                 "Plugins/WidgetsGoogleAnalytics/{action}",
+            routes.MapRoute("SmartStore.GoogleAnalytics",
+				 "Plugins/SmartStore.GoogleAnalytics/{action}",
                  new { controller = "WidgetsGoogleAnalytics", action = "Configure" },
-                 new[] { "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }
+                 new[] { "SmartStore.GoogleAnalytics.Controllers" }
             )
-			.DataTokens["area"] = "Widgets.GoogleAnalytics";
+			.DataTokens["area"] = "SmartStore.GoogleAnalytics";
         }
 
         public int Priority

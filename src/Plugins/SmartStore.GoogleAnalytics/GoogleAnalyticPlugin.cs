@@ -5,7 +5,7 @@ using SmartStore.Services.Cms;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.Plugin.Widgets.GoogleAnalytics
+namespace SmartStore.GoogleAnalytics
 {
     /// <summary>
     /// Live person provider
@@ -46,7 +46,7 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
         {
             actionName = "Configure";
             controllerName = "WidgetsGoogleAnalytics";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers" }, { "area", "Widgets.GoogleAnalytics" } };
+			routeValues = new RouteValueDictionary() { /*{ "Namespaces", "SmartStore.GoogleAnalytics.Controllers" },*/ { "area", "SmartStore.GoogleAnalytics" } };
         }
 
         /// <summary>
@@ -62,8 +62,8 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics
             controllerName = "WidgetsGoogleAnalytics";
             routeValues = new RouteValueDictionary()
             {
-                {"Namespaces", "SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers"},
-                {"area", "Widgets.GoogleAnalytics"},
+                //{"Namespaces", "SmartStore.GoogleAnalytics.Controllers"},
+                {"area", "SmartStore.GoogleAnalytics"},
                 {"widgetZone", widgetZone}
             };
         }

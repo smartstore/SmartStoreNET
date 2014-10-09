@@ -1,2 +1,2 @@
 ﻿using System.Reflection;
-[assembly: AssemblyTitle("SmartStore.Plugin.DiscountRules.CustomerRoles")]
+[assembly: AssemblyTitle("SmartStore.DiscountRules")]

@@ -253,6 +253,7 @@ namespace SmartStore.Core.Packaging
 				{ "Developer.DevTools", "SmartStore.DevTools" },
 				{ "ExternalAuth.Facebook", "SmartStore.FacebookAuth" },
 				{ "SMS.Clickatell", "SmartStore.Clickatell" },
+				{ "Widgets.GoogleAnalytics", "SmartStore.GoogleAnalytics" },
 			};
 
 			foreach (var name in installedPlugins)

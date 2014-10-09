@@ -7,7 +7,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Plugin.Widgets.GoogleAnalytics.Models;
+using SmartStore.GoogleAnalytics.Models;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Logging;
@@ -16,7 +16,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Settings;
 
-namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
+namespace SmartStore.GoogleAnalytics.Controllers
 {
 
     public class WidgetsGoogleAnalyticsController : SmartController
@@ -115,7 +115,6 @@ namespace SmartStore.Plugin.Widgets.GoogleAnalytics.Controllers
                 Logger.InsertLog(SmartStore.Core.Domain.Logging.LogLevel.Error, "Error creating scripts for google ecommerce tracking", ex.ToString());
             }
             return Content(globalScript);
-            //return View("SmartStore.Plugin.Widgets.GoogleAnalytics.Views.WidgetsGoogleAnalytics.PublicInfo", model);
         }
 
         private Order GetLastOrder()

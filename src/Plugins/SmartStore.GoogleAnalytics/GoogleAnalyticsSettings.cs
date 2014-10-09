@@ -1,7 +1,7 @@
 ﻿
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Plugin.Widgets.GoogleAnalytics
+namespace SmartStore.GoogleAnalytics
 {
     public class GoogleAnalyticsSettings : ISettings
     {

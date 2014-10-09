@@ -1,2 +1,2 @@
 ﻿using System.Reflection;
-[assembly: AssemblyTitle("SmartStore.Plugin.Tax.Free")]
+[assembly: AssemblyTitle("SmartStore.DevTools")]

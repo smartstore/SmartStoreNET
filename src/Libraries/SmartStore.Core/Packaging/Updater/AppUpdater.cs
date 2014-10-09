@@ -254,6 +254,9 @@ namespace SmartStore.Core.Packaging
 				{ "ExternalAuth.Facebook", "SmartStore.FacebookAuth" },
 				{ "SMS.Clickatell", "SmartStore.Clickatell" },
 				{ "Widgets.GoogleAnalytics", "SmartStore.GoogleAnalytics" },
+				{ "Misc.DemoShop", "SmartStore.DemoShopControlling" },
+				{ "Admin.OrderNumberFormatter", "SmartStore.OrderNumberFormatter" },
+				{ "Admin.Debitoor", "SmartStore.Debitoor" },
 			};
 
 			foreach (var name in installedPlugins)

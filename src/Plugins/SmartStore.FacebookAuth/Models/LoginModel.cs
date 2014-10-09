@@ -1,5 +1,5 @@
 ﻿
-namespace SmartStore.Plugin.ExternalAuth.Facebook.Models
+namespace SmartStore.FacebookAuth.Models
 {
     public class LoginModel
     {

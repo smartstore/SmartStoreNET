@@ -4,9 +4,9 @@ using Autofac;
 using Autofac.Integration.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
-using SmartStore.Plugin.ExternalAuth.Facebook.Core;
+using SmartStore.FacebookAuth.Core;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook
+namespace SmartStore.FacebookAuth
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {

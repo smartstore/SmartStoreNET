@@ -2,18 +2,18 @@
 using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc.Routes;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook
+namespace SmartStore.FacebookAuth
 {
     public partial class RouteProvider : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-			routes.MapRoute("ExternalAuth.Facebook",
-				 "Plugins/ExternalAuthFacebook/{action}",
-				 new { controller = "ExternalAuthFacebook", action = "Login" },
-				 new[] { "SmartStore.Plugin.ExternalAuth.Facebook.Controllers" }
+			routes.MapRoute("SmartStore.FacebookAuth",
+				 "Plugins/SmartStore.FacebookAuth/{action}",
+				 new { controller = "ExternalAuthFacebook" },
+				 new[] { "SmartStore.FacebookAuth.Controllers" }
 			)
-			.DataTokens["area"] = "ExternalAuth.Facebook";
+			.DataTokens["area"] = "SmartStore.FacebookAuth";
         }
         public int Priority
         {

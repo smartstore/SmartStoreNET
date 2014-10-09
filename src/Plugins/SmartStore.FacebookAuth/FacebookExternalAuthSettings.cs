@@ -1,6 +1,6 @@
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook
+namespace SmartStore.FacebookAuth
 {
     public class FacebookExternalAuthSettings : ISettings
     {

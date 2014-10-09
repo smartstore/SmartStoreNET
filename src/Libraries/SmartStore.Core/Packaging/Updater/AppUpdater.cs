@@ -206,8 +206,9 @@ namespace SmartStore.Core.Packaging
 			var currentVersion = SmartStoreVersion.Version;
 			var prevVersion = DataSettings.Current.AppVersion ?? new Version(1, 0);
 
-			if (prevVersion >= currentVersion)
-				return;
+			// TODO: (mc) uncomment!!!
+			//if (prevVersion >= currentVersion)
+			//	return;
 
 			if (prevVersion < new Version(2, 1))
 			{
@@ -250,6 +251,7 @@ namespace SmartStore.Core.Packaging
 				{ "Payments.AccardaKar", "SmartStore.AccardaKar" },
 				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
 				{ "Developer.DevTools", "SmartStore.DevTools" },
+				{ "ExternalAuth.Facebook", "SmartStore.FacebookAuth" },
 			};
 
 			foreach (var name in installedPlugins)

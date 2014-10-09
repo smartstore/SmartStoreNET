@@ -1,5 +1,5 @@
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook.Core
+namespace SmartStore.FacebookAuth.Core
 {
     public static class Provider
     {
@@ -7,7 +7,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Core
         {
             get
             {
-                return "ExternalAuth.Facebook";
+				return "SmartStore.FacebookAuth";
             }
         }
     }

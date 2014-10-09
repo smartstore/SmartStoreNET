@@ -3,7 +3,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook
+namespace SmartStore.FacebookAuth
 {
     /// <summary>
     /// Facebook externalAuth processor
@@ -37,7 +37,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
         {
 			actionName = "Configure";
 			controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary( new { Namespaces = "SmartStore.Plugin.ExternalAuth.Facebook.Controllers", area = "ExternalAuth.Facebook" } );
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = "SmartStore.FacebookAuth" });
         }
 
         /// <summary>
@@ -50,7 +50,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook
         {
             actionName = "PublicInfo";
             controllerName = "ExternalAuthFacebook";
-			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.Plugin.ExternalAuth.Facebook.Controllers", area = "ExternalAuth.Facebook" });
+			routeValues = new RouteValueDictionary(new { Namespaces = "SmartStore.FacebookAuth.Controllers", area = "SmartStore.FacebookAuth" });
         }
 
         /// <summary>

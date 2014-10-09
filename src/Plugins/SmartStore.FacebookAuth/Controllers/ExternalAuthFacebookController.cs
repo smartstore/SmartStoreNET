@@ -1,15 +1,15 @@
 ﻿using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Plugin.ExternalAuth.Facebook.Core;
-using SmartStore.Plugin.ExternalAuth.Facebook.Models;
+using SmartStore.FacebookAuth.Core;
+using SmartStore.FacebookAuth.Models;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
+namespace SmartStore.FacebookAuth.Controllers
 {
     //[UnitOfWork]
 	public class ExternalAuthFacebookController : PluginControllerBase
@@ -81,7 +81,7 @@ namespace SmartStore.Plugin.ExternalAuth.Facebook.Controllers
 		[NonAction]
 		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
         {
-			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("ExternalAuth.Facebook", _storeContext.CurrentStore.Id);
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("SmartStore.FacebookAuth", _storeContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
 			{
 				throw new SmartException("Facebook module cannot be loaded");

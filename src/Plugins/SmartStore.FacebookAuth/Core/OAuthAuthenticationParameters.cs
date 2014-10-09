@@ -2,7 +2,7 @@ using System;
 using System.Collections.Generic;
 using SmartStore.Services.Authentication.External;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook.Core
+namespace SmartStore.FacebookAuth.Core
 {
     [Serializable]
     public class OAuthAuthenticationParameters : OpenAuthenticationParameters

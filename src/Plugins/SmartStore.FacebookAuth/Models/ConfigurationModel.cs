@@ -1,7 +1,7 @@
 ﻿using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
-namespace SmartStore.Plugin.ExternalAuth.Facebook.Models
+namespace SmartStore.FacebookAuth.Models
 {
     public class ConfigurationModel : ModelBase
     {

@@ -68,7 +68,7 @@ namespace SmartStore.PayPal
 			this._orderTotalCalculationService = orderTotalCalculationService;
 			this._localizationService = localizationService;
 
-			_helper = new PluginHelper(ctx, "Payments.PayPalDirect");
+			_helper = new PluginHelper(ctx, "SmartStore.PayPal");
 		}
 
 		#endregion

@@ -83,7 +83,7 @@ namespace SmartStore.PayPal.Controllers
 			this._genericAttributeService = genericAttributeService;
 			this._storeContext = storeContext;
 
-			_helper = new PluginHelper(ctx, "Payments.PayPalExpress");
+			_helper = new PluginHelper(ctx, "SmartStore.PayPal");
 
 			T = NullLocalizer.Instance;
 		}

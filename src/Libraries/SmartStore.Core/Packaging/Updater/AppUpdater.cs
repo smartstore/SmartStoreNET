@@ -248,6 +248,7 @@ namespace SmartStore.Core.Packaging
 				{ "DiscountRequirement.PurchasedAllProducts", "SmartStore.DiscountRules.PurchasedProducts" },
 				{ "DiscountRequirement.PurchasedOneProduct", "SmartStore.DiscountRules.PurchasedProducts" },
 				{ "PromotionFeed.Froogle", "SmartStore.GoogleMerchantCenter" },
+				{ "PromotionFeed.Billiger", "SmartStore.Billiger" },
 				{ "Payments.AccardaKar", "SmartStore.AccardaKar" },
 				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
 				{ "Developer.DevTools", "SmartStore.DevTools" },

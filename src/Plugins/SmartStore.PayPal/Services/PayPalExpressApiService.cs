@@ -89,7 +89,7 @@ namespace SmartStore.PayPal.Services
             _countryService = countryService;
             _priceCalculationService = priceCalculationService;
 
-            _helper = new PluginHelper(ctx, "Payments.PayPalExpress");
+			_helper = new PluginHelper(ctx, "SmartStore.PayPal");
         }
 
         public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request)

@@ -50,6 +50,14 @@ namespace SmartStore.Web.Framework.Plugins
 				if (_plugin == null)
 				{
 					_plugin = _ctx.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(SystemName);
+					if (_plugin == null)
+					{
+						var provider = _ctx.Resolve<IProviderManager>().GetProvider(SystemName);
+						if (provider != null)
+						{
+							_plugin = provider.Metadata.PluginDescriptor;
+						}
+					}
 				}
 				return _plugin;
 			}

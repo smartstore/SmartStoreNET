@@ -49,7 +49,7 @@ namespace SmartStore.PayPal.Controllers
 			this._paymentSettings = paymentSettings;
 			this._localizationService = localizationService;
 
-			_helper = new PluginHelper(ctx, "Payments.PayPalDirect");
+			_helper = new PluginHelper(ctx, "SmartStore.PayPal");
 		}
 
 		// codehint: sm-add

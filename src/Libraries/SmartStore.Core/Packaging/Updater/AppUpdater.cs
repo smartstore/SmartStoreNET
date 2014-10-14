@@ -255,6 +255,7 @@ namespace SmartStore.Core.Packaging
 				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
 				{ "Developer.DevTools", "SmartStore.DevTools" },
 				{ "ExternalAuth.Facebook", "SmartStore.FacebookAuth" },
+				{ "ExternalAuth.Twitter", "SmartStore.TwitterAuth" },
 				{ "SMS.Clickatell", "SmartStore.Clickatell" },
 				{ "Widgets.GoogleAnalytics", "SmartStore.GoogleAnalytics" },
 				{ "Misc.DemoShop", "SmartStore.DemoShopControlling" },

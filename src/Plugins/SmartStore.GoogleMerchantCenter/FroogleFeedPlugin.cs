@@ -54,7 +54,7 @@ namespace SmartStore.GoogleMerchantCenter
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
-			_googleService.Helper.InsertScheduleTask();
+		 	_googleService.Helper.InsertScheduleTask();
 
             base.Install();
         }

@@ -261,6 +261,7 @@ namespace SmartStore.Core.Packaging
                 { "SmartStore.Plugin.Payments.PayPalDirect", "SmartStore.PayPalDirect" },
                 { "SmartStore.Plugin.Payments.PayPalStandard", "SmartStore.PayPalStandard" },
                 { "SmartStore.Plugin.Payments.PayPalExpress", "SmartStore.PayPalExpress" },
+				{ "Developer.Glimpse", "SmartStore.Glimpse" },
 			};
 
 			foreach (var name in installedPlugins)

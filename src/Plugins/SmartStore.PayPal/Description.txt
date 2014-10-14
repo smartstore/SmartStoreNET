@@ -1,0 +1,9 @@
+﻿FriendlyName: PayPal
+SystemName: SmartStore.PayPal
+Group: Payment
+Version: 1.2
+MinAppVersion: 2.0.2
+Author: SmartStore AG
+DisplayOrder: 1
+FileName: SmartStore.PayPal.dll
+ResourceRootKey: Plugins.SmartStore.PayPal

@@ -257,6 +257,10 @@ namespace SmartStore.Core.Packaging
 				{ "Misc.DemoShop", "SmartStore.DemoShopControlling" },
 				{ "Admin.OrderNumberFormatter", "SmartStore.OrderNumberFormatter" },
 				{ "Admin.Debitoor", "SmartStore.Debitoor" },
+                { "Widgets.ETracker", "SmartStore.ETracker" },
+                { "SmartStore.Plugin.Payments.PayPalDirect", "SmartStore.PayPalDirect" },
+                { "SmartStore.Plugin.Payments.PayPalStandard", "SmartStore.PayPalStandard" },
+                { "SmartStore.Plugin.Payments.PayPalExpress", "SmartStore.PayPalExpress" },
 			};
 
 			foreach (var name in installedPlugins)

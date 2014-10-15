@@ -145,6 +145,11 @@ namespace SmartStore.Services.Tasks
             }
         }
 
+		public bool HasJobs
+		{
+			get { return _jobs.Count > 0; }
+		}
+
         /// <summary>
         /// Gets the interval at which to run the jobs
         /// </summary>

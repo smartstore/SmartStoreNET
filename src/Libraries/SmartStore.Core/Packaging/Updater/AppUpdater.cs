@@ -270,6 +270,7 @@ namespace SmartStore.Core.Packaging
 				{ "SmartStore.Plugin.Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
 				{ "SmartStore.Plugin.Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
 				{ "Misc.MailChimp", "SmartStore.MailChimp" },
+				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
 			};
 
 			foreach (var name in installedPlugins)

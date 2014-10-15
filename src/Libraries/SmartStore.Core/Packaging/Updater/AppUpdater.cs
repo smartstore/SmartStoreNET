@@ -268,6 +268,7 @@ namespace SmartStore.Core.Packaging
 				{ "Developer.Glimpse", "SmartStore.Glimpse" },
 				{ "Import.Biz", "SmartStore.BizImporter" },
                 { "SmartStore.Plugin.Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
+                { "SmartStore.Plugin.Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
 			};
 
 			foreach (var name in installedPlugins)

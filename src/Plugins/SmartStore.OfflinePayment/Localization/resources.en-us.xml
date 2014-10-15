@@ -1,0 +1,44 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+
+  <LocaleResource Name="DescriptionText">
+    <Value>Description</Value>
+  </LocaleResource>
+  <LocaleResource Name="DescriptionText.Hint">
+    <Value>Enter info that will be shown to customers during checkout.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee">
+    <Value>Additional fee</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFee.Hint">
+    <Value>Determines the additional fee.</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFeePercentage">
+    <Value>Additional fee. Use percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="AdditionalFeePercentage.Hint">
+    <Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+  </LocaleResource>
+
+  <!-- CashOnDelivery -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.CashOnDelivery" AppendRootKey="false">
+    <Value>Cash on delivery</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payment.CashOnDelivery" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentInfoDescription">
+        <Value>
+          <![CDATA[
+        <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
+      ]]>
+        </Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+ 
+</Language>

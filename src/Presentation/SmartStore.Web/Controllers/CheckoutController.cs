@@ -1563,8 +1563,7 @@ namespace SmartStore.Web.Controllers
                     throw new Exception("Payment method is not selected");
 
                 var paymentControllerType = paymentMethod.Value.GetControllerType();
-                var paymentController =
-                    DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
+                var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
                 var warnings = paymentController.ValidatePaymentForm(form);
                 foreach (var warning in warnings)
                     ModelState.AddModelError("", warning);

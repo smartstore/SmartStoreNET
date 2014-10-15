@@ -262,16 +262,17 @@ namespace SmartStore.Core.Packaging
 				{ "Admin.OrderNumberFormatter", "SmartStore.OrderNumberFormatter" },
 				{ "Admin.Debitoor", "SmartStore.Debitoor" },
                 { "Widgets.ETracker", "SmartStore.ETracker" },
-                { "SmartStore.Plugin.Payments.PayPalDirect", "SmartStore.PayPalDirect" },
-                { "SmartStore.Plugin.Payments.PayPalStandard", "SmartStore.PayPalStandard" },
-                { "SmartStore.Plugin.Payments.PayPalExpress", "SmartStore.PayPalExpress" },
+                { "Payments.PayPalDirect", "SmartStore.PayPalDirect" },
+                { "Payments.PayPalStandard", "SmartStore.PayPalStandard" },
+                { "Payments.PayPalExpress", "SmartStore.PayPalExpress" },
 				{ "Developer.Glimpse", "SmartStore.Glimpse" },
 				{ "Import.Biz", "SmartStore.BizImporter" },
-				{ "SmartStore.Plugin.Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
-				{ "SmartStore.Plugin.Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
+				{ "Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
+				{ "Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
 				{ "Misc.MailChimp", "SmartStore.MailChimp" },
 				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
 				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
+				{ "Payments.CashOnDelivery", "SmartStore.OfflinePayment" },
 			};
 
 			foreach (var name in installedPlugins)

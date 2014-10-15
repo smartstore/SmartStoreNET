@@ -271,6 +271,7 @@ namespace SmartStore.Core.Packaging
 				{ "SmartStore.Plugin.Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
 				{ "Misc.MailChimp", "SmartStore.MailChimp" },
 				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
+				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
 			};
 
 			foreach (var name in installedPlugins)

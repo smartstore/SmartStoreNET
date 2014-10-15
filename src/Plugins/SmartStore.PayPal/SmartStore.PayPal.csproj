@@ -113,7 +113,6 @@
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
-    <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
@@ -181,7 +180,7 @@
     <Content Include="Content\images\logo200x53.png">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\smartstore.paypalexpress.css">
+    <Content Include="Content\smartstore.paypal.css">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Content\icon.png">

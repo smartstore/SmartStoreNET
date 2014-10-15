@@ -1,143 +1,144 @@
 ﻿@{
     Layout = "";
+    Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
 }
 @model PayPalExpressConfigurationModel
 @using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @using (Html.BeginForm())
 {
-    <table class="adminContent">
-	<tr>
-		<td colspan="2">
-			<a href="https://www.paypal.com/" target="_blank">
-				<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" style="width:200px; height:53px; margin-bottom:10px;" />
-			</a>
-		</td>
-	</tr>
-    <tr>
-        <td colspan="2">
-            <div class="alert alert-info fade in">
-                <button class="close" data-dismiss="alert">x</button>
-                @Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.TransactMode)
-        </td>
-        <td class="adminData">
-            @Html.DropDownList("TransactMode", Model.TransactModeValues)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.UseSandbox)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.UseSandbox)
-            @Html.ValidationMessageFor(model => model.UseSandbox)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ApiAccountName)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ApiAccountName)
-            @Html.ValidationMessageFor(model => model.ApiAccountName)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ApiAccountPassword)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ApiAccountPassword)
-            @Html.ValidationMessageFor(model => model.ApiAccountPassword)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Signature)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.Signature)
-            @Html.ValidationMessageFor(model => model.Signature)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AdditionalFee)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.AdditionalFee)
-            @Html.ValidationMessageFor(model => model.AdditionalFee)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.AdditionalFeePercentage)
-            @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
-        </td>
-    </tr>
+    <table class="adminContent configure-paypal-express">
+        <tr>
+            <td colspan="2">
+                <a href="https://www.paypal.com/" target="_blank">
+                    <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-info fade in">
+                    <button class="close" data-dismiss="alert">x</button>
+                    @Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
+                </div>
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TransactMode)
+            </td>
+            <td class="adminData">
+                @Html.DropDownList("TransactMode", Model.TransactModeValues)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.UseSandbox)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.UseSandbox)
+                @Html.ValidationMessageFor(model => model.UseSandbox)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ApiAccountName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ApiAccountName)
+                @Html.ValidationMessageFor(model => model.ApiAccountName)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ApiAccountPassword)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ApiAccountPassword)
+                @Html.ValidationMessageFor(model => model.ApiAccountPassword)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Signature)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Signature)
+                @Html.ValidationMessageFor(model => model.Signature)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFee)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.ValidationMessageFor(model => model.AdditionalFee)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+            </td>
+        </tr>
 
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayCheckoutButton)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayCheckoutButton)
-            @Html.ValidationMessageFor(model => model.DisplayCheckoutButton)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ConfirmedShipment)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.ConfirmedShipment)
-            @Html.ValidationMessageFor(model => model.ConfirmedShipment)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.NoShipmentAddress)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.NoShipmentAddress)
-            @Html.ValidationMessageFor(model => model.NoShipmentAddress)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CallbackTimeout)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.CallbackTimeout)
-            @Html.ValidationMessageFor(model => model.CallbackTimeout)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DefaultShippingPrice)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DefaultShippingPrice)
-            @Html.ValidationMessageFor(model => model.DefaultShippingPrice)
-        </td>
-    </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DisplayCheckoutButton)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DisplayCheckoutButton)
+                @Html.ValidationMessageFor(model => model.DisplayCheckoutButton)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ConfirmedShipment)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ConfirmedShipment)
+                @Html.ValidationMessageFor(model => model.ConfirmedShipment)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.NoShipmentAddress)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.NoShipmentAddress)
+                @Html.ValidationMessageFor(model => model.NoShipmentAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CallbackTimeout)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CallbackTimeout)
+                @Html.ValidationMessageFor(model => model.CallbackTimeout)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.DefaultShippingPrice)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.DefaultShippingPrice)
+                @Html.ValidationMessageFor(model => model.DefaultShippingPrice)
+            </td>
+        </tr>
 
-    <tr>
-        <td>&nbsp;</td>
-        <td style="padding-top:10px;">
-            <button type="submit" name="save" class="btn btn-primary" value="save">
-                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
-            </button>
-        </td>
-    </tr>
+        <tr>
+            <td>&nbsp;</td>
+            <td class="button-save">
+                <button type="submit" name="save" class="btn btn-primary" value="save">
+                    <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+                </button>
+            </td>
+        </tr>
     </table>
 }

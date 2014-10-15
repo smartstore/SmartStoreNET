@@ -7,7 +7,7 @@ using SmartStore.Services;
 
 namespace SmartStore.PayPal
 {
-	public class Plugin : BasePlugin, IConfigurable
+	public class Plugin : BasePlugin
 	{
 		private readonly ISettingService _settingService;
 		private readonly ILocalizationService _localizationService;
@@ -62,14 +62,6 @@ namespace SmartStore.PayPal
 			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			base.Uninstall();
-		}
-
-
-		public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
-		{
-			actionName = "Configure";
-			controllerName = "PayPalExpress";
-            routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.PayPal.Controllers" }, { "area", "SmartStore.PayPal" } };
 		}
 	}
 }

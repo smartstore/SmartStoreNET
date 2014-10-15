@@ -22,5 +22,5 @@
     </fieldset>
 </div>
 @Html.SmartLabelFor(model => model.CardCode, false)
-@Html.TextBoxFor(model => model.CardCode, new { style = "Width: 60px;", autocomplete = "off", maxlength = 4 })
+@Html.TextBoxFor(model => model.CardCode, new { autocomplete = "off", maxlength = 4 })
 @Html.ValidationMessageFor(model => model.CardCode)

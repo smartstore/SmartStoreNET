@@ -1,4 +1,12 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
+    <Value>PayPal Payment Methods</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
+    <Value>Provides the PayPal payment methods PayPal Express, PayPal Standard and PayPal Direct.</Value>
+  </LocaleResource>
+  
 	<LocaleResource Name="Plugins.FriendlyName.Payments.PayPalExpress" AppendRootKey="false">
 		<Value>PayPal Express</Value>
 	</LocaleResource>

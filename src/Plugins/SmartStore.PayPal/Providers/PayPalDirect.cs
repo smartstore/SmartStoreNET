@@ -128,7 +128,7 @@ namespace SmartStore.PayPal
 			details.PaymentDetails.OrderTotal.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
 			details.PaymentDetails.OrderTotal.currencyID = payPalCurrency;
 			details.PaymentDetails.Custom = processPaymentRequest.OrderGuid.ToString();
-            details.PaymentDetails.ButtonSource = "SmartStore.NET";
+            details.PaymentDetails.ButtonSource = SmartStoreVersion.CurrentFullVersion;
 			//shipping
 			if (customer.ShippingAddress != null)
 			{

@@ -24,22 +24,22 @@
 
 @using (Html.BeginForm())
 {
-    <table class="adminContent">
-	<tr>
-		<td colspan="2">
-			<a href="https://www.paypal.com/" target="_blank">
-				<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" style="width:200px; height:53px; margin-bottom:10px;" />
-			</a>
-		</td>
-	</tr>
-    <tr>
-        <td colspan="2">
-            <div class="alert alert-info fade in">
-                <button class="close" data-dismiss="alert">x</button>
-                @Html.Raw(T("Plugins.Payments.PayPalStandard.AdminInstruction"))
-            </div>
-        </td>
-    </tr>
+    <table class="adminContent configure-paypal-standard">
+        <tr>
+            <td colspan="2">
+                <a href="https://www.paypal.com/" target="_blank">
+                    <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
+                </a>
+            </td>
+        </tr>
+        <tr>
+            <td colspan="2">
+                <div class="alert alert-info fade in">
+                    <button class="close" data-dismiss="alert">x</button>
+                    @Html.Raw(T("Plugins.Payments.PayPalStandard.AdminInstruction"))
+                </div>
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)
@@ -112,12 +112,12 @@
                 @Html.ValidationMessageFor(model => model.EnableIpn)
             </td>
         </tr>
-		<tr id="pnlIpnUrl">
+        <tr id="pnlIpnUrl">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IpnUrl)
-                <span style="float:right; font-size:0.9em; font-style:italic;">
-				    @T("Plugins.Payments.PayPalStandard.Fields.EnableIpn.Hint2")
-			    </span>
+                <span class="enable-ipn-hint">
+                    @T("Plugins.Payments.PayPalStandard.Fields.EnableIpn.Hint2")
+                </span>
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.IpnUrl)
@@ -125,14 +125,14 @@
             </td>
         </tr>
         <tr>
-			<td class="adminTitle">
-				&nbsp;
-			</td>
-			<td class="adminData">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
                 <button type="submit" name="save" class="btn btn-primary" value="save">
                     <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
                 </button>
             </td>
         </tr>
-    </table>   
+    </table>
 }

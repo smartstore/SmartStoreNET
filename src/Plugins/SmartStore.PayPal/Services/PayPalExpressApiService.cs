@@ -15,7 +15,6 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Infrastructure;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Extensions;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -94,7 +93,7 @@ namespace SmartStore.PayPal.Services
 
         public ProcessPaymentResult ProcessPayment(ProcessPaymentRequest request)
         {
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             var doPayment = DoExpressCheckoutPayment(request);
             var result = new ProcessPaymentResult();
 
@@ -128,7 +127,7 @@ namespace SmartStore.PayPal.Services
         public CapturePaymentResult Capture(CapturePaymentRequest request)
         {
             var result = new CapturePaymentResult();
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             string authorizationId = request.Order.AuthorizationTransactionId;
             var req = new DoCaptureReq();
@@ -171,7 +170,7 @@ namespace SmartStore.PayPal.Services
 
         public VoidPaymentResult Void(VoidPaymentRequest request)
         {
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             var result = new VoidPaymentResult();
 
             string transactionId = request.Order.AuthorizationTransactionId;
@@ -216,7 +215,7 @@ namespace SmartStore.PayPal.Services
         {
 
             var result = new RefundPaymentResult();
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             string transactionId = request.Order.CaptureTransactionId;
 
@@ -261,7 +260,7 @@ namespace SmartStore.PayPal.Services
         {
         
             var result = new CancelRecurringPaymentResult();
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             var order = request.Order;
 
             var req = new ManageRecurringPaymentsProfileStatusReq();
@@ -302,7 +301,7 @@ namespace SmartStore.PayPal.Services
         {
             var result = new SetExpressCheckoutResponseType();
             var currentStore = _storeContext.CurrentStore;
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             var req = new SetExpressCheckoutReq
             {
@@ -465,7 +464,7 @@ namespace SmartStore.PayPal.Services
                     currencyID = PayPalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId))
                 },
                 Custom = processPaymentRequest.OrderGuid.ToString(),
-                ButtonSource = "SmartStore.NET",
+                ButtonSource = SmartStoreVersion.CurrentFullVersion,
                 PaymentAction = PayPalHelper.GetPaymentAction(settings),
                 PaymentDetailsItem = cartItems.ToArray()
             };
@@ -506,7 +505,7 @@ namespace SmartStore.PayPal.Services
         public GetExpressCheckoutDetailsResponseType GetExpressCheckoutDetails(string token)
         {
             var result = new GetExpressCheckoutDetailsResponseType();
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             using (var service = new PayPalAPIAASoapBinding())
             {
@@ -537,7 +536,7 @@ namespace SmartStore.PayPal.Services
 
         public ProcessPaymentRequest SetCheckoutDetails(ProcessPaymentRequest processPaymentRequest, GetExpressCheckoutDetailsResponseDetailsType checkoutDetails)
         {
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             int customerId = Convert.ToInt32(_workContext.CurrentCustomer.Id.ToString());
             var customer = _customerService.GetCustomerById(customerId);
 
@@ -697,7 +696,7 @@ namespace SmartStore.PayPal.Services
         /// <returns>Result</returns>
         public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
@@ -733,7 +732,7 @@ namespace SmartStore.PayPal.Services
         public DoExpressCheckoutPaymentResponseType DoExpressCheckoutPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new DoExpressCheckoutPaymentResponseType();
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             // populate payment details
             var paymentDetails = new PaymentDetailsType
@@ -744,7 +743,7 @@ namespace SmartStore.PayPal.Services
                     currencyID = PayPalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId))
                 },
                 Custom = processPaymentRequest.OrderGuid.ToString(),
-                ButtonSource = "SmartStore.NET"
+                ButtonSource = SmartStoreVersion.CurrentFullVersion
             };
 
             // build the request

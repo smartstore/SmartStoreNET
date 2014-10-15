@@ -6,7 +6,6 @@ using System.Web.Routing;
 using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Extensions;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
@@ -82,7 +81,7 @@ namespace SmartStore.PayPal
         /// <returns>Additional handling fee</returns>
         public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
         {
-            var settings = _settingService.LoadPayPalExpressSettings("PayPalExpress", _services.StoreContext.CurrentStore.Id);
+            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
                 settings.AdditionalFee, settings.AdditionalFeePercentage);

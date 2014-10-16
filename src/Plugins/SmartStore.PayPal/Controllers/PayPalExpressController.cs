@@ -469,9 +469,9 @@ namespace SmartStore.PayPal.Controllers
 
 					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, "Payments.PayPalExpress", _storeContext.CurrentStore.Id);
 
-					var result = new RedirectResult(String.Format(_payPalExpressPaymentSettings.UseSandbox ?
-						"https://www.sandbox.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token={0}" :
-						"https://www.paypal.com/webscr?cmd=_express-checkout&useraction=commit&token={0}", resp.Token));
+					var result = new RedirectResult(String.Format(
+                        PayPalHelper.GetPaypalUrl(_payPalExpressPaymentSettings) + 
+                        "?cmd=_express-checkout&useraction=commit&token={0}", resp.Token));
 
 					return result;
 				}

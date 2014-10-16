@@ -153,15 +153,15 @@ namespace SmartStore.PayPal.Services
                 && routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Cart");
         }
 
-        //TODO: join the following two methods
+        //TODO: join the following two methods, with help of payment method type
 
         /// <summary>
         /// Gets Paypal URL
         /// </summary>
         /// <returns></returns>
-        public static string GetPaypalUrl(PayPalExpressSettings payPalExpressPaymentSettings)
+        public static string GetPaypalUrl(PayPalSettingsBase settings)
         {
-            return payPalExpressPaymentSettings.UseSandbox ?
+            return settings.UseSandbox ?
                 "https://www.sandbox.paypal.com/cgi-bin/webscr" :
                 "https://www.paypal.com/cgi-bin/webscr";
         }
@@ -170,9 +170,9 @@ namespace SmartStore.PayPal.Services
         /// Gets Paypal URL
         /// </summary>
         /// <returns></returns>
-        public static string GetPaypalServiceUrl(PayPalExpressSettings payPalExpressPaymentSettings)
+        public static string GetPaypalServiceUrl(PayPalSettingsBase settings)
         {
-            return payPalExpressPaymentSettings.UseSandbox ?
+            return settings.UseSandbox ?
                 "https://api-3t.sandbox.paypal.com/2.0/" :
                 "https://api-3t.paypal.com/2.0/";
         }

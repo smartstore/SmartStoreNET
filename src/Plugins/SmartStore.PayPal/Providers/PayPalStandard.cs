@@ -86,13 +86,7 @@ namespace SmartStore.PayPal
 		/// <returns>Result</returns>
 		public bool GetPDTDetails(string tx, out Dictionary<string, string> values, out string response)
 		{
-            var serviceUrl = _paypalStandardSettings.UseSandbox ?
-                "https://www.sandbox.paypal.com/cgi-bin/webscr" :
-                "https://www.paypal.com/cgi-bin/webscr";
-
-            //TODO
-            //var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
-            var req = (HttpWebRequest)WebRequest.Create(serviceUrl);
+            var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(_paypalStandardSettings));
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
 
@@ -135,13 +129,7 @@ namespace SmartStore.PayPal
 		/// <returns>Result</returns>
 		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
 		{
-            var serviceUrl = _paypalStandardSettings.UseSandbox ?
-                "https://www.sandbox.paypal.com/cgi-bin/webscr" :
-                "https://www.paypal.com/cgi-bin/webscr";
-
-            //TODO
-			//var req = (HttpWebRequest)WebRequest.Create(GetPaypalUrl());
-            var req = (HttpWebRequest)WebRequest.Create(serviceUrl);
+            var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(_paypalStandardSettings));
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
 			req.UserAgent = HttpContext.Current.Request.UserAgent;
@@ -204,15 +192,8 @@ namespace SmartStore.PayPal
 			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
 				return;
 
-            var serviceUrl = _paypalStandardSettings.UseSandbox ?
-                "https://www.sandbox.paypal.com/cgi-bin/webscr" :
-                "https://www.paypal.com/cgi-bin/webscr";
-
-            //TODO
 			var builder = new StringBuilder();
-            //TODO
-			//builder.Append(GetPaypalUrl());
-            builder.Append(serviceUrl);
+            builder.Append(PayPalHelper.GetPaypalUrl(_paypalStandardSettings));
 
 			string orderNumber = postProcessPaymentRequest.Order.GetOrderNumber();
             string cmd = (_paypalStandardSettings.PassProductNamesAndTotals ? "_cart" : "_xclick");

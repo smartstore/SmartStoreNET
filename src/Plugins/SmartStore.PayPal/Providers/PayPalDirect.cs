@@ -147,21 +147,17 @@ namespace SmartStore.PayPal
 			}
 
 			//send request
-			using (var service2 = new PayPalAPIAASoapBinding())
+			using (var service = new PayPalAPIAASoapBinding())
 			{
-				if (!_paypalDirectSettings.UseSandbox)
-					service2.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service2.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+                service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-				service2.RequesterCredentials = new CustomSecurityHeaderType();
-				service2.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service2.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service2.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service2.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service2.RequesterCredentials.Credentials.Subject = "";
-
-				DoDirectPaymentResponseType response = service2.DoDirectPayment(req);
+				DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
 				string error = "";
 				bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
@@ -200,10 +196,7 @@ namespace SmartStore.PayPal
 		/// <returns>Result</returns>
 		public bool VerifyIPN(string formString, out Dictionary<string, string> values)
 		{
-            var serviceUrl = _paypalDirectSettings.UseSandbox ?
-                "https://www.sandbox.paypal.com/cgi-bin/webscr" :
-                "https://www.paypal.com/cgi-bin/webscr";
-
+            var serviceUrl = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
             var req = (HttpWebRequest)WebRequest.Create(serviceUrl);
 			req.Method = "POST";
 			req.ContentType = "application/x-www-form-urlencoded";
@@ -288,21 +281,18 @@ namespace SmartStore.PayPal
             req.DoCaptureRequest.Amount.currencyID = PayPalHelper.GetPaypalCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
 			req.DoCaptureRequest.CompleteType = CompleteCodeType.Complete;
 
-			using (var service2 = new PayPalAPIAASoapBinding())
+			using (var service = new PayPalAPIAASoapBinding())
 			{
-                if (!_paypalDirectSettings.UseSandbox)
-					service2.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service2.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
 
-				service2.RequesterCredentials = new CustomSecurityHeaderType();
-				service2.RequesterCredentials.Credentials = new UserIdPasswordType();
-				service2.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service2.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service2.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service2.RequesterCredentials.Credentials.Subject = "";
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+				service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-				DoCaptureResponseType response = service2.DoCapture(req);
+				DoCaptureResponseType response = service.DoCapture(req);
 
 				string error = "";
 				bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
@@ -339,21 +329,17 @@ namespace SmartStore.PayPal
             req.RefundTransactionRequest.Version = PayPalHelper.GetApiVersion();
 			req.RefundTransactionRequest.TransactionID = transactionId;
 
-			using (var service1 = new PayPalAPISoapBinding())
+			using (var service = new PayPalAPISoapBinding())
 			{
-                if (!_paypalDirectSettings.UseSandbox)
-					service1.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service1.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+                service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-				service1.RequesterCredentials = new CustomSecurityHeaderType();
-				service1.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service1.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service1.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service1.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service1.RequesterCredentials.Credentials.Subject = "";
-
-				RefundTransactionResponseType response = service1.RefundTransaction(req);
+				RefundTransactionResponseType response = service.RefundTransaction(req);
 
 				string error = string.Empty;
 				bool Success = PayPalHelper.CheckSuccess(_helper, response, out error);
@@ -390,21 +376,17 @@ namespace SmartStore.PayPal
 			req.DoVoidRequest.AuthorizationID = transactionId;
 
 
-			using (var service2 = new PayPalAPIAASoapBinding())
+			using (var service = new PayPalAPIAASoapBinding())
 			{
-                if (!_paypalDirectSettings.UseSandbox)
-					service2.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service2.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+                service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-				service2.RequesterCredentials = new CustomSecurityHeaderType();
-				service2.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service2.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service2.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service2.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service2.RequesterCredentials.Credentials.Subject = "";
-
-				DoVoidResponseType response = service2.DoVoid(req);
+				DoVoidResponseType response = service.DoVoid(req);
 
 				string error = "";
                 bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
@@ -499,23 +481,17 @@ namespace SmartStore.PayPal
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCycles = processPaymentRequest.RecurringTotalCycles;
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCyclesSpecified = true;
 
-
-
-			using (var service2 = new PayPalAPIAASoapBinding())
+			using (var service = new PayPalAPIAASoapBinding())
 			{
-                if (!_paypalDirectSettings.UseSandbox)
-					service2.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service2.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+                service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-				service2.RequesterCredentials = new CustomSecurityHeaderType();
-				service2.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service2.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service2.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service2.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service2.RequesterCredentials.Credentials.Subject = "";
-
-				CreateRecurringPaymentsProfileResponseType response = service2.CreateRecurringPaymentsProfile(req);
+				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";
                 bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
@@ -556,24 +532,17 @@ namespace SmartStore.PayPal
 			//Recurring payments profile ID returned in the CreateRecurringPaymentsProfile response
 			details.ProfileID = order.SubscriptionTransactionId;
 
-			using (var service2 = new PayPalAPIAASoapBinding())
+			using (var service = new PayPalAPIAASoapBinding())
 			{
-                if (!_paypalDirectSettings.UseSandbox)
-					service2.Url = "https://api-3t.paypal.com/2.0/";
-				else
-					service2.Url = "https://api-3t.sandbox.paypal.com/2.0/";
+                service.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
+				service.RequesterCredentials = new CustomSecurityHeaderType();
+				service.RequesterCredentials.Credentials = new UserIdPasswordType();
+                service.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
+                service.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
+                service.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
+				service.RequesterCredentials.Credentials.Subject = "";
 
-                //TODO: get url via PayPalHelper.GetPaypalServiceUrl
-                //service2.Url = PayPalHelper.GetPaypalServiceUrl(_paypalDirectSettings);
-
-				service2.RequesterCredentials = new CustomSecurityHeaderType();
-				service2.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service2.RequesterCredentials.Credentials.Username = _paypalDirectSettings.ApiAccountName;
-                service2.RequesterCredentials.Credentials.Password = _paypalDirectSettings.ApiAccountPassword;
-                service2.RequesterCredentials.Credentials.Signature = _paypalDirectSettings.Signature;
-				service2.RequesterCredentials.Credentials.Subject = "";
-
-				var response = service2.ManageRecurringPaymentsProfileStatus(req);
+				var response = service.ManageRecurringPaymentsProfileStatus(req);
 
 				string error = "";
 				if (!PayPalHelper.CheckSuccess(_helper, response, out error))

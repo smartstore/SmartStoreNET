@@ -4,7 +4,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.PayPal.Models
 {
-    public class PayPalDirectConfigurationModel : ModelBase
+    public abstract class ApiConfigurationModel: ModelBase
 	{
 		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.UseSandbox")]
 		public bool UseSandbox { get; set; }
@@ -28,4 +28,26 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 	}
+
+    public class PayPalDirectConfigurationModel : ApiConfigurationModel
+    { 
+    }
+
+    public class PayPalExpressConfigurationModel : ApiConfigurationModel
+    {
+        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.DisplayCheckoutButton")]
+        public bool DisplayCheckoutButton { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.ConfirmedShipment")]
+        public bool ConfirmedShipment { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.NoShipmentAddress")]
+        public bool NoShipmentAddress { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.CallbackTimeout")]
+        public int CallbackTimeout { get; set; }
+
+        [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.DefaultShippingPrice")]
+        public decimal DefaultShippingPrice { get; set; }
+    }
 }

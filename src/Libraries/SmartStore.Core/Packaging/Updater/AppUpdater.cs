@@ -273,6 +273,7 @@ namespace SmartStore.Core.Packaging
 				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
 				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
 				{ "Payments.CashOnDelivery", "SmartStore.OfflinePayment" },
+				{ "Payments.Invoice", "SmartStore.OfflinePayment" },
                 { "Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
                 { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
 

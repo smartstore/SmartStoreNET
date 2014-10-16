@@ -27,6 +27,10 @@ namespace SmartStore.OfflinePayment
 			{
 				DescriptionText = "@Plugins.Payment.CashOnDelivery.PaymentInfoDescription"
 			});
+			settings.SaveSetting(new InvoicePaymentSettings
+			{
+				DescriptionText = "@Plugins.Payment.Invoice.PaymentInfoDescription"
+			});
 
 			// add resources
 			loc.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -41,6 +45,7 @@ namespace SmartStore.OfflinePayment
 
 			// delete settings
 			settings.DeleteSetting<CashOnDeliveryPaymentSettings>();
+			settings.DeleteSetting<InvoicePaymentSettings>();
 
 			// delete resources
 			loc.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);

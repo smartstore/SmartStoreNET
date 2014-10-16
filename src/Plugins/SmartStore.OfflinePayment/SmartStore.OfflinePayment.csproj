@@ -137,6 +137,7 @@
     <Compile Include="Models\PaymentInfoModel.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\InvoiceProvider.cs" />
     <Compile Include="Providers\OfflinePaymentProviderBase.cs" />
     <Compile Include="Providers\CashOnDeliveryProvider.cs" />
     <Compile Include="RouteProvider.cs" />
@@ -184,10 +185,10 @@
     <Content Include="Views\Web.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\OfflinePayment\CashOnDeliveryConfigure.cshtml">
+    <Content Include="Views\OfflinePayment\GenericConfigure.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Views\OfflinePayment\CashOnDeliveryPaymentInfo.cshtml">
+    <Content Include="Views\OfflinePayment\GenericPaymentInfo.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

@@ -119,7 +119,7 @@ namespace SmartStore.OfflinePayment.Controllers
 		public ActionResult CashOnDeliveryConfigure()
 		{
 			var model = ConfigureGet<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>();
-			return View(model);
+			return View("GenericConfigure", model);
 		}
 
 		[HttpPost]
@@ -134,14 +134,49 @@ namespace SmartStore.OfflinePayment.Controllers
 			var settings = ConfigurePost<CashOnDeliveryConfigurationModel, CashOnDeliveryPaymentSettings>(model);
 			_services.Settings.SaveSetting(settings);
 
-			return View(model);
+			return View("GenericConfigure", model);
 		}
 
 		[ChildActionOnly]
-		public ActionResult CashOnDeliveryPaymentInfo()
+		public ActionResult CashOnDeliveryPaymentInfo() 
 		{
 			var model = PaymentInfoGet<CashOnDeliveryPaymentInfoModel, CashOnDeliveryPaymentSettings>();
-			return View(model);
+			return View("GenericPaymentInfo", model);
+		}
+
+		#endregion
+
+
+		#region Invoice
+
+		[AdminAuthorize]
+		[ChildActionOnly]
+		public ActionResult InvoiceConfigure()
+		{
+			var model = ConfigureGet<InvoiceConfigurationModel, InvoicePaymentSettings>();
+			return View("GenericConfigure", model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		[ChildActionOnly]
+		[ValidateInput(false)]
+		public ActionResult InvoiceConfigure(InvoiceConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return InvoiceConfigure();
+
+			var settings = ConfigurePost<InvoiceConfigurationModel, InvoicePaymentSettings>(model);
+			_services.Settings.SaveSetting(settings);
+
+			return View("GenericConfigure", model);
+		}
+
+		[ChildActionOnly]
+		public ActionResult InvoicePaymentInfo()
+		{
+			var model = PaymentInfoGet<InvoicePaymentInfoModel, InvoicePaymentSettings>();
+			return View("GenericPaymentInfo", model);
 		}
 
 		#endregion

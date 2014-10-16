@@ -40,5 +40,26 @@
     </Children>
   </LocaleResource>
 
+  <!-- Invoice -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.Invoice" AppendRootKey="false">
+    <Value>Invoice</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payment.Invoice" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentInfoDescription">
+        <Value>
+          <![CDATA[
+            <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
+          ]]>
+        </Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
  
 </Language>

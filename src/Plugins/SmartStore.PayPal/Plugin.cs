@@ -30,7 +30,6 @@ namespace SmartStore.PayPal
                 UseSandbox = true,
                 TransactMode = TransactMode.Authorize
             };
-
             _settingService.SaveSetting<PayPalExpressSettings>(paypalExpressSettings);
 
             var paypalDirectSettings = new PayPalDirectSettings()

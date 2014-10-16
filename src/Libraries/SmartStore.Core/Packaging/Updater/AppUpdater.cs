@@ -273,6 +273,9 @@ namespace SmartStore.Core.Packaging
 				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
 				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
 				{ "Payments.CashOnDelivery", "SmartStore.OfflinePayment" },
+                { "SmartStore.Plugin.Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
+                { "SmartStore.Plugin.Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
+
 			};
 
 			foreach (var name in installedPlugins)

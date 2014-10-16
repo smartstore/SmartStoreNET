@@ -9,7 +9,7 @@ namespace SmartStore.OfflinePayment
         public void RegisterRoutes(RouteCollection routes)
         {
 			routes.MapRoute("SmartStore.OfflinePayment",
-				 "Plugins/SmartStore.OfflinePayment/{controller}/{action}",
+				 "Plugins/SmartStore.OfflinePayment/{action}",
 				 new { controller = "OfflinePayment", action = "Index" },
 				 new[] { "SmartStore.OfflinePayment.Controllers" }
             )

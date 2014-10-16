@@ -129,7 +129,6 @@ namespace SmartStore.PayPal
         public override ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new ProcessPaymentResult();
-
             return result;
         }
 

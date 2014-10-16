@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
@@ -13,6 +14,13 @@ namespace SmartStore.Services.Payments
 	/// </summary>
 	public abstract class PaymentMethodBase : IPaymentMethod
 	{
+
+		protected PaymentMethodBase()
+		{
+			T = NullLocalizer.Instance;
+		}
+
+		public Localizer T { get; set; }
 
 		#region Methods
 
@@ -59,7 +67,9 @@ namespace SmartStore.Services.Payments
 		/// <returns>Capture payment result</returns>
 		public virtual CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
 		{
-			throw Error.NotSupported();
+			var result = new CapturePaymentResult();
+			result.AddError(T("Common.Payment.NoCaptureSupport"));
+			return result;
 		}
 
 		/// <summary>
@@ -69,7 +79,9 @@ namespace SmartStore.Services.Payments
 		/// <returns>Result</returns>
 		public virtual RefundPaymentResult Refund(RefundPaymentRequest refundPaymentRequest)
 		{
-			throw Error.NotSupported();
+			var result = new RefundPaymentResult();
+			result.AddError(T("Common.Payment.NoRefundSupport"));
+			return result;
 		}
 
 		/// <summary>
@@ -79,7 +91,9 @@ namespace SmartStore.Services.Payments
 		/// <returns>Result</returns>
 		public virtual VoidPaymentResult Void(VoidPaymentRequest voidPaymentRequest)
 		{
-			throw Error.NotSupported();
+			var result = new VoidPaymentResult();
+			result.AddError(T("Common.Payment.NoVoidSupport"));
+			return result;
 		}
 
 		/// <summary>
@@ -89,7 +103,9 @@ namespace SmartStore.Services.Payments
 		/// <returns>Process payment result</returns>
 		public virtual ProcessPaymentResult ProcessRecurringPayment(ProcessPaymentRequest processPaymentRequest)
 		{
-			throw Error.NotSupported();
+			var result = new ProcessPaymentResult();
+			result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
+			return result;
 		}
 
 		/// <summary>
@@ -99,7 +115,9 @@ namespace SmartStore.Services.Payments
 		/// <returns>Result</returns>
 		public virtual CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest cancelPaymentRequest)
 		{
-			throw Error.NotSupported();
+			var result = new CancelRecurringPaymentResult();
+			result.AddError(T("Common.Payment.NoRecurringPaymentSupport"));
+			return result;
 		}
 
 		/// <summary>

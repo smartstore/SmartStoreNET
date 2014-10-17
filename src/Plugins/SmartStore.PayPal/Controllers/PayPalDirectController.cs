@@ -190,11 +190,10 @@ namespace SmartStore.PayPal.Controllers
 				ExpireYear = form["ExpireYear"]
 			};
 
-            //TODO: 
-            //var validationResult = validator.Validate(model);
-            //if (!validationResult.IsValid)
-            //    foreach (var error in validationResult.Errors)
-            //        warnings.Add(error.ErrorMessage);
+            var validationResult = validator.Validate(model);
+            if (!validationResult.IsValid)
+                foreach (var error in validationResult.Errors)
+                    warnings.Add(error.ErrorMessage);
 			return warnings;
 		}
 
@@ -223,7 +222,7 @@ namespace SmartStore.PayPal.Controllers
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalDirect", true);
 			var processor = provider != null ? provider.Value as PayPalDirectPaymentProcessor : null;
 			if (processor == null)
-				throw new SmartException(_helper.GetResource("NoModuleLoading"));	// codehint: sm-edit
+				throw new SmartException(_helper.GetResource("NoModuleLoading"));
 
 			if (processor.VerifyIPN(strRequest, out values))
 			{
@@ -270,7 +269,7 @@ namespace SmartStore.PayPal.Controllers
 				}
 
                 var newPaymentStatus = PayPalHelper.GetPaymentStatus(payment_status, pending_reason);
-				sb.AppendLine("{0}: {1}".FormatWith(_helper.GetResource("NewPaymentStatus"), newPaymentStatus));		// codehint: sm-edit
+				sb.AppendLine("{0}: {1}".FormatWith(_helper.GetResource("NewPaymentStatus"), newPaymentStatus));
 
 				switch (txn_type)
 				{
@@ -413,7 +412,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			else
 			{
-				Logger.Error(_helper.GetResource("IpnFailed"), new SmartException(strRequest));		// codehint: sm-edit
+				Logger.Error(_helper.GetResource("IpnFailed"), new SmartException(strRequest));
 			}
 
 			//nothing should be rendered to visitor

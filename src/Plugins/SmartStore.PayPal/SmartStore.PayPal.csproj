@@ -125,7 +125,7 @@
     <Compile Include="Services\PayPalHelper.cs" />
     <Compile Include="Services\PayPalStandardCore.cs" />
     <Compile Include="Services\PayPalStandardService.cs" />
-    <Compile Include="Settings\ApiSettings.cs" />
+    <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Services\PayPalProcessPaymentRequest.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
@@ -136,8 +136,6 @@
     </Compile>
     <Compile Include="Providers\PayPalExpress.cs" />
     <Compile Include="RouteProvider.cs" />
-    <Compile Include="Settings\PayPalStandardSettings.cs" />
-    <Compile Include="Settings\TransactMode.cs" />
     <Compile Include="Validators\PayPalDirectPaymentInfoValidator.cs" />
     <Compile Include="Validators\PayPalExpressPaymentInfoValidator.cs" />
     <Compile Include="Web References\PayPalSvc\Reference.cs">

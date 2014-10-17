@@ -5,7 +5,7 @@ namespace SmartStore.PayPal.Models
 {
     public class PayPalStandardConfigurationModel : ModelBase
 	{
-		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.UseSandbox")]
+        [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.BusinessEmail")]

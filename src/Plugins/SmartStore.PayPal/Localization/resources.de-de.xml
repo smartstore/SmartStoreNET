@@ -7,9 +7,50 @@
     <Value>Stellt die PayPal-Zahlungsmethoden PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
   </LocaleResource>
 
-  <LocaleResource Name="Plugins.Payments.PayPalExpress" AppendRootKey="false">
+  <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
-      
+      <LocaleResource Name="UseSandbox">
+        <Value>Sandbox benutzen</Value>
+      </LocaleResource>
+      <LocaleResource Name="UseSandbox.Hint">
+        <Value>Aktiviert die Nutzung der PayPal Sandbox (Testumgebung).</Value>
+      </LocaleResource>
+      <LocaleResource Name="TransactMode">
+        <Value>Transaktionsmodus</Value>
+      </LocaleResource>
+      <LocaleResource Name="TransactMode.Hint">
+        <Value>Bestimmen Sie den Transaktionsmodus.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ApiAccountName">
+        <Value>API Benutzername</Value>
+      </LocaleResource>
+      <LocaleResource Name="ApiAccountName.Hint">
+        <Value>Geben Sie Ihren API Benutzername ein.</Value>
+      </LocaleResource>
+      <LocaleResource Name="ApiAccountPassword">
+        <Value>API Passwort</Value>
+      </LocaleResource>
+      <LocaleResource Name="ApiAccountPassword.Hint">
+        <Value>Geben Sie Ihr API Passwort ein.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Signature">
+        <Value>Signatur</Value>
+      </LocaleResource>
+      <LocaleResource Name="Signature.Hint">
+        <Value>Geben Sie Ihre Signatur ein.</Value>
+      </LocaleResource>
+      <LocaleResource Name="AdditionalFee">
+        <Value>Zusätzliche Gebühren</Value>
+      </LocaleResource>
+      <LocaleResource Name="AdditionalFee.Hint">
+        <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
+      </LocaleResource>
+      <LocaleResource Name="AdditionalFeePercentage">
+        <Value>Zusätzliche Gebühren (prozentual)</Value>
+      </LocaleResource>
+      <LocaleResource Name="AdditionalFeePercentage.Hint">
+        <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   
@@ -40,48 +81,6 @@
             <li><b>Speichern</b> klicken. Danach sollten Sie eine Nachricht über die erfolgreiche Aktivierung von IPN erhalten.</li>
             </ol>]]>
 		    </Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.UseSandbox">
-		    <Value>Sandbox benutzen</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.UseSandbox.Hint">
-		    <Value>Abhaken, um die Sandbox (Testumgebung) zu aktivieren.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.TransactMode">
-		    <Value>Transaktionsmodus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.TransactMode.Hint">
-		    <Value>Bestimmen Sie den Transaktionsmodus.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountName">
-		    <Value>API Benutzername</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountName.Hint">
-		    <Value>Geben Sie Ihren API Benutzername ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountPassword">
-		    <Value>API Passwort</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountPassword.Hint">
-		    <Value>Geben Sie Ihr API Passwort ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.Signature">
-		    <Value>Signatur</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.Signature.Hint">
-		    <Value>Geben Sie Ihre Signatur ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFee">
-		    <Value>Zusätzliche Gebühren</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFee.Hint">
-		    <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFeePercentage">
-		    <Value>Zusätzliche Gebühren (prozentual)</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
-		    <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
 	    </LocaleResource>
   
 	    <LocaleResource Name="NoModuleLoading">
@@ -166,48 +165,6 @@
           </ol>]]>
 		    </Value>
 	    </LocaleResource>
-	    <LocaleResource Name="Fields.UseSandbox">
-		    <Value>Sandbox benutzen</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.UseSandbox.Hint">
-		    <Value>Abhaken, um die Sandbox (Testumgebung) zu aktivieren.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.TransactMode">
-		    <Value>Transaktionsmodus</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.TransactMode.Hint">
-		    <Value>Bestimmen Sie den Transaktionsmodus.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountName">
-		    <Value>API Benutzername</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountName.Hint">
-		    <Value>Geben Sie Ihren API Benutzername ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountPassword">
-		    <Value>API Passwort</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.ApiAccountPassword.Hint">
-		    <Value>Geben Sie Ihr API Passwort ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.Signature">
-		    <Value>Signatur</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.Signature.Hint">
-		    <Value>Geben Sie Ihre Signatur ein.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFee">
-		    <Value>Zusätzliche Gebühren</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFee.Hint">
-		    <Value>Zusätzliche Gebühren, die dem Kunden berechnet werden sollen.</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFeePercentage">
-		    <Value>Zusätzliche Gebühren (prozentual)</Value>
-	    </LocaleResource>
-	    <LocaleResource Name="Fields.AdditionalFeePercentage.Hint">
-		    <Value>Zusätzliche prozentuale Gebühr zum Gesamtbetrag. Es wird ein fester Wert verwendet, falls diese Option nicht aktiviert ist.</Value>
-	    </LocaleResource>
 	    <LocaleResource Name="NoModuleLoading">
 		    <Value>PayPal-Direct-Modul konnte nicht geladen werden.</Value>
 	    </LocaleResource>
@@ -280,12 +237,6 @@
       </LocaleResource>
       <LocaleResource Name="Fields.RedirectionTip">
         <Value>Nach Bestätigung der Bestellung werden Sie direkt zu PayPal weitergeleitet. Halten Sie bitte Ihre Daten für das Online-Banking bereit.</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.UseSandbox">
-        <Value>Sandbox benutzen</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.UseSandbox.Hint">
-        <Value>Abhaken, um die Sandbox (Testumgebung) zu aktivieren.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.BusinessEmail">
         <Value>Business E-Mail</Value>

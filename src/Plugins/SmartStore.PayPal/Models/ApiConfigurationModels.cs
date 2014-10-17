@@ -6,26 +6,26 @@ namespace SmartStore.PayPal.Models
 {
     public abstract class ApiConfigurationModel: ModelBase
 	{
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.UseSandbox")]
+        [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.TransactMode")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.TransactMode")]
 		public int TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.ApiAccountName")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountName")]
 		public string ApiAccountName { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.ApiAccountPassword")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.ApiAccountPassword")]
 		public string ApiAccountPassword { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.Signature")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.Signature")]
 		public string Signature { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.AdditionalFee")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
-		[SmartResourceDisplayName("Plugins.Payments.PayPalDirect.Fields.AdditionalFeePercentage")]
+		[SmartResourceDisplayName("Plugins.Payments.PayPal.AdditionalFeePercentage")]
 		public bool AdditionalFeePercentage { get; set; }
 	}
 

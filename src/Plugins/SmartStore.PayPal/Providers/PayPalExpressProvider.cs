@@ -76,6 +76,11 @@ namespace SmartStore.PayPal
             _countryService = countryService;
         }
 
+		protected override string GetResourceRootKey()
+		{
+			return "Plugins.Payments.PayPalExpress";
+		}
+
         /// <summary>
         /// Process a payment
         /// </summary>

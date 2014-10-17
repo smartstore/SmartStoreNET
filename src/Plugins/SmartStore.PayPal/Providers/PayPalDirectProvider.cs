@@ -62,6 +62,11 @@ namespace SmartStore.PayPal
 
 		#region Methods
 
+		protected override string GetResourceRootKey()
+		{
+			return "Plugins.Payments.PayPalDirect";
+		}
+
 		/// <summary>
 		/// Process a payment
 		/// </summary>

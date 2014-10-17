@@ -34,8 +34,8 @@ namespace SmartStore.Web.Framework.Plugins
 		private IDictionary<int, string> _cachedPathes;
 		private Func<PromotionFeedSettings> _settingsFunc;
 
-		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
-			base(componentContext, systemName)
+		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings, string providerResRootKey = null /* Legacy */) :
+			base(componentContext, systemName, providerResRootKey)
 		{
 			_namespace = rootNamespace;
 			_settingsFunc = settings;

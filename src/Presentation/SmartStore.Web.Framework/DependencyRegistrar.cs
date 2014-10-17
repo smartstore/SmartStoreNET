@@ -756,7 +756,7 @@ namespace SmartStore.Web.Framework
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
 
-				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest();
+				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.PluginDescriptor, pluginDescriptor);

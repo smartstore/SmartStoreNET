@@ -170,12 +170,14 @@ namespace SmartStore.Web.Framework.Plugins
 						return _resMap[key];
 					}
 
-					res = _ctx.Resolve<ILocalizationService>().GetResource(key, returnEmptyIfNotFound: true).NullEmpty();
+					var loc = _ctx.Resolve<ILocalizationService>();
+
+					res = loc.GetResource(key, returnEmptyIfNotFound: true).NullEmpty();
 
 					if (res == null && isProvider)
 					{
 						// No match with provider root key! Try it again with plugin root key as fallback.
-						res = _ctx.Resolve<ILocalizationService>().GetResource("{0}.{1}".FormatWith(_pluginResRootKey, keyOrShortKey), returnEmptyIfNotFound: true).NullEmpty();
+						res = loc.GetResource("{0}.{1}".FormatWith(_pluginResRootKey, keyOrShortKey), returnEmptyIfNotFound: true).NullEmpty();
 					}
 
 					if (res == null)

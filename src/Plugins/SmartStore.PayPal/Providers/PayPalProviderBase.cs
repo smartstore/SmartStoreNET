@@ -48,6 +48,8 @@ namespace SmartStore.PayPal
 
 		public IComponentContext ComponentContext { get; set; }
 
+		protected abstract string GetResourceRootKey();
+
 		private PluginHelper _helper;
 		public PluginHelper Helper 
 		{
@@ -55,7 +57,7 @@ namespace SmartStore.PayPal
 			{
 				if (_helper == null)
 				{
-					_helper = new PluginHelper(this.ComponentContext, "SmartStore.IPayment");
+					_helper = new PluginHelper(this.ComponentContext, "SmartStore.PayPal", GetResourceRootKey());
 				}
 				return _helper;
 			}

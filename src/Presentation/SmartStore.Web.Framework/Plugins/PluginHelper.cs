@@ -21,16 +21,21 @@ namespace SmartStore.Web.Framework.Plugins
 		protected readonly IComponentContext _ctx;
 		private PluginDescriptor _plugin;
 		private string _interfaceVersion;
+		private string _pluginResRootKey;
+		private string _providerResRootKey;
 		private Language _language;
 		private int? _currencyID;
 		private string _currencyCode;
 		private Currency _euroCurrency;
 		private Dictionary<string, string> _resMap = new Dictionary<string, string>();
 
-		public PluginHelper(IComponentContext componentContext, string systemName)
+		public PluginHelper(IComponentContext componentContext, string systemName, string providerResRootKey = null /* Legacy */)
 		{
-			SystemName = systemName;
+			Guard.ArgumentNotEmpty(() => systemName);
+			
 			_ctx = componentContext;
+			SystemName = systemName;
+			_providerResRootKey = providerResRootKey.NullEmpty();
 		}
 
 		public static string NotSpecified
@@ -50,6 +55,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (_plugin == null)
 				{
 					_plugin = _ctx.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(SystemName);
+					
 					if (_plugin == null)
 					{
 						var provider = _ctx.Resolve<IProviderManager>().GetProvider(SystemName);
@@ -140,39 +146,49 @@ namespace SmartStore.Web.Framework.Plugins
 		public string GetResource(string keyOrShortKey)
 		{
 			string res = "";
+
 			try
 			{
 				if (keyOrShortKey.HasValue())
 				{
-					if (!keyOrShortKey.Contains('.'))
+					var key = keyOrShortKey;
+					var isFullExpr = key.Contains('.');
+					var isProvider = !isFullExpr && _providerResRootKey != null;
+					
+					if (_pluginResRootKey == null)
 					{
-						if (Plugin.ResourceRootKey.HasValue())
-						{
-							keyOrShortKey = "{0}.{1}".FormatWith(Plugin.ResourceRootKey, keyOrShortKey);
-						}
-						else
-						{
-							keyOrShortKey = "Plugins.{0}.{1}".FormatWith(SystemName, keyOrShortKey);
-						}
+						_pluginResRootKey = Plugin.ResourceRootKey.HasValue() ? Plugin.ResourceRootKey : "Plugins.{0}".FormatWith(SystemName);
 					}
 
-					if (_resMap.ContainsKey(keyOrShortKey))
+					if (!isFullExpr)
 					{
-						return _resMap[keyOrShortKey];
+						key = "{0}.{1}".FormatWith(_providerResRootKey ?? _pluginResRootKey, key);
 					}
 
-					res = _ctx.Resolve<ILocalizationService>().GetResource(keyOrShortKey);
+					if (_resMap.ContainsKey(key))
+					{
+						return _resMap[key];
+					}
 
-					if (res.IsNullOrEmpty())
-						res = keyOrShortKey;
+					res = _ctx.Resolve<ILocalizationService>().GetResource(key, returnEmptyIfNotFound: true).NullEmpty();
 
-					_resMap.Add(keyOrShortKey, res);
+					if (res == null && isProvider)
+					{
+						// No match with provider root key! Try it again with plugin root key as fallback.
+						res = _ctx.Resolve<ILocalizationService>().GetResource("{0}.{1}".FormatWith(_pluginResRootKey, keyOrShortKey), returnEmptyIfNotFound: true).NullEmpty();
+					}
+
+					if (res == null)
+						res = key;
+
+					_resMap[keyOrShortKey] = res;
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				exc.Dump();
+				ex.Dump();
 			}
+
 			return res;
 		}
 

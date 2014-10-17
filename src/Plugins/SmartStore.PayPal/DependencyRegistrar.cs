@@ -9,7 +9,6 @@ namespace SmartStore.PayPal
 	{
 		public virtual void Register(ContainerBuilder builder, ITypeFinder typeFinder, bool isActiveModule)
 		{
-            builder.RegisterType<PayPalExpressApiService>().As<IPayPalExpressApiService>().InstancePerRequest();
             builder.RegisterType<PayPalStandardService>().As<IPayPalStandardService>().InstancePerRequest();
 		}
 

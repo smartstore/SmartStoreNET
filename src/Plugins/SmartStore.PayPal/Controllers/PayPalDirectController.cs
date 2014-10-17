@@ -220,7 +220,7 @@ namespace SmartStore.PayPal.Controllers
 			Dictionary<string, string> values;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalDirect", true);
-			var processor = provider != null ? provider.Value as PayPalDirectPaymentProcessor : null;
+			var processor = provider != null ? provider.Value as PayPalDirectProvider : null;
 			if (processor == null)
 				throw new SmartException(_helper.GetResource("NoModuleLoading"));
 

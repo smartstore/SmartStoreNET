@@ -117,11 +117,11 @@
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
     <Compile Include="Models\PayPalExpressPaymentInfoModel.cs" />
-    <Compile Include="Providers\PayPalDirect.cs" />
-    <Compile Include="Providers\PayPalStandard.cs" />
-    <Compile Include="Services\IPayPalExpressApiService.cs" />
+    <Compile Include="Providers\PayPalExpressProvider.cs" />
+    <Compile Include="Providers\PayPalProviderBase.cs" />
+    <Compile Include="Providers\PayPalDirectProvider.cs" />
+    <Compile Include="Providers\PayPalStandardProvider.cs" />
     <Compile Include="Services\IPayPalStandardService.cs" />
-    <Compile Include="Services\PayPalExpressApiService.cs" />
     <Compile Include="Services\PayPalHelper.cs" />
     <Compile Include="Services\PayPalStandardCore.cs" />
     <Compile Include="Services\PayPalStandardService.cs" />
@@ -134,7 +134,6 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
       <DependentUpon>Settings.settings</DependentUpon>
     </Compile>
-    <Compile Include="Providers\PayPalExpress.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Validators\PayPalDirectPaymentInfoValidator.cs" />
     <Compile Include="Validators\PayPalExpressPaymentInfoValidator.cs" />

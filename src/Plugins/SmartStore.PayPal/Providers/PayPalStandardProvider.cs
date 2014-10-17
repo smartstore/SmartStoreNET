@@ -32,7 +32,7 @@ namespace SmartStore.PayPal
     [SystemName("Payments.PayPalStandard")]
     [FriendlyName("PayPal Standard")]
     [DisplayOrder(2)]
-	public partial class PayPalStandard : PaymentMethodBase, IConfigurable
+	public partial class PayPalStandardProvider : PaymentMethodBase, IConfigurable
 	{
 		#region Fields
 
@@ -52,7 +52,7 @@ namespace SmartStore.PayPal
 
 		#region Ctor
 
-        public PayPalStandard(PayPalStandardSettings paypalStandardSettings,
+        public PayPalStandardProvider(PayPalStandardSettings paypalStandardSettings,
 			ISettingService settingService, ICurrencyService currencyService,
 			CurrencySettings currencySettings, IWebHelper webHelper,
 			ICheckoutAttributeParser checkoutAttributeParser, ITaxService taxService,

@@ -128,7 +128,7 @@ namespace SmartStore.PayPal.Controllers
 			string response;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
-            var processor = provider != null ? provider.Value as PayPalStandard : null;
+            var processor = provider != null ? provider.Value as PayPalStandardProvider : null;
 			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
@@ -244,7 +244,7 @@ namespace SmartStore.PayPal.Controllers
 			Dictionary<string, string> values;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
-			var processor = provider != null ? provider.Value as PayPalStandard : null;
+			var processor = provider != null ? provider.Value as PayPalStandardProvider : null;
 			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 

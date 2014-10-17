@@ -70,5 +70,49 @@
     </Children>
   </LocaleResource>
 
+  <!-- PayInStore -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PayInStore" AppendRootKey="false">
+    <Value>Barzahlung</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payment.PayInStore" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentInfoDescription">
+        <Value>
+          <![CDATA[
+            <p>Reservieren Sie Produkte und zahlen Sie an der Kasse in unserem Ladenlokal.<br />Und Hier finden Sie uns: Dortmund, Westenhellweg 88,...</p>
+            <p>P.S. Dieser Text kann im Admin-Bereich editiert werden.</p>
+          ]]>
+        </Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+  <!-- Prepayment -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.Prepayment" AppendRootKey="false">
+    <Value>Vorkasse</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payment.Prepayment" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PaymentInfoDescription">
+        <Value>
+          <![CDATA[
+            <p>Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.
+            </p><p>P.S. Dieser Text kann im Admin-Bereich editiert werden.</p>
+          ]]>
+        </Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 
 </Language>

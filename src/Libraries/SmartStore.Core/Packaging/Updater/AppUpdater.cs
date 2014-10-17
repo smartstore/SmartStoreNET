@@ -274,6 +274,8 @@ namespace SmartStore.Core.Packaging
 				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
 				{ "Payments.CashOnDelivery", "SmartStore.OfflinePayment" },
 				{ "Payments.Invoice", "SmartStore.OfflinePayment" },
+				{ "Payments.PayInStore", "SmartStore.OfflinePayment" },
+				{ "Payments.Prepayment", "SmartStore.OfflinePayment" },
                 { "Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
                 { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
 

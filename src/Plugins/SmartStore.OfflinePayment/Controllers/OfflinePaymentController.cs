@@ -181,5 +181,75 @@ namespace SmartStore.OfflinePayment.Controllers
 
 		#endregion
 
+
+		#region PayInStore
+
+		[AdminAuthorize]
+		[ChildActionOnly]
+		public ActionResult PayInStoreConfigure()
+		{
+			var model = ConfigureGet<PayInStoreConfigurationModel, PayInStorePaymentSettings>();
+			return View("GenericConfigure", model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		[ChildActionOnly]
+		[ValidateInput(false)]
+		public ActionResult PayInStoreConfigure(PayInStoreConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return PayInStoreConfigure();
+
+			var settings = ConfigurePost<PayInStoreConfigurationModel, PayInStorePaymentSettings>(model);
+			_services.Settings.SaveSetting(settings);
+
+			return View("GenericConfigure", model);
+		}
+
+		[ChildActionOnly]
+		public ActionResult PayInStorePaymentInfo()
+		{
+			var model = PaymentInfoGet<PayInStorePaymentInfoModel, PayInStorePaymentSettings>();
+			return View("GenericPaymentInfo", model);
+		}
+
+		#endregion
+
+
+		#region Prepayment
+
+		[AdminAuthorize]
+		[ChildActionOnly]
+		public ActionResult PrepaymentConfigure()
+		{
+			var model = ConfigureGet<PrepaymentConfigurationModel, PrepaymentPaymentSettings>();
+			return View("GenericConfigure", model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		[ChildActionOnly]
+		[ValidateInput(false)]
+		public ActionResult PrepaymentConfigure(PrepaymentConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return PrepaymentConfigure();
+
+			var settings = ConfigurePost<PrepaymentConfigurationModel, PrepaymentPaymentSettings>(model);
+			_services.Settings.SaveSetting(settings);
+
+			return View("GenericConfigure", model);
+		}
+
+		[ChildActionOnly]
+		public ActionResult PrepaymentaymentInfo()
+		{
+			var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
+			return View("GenericPaymentInfo", model);
+		}
+
+		#endregion
+
 	}
 }

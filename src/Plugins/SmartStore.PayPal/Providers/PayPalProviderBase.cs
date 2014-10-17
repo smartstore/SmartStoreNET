@@ -32,13 +32,10 @@ namespace SmartStore.PayPal
     {
         protected PayPalProviderBase()
 		{
-			T = NullLocalizer.Instance;
 			Logger = NullLogger.Instance;
 		}
 
 		public TSetting Settings { get; set; }
-
-		public Localizer T { get; set; }
 
 		public ILogger Logger { get; set; }
 

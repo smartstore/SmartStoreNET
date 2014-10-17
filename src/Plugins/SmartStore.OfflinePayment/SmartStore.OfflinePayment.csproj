@@ -137,6 +137,8 @@
     <Compile Include="Models\PaymentInfoModel.cs" />
     <Compile Include="Plugin.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="Providers\PrepaymentStoreProvider.cs" />
+    <Compile Include="Providers\PayInStoreProvider.cs" />
     <Compile Include="Providers\InvoiceProvider.cs" />
     <Compile Include="Providers\OfflinePaymentProviderBase.cs" />
     <Compile Include="Providers\CashOnDeliveryProvider.cs" />

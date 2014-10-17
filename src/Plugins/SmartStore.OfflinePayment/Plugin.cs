@@ -31,6 +31,14 @@ namespace SmartStore.OfflinePayment
 			{
 				DescriptionText = "@Plugins.Payment.Invoice.PaymentInfoDescription"
 			});
+			settings.SaveSetting(new PayInStorePaymentSettings
+			{
+				DescriptionText = "@Plugins.Payment.PayInStore.PaymentInfoDescription"
+			});
+			settings.SaveSetting(new PrepaymentPaymentSettings
+			{
+				DescriptionText = "@Plugins.Payment.Prepayment.PaymentInfoDescription"
+			});
 
 			// add resources
 			loc.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -46,6 +54,8 @@ namespace SmartStore.OfflinePayment
 			// delete settings
 			settings.DeleteSetting<CashOnDeliveryPaymentSettings>();
 			settings.DeleteSetting<InvoicePaymentSettings>();
+			settings.DeleteSetting<PayInStorePaymentSettings>();
+			settings.DeleteSetting<PrepaymentPaymentSettings>();
 
 			// delete resources
 			loc.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);

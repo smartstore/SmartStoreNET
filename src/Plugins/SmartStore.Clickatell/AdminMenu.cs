@@ -9,9 +9,9 @@ using SmartStore.Collections;
 
 namespace SmartStore.Clickatell
 {
-	public class AdminMenu : IMenuProvider
+	public class AdminMenu : AdminMenuProvider
 	{
-		public void BuildMenu(TreeNode<MenuItem> pluginsNode)
+		protected override void BuildMenuCore(TreeNode<MenuItem> pluginsNode)
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Clickatell SMS Provider")
@@ -21,6 +21,14 @@ namespace SmartStore.Clickatell
 				.ToItem();
 
 			pluginsNode.Prepend(menuItem);
+		}
+
+		public override int Ordinal
+		{
+			get
+			{
+				return 100;
+			}
 		}
 
 	}

@@ -12,6 +12,8 @@
 * (Developer) Model binding for plugin tab views: models from plugin tabs get automatically materialized and bound to TabbableModel.CustomProperties[MyKey]. Extended the SmartModelBinder for this.
 * (Developer) New event _ModelBoundEvent_. Consume this in plugins to persist plugin specific models.
 * (Admin) Added _GMC_ tab to product edit view. This is more a coding example for the above stuff rather than a new feature.
+* (Developer) Implemented _AdminThemedAttribute_: instructs the view engine to additionally search in the admin area for views. Very useful in larger plugin projects.
+* (Developer) Enhanced _IMenuProvider_: menu items can now be injected to the public catalog menu
 * (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()

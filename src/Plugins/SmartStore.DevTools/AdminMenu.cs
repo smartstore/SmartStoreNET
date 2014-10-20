@@ -9,9 +9,9 @@ using SmartStore.Collections;
 
 namespace SmartStore.DevTools
 {
-	public class AdminMenu : IMenuProvider
+	public class AdminMenu : AdminMenuProvider
 	{
-		public void BuildMenu(TreeNode<MenuItem> pluginsNode)
+		protected override void BuildMenuCore(TreeNode<MenuItem> pluginsNode)
 		{
 			var menuItem = new MenuItem().ToBuilder()
 				.Text("Developer Tools")
@@ -21,6 +21,5 @@ namespace SmartStore.DevTools
 
 			pluginsNode.Prepend(menuItem);
 		}
-
 	}
 }

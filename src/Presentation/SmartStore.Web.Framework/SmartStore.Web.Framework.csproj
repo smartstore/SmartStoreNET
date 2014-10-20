@@ -246,6 +246,8 @@
     <Compile Include="Mvc\ProviderModel.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
+    <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
+    <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
     <Compile Include="UI\HtmlAttributeExtensions.cs" />
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />

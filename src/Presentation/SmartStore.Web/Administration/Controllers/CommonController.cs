@@ -58,7 +58,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IImageCache _imageCache;
         private readonly SecuritySettings _securitySettings;
-        private readonly ITypeFinder _typeFinder;
+		private readonly IMenuPublisher _menuPublisher;
         private readonly IPluginFinder _pluginFinder;
         private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IDbContext _dbContext;
@@ -86,7 +86,7 @@ namespace SmartStore.Admin.Controllers
 			ILocalizationService localizationService,
             IImageCache imageCache,
 			SecuritySettings securitySettings,
-			ITypeFinder typeFinder,
+			IMenuPublisher menuPublisher,
             IPluginFinder pluginFinder,
             IGenericAttributeService genericAttributeService,
 			IDbContext dbContext)
@@ -108,7 +108,7 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._imageCache = imageCache;
             this._securitySettings = securitySettings;
-            this._typeFinder = typeFinder;
+            this._menuPublisher = menuPublisher;
 			this._pluginFinder = pluginFinder;
             this._genericAttributeService = genericAttributeService;
 			this._dbContext = dbContext;
@@ -145,27 +145,32 @@ namespace SmartStore.Admin.Controllers
             
             var rootNode = ConvertSitemapNodeToMenuItemNode(siteMap.RootNode);
 
-            TreeNode<MenuItem> pluginNode = null;
+			_menuPublisher.RegisterMenus(rootNode, "admin");
 
-            // "collect" menus from plugins
-            var providers = new List<IMenuProvider>();
-			var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);
+			//TreeNode<MenuItem> pluginNode = null;
 
-            foreach (var type in providerTypes)
-            {
-                try
-                {
-                    var provider = Activator.CreateInstance(type) as IMenuProvider;
-                    providers.Add(provider);
-                }
-                catch { }
-            }
+			//// "collect" menus from plugins
+			//var providers = new List<IMenuProvider>();
+			//var providerTypes = _typeFinder.FindClassesOfType<IMenuProvider>(ignoreInactivePlugins: true);
 
-            if (providers.Any())
-            {
-				pluginNode = rootNode.Children.FirstOrDefault(x => x.Value.Id == "plugins");
-                providers.Each(x => x.BuildMenu(pluginNode));
-            }
+			//foreach (var type in providerTypes)
+			//{
+			//	try
+			//	{
+			//		var provider = Activator.CreateInstance(type) as IMenuProvider;
+			//		if (provider.MenuName.IsCaseInsensitiveEqual("admin"))
+			//		{
+			//			providers.Add(provider);
+			//		}
+			//	}
+			//	catch { }
+			//}
+
+			//if (providers.Any())
+			//{
+			//	pluginNode = rootNode.Children.FirstOrDefault(x => x.Value.Id == "plugins");
+			//	providers.Each(x => x.BuildMenu(pluginNode));
+			//}
 
 			// hide based on permissions
             rootNode.TraverseTree(x => {

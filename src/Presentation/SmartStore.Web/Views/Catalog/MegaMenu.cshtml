@@ -59,7 +59,7 @@
 						
                         <li class='@(GetCssClassForNode(node, itemState))'> 
                         <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@item.Text
-                            @if (item.ElementsCount.HasValue)
+                            @if (item.ElementsCount.GetValueOrDefault() > 0)
                             {
                                 <text> (@(item.ElementsCount))</text>
                             }

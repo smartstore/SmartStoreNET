@@ -64,6 +64,7 @@ namespace SmartStore.Web.Controllers
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly ISettingService _settingService;
+		private readonly Lazy<IMenuPublisher> _menuPublisher;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -96,6 +97,7 @@ namespace SmartStore.Web.Controllers
 			TaxSettings taxSettings,
 			IDeliveryTimeService deliveryTimeService,
 			ISettingService settingService,
+			Lazy<IMenuPublisher> _menuPublisher,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -127,6 +129,7 @@ namespace SmartStore.Web.Controllers
 			this._customerSettings = customerSettings;
 			this._captchaSettings = captchaSettings;
 			this._currencySettings = currencySettings;
+			this._menuPublisher = _menuPublisher;
 
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
@@ -1443,6 +1446,9 @@ namespace SmartStore.Web.Controllers
 				}
 
 				var root = curParent.Root;
+
+				// menu publisher
+				_menuPublisher.Value.RegisterMenus(root, "catalog");
 
 				// event
 				_services.EventPublisher.Publish(new NavigationModelBuiltEvent(root));

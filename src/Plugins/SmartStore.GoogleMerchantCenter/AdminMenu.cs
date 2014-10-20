@@ -9,9 +9,9 @@ using SmartStore.Collections;
 
 namespace SmartStore.GoogleMerchantCenter
 {
-    public class AdminMenu : IMenuProvider
+    public class AdminMenu : AdminMenuProvider
     {
-        public void BuildMenu(TreeNode<MenuItem> pluginsNode)
+		protected override void BuildMenuCore(TreeNode<MenuItem> pluginsNode)
         {
 			var root = pluginsNode.SelectNode(x => x.Value.Id == "promotion-feeds");
 			if (root == null)

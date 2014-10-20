@@ -699,6 +699,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
 
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
+			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
 		}
 	}
 

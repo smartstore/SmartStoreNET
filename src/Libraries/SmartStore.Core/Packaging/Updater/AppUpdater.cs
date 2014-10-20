@@ -282,6 +282,7 @@ namespace SmartStore.Core.Packaging
                 { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
                 { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
                 { "Shipping.Fedex", "SmartStore.Fedex" },
+                { "Shipping.UPS", "SmartStore.UPS" },
 
 			};
 

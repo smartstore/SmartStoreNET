@@ -283,7 +283,7 @@ namespace SmartStore.Core.Packaging
                 { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
                 { "Shipping.Fedex", "SmartStore.Fedex" },
                 { "Shipping.UPS", "SmartStore.UPS" },
-
+				{ "Payments.Manual", "SmartStore.OfflinePayment" },
 			};
 
 			foreach (var name in installedPlugins)

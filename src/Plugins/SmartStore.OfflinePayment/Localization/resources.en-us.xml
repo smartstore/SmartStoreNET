@@ -103,5 +103,25 @@
     </Children>
   </LocaleResource>
 
+  <!-- Manual -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.Manual" AppendRootKey="false">
+    <Value>Credit card (manual)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.Manual" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.TransactMode">
+        <Value>After checkout mark payment as</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.TransactMode.Hint">
+        <Value>Specify transaction mode.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
  
 </Language>

@@ -1,11 +1,14 @@
-﻿@{
-    Layout = "";
-}
-@model SmartStore.Plugin.Payments.Manual.Models.ConfigurationModel
+﻿@model SmartStore.OfflinePayment.Models.ManualConfigurationModel
 @using SmartStore.Web.Framework;
+
+@{
+	Layout = "";
+}
+
+
 @using (Html.BeginForm())
 {
-    <table class="adminContent">
+	<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TransactMode)
@@ -41,5 +44,4 @@
             </td>
         </tr>
     </table>
-    
 }

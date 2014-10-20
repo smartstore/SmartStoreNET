@@ -20,6 +20,11 @@
         @using (Html.BeginForm())
         {
             @Html.Widget("checkout_payment_info_top")
+			
+			<div class="message-error">
+                @Html.ValidationSummary(false)
+            </div>
+			
             <div class="payment-info">
                 <div class="body">
                     @Html.Action(Model.PaymentInfoActionName, Model.PaymentInfoControllerName, Model.PaymentInfoRouteValues)
@@ -39,9 +44,6 @@
                 </div>
             </div>
             
-            <div class="message-error">
-                @Html.ValidationSummary(false)
-            </div>
             @Html.Widget("checkout_payment_info_bottom")
         }
 

@@ -114,5 +114,25 @@
     </Children>
   </LocaleResource>
 
+  <!-- Manual -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.Manual" AppendRootKey="false">
+    <Value>Kreditkarte (manuell)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.Manual" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.TransactMode">
+        <Value>Markiere die Zahlung nach dem Abschluß der Bestellung als</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.TransactMode.Hint">
+        <Value>Bestimmen Sie den Transaktionsmodus.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
 
 </Language>

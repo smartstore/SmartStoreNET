@@ -39,6 +39,10 @@ namespace SmartStore.OfflinePayment
 			{
 				DescriptionText = "@Plugins.Payment.Prepayment.PaymentInfoDescription"
 			});
+			settings.SaveSetting(new ManualPaymentSettings
+			{
+				TransactMode = TransactMode.Pending
+			});
 
 			// add resources
 			loc.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -56,15 +60,16 @@ namespace SmartStore.OfflinePayment
 			settings.DeleteSetting<InvoicePaymentSettings>();
 			settings.DeleteSetting<PayInStorePaymentSettings>();
 			settings.DeleteSetting<PrepaymentPaymentSettings>();
+			settings.DeleteSetting<ManualPaymentSettings>();
 
 			// delete resources
 			loc.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 			loc.DeleteLocaleStringResources("Plugins.Payment.CashOnDelivery");
-			loc.DeleteLocaleStringResources("Plugins.Payments.DirectDebit");
 			loc.DeleteLocaleStringResources("Plugins.Payment.Invoice");
-			loc.DeleteLocaleStringResources("Plugins.Payments.Manual");
 			loc.DeleteLocaleStringResources("Plugins.Payment.PayInStore");
 			loc.DeleteLocaleStringResources("Plugins.Payment.Prepayment");
+			loc.DeleteLocaleStringResources("Plugins.Payments.Manual");
+			loc.DeleteLocaleStringResources("Plugins.Payments.DirectDebit");
 
             base.Uninstall();
         }

@@ -1,11 +1,16 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using Autofac;
+using FluentValidation;
 using SmartStore.Core.Localization;
 using SmartStore.OfflinePayment.Models;
 using SmartStore.OfflinePayment.Settings;
+using SmartStore.OfflinePayment.Validators;
 using SmartStore.Services;
 using SmartStore.Services.Payments;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.OfflinePayment.Controllers
@@ -31,7 +36,7 @@ namespace SmartStore.OfflinePayment.Controllers
 		#region Global
 
 		[NonAction]
-		private TModel ConfigureGet<TModel, TSetting>() 
+		private TModel ConfigureGet<TModel, TSetting>(Action<TModel, TSetting> fn = null) 
 			where TModel : ConfigurationModelBase, new()
 			where TSetting : PaymentSettingsBase, new()
 		{
@@ -41,6 +46,11 @@ namespace SmartStore.OfflinePayment.Controllers
 			model.DescriptionText = settings.DescriptionText;
 			model.AdditionalFee = settings.AdditionalFee;
 			model.AdditionalFeePercentage = settings.AdditionalFeePercentage;
+
+			if (fn != null)
+			{
+				fn(model, settings);
+			}
 
 			return model;
 		}
@@ -59,7 +69,7 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		[NonAction]
-		private TModel PaymentInfoGet<TModel, TSetting>()
+		private TModel PaymentInfoGet<TModel, TSetting>(Action<TModel, TSetting> fn = null)
 			where TModel : PaymentInfoModelBase, new()
 			where TSetting : PaymentSettingsBase, new()
 		{
@@ -67,12 +77,17 @@ namespace SmartStore.OfflinePayment.Controllers
 			var model = new TModel();
 			model.DescriptionText = GetLocalizedText(settings.DescriptionText);
 
+			if (fn != null)
+			{
+				fn(model, settings);
+			}
+
 			return model;
 		}
 
 		private string GetLocalizedText(string text)
 		{
-			if (text.StartsWith("@"))
+			if (text.EmptyNull().StartsWith("@"))
 			{
 				return T(text.Substring(1));
 			}
@@ -84,11 +99,31 @@ namespace SmartStore.OfflinePayment.Controllers
 		public override IList<string> ValidatePaymentForm(FormCollection form)
 		{
 			var warnings = new List<string>();
+			IValidator validator;
 
-			string type = form["PaymentMethodType"].NullEmpty();
+			string type = form["OfflinePaymentMethodType"].NullEmpty();
+
 			if (type.HasValue())
 			{
-				// [...]
+				if (type == "Manual")
+				{
+					validator = new ManualPaymentInfoValidator(_services.Localization);
+					var model = new ManualPaymentInfoModel
+					{
+						CardholderName = form["CardholderName"],
+						CardNumber = form["CardNumber"],
+						CardCode = form["CardCode"]
+					};
+					var validationResult = validator.Validate(model);
+					if (!validationResult.IsValid)
+					{
+						validationResult.Errors.Each(x => warnings.Add(x.ErrorMessage));
+					}
+				}
+				else if (type == "DirectDebit")
+				{
+					// [...]
+				}
 			}
 
 			return warnings;
@@ -99,10 +134,23 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var paymentInfo = new ProcessPaymentRequest();
 
-			string type = form["PaymentMethodType"].NullEmpty();
+			string type = form["OfflinePaymentMethodType"].NullEmpty();
+
 			if (type.HasValue())
 			{
-				// [...]
+				if (type == "Manual")
+				{
+					paymentInfo.CreditCardType = form["CreditCardType"];
+					paymentInfo.CreditCardName = form["CardholderName"];
+					paymentInfo.CreditCardNumber = form["CardNumber"];
+					paymentInfo.CreditCardExpireMonth = int.Parse(form["ExpireMonth"]);
+					paymentInfo.CreditCardExpireYear = int.Parse(form["ExpireYear"]);
+					paymentInfo.CreditCardCvv2 = form["CardCode"];
+				}
+				else if (type == "DirectDebit")
+				{
+					// [...]
+				}
 			}
 
 			return paymentInfo;
@@ -242,10 +290,114 @@ namespace SmartStore.OfflinePayment.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult PrepaymentaymentInfo()
+		public ActionResult PrepaymentPaymentInfo()
 		{
 			var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
 			return View("GenericPaymentInfo", model);
+		}
+
+		#endregion
+
+
+		#region Manual
+
+		[AdminAuthorize]
+		[ChildActionOnly]
+		public ActionResult ManualConfigure()
+		{
+			var model = ConfigureGet<ManualConfigurationModel, ManualPaymentSettings>((m, s) => 
+			{
+				m.TransactMode = Convert.ToInt32(s.TransactMode);
+				m.TransactModeValues = s.TransactMode.ToSelectList();		
+			});
+
+			return View(model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		[ChildActionOnly]
+		[ValidateInput(false)]
+		public ActionResult ManualConfigure(ManualConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return ManualConfigure();
+
+			var settings = ConfigurePost<ManualConfigurationModel, ManualPaymentSettings>(model);
+
+			settings.TransactMode = (TransactMode)model.TransactMode;
+			model.TransactModeValues = settings.TransactMode.ToSelectList();
+
+			_services.Settings.SaveSetting(settings);
+
+			return View(model);
+		}
+
+		[ChildActionOnly]
+		public ActionResult ManualPaymentInfo()
+		{
+			var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>();
+
+			// CC types
+			model.CreditCardTypes.Add(new SelectListItem()
+			{
+				Text = "Visa",
+				Value = "Visa",
+			});
+			model.CreditCardTypes.Add(new SelectListItem()
+			{
+				Text = "Master card",
+				Value = "MasterCard",
+			});
+			model.CreditCardTypes.Add(new SelectListItem()
+			{
+				Text = "Discover",
+				Value = "Discover",
+			});
+			model.CreditCardTypes.Add(new SelectListItem()
+			{
+				Text = "Amex",
+				Value = "Amex",
+			});
+
+			// years
+			for (int i = 0; i < 15; i++)
+			{
+				string year = Convert.ToString(DateTime.Now.Year + i);
+				model.ExpireYears.Add(new SelectListItem()
+				{
+					Text = year,
+					Value = year,
+				});
+			}
+
+			// months
+			for (int i = 1; i <= 12; i++)
+			{
+				string text = (i < 10) ? "0" + i.ToString() : i.ToString();
+				model.ExpireMonths.Add(new SelectListItem()
+				{
+					Text = text,
+					Value = i.ToString(),
+				});
+			}
+
+			// set postback values
+			var form = this.Request.Form;
+			model.CardholderName = form["CardholderName"];
+			model.CardNumber = form["CardNumber"];
+			model.CardCode = form["CardCode"];
+			var selectedCcType = model.CreditCardTypes.Where(x => x.Value.Equals(form["CreditCardType"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+			if (selectedCcType != null)
+				selectedCcType.Selected = true;
+			var selectedMonth = model.ExpireMonths.Where(x => x.Value.Equals(form["ExpireMonth"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+			if (selectedMonth != null)
+				selectedMonth.Selected = true;
+			var selectedYear = model.ExpireYears.Where(x => x.Value.Equals(form["ExpireYear"], StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+			if (selectedYear != null)
+				selectedYear.Selected = true;
+
+			return View( model);
 		}
 
 		#endregion

@@ -1,8 +1,11 @@
-﻿@{
-    Layout = "";
+﻿@model SmartStore.OfflinePayment.Models.ManualPaymentInfoModel
+
+@{
+	Layout = "";
 }
-@model SmartStore.Plugin.Payments.Manual.Models.PaymentInfoModel
-@using SmartStore.Web.Framework;
+
+@Html.Hidden("OfflinePaymentMethodType", "Manual")
+
 @Html.SmartLabelFor(model => model.CreditCardTypes, false)
 @Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes)
 @Html.SmartLabelFor(model => model.CardholderName, false)
@@ -13,11 +16,11 @@
 @Html.ValidationMessageFor(model => model.CardNumber)
 @Html.SmartLabelFor(model => model.ExpireMonth, false)
 <div data-role="fieldcontain">
-    <fieldset data-role="controlgroup" data-type="horizontal">
-        @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths)
-        /
-        @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears)
-    </fieldset>
+	<fieldset data-role="controlgroup" data-type="horizontal">
+		@Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths)
+		/
+		@Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears)
+	</fieldset>
 </div>
 @Html.SmartLabelFor(model => model.CardCode, false)
 @Html.TextBoxFor(model => model.CardCode, new { style = "Width: 60px;", autocomplete = "off", maxlength = 4 })

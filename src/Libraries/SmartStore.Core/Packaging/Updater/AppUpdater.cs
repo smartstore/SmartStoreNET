@@ -280,6 +280,7 @@ namespace SmartStore.Core.Packaging
                 { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
                 { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
                 { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
+                { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
 
 			};
 

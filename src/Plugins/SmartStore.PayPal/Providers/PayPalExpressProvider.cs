@@ -34,12 +34,8 @@ namespace SmartStore.PayPal
     [DisplayOrder(0)]
     public partial class PayPalExpress : PayPalProviderBase<PayPalExpressSettings>
     {
-        private readonly ISettingService _settingService;
-        private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-        private readonly ICommonServices _services;
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
-
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly IStateProvinceService _stateProvinceService;
@@ -49,9 +45,6 @@ namespace SmartStore.PayPal
         private readonly ICountryService _countryService;
         
         public PayPalExpress(
-            ISettingService settingService,
-            IOrderTotalCalculationService orderTotalCalculationService,
-            ICommonServices services,
             ICurrencyService currencyService,
             CurrencySettings currencySettings,
             IPriceCalculationService priceCalculationService,
@@ -62,9 +55,6 @@ namespace SmartStore.PayPal
             ICustomerService customerService,
             ICountryService countryService)
         {
-            _settingService = settingService;
-            _orderTotalCalculationService = orderTotalCalculationService;
-            _services = services;
             _currencyService = currencyService;
             _currencySettings = currencySettings;
             _priceCalculationService = priceCalculationService;
@@ -88,13 +78,12 @@ namespace SmartStore.PayPal
         /// <returns>Process payment result</returns>
         public override ProcessPaymentResult ProcessPayment(ProcessPaymentRequest processPaymentRequest)
         {
-            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             var doPayment = DoExpressCheckoutPayment(processPaymentRequest);
             var result = new ProcessPaymentResult();
 
             if (doPayment.Ack == AckCodeType.Success)
             {
-                if (PayPalHelper.GetPaymentAction(settings) == PaymentActionCodeType.Authorization)
+                if (PayPalHelper.GetPaymentAction(Settings) == PaymentActionCodeType.Authorization)
                 {
                     result.NewPaymentStatus = PaymentStatus.Authorized;
                 }
@@ -126,20 +115,6 @@ namespace SmartStore.PayPal
             //if(!String.IsNullOrEmpty(postProcessPaymentRequest.GiroPayUrl))
             //    return re
 
-        }
-
-        /// <summary>
-        /// Gets additional handling fee
-        /// </summary>
-        /// <param name="cart">Shoping cart</param>
-        /// <returns>Additional handling fee</returns>
-        public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
-        {
-            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
-
-            var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
-                settings.AdditionalFee, settings.AdditionalFeePercentage);
-            return result;
         }
 
         /// <summary>
@@ -191,8 +166,8 @@ namespace SmartStore.PayPal
             {
                 PaymentAction = PayPalHelper.GetPaymentAction(Settings),
                 PaymentActionSpecified = true,
-                CancelURL = _services.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "cart",
-                ReturnURL = _services.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/PayPalExpress/GetDetails",
+                CancelURL = CommonServices.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "cart",
+                ReturnURL = CommonServices.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/PayPalExpress/GetDetails",
                 //CallbackURL = _webHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/PayPalExpress/ShippingOptions?CustomerID=" + _workContext.CurrentCustomer.Id.ToString(),
                 //CallbackTimeout = _payPalExpressPaymentSettings.CallbackTimeout.ToString() 
                 ReqConfirmShipping = Settings.ConfirmedShipment.ToString(),
@@ -224,7 +199,7 @@ namespace SmartStore.PayPal
             decimal shippingTotal = decimal.Zero;
             if (cart.RequiresShipping())
             {
-                decimal? shoppingCartShippingBase = _orderTotalCalculationService.GetShoppingCartShippingTotal(cart);
+                decimal? shoppingCartShippingBase = OrderTotalCalculationService.GetShoppingCartShippingTotal(cart);
                 if (shoppingCartShippingBase.HasValue && shoppingCartShippingBase > 0)
                 {
                     shippingTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartShippingBase.Value, CommonServices.WorkContext.WorkingCurrency);
@@ -252,7 +227,7 @@ namespace SmartStore.PayPal
 
             // get total tax
             SortedDictionary<decimal, decimal> taxRates = null;
-            decimal shoppingCartTaxBase = _orderTotalCalculationService.GetTaxTotal(cart, out taxRates);
+            decimal shoppingCartTaxBase = OrderTotalCalculationService.GetTaxTotal(cart, out taxRates);
             decimal shoppingCartTax = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTaxBase, CommonServices.WorkContext.WorkingCurrency);
             decimal discount = -processPaymentRequest.Discount;
 
@@ -380,7 +355,6 @@ namespace SmartStore.PayPal
         public GetExpressCheckoutDetailsResponseType GetExpressCheckoutDetails(string token)
         {
             var result = new GetExpressCheckoutDetailsResponseType();
-            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             using (var service = new PayPalAPIAASoapBinding())
             {
@@ -391,15 +365,15 @@ namespace SmartStore.PayPal
                     Version = PayPalHelper.GetApiVersion()
                 };
 
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
 
                 service.RequesterCredentials = new CustomSecurityHeaderType
                 {
                     Credentials = new UserIdPasswordType
                     {
-                        Username = settings.ApiAccountName,
-                        Password = settings.ApiAccountPassword,
-                        Signature = settings.Signature,
+                        Username = Settings.ApiAccountName,
+                        Password = Settings.ApiAccountPassword,
+                        Signature = Settings.Signature,
                         Subject = ""
                     }
                 };
@@ -411,7 +385,6 @@ namespace SmartStore.PayPal
 
         public ProcessPaymentRequest SetCheckoutDetails(ProcessPaymentRequest processPaymentRequest, GetExpressCheckoutDetailsResponseDetailsType checkoutDetails)
         {
-            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
             int customerId = Convert.ToInt32(CommonServices.WorkContext.CurrentCustomer.Id.ToString());
             var customer = _customerService.GetCustomerById(customerId);
 
@@ -550,7 +523,7 @@ namespace SmartStore.PayPal
                 {
                     var shippingOption = new ShippingOption();
                     shippingOption.Name = checkoutDetails.UserSelectedOptions.ShippingOptionName;
-                    decimal shippingPrice = settings.DefaultShippingPrice;
+                    decimal shippingPrice = Settings.DefaultShippingPrice;
                     decimal.TryParse(checkoutDetails.UserSelectedOptions.ShippingOptionAmount.Value, out shippingPrice);
                     shippingOption.Rate = shippingPrice;
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption);
@@ -566,7 +539,6 @@ namespace SmartStore.PayPal
         public DoExpressCheckoutPaymentResponseType DoExpressCheckoutPayment(ProcessPaymentRequest processPaymentRequest)
         {
             var result = new DoExpressCheckoutPaymentResponseType();
-            var settings = _settingService.LoadSetting<PayPalExpressSettings>(_services.StoreContext.CurrentStore.Id);
 
             // populate payment details
             var paymentDetails = new PaymentDetailsType
@@ -590,7 +562,7 @@ namespace SmartStore.PayPal
                     {
                         Token = processPaymentRequest.PaypalToken,
                         PayerID = processPaymentRequest.PaypalPayerId,
-                        PaymentAction = PayPalHelper.GetPaymentAction(settings),
+                        PaymentAction = PayPalHelper.GetPaymentAction(Settings),
                         PaymentActionSpecified = true,
                         PaymentDetails = new PaymentDetailsType[]
                         {
@@ -603,15 +575,15 @@ namespace SmartStore.PayPal
             //execute request
             using (var service = new PayPalAPIAASoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
 
                 service.RequesterCredentials = new CustomSecurityHeaderType
                 {
                     Credentials = new UserIdPasswordType
                     {
-                        Username = settings.ApiAccountName,
-                        Password = settings.ApiAccountPassword,
-                        Signature = settings.Signature,
+                        Username = Settings.ApiAccountName,
+                        Password = Settings.ApiAccountPassword,
+                        Signature = Settings.Signature,
                         Subject = ""
                     }
                 };

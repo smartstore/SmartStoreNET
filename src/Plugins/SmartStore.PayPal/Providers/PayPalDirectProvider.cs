@@ -186,18 +186,6 @@ namespace SmartStore.PayPal
 		}
 
 		/// <summary>
-		/// Gets additional handling fee
-		/// </summary>
-		/// <param name="cart">Shoping cart</param>
-		/// <returns>Additional handling fee</returns>
-		public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
-		{
-			var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
-                Settings.AdditionalFee, Settings.AdditionalFeePercentage);
-			return result;
-		}
-
-		/// <summary>
 		/// Process recurring payment
 		/// </summary>
 		/// <param name="processPaymentRequest">Payment info required for an order processing</param>

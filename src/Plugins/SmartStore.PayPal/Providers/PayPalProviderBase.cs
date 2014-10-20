@@ -43,6 +43,8 @@ namespace SmartStore.PayPal
 
 		public IOrderService OrderService { get; set; }
 
+        public IOrderTotalCalculationService OrderTotalCalculationService { get; set; }
+
 		public IComponentContext ComponentContext { get; set; }
 
 		protected abstract string GetResourceRootKey();
@@ -98,6 +100,18 @@ namespace SmartStore.PayPal
             }
 
             return success;
+        }
+
+        /// <summary>
+        /// Gets additional handling fee
+        /// </summary>
+        /// <param name="cart">Shoping cart</param>
+        /// <returns>Additional handling fee</returns>
+        public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
+        {
+            var result = this.CalculateAdditionalFee(OrderTotalCalculationService, cart,
+                Settings.AdditionalFee, Settings.AdditionalFeePercentage);
+            return result;
         }
 
         /// <summary>

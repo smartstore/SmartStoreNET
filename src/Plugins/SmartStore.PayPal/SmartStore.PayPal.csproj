@@ -112,7 +112,6 @@
     <Compile Include="Controllers\PayPalStandardController.cs" />
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
-    <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
@@ -121,10 +120,8 @@
     <Compile Include="Providers\PayPalProviderBase.cs" />
     <Compile Include="Providers\PayPalDirectProvider.cs" />
     <Compile Include="Providers\PayPalStandardProvider.cs" />
-    <Compile Include="Services\IPayPalStandardService.cs" />
     <Compile Include="Services\PayPalHelper.cs" />
     <Compile Include="Services\PayPalStandardCore.cs" />
-    <Compile Include="Services\PayPalStandardService.cs" />
     <Compile Include="Settings\PayPalSettings.cs" />
     <Compile Include="Services\PayPalProcessPaymentRequest.cs" />
     <Compile Include="Plugin.cs" />

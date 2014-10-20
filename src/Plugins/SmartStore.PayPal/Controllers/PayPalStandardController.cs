@@ -18,6 +18,7 @@ using Autofac;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -33,7 +34,6 @@ namespace SmartStore.PayPal.Controllers
 		private readonly PayPalStandardSettings _paypalStandardSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
-		private readonly IPayPalStandardService _payPalStandardService;
 
         public PayPalStandardController(ISettingService settingService,
 			IPaymentService paymentService, IOrderService orderService,
@@ -43,8 +43,7 @@ namespace SmartStore.PayPal.Controllers
 			IWebHelper webHelper,
             PayPalStandardSettings paypalStandardSettings,
 			PaymentSettings paymentSettings,
-			ILocalizationService localizationService,
-			IPayPalStandardService payPalStandardService)
+			ILocalizationService localizationService)
 		{
 			this._settingService = settingService;
 			this._paymentService = paymentService;
@@ -56,7 +55,6 @@ namespace SmartStore.PayPal.Controllers
             this._paypalStandardSettings = paypalStandardSettings;
 			this._paymentSettings = paymentSettings;
 			this._localizationService = localizationService;
-			this._payPalStandardService = payPalStandardService;
 		}
 
 		[AdminAuthorize]
@@ -292,7 +290,7 @@ namespace SmartStore.PayPal.Controllers
 					sb.AppendLine(kvp.Key + ": " + kvp.Value);
 				}
 
-				var newPaymentStatus = _payPalStandardService.GetPaymentStatus(payment_status, pending_reason);
+                var newPaymentStatus = GetPaymentStatus(payment_status, pending_reason);
 				sb.AppendLine("{0}: {1}".FormatWith(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NewPaymentStatus"), newPaymentStatus));
 
 				switch (txn_type)
@@ -437,6 +435,56 @@ namespace SmartStore.PayPal.Controllers
 			//nothing should be rendered to visitor
 			return Content("");
 		}
+
+        /// <summary>
+        /// Gets a payment status
+        /// </summary>
+        /// <param name="paymentStatus">PayPal payment status</param>
+        /// <param name="pendingReason">PayPal pending reason</param>
+        /// <returns>Payment status</returns>
+        public PaymentStatus GetPaymentStatus(string paymentStatus, string pendingReason)
+        {
+            var result = PaymentStatus.Pending;
+
+            if (paymentStatus == null)
+                paymentStatus = string.Empty;
+
+            if (pendingReason == null)
+                pendingReason = string.Empty;
+
+            switch (paymentStatus.ToLowerInvariant())
+            {
+                case "pending":
+                    switch (pendingReason.ToLowerInvariant())
+                    {
+                        case "authorization":
+                            result = PaymentStatus.Authorized;
+                            break;
+                        default:
+                            result = PaymentStatus.Pending;
+                            break;
+                    }
+                    break;
+                case "processed":
+                case "completed":
+                case "canceled_reversal":
+                    result = PaymentStatus.Paid;
+                    break;
+                case "denied":
+                case "expired":
+                case "failed":
+                case "voided":
+                    result = PaymentStatus.Voided;
+                    break;
+                case "refunded":
+                case "reversed":
+                    result = PaymentStatus.Refunded;
+                    break;
+                default:
+                    break;
+            }
+            return result;
+        }
 
 		public ActionResult CancelOrder(FormCollection form)
 		{

@@ -281,6 +281,7 @@ namespace SmartStore.Core.Packaging
                 { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
                 { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
                 { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
+                { "Shipping.Fedex", "SmartStore.Fedex" },
 
 			};
 

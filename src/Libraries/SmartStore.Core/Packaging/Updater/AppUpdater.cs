@@ -279,6 +279,7 @@ namespace SmartStore.Core.Packaging
                 { "Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
                 { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
                 { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
+                { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
 
 			};
 

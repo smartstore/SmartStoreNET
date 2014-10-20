@@ -278,6 +278,7 @@ namespace SmartStore.Core.Packaging
 				{ "Payments.Prepayment", "SmartStore.OfflinePayment" },
                 { "Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
                 { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
+                { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
 
 			};
 

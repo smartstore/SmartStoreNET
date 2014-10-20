@@ -21,9 +21,9 @@
                     .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
                     .DataBinding(dataBinding => dataBinding
                         .Ajax()
-						.Select("RatesList", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
-						.Update("RateUpdate", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
-						.Delete("RateDelete", "ShippingByTotal", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "" } })
+							.Select("RatesList", "ShippingByTotal", new RouteValueDictionary() { { "area", "Shipping.ByTotal" } })
+							.Update("RateUpdate", "ShippingByTotal", new RouteValueDictionary() { { "area", "Shipping.ByTotal" } })
+							.Delete("RateDelete", "ShippingByTotal", new RouteValueDictionary() { { "area", "Shipping.ByTotal" } })
                     )
                     .Columns(columns =>
                     {
@@ -118,7 +118,7 @@
                 $.ajax({
                     cache: false,
                     type: 'POST',
-                    url: '@Url.RouteUrl("Plugin.Shipping.ByTotal.AddShippingRate")',
+                    url: '@Url.Action("AddShippingRate")',
                     data: $(this.form).serialize(),
                     dataType: 'json',
                     success: function (data) {
@@ -141,7 +141,7 @@
                 $.ajax({
                     cache: false,
                     type: 'POST',
-                    url: '@Url.RouteUrl("Plugin.Shipping.ByTotal.SaveGeneralSettings")',
+                    url: '@Url.Action("SaveGeneralSettings")',
                     data: $(this.form).serialize(),
                     dataType: 'json',
                     success: function (data) {

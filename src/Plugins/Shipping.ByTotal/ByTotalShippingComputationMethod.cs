@@ -250,7 +250,7 @@ namespace SmartStore.Plugin.Shipping.ByTotal
         {
             actionName = "Configure";
             controllerName = "ShippingByTotal";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByTotal.Controllers" }, { "area", "Shipping.ByTotal" } };
+			routeValues = new RouteValueDictionary() { { "area", "Shipping.ByTotal" } };
         }
 
         /// <summary>

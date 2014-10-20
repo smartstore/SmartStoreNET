@@ -11,6 +11,7 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Web.Framework.Controllers
 {
 	
+	[AdminThemed]
     [RequireHttpsByConfig(SslRequirement.Yes)]
     [AdminValidateIpAddress]
     [CustomerLastActivity]

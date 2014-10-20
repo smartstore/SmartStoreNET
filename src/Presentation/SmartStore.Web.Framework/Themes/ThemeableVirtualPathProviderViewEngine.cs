@@ -46,24 +46,38 @@ namespace SmartStore.Web.Framework.Themes
 				return string.Empty;
 			}
 
-			string areaName = GetAreaName(controllerContext.RouteData);
+			string areaName = controllerContext.RouteData.GetAreaName();
 			bool isArea = !string.IsNullOrEmpty(areaName);
 
-			// Little hack to get sm's admin area to be in /Administration/ instead of /SmartStore/Admin/ or Areas/Admin/
-			if (isArea && areaName.Equals("admin", StringComparison.InvariantCultureIgnoreCase))
+			if (isArea)
 			{
-				//admin area does not support mobile devices
-				if (mobile)
+				var isAdminArea = areaName.IsCaseInsensitiveEqual("admin");
+
+				// admin area does not support mobile devices
+				if (isAdminArea && mobile)
 				{
 					searchedLocations = new string[0];
 					return string.Empty;
 				}
-				var newLocations = areaLocations.ToList();
 
-				newLocations.Insert(0, "~/Administration/Views/{1}/{0}.cshtml");
-				newLocations.Insert(0, "~/Administration/Views/Shared/{0}.cshtml");
+				// "ExtraAreaViewLocations" gets injected by AdminThemedAttribute
+				var extraAreaViewLocations = controllerContext.RouteData.DataTokens["ExtraAreaViewLocations"] as string[];
 
-				areaLocations = newLocations.ToArray();
+				if (extraAreaViewLocations != null && extraAreaViewLocations.Length > 0)
+				{
+					var newLocations = areaLocations.ToList();
+					if (isAdminArea)
+					{
+						// the admin area cannot fallback to itself. Prepend to list.
+						extraAreaViewLocations.Reverse().Each(x => newLocations.Insert(0, x));
+					}
+					else
+					{
+						newLocations.AddRange(extraAreaViewLocations);
+					}
+
+					areaLocations = newLocations.ToArray();
+				}
 			}
 
 			List<ViewLocation> viewLocations = GetViewLocations(locations, isArea ? areaLocations : null);
@@ -204,7 +218,6 @@ namespace SmartStore.Web.Framework.Themes
 
 		protected virtual string GetCurrentTheme(ControllerContext controllerContext, bool mobile)
 		{
-			// codehint: sm-edit (ThemeOverride)
 			object themeOverride;
 			if (controllerContext.RouteData.DataTokens.TryGetValue("ThemeOverride", out themeOverride))
 			{
@@ -222,31 +235,6 @@ namespace SmartStore.Web.Framework.Themes
 			else
 				//desktop theme
 				return themeContext.WorkingDesktopTheme;
-		}
-
-		protected virtual string GetAreaName(RouteData routeData)
-		{
-			object obj2;
-			if (routeData.DataTokens.TryGetValue("area", out obj2))
-			{
-				return (obj2 as string);
-			}
-			return GetAreaName(routeData.Route);
-		}
-
-		protected virtual string GetAreaName(RouteBase route)
-		{
-			var area = route as IRouteWithArea;
-			if (area != null)
-			{
-				return area.Area;
-			}
-			var route2 = route as Route;
-			if ((route2 != null) && (route2.DataTokens != null))
-			{
-				return (route2.DataTokens["area"] as string);
-			}
-			return null;
 		}
 
 		protected virtual ViewEngineResult FindThemeableView(ControllerContext controllerContext, string viewName, string masterName, bool useCache, bool mobile)

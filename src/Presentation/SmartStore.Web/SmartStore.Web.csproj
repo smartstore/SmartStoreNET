@@ -2226,6 +2226,14 @@
     </Content>
     <Content Include="Views\ShoppingCart\_CommentBox.cshtml" />
     <Content Include="Views\ShoppingCart\_CommentBox.Mobile.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Color.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Decimal.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

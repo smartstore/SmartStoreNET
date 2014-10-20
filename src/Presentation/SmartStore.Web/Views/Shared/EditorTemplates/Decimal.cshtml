@@ -1,20 +1,20 @@
-﻿@using Telerik.Web.Mvc.UI
+@using Telerik.Web.Mvc.UI
 
-@* codehing: sm-add *@
 @functions{
-    private int? Value
+    private decimal? Value
     {
         get
         {
-            int? value = null;
+            decimal? value = null;
             if (ViewData.Model != null)
             {
-                value = Convert.ToInt32(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+                value = Convert.ToDecimal(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
             }
             return value;
         }
     }
 }
+
 
 @{
     string additionalClass = string.Empty;
@@ -23,9 +23,11 @@
     }
 }
 
-@(Html.Telerik().IntegerTextBox()
+@(Html.Telerik().NumericTextBox<decimal>()
         .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
         .EmptyMessage(T("Common.EnterValue"))
         .Value(Value)
         .HtmlAttributes(new { @class = additionalClass })
+        .DecimalDigits(4)   //always display 4 digits
 )
+

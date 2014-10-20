@@ -221,6 +221,7 @@
     </Compile>
     <Compile Include="AppPath.cs" />
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Controllers\AdminThemedAttribute.cs" />
     <Compile Include="Controllers\HandleExceptionFilter.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
     <Compile Include="Controllers\PublicControllerBase.cs" />
@@ -240,6 +241,7 @@
     <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
+    <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
     <Compile Include="Mvc\ProviderModel.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />

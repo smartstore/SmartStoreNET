@@ -28,7 +28,6 @@ namespace SmartStore.OfflinePayment.Controllers
 
 		public Localizer T { get; set; }
 
-
 		#region Global
 
 		[NonAction]

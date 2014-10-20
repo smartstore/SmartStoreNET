@@ -32,10 +32,6 @@ namespace SmartStore.Web.Framework.Themes
                 //default
                 "~/Views/{1}/{0}.cshtml", 
                 "~/Views/Shared/{0}.cshtml",
-
-				//Admin
-                "~/Administration/Views/{1}/{0}.cshtml",
-                "~/Administration/Views/Shared/{0}.cshtml"
             };
 
 			// 0: view, 1: controller, 2: theme
@@ -60,10 +56,6 @@ namespace SmartStore.Web.Framework.Themes
 				//default
 				"~/Views/{1}/{0}.cshtml",  
 				"~/Views/Shared/{0}.cshtml", 
-
-				//Admin
-                "~/Administration/Views/{1}/{0}.cshtml",
-                "~/Administration/Views/Shared/{0}.cshtml"
             };
 
 			FileExtensions = new[] { "cshtml" };

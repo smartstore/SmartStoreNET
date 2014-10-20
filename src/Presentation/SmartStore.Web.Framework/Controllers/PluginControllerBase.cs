@@ -6,6 +6,7 @@ using SmartStore.Core.Infrastructure;
 namespace SmartStore.Web.Framework.Controllers
 {
 
+	[AdminThemed]
     [AdminAuthorize]
     public abstract partial class PluginControllerBase : SmartController
     {

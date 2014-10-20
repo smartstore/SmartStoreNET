@@ -467,9 +467,6 @@
     <Content Include="Views\Language\_CreateOrUpdate.cshtml" />
     <Content Include="Views\Log\List.cshtml" />
     <Content Include="Views\Shared\Delete.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\DateTime.cshtml">
-      <SubType>Code</SubType>
-    </Content>
     <Content Include="Views\Shared\EditorTemplates\Picture.cshtml" />
     <Content Include="Views\Shared\Menu.cshtml" />
     <Content Include="Views\Shared\_AdminLayout.cshtml" />
@@ -479,7 +476,6 @@
     <Content Include="Views\_ViewStart.cshtml" />
     <Content Include="Views\Shared\Navbar.cshtml" />
     <Content Include="Views\ScheduleTask\List.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Boolean.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
@@ -598,9 +594,6 @@
     <Content Include="Views\CustomerRole\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Customer\AddressCreate.cshtml" />
     <Content Include="Views\Customer\AddressEdit.cshtml" />
     <Content Include="Views\Customer\Create.cshtml" />
@@ -683,11 +676,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Decimal.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
@@ -1073,9 +1061,6 @@
     <Content Include="Views\DeliveryTime\Edit.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Color.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\ContentSlider\CreateSlide.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1086,9 +1071,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\ContentSlider\Index.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\ButtonType.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\AttributeCombinationCreatePopup.cshtml" />

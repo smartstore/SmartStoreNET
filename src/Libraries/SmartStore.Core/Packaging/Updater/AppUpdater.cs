@@ -284,6 +284,7 @@ namespace SmartStore.Core.Packaging
                 { "Shipping.Fedex", "SmartStore.Fedex" },
                 { "Shipping.UPS", "SmartStore.UPS" },
 				{ "Payments.Manual", "SmartStore.OfflinePayment" },
+                { "Shipping.USPS", "SmartStore.USPS" },
 			};
 
 			foreach (var name in installedPlugins)

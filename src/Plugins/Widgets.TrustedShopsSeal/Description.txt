@@ -1,8 +1,0 @@
-﻿FriendlyName: Trusted Shops Seal
-SystemName: Widgets.TrustedShopsSeal
-Group: Marketing
-Version: 1.4
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Widgets.TrustedShopsSeal.dll
-ResourceRootKey: Plugins.Widgets.TrustedShopsSeal

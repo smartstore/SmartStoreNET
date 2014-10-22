@@ -262,9 +262,9 @@ namespace SmartStore.Core.Packaging
 				{ "Admin.OrderNumberFormatter", "SmartStore.OrderNumberFormatter" },
 				{ "Admin.Debitoor", "SmartStore.Debitoor" },
                 { "Widgets.ETracker", "SmartStore.ETracker" },
-                { "Payments.PayPalDirect", "SmartStore.PayPalDirect" },
-                { "Payments.PayPalStandard", "SmartStore.PayPalStandard" },
-                { "Payments.PayPalExpress", "SmartStore.PayPalExpress" },
+                { "Payments.PayPalDirect", "SmartStore.PayPal" },
+                { "Payments.PayPalStandard", "SmartStore.PayPal" },
+                { "Payments.PayPalExpress", "SmartStore.PayPal" },
 				{ "Developer.Glimpse", "SmartStore.Glimpse" },
 				{ "Import.Biz", "SmartStore.BizImporter" },
 				{ "Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
@@ -276,8 +276,8 @@ namespace SmartStore.Core.Packaging
 				{ "Payments.Invoice", "SmartStore.OfflinePayment" },
 				{ "Payments.PayInStore", "SmartStore.OfflinePayment" },
 				{ "Payments.Prepayment", "SmartStore.OfflinePayment" },
-                { "Payments.IPaymentCreditCard", "SmartStore.IPaymentCreditCard" },
-                { "Payments.IPaymentDirectDebit", "SmartStore.IPaymentDirectDebit" },
+                { "Payments.IPaymentCreditCard", "SmartStore.IPayment" },
+                { "Payments.IPaymentDirectDebit", "SmartStore.IPayment" },
                 { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
                 { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
                 { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
@@ -285,6 +285,9 @@ namespace SmartStore.Core.Packaging
                 { "Shipping.UPS", "SmartStore.UPS" },
 				{ "Payments.Manual", "SmartStore.OfflinePayment" },
                 { "Shipping.USPS", "SmartStore.USPS" },
+                { "Widgets.TrustedShopsSeal", "SmartStore.TrustedShops" },
+                { "Widgets.TrustedShopsCustomerReviews", "SmartStore.TrustedShops" },
+                { "Widgets.TrustedShopsCustomerProtection", "SmartStore.TrustedShops" },
 			};
 
 			foreach (var name in installedPlugins)

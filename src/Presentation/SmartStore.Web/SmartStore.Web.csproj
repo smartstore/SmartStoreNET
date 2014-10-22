@@ -341,7 +341,6 @@
     <Compile Include="Models\Checkout\CheckoutPaymentInfoModel.cs" />
     <Compile Include="Models\Checkout\CheckoutConfirmModel.cs" />
     <Compile Include="Models\Checkout\CheckoutCompletedModel.cs" />
-    <Compile Include="Models\Checkout\OnePageCheckoutModel.cs" />
     <Compile Include="Models\Checkout\UpdateSectionJsonModel.cs" />
     <Compile Include="Models\ShoppingCart\ButtonPaymentMethodModel.cs" />
     <Compile Include="Models\Topics\TopicWidgetModel.cs" />
@@ -1966,8 +1965,6 @@
     <Content Include="Scripts\smartstore.hacks.js" />
     <Content Include="Scripts\prettify.js" />
     <Content Include="Scripts\public.ajaxcart.js" />
-    <Content Include="Scripts\public.accordion.js" />
-    <Content Include="Scripts\public.onepagecheckout.js" />
     <Content Include="Scripts\public.common.js" />
     <Content Include="Scripts\smartstore.jquery.utils.js" />
     <Content Include="Scripts\smartstore.system.js" />
@@ -2061,13 +2058,6 @@
     <Content Include="browserCaps.config">
       <SubType>Designer</SubType>
     </Content>
-    <Content Include="Views\Checkout\OnePageCheckout.cshtml" />
-    <Content Include="Views\Checkout\OpcShippingMethods.cshtml" />
-    <Content Include="Views\Checkout\OpcShippingAddress.cshtml" />
-    <Content Include="Views\Checkout\OpcBillingAddress.cshtml" />
-    <Content Include="Views\Checkout\OpcPaymentMethods.cshtml" />
-    <Content Include="Views\Checkout\OpcPaymentInfo.cshtml" />
-    <Content Include="Views\Checkout\OpcConfirmOrder.cshtml" />
     <Content Include="Views\Shared\LanguageAttributes.cshtml" />
     <Content Include="Views\Customer\_CheckUsernameAvailability.cshtml" />
     <Content Include="Views\Boards\ActiveDiscussionsSmall.cshtml" />
@@ -2197,7 +2187,6 @@
     <Content Include="Views\Filter\Products.cshtml" />
     <Content Include="Views\Filter\ProductsMultiSelect.cshtml" />
     <Content Include="Views\Home\ContentSlider.cshtml" />
-    <Content Include="Views\Checkout\OpcTerms.cshtml" />
     <Content Include="Themes\Alpha\Views\Shared\ConfigureTheme.cshtml" />
     <Content Include="Views\Shared\NotFound.cshtml">
       <SubType>Code</SubType>

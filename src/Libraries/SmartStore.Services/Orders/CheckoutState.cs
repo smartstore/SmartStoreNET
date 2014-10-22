@@ -12,11 +12,6 @@ namespace SmartStore.Services.Orders
 		public static string CheckoutStateSessionKey { get { return "SmCheckoutState"; } }
 
 		/// <summary>
-		/// Whether the one page checkout is disabled for a particular session
-		/// </summary>
-		public bool OnePageCheckoutDisabled { get; set; }
-
-		/// <summary>
 		/// Use that dictionary for any custom data required along checkout flow
 		/// </summary>
 		public Dictionary<string, object> CustomProperties { get; set; }

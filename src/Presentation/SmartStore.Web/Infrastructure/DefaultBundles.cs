@@ -47,11 +47,6 @@ namespace SmartStore.Web.Infrastructure
 			bundles.Add(new CustomStyleBundle("~/css/fileupload").Include(
 				"~/Content/fileupload/jquery.fileupload-single-ui.css"));
 
-			/* One Page Checkout (OPC)
-			-----------------------------------------------------*/
-			bundles.Add(new CustomScriptBundle("~/bundles/opc").Include(
-				"~/Scripts/public.accordion.js",
-				"~/Scripts/public.onepagecheckout.js"));
 		}
 
 		public int Priority

@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
+using System.Web.Routing;
 
 namespace SmartStore.Services.Payments
 {
@@ -65,5 +66,44 @@ namespace SmartStore.Services.Payments
             }
             return result;
         }
+
+		public static RouteInfo GetConfigurationRoute(this IPaymentMethod method)
+		{
+			Guard.ArgumentNotNull(() => method);
+			
+			string action;
+			string controller;
+			RouteValueDictionary routeValues;
+
+			var configurable = method as IConfigurable;
+
+			if (configurable != null)
+			{
+				configurable.GetConfigurationRoute(out action, out controller, out routeValues);
+				if (action.HasValue())
+				{
+					return new RouteInfo(action, controller, routeValues);
+				}
+			}
+			
+			return null;
+		}
+
+		public static RouteInfo GetPaymentInfoRoute(this IPaymentMethod method)
+		{
+			Guard.ArgumentNotNull(() => method);
+
+			string action;
+			string controller;
+			RouteValueDictionary routeValues;
+
+			method.GetPaymentInfoRoute(out action, out controller, out routeValues);
+			if (action.HasValue())
+			{
+				return new RouteInfo(action, controller, routeValues);
+			}
+
+			return null;
+		}
     }
 }

@@ -38,15 +38,15 @@ namespace SmartStore.Web.Framework.Controllers
 				};
 			}
 
-			// set MasterName (aka Layout) to view results if not explicitly specified
-			if (!filterContext.IsChildAction)
-			{
-				var viewResult = filterContext.Result as ViewResult;
-				if (viewResult != null && viewResult.MasterName.IsEmpty())
-				{
-					viewResult.MasterName = "_AdminLayout";
-				}
-			}
+			//// set MasterName (aka Layout) to view results if not explicitly specified
+			//if (!filterContext.IsChildAction)
+			//{
+			//	var viewResult = filterContext.Result as ViewResult;
+			//	if (viewResult != null && viewResult.MasterName.IsEmpty())
+			//	{
+			//		viewResult.MasterName = "_AdminLayout";
+			//	}
+			//}
 		}
 
 	}

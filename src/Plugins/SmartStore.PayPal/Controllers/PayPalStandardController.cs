@@ -98,10 +98,9 @@ namespace SmartStore.PayPal.Controllers
 			return View(model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult PaymentInfo()
 		{
-			return View();
+			return PartialView();
 		}
 
 		[NonAction]

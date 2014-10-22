@@ -99,5 +99,13 @@ namespace SmartStore.OfflinePayment
 			return "Manual";
 		}
 
+		public override bool RequiresInteraction
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 	}
 }

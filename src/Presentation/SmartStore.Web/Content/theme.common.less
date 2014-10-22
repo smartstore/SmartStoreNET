@@ -1232,3 +1232,74 @@ p.continued {
 .product-details-page .quick-links a .fa {
 	color: inherit;
 }
+
+
+/* Checkout
+================================================ */
+
+.checkout-data {
+	.opt-list { 
+		margin-bottom: 20px;
+	}
+	.opt-list-item { 
+		position: relative;
+		padding: 12px 12px;
+		border-top: 1px solid #ddd;
+		border-bottom: 1px solid #ddd;
+		margin-top: -1px;
+	}
+	.opt-list-item.selected { 
+		background-color: #f9f9f9;
+		border-color: #f9f9f9;
+	}
+	.opt-data { }
+	.opt-info { 
+		margin-top: 6px;
+		margin-left: 32px;
+	}
+	.opt-info .form-horizontal { 
+		margin-top: 20px;
+	}
+	.opt-info .form-horizontal .control-label { 
+		text-align: left;
+		width: 200px;
+		&.required {
+			font-weight: normal;
+		}
+	}
+	.opt-info .form-horizontal .controls {
+		margin-left: 220px;
+	}
+	.opt-info .form-horizontal .control-group {
+		margin-bottom: 12px;
+	}
+	.opt-info .media .pull-left { 
+		width: 120px;
+	}
+	.opt-info .media-object { 
+		max-width: 120px;
+		text-align: center;
+	}
+	.opt-info .media-body { 
+		//color: #999;
+		.muted();
+	}
+
+
+	.opt-radio { }
+	.opt-branding { }
+	.opt-fee { }
+	.opt-control {
+		padding-right: 100px;
+	}
+	.opt-control label {
+		cursor: pointer;
+		margin-bottom: 0;
+	}
+	.opt-name { 
+		font-weight: bold;
+		margin-left: 12px;
+		.text-overflow();
+	}
+	.opt-description { }
+}

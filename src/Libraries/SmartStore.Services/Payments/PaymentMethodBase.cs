@@ -137,16 +137,6 @@ namespace SmartStore.Services.Payments
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
 		public abstract void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
-		public RouteInfo GetConfigurationRoute()
-		{
-			string action;
-			string controller;
-			RouteValueDictionary routeValues;
-
-			this.GetConfigurationRoute(out action, out controller, out routeValues);
-
-			return new RouteInfo(action, controller, routeValues);
-		}
 
 		/// <summary>
 		/// Gets a route for payment info
@@ -155,16 +145,6 @@ namespace SmartStore.Services.Payments
 		/// <param name="controllerName">Controller name</param>
 		/// <param name="routeValues">Route values</param>
 		public abstract void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
-		public RouteInfo GetPaymentInfoRoute()
-		{
-			string action;
-			string controller;
-			RouteValueDictionary routeValues;
-
-			this.GetPaymentInfoRoute(out action, out controller, out routeValues);
-
-			return new RouteInfo(action, controller, routeValues);
-		}
 
 		/// <summary>
 		/// Gets a route for the payment info handler controller action
@@ -185,6 +165,18 @@ namespace SmartStore.Services.Payments
 		#endregion
 
 		#region Properties
+
+		/// <summary>
+		/// Gets a value indicating whether the payment method requires user input
+		/// before proceeding (e.g. CreditCard, DirectDebit etc.)
+		/// </summary>
+		public virtual bool RequiresInteraction
+		{
+			get
+			{
+				return false;
+			}
+		}
 
 		/// <summary>
 		/// Gets a value indicating whether capture is supported

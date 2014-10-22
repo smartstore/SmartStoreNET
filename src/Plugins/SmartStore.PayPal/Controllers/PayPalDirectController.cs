@@ -107,7 +107,6 @@ namespace SmartStore.PayPal.Controllers
 			return View(model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult PaymentInfo()
 		{
 			var model = new PayPalDirectPaymentInfoModel();
@@ -157,7 +156,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 
 			//set postback values
-			var form = this.Request.Form;
+			var form = this.GetPaymentData();
 			model.CardholderName = form["CardholderName"];
 			model.CardNumber = form["CardNumber"];
 			model.CardCode = form["CardCode"];
@@ -171,7 +170,7 @@ namespace SmartStore.PayPal.Controllers
 			if (selectedYear != null)
 				selectedYear.Selected = true;
 
-			return View(model);
+			return PartialView(model);
 		}
 
 		[NonAction]

@@ -128,9 +128,14 @@ namespace SmartStore.Plugin.Payments.DirectDebit
 
         #region Properties
 
-        /// <summary>
-        /// Gets a payment method type
-        /// </summary>
+		public override bool RequiresInteraction
+		{
+			get
+			{
+				return true;
+			}
+		}
+
         public override PaymentMethodType PaymentMethodType
         {
             get

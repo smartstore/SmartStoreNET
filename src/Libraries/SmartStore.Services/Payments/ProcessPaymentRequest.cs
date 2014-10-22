@@ -114,7 +114,6 @@ namespace SmartStore.Services.Payments
 		public string DirectDebitBic { get; set; }
 
         public bool IsShippingMethodSet { get; set; }
-        public bool RequiresPaymentWorkflow { get; set; }
 
         #endregion
 

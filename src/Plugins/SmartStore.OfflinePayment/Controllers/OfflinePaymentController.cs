@@ -184,11 +184,10 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult CashOnDeliveryPaymentInfo() 
 		{
 			var model = PaymentInfoGet<CashOnDeliveryPaymentInfoModel, CashOnDeliveryPaymentSettings>();
-			return View("GenericPaymentInfo", model);
+			return PartialView("GenericPaymentInfo", model);
 		}
 
 		#endregion
@@ -219,11 +218,10 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult InvoicePaymentInfo()
 		{
 			var model = PaymentInfoGet<InvoicePaymentInfoModel, InvoicePaymentSettings>();
-			return View("GenericPaymentInfo", model);
+			return PartialView("GenericPaymentInfo", model);
 		}
 
 		#endregion
@@ -254,11 +252,10 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult PayInStorePaymentInfo()
 		{
 			var model = PaymentInfoGet<PayInStorePaymentInfoModel, PayInStorePaymentSettings>();
-			return View("GenericPaymentInfo", model);
+			return PartialView("GenericPaymentInfo", model);
 		}
 
 		#endregion
@@ -289,11 +286,10 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View("GenericConfigure", model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult PrepaymentPaymentInfo()
 		{
 			var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
-			return View("GenericPaymentInfo", model);
+			return PartialView("GenericPaymentInfo", model);
 		}
 
 		#endregion
@@ -333,7 +329,6 @@ namespace SmartStore.OfflinePayment.Controllers
 			return View(model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult ManualPaymentInfo()
 		{
 			var model = PaymentInfoGet<ManualPaymentInfoModel, ManualPaymentSettings>();
@@ -383,7 +378,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			}
 
 			// set postback values
-			var form = this.Request.Form;
+			var form = this.GetPaymentData();
 			model.CardholderName = form["CardholderName"];
 			model.CardNumber = form["CardNumber"];
 			model.CardCode = form["CardCode"];
@@ -397,7 +392,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			if (selectedYear != null)
 				selectedYear.Selected = true;
 
-			return View( model);
+			return PartialView(model);
 		}
 
 		#endregion

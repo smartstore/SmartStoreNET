@@ -153,7 +153,6 @@ namespace SmartStore.PayPal.Controllers
 			return View(model);
 		}
 
-		[ChildActionOnly]
 		public ActionResult PaymentInfo()
 		{
 
@@ -167,7 +166,7 @@ namespace SmartStore.PayPal.Controllers
 				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(buttonUrl);
 			}
 
-			return View(model);
+			return PartialView(model);
 		}
 
 		[ValidateInput(false)]

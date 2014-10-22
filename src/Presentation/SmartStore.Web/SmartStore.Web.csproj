@@ -277,7 +277,6 @@
     <Compile Include="Infrastructure\DefaultBundles.cs" />
     <Compile Include="Infrastructure\DefaultWidgetSelector.cs" />
     <Compile Include="Infrastructure\DependencyRegistrar.cs" />
-    <Compile Include="Infrastructure\Routes\0_StoreRoutes_obsolete.cs" />
     <Compile Include="Infrastructure\Routes\2_DefaultRoutes.cs" />
     <Compile Include="Infrastructure\Routes\3_GenericRoutes.cs" />
     <Compile Include="Infrastructure\Installation\DeDESeedData.cs" />

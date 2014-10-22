@@ -91,22 +91,17 @@ namespace SmartStore.Services.Payments
         /// <param name="routeValues">Route values</param>
         void GetPaymentInfoRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues);
 
-		///// <summary>
-		///// Gets a route for the payment info handler controller action
-		///// </summary>
-		///// <param name="order">Order</param>
-		///// <returns>Result</returns>
-		///// <remarks>
-		///// The defined route is being redirected to during the checkout process > PaymentInfo page.
-		///// Implementors should return <c>null</c> if no redirection occurs.
-		///// </remarks>
-		RouteInfo GetPaymentInfoHandlerRoute();
-
         Type GetControllerType();
 
         #endregion
 
         #region Properties
+
+		/// <summary>
+		/// Gets a value indicating whether the payment method requires user input
+		/// before proceeding (e.g. CreditCard, DirectDebit etc.)
+		/// </summary>
+		bool RequiresInteraction { get; }
 
         /// <summary>
         /// Gets a value indicating whether capture is supported

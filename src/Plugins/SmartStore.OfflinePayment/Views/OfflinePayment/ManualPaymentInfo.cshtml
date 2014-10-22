@@ -16,14 +16,14 @@
 	<div class="control-group">
 		@Html.LabelFor(model => model.CardholderName, new { @class = "control-label required" })
 		<div class="controls">
-			@Html.TextBoxFor(model => model.CardholderName, new { style = "width: 165px;", autocomplete = "off" })
+			@Html.TextBoxFor(model => model.CardholderName, new { autocomplete = "off" })
 			@Html.ValidationMessageFor(model => model.CardholderName)
 		</div>
 	</div>
 	<div class="control-group">
 		@Html.LabelFor(model => model.CardNumber, new { @class = "control-label required" })
 		<div class="controls">
-			@Html.TextBoxFor(model => model.CardNumber, new { style = "width: 165px;", autocomplete = "off", maxlength = 22 })
+			@Html.TextBoxFor(model => model.CardNumber, new { autocomplete = "off", maxlength = 22 })
 			@Html.ValidationMessageFor(model => model.CardNumber)
 		</div>
 	</div>

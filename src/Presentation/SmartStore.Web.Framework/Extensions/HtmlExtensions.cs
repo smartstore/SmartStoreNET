@@ -252,6 +252,10 @@ namespace SmartStore.Web.Framework
             monthsList.Attributes.Add("class", "date-part");
             yearsList.Attributes.Add("class", "date-part");
 
+			daysList.Attributes.Add("data-select-min-results-for-search", "100");
+			monthsList.Attributes.Add("data-select-min-results-for-search", "100");
+			//yearsList.Attributes.Add("data-select-min-results-for-search", "100");
+
 			if (disabled)
 			{
 				daysList.Attributes.Add("disabled", "disabled");

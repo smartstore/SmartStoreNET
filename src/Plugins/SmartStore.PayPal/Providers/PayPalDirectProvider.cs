@@ -308,6 +308,14 @@ namespace SmartStore.PayPal
 
 		#region Properties
 
+		public override bool RequiresInteraction
+		{
+			get
+			{
+				return true;
+			}
+		}
+
 		/// <summary>
 		/// Gets a recurring payment type of payment method
 		/// </summary>

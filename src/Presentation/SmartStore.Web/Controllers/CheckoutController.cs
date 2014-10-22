@@ -129,13 +129,6 @@ namespace SmartStore.Web.Controllers
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
                 result = false;
 
-            //Check whether paymethod needs workflow
-            var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-            if (processPaymentRequest != null)
-            {
-                result = processPaymentRequest.RequiresPaymentWorkflow;
-            }
-
             return result;
         }
 
@@ -229,6 +222,7 @@ namespace SmartStore.Web.Controllers
 
 					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
 					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
+					soModel.FeeRaw = rate;
 					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
 
 					model.ShippingMethods.Add(soModel);
@@ -285,6 +279,7 @@ namespace SmartStore.Web.Controllers
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
 				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection)
                 .ToList();
+
             foreach (var pm in boundPaymentMethods)
             {
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
@@ -295,11 +290,13 @@ namespace SmartStore.Web.Controllers
 					Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
 					Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
                     PaymentMethodSystemName = pm.Metadata.SystemName,
+					PaymentInfoRoute = pm.Value.GetPaymentInfoRoute(),
+					RequiresInteraction = pm.Value.RequiresInteraction
                 };
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
-                //payment method additional fee
+                // payment method additional fee
 				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
                 decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
@@ -309,19 +306,24 @@ namespace SmartStore.Web.Controllers
                 model.PaymentMethods.Add(pmModel);
             }
             
-            //find a selected (previously) payment method
+            // find a selected (previously) payment method
 			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 				 SystemCustomerAttributeNames.SelectedPaymentMethod,
 				 _genericAttributeService, _storeContext.CurrentStore.Id);
-			if (!String.IsNullOrEmpty(selectedPaymentMethodSystemName))
+
+			bool selected = false;
+			if (selectedPaymentMethodSystemName.HasValue())
             {
-                var paymentMethodToSelect = model.PaymentMethods.ToList()
-					.Find(pm => pm.PaymentMethodSystemName.Equals(selectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
-                if (paymentMethodToSelect != null)
-                    paymentMethodToSelect.Selected = true;
+                var paymentMethodToSelect = model.PaymentMethods.Find(pm => pm.PaymentMethodSystemName.IsCaseInsensitiveEqual(selectedPaymentMethodSystemName));
+				if (paymentMethodToSelect != null)
+				{
+					paymentMethodToSelect.Selected = true;
+					selected = true;
+				}
             }
-            //if no option has been selected, let's do it for the first one
-			if (model.PaymentMethods.FirstOrDefault(so => so.Selected) == null)
+
+            // if no option has been selected, let's do it for the first one
+			if (!selected)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
                 if (paymentMethodToSelect != null)
@@ -719,42 +721,36 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
+                return new HttpUnauthorizedResult();	
 
-            //Check whether payment workflow is required
-            //we ignore reward points during cart total calculation
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
-            if (!isPaymentWorkflowRequired)
+			// Check whether payment workflow is required
+			// we ignore reward points during cart total calculation
+			bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
+
+			var model = PreparePaymentMethodModel(cart);
+			bool onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
+
+			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod && !model.DisplayRewardPoints))
             {
-                //TODO: get all paymenthods, when there's only one set it to be the selected
-				//_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-                return RedirectToAction("PaymentInfo");
-            }
-
-            //model
-            var paymentMethodModel = PreparePaymentMethodModel(cart);
-
-            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
-                paymentMethodModel.PaymentMethods.Count == 1 && !paymentMethodModel.DisplayRewardPoints)
-            {
-                //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
-                //so customer doesn't have to choose a payment method
-
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+                // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
+				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method
+				_genericAttributeService.SaveAttribute<string>(
+					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName,
+					(isPaymentWorkflowRequired || !model.PaymentMethods.Any()) ? null : model.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
-				return RedirectToAction("PaymentInfo");
+				return RedirectToAction("Confirm");
             }
 
-            return View(paymentMethodModel);
+            return View(model);
         }
+
         [HttpPost, ActionName("PaymentMethod")]
         [FormValueRequired("nextstep")]
         [ValidateInput(false)]
-        public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
+        public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
-            //validation
+            // validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
@@ -766,23 +762,16 @@ namespace SmartStore.Web.Controllers
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //reward points
+            // reward points
 			if (_rewardPointsSettings.Enabled)
 			{
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+				_genericAttributeService.SaveAttribute(
+					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
 					_storeContext.CurrentStore.Id);
 			}
 
-            //Check whether payment workflow is required
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-            if (!isPaymentWorkflowRequired)
-            {
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-					  SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-				return RedirectToAction("PaymentInfo");
-            }
-            //payment method 
+            // payment method 
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
@@ -790,13 +779,41 @@ namespace SmartStore.Web.Controllers
 			if (paymentMethodProvider == null)
                 return PaymentMethod();
 
-            //save
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-				 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
+            // save
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
 
-			return RedirectToAction("PaymentInfo");
+			// validate info
+			if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
+			{
+				return PaymentMethod();
+			}
+
+			// save payment data for later use
+			Session["PaymentData"] = form;
+
+			return RedirectToAction("Confirm");
         }
 
+		[HttpPost]
+		public ActionResult PaymentInfoAjax(string paymentMethodSystemName)
+		{
+			if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+				return Content("");
+
+			if (paymentMethodSystemName.IsEmpty())
+				return new HttpStatusCodeResult(404);
+
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
+			if (paymentMethod == null)
+				return new HttpStatusCodeResult(404);
+
+			var infoRoute = paymentMethod.Value.GetPaymentInfoRoute();
+
+			if (infoRoute == null)
+				return Content("");
+
+			return RedirectToAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
+		}
 
         public ActionResult PaymentInfo()
         {
@@ -812,12 +829,12 @@ namespace SmartStore.Web.Controllers
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //Check whether payment workflow is required
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-            if (!isPaymentWorkflowRequired)
-            {
-                return RedirectToAction("Confirm");
-            }
+			//Check whether payment workflow is required
+			bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
+			if (!isPaymentWorkflowRequired)
+			{
+				return RedirectToAction("Confirm");
+			}
 
 			//load payment method
 			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
@@ -826,12 +843,6 @@ namespace SmartStore.Web.Controllers
 			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
             if (paymentMethod == null)
 				return RedirectToAction("PaymentMethod");
-
-            RouteInfo routeinfo = paymentMethod.Value.GetPaymentInfoHandlerRoute();
-            if (routeinfo != null)
-            {
-                return new RedirectToRouteResult(routeinfo.RouteValues);
-            }
 
 			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod.Value, new FormCollection()))
 			{
@@ -961,6 +972,7 @@ namespace SmartStore.Web.Controllers
                     };
                     _paymentService.PostProcessPayment(postProcessPaymentRequest);
 
+					_httpContext.Session["PaymentData"] = null;
 					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
@@ -1565,8 +1577,12 @@ namespace SmartStore.Web.Controllers
                 var paymentControllerType = paymentMethod.Value.GetControllerType();
                 var paymentController = DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
                 var warnings = paymentController.ValidatePaymentForm(form);
-                foreach (var warning in warnings)
-                    ModelState.AddModelError("", warning);
+
+				foreach (var warning in warnings)
+				{
+					ModelState.AddModelError("", warning);
+				}
+
                 if (ModelState.IsValid)
                 {
                     //get payment info

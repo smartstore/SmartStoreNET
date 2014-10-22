@@ -2116,7 +2116,6 @@
     <Content Include="Views\Checkout\ShippingAddress.Mobile.cshtml" />
     <Content Include="Views\Checkout\ShippingMethod.Mobile.cshtml" />
     <Content Include="Views\Checkout\PaymentMethod.Mobile.cshtml" />
-    <Content Include="Views\Checkout\PaymentInfo.Mobile.cshtml" />
     <Content Include="Views\Checkout\Confirm.Mobile.cshtml" />
     <Content Include="Views\Checkout\Completed.Mobile.cshtml" />
     <Content Include="Views\Home\Sitemap.Mobile.cshtml" />
@@ -2319,7 +2318,6 @@
     <Content Include="Views\Checkout\ShippingAddress.cshtml" />
     <Content Include="Views\Checkout\ShippingMethod.cshtml" />
     <Content Include="Views\Checkout\PaymentMethod.cshtml" />
-    <Content Include="Views\Checkout\PaymentInfo.cshtml" />
     <Content Include="Views\Checkout\Confirm.cshtml" />
     <Content Include="Views\Checkout\Completed.cshtml" />
     <Content Include="Views\Customer\Orders.cshtml" />

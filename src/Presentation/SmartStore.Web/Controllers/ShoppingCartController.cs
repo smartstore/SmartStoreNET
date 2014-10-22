@@ -820,6 +820,7 @@ namespace SmartStore.Web.Controllers
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
 				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
+				model.OrderReviewData.PaymentSummary = _httpContext.GetCheckoutState().PaymentSummary;
 			}
 			#endregion
 

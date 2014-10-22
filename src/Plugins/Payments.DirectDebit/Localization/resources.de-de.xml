@@ -98,8 +98,7 @@
   <LocaleResource Name="PaymentInfoDescription">
     <Value>
       <![CDATA[
-        <p>Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.
-        </p><p>P.S. Dieser Text kann im Admin-Bereich editiert werden.</p>
+        Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.
       ]]>
     </Value>
   </LocaleResource>

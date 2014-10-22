@@ -5,6 +5,7 @@ namespace SmartStore.Data.Migrations
 	using System.Data.Entity.Migrations;
 	using SmartStore.Core.Domain.Tasks;
 	using SmartStore.Data.Setup;
+	using SmartStore.Core.Domain.Localization;
 
 	public partial class NewRes : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
@@ -80,6 +81,35 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.Manage",
 				"Manage plugins",
 				"Plugins verwalten");
+
+			builder.AddOrUpdate("admin.help.nopcommercenote",
+				"SmartStore.NET is a fork of the ASP.NET open source e-commerce solution {0}.",
+				"SmartStore.NET ist ein Fork der ASP.NET Open-Source E-Commerce-Lösung {0}.");
+
+			builder.AddOrUpdate("Payment.ExpirationDate",
+				"Valid until",
+				"Gültig bis");
+
+			builder.Update("Plugins.Payment.CashOnDelivery.PaymentInfoDescription")
+				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
+
+			builder.Update("Plugins.Payment.Invoice.PaymentInfoDescription")
+				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
+
+			builder.Update("Plugins.Payment.DirectDebit.PaymentInfoDescription")
+				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
+
+			builder.Update("Plugins.Payment.PayInStore.PaymentInfoDescription")
+				.Value("en", "Reserve items at your local store, and pay in store when you pick up your order.")
+				.Value("de", "Reservieren Sie Produkte und zahlen Sie an der Kasse in unserem Ladenlokal.");
+
+			builder.Update("Plugins.Payment.Prepayment.PaymentInfoDescription")
+				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
+
 		}
 	}
 }

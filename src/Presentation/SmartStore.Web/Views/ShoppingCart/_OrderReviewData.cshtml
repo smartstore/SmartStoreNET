@@ -171,6 +171,10 @@
                     </div>
                     <div class="block-body">
                         @Model.PaymentMethod
+						@if (Model.PaymentSummary.HasValue())
+						{
+							<span class="muted">@Model.PaymentSummary</span>
+						}
                     </div>
                 </div>
             </div>

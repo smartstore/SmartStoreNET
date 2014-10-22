@@ -384,8 +384,11 @@ namespace SmartStore.Web.Controllers
 				var paymentInfo = paymentController.GetPaymentInfo(form);
 				_httpContext.Session["OrderPaymentInfo"] = paymentInfo;
 
+				_httpContext.GetCheckoutState().PaymentSummary = paymentController.GetPaymentSummary(form);
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -791,7 +794,7 @@ namespace SmartStore.Web.Controllers
                 {
                     //Check whether payment workflow is required
                     if (IsPaymentWorkflowRequired(cart))
-						return RedirectToAction("PaymentInfo");
+						return RedirectToAction("PaymentMethod");
                     else
                         processPaymentRequest = new ProcessPaymentRequest();
                 }

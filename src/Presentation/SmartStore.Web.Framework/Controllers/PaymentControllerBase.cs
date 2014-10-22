@@ -11,6 +11,11 @@ namespace SmartStore.Web.Framework.Controllers
         public abstract IList<string> ValidatePaymentForm(FormCollection form);
         public abstract ProcessPaymentRequest GetPaymentInfo(FormCollection form);
 
+		public virtual string GetPaymentSummary(FormCollection form)
+		{
+			return null;
+		}
+
 		protected virtual NameValueCollection GetPaymentData()
 		{
 			if (Request.RequestType.IsCaseInsensitiveEqual("POST"))

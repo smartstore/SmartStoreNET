@@ -33,8 +33,8 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-        <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
-      ]]>
+            Once your order is placed, you will be contacted by our stuff to confirm the order.
+          ]]>
         </Value>
       </LocaleResource>
     </Children>
@@ -54,7 +54,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
+            Once your order is placed, you will be contacted by our stuff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -75,7 +75,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            <p>Reserve items at your local store, and pay in store when you pick up your order.<br />Our store location: USA, New York,...</p><p>P.S. You can edit this text from admin panel.</p>
+            Reserve items at your local store, and pay in store when you pick up your order.
           ]]>
         </Value>
       </LocaleResource>
@@ -96,7 +96,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            <p>In cases where an order is placed, an authorized representative will contact you, personally or over telephone, to confirm the order.<br />After the order is confirmed, it will be processed.<br />Orders once confirmed, cannot be cancelled.</p><p>P.S. You can edit this text from admin panel.</p>
+            Once your order is placed, you will be contacted by our stuff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>

@@ -12,6 +12,7 @@ namespace SmartStore.Data.Setup
 		public string Value { get; set; }
 		public string Lang { get; set; }
 
+		public bool UpdateOnly { get; set; }
 		public bool Important { get; set; }
 	}
 
@@ -47,6 +48,29 @@ namespace SmartStore.Data.Setup
 			lang = lang.NullEmpty();
 
 			keys.Each(x => _entries.Add(new LocaleResourceEntry { Key = x, Lang = lang, Important = true }));
+		}
+
+		/// <summary>
+		/// Updates existing locale resources
+		/// </summary>
+		/// <param name="key">The key of the resource</param>
+		/// <returns>IResourceAddBuilder</returns>
+		public IResourceAddBuilder Update(string key)
+		{
+			Guard.ArgumentNotEmpty(() => key);
+
+			Action<string, string, bool> fn = (string v, string l, bool isHint) =>
+			{
+				string k = key;
+				if (isHint)
+				{
+					k += ".Hint";
+				}
+
+				_entries.Add(new LocaleResourceEntry { Key = k, Value = v, Lang = l, UpdateOnly = true });
+			};
+
+			return new ResourceAddBuilder(key, fn);
 		}
 
 		/// <summary>

@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Web.Routing;
 
 namespace SmartStore.Services.Orders
 {
@@ -6,14 +7,26 @@ namespace SmartStore.Services.Orders
 	{
 		public CheckoutState()
 		{
-			CustomProperties = new Dictionary<string, object>();
+			CustomProperties = new RouteValueDictionary();
 		}
 
 		public static string CheckoutStateSessionKey { get { return "SmCheckoutState"; } }
 
+		public string PaymentSummary
+		{
+			get
+			{
+				return CustomProperties["_PaymentSummary"] as string;
+			}
+			set
+			{
+				CustomProperties["_PaymentSummary"] = value;
+			}
+		}
+
 		/// <summary>
-		/// Use that dictionary for any custom data required along checkout flow
+		/// Use this dictionary for any custom data required along checkout flow
 		/// </summary>
-		public Dictionary<string, object> CustomProperties { get; set; }
+		public IDictionary<string, object> CustomProperties { get; set; }
 	}
 }

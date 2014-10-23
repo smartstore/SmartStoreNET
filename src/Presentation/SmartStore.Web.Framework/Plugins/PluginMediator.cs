@@ -11,6 +11,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Cms;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Mvc;
 
@@ -159,6 +160,10 @@ namespace SmartStore.Web.Framework.Plugins
 			model.IsEditable = metadata.IsEditable;
 			model.IconUrl = GetIconUrl(metadata);
 			model.PluginDescriptor = metadata.PluginDescriptor;
+			if (model.PluginDescriptor != null)
+			{
+				model.ProvidingPluginFriendlyName = model.PluginDescriptor.GetLocalizedValue(_services.Localization, "FriendlyName");
+			}
 
 			if (metadata.IsConfigurable)
 			{

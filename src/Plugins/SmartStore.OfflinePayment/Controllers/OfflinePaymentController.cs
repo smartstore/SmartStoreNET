@@ -122,7 +122,7 @@ namespace SmartStore.OfflinePayment.Controllers
 				}
 				else if (type == "DirectDebit")
 				{
-					// [...]
+					// [...] do nothing actually, but perhaps later
 				}
 			}
 
@@ -149,7 +149,13 @@ namespace SmartStore.OfflinePayment.Controllers
 				}
 				else if (type == "DirectDebit")
 				{
-					// [...]
+					paymentInfo.DirectDebitAccountHolder = form["DirectDebitAccountHolder"];
+					paymentInfo.DirectDebitAccountNumber = form["DirectDebitAccountNumber"];
+					paymentInfo.DirectDebitBankCode = form["DirectDebitBankCode"];
+					paymentInfo.DirectDebitBankName = form["DirectDebitBankName"];
+					paymentInfo.DirectDebitBic = form["DirectDebitBic"];
+					paymentInfo.DirectDebitCountry = form["DirectDebitCountry"];
+					paymentInfo.DirectDebitIban = form["DirectDebitIban"];
 				}
 			}
 
@@ -331,6 +337,40 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var model = PaymentInfoGet<PrepaymentPaymentInfoModel, PrepaymentPaymentSettings>();
 			return PartialView("GenericPaymentInfo", model);
+		}
+
+		#endregion
+
+
+		#region DirectDebit
+
+		[AdminAuthorize]
+		[ChildActionOnly]
+		public ActionResult DirectDebitConfigure()
+		{
+			var model = ConfigureGet<DirectDebitConfigurationModel, DirectDebitPaymentSettings>();
+			return View("GenericConfigure", model);
+		}
+
+		[HttpPost]
+		[AdminAuthorize]
+		[ChildActionOnly]
+		[ValidateInput(false)]
+		public ActionResult DirectDebitConfigure(DirectDebitConfigurationModel model, FormCollection form)
+		{
+			if (!ModelState.IsValid)
+				return DirectDebitConfigure();
+
+			var settings = ConfigurePost<DirectDebitConfigurationModel, DirectDebitPaymentSettings>(model);
+			_services.Settings.SaveSetting(settings);
+
+			return View("GenericConfigure", model);
+		}
+
+		public ActionResult DirectDebitPaymentInfo()
+		{
+			var model = PaymentInfoGet<DirectDebitPaymentInfoModel, DirectDebitPaymentSettings>();
+			return PartialView(model);
 		}
 
 		#endregion

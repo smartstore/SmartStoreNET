@@ -78,22 +78,27 @@
 							@item.Description
 						</div>					
 					}
-					<div class="module-actions">
-						@if (item.IsEditable)
-						{
-							<a class="btn btn-link module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
-								<i class="fa fa-pencil-square-o"></i>
-								@T("Admin.Common.Edit")
-							</a>
-						}
-						@if (item.IsConfigurable)
-						{
-							<a class="btn btn-link module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
-								<i class="fa fa-cog"></i>
-								@T("Admin.Common.Configure")
-							</a>
-						}
-					</div>
+					@if (item.IsEditable || item.IsConfigurable)
+					{
+						<div class="module-actions">
+							<div class="btn-group">
+								@if (item.IsEditable)
+								{
+									<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+										<i class="fa fa-pencil-square-o"></i>
+										@T("Admin.Common.Edit")
+									</a>
+								}
+								@if (item.IsConfigurable)
+								{
+									<a class="btn btn-small module-configure" href="@Url.Action("ConfigureProvider", "Plugin", new { systemName = item.SystemName })">
+										<i class="fa fa-cog"></i>
+										@T("Admin.Common.Configure")
+									</a>
+								}
+							</div>
+						</div>						
+					}
 				</div>
 				@foreach (var col in Model.ExtraColumns)
 				{

@@ -224,16 +224,9 @@
     if (groupName != null) 
     {
         <tr>
-            @if(groupName != "")
-            {
-                <td colspan="2" class="group-name">
-                    <h4>@groupName</h4>
-                    <hr/>
-                </td>
-            }
-            else {
-                <td colspan="2"><hr /></td>
-            }
+            <td colspan="2" class="admin-config-group">
+                <div class="title">@groupName</div>
+            </td>
         </tr>
     }
     <tr>

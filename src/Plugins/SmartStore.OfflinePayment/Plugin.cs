@@ -43,6 +43,10 @@ namespace SmartStore.OfflinePayment
 			{
 				TransactMode = TransactMode.Pending
 			});
+			settings.SaveSetting(new DirectDebitPaymentSettings
+			{
+				DescriptionText = "@Plugins.Payments.DirectDebit.PaymentInfoDescription"
+			});
 
 			// add resources
 			loc.ImportPluginResourcesFromXml(this.PluginDescriptor);
@@ -61,6 +65,7 @@ namespace SmartStore.OfflinePayment
 			settings.DeleteSetting<PayInStorePaymentSettings>();
 			settings.DeleteSetting<PrepaymentPaymentSettings>();
 			settings.DeleteSetting<ManualPaymentSettings>();
+			settings.DeleteSetting<DirectDebitPaymentSettings>();
 
 			// delete resources
 			loc.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);

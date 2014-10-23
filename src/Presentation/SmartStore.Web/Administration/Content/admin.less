@@ -324,6 +324,16 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
+.admin-config-group .title {
+    font-family: @headingsFontFamily;
+    font-weight: @headingsFontWeight;
+    color: inherit; 
+    font-size: 18px;
+	margin: 12px 0;
+	padding: 12px 0;
+	border-bottom: 1px solid #ddd;
+}
+
 
 /* "select2" ui tweaks for admin
 -------------------------------------------------------------- */
@@ -1098,7 +1108,7 @@ table.order-edit td {
 -------------------------------------------------------------- */
 
 .sortable-grip {
-	left: 52px;
+	left: 67px;
 	width: 9px;
 }
 
@@ -1111,21 +1121,24 @@ table.order-edit td {
     font-weight: @headingsFontWeight;
     color: inherit; 
     font-size: 18px;
-	border-bottom: 1px solid #ddd;
-	padding-bottom: 12px;
 	margin-top: 30px;
 }
 
 .module-item {
-	margin-top: 20px;
+	padding: 12px 0;
+	border-top: 1px solid #ddd;
+}
+.module-item.inactive {
+	background-color: #fafafa;
 }
 .module-item.inactive .module-icon {
-	.opacity(40);
+	.opacity(50);
 }
 
 .module-icon {
 	float: left;
 	width: 48px;
+	margin-left: 10px;
 	text-align: center;
 
 	.icon, .fa {
@@ -1135,10 +1148,7 @@ table.order-edit td {
 
 .module-data {
 	box-sizing: border-box;
-	margin-left: 70px;
-	padding-bottom: 10px;
-	//margin-bottom: 20px;
-	border-bottom: 1px solid #ddd;
+	margin-left: 90px;
 }
 .module-item:last-child .module-data {
 	border-bottom: none;
@@ -1181,8 +1191,11 @@ table.order-edit td {
 }
 
 .module-actions {
-	margin-top: 6px;
-	margin-left: -12px;
+	margin-top: 8px;
+}
+
+.module-actions .btn {
+	text-transform: none;
 }
 
 table.payment-method-features td {
@@ -1260,15 +1273,6 @@ table.payment-method-features td {
 	margin-top: 12px; 
 	position: absolute; 
 	bottom: 12px;
-}
-.theme-edit .group-name{
-	h4 {
-		color: #aaa;
-		padding-left: 10px;
-	}
-	hr {
-		margin-top: 8px;
-	}
 }
 
 .slides-title {

@@ -62,17 +62,19 @@
 					@if (plugin.Installed)
 					{
 						<div class="module-actions">
-							@if (plugin.ConfigurationUrl.HasValue())
-							{
-								<a class="btn btn-link plugin-configure" href="@plugin.ConfigurationUrl">
-									<i class="fa fa-cog"></i>
-									@T("Admin.Configuration.Plugins.Fields.Configure")
+							<div class="btn-group">
+								<a class="btn btn-small plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
+									<i class="fa fa-language"></i>
+									@T("Admin.Configuration.Plugins.Resources.Update")
 								</a>
-							}
-							<a class="btn btn-link plugin-update-resources" href="@Url.Action("UpdateStringResources", new { systemName = plugin.SystemName })">
-								<i class="fa fa-refresh"></i>
-								@T("Admin.Configuration.Plugins.Resources.Update")
-							</a>
+								@if (plugin.ConfigurationUrl.HasValue())
+								{
+									<a class="btn btn-small plugin-configure" href="@plugin.ConfigurationUrl">
+										<i class="fa fa-cog"></i>
+										@T("Admin.Configuration.Plugins.Fields.Configure")
+									</a>
+								}
+							</div>
 						</div>	
 					}
 				</div>

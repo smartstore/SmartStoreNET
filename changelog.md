@@ -32,6 +32,8 @@
 
 ###Improvements###
 * New backend design and cleaner frontend theme
+* Simplified checkout process by combining payment method and info pages
+* (Perf) Lower memory consumption
 * (Perf) (Developer) Client Dependency updates
 	- jQuery 1.8.3 > 2.1.1 (although the backend is still using v1.8.3 because of the Telerik components)
 	- FontAwesome 3 > 4.1

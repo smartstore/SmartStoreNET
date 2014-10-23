@@ -445,12 +445,15 @@ th label {
 	height: 100%;
 	width: 5px;
 	cursor: move;
-	display: none;
+	visibility: hidden;
+	.opacity(0);
+	.transition(opacity 0.1s ease-in-out);
 	background: transparent url('../../images/grippy.png') 0 0 repeat;
 }
 
 .sortable-item:hover .sortable-grip {
-	display: block;
+	visibility: visible;
+	.opacity(100);
 }
 
 .sortable-dragging {

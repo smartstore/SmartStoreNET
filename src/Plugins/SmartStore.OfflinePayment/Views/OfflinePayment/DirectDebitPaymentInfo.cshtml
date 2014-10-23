@@ -1,12 +1,15 @@
-﻿@{
-    Layout = "";
-}
-@model SmartStore.Plugin.Payments.DirectDebit.Models.PaymentInfoModel
+﻿@model SmartStore.OfflinePayment.Models.DirectDebitPaymentInfoModel
 @using SmartStore.Web.Framework;
 
-<div>
+@{
+    Layout = "";
+}
+
+<p class="muted">
     @Html.Raw(Model.DescriptionText)
-</div>
+</p>
+
+@Html.Hidden("OfflinePaymentMethodType", "DirectDebit")
 
 <div class="form-horizontal">
 	<div class="control-group">

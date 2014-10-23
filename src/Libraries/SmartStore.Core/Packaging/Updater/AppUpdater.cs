@@ -290,6 +290,8 @@ namespace SmartStore.Core.Packaging
                 { "Widgets.TrustedShopsCustomerProtection", "SmartStore.TrustedShops" },
                 { "Shipping.ByWeight", "SmartStore.ShippingByWeight" },
 				{ "Payments.DirectDebit", "SmartStore.OfflinePayment" },
+				{ "Tax.FixedRate", "SmartStore.Tax" },
+				{ "Tax.CountryStateZip", "SmartStore.Tax" }
 			};
 
 			foreach (var name in installedPlugins)

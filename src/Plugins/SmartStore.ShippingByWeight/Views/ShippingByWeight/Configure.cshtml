@@ -2,7 +2,7 @@
     Layout = "";
 }
 @model ShippingByWeightListModel
-@using SmartStore.Plugin.Shipping.ByWeight.Models;
+@using SmartStore.ShippingByWeight.Models;
 @using SmartStore.Web.Framework;
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
@@ -48,9 +48,9 @@
                     .DataBinding(dataBinding =>
                     {
 						dataBinding.Ajax()
-							.Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
-							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } })
-							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "" } });
+							.Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } })
+							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } })
+							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } });
                     })
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .EnableCustomBinding(true))

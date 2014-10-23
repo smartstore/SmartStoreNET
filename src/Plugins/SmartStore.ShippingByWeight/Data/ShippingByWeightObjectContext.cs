@@ -5,9 +5,9 @@ using System.Data.Entity.Infrastructure;
 using SmartStore.Core;
 using SmartStore.Data;
 using SmartStore.Data.Setup;
-using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
+using SmartStore.ShippingByWeight.Data.Migrations;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Data
+namespace SmartStore.ShippingByWeight.Data
 {
     /// <summary>
     /// Object context

@@ -5,11 +5,11 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Data;
-using SmartStore.Plugin.Shipping.ByWeight.Data;
-using SmartStore.Plugin.Shipping.ByWeight.Domain;
-using SmartStore.Plugin.Shipping.ByWeight.Services;
+using SmartStore.ShippingByWeight.Data;
+using SmartStore.ShippingByWeight.Domain;
+using SmartStore.ShippingByWeight.Services;
 
-namespace SmartStore.Plugin.Shipping.ByWeight
+namespace SmartStore.ShippingByWeight
 {
     public class DependencyRegistrar : IDependencyRegistrar
     {

@@ -2,18 +2,18 @@
 using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc.Routes;
 
-namespace SmartStore.Plugin.Shipping.ByWeight
+namespace SmartStore.ShippingByWeight
 {
     public partial class RouteProvider : IRouteProvider
     {
         public void RegisterRoutes(RouteCollection routes)
         {
-            routes.MapRoute("Plugin.Shipping.ByWeight.Configure",
-                 "Plugins/ShippingByWeight/Configure",
+            routes.MapRoute("SmartStore.ShippingByWeight",
+                 "Plugins/ShippingByWeight/{action}",
                  new { controller = "ShippingByWeight", action = "Configure" },
-                 new[] { "SmartStore.Plugin.Shipping.ByWeight.Controllers" }
+                 new[] { "SmartStore.ShippingByWeight.Controllers" }
             )
-			.DataTokens["area"] = "Shipping.ByWeight";
+            .DataTokens["area"] = "SmartStore.ShippingByWeight";
         }
 
         public int Priority

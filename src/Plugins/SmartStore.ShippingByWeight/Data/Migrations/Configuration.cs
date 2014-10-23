@@ -1,4 +1,4 @@
-namespace SmartStore.Plugin.Shipping.ByWeight.Data.Migrations
+namespace SmartStore.ShippingByWeight.Data.Migrations
 {
     using System;
     using System.Data.Entity;

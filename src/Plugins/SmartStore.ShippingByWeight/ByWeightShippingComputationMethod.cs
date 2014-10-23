@@ -4,16 +4,16 @@ using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
-using SmartStore.Plugin.Shipping.ByWeight.Data;
-using SmartStore.Plugin.Shipping.ByWeight.Data.Migrations;
-using SmartStore.Plugin.Shipping.ByWeight.Services;
+using SmartStore.ShippingByWeight.Data;
+using SmartStore.ShippingByWeight.Data.Migrations;
+using SmartStore.ShippingByWeight.Services;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Shipping.Tracking;
 
-namespace SmartStore.Plugin.Shipping.ByWeight
+namespace SmartStore.ShippingByWeight
 {
 	public class ByWeightShippingComputationMethod : BasePlugin, IShippingRateComputationMethod, IConfigurable
     {
@@ -193,7 +193,7 @@ namespace SmartStore.Plugin.Shipping.ByWeight
         {
             actionName = "Configure";
             controllerName = "ShippingByWeight";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.Plugin.Shipping.ByWeight.Controllers" }, { "area", "Shipping.ByWeight" } };
+            routeValues = new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } };
         }
         
         /// <summary>

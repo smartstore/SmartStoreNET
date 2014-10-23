@@ -1,7 +1,7 @@
 ﻿using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Models
+namespace SmartStore.ShippingByWeight.Models
 {
     public class ShippingByWeightModel : EntityModelBase
     {

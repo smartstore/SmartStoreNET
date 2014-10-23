@@ -1,6 +1,6 @@
 using SmartStore.Core;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Domain
+namespace SmartStore.ShippingByWeight.Domain
 {
     /// <summary>
     /// Represents a shipping by weight record

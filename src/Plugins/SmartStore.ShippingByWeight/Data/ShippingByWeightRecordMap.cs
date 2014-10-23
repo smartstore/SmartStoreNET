@@ -1,7 +1,7 @@
 using System.Data.Entity.ModelConfiguration;
-using SmartStore.Plugin.Shipping.ByWeight.Domain;
+using SmartStore.ShippingByWeight.Domain;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Data
+namespace SmartStore.ShippingByWeight.Data
 {
     public partial class ShippingByWeightRecordMap : EntityTypeConfiguration<ShippingByWeightRecord>
     {

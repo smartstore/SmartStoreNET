@@ -1,7 +1,7 @@
 ﻿
 using SmartStore.Core.Configuration;
 
-namespace SmartStore.Plugin.Shipping.ByWeight
+namespace SmartStore.ShippingByWeight
 {
     public class ShippingByWeightSettings : ISettings
     {

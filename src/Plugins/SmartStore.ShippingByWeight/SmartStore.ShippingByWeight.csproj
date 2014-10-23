@@ -18,8 +18,8 @@
     <ProjectTypeGuids>{349c5851-65df-11da-9384-00065b846f21};{fae04ec0-301f-11d3-bf4b-00c04f79efbc}</ProjectTypeGuids>
     <OutputType>Library</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>SmartStore.Plugin.Shipping.ByWeight</RootNamespace>
-    <AssemblyName>SmartStore.Plugin.Shipping.ByWeight</AssemblyName>
+    <RootNamespace>SmartStore.ShippingByWeight</RootNamespace>
+    <AssemblyName>SmartStore.ShippingByWeight</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
@@ -47,7 +47,7 @@
     <DebugSymbols>true</DebugSymbols>
     <DebugType>full</DebugType>
     <Optimize>false</Optimize>
-    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\Shipping.ByWeight\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\Plugins\SmartStore.ShippingByWeight\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
@@ -216,7 +216,6 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
-    <Content Include="Notes.txt" />
     <Content Include="packages.config">
       <SubType>Designer</SubType>
     </Content>

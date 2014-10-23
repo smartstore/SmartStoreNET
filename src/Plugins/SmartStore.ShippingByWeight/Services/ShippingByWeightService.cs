@@ -3,13 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Plugin.Shipping.ByWeight.Domain;
-using SmartStore.Plugin.Shipping.ByWeight.Models;
+using SmartStore.ShippingByWeight.Domain;
+using SmartStore.ShippingByWeight.Models;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Services
+namespace SmartStore.ShippingByWeight.Services
 {
     public partial class ShippingByWeightService : IShippingByWeightService
     {

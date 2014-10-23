@@ -1,10 +1,10 @@
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
-using SmartStore.Plugin.Shipping.ByWeight.Domain;
-using SmartStore.Plugin.Shipping.ByWeight.Models;
+using SmartStore.ShippingByWeight.Domain;
+using SmartStore.ShippingByWeight.Models;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Services
+namespace SmartStore.ShippingByWeight.Services
 {
     public partial interface IShippingByWeightService
     {

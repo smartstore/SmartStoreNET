@@ -4,9 +4,9 @@ using System.Threading;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Plugin.Shipping.ByWeight.Domain;
-using SmartStore.Plugin.Shipping.ByWeight.Models;
-using SmartStore.Plugin.Shipping.ByWeight.Services;
+using SmartStore.ShippingByWeight.Domain;
+using SmartStore.ShippingByWeight.Models;
+using SmartStore.ShippingByWeight.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Shipping;
@@ -14,7 +14,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
-namespace SmartStore.Plugin.Shipping.ByWeight.Controllers
+namespace SmartStore.ShippingByWeight.Controllers
 {
 
     public class ShippingByWeightController : PluginControllerBase

@@ -288,6 +288,7 @@ namespace SmartStore.Core.Packaging
                 { "Widgets.TrustedShopsSeal", "SmartStore.TrustedShops" },
                 { "Widgets.TrustedShopsCustomerReviews", "SmartStore.TrustedShops" },
                 { "Widgets.TrustedShopsCustomerProtection", "SmartStore.TrustedShops" },
+                { "Shipping.ByWeight", "SmartStore.ShippingByWeight" },
 			};
 
 			foreach (var name in installedPlugins)

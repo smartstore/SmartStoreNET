@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using Autofac;
 using FluentValidation;
+using FluentValidation.Results;
 using SmartStore.Core.Localization;
 using SmartStore.OfflinePayment.Models;
 using SmartStore.OfflinePayment.Settings;
@@ -100,6 +101,7 @@ namespace SmartStore.OfflinePayment.Controllers
 		{
 			var warnings = new List<string>();
 			IValidator validator;
+			ValidationResult validationResult = null;
 
 			string type = form["OfflinePaymentMethodType"].NullEmpty();
 
@@ -114,15 +116,28 @@ namespace SmartStore.OfflinePayment.Controllers
 						CardNumber = form["CardNumber"],
 						CardCode = form["CardCode"]
 					};
-					var validationResult = validator.Validate(model);
-					if (!validationResult.IsValid)
-					{
-						validationResult.Errors.Each(x => warnings.Add(x.ErrorMessage));
-					}
+					validationResult = validator.Validate(model);
 				}
 				else if (type == "DirectDebit")
 				{
-					// [...] do nothing actually, but perhaps later
+					validator = new DirectDebitPaymentInfoValidator(_services.Localization);
+					var model = new DirectDebitPaymentInfoModel
+					{
+						EnterIBAN = form["EnterIBAN"],
+						DirectDebitAccountHolder = form["DirectDebitAccountHolder"],
+						DirectDebitAccountNumber = form["DirectDebitAccountNumber"],
+						DirectDebitBankCode = form["DirectDebitBankCode"],
+						DirectDebitCountry = form["DirectDebitCountry"],
+						DirectDebitBankName = form["DirectDebitBankName"],
+						DirectDebitIban = form["DirectDebitIban"],
+						DirectDebitBic = form["DirectDebitBic"]
+					};
+					validationResult = validator.Validate(model);
+				}
+
+				if (validationResult != null && !validationResult.IsValid)
+				{
+					validationResult.Errors.Each(x => warnings.Add(x.ErrorMessage));
 				}
 			}
 
@@ -187,7 +202,7 @@ namespace SmartStore.OfflinePayment.Controllers
 						var len = number.Length;
 						return "{0}, {1}, {2}".FormatCurrent(
 							form["DirectDebitAccountHolder"],
-							form["DirectDebitBankName"] ?? form["DirectDebitBankCode"],
+							form["DirectDebitBankName"].NullEmpty() ?? form["DirectDebitBankCode"],
 							number.Substring(0, 4) + new String('*', len - 4)
 						);
 					}
@@ -370,6 +385,16 @@ namespace SmartStore.OfflinePayment.Controllers
 		public ActionResult DirectDebitPaymentInfo()
 		{
 			var model = PaymentInfoGet<DirectDebitPaymentInfoModel, DirectDebitPaymentSettings>();
+
+			var form = this.GetPaymentData();
+			model.DirectDebitAccountHolder = form["DirectDebitAccountHolder"];
+			model.DirectDebitAccountNumber = form["DirectDebitAccountNumber"];
+			model.DirectDebitBankCode = form["DirectDebitBankCode"];
+			model.DirectDebitBankName = form["DirectDebitBankName"];
+			model.DirectDebitBic = form["DirectDebitBic"];
+			model.DirectDebitCountry = form["DirectDebitCountry"];
+			model.DirectDebitIban = form["DirectDebitIban"];
+
 			return PartialView(model);
 		}
 

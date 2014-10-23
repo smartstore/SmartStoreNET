@@ -35,6 +35,8 @@ namespace SmartStore
 
 		public static readonly Regex IsYearRange = new Regex(@"^(\d{4})-(\d{4})$", RegexOptions.Compiled);
 
+		public static readonly Regex IsIban = new Regex(@"[a-zA-Z]{2}[0-9]{2}[a-zA-Z0-9]{4}[0-9]{7}([a-zA-Z0-9]?){0,16}", RegexOptions.Singleline | RegexOptions.Compiled);
+		public static readonly Regex IsBic = new Regex(@"([a-zA-Z]{4}[a-zA-Z]{2}[a-zA-Z0-9]{2}([a-zA-Z0-9]{3})?)", RegexOptions.Singleline | RegexOptions.Compiled);
     }
 
 }

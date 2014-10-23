@@ -16,6 +16,11 @@ namespace SmartStore.OfflinePayment.Models
 
 	public class DirectDebitPaymentInfoModel : PaymentInfoModelBase
 	{
+		public DirectDebitPaymentInfoModel()
+		{
+			EnterIBAN = "iban";
+		}
+		
 		[SmartResourceDisplayName("Plugins.Payments.DirectDebit.EnterIBAN")]
 		public string EnterIBAN { get; set; }
 

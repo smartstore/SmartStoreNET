@@ -150,6 +150,7 @@
     <Compile Include="Providers\CashOnDeliveryProvider.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Settings\OfflinePaymentSettings.cs" />
+    <Compile Include="Validators\DirectDebitPaymentInfoValidator.cs" />
     <Compile Include="Validators\ManualPaymentInfoValidator.cs" />
   </ItemGroup>
   <ItemGroup>

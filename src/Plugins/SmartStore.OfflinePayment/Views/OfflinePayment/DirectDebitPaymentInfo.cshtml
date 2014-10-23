@@ -14,11 +14,15 @@
 <div class="form-horizontal">
 	<div class="control-group">
 		@Html.LabelFor(model => model.EnterIBAN, new { @class = "control-label" })
-		<div class="controls" style="margin-top: 5px;">
-			<input type="radio" id="EnterIBAN_1" name="EnterIBAN" value="no-iban" @(Model.EnterIBAN == "no-iban" ? "checked=\"checked\"" : "") style="vertical-align: top;" />
-			<label for="EnterIBAN_1" style="display:inline;">@T("Plugins.Payments.DirectDebit.NoEnterIBAN")</label>
-			<input type="radio" id="EnterIBAN_2" name="EnterIBAN" value="iban" @(Model.EnterIBAN == "iban" ? "checked=\"checked\"" : "") style="vertical-align: top; margin-left: 20px;" />
-			<label for="EnterIBAN_2" style="display:inline;">@T("Plugins.Payments.DirectDebit.YesEnterIBAN")</label>
+		<div class="controls">
+			<label class="radio inline">
+				<input type="radio" id="EnterIBAN_1" name="EnterIBAN" value="no-iban" @(Model.EnterIBAN == "no-iban" ? "checked=\"checked\"" : "") />
+				@T("Plugins.Payments.DirectDebit.NoEnterIBAN")
+			</label>
+			<label class="radio inline">
+				<input type="radio" id="EnterIBAN_2" name="EnterIBAN" value="iban" @(Model.EnterIBAN == "iban" ? "checked=\"checked\"" : "") />
+				@T("Plugins.Payments.DirectDebit.YesEnterIBAN")
+			</label>
 		</div>
 	</div>
 
@@ -82,7 +86,7 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $('input[name=EnterIBAN]').change(function () {
+        $('input[name=EnterIBAN]').on('change', function () {
             SwitchEnterIban($(this).filter(':checked').val());
         }).trigger('change');
     });

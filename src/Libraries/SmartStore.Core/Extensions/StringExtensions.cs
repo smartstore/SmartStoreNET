@@ -911,15 +911,16 @@ namespace SmartStore
             }
         }
 
-		public static string Sha(this string value) 
+		public static string Sha(this string value, Encoding encoding) 
         {
-			if (value.HasValue()) 
+			if (value.HasValue())
             {
-				using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider()) 
+				using (var sha1 = new SHA1CryptoServiceProvider()) 
                 {
-					byte[] data = Encoding.ASCII.GetBytes(value);
+					byte[] data = encoding.GetBytes(value);
 
 					return sha1.ComputeHash(data).ToHexString();
+					//return BitConverter.ToString(sha1.ComputeHash(data)).Replace("-", "");
 				}
 			}
 			return "";

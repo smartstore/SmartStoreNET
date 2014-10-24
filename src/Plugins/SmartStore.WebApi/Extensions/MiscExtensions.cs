@@ -11,16 +11,16 @@ namespace SmartStore.WebApi.Extensions
 
 			sb.Append("<div data-id=\"<#= Id #>\">");
 
-			sb.AppendFormat("<button name=\"ApiButtonRemoveKeys\" class=\"btn btn-danger api-grid-button\" style=\"display:<#= ButtonDisplayRemoveKeys #>;\"><i class=\"fa fa-trash-o-o\"></i>&nbsp;{0}</button>",
+			sb.AppendFormat("<button name=\"ApiButtonRemoveKeys\" class=\"btn btn-danger api-grid-button\" style=\"display:<#= ButtonDisplayRemoveKeys #>;\"><i class=\"fa fa-trash-o\"></i>&nbsp;{0}</button>",
 				helper.ViewData["ButtonTextRemoveKeys"]);
 
 			sb.AppendFormat("<button name=\"ApiButtonCreateKeys\" class=\"btn btn-primary api-grid-button\" style=\"display:<#= ButtonDisplayCreateKeys #>;\"><i class=\"fa fa-check\"></i>&nbsp;{0}</button>",
 				helper.ViewData["ButtonTextCreateKeys"]);
 
-			sb.AppendFormat("<button name=\"ApiButtonEnable\" class=\"btn api-grid-button\" style=\"display:<#= ButtonDisplayEnable #>;\"><i class=\"icon-active-true\"></i>&nbsp;{0}</button>",
+			sb.AppendFormat("<button name=\"ApiButtonEnable\" class=\"btn api-grid-button\" style=\"display:<#= ButtonDisplayEnable #>;\"><i class=\"fa fa-plus icon-active-true\"></i>&nbsp;{0}</button>",
 				helper.ViewData["ButtonTextEnable"]);
 
-			sb.AppendFormat("<button name=\"ApiButtonDisable\" class=\"btn api-grid-button\" style=\"display:<#= ButtonDisplayDisable #>;\"><i class=\"icon-active-false\"></i>&nbsp;{0}</button>",
+			sb.AppendFormat("<button name=\"ApiButtonDisable\" class=\"btn api-grid-button\" style=\"display:<#= ButtonDisplayDisable #>;\"><i class=\"fa fa-minus icon-active-false\"></i>&nbsp;{0}</button>",
 				helper.ViewData["ButtonTextDisable"]);
 
 			sb.Append("</div>");

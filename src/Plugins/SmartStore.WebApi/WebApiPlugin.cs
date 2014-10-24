@@ -27,7 +27,7 @@ namespace SmartStore.WebApi
 		{
 			actionName = "Configure";
 			controllerName = "WebApi";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", "SmartStore.WebApi" } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", WebApiGlobal.PluginSystemName } };
 		}
 
 		public override void Install()

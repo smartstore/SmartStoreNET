@@ -104,6 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
+    <Reference Include="FiftyOne.Foundation">
+      <HintPath>..\..\packages\51Degrees.mobi.3.1.6.6\lib\NET40\FiftyOne.Foundation.dll</HintPath>
+    </Reference>
     <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
@@ -2055,9 +2058,6 @@
     <Content Include="Views\Product\ProductTemplate.Grouped.cshtml" />
     <Content Include="Views\Product\ProductTemplate.Simple.cshtml" />
     <Content Include="Views\Product\_PictureGallery.cshtml" />
-    <Content Include="browserCaps.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Views\Shared\LanguageAttributes.cshtml" />
     <Content Include="Views\Customer\_CheckUsernameAvailability.cshtml" />
     <Content Include="Views\Boards\ActiveDiscussionsSmall.cshtml" />

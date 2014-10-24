@@ -227,9 +227,6 @@
     <Compile Include="WebApiPlugin.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\smartstore.web.api.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-    </Content>
     <Content Include="Description.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

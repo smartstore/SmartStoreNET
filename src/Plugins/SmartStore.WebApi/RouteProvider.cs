@@ -1,6 +1,7 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.WebApi;
 
 namespace SmartStore.WebApi
 {
@@ -13,7 +14,7 @@ namespace SmartStore.WebApi
 				new { controller = "WebApi" }, 
 				new[] { "SmartStore.WebApi.Controllers" }
 			)
-			.DataTokens["area"] = "SmartStore.WebApi";
+			.DataTokens["area"] = WebApiGlobal.PluginSystemName;
 		}
 		public int Priority
 		{

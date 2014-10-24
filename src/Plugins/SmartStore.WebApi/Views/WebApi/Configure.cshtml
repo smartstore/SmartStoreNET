@@ -3,6 +3,7 @@
 @using SmartStore.WebApi.Models;
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.Plugins;
+@using SmartStore.Web.Framework.WebApi;
 @using SmartStore.WebApi.Extensions;
 @using SmartStore.Web.Framework.UI;
 @using Telerik.Web.Mvc.UI;
@@ -10,15 +11,14 @@
 @{
     Layout = "";
 
-    Html.AddCssFileParts(true, Url.Content("~/Plugins/Api.WebApi/Content/smartstore.web.api.css"));
-    Html.AddScriptParts(true, Url.Content("~/Plugins/Api.WebApi/Scripts/smartstore.web.api.js"));
+	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.WebApi/Scripts/smartstore.web.api.js"));
 }
 
 <div class="alert alert-info">
     @Html.Raw(@T("Plugins.Api.WebApi.AdminInstruction"))
 </div>
 
-<table id="apiuser-grid-container" class="adminContent" data-url="@(Url.Content("~/Plugins/WebApi"))" data-ask="@T("Admin.Common.AskToProceed")">
+<table id="apiuser-grid-container" class="adminContent" data-url="@(Url.Content("~/Plugins/SmartStore.WebApi"))" data-ask="@T("Admin.Common.AskToProceed")">
 <tr>
     <td>
 
@@ -40,11 +40,12 @@
                 .ClientTemplate(@Html.SymbolForBool("Enabled"));
             c.Bound(x => x.LastRequest);
             c.Template(x => @Html.ApiGridButtons())
+				.Width(330)
                 .ClientTemplate(@Html.ApiGridButtons());
         })
         .DataBinding(dataBinding =>
         {
-            dataBinding.Ajax().Select("GridUserData", "WebApi", new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", "SmartStore.WebApi" } });
+			dataBinding.Ajax().Select("GridUserData", "WebApi", new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", WebApiGlobal.PluginSystemName } });
         })
         .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
         .EnableCustomBinding(true)

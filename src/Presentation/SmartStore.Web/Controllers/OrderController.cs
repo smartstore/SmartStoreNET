@@ -512,9 +512,9 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("Details")]
         [FormValueRequired("repost-payment")]
-        public ActionResult RePostPayment(int orderId)
+        public ActionResult RePostPayment(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 

@@ -2,7 +2,7 @@
 SystemName: SmartStore.DevTools
 Group: Developer
 Version: 1.1
-MinAppVersion: 2.0.0
+MinAppVersion: 2.1.0
 DisplayOrder: 1
 FileName: SmartStore.DevTools.dll
 ResourceRootKey: Plugins.Developer.DevTools

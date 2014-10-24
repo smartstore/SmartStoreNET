@@ -2,7 +2,7 @@
 SystemName: SmartStore.GoogleAnalytics
 Group: Analytics
 Version: 1.7
-MinAppVersion: 2.0.0
+MinAppVersion: 2.1.0
 DisplayOrder: 1
 FileName: SmartStore.GoogleAnalytics.dll
 ResourceRootKey: Plugins.Widgets.GoogleAnalytics

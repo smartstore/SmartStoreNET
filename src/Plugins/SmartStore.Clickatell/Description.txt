@@ -2,7 +2,7 @@
 SystemName: SmartStore.Clickatell
 Group: Mobile
 Version: 1.5
-MinAppVersion: 2.0.0
+MinAppVersion: 2.1.0
 DisplayOrder: 1
 FileName: SmartStore.Clickatell.dll
 ResourceRootKey: Plugins.Sms.Clickatell

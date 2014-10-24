@@ -206,9 +206,8 @@ namespace SmartStore.Core.Packaging
 			var currentVersion = SmartStoreVersion.Version;
 			var prevVersion = DataSettings.Current.AppVersion ?? new Version(1, 0);
 
-			// TODO: (mc) uncomment!!!
-			//if (prevVersion >= currentVersion)
-			//	return;
+			if (prevVersion >= currentVersion)
+				return;
 
 			if (prevVersion < new Version(2, 1))
 			{

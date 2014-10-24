@@ -1,5 +1,6 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Shipping.ByWeight" AppendRootKey="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.ShippingByWeight" AppendRootKey="false">
     <Value>Versand nach Gewicht</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Country">

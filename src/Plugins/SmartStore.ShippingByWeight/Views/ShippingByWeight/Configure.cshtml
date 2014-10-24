@@ -47,10 +47,10 @@
                     })
                     .DataBinding(dataBinding =>
                     {
-						dataBinding.Ajax()
-							.Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } })
-							.Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } })
-							.Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "" } });
+                        dataBinding.Ajax()
+                            .Select("RatesList", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "SmartStore.ShippingByWeight" } })
+                            .Update("RateUpdate", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "SmartStore.ShippingByWeight" } })
+                            .Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "Namespaces", "SmartStore.ShippingByWeight.Controllers" }, { "area", "SmartStore.ShippingByWeight" } });
                     })
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .EnableCustomBinding(true))

@@ -291,7 +291,9 @@ namespace SmartStore.Core.Packaging
                 { "Shipping.ByWeight", "SmartStore.ShippingByWeight" },
 				{ "Payments.DirectDebit", "SmartStore.OfflinePayment" },
 				{ "Tax.FixedRate", "SmartStore.Tax" },
-				{ "Tax.CountryStateZip", "SmartStore.Tax" }
+				{ "Tax.CountryStateZip", "SmartStore.Tax" },
+                { "Shipping.ByTotal", "SmartStore.Shipping" },
+                { "Shipping.FixedRate", "SmartStore.Shipping" }
 			};
 
 			foreach (var name in installedPlugins)

@@ -167,10 +167,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ReplyTo, mo => mo.Ignore())
 				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore());
             //campaign
-            Mapper.CreateMap<Campaign, CampaignModel>()
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-                .ForMember(dest => dest.AllowedTokens, mo => mo.Ignore())
-                .ForMember(dest => dest.TestEmail, mo => mo.Ignore());
+			Mapper.CreateMap<Campaign, CampaignModel>()
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.AllowedTokens, mo => mo.Ignore())
+				.ForMember(dest => dest.TestEmail, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
             Mapper.CreateMap<CampaignModel, Campaign>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
             //topcis
@@ -253,7 +255,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
-				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore());
+				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
+				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
 				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductTags, mo => mo.Ignore())
@@ -332,7 +335,9 @@ namespace SmartStore.Admin.Infrastructure
 
             // ContentSlider slides
             Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
-                .ForMember(dest => dest.Id, mo => mo.Ignore());
+                .ForMember(dest => dest.Id, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.SearchStoreId, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
 
 			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
@@ -384,13 +389,16 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
-                .ForMember(dest => dest.IconUrl, mo => mo.Ignore());
+                .ForMember(dest => dest.IconUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.ConfigurationRoute, mo => mo.Ignore());
             //newsLetter subscriptions
             Mapper.CreateMap<NewsLetterSubscription, NewsLetterSubscriptionModel>()
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore());
+                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.StoreName, mo => mo.Ignore());
             Mapper.CreateMap<NewsLetterSubscriptionModel, NewsLetterSubscription>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
-                .ForMember(dest => dest.NewsLetterSubscriptionGuid, mo => mo.Ignore());
+                .ForMember(dest => dest.NewsLetterSubscriptionGuid, mo => mo.Ignore())
+				.ForMember(dest => dest.StoreId, mo => mo.Ignore());
             //forums
             Mapper.CreateMap<ForumGroup, ForumGroupModel>()
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
@@ -449,7 +457,9 @@ namespace SmartStore.Admin.Infrastructure
             //polls
             Mapper.CreateMap<Poll, PollModel>()
                 .ForMember(dest => dest.StartDate, mo => mo.Ignore())
-                .ForMember(dest => dest.EndDate, mo => mo.Ignore());
+                .ForMember(dest => dest.EndDate, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
+				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
             Mapper.CreateMap<PollModel, Poll>()
                 .ForMember(dest => dest.PollAnswers, mo => mo.Ignore())
                 .ForMember(dest => dest.Language, mo => mo.Ignore())
@@ -599,9 +609,11 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.GiftCards_Activated_OrderStatuses, mo => mo.Ignore())
                 .ForMember(dest => dest.GiftCards_Deactivated_OrderStatuses, mo => mo.Ignore())
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
-                .ForMember(dest => dest.OrderIdent, mo => mo.Ignore());
+                .ForMember(dest => dest.OrderIdent, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<OrderSettingsModel, OrderSettings>()
-                .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore());
+                .ForMember(dest => dest.MinimumOrderPlacementInterval, mo => mo.Ignore())
+				.ForMember(dest => dest.Id, mo => mo.Ignore());
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
 				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());

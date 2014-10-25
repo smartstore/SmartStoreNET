@@ -31,7 +31,7 @@ namespace SmartStore.Core.Tests.Domain.Shipping
                 Rate = 3.57M,
                 ShippingRateComputationMethodSystemName = "4"
             };
-            var converter = TypeDescriptor.GetConverter(shippingOptionInput.GetType());
+			var converter = CommonHelper.GetTypeConverter(shippingOptionInput.GetType());
             var result = converter.ConvertTo(shippingOptionInput, typeof(string)) as string;
 
             var shippingOptionOutput = converter.ConvertFrom(result) as ShippingOption;

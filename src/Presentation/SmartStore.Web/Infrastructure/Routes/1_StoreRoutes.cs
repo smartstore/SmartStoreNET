@@ -194,7 +194,7 @@ namespace SmartStore.Web.Infrastructure
 
             routes.MapLocalizedRoute("CustomerProfile",
                 "profile/{id}",
-                new { controller = "Profile", action = "Index" },
+                new { controller = "Profile", action = "Index", id = UrlParameter.Optional },
                 new { id = @"\d+"},
                 new[] { "SmartStore.Web.Controllers" });
 
@@ -232,17 +232,35 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Boards", action = "Index" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			routes.MapLocalizedRoute("BoardPostCreate",
+				"boards/postcreate/{id}/{quote}",
+				new { controller = "Boards", action = "PostCreate", quote = UrlParameter.Optional },
+				new { id = @"\d+" },
+				new[] { "SmartStore.Web.Controllers" });
+
             routes.MapLocalizedRoute("TopicSlug",
                 "boards/topic/{id}/{slug}",
                 new { controller = "Boards", action = "Topic", slug = UrlParameter.Optional },
                 new { id = @"\d+"},
                 new[] { "SmartStore.Web.Controllers" });
 
+			routes.MapLocalizedRoute("TopicSlugPaged",
+				"boards/topic/{id}/{slug}/page/{page}",
+				new { controller = "Boards", action = "Topic" },
+				new { id = @"\d+", page = @"\d+" },
+				new[] { "SmartStore.Web.Controllers" });
+
             routes.MapLocalizedRoute("ForumSlug",
                 "boards/forum/{id}/{slug}",
                 new { controller = "Boards", action = "Forum", slug = UrlParameter.Optional },
                 new { id = @"\d+" },
                 new[] { "SmartStore.Web.Controllers" });
+
+			routes.MapLocalizedRoute("ForumSlugPaged",
+				"boards/forum/{id}/{slug}/page/{page}",
+				new { controller = "Boards", action = "Forum" },
+				new { id = @"\d+", page = @"\d+" },
+				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("ForumGroupSlug",
 				"boards/forumgroup/{id}/{slug}",
@@ -268,12 +286,18 @@ namespace SmartStore.Web.Infrastructure
             routes.MapLocalizedRoute("PrivateMessages",
                 "privatemessages/{tab}",
                 new { controller = "PrivateMessages", action = "Index", tab = UrlParameter.Optional },
+				new { tab = @"inbox|sent" },
                 new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("NewsArchive",
                 "news",
                 new { controller = "News", action = "List" },
                 new[] { "SmartStore.Web.Controllers" });
+
+			routes.MapLocalizedRoute("NewsRss",
+				"news/rss/{languageId}",
+				new { controller = "News", action = "rss", languageId = UrlParameter.Optional },
+				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("Sitemap",
                 "sitemap",

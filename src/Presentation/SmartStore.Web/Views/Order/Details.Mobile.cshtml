@@ -328,7 +328,7 @@
                 }
                 if (Model.IsReturnRequestAllowed)
                 {
-            <a href="@Url.RouteUrl("ReturnRequest", new { id = Model.Id })" data-role="button">@T("Order.ReturnItems")</a>
+            <a href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })" data-role="button">@T("Order.ReturnItems")</a>
                 }
         }
         @Html.Widget("mobile_orderdetails_page_afterproducts")

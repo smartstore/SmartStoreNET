@@ -483,7 +483,7 @@ namespace SmartStore.Web.Controllers
                 //load posts
                 var posts = _forumService.GetAllPosts(forumTopic.Id, 0, string.Empty,
                     page - 1, _forumSettings.PostsPageSize);
-                //if not posts loaded, redirect to the first page
+                // if no posts area loaded, redirect to the first page
                 if (posts.Count == 0 && page > 1)
                 {
                     return RedirectToRoute("TopicSlug", new {id = forumTopic.Id, slug = forumTopic.GetSeName()});

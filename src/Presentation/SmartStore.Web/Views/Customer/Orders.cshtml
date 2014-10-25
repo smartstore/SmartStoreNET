@@ -127,7 +127,7 @@
                     <div class="buttons pull-right">
                         @if (order.IsReturnRequestAllowed)
                         {
-                            <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { id = order.Id })">
+                            <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { orderId = order.Id })">
 								<i class="fa fa-reply"></i>
                                 @T("Account.CustomerOrders.ReturnItems")
                             </a>

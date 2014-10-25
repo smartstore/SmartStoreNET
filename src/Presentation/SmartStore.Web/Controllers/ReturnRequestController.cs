@@ -134,9 +134,9 @@ namespace SmartStore.Web.Controllers
         #region Return requests
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult ReturnRequest(int id /* orderId */)
+        public ActionResult ReturnRequest(int orderId)
         {
-            var order = _orderService.GetOrderById(id);
+			var order = _orderService.GetOrderById(orderId);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 

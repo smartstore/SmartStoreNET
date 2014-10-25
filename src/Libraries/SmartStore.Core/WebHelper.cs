@@ -372,13 +372,28 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
-			var parts = url.EmptyNull().Split(new[] { '?' });
+			url = url.EmptyNull().ToLower();
+			queryStringModification = queryStringModification.EmptyNull().ToLower();
+
+			string curAnchor = null;
+
+			var hsIndex = url.LastIndexOf('#');
+			if (hsIndex >= 0)
+			{
+				curAnchor = url.Substring(hsIndex);
+				url = url.Substring(0, hsIndex);
+			}
+			
+			var parts = url.Split(new[] { '?' });
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
-			var modify = new QueryString(queryStringModification.EmptyNull());
+			var modify = new QueryString(queryStringModification);
 
-			current.AddRange(modify);
+			foreach (var nv in modify.AllKeys)
+			{
+				current.Add(nv, modify[nv], true);
+			}
 
-			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? "" : "#" + anchor);
+			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor.ToLower()) : "#" + anchor.ToLower());
 			return result;
         }
 
@@ -390,7 +405,7 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string RemoveQueryString(string url, string queryString)
         {
-			var parts = url.EmptyNull().Split(new[] { '?' });
+			var parts = url.EmptyNull().ToLower().Split(new[] { '?' });
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
 
 			if (current.Count > 0 && queryString.HasValue())

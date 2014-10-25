@@ -34,7 +34,7 @@ namespace SmartStore.Services.Tests.Messages
         [Test]
         public void VerifyActiveInsertTriggersSubscribeEvent()
         {
-            var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com" };
+            var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 
 			_newsLetterSubscriptionService.InsertNewsLetterSubscription(subscription, true);
 
@@ -47,7 +47,7 @@ namespace SmartStore.Services.Tests.Messages
         [Test]
         public void VerifyDeleteTriggersUnsubscribeEvent()
         {
-            var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com" };
+			var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 
 			_newsLetterSubscriptionService.DeleteNewsLetterSubscription(subscription, true);
 
@@ -62,10 +62,10 @@ namespace SmartStore.Services.Tests.Messages
         public void VerifyEmailUpdateTriggersUnsubscribeAndSubscribeEvent()
         {
             //Prepare the original result
-            var originalSubscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com" };
+			var originalSubscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 			_subscriptionRepository.Stub(m => m.GetById(Arg<object>.Is.Anything)).Return(originalSubscription);
 
-            var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@tetragensoftware.com" };
+			var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@tetragensoftware.com", StoreId = 1 };
 
 			_newsLetterSubscriptionService.UpdateNewsLetterSubscription(subscription, true);
 
@@ -81,10 +81,10 @@ namespace SmartStore.Services.Tests.Messages
         public void VerifyInactiveToActiveUpdateTriggersSubscribeEvent()
         {
             //Prepare the original result
-            var originalSubscription = new NewsLetterSubscription { Active = false, Email = "skyler@csharpwebdeveloper.com" };
+			var originalSubscription = new NewsLetterSubscription { Active = false, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 			_subscriptionRepository.Stub(m => m.GetById(Arg<object>.Is.Anything)).Return(originalSubscription);
 
-            var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com" };
+			var subscription = new NewsLetterSubscription { Active = true, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 
             _newsLetterSubscriptionService.UpdateNewsLetterSubscription(subscription, true);
 
@@ -97,7 +97,7 @@ namespace SmartStore.Services.Tests.Messages
         [Test]
         public void VerifyInsertEventIsFired()
         {
-			_newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com" });
+			_newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com", StoreId = 1 });
 
             _eventPublisher.AssertWasCalled(x => x.EntityInserted(Arg<NewsLetterSubscription>.Is.Anything));
         }
@@ -110,10 +110,10 @@ namespace SmartStore.Services.Tests.Messages
         public void VerifyUpdateEventIsFired()
         {
             //Prepare the original result
-            var originalSubscription = new NewsLetterSubscription { Active = false, Email = "skyler@csharpwebdeveloper.com" };
+			var originalSubscription = new NewsLetterSubscription { Active = false, Email = "skyler@csharpwebdeveloper.com", StoreId = 1 };
 			_subscriptionRepository.Stub(m => m.GetById(Arg<object>.Is.Anything)).Return(originalSubscription);
 
-			_newsLetterSubscriptionService.UpdateNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com" });
+			_newsLetterSubscriptionService.UpdateNewsLetterSubscription(new NewsLetterSubscription { Email = "skyler@csharpwebdeveloper.com", StoreId = 1 });
 
             _eventPublisher.AssertWasCalled(x => x.EntityUpdated(Arg<NewsLetterSubscription>.Is.Anything));
         }

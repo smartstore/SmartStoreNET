@@ -1010,11 +1010,11 @@
     <Content Include="Content\samples\0000730-apple-iphone-4s-weis.jpg" />
     <Content Include="Content\samples\0000740-antonio-vivaldi-der-fruhling-100.jpg" />
     <Content Include="Content\samples\0000746_apple_125.jpeg" />
-    <Content Include="Content\samples\0000785-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000786-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000787-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000788-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000789-apple-iphone-5-32-gb.jpg" />
+    <Content Include="Content\samples\0000785-apple-iphone.png" />
+    <Content Include="Content\samples\0000786-apple-iphone.png" />
+    <Content Include="Content\samples\0000787-apple-iphone.jpg" />
+    <Content Include="Content\samples\0000788-apple-iphone.png" />
+    <Content Include="Content\samples\0000789-apple-iphone.jpg" />
     <Content Include="Content\samples\0000898_blackberry.jpeg" />
     <Content Include="Content\samples\0000899_htc.png" />
     <Content Include="Content\samples\0000900_lg.jpeg" />
@@ -1101,6 +1101,9 @@
     <Content Include="Media\Uploaded\placeholder.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Scripts\2012.2.607\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.calendar.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.datepicker.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.datetimepicker.min.js" />
     <Content Include="Scripts\2012.2.607\telerik.textbox.min.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.af-ZA.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.af.js" />

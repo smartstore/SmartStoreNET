@@ -198,7 +198,8 @@
     <Reference Include="System.EnterpriseServices" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Telerik\Telerik.Web.Mvc.dll</HintPath>
       <Private>True</Private>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
@@ -459,6 +460,20 @@
     <Content Include="Content\2012.2.607\Default\treeview-line.png" />
     <Content Include="Content\2012.2.607\Default\treeview-nodes-rtl.png" />
     <Content Include="Content\2012.2.607\Default\treeview-nodes.png" />
+    <Content Include="Content\2012.2.607\telerik.common.css" />
+    <Content Include="Content\2012.2.607\telerik.default.min.css" />
+    <Content Include="Content\2012.2.607\telerik.rtl.css" />
+    <Content Include="Content\2012.2.607\telerik.telerik.min.css" />
+    <Content Include="Content\2012.2.607\Telerik\editor.png" />
+    <Content Include="Content\2012.2.607\Telerik\imagebrowser.png" />
+    <Content Include="Content\2012.2.607\Telerik\loading.gif" />
+    <Content Include="Content\2012.2.607\Telerik\slider-h.gif" />
+    <Content Include="Content\2012.2.607\Telerik\slider-v.gif" />
+    <Content Include="Content\2012.2.607\Telerik\sprite-vertical.png" />
+    <Content Include="Content\2012.2.607\Telerik\sprite.png" />
+    <Content Include="Content\2012.2.607\Telerik\treeview-line.png" />
+    <Content Include="Content\2012.2.607\Telerik\treeview-nodes-rtl.png" />
+    <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
     <Content Include="Content\bootstrap\custom\images\alpha.png" />
     <Content Include="Content\bootstrap\custom\images\hue.png" />
     <Content Include="Content\bootstrap\custom\images\saturation.png" />
@@ -1010,11 +1025,11 @@
     <Content Include="Content\samples\0000730-apple-iphone-4s-weis.jpg" />
     <Content Include="Content\samples\0000740-antonio-vivaldi-der-fruhling-100.jpg" />
     <Content Include="Content\samples\0000746_apple_125.jpeg" />
-    <Content Include="Content\samples\0000785-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000786-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000787-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000788-apple-iphone-5-32-gb.jpg" />
-    <Content Include="Content\samples\0000789-apple-iphone-5-32-gb.jpg" />
+    <Content Include="Content\samples\0000785-apple-iphone.png" />
+    <Content Include="Content\samples\0000786-apple-iphone.png" />
+    <Content Include="Content\samples\0000787-apple-iphone.jpg" />
+    <Content Include="Content\samples\0000788-apple-iphone.png" />
+    <Content Include="Content\samples\0000789-apple-iphone.jpg" />
     <Content Include="Content\samples\0000898_blackberry.jpeg" />
     <Content Include="Content\samples\0000899_htc.png" />
     <Content Include="Content\samples\0000900_lg.jpeg" />
@@ -1101,7 +1116,19 @@
     <Content Include="Media\Uploaded\placeholder.txt" />
     <Content Include="Refresh.html" />
     <Content Include="Scripts\2012.2.607\jquery-1.7.1.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.calendar.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.common.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.datepicker.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.datetimepicker.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.draganddrop.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.editing.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.filtering.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.grouping.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.reordering.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.grid.resizing.min.js" />
     <Content Include="Scripts\2012.2.607\telerik.textbox.min.js" />
+    <Content Include="Scripts\2012.2.607\telerik.treeview.min.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.af-ZA.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.af.js" />
     <Content Include="Scripts\globalize\cultures\globalize.culture.am-ET.js" />
@@ -1515,21 +1542,7 @@
     <Content Include="Content\bootstrap\custom\telerik\slider-v.gif" />
     <Content Include="Content\bootstrap\custom\telerik\sprite-vertical.png" />
     <Content Include="Content\bootstrap\custom\telerik\sprite.png" />
-    <Content Include="Content\2012.2.607\telerik.common.css" />
-    <Content Include="Content\2012.2.607\telerik.default.min.css" />
-    <Content Include="Content\2012.2.607\telerik.rtl.css" />
     <Content Include="Content\bootstrap\custom\telerik\telerik.smartstore.less" />
-    <Content Include="Content\2012.2.607\telerik.telerik.min.css" />
-    <Content Include="Content\2012.2.607\Telerik\editor.png" />
-    <Content Include="Content\2012.2.607\Telerik\imagebrowser.png" />
-    <Content Include="Content\2012.2.607\Telerik\loading.gif" />
-    <Content Include="Content\2012.2.607\Telerik\slider-h.gif" />
-    <Content Include="Content\2012.2.607\Telerik\slider-v.gif" />
-    <Content Include="Content\2012.2.607\Telerik\sprite-vertical.png" />
-    <Content Include="Content\2012.2.607\Telerik\sprite.png" />
-    <Content Include="Content\2012.2.607\Telerik\treeview-line.png" />
-    <Content Include="Content\2012.2.607\Telerik\treeview-nodes-rtl.png" />
-    <Content Include="Content\2012.2.607\Telerik\treeview-nodes.png" />
     <Content Include="Content\bootstrap\custom\images\select2x2.png" />
     <Content Include="Content\bootstrap\custom\images\spinner.gif" />
     <Content Include="Content\bootstrap\custom\navbar.less" />
@@ -1946,15 +1959,6 @@
     <Content Include="license.txt" />
     <Content Include="Content\bootstrap\images\glyphicons-halflings-white.png" />
     <Content Include="Content\bootstrap\images\glyphicons-halflings.png" />
-    <Content Include="Scripts\2012.2.607\telerik.common.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.draganddrop.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.editing.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.filtering.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.grouping.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.reordering.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.grid.resizing.min.js" />
-    <Content Include="Scripts\2012.2.607\telerik.treeview.min.js" />
     <Content Include="Scripts\smartstore.navbar.js" />
     <Content Include="Scripts\jquery.addeasing.js" />
     <Content Include="Scripts\jquery.ba-outside-events.js" />
@@ -2450,39 +2454,29 @@
     <Content Include="Content\bootstrap\wells.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.resx">
+    <Content Include="App_GlobalResources\EditorLocalization.de-DE.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
+      <LastGenOutput>EditorLocalization.de-DE.designer.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.en-US.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.en-US.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\GridLocalization.de-DE.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.de-DE.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.designer.cs</LastGenOutput>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="App_GlobalResources\EditorLocalization.en-US.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>EditorLocalization.en-US.designer.cs</LastGenOutput>
     </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.de-DE.resx">
+    <Content Include="App_GlobalResources\EditorLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.de-DE.designer.cs</LastGenOutput>
+      <LastGenOutput>EditorLocalization.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\GridLocalization.de-DE.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.de-DE.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\GridLocalization.en-US.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.en-US.designer.cs</LastGenOutput>
+    </Content>
+    <Content Include="App_GlobalResources\GridLocalization.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <PropertyGroup>

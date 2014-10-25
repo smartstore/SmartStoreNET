@@ -16,7 +16,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Seo;
 using ImageResizer;
 using ImageResizer.Configuration;
-using StackExchange.Profiling;
 using System.Threading;
 using System.Text;
 using SmartStore.Utilities;

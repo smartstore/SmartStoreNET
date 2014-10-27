@@ -31,7 +31,7 @@ namespace SmartStore.PayPal
 
             //Legacay Routes
             routes.MapRoute("SmartStore.PayPalExpress.IPN",
-                 "Plugins/PaymentPayPalStandard/IPNHandler",
+                 "Plugins/PaymentPayPalExpress/IPNHandler",
                  new { controller = "PayPalExpress", action = "IPNHandler" },
                  new[] { "SmartStore.PayPal.Controllers" }
             )
@@ -44,37 +44,33 @@ namespace SmartStore.PayPal
             )
             .DataTokens["area"] = "SmartStore.PayPal";
 
-            routes.MapRoute("Plugin.Payments.PayPalStandard.IPNHandler",
+            routes.MapRoute("SmartStore.PayPalStandard.IPN",
                  "Plugins/PaymentPayPalStandard/IPNHandler",
                  new { controller = "PayPalStandard", action = "IPNHandler" },
                  new[] { "SmartStore.PayPal.Controllers" }
             )
             .DataTokens["area"] = "SmartStore.PayPal";
 
+            routes.MapRoute("SmartStore.PayPalStandard.PDT",
+                 "Plugins/PaymentPayPalStandard/PDTHandler",
+                 new { controller = "PayPalStandard", action = "PDTHandler" },
+                 new[] { "SmartStore.PayPal.Controllers" }
+            )
+            .DataTokens["area"] = "SmartStore.PayPal";
 
+            routes.MapRoute("SmartStore.PayPalExpress.RedirectFromPaymentInfo",
+                 "Plugins/PaymentPayPalExpress/RedirectFromPaymentInfo",
+                 new { controller = "PayPalExpress", action = "RedirectFromPaymentInfo" },
+                 new[] { "SmartStore.PayPal.Controllers" }
+            )
+            .DataTokens["area"] = "SmartStore.PayPal";
 
-            //TODO: Check whether these Routes needs to stay
-            //routes.MapRoute("Payments.PayPal.RedirectFromPaymentInfo",
-            //     "Plugins/PayPalExpress/RedirectFromPaymentInfo",
-            //     new { controller = "PayPal", action = "RedirectFromPaymentInfo" },
-            //     new[] { "SmartStore.PayPal.Controllers" }
-            //)
-            //.DataTokens["area"] = "SmartStore.PayPal";
-
-            //routes.MapRoute("Plugin.Payments.PayPalStandard.PDTHandler",
-            //     "Plugins/PaymentPayPalStandard/PDTHandler",
-            //     new { controller = "PaymentPayPalStandard", action = "PDTHandler" },
-            //     new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            //)
-            //.DataTokens["area"] = "Payments.PayPalStandard";
-
-            //routes.MapRoute("Plugin.Payments.PayPalStandard.CancelOrder",
-            //     "Plugins/PaymentPayPalStandard/CancelOrder",
-            //     new { controller = "PaymentPayPalStandard", action = "CancelOrder" },
-            //     new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            //)
-            //.DataTokens["area"] = "Payments.PayPalStandard";
-
+            routes.MapRoute("SmartStore.PayPalStandard.CancelOrder",
+                 "Plugins/PaymentPayPalStandard/CancelOrder",
+                 new { controller = "PayPalStandard", action = "CancelOrder" },
+                 new[] { "SmartStore.PayPal.Controllers" }
+            )
+            .DataTokens["area"] = "Payments.PayPal";
         }
 
         public int Priority

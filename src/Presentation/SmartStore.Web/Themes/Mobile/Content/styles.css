@@ -161,6 +161,13 @@
 .checkout-data .payment-info{text-align:left;height:auto;}
 .checkout-data .payment-info .body{text-align:left;vertical-align:text-top;}
 .checkout-data .payment-info .select-button{text-align:left;}
+.checkout-data .payment-method-info .pull-left {  
+    float: left;  
+    margin: 0 10px 10px 15px;
+}
+.checkout-data .payment-method-info .media-body {
+    margin: 5px 10px 10px 15px;
+}
 .checkout-data .confirm-order{text-align:left;height:auto;}
 .checkout-data .confirm-order .select-button{text-align:left;}
 .checkout-data .confirm-order .message-error{text-align:left;}

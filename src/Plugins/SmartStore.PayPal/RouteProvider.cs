@@ -51,7 +51,12 @@ namespace SmartStore.PayPal
             )
             .DataTokens["area"] = "SmartStore.PayPal";
 
-
+            routes.MapRoute("Plugin.Payments.PayPalStandard.PDTHandler",
+                 "Plugins/PaymentPayPalStandard/PDTHandler",
+                 new { controller = "PayPalStandard", action = "PDTHandler" },
+                 new[] { "SmartStore.PayPal.Controllers" }
+            )
+            .DataTokens["area"] = "SmartStore.PayPal";
 
             //TODO: Check whether these Routes needs to stay
             //routes.MapRoute("Payments.PayPal.RedirectFromPaymentInfo",
@@ -60,13 +65,6 @@ namespace SmartStore.PayPal
             //     new[] { "SmartStore.PayPal.Controllers" }
             //)
             //.DataTokens["area"] = "SmartStore.PayPal";
-
-            //routes.MapRoute("Plugin.Payments.PayPalStandard.PDTHandler",
-            //     "Plugins/PaymentPayPalStandard/PDTHandler",
-            //     new { controller = "PaymentPayPalStandard", action = "PDTHandler" },
-            //     new[] { "SmartStore.Plugin.Payments.PayPalStandard.Controllers" }
-            //)
-            //.DataTokens["area"] = "Payments.PayPalStandard";
 
             //routes.MapRoute("Plugin.Payments.PayPalStandard.CancelOrder",
             //     "Plugins/PaymentPayPalStandard/CancelOrder",

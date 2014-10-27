@@ -42,6 +42,7 @@ namespace SmartStore.PayPal
 
 		private readonly ICurrencyService _currencyService;
 		private readonly CurrencySettings _currencySettings;
+        private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly ITaxService _taxService;
         private readonly HttpContextBase _httpContext;
@@ -53,13 +54,19 @@ namespace SmartStore.PayPal
 
 		#region Ctor
 
-        public PayPalStandardProvider(ICurrencyService currencyService, HttpContextBase httpContext,
-			CurrencySettings currencySettings, ICheckoutAttributeParser checkoutAttributeParser,
-            ITaxService taxService, PayPalStandardSettings paypalStandardSettings,
-            ICommonServices commonServices, ILogger logger)
+        public PayPalStandardProvider(ICurrencyService currencyService, 
+            HttpContextBase httpContext,
+			CurrencySettings currencySettings,
+            IOrderTotalCalculationService orderTotalCalculationService,
+            ICheckoutAttributeParser checkoutAttributeParser,
+            ITaxService taxService, 
+            PayPalStandardSettings paypalStandardSettings,
+            ICommonServices commonServices, 
+            ILogger logger)
 		{
 			_currencyService = currencyService;
 			_currencySettings = currencySettings;
+            _orderTotalCalculationService = orderTotalCalculationService;
 			_checkoutAttributeParser = checkoutAttributeParser;
 			_taxService = taxService;
             _httpContext = httpContext;
@@ -289,6 +296,18 @@ namespace SmartStore.PayPal
 
 			_httpContext.Response.Redirect(builder.ToString());
 		}
+
+        /// <summary>
+        /// Gets additional handling fee
+        /// </summary>
+        /// <param name="cart">Shoping cart</param>
+        /// <returns>Additional handling fee</returns>
+        public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
+        {
+            var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
+                _paypalStandardSettings.AdditionalFee, _paypalStandardSettings.AdditionalFeePercentage);
+            return result;
+        }
 
 		/// <summary>
 		/// Gets a value indicating whether customers can complete a payment after order is placed but not completed (for redirection payment methods)

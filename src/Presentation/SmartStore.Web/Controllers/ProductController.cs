@@ -184,7 +184,7 @@ namespace SmartStore.Web.Controllers
 		//currently we use this method only for mobile device version
 		//desktop version uses AJAX version of this method (see ShoppingCartController)
 		// TODO: This should be handled by ShoppingCartController
-		[HttpPost, ActionName("Product")]
+		[HttpPost, ActionName("ProductDetails")]
 		[ValidateInput(false)]
 		public ActionResult AddProductToCart(int productId, FormCollection form)
 		{

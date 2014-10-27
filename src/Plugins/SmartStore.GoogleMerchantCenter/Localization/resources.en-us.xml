@@ -1,4 +1,7 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
+    <Value>Google Merchant Center (GMC) Feed</Value>
+  </LocaleResource>
 	<LocaleResource Name="AdminInstruction">
 		<Value>
 			<![CDATA[<ul>

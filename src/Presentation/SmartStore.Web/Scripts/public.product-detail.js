@@ -93,6 +93,7 @@
 		    var deliveryTime = priceBlock.find(".delivery-time");
 
 		    if (data.Delivery.DisplayAccordingToStock) {
+		    	deliveryTime.toggle(true);
 		    	deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
 		    	deliveryTime.find(".delivery-time-color")
 					.css("background-color", data.Delivery.Color)
@@ -102,6 +103,7 @@
 		    else {
 		    	deliveryTime.find(".delivery-time-value").html(data.Stock.Availability.Text);
 		    	deliveryTime.find(".delivery-time-color").toggle(false);
+		    	deliveryTime.toggle(data.Stock.Availability.Text.length > 0);
 		    }
 		     
 		    //attributes

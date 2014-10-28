@@ -1,16 +1,16 @@
-﻿DROP PROCEDURE [ProductLoadAllPaged]
+﻿DROP PROCEDURE [dbo].[ProductLoadAllPaged]
 GO
 
 DROP PROCEDURE [dbo].[ProductTagCountLoadAll]
 GO
 
-DROP PROCEDURE [FullText_IsSupported]
+DROP PROCEDURE [dbo].[FullText_IsSupported]
 GO
 
-DROP PROCEDURE [FullText_Enable]
+DROP PROCEDURE [dbo].[FullText_Enable]
 GO
 
-DROP PROCEDURE [FullText_Disable]
+DROP PROCEDURE [dbo].[FullText_Disable]
 GO
 
 

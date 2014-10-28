@@ -25,7 +25,7 @@ namespace SmartStore.DevTools
 			if (isActiveModule)
 			{
 				// intercept ALL public store controller actions
-				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<PublicControllerBase>();
+				builder.RegisterType<ProfilerFilter>().AsActionFilterFor<SmartController>();
 
 				//// intercept CatalogController's Product action
 				//builder.RegisterType<SampleResultFilter>().AsResultFilterFor<CatalogController>(x => x.Product(default(int), default(string))).InstancePerRequest();

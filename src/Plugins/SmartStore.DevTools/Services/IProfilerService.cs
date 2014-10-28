@@ -7,7 +7,7 @@ namespace SmartStore.DevTools.Services
 {
 	public interface IProfilerService
 	{
-		void StepStart(string key, string message, bool isVerbose = false);
+		void StepStart(string key, string message);
 		void StepStop(string key);
 	}
 }

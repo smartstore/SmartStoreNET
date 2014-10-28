@@ -23,7 +23,7 @@ namespace SmartStore.DevTools.Services
 			}
 		}
 
-		public void StepStart(string key, string message, bool isVerbose = false)
+		public void StepStart(string key, string message)
 		{
 			if (this.Profiler == null)
 			{
@@ -31,7 +31,7 @@ namespace SmartStore.DevTools.Services
 			}
 
 			var stack = this.steps.GetOrAdd(key, k => new ConcurrentStack<IDisposable>());
-			var step = this.Profiler.Step(message, isVerbose ? ProfileLevel.Verbose : ProfileLevel.Info);
+			var step = this.Profiler.Step(message);
 			stack.Push(step);
 		}
 

@@ -46,7 +46,7 @@ namespace SmartStore.DevTools.Filters
 				string.Empty;
 			string controller = string.Concat(filterContext.Controller.ToString().Split('.').Last(), ".");
 			string action = filterContext.ActionDescriptor.ActionName;
-			this._profiler.Value.StepStart("ActionFilter", "Controller: " + area + controller + action);
+			this._profiler.Value.StepStart("ActionFilter", "Action: " + area + controller + action);
 		}
 
 		public void OnActionExecuted(ActionExecutedContext filterContext)
@@ -63,7 +63,8 @@ namespace SmartStore.DevTools.Filters
 				return;
 			
 			// should only run on a full view rendering result
-			if (!(filterContext.Result is ViewResultBase))
+			var result = filterContext.Result as ViewResultBase;
+			if (result == null)
 			{
 				return;
 			}
@@ -79,10 +80,17 @@ namespace SmartStore.DevTools.Filters
 					"head_html_tag",
 					"MiniProfiler",
 					"DevTools",
-					new { Namespaces = "SmartStore.DevTools.Controllers", area = "SmartStore.DevTools" });
+					new { area = "SmartStore.DevTools" });
 			}
 
-			this._profiler.Value.StepStart("ResultFilter", string.Format("Result: {0}", filterContext.Result));
+			var viewName = result.ViewName;
+			if (viewName.IsEmpty())
+			{
+				string action = (filterContext.RouteData.Values["action"] as string).EmptyNull();
+				viewName = action;
+			}
+
+			this._profiler.Value.StepStart("ResultFilter", string.Format("{0}: {1}", result is PartialViewResult ? "Partial" : "View", viewName));
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)

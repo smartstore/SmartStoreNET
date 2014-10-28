@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -79,7 +79,8 @@ namespace SmartStore.Services.Payments
 				}
 				else
 				{
-					throw Error.Application("At least one payment method provider is required to be active.");
+					if (DataSettings.DatabaseIsInstalled())
+						throw Error.Application("At least one payment method provider is required to be active.");
 				}
 			}
 

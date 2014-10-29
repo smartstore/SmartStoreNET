@@ -1,10 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data.Entity.Migrations;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using SmartStore.Data.Migrations;
 
 namespace SmartStore.Data.Setup
 {
@@ -99,6 +101,73 @@ namespace SmartStore.Data.Setup
 			object newType = Activator.CreateInstance(classType);
 
 			return newType as TType;
+		}
+
+
+		public static void ExecutePendingResourceMigrations(string resPath, SmartObjectContext dbContext)
+		{
+			Guard.ArgumentNotNull(() => dbContext);
+			
+			string headPath = Path.Combine(resPath, "head.txt");
+			if (!File.Exists(headPath))
+				return;
+
+			string resHead = File.ReadAllText(headPath);
+			if (!MigratorUtils.IsValidMigrationId(resHead))
+				return;
+
+			var migrator = new DbMigrator(new MigrationsConfiguration());
+			var migrations = GetPendingResourceMigrations(migrator, resHead);
+
+			foreach (var id in migrations)
+			{
+				if (IsAutomaticMigration(id))
+					continue;
+
+				if (!IsValidMigrationId(id))
+					continue;
+
+				// Resolve and instantiate the DbMigration instance from the assembly
+				var migration = CreateMigrationInstanceByMigrationId(id, migrator.Configuration);
+
+				var provider = migration as ILocaleResourcesProvider;
+				if (provider == null)
+					continue;
+
+				var builder = new LocaleResourcesBuilder();
+				provider.MigrateLocaleResources(builder);
+
+				var resEntries = builder.Build();
+				var resMigrator = new LocaleResourcesMigrator(dbContext);
+				resMigrator.Migrate(resEntries);
+			}
+		}
+
+		private static IEnumerable<string> GetPendingResourceMigrations(DbMigrator migrator, string resHead)
+		{
+			var local = migrator.GetLocalMigrations();
+			var atHead = false;
+
+			if (local.Last().IsCaseInsensitiveEqual(resHead))
+				yield break;
+
+			foreach (var id in local)
+			{
+				if (!atHead)
+				{
+					if (!id.IsCaseInsensitiveEqual(resHead))
+					{
+						continue;
+					}
+					else
+					{
+						atHead = true;
+						continue;
+					}
+				}
+
+				yield return id;
+			}
 		}
 
 	}

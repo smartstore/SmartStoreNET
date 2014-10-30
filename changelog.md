@@ -100,6 +100,8 @@
 * #419 email account password hidden
 * #424 Localize return reasons & return actions
 * #479 Product filter: Wrong count of manufacturers if products of sub-categories are included
+* #492 Ipayment credit card: Order notes are only created when the order exists
+* #493 Postfinance plugin does not work if shopname includes a "umlaut"
 
 
 ##SmartStore.NET 2.0.2#

@@ -235,10 +235,11 @@ namespace SmartStore.Core.Plugins
 
         public int CompareTo(PluginDescriptor other)
         {
-            if (DisplayOrder != other.DisplayOrder)
-                return DisplayOrder.CompareTo(other.DisplayOrder);
-            else
-                return FriendlyName.CompareTo(other.FriendlyName);
+			if (DisplayOrder != other.DisplayOrder)
+				return DisplayOrder.CompareTo(other.DisplayOrder);
+			else if (FriendlyName != null)
+				return FriendlyName.CompareTo(other.FriendlyName);
+			return 0;
         }
 
 		public string GetSettingKey(string name)

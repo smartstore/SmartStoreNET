@@ -4,6 +4,11 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
+@{
+    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+}
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 

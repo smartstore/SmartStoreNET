@@ -25,27 +25,27 @@ namespace SmartStore.PayPal
 
 		public override void Install()
 		{
-            var paypalExpressSettings = new PayPalExpressSettings()
+            var paypalExpressSettings = new PayPalExpressPaymentSettings()
             {
                 UseSandbox = true,
                 TransactMode = TransactMode.Authorize
             };
-            _settingService.SaveSetting<PayPalExpressSettings>(paypalExpressSettings);
+            _settingService.SaveSetting<PayPalExpressPaymentSettings>(paypalExpressSettings);
 
-            var paypalDirectSettings = new PayPalDirectSettings()
+            var paypalDirectSettings = new PayPalDirectPaymentSettings()
             {
                 TransactMode = TransactMode.Authorize,
                 UseSandbox = true,
             };
-            _settingService.SaveSetting<PayPalDirectSettings>(paypalDirectSettings);
+            _settingService.SaveSetting<PayPalDirectPaymentSettings>(paypalDirectSettings);
 
-            var paypalStandardSettings = new PayPalStandardSettings()
+            var paypalStandardSettings = new PayPalStandardPaymentSettings()
             {
                 UseSandbox = true,
                 PdtValidateOrderTotal = true,
                 EnableIpn = true,
             };
-            _settingService.SaveSetting<PayPalStandardSettings>(paypalStandardSettings);
+            _settingService.SaveSetting<PayPalStandardPaymentSettings>(paypalStandardSettings);
 
 			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -54,9 +54,9 @@ namespace SmartStore.PayPal
 
 		public override void Uninstall()
 		{
-            _settingService.DeleteSetting<PayPalExpressSettings>();
-            _settingService.DeleteSetting<PayPalDirectSettings>();
-            _settingService.DeleteSetting<PayPalStandardSettings>();
+            _settingService.DeleteSetting<PayPalExpressPaymentSettings>();
+            _settingService.DeleteSetting<PayPalDirectPaymentSettings>();
+            _settingService.DeleteSetting<PayPalStandardPaymentSettings>();
 
 			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 

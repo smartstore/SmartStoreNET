@@ -163,7 +163,7 @@
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Services\IShippingByTotalService.cs" />
     <Compile Include="Services\ShippingByTotalService.cs" />
-    <Compile Include="Settings\ByTotalSettings.cs" />
+    <Compile Include="Settings\ShippingByTotalSettings.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

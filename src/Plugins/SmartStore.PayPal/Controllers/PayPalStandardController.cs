@@ -31,7 +31,7 @@ namespace SmartStore.PayPal.Controllers
 		private readonly IStoreContext _storeContext;
 		private readonly IWorkContext _workContext;
 		private readonly IWebHelper _webHelper;
-		private readonly PayPalStandardSettings _paypalStandardSettings;
+		private readonly PayPalStandardPaymentSettings _paypalStandardSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
 
@@ -41,7 +41,7 @@ namespace SmartStore.PayPal.Controllers
 			IStoreContext storeContext,
 			IWorkContext workContext,
 			IWebHelper webHelper,
-            PayPalStandardSettings paypalStandardSettings,
+            PayPalStandardPaymentSettings paypalStandardSettings,
 			PaymentSettings paymentSettings,
 			ILocalizationService localizationService)
 		{

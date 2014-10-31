@@ -212,7 +212,7 @@ namespace SmartStore.PayPal.Services
             return creditCardTypeType;
         }
 
-        public static PaymentActionCodeType GetPaymentAction(PayPalExpressSettings payPalExpressPaymentSettings)
+        public static PaymentActionCodeType GetPaymentAction(PayPalExpressPaymentSettings payPalExpressPaymentSettings)
         {
             if (payPalExpressPaymentSettings.TransactMode == TransactMode.Authorize)
             {

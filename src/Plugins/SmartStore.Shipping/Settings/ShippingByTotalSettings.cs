@@ -2,7 +2,7 @@
 
 namespace SmartStore.Shipping
 {
-    public class ByTotalSettings : ISettings
+    public class ShippingByTotalSettings : ISettings
     {
         public bool LimitMethodsToCreated { get; set; }
 

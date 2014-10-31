@@ -42,7 +42,7 @@ namespace SmartStore.PayPal.Controllers
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly ILogger _logger;
-		private readonly PayPalExpressSettings _payPalExpressPaymentSettings;
+		private readonly PayPalExpressPaymentSettings _payPalExpressPaymentSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
 		private readonly IWorkContext _workContext;
@@ -58,7 +58,7 @@ namespace SmartStore.PayPal.Controllers
 		public PayPalExpressController(ISettingService settingService,
 			IPaymentService paymentService, IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
-			ILogger logger, PayPalExpressSettings PayPalExpressPaymentSettings,
+			ILogger logger, PayPalExpressPaymentSettings PayPalExpressPaymentSettings,
 			PaymentSettings paymentSettings, ILocalizationService localizationService,
 			IWorkContext workContext, OrderSettings orderSettings,
 			ICurrencyService currencyService, CurrencySettings currencySettings,

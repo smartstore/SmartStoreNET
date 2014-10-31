@@ -30,14 +30,14 @@ namespace SmartStore.PayPal.Controllers
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
-		private readonly PayPalDirectSettings _paypalDirectSettings;
+		private readonly PayPalDirectPaymentSettings _paypalDirectSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
 
 		public PayPalDirectController(ISettingService settingService,
 			IPaymentService paymentService, IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
-			PayPalDirectSettings paypalDirectSettings,
+			PayPalDirectPaymentSettings paypalDirectSettings,
 			PaymentSettings paymentSettings, ILocalizationService localizationService,
 			IComponentContext ctx)
 		{

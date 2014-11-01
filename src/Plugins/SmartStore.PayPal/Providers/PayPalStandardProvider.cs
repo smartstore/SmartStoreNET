@@ -46,7 +46,7 @@ namespace SmartStore.PayPal
 		private readonly ICheckoutAttributeParser _checkoutAttributeParser;
 		private readonly ITaxService _taxService;
         private readonly HttpContextBase _httpContext;
-        private readonly PayPalStandardSettings _paypalStandardSettings;
+        private readonly PayPalStandardPaymentSettings _paypalStandardSettings;
         private readonly ICommonServices _commonServices;
         private readonly ILogger _logger;
 
@@ -60,7 +60,7 @@ namespace SmartStore.PayPal
             IOrderTotalCalculationService orderTotalCalculationService,
             ICheckoutAttributeParser checkoutAttributeParser,
             ITaxService taxService, 
-            PayPalStandardSettings paypalStandardSettings,
+            PayPalStandardPaymentSettings paypalStandardSettings,
             ICommonServices commonServices, 
             ILogger logger)
 		{

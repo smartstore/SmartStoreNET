@@ -4,9 +4,6 @@
 
 @{
     Layout = "";
-
-    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
-    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
 @if (Model.Id > 0)
@@ -14,7 +11,7 @@
     /*hide "add spec" table if no attributes are defined*/
     if (Model.AddSpecificationAttributeModel.AvailableAttributes.Count > 0)
     {
-                <div style="margin-top:10px;">
+        <div style="margin-top:10px;">
             <h3 class="bordered">@T("Admin.Catalog.Products.SpecificationAttributes.AddNew")</h3>
         </div>
         <script type="text/javascript">

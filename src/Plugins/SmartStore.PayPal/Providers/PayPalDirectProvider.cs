@@ -34,7 +34,7 @@ namespace SmartStore.PayPal
     [SystemName("Payments.PayPalDirect")]
     [FriendlyName("PayPal Direct")]
     [DisplayOrder(1)]
-    public class PayPalDirectProvider : PayPalProviderBase<PayPalDirectSettings>
+    public class PayPalDirectProvider : PayPalProviderBase<PayPalDirectPaymentSettings>
 	{
 		#region Fields
 

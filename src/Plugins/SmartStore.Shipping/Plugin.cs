@@ -45,13 +45,13 @@ namespace SmartStore.Shipping
         /// </summary>
         public override void Install()
         {            
-            var byTotalSettings = new ByTotalSettings()
+            var shippingByTotalSettings = new ShippingByTotalSettings()
             {
                 LimitMethodsToCreated = false,
                 SmallQuantityThreshold = 0,
                 SmallQuantitySurcharge = 0
             };
-            _settingService.SaveSetting(byTotalSettings);
+            _settingService.SaveSetting(shippingByTotalSettings);
 
             _localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -65,7 +65,7 @@ namespace SmartStore.Shipping
         /// </summary>
         public override void Uninstall()
         {
-            _settingService.DeleteSetting<ByTotalSettings>();
+            _settingService.DeleteSetting<ShippingByTotalSettings>();
 
 			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 

@@ -32,7 +32,7 @@ namespace SmartStore.PayPal
     [SystemName("Payments.PayPalExpress")]
     [FriendlyName("PayPal Express")]
     [DisplayOrder(0)]
-    public partial class PayPalExpress : PayPalProviderBase<PayPalExpressSettings>
+    public partial class PayPalExpress : PayPalProviderBase<PayPalExpressPaymentSettings>
     {
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;

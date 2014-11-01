@@ -20,7 +20,7 @@ namespace SmartStore.Shipping.Controllers
 		private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
         private readonly IShippingByTotalService _shippingByTotalService;
-        private readonly ByTotalSettings _shippingByTotalSettings;
+        private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly ICountryService _countryService;
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
@@ -30,7 +30,7 @@ namespace SmartStore.Shipping.Controllers
 			IStoreService storeService, 
             ISettingService settingService, 
             IShippingByTotalService shippingByTotalService,
-            ByTotalSettings shippingByTotalSettings, 
+            ShippingByTotalSettings shippingByTotalSettings, 
             ICountryService countryService,
             ICurrencyService currencyService, 
             CurrencySettings currencySettings,

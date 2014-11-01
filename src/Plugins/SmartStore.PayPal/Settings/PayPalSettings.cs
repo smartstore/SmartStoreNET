@@ -24,11 +24,11 @@ namespace SmartStore.PayPal.Settings
 		public string Signature { get; set; }
 	}
 
-    public class PayPalDirectSettings : PayPalApiSettingsBase, ISettings
+    public class PayPalDirectPaymentSettings : PayPalApiSettingsBase, ISettings
     {
     }
 
-    public class PayPalExpressSettings : PayPalApiSettingsBase, ISettings 
+    public class PayPalExpressPaymentSettings : PayPalApiSettingsBase, ISettings 
     {
         /// <summary>
         /// Determines whether the checkout button is displayed beneath the cart
@@ -56,7 +56,7 @@ namespace SmartStore.PayPal.Settings
         public decimal DefaultShippingPrice { get; set; }
     }
 
-    public class PayPalStandardSettings : PayPalSettingsBase, ISettings
+    public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
     {
         public string BusinessEmail { get; set; }
         public string PdtToken { get; set; }

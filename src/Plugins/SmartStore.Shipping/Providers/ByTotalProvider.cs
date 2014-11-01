@@ -22,7 +22,7 @@ namespace SmartStore.Shipping
         private readonly IShippingService _shippingService;
 		private readonly IStoreContext _storeContext;
         private readonly IShippingByTotalService _shippingByTotalService;
-        private readonly ByTotalSettings _shippingByTotalSettings;
+        private readonly ShippingByTotalSettings _shippingByTotalSettings;
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ILogger _logger;
         private readonly ISettingService _settingService;
@@ -42,7 +42,7 @@ namespace SmartStore.Shipping
         public ByTotalProvider(IShippingService shippingService,
 			IStoreContext storeContext,
             IShippingByTotalService shippingByTotalService,
-            ByTotalSettings shippingByTotalSettings,
+            ShippingByTotalSettings shippingByTotalSettings,
             IPriceCalculationService priceCalculationService,
             ILogger logger,
             ISettingService settingService,

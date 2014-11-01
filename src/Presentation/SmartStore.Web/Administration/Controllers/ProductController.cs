@@ -430,10 +430,6 @@ namespace SmartStore.Admin.Controllers
 			p.MetaDescription = m.MetaDescription;
 			p.MetaTitle = m.MetaTitle;
 
-			// URL alias
-			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
-			_urlRecordService.SaveSlug(p, m.SeName, 0);
-
 			// SEO
 			var service = _localizedEntityService;
 			foreach (var localized in model.Locales)
@@ -548,6 +544,17 @@ namespace SmartStore.Admin.Controllers
 			{
 				_pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
 			}
+		}
+
+		[NonAction]
+		private void UpdateDataOfExistingProduct(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			// SEO: URL alias
+			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
+			_urlRecordService.SaveSlug(p, m.SeName, 0);
 		}
 
 		#endregion
@@ -990,6 +997,8 @@ namespace SmartStore.Admin.Controllers
 
                 _productService.InsertProduct(product);
 
+				UpdateDataOfExistingProduct(product, model);
+
                 //activity log
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
 
@@ -1066,6 +1075,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form);
+				UpdateDataOfExistingProduct(product, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);

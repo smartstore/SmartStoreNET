@@ -1,8 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using System.Web.Caching;
+using System.Web.Hosting;
+using System.Web.Optimization;
 using System.Web.SessionState;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Assets;
@@ -19,9 +23,10 @@ namespace SmartStore.Web.Framework.Themes
 
     public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase
     {
-        public LessCssHttpHandler()
+		
+		public LessCssHttpHandler()
             : this(HttpContext.Current.Cache,
-                BundleTransformerContext.Current.GetVirtualFileSystemWrapper(),
+				BundleTransformerContext.Current.GetVirtualFileSystemWrapper(),
                 BundleTransformerContext.Current.GetCoreConfiguration().AssetHandler)
         { }
 
@@ -65,16 +70,16 @@ namespace SmartStore.Web.Framework.Themes
 						// required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
 						if (qs.Contains("storeId"))
 						{
-							httpContext.Items.Add(ThemeVarsVirtualPathProvider.OverriddenStoreIdKey, qs["storeId"].ToInt());
+							httpContext.Items.Add(ThemeHelper.OverriddenStoreIdKey, qs["storeId"].ToInt());
 						}
 						if (qs.Contains("theme"))
 						{
-							httpContext.Items.Add(ThemeVarsVirtualPathProvider.OverriddenThemeNameKey, qs["theme"]);
+							httpContext.Items.Add(ThemeHelper.OverriddenThemeNameKey, qs["theme"]);
 						}
 					}
 				}
 				
-				cacheKey += "_" + ThemeVarsVirtualPathProvider.ResolveCurrentStoreId();
+				cacheKey += "_" + ThemeHelper.ResolveCurrentTheme().ThemeName + "_" + ThemeHelper.ResolveCurrentStoreId();
             }
 
             return cacheKey;

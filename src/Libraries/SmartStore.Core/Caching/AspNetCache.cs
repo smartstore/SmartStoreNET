@@ -12,21 +12,21 @@ namespace SmartStore.Core.Caching
     public partial class AspNetCache : ICache
     {
         private const string REGION_NAME = "$$SmartStoreNET$$";
-        private readonly HttpContextBase _context;
 
-        public AspNetCache(HttpContextBase context)
-        {
-            this._context = context;
-        }
+		// AspNetCache object does not have a ContainsKey() method:
+		// Therefore we put a special string into cache if value is null,
+		// otherwise our 'Contains()' would always return false,
+		// which is bad if we intentionally wanted to save NULL values.
+		private const string FAKE_NULL = "__[NULL]__";
 
         public IEnumerable<KeyValuePair<string, object>> Entries
         {
             get
             {
-                if (_context is FakeHttpContext)
+                if (HttpContext.Current == null || HttpContext.Current.Cache == null)
                     return Enumerable.Empty<KeyValuePair<string, object>>();
 
-                return from entry in _context.Cache.Cast<DictionaryEntry>()
+				return from entry in HttpContext.Current.Cache.Cast<DictionaryEntry>()
                        let key = entry.Key.ToString()
                        where key.StartsWith(REGION_NAME)
                        select new KeyValuePair<string, object>(
@@ -37,14 +37,22 @@ namespace SmartStore.Core.Caching
 
 		public object Get(string key)
         {
-            if (_context is FakeHttpContext)
+			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
                 return null;
-            
-			return _context.Cache.Get(BuildKey(key));
+
+			var value = HttpContext.Current.Cache.Get(BuildKey(key));
+
+			if (value.Equals(FAKE_NULL))
+				return null;
+
+			return value;
         }
 
 		public void Set(string key, object value, int? cacheTime)
 		{
+			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+				return;
+			
 			key = BuildKey(key);
 
 			var absoluteExpiration = Cache.NoAbsoluteExpiration;
@@ -53,23 +61,23 @@ namespace SmartStore.Core.Caching
 				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
 			}
 
-			_context.Cache.Insert(key, value, null, absoluteExpiration, Cache.NoSlidingExpiration);
+			HttpContext.Current.Cache.Insert(key, value ?? FAKE_NULL, null, absoluteExpiration, Cache.NoSlidingExpiration);
 		}
 
         public bool Contains(string key)
         {
-            if (_context is FakeHttpContext)
+			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
                 return false;
-            
-            return _context.Cache.Get(BuildKey(key)) != null;
+
+			return HttpContext.Current.Cache.Get(BuildKey(key)) != null;
         }
 
         public void Remove(string key)
         {
-            if (_context is FakeHttpContext)
+			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
                 return;
-            
-            _context.Cache.Remove(BuildKey(key));
+
+			HttpContext.Current.Cache.Remove(BuildKey(key));
         }
 
         public static string BuildKey(string key)
@@ -79,6 +87,8 @@ namespace SmartStore.Core.Caching
 
 		public bool IsSingleton
 		{
+			// because Asp.NET Cache is thread-safe by itself,
+			// no need to mess up with locks.
 			get { return false; }
 		}
 

@@ -103,8 +103,8 @@ namespace SmartStore.Web
 				// Bundles
 				RegisterBundles(BundleTable.Bundles);
 
-				// register virtual path provider for theme variables
-				HostingEnvironment.RegisterVirtualPathProvider(new ThemeVarsVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
+				// register virtual path provider for theming (file inheritance & variables handling)
+				HostingEnvironment.RegisterVirtualPathProvider(new ThemingVirtualPathProvider(HostingEnvironment.VirtualPathProvider));
 				BundleTable.VirtualPathProvider = HostingEnvironment.VirtualPathProvider;
 
 				// register plugin debug view virtual path provider

@@ -22,8 +22,6 @@ namespace SmartStore.Web.Framework.Themes
     {
 		#region Fields
 
-		internal const string THEME_MANIFESTS_ALL_KEY = "sm.theme-manifests.all";
-
 		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
@@ -141,7 +139,7 @@ namespace SmartStore.Web.Framework.Themes
 		public ThemeManifest GetThemeManifest(string themeName)
 		{
 			ThemeManifest value;
-			if (_themes.TryGetValue(themeName, out value))
+			if (themeName.HasValue() && _themes.TryGetValue(themeName, out value))
 			{
 				return value;
 			}
@@ -158,7 +156,10 @@ namespace SmartStore.Web.Framework.Themes
 			Guard.ArgumentNotNull(() => manifest);
 
 			TryRemoveManifest(manifest.ThemeName);
-			_themes.TryAdd(manifest.ThemeName, manifest);
+			if (ValidateThemeInheritance(manifest, _themes))
+			{
+				_themes.TryAdd(manifest.ThemeName, manifest);
+			}
 		}
 
 		private bool TryRemoveManifest(string themeName)
@@ -172,10 +173,40 @@ namespace SmartStore.Web.Framework.Themes
 			return result;
 		}
 
+		public bool IsChildThemeOf(string themeName, string baseTheme)
+		{
+			if (themeName.IsEmpty() && baseTheme.IsEmpty())
+			{
+				return false;
+			}
+
+			if (themeName.Equals(baseTheme, StringComparison.OrdinalIgnoreCase))
+			{
+				return false;
+			}
+
+			var current = GetThemeManifest(themeName);
+			if (current == null)
+				return false;
+
+			while (current != null && current.BaseThemeName != null)
+			{
+				if (baseTheme.Equals(current.BaseThemeName, StringComparison.OrdinalIgnoreCase))
+				{
+					return true;
+				}
+
+				current = GetThemeManifest(current.BaseThemeName);
+			}
+
+			return false;
+		}
+
 		private void LoadThemes()
 		{
 			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
 			var virtualBasePath = _themesBasePath;
+			var manifests = new List<ThemeManifest>();
 			foreach (var path in folder.ListDirectories(virtualBasePath))
 			{
 				try
@@ -183,7 +214,7 @@ namespace SmartStore.Web.Framework.Themes
 					var manifest = ThemeManifest.Create(CommonHelper.MapPath(path), virtualBasePath);
 					if (manifest != null)
 					{
-						_themes.TryAdd(manifest.ThemeName, manifest);
+						manifests.Add(manifest);
 					}
 				}
 				catch (Exception ex)
@@ -191,10 +222,47 @@ namespace SmartStore.Web.Framework.Themes
 					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(path, ex.Message));
 				}
 			}
+
+			var map = manifests.OrderBy(x => x.BaseThemeName).ThenBy(x => x.ThemeName).ToDictionary(x => x.ThemeName);
+
+			foreach (var manifest in map.Values)
+			{
+				if (ValidateThemeInheritance(manifest, map)) 
+				{
+					_themes.TryAdd(manifest.ThemeName, manifest);
+				}
+			}
+		}
+
+		private bool ValidateThemeInheritance(ThemeManifest manifest, IDictionary<string, ThemeManifest> map)
+		{
+			var stack = new List<string>();
+
+			while (manifest.BaseThemeName != null)
+			{
+				stack.Add(manifest.ThemeName);
+				
+				if (!map.ContainsKey(manifest.BaseThemeName))
+				{
+					Debug.WriteLine("The base theme does not exist");
+					return false;
+				}
+
+				if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
+				{
+					Debug.WriteLine("Circular reference");
+					return false;
+				}
+
+				manifest = map[manifest.BaseThemeName];
+			}
+
+			return true;
 		}
 
         #endregion
 
+		#region Disposable
 
 		protected override void OnDispose(bool disposing)
 		{
@@ -207,6 +275,9 @@ namespace SmartStore.Web.Framework.Themes
 				_watcherFolders = null;
 			}
 		}
+
+		#endregion
+
 	}
 
 }

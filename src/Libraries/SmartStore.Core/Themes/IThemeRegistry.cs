@@ -32,5 +32,16 @@ namespace SmartStore.Core.Themes
 		/// <remarks>If an equal theme exists already, it gets removed first.</remarks>
 		void AddThemeManifest(ThemeManifest manifest);
 
+		/// <summary>
+		/// Gets a value indicating whether a theme is a child of another theme
+		/// </summary>
+		/// <param name="themeName">The name of the theme to test</param>
+		/// <param name="baseTheme">The name of the base theme</param>
+		/// <returns><c>true</c> when <paramref name="themeName"/> is based on <paramref name="baseTheme"/>, <c>false</c> othwerise</returns>
+		/// <remarks>
+		/// This method walks up the complete hierarchy chain of <paramref name="themeName"/> to determine the result.
+		/// </remarks>
+		bool IsChildThemeOf(string themeName, string baseTheme);
+
     }
 }

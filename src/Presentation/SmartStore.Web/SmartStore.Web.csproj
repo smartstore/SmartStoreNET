@@ -104,8 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FiftyOne.Foundation">
-      <HintPath>..\..\packages\51Degrees.mobi.3.1.6.6\lib\NET40\FiftyOne.Foundation.dll</HintPath>
+    <Reference Include="FiftyOne.Foundation, Version=3.1.4.5, Culture=neutral, PublicKeyToken=e967ae578dabd98e, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\51Degrees.mobi.3.1.4.5\lib\NET40\FiftyOne.Foundation.dll</HintPath>
     </Reference>
     <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -1983,6 +1984,7 @@
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
     <Content Include="Themes\Alpha\preview.png" />
+    <Content Include="Themes\Gamma\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
     <Content Include="Themes\Mobile\Content\images\ico-forum-post-high.gif" />
@@ -2206,9 +2208,6 @@
     <Content Include="Views\Checkout\BillingAddress.cshtml">
       <SubType>Code</SubType>
     </Content>
-    <Content Include="Themes\Alpha\Content\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
     <Content Include="Themes\Mobile\Content\Web.config">
       <SubType>Designer</SubType>
     </Content>
@@ -2225,9 +2224,18 @@
     <Content Include="Views\Shared\EditorTemplates\Double.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
+    <Content Include="Themes\Alpha\Content\bootstrap.less" />
+    <Content Include="Themes\Gamma\theme.config">
+      <SubType>Designer</SubType>
+    </Content>
+    <Content Include="Themes\Gamma\Views\Common\ShopBar.cshtml" />
+    <Content Include="Themes\Gamma\Views\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
+    <Folder Include="Themes\Gamma\Content\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

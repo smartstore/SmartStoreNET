@@ -250,6 +250,9 @@
     <Compile Include="Mvc\ProviderModel.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
+    <Compile Include="Themes\IThemeFileResolver.cs" />
+    <Compile Include="Themes\ThemeFileResolver.cs" />
+    <Compile Include="Themes\InheritedVirtualThemeFile.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
@@ -277,7 +280,7 @@
     <Compile Include="Themes\SmartStyleBundle.cs" />
     <Compile Include="Themes\ThemeHelper.cs" />
     <Compile Include="Themes\ThemeVarsVirtualFile.cs" />
-    <Compile Include="Themes\ThemeVarsVirtualPathProvider.cs" />
+    <Compile Include="Themes\ThemingVirtualPathProvider.cs" />
     <Compile Include="Themes\ThemeHtmlExtensions.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Themes\ThemeVarsRepository.cs" />

@@ -453,7 +453,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<StaticCache>().Keyed<ICache>(typeof(StaticCache)).SingleInstance();
-			builder.RegisterType<AspNetCache>().Keyed<ICache>(typeof(AspNetCache)).InstancePerRequest();
+			builder.RegisterType<AspNetCache>().Keyed<ICache>(typeof(AspNetCache)).SingleInstance();
 			builder.RegisterType<RequestCache>().Keyed<ICache>(typeof(RequestCache)).InstancePerRequest();
 
 			builder.RegisterType<CacheManager<RequestCache>>()
@@ -464,7 +464,7 @@ namespace SmartStore.Web.Framework
 				.SingleInstance();
 			builder.RegisterType<CacheManager<AspNetCache>>()
 				.Named<ICacheManager>("aspnet")
-				.InstancePerRequest();
+				.SingleInstance();
 			builder.RegisterType<NullCache>()
 				.Named<ICacheManager>("null")
 				.SingleInstance();
@@ -690,6 +690,7 @@ namespace SmartStore.Web.Framework
 		{
 			// register theming services
 			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance();
+			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();
 

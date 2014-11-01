@@ -7,7 +7,7 @@ namespace SmartStore.Web.Framework.Themes
     public interface IThemeContext
     {
         /// <summary>
-        /// Get or set current theme for desktops (e.g. darkOrange)
+        /// Get or set current theme for desktops (e.g. Alpha)
         /// </summary>
         string WorkingDesktopTheme { get; set; }
 

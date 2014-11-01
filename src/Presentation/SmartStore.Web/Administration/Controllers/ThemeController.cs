@@ -126,10 +126,10 @@ namespace SmartStore.Admin.Controllers
                     IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName
                 };
 
-            if (System.IO.File.Exists(System.IO.Path.Combine(manifest.Path, "Views\\Shared\\ConfigureTheme.cshtml")))
-            {
-                model.IsConfigurable = true;
-            }
+			if (HostingEnvironment.VirtualPathProvider.FileExists("{0}/{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location, manifest.ThemeName)))
+			{
+				model.IsConfigurable = true;
+			}
             
             return model;
         }

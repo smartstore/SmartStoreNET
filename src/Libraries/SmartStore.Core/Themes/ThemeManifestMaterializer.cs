@@ -32,6 +32,13 @@ namespace SmartStore.Core.Themes
 
             var root = _manifest.ConfigurationNode;
 
+			_manifest.BaseThemeName = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
+			if (_manifest.BaseThemeName != null && _manifest.BaseThemeName.IsCaseInsensitiveEqual(_manifest.ThemeName))
+			{
+				// Don't let theme point to itself!
+				_manifest.BaseThemeName = null;
+			}
+
 			_manifest.ThemeTitle = root.GetAttribute("title") ?? _manifest.ThemeName;
             _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
             _manifest.MobileTheme = root.GetAttribute("mobileTheme").ToBool();

@@ -311,10 +311,8 @@ namespace SmartStore.Web.Framework
 			{
 				var storeService = c.Resolve<IStoreService>();
 				var aclService = c.Resolve<IAclService>();
-				//return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
-				var x = !aclService.HasActiveAcl;
-				var y = storeService.IsSingleStoreMode();
-				return new DbQuerySettings(true, true);
+
+				return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
 			})
 			.InstancePerRequest();
 		}

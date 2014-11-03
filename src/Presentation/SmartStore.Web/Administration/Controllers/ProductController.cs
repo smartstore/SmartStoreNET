@@ -202,17 +202,6 @@ namespace SmartStore.Admin.Controllers
 			p.ProductTypeId = m.ProductTypeId;
 			p.VisibleIndividually = m.VisibleIndividually;
 			p.ProductTemplateId = m.ProductTemplateId;
-			p.ManageInventoryMethodId = m.ManageInventoryMethodId;
-			p.StockQuantity = m.StockQuantity;
-			p.DisplayStockAvailability = m.DisplayStockAvailability;
-			p.DisplayStockQuantity = m.DisplayStockQuantity;
-			p.MinStockQuantity = m.MinStockQuantity;
-			p.LowStockActivityId = m.LowStockActivityId;
-			p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
-			p.BackorderModeId = m.BackorderModeId;
-			p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
-			p.OrderMinimumQuantity = m.OrderMinimumQuantity;
-			p.OrderMaximumQuantity = m.OrderMaximumQuantity;
 
 			p.Name = m.Name;
 			p.ShortDescription = m.ShortDescription;
@@ -418,6 +407,7 @@ namespace SmartStore.Admin.Controllers
 			p.BasePriceEnabled = m.BasePriceEnabled;
 			p.BasePriceBaseAmount = m.BasePriceBaseAmount;
 			p.BasePriceAmount = m.BasePriceAmount;
+            p.BasePriceMeasureUnit = m.BasePriceMeasureUnit;
 		}
 
 		[NonAction]

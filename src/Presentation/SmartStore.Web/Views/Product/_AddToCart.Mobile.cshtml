@@ -1,45 +1,49 @@
-﻿@model ProductDetailsModel.AddToCartModel
+﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
 <div class="add-to-cart">
-    @if (Model.CustomerEntersPrice)
+    @if (Model.AddToCart.CustomerEntersPrice)
     {
         <div class="customer-entered-price">
             <div>
-                @Html.LabelFor(model => model.CustomerEnteredPrice, new { @class = "enter-price-label" })
+                @Html.LabelFor(model => model.AddToCart.CustomerEnteredPrice, new { @class = "enter-price-label" })
                 @*round price*@
-                @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.CustomerEnteredPrice)), new { @class = "enter-price-input" })
+                @Html.TextBox("CustomerEnteredPrice", Convert.ToInt32(Math.Ceiling(Model.AddToCart.CustomerEnteredPrice)), new { @class = "enter-price-input" })
             </div>
             <div class="price-range">
-                @Model.CustomerEnteredPriceRange
+                @Model.AddToCart.CustomerEnteredPriceRange
             </div>
         </div>
     }
-    @if (!Model.DisableBuyButton || !Model.DisableWishlistButton)
+    @if (!Model.AddToCart.DisableBuyButton || !Model.AddToCart.DisableWishlistButton)
     {
-        <div>
-            @if (Model.AllowedQuantities.Count > 0)
+        <div class="form-inline" style="@(Model.IsAvailable ? "" : "display:none;")">
+            @if (Model.AddToCart.AllowedQuantities.Count > 0)
             {
                 <div data-role="fieldcontain">
                     <fieldset data-role="controlgroup" data-type="horizontal" data-mini="true">
-                        @Html.LabelFor(model => model.EnteredQuantity, new { @class = "qty-label" })
-                        @Html.DropDownListFor(model => model.EnteredQuantity, Model.AllowedQuantities, new { @class = "qty-dropdown" })
+                        @Html.LabelFor(model => model.AddToCart.EnteredQuantity, new { @class = "qty-label" })
+                        @Html.DropDownListFor(model => model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
                     </fieldset>
                 </div>
             }
             else
             {
-                @Html.LabelFor(model => model.EnteredQuantity, new { @class = "qty-label" })
-                @Html.TextBoxFor(model => model.EnteredQuantity, new { @class = "qty-input" })
+                @Html.LabelFor(model => model.AddToCart.EnteredQuantity, new { @class = "qty-label" })
+                @Html.TextBoxFor(model => model.AddToCart.EnteredQuantity, new { @class = "qty-input" })
             }
         </div>
-            if (!Model.DisableBuyButton)
-            {
-                <input type="submit" name="addtocartbutton-@(Model.ProductId)" value="@(Model.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))" />
-            }
-            if (!Model.DisableWishlistButton)
-            {
-                <input type="submit" name="addtowishlistbutton-@(Model.ProductId)" value="@T("ShoppingCart.AddToWishlist")" />
-            }
+        if (!Model.AddToCart.DisableBuyButton)
+        {
+            <div class="form-inline" style="@(Model.IsAvailable ? "" : "display:none;")">
+                <input type="submit"
+                       name="addtocartbutton-@(Model.AddToCart.ProductId)"
+                       value="@(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))" />
+            </div>
+        }
+        if (!Model.AddToCart.DisableWishlistButton)
+        {
+            <input type="submit" name="addtowishlistbutton-@(Model.AddToCart.ProductId)" value="@T("ShoppingCart.AddToWishlist")" />
+        }
     }
     @Html.Widget("mobile_productdetails_add_info")
 </div>

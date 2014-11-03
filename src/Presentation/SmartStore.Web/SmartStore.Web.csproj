@@ -1508,6 +1508,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.js" />
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
+    <Content Include="Scripts\public.product-detail.mobile.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />
     <Content Include="Scripts\jquery.backgroundpos.js" />

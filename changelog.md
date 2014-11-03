@@ -105,6 +105,7 @@
 * #492 Ipayment credit card: Order notes are only created when the order exists
 * #493 Postfinance plugin does not work if shopname includes a "umlaut"
 * #237 Mobile theme: inactive attribute combinations should not be added to cart
+* #178 Mobile theme doesn't display base price
 
 
 ##SmartStore.NET 2.0.2#

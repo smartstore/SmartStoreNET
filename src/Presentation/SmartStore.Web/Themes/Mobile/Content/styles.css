@@ -438,6 +438,8 @@
 .product-details-page .add-to-cart .qty-input{display:inline-block;width:40px;}
 .product-details-page .add-to-cart .qty-dropdown{}
 .product-details-page .attributes{}
+.product-details-page .attributes .in { display: inline-block }
+.product-details-page .attributes .hide { display: none }
 .product-details-page .attributes .text-prompt{font-weight:bold;}
 .product-details-page .attributes .attribute-description{}
 .product-details-page .attributes ul.option-list{padding:0px;margin:0px;}

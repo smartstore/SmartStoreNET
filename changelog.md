@@ -1,4 +1,4 @@
-﻿#Release Notes#
+#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -30,6 +30,7 @@
 * #266 Update Pending Order in Admin Panel
 * #331 Show CommentBox in checkout (optional) 
 * Option to turn off the filter for products in categories
+* Export/Import was enabeled to work with localized values for name, short description and long description 
 
 ###Improvements###
 * New backend design and cleaner frontend theme
@@ -76,6 +77,7 @@
 * #375 Implement SKU search for 'related products picker'
 * #391 Admin: allow searching/filtering for specification attributes
 * Removed _OpenID_ plugin from core
+* Specification attribute values that are assigned to a product can be edited 
 
 ###Bugfixes###
 * Twitter Auth: fixed _SecurityTransparent_ error
@@ -102,6 +104,7 @@
 * #479 Product filter: Wrong count of manufacturers if products of sub-categories are included
 * #492 Ipayment credit card: Order notes are only created when the order exists
 * #493 Postfinance plugin does not work if shopname includes a "umlaut"
+* #237 Mobile theme: inactive attribute combinations should not be added to cart
 
 
 ##SmartStore.NET 2.0.2#

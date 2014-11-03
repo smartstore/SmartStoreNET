@@ -291,6 +291,9 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
+				if (row.Count == 0)
+					continue;
+
 				Product product = null;
 
 				object key;

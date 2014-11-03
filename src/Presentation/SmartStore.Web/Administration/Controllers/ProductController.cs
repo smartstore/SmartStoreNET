@@ -202,17 +202,6 @@ namespace SmartStore.Admin.Controllers
 			p.ProductTypeId = m.ProductTypeId;
 			p.VisibleIndividually = m.VisibleIndividually;
 			p.ProductTemplateId = m.ProductTemplateId;
-			p.ManageInventoryMethodId = m.ManageInventoryMethodId;
-			p.StockQuantity = m.StockQuantity;
-			p.DisplayStockAvailability = m.DisplayStockAvailability;
-			p.DisplayStockQuantity = m.DisplayStockQuantity;
-			p.MinStockQuantity = m.MinStockQuantity;
-			p.LowStockActivityId = m.LowStockActivityId;
-			p.NotifyAdminForQuantityBelow = m.NotifyAdminForQuantityBelow;
-			p.BackorderModeId = m.BackorderModeId;
-			p.AllowBackInStockSubscriptions = m.AllowBackInStockSubscriptions;
-			p.OrderMinimumQuantity = m.OrderMinimumQuantity;
-			p.OrderMaximumQuantity = m.OrderMaximumQuantity;
 
 			p.Name = m.Name;
 			p.ShortDescription = m.ShortDescription;
@@ -418,6 +407,7 @@ namespace SmartStore.Admin.Controllers
 			p.BasePriceEnabled = m.BasePriceEnabled;
 			p.BasePriceBaseAmount = m.BasePriceBaseAmount;
 			p.BasePriceAmount = m.BasePriceAmount;
+            p.BasePriceMeasureUnit = m.BasePriceMeasureUnit;
 		}
 
 		[NonAction]
@@ -429,10 +419,6 @@ namespace SmartStore.Admin.Controllers
 			p.MetaKeywords = m.MetaKeywords;
 			p.MetaDescription = m.MetaDescription;
 			p.MetaTitle = m.MetaTitle;
-
-			// URL alias
-			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
-			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
 			// SEO
 			var service = _localizedEntityService;
@@ -548,6 +534,17 @@ namespace SmartStore.Admin.Controllers
 			{
 				_pictureService.SetSeoFilename(pp.PictureId, _pictureService.GetPictureSeName(product.Name));
 			}
+		}
+
+		[NonAction]
+		private void UpdateDataOfExistingProduct(Product product, ProductModel model)
+		{
+			var p = product;
+			var m = model;
+
+			// SEO: URL alias
+			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
+			_urlRecordService.SaveSlug(p, m.SeName, 0);
 		}
 
 		#endregion
@@ -990,6 +987,8 @@ namespace SmartStore.Admin.Controllers
 
                 _productService.InsertProduct(product);
 
+				UpdateDataOfExistingProduct(product, model);
+
                 //activity log
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
 
@@ -1066,6 +1065,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form);
+				UpdateDataOfExistingProduct(product, model);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);

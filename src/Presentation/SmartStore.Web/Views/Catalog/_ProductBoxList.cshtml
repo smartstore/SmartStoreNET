@@ -13,7 +13,6 @@
 		addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id });
     }
 
-    //codehint: sm-add begin
     string leftContentWidth = (Model.ThumbDimension + 20).ToString() + "px";
     
     int ratingPercent = 0;
@@ -29,8 +28,6 @@
     }
 
     bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;  
-    
-    //codehint: sm-add end
 }
 
 <div class="pull-left" style="width:@leftContentWidth">

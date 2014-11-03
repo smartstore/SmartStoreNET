@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -143,7 +142,6 @@ namespace SmartStore.Services.Catalog
 		/// <param name="alias">Alias to be filtered</param>
         /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
         /// <returns>Categories</returns>
-		/// <remarks>codehint: sm-edit</remarks>
         public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true)
         {
             var query = _categoryRepository.Table;
@@ -165,7 +163,7 @@ namespace SmartStore.Services.Catalog
             var unsortedCategories = query.ToList();
 
             // sort categories
-            var sortedCategories = unsortedCategories.SortCategoriesForTree(ignoreCategoriesWithoutExistingParent: true);
+            var sortedCategories = unsortedCategories.SortCategoriesForTree();
 
             // paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);

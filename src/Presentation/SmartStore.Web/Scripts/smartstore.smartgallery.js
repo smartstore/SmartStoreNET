@@ -484,7 +484,7 @@
 							{
                 				container: container[0],
                 				index: self.currentIndex,
-                				event: event
+                				event: e
 							},
 							callbacks,
 							self.options

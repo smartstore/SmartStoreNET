@@ -1,6 +1,6 @@
 /*
  *  Project: smartstore.smartgallery
- *  Version: 1.0 
+ *  Version: 1.1
  *  Author: Murat Cakir
  */
 
@@ -8,7 +8,7 @@
     
     var pluginName = 'smartGallery';
     
-	var defaultEasing = "easeInQuad";
+	var defaultEasing = "easeInOutQuad";
 	var animations = {
 	    'slide': function (cnt, dir, desc) {
 			var curLeft = parseInt(cnt.css('left'), 10);
@@ -199,7 +199,7 @@
 			
 			this.origHtml = this.el.outerHtml();
 			this.imageWrapper = el.find('.sg-image-wrapper').empty();
-			this.nav = el.find('.sg-nav').addClass("invisible");
+			this.nav = el.find('.sg-nav').css("opacity", "0");
 			this.thumbsWrapper = this.nav.find('.sg-thumbs');
 			this.preloads = $('<div class="sg-preloads"></div>');
 			this.loader = $('<div class="ajax-loader-small sg-loader"></div>');
@@ -248,21 +248,20 @@
 				var thumb = link.find('img');
 				var linkSize = self.options.thumbSize + 2;
 
+				thumbWrapperWidth += this.parentNode.offsetWidth; // parent LI of A
+
 				// Check if the thumb has already been loaded
 				if (!self.isImageLoaded(thumb[0])) {
 					thumb.load(function() {
-					    thumbWrapperWidth += this.parentNode.parentNode.offsetWidth;
 					    thumbsLoaded++;
 					});
 				} 
 				else{
-					thumbWrapperWidth += (linkSize || 50) + 2;
 					thumbsLoaded++;
 				}
 				
 				
-				link.addClass('sg-thumb' + i)
-			        .css({ width: linkSize + "px", height: linkSize + "px", lineHeight: (linkSize-2) + "px" });
+				link.addClass('sg-thumb' + i);
 				
 				link.on({ 
 				    'click': function () {
@@ -310,10 +309,9 @@
 				};
 			});
 			
-			// Wait until all thumbs are loaded, and then set the width of the ul
-			var list = self.nav.find('.sg-thumb-list');
-			var setULWidth = function() {
-				
+			// Wait until all thumbs are loaded, and then set the width of the UL wrapper
+			var listWrapper = self.nav.find('.sg-thumbs');
+			var setULWrapperWidth = function() {
 				if (thumbCount == thumbsLoaded) {
 					var scrollers = self.nav.find('.scroll-button');
 					if (thumbWrapperWidth <= self.navDisplayWidth) {
@@ -324,8 +322,6 @@
 						});
 						// ...und verhindern, dass ein ThumbJump durchgeführt würde.
 						self.noScrollers = true;
-						// ...und Liste horizontal zentrieren
-						list.css('left', (self.navDisplayWidth - thumbWrapperWidth) / 2 +'px');	
 					}
 					else {
 						// Liste ist größer als Container!
@@ -337,21 +333,18 @@
 						}
 					}
 					
+					thumbWrapperWidth += self.thumbsWrapper.horizontalCushioning() - thumbsLoaded + 1;
+
 					// tatsächliche Breite der Liste setzen
-					//list.css('width', (thumbWrapperWidth) +'px');
-					list.css('width', (thumbWrapperWidth + 1) +'px');
+					listWrapper.css('width', (thumbWrapperWidth) + 'px');
 					
 					clearInterval(inter);
-					
-					self.navListWidth = list.outerWidth(true);
-					
-					self.nav.removeClass("invisible");
-					
+					self.navListWidth = thumbWrapperWidth;
+					self.nav.css("opacity", "1");
 				}
 			}
 			
-			var inter = setInterval( setULWidth, 50 );
-	
+			var inter = setInterval(setULWrapperWidth, 50);
 		},
 
 		initKeyEvents: function() {
@@ -395,12 +388,15 @@
 					if (self.options.scrollJump >>> 0) {
 						width = self.options.scrollJump;
 					}
+					var left;
 					if (dir == 'right') {
-						var left = self.thumbsWrapper.scrollLeft() + width;
+						left = self.thumbsWrapper.scrollLeft() + width;
 					} 
 					else {
-						var left = self.thumbsWrapper.scrollLeft() - width;
+						left = self.thumbsWrapper.scrollLeft() - width;
 					}
+					left = Math.min(left, self.navDisplayWidth);
+
 					self.thumbsWrapper.animate({ scrollLeft: left +'px' }, 400, "easeOutQuad");
 					self._toggleScrollButtons(left);
 					return false;
@@ -434,13 +430,35 @@
 
 				widget = $('<div id="' + id + '" class="blueimp-gallery blueimp-gallery-controls"></div>')
 					.append('<div class="slides"></div>')
-					.append('<h3 class="title"></h3>')
-					.append('<a class="prev">' + String.fromCharCode(8249) + '</a>')
-					.append('<a class="next">' + String.fromCharCode(8250) + '</a>')
+					.append('<a class="prev"><i class="fa fa-angle-left"></i></a>')
+					.append('<a class="next"><i class="fa fa-angle-right"></i></a>')
 					.append('<a class="close">' + String.fromCharCode(215) + '</a>')
-					.append('<a class="play-pause"></a>')
 					.append('<ol class="indicator"></ol>');
 				widget.appendTo('body');
+
+				var prevY = null;
+
+				var onMouseMove = function (e) {
+					if (!_.isNumber(prevY)) {
+						prevY = e.pageY;
+						return;
+					}		
+
+					if (e.pageY - prevY > 25) {
+						// moved down by 25px
+						widget.find('>.indicator').removeClass('out').data("explicit-move", true);
+					}
+					else if (prevY - e.pageY > 25) {
+						// moved up by 25px
+						widget.find('>.indicator').addClass('out');
+					}
+
+					prevY = e.pageY;
+				};
+
+				// trigger mousemove all 100ms
+				var throttledMouseMove = _.throttle(onMouseMove, 100, { leading: false, trailing: false });
+				widget.find('> .slides').on('mousemove', throttledMouseMove);
 
 				return widget;
 			};
@@ -514,7 +532,7 @@
 			var fwd = this.scrollForward, back = this.scrollBack;
 			var plugin, enabled = true;
 			scrollLeft = scrollLeft !== undefined ? scrollLeft : this.thumbsWrapper.scrollLeft();
-			var listWidth = this.navListWidth || this.nav.find('.sg-thumb-list').outerWidth(true);
+			var listWidth = this.navListWidth || this.thumbsWrapper.outerWidth(true);
 			if (fwd) {	
 				enabled = (this.navDisplayWidth - (listWidth - scrollLeft)) < 0;
 				plugin = fwd.data("ScrollButton");
@@ -608,7 +626,7 @@
 			var imgContainer = $(document.createElement('div')).addClass('sg-image');
 			var img = $(new Image()).attr('src', image.image);
 			if (image.link) {
-				var link = $('<a href="' + image.link + '" target="_blank"></a>').css('width', (self.options.thumbSize || 50) + 2);
+				var link = $('<a href="' + image.link + '" target="_blank"></a>');
 				link.append(img).data('gallery', thumb.data('gallery'));
 				imgContainer.append(link);
 			} 
@@ -796,13 +814,17 @@
 			return true;
 		},
 
-		highlightThumb: function(thumb) {
+		highlightThumb: function (thumb) {
+			if (thumb.hasClass('sg-active'))
+				return;
+
 			this.thumbsWrapper.find('.sg-active').removeClass('sg-active');
 			thumb.addClass('sg-active');
 			if (!this.noScrollers) {
-				var left = thumb[0].parentNode.offsetLeft;
+				var left = thumb[0].parentNode.offsetLeft + toInt(this.thumbsWrapper.css('margin-left'));
 				left -= (this.navDisplayWidth / 2) - (thumb[0].offsetWidth / 2);
-				this.thumbsWrapper.animate({ scrollLeft: left +'px' });
+				left = Math.min(left, this.navDisplayWidth);
+				this.thumbsWrapper.animate({ scrollLeft: left + 'px' });
 				this._toggleScrollButtons(left);
 			}
 		},

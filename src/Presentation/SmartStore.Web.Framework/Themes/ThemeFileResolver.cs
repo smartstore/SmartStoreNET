@@ -16,72 +16,79 @@ using System.Text.RegularExpressions;
 namespace SmartStore.Web.Framework.Themes
 {
 	
-	public class ThemeFileResolver : DisposableObject, IThemeFileResolver
+	internal class ThemeFileResolver : DisposableObject
 	{
 		private readonly ConcurrentDictionary<FileKey, InheritedThemeFileResult> _files = new ConcurrentDictionary<FileKey, InheritedThemeFileResult>();
-		private FileSystemWatcher _monitor;
-		private readonly Regex _monitorFilterPattern = new Regex(@"^\.(png|gif|jpg|jpeg|css|less|cshtml|svg|json)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		private readonly string _themesBasePath;
-
 		private readonly IThemeRegistry _themeRegistry;
 
-		public ThemeFileResolver(IThemeRegistry themeRegistry)
+		public ThemeFileResolver()
 		{
-			this._themeRegistry = themeRegistry;
-			this._themesBasePath = HostingEnvironment.MapPath(ThemeHelper.ThemesBasePath);
+			this._themeRegistry = EngineContext.Current.Resolve<IThemeRegistry>();
 
-			MonitorFiles();
+			// listen to file monitoring events
+			this._themeRegistry.ThemeFolderDeleted += OnThemeFolderDeleted;
+			this._themeRegistry.ThemeFolderRenamed += OnThemeFolderRenamed;
+			this._themeRegistry.BaseThemeChanged += OnBaseThemeChanged;
+			this._themeRegistry.ThemeFileChanged += OnThemeFileChanged;
 		}
 
-		private void MonitorFiles() 
+		private void OnThemeFolderDeleted(object sender, ThemeFolderDeletedEventArgs e)
 		{
-			_monitor = new FileSystemWatcher();
-
-			_monitor.Path = _themesBasePath;
-			_monitor.Filter = "*.*";
-			_monitor.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName;
-			_monitor.IncludeSubdirectories = true;
-			_monitor.EnableRaisingEvents = true;
-
-			_monitor.Created += (s, e) => FileSystemChanged(e.Name, e.FullPath, true);
-			_monitor.Deleted += (s, e) => FileSystemChanged(e.Name, e.FullPath, false);
-			_monitor.Renamed += (s, e) => { FileSystemChanged(e.OldName, e.OldFullPath, false); FileSystemChanged(e.Name, e.FullPath, true); };
+			OnThemeRemoved(e.Name);
 		}
 
-		/// <summary>
-		/// Only called when files are created or deleted, NOT when changed.
-		/// </summary>
-		/// <param name="name">The file name</param>
-		/// <param name="fullPath">The full path</param>
-		/// <param name="created">Indicates whether file was created or deleted</param>
-		private void FileSystemChanged(string name, string fullPath, bool created)
+		private void OnThemeFolderRenamed(object sender, ThemeFolderRenamedEventArgs e)
 		{
-			if (!_monitorFilterPattern.IsMatch(Path.GetExtension(name)))
-				return;
+			OnThemeRemoved(e.OldName);
+		}
 
-			var idx = name.IndexOf('\\');
-			if (idx < 0)
+		private void OnBaseThemeChanged(object sender, BaseThemeChangedEventArgs e)
+		{
+			if (e.OldBaseTheme.IsEmpty())
 			{
+				// nothing to invalidate, because we never cached anything before
 				return;
 			}
 
-			string themeName = name.Substring(0, idx);
-			string relativePath = name.Substring(themeName.Length + 1).Replace('\\', '/');
+			// We should be smarter than just clearing the whole cache here. BUT:
+			// Changing the base theme is a very rare case, whereas determining all dependant file is rather sophisticated.
+			// So, who cares ;-)
+			_files.Clear();
+		}
 
-			// get keys with same relative path
-			var keys = _files.Keys.Where(x => x.RelativePath.IsCaseInsensitiveEqual(relativePath)).ToList();
+		private void OnThemeRemoved(string themeName)
+		{
+			var keys = _files.Keys.Where(x => x.ThemeName.IsCaseInsensitiveEqual(themeName)).ToList();
 			foreach (var key in keys)
 			{
 				if (key.ThemeName.IsCaseInsensitiveEqual(themeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, themeName))
 				{
-					// remove all cached pathes for this theme or any of it's child themes
+					// remove all cached pathes for this theme (also in all derived themes)
+					InheritedThemeFileResult result;
+					_files.TryRemove(key, out result);
+				}
+			}
+		}
+
+		private void OnThemeFileChanged(object sender, ThemeFileChangedEventArgs e)
+		{
+			if (e.IsConfigurationFile)
+				return;
+
+			// get keys with same relative path
+			var keys = _files.Keys.Where(x => x.RelativePath.IsCaseInsensitiveEqual(e.RelativePath)).ToList();
+			foreach (var key in keys)
+			{
+				if (key.ThemeName.IsCaseInsensitiveEqual(e.ThemeName) || _themeRegistry.IsChildThemeOf(key.ThemeName, e.ThemeName))
+				{
+					// remove all cached pathes for this file/theme combination (also in all derived themes)
 					InheritedThemeFileResult result;
 					if (_files.TryRemove(key, out result))
 					{
-						if (created)
+						if (e.ChangeType == ThemeFileChangeType.Created)
 						{
 							// The file is new: no chance that our VPP dependencies
-							// could have been notified about this (only deletions are monitored).
+							// could have been notified about this (only deletions/changes are monitored).
 							// Therefore we brutally set the result file's last write time
 							// to enforece VPP to invalidate cache.
 							try
@@ -100,14 +107,22 @@ namespace SmartStore.Web.Framework.Themes
 		{
 			if (disposing)
 			{
-				if (_monitor != null)
-				{
-					_monitor.Dispose();
-					_monitor = null;
-				}
+				this._themeRegistry.ThemeFileChanged -= OnThemeFileChanged;
+				this._themeRegistry.ThemeFolderDeleted -= OnThemeFolderDeleted;
+				this._themeRegistry.BaseThemeChanged -= OnBaseThemeChanged;
+				this._themeRegistry.ThemeFolderRenamed -= OnThemeFolderRenamed;
 			}
 		}
 
+		/// <summary>
+		/// Tries to resolve a file up in the current theme's hierarchy chain.
+		/// </summary>
+		/// <param name="virtualPath">The original virtual path of the theme file</param>
+		/// <returns>
+		/// If the current working themme is based on another theme AND the requested file
+		/// was physically found in the theme's hierarchy chain, an instance of <see cref="InheritedThemeFileResult" /> will be returned.
+		/// In any other case the return value is <c>null</c>.
+		/// </returns>
 		public InheritedThemeFileResult Resolve(string virtualPath)
 		{
 			Guard.ArgumentNotEmpty(() => virtualPath);
@@ -234,6 +249,39 @@ namespace SmartStore.Web.Framework.Themes
 			}
 		}
 
+	}
+
+	internal class InheritedThemeFileResult
+	{
+		/// <summary>
+		/// The unrooted relative path of the file (without <c>~/Themes/ThemeName/</c>)
+		/// </summary>
+		public string RelativePath { get; set; }
+
+		/// <summary>
+		/// The original virtual path
+		/// </summary>
+		public string OriginalVirtualPath { get; set; }
+
+		/// <summary>
+		/// The result virtual path (the path in which the file is actually located)
+		/// </summary>
+		public string ResultVirtualPath { get; set; }
+
+		/// <summary>
+		/// The result physical path (the path in which the file is actually located)
+		/// </summary>
+		public string ResultPhysicalPath { get; set; }
+
+		/// <summary>
+		/// The name of the requesting theme
+		/// </summary>
+		public string OriginalThemeName { get; set; }
+
+		/// <summary>
+		/// The name of the resulting theme where the file is actually located
+		/// </summary>
+		public string ResultThemeName { get; set; }
 	}
 
 }

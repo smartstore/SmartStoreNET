@@ -688,7 +688,6 @@ namespace SmartStore.Web.Framework
 		{
 			// register theming services
 			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance();
-			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();
 

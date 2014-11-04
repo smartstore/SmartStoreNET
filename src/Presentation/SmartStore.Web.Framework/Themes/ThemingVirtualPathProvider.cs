@@ -16,10 +16,12 @@ namespace SmartStore.Web.Framework.Themes
     public class ThemingVirtualPathProvider : VirtualPathProvider
     {
 		private readonly VirtualPathProvider _previous;
+		private readonly ThemeFileResolver _resolver;
 
         public ThemingVirtualPathProvider(VirtualPathProvider previous)
         {
             _previous = previous;
+			_resolver = new ThemeFileResolver();
         }
 
         public override bool FileExists(string virtualPath)
@@ -132,8 +134,7 @@ namespace SmartStore.Web.Framework.Themes
 
 		private InheritedThemeFileResult GetResolveResult(string virtualPath)
 		{
-			var resolver = EngineContext.Current.Resolve<IThemeFileResolver>();
-			var result = resolver.Resolve(virtualPath);
+			var result = _resolver.Resolve(virtualPath);
 			return result;
 		}
 

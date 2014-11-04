@@ -15,6 +15,7 @@ using SmartStore.Core.Events;
 using SmartStore.Web.Framework.Events;
 using System.Diagnostics;
 using System.Collections.Concurrent;
+using System.Text.RegularExpressions;
 
 namespace SmartStore.Web.Framework.Themes
 {
@@ -22,12 +23,15 @@ namespace SmartStore.Web.Framework.Themes
     {
 		#region Fields
 
+		private readonly bool _enableMonitoring;
 		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
 
-		private FileSystemWatcher _watcherCfg;
-		private FileSystemWatcher _watcherFolders;
+		private readonly Regex _fileFilterPattern = new Regex(@"^\.(config|png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+
+		private FileSystemWatcher _monitorFolders;
+		private FileSystemWatcher _monitorFiles;
 
 		#endregion
 
@@ -35,96 +39,21 @@ namespace SmartStore.Web.Framework.Themes
 
 		public DefaultThemeRegistry(IEventPublisher eventPublisher)
         {
+			this._enableMonitoring = CommonHelper.GetAppSetting<bool>("sm:MonitorThemesFolder", true);
 			this._themesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
 			
 			// load all themes initially
 			LoadThemes();
 
-			// start FS watcher
-			WatchConfigFiles();
-			WatchFolders();
+			if (_enableMonitoring)
+			{
+				// start FS watcher
+				StartMonitoring();
+			}
         }
 
 		#endregion 
-        
-		#region Watcher
-
-		private void WatchConfigFiles()
-		{
-			_watcherCfg = new FileSystemWatcher();
-
-			_watcherCfg.Path = CommonHelper.MapPath(_themesBasePath);
-			_watcherCfg.Filter = "theme.config";
-			_watcherCfg.NotifyFilter = NotifyFilters.LastWrite | NotifyFilters.FileName;
-			_watcherCfg.IncludeSubdirectories = true;
-			_watcherCfg.EnableRaisingEvents = true;
-
-			_watcherCfg.Changed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			_watcherCfg.Deleted += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			_watcherCfg.Created += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-			_watcherCfg.Renamed += (s, e) => ThemeConfigChanged(e.Name, e.FullPath);
-		}
-
-		private void WatchFolders()
-		{
-			_watcherFolders = new FileSystemWatcher();
-
-			_watcherFolders.Path = CommonHelper.MapPath(_themesBasePath);
-			_watcherFolders.Filter = "*";
-			_watcherFolders.NotifyFilter = NotifyFilters.DirectoryName;
-			_watcherFolders.IncludeSubdirectories = false;
-			_watcherFolders.EnableRaisingEvents = true;
-
-			_watcherFolders.Renamed += (s, e) => ThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
-			_watcherFolders.Deleted += (s, e) => TryRemoveManifest(e.Name);
-		}
-
-		private void ThemeConfigChanged(string name, string fullPath)
-		{
-			var di = new DirectoryInfo(Path.GetDirectoryName(fullPath));
-			try
-			{
-				var newManifest = ThemeManifest.Create(di.FullName);
-				if (newManifest != null)
-				{
-					this.AddThemeManifest(newManifest);
-					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
-				}
-				else
-				{
-					// something went wrong (most probably no 'theme.config'): remove the manifest
-					TryRemoveManifest(di.Name);
-				}
-			}
-			catch (Exception ex)
-			{
-				TryRemoveManifest(di.Name);
-				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
-			}
-		}
-
-		private void ThemeFolderRenamed(string name, string fullPath, string oldName, string oldFullPath)
-		{
-			TryRemoveManifest(oldName);
-			
-			var di = new DirectoryInfo(fullPath);
-			try
-			{
-				var newManifest = ThemeManifest.Create(di.FullName);
-				if (newManifest != null)
-				{
-					this.AddThemeManifest(newManifest);
-					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
-				}
-			}
-			catch (Exception ex)
-			{
-				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
-			}
-		}
-
-		#endregion
 
 		#region IThemeRegistry
 
@@ -262,17 +191,203 @@ namespace SmartStore.Web.Framework.Themes
 
         #endregion
 
+		#region Monitoring &  Events
+
+		private void StartMonitoring()
+		{
+			_monitorFiles = new FileSystemWatcher();
+			_monitorFiles.Path = CommonHelper.MapPath(_themesBasePath);
+			_monitorFiles.InternalBufferSize = 32768; // 32 instead of the default 8 KB
+			_monitorFiles.Filter = "*.*";
+			_monitorFiles.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName;
+			_monitorFiles.IncludeSubdirectories = true;
+			_monitorFiles.EnableRaisingEvents = true;
+			_monitorFiles.Changed += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Modified);
+			_monitorFiles.Deleted += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Deleted);
+			_monitorFiles.Created += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Created);
+			_monitorFiles.Renamed += (s, e) => { 
+				OnThemeFileChanged(e.OldName, e.OldFullPath, ThemeFileChangeType.Deleted);
+				OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Created); 
+			};
+
+			_monitorFolders = new FileSystemWatcher();
+			_monitorFolders.Path = CommonHelper.MapPath(_themesBasePath);
+			_monitorFolders.Filter = "*";
+			_monitorFolders.NotifyFilter = NotifyFilters.DirectoryName;
+			_monitorFolders.IncludeSubdirectories = false;
+			_monitorFolders.EnableRaisingEvents = true;
+			_monitorFolders.Renamed += (s, e) => OnThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
+			_monitorFolders.Deleted += (s, e) => OnThemeFolderDeleted(e.Name, e.FullPath);
+		}
+
+		private void OnThemeFileChanged(string name, string fullPath, ThemeFileChangeType changeType)
+		{
+			if (!_fileFilterPattern.IsMatch(Path.GetExtension(name)))
+				return;
+
+			var idx = name.IndexOf('\\');
+			if (idx < 0)
+			{
+				// must be a subfolder of "~/Themes/"
+				return;
+			}
+
+			var themeName = name.Substring(0, idx);
+			var relativePath = name.Substring(themeName.Length + 1).Replace('\\', '/');
+			var isConfigFile = relativePath.IsCaseInsensitiveEqual("theme.config");
+
+			if (changeType == ThemeFileChangeType.Modified && !isConfigFile)
+			{
+				// Monitor changes only for root theme.config
+				return;
+			}
+
+			BaseThemeChangedEventArgs baseThemeChangedArgs = null;
+
+			if (isConfigFile)
+			{			
+				// config file changes always result in refreshing the corresponding theme manifest
+				var di = new DirectoryInfo(Path.GetDirectoryName(fullPath));
+
+				string oldBaseTheme = null;
+				var oldManifest = this.GetThemeManifest(di.Name);
+				if (oldManifest != null)
+				{
+					oldBaseTheme = oldManifest.BaseThemeName;
+				}
+
+				try
+				{
+					var newManifest = ThemeManifest.Create(di.FullName);
+					if (newManifest != null)
+					{
+						this.AddThemeManifest(newManifest);
+
+						if (oldBaseTheme.IsCaseInsensitiveEqual(newManifest.BaseThemeName))
+						{
+							baseThemeChangedArgs = new BaseThemeChangedEventArgs
+							{ 
+								ThemeName = newManifest.ThemeName,
+								BaseTheme = newManifest.BaseThemeName,
+								OldBaseTheme = oldBaseTheme
+							};
+						}
+
+						Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+					}
+					else
+					{
+						// something went wrong (most probably no 'theme.config'): remove the manifest
+						TryRemoveManifest(di.Name);
+					}
+				}
+				catch (Exception ex)
+				{
+					TryRemoveManifest(di.Name);
+					Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
+				}
+			}
+
+			if (baseThemeChangedArgs != null)
+			{
+				RaiseBaseThemeChanged(baseThemeChangedArgs);
+			}
+
+			RaiseThemeFileChanged(new ThemeFileChangedEventArgs { 
+				ChangeType = changeType,
+				FullPath = fullPath,
+				ThemeName = themeName,
+				RelativePath = relativePath,
+				IsConfigurationFile = isConfigFile
+			});
+		}
+
+		private void OnThemeFolderRenamed(string name, string fullPath, string oldName, string oldFullPath)
+		{
+			TryRemoveManifest(oldName);
+
+			var di = new DirectoryInfo(fullPath);
+			try
+			{
+				var newManifest = ThemeManifest.Create(di.FullName);
+				if (newManifest != null)
+				{
+					this.AddThemeManifest(newManifest);
+					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine("ERR - Could not touch theme manifest '{0}': {1}".FormatCurrent(name, ex.Message));
+			}
+
+			RaiseThemeFolderRenamed(new ThemeFolderRenamedEventArgs
+			{
+				FullPath = fullPath,
+				Name = name,
+				OldFullPath = oldFullPath,
+				OldName = oldName
+			});
+		}
+
+		private void OnThemeFolderDeleted(string name, string fullPath)
+		{
+			TryRemoveManifest(name);
+
+			RaiseThemeFolderDeleted(new ThemeFolderDeletedEventArgs
+			{
+				FullPath = fullPath,
+				Name = name
+			});
+		}
+
+		public event EventHandler<ThemeFileChangedEventArgs> ThemeFileChanged;
+		protected void RaiseThemeFileChanged(ThemeFileChangedEventArgs e)
+		{
+			if (ThemeFileChanged != null)
+				ThemeFileChanged(this, e);
+		}
+
+		public event EventHandler<ThemeFolderRenamedEventArgs> ThemeFolderRenamed;
+		protected void RaiseThemeFolderRenamed(ThemeFolderRenamedEventArgs e)
+		{
+			if (ThemeFolderRenamed != null)
+				ThemeFolderRenamed(this, e);
+		}
+
+		public event EventHandler<ThemeFolderDeletedEventArgs> ThemeFolderDeleted;
+		protected void RaiseThemeFolderDeleted(ThemeFolderDeletedEventArgs e)
+		{
+			if (ThemeFolderDeleted != null)
+				ThemeFolderDeleted(this, e);
+		}
+
+		public event EventHandler<BaseThemeChangedEventArgs> BaseThemeChanged;
+		protected void RaiseBaseThemeChanged(BaseThemeChangedEventArgs e)
+		{
+			if (BaseThemeChanged != null)
+				BaseThemeChanged(this, e);
+		}
+
+		#endregion
+
 		#region Disposable
 
 		protected override void OnDispose(bool disposing)
 		{
 			if (disposing)
 			{
-				_watcherCfg.Dispose();
-				_watcherFolders.Dispose();
+				if (_monitorFiles != null)
+				{
+					_monitorFiles.Dispose();
+					_monitorFiles = null;
+				}
 
-				_watcherCfg = null;
-				_watcherFolders = null;
+				if (_monitorFolders != null)
+				{
+					_monitorFolders.Dispose();
+					_monitorFolders = null;
+				}
 			}
 		}
 

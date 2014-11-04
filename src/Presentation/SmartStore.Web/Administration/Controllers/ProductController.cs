@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Async;
@@ -38,10 +40,6 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
-using SmartStore.Core.IO;
-using System.Net.Mime;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -456,6 +454,8 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		protected void UpdateProductAcl(Product product, ProductModel model)
 		{
+			product.SubjectToAcl = model.SubjectToAcl;
+
 			var existingAclRecords = _aclService.GetAclRecords(product);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 			foreach (var customerRole in allCustomerRoles)
@@ -479,13 +479,14 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		protected void UpdateStoreMappings(Product product, ProductModel model)
 		{
+			product.LimitedToStores = model.LimitedToStores;
+
 			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
 			var allStores = _storeService.GetAllStores();
 			foreach (var store in allStores)
 			{
 				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
 				{
-					// new role
 					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
 					{
 						_storeMappingService.InsertStoreMapping(product, store.Id);
@@ -493,7 +494,6 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					// removed role
 					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
 					if (storeMappingToDelete != null)
 					{

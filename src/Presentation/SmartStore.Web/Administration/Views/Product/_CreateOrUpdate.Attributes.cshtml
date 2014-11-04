@@ -196,7 +196,8 @@
                             .Width(160)
                             .Centered();
                         columns.Bound(x => x.AllowOutOfStockOrders)
-                            .Width(260)
+                            .Width(60)
+                            .HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
                             .Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
                             .ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
                             .Centered();

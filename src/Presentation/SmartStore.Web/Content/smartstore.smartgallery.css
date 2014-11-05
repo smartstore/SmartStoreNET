@@ -10,7 +10,7 @@
 
 .sg-image-wrapper {
 	width: 100%;
-    height: 250px; /* just to avoid page load flickering. This is overwritten per inline css anyway */
+    min-height: 300px; /* just to avoid page load flickering. This is overwritten per inline css anyway */
 	margin-bottom: 5px;
 	position: relative;
 	overflow: hidden;
@@ -32,17 +32,24 @@
 	border: 1px solid #CCC;
 }
 
-
 .sg-image {
 	position: absolute;
 	overflow: hidden;
 	top: 0;
 	left: 0;
+	height: 300px;
+	max-width: 100%;
 	/*z-index: 9;*/
+}
+
+.sg-image a {
+	display: inline-block;
 }
 
 .sg-image a img {
 	border: 0;
+	max-height: 100%;
+	max-width: 100%;
 }
       
 .sg-image-description {

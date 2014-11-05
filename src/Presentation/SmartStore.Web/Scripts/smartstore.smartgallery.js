@@ -83,23 +83,15 @@
 		var meta = $.metadata ? $.metadata.get(element) : {};
 		var opts = this.options = $.extend(true, {}, options, meta || {});
 		
-		this.init = function() {
+		this.init = function(isRefresh) {
 			this.setupElements(); // DO
-			if (opts.width) {
-				this.imageWrapperWidth = opts.width;
-				this.imageWrapper.width(opts.width);
-				el.width(opts.width);
-			} 
-			else {
-			    this.imageWrapperWidth = this.imageWrapper.width();
-			}
 			
-			this.imageWrapper.height(opts.height || 400);
-			this.imageWrapperHeight = opts.height;
+			this.imageWrapperWidth = this.imageWrapper.width();
+			this.imageWrapperHeight = opts.height || 300;
 			
 			this.navDisplayWidth = this.nav.width();
 			this.currentIndex = 0;
-			
+
 			this.findImages();
 			
 			if (this.options.box && this.options.box.enabled) {
@@ -140,26 +132,12 @@
 			
 			this.showImage(startAt);
 			
-            /* // TODO: (MC) this is more challenging than i thought (!)
-			if (opts.responsive && (!opts.width)) {
-			    EventBroker.subscribe("page.resized", function (data) {
-			        // recalc some metrics on page resize
-			        self.imageWrapperWidth = self.imageWrapper.width();
-			        self.navDisplayWidth = self.nav.width();
-
-			        // center current image
-			        var imgContainer = self.imageWrapper.find('.sg-image');
-			        var img = imgContainer.find("img");
-			        self._centerImage(imgContainer, img.width(), img.height());
-
-			        // hide show/scroll buttons
-                    // [...]
+			if (opts.responsive && !isRefresh) {
+				EventBroker.subscribe("page.resized", function (data) {
+					self.reset();
+					self.init(true);
 			    });
 			}
-            */
-
-			/*this.fireCallback(opts.callbacks.init);*/
-
 		};
 		
 		this.initialized = false;
@@ -170,7 +148,6 @@
 	SmartGallery.prototype = {
 		
 		imageWrapper: null,
-		//imageOverlay: null,
 	    nav: null,
 	    loader: null,
 	    preloads: null,
@@ -209,14 +186,26 @@
 		},
 
 		reset: function () {
-		    var self = this;
+			var self = this;
+
+			$('.blueimp-gallery').remove();
+
+			self.noScrollers = false;
+			self.nav.find(".sb")
+			self.thumbsWrapper.find('> ul > li > a').off('click mouseenter');
+
 		    if (self.preloads) {
 		        self.preloads.remove();
+		    }
+		    if (self.loader) {
+		    	self.loader.remove();
 		    }
 		    var oldZoomImage = self.imageWrapper.find('.sg-image img').data("elevateZoom");
 		    if (oldZoomImage) {
 		        oldZoomImage.reset();
 		    }
+
+		    self.imageWrapper.find('.sg-image').remove();
 		},
 
 		loading: function(value) {
@@ -246,7 +235,6 @@
 				var link = $(this);
 				var imageSrc = link.data('medium-image');
 				var thumb = link.find('img');
-				var linkSize = self.options.thumbSize + 2;
 
 				thumbWrapperWidth += this.parentNode.offsetWidth; // parent LI of A
 
@@ -395,7 +383,7 @@
 					else {
 						left = self.thumbsWrapper.scrollLeft() - width;
 					}
-					left = Math.min(left, self.navDisplayWidth);
+					left = Math.min(left, self.navListWidth - self.navDisplayWidth);
 
 					self.thumbsWrapper.animate({ scrollLeft: left +'px' }, 400, "easeOutQuad");
 					self._toggleScrollButtons(left);
@@ -423,7 +411,7 @@
 			var self = this;
 
 			var getWidget = function (id) {
-				var widget = $(id);
+				var widget = $('#' + id);
 				if (widget.length > 0) {
 					return widget;
 				}
@@ -470,7 +458,7 @@
 					e.preventDefault();
 
 					var id = $(this).data('gallery') || 'default',
-						widget = getWidget(id == 'default' ? '#image-gallery-default' : id),
+						widget = getWidget(id == 'default' ? 'image-gallery-default' : id),
 						container = (widget.length && widget) || $(Gallery.prototype.options.container),
 						callbacks = {
 						    onopen: function () {
@@ -512,6 +500,7 @@
 
 					if (options.filter) {
 						links = links.filter(options.filter);
+						console.log(links);
 					}
 
 					return new blueimp.Gallery(links, options);
@@ -549,7 +538,7 @@
 		 * Checks if the image is small enough to fit inside the container
 		 * If it's not, shrink it proportionally
 		 */
-		_getContainedImageSize: function(imageWidth, imageHeight) {
+		_getContainedImageSize: function (imageWidth, imageHeight) {
 			var ratio = 0;
 			if (imageHeight > this.imageWrapperHeight) {
 				ratio = imageWidth / imageHeight;
@@ -561,7 +550,7 @@
 				imageWidth = this.imageWrapperWidth;
 				imageHeight = this.imageWrapperWidth * ratio;
 			};
-			return {width: imageWidth, height: imageHeight};
+			return { width: imageWidth, height: imageHeight };
 		},
 
 		/**
@@ -635,10 +624,10 @@
 			}
 			
 			this.imageWrapper.prepend(imgContainer);
+			
 			var size = this._getContainedImageSize(image.size.width, image.size.height);
-			img.attr('width', size.width);
-			img.attr('height', size.height);
-			imgContainer.css({ width: size.width +'px', height: size.height +'px' });
+			img.css('max-height', opts.height);
+			imgContainer.css({ width: size.width + 'px', height: size.height + 'px' });
 			this._centerImage(imgContainer, size.width, size.height);
 			
 			if (opts.enableDescription) {
@@ -699,17 +688,18 @@
 
 		    // enable zoom
 			if ($.isPlainObject(opts.zoom) && opts.zoom.enabled === true && image.zoom) {
-			    img.attr("data-zoom-image", image.zoom);
+				if (img.data("elevateZoom") === undefined) {
+					img.attr("data-zoom-image", image.zoom);
+					var zoomOpts = $.extend({}, defaultZoomOpts, opts.zoom);
 
-			    var zoomOpts = $.extend({}, defaultZoomOpts, opts.zoom);
+					if (!zoomOpts.zoomWindowHeight)
+						zoomOpts.zoomWindowHeight = self.el.height() - 2;
 
-			    if (!zoomOpts.zoomWindowHeight)
-			        zoomOpts.zoomWindowHeight = self.el.height() - 2;
+					if (zoomOpts.lensShape === "round" && zoomOpts.zoomType !== "lens")
+						zoomOpts.lensShape = undefined;
 
-			    if (zoomOpts.lensShape === "round" && zoomOpts.zoomType !== "lens")
-			        zoomOpts.lensShape = undefined;
-
-			    img.elevateZoom(zoomOpts);
+					img.elevateZoom(zoomOpts);
+				}
 			}
 		},
 
@@ -823,7 +813,7 @@
 			if (!this.noScrollers) {
 				var left = thumb[0].parentNode.offsetLeft + toInt(this.thumbsWrapper.css('margin-left'));
 				left -= (this.navDisplayWidth / 2) - (thumb[0].offsetWidth / 2);
-				left = Math.min(left, this.navDisplayWidth);
+				left = Math.min(left, this.navListWidth - this.navDisplayWidth);
 				this.thumbsWrapper.animate({ scrollLeft: left + 'px' });
 				this._toggleScrollButtons(left);
 			}
@@ -843,18 +833,14 @@
 	$[pluginName].defaults = {
         // whether the gallery should be update on windows/viewport resize
 	    responsive: true,
-        // the max width and/or height of thumbnails
-        thumbSize: 50,
 		// 0-based index of image to start with
 		startIndex: 0,
         // animation type: slide, fade, none
 		animation: "slide",
 		// speed of animation in ms.
 		animationSpeed: 400,
-		// width of outermost container in px.
-        width: null,
-        // height of outermost container in px.
-        height: null,
+        // height of image container in px.
+        height: 300,
         // display the top toolbar
         displayImage: true,
         // ...

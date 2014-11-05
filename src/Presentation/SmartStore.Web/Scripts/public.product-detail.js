@@ -153,10 +153,8 @@
 			var opts = this.options;
 
 			gallery = $('#pd-gallery').smartGallery({
-			    width: opts.galleryWidth,	
 			    height: opts.galleryHeight,
 				enableDescription: opts.showImageDescription,
-				thumbSize: opts.galleryThumbSize || 50,
 				startIndex: startIndex || 0,
 				zoom: {
 				    enabled: opts.enableZoom,

@@ -450,11 +450,17 @@ nav ul, nav li {
     float: left;
     display: block;
     position: relative;
-	text-decoration: none;
-	font-size: 26px;
-	line-height: 26px;
-	font-family: @headingsFontFamily;
-	font-weight: @headingsFontWeight;
+
+	&.textual {
+		position: absolute;
+		top: 50%;
+		font-size: 26px;
+		line-height: 26px;
+		margin-top: -13px;
+		text-decoration: none;
+		font-family: @headingsFontFamily;
+		font-weight: @headingsFontWeight;
+	}
 }
 
 .ie8 #logobar img {
@@ -974,6 +980,32 @@ fieldset > legend {
 	}
 }
 
+
+/* Product details
+================================================ */
+
+.product-details-page .top-content {
+	margin-top: 15px;
+}
+
+.product-details-page .product-data {
+	position: relative;
+}
+
+.product-details-page .product-data .product-name {
+	margin-top: 0;
+}
+
+.product-details-page .product-data .btn-edit-product {
+	position: absolute;
+	xtop: 0;
+	right: 0;
+	display: none;
+}
+
+.product-details-page .product-data:hover .btn-edit-product {
+	display: inline-block;
+}
 
 /* Misc
 ================================================ */

@@ -188,11 +188,14 @@
 		reset: function () {
 			var self = this;
 
-			$('.blueimp-gallery').remove();
-
+			self.imageWrapperWidth = 0;
+			self.imageWrapperHeight = 0;
+			self.navDisplayWidth = 0;
+			self.navListWidth = 0;
 			self.noScrollers = false;
-			self.nav.find(".sb")
+			self.nav.removeClass("has-buttons");
 			self.thumbsWrapper.find('> ul > li > a').off('click mouseenter');
+			self.thumbsWrapper.css('width', 'initial');
 
 		    if (self.preloads) {
 		        self.preloads.remove();
@@ -303,17 +306,15 @@
 				if (thumbCount == thumbsLoaded) {
 					var scrollers = self.nav.find('.scroll-button');
 					if (thumbWrapperWidth <= self.navDisplayWidth) {
-						// Liste passt in den Container.
-						// ScrollButtons entfernen
+						// List fits into container: remove ScrollButtons
 						scrollers.each(function() {
 							$(this).parent().remove();
 						});
-						// ...und verhindern, dass ein ThumbJump durchgeführt würde.
+						// ...and prevent a ThumbJump
 						self.noScrollers = true;
 					}
 					else {
-						// Liste ist größer als Container!
-						// wir brauchen ScrollButtons:	
+						// List ist wider than container: we need ScrollButtons	
 						if (scrollers.length > 0) {
 							self.nav.addClass("has-buttons"); // der hier hat die paddings
 							var parentHeight = scrollers.parent().innerHeight();
@@ -321,7 +322,9 @@
 						}
 					}
 					
-					thumbWrapperWidth += self.thumbsWrapper.horizontalCushioning() - thumbsLoaded + 1;
+					console.log(thumbWrapperWidth, toInt(listWrapper.css('margin-left')));
+
+					thumbWrapperWidth += listWrapper.horizontalCushioning() - thumbsLoaded + 1;
 
 					// tatsächliche Breite der Liste setzen
 					listWrapper.css('width', (thumbWrapperWidth) + 'px');

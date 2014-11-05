@@ -232,12 +232,12 @@ namespace SmartStore.Web.Controllers
             return new RssActionResult() { Feed = feed };
         }
 
-        public ActionResult NewsItem(int id)
+        public ActionResult NewsItem(int newsItemId)
         {
             if (!_newsSettings.Enabled)
 				return HttpNotFound();
 
-            var newsItem = _newsService.GetNewsById(id);
+            var newsItem = _newsService.GetNewsById(newsItemId);
             if (newsItem == null ||
                 !newsItem.Published ||
                 (newsItem.StartDateUtc.HasValue && newsItem.StartDateUtc.Value >= DateTime.UtcNow) ||

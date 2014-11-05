@@ -111,7 +111,10 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var file in _cacheRootDir.GetFiles())
                     {
-                        file.Delete();
+						if (!file.Name.IsCaseInsensitiveEqual("placeholder"))
+						{
+							file.Delete();
+						}
                     }
                     foreach (var dir in _cacheRootDir.GetDirectories())
                     {

@@ -155,8 +155,7 @@ namespace SmartStore.Services.Customers
         /// <param name="registrationTo">Customer registration to; null to load all customers</param>
         /// <param name="onlyWithoutShoppingCart">A value indicating whether to delete customers only without shopping cart</param>
         /// <returns>Number of deleted customers</returns>
-        int DeleteGuestCustomers(DateTime? registrationFrom,
-           DateTime? registrationTo, bool onlyWithoutShoppingCart);
+        int DeleteGuestCustomers(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart, int maxItemsToDelete = 5000);
 
         #endregion
 

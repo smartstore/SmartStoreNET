@@ -11776,7 +11776,8 @@ namespace SmartStore.PayPal.PayPalSvc {
         }
         
         /// <remarks/>
-        [System.Xml.Serialization.XmlAnyElementAttribute(Order=6)]
+        //[System.Xml.Serialization.XmlAnyElementAttribute(Order=6)]
+        [System.Xml.Serialization.XmlIgnoreAttribute()]
         public System.Xml.XmlElement Any {
             get {
                 return this.anyField;

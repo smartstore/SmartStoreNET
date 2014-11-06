@@ -12,7 +12,8 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Shipping.Controllers
 {
-    public class FixedRateController : PluginControllerBase
+	[AdminAuthorize]
+	public class FixedRateController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
         private readonly ISettingService _settingService;

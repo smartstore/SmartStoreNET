@@ -6,20 +6,19 @@ using SmartStore.Core.Infrastructure;
 namespace SmartStore.Web.Framework.Controllers
 {
 
-    [AdminAuthorize]
     public abstract partial class PluginControllerBase : SmartController
     {
-        /// <summary>
-        /// Initialize controller
-        /// </summary>
-        /// <param name="requestContext">Request context</param>
-        protected override void Initialize(RequestContext requestContext)
-        {
-            //set work context to admin mode
-            EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
+		///// <summary>
+		///// Initialize controller
+		///// </summary>
+		///// <param name="requestContext">Request context</param>
+		//protected override void Initialize(RequestContext requestContext)
+		//{
+		//	////set work context to admin mode
+		//	//EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
 
-            base.Initialize(requestContext);
-        }
+		//	base.Initialize(requestContext);
+		//}
 
 		/// <summary>
 		/// Access denied view

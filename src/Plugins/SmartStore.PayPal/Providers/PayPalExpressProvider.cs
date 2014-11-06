@@ -347,7 +347,6 @@ namespace SmartStore.PayPal
                 };
 
                 result = service.SetExpressCheckout(req);
-                result.Token = result.Any.InnerText;
             }
             return result;
         }

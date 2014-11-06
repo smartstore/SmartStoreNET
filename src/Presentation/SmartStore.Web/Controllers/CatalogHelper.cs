@@ -1162,6 +1162,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					model.ProductPrice = priceModel;
+                    model.ProductPrice.CallForPrice = product.CallForPrice;
 
 					#endregion
 				}

@@ -164,16 +164,26 @@
                 
         @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
         {
-            var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
-            <a data-href='@addtocartlink' 
-                href="#"
-                class="btn btn-warning ajax-cart-link"
-                title="@title" 
-                rel="tooltip nofollow"
-                data-type="cart"
-                data-action="add">
-                <i class="fa fa-shopping-cart"></i>      
-            </a>
+            if (!Model.ProductPrice.CallForPrice) { 
+                var title = (Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"));
+                <a data-href='@addtocartlink' 
+                    href="#"
+                    class="btn btn-warning ajax-cart-link"
+                    title="@title" 
+                    rel="tooltip nofollow"
+                    data-type="cart"
+                    data-action="add">
+                    <i class="fa fa-shopping-cart"></i>      
+                </a>
+            }
+            else
+            {
+                <a class="btn btn-primary add-to-cart-button"
+                   href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })"
+                   title="@T("Products.CallForPrice.GoToForm")">
+                    <i class="fa fa-envelope"></i>
+                </a>
+            }
         }
         <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn">
             <i class="fa fa-info-circle"></i>

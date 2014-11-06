@@ -242,15 +242,24 @@
                  
                 @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
                 {
-                    <a data-href='@addtocartlink'
-                        href="#"
-					    rel="nofollow"
-                        class="btn btn-warning ajax-cart-link"
-                        data-type="cart"
-                        data-action="add">
-                        @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                        <i class="fa fa-shopping-cart"></i>      
-                    </a>
+                    if (!Model.ProductPrice.CallForPrice) { 
+                        <a data-href='@addtocartlink'
+                            href="#"
+					        rel="nofollow"
+                            class="btn btn-warning ajax-cart-link"
+                            data-type="cart"
+                            data-action="add">
+                            @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
+                            <i class="fa fa-shopping-cart"></i>      
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+                            <i class="fa fa-envelope"></i>
+                            @T("Products.CallForPrice.GoToForm")
+                        </a>
+                    }
                 }
             </div>
         </div>

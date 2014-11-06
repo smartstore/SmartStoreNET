@@ -1,4 +1,5 @@
 ﻿.foo{}
+img { max-width: 100% }
 
 /* MISC. CLASSES */
 .nobr{white-space:nowrap!important;}

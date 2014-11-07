@@ -13259,7 +13259,7 @@
 		<Value>Das Produkt wurde dem Wunschzettel hinzugefügt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductHasBeenAddedToTheWishlist.Link">
-		<Value>Dieses Produkt wurde zu Ihrem &lt;a href="{0}"&gt;Wunschzettel&lt;/a&gt;hinzugefügt.</Value>
+		<Value>Dieses Produkt wurde zu Ihrem &lt;a href="{0}"&gt;Wunschzettel&lt;/a&gt; hinzugefügt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductNotAddedToTheCart">
 		<Value>Produkt konnte nicht zum Warenkorb hinzugefügt werden.</Value>

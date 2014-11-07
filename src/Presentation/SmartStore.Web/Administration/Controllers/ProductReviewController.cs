@@ -68,6 +68,12 @@ namespace SmartStore.Admin.Controllers
             model.IpAddress = productReview.IpAddress;
             model.Rating = productReview.Rating;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(productReview.CreatedOnUtc, DateTimeKind.Utc);
+
+			if (string.IsNullOrWhiteSpace(model.CustomerName) && !productReview.Customer.IsRegistered())
+			{
+				model.CustomerName = _localizationService.GetResource("Admin.Customers.Guest");
+			}
+
             if (!excludeProperties)
             {
                 model.Title = productReview.Title;

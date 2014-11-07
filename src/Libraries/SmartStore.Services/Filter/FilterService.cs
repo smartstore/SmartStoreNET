@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Text;
 using Newtonsoft.Json;
+using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
-using System.Linq.Dynamic;
-using SmartStore.Core.Data;
-using System.Globalization;
-using SmartStore.Core;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
@@ -497,13 +497,12 @@ namespace SmartStore.Services.Filter
 					break;
 			}
 
-
-			// distinct (required?)
-			//query =
-			//	from p in query
-			//	group p by p.Id into grp
-			//	orderby grp.Key
-			//	select grp.FirstOrDefault();
+			// distinct cause same products can be mapped to sub-categories
+			query =
+				from p in query
+				group p by p.Id into grp
+				orderby grp.Key
+				select grp.FirstOrDefault();
 
 			//query.ToString().Dump();
 			return query;

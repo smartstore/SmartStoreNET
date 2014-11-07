@@ -358,6 +358,13 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool IsTaxExempt { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the product is an electronic service
+		/// bound to EU VAT regulations for digital goods.
+		/// </summary>
+		[DataMember]
+		public bool IsEsd { get; set; }
+
+		/// <summary>
 		/// Gets or sets the tax category identifier
 		/// </summary>
 		[DataMember]

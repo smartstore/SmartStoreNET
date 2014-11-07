@@ -39,9 +39,10 @@
         @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
         {
             <article itemscope itemtype="http://schema.org/Product">
-                <div class="top-content clearfix">
 
-                <div class="product-image equalized-column" data-equalized-column-name="pd">
+                <div class="row-fluid top-content">
+
+                <div class="product-image span12">
                         @Html.Widget("productdetails_before_pictures")
                         <!--product pictures-->
                         <div id="pd-gallery-container-outer">
@@ -158,16 +159,13 @@
                         </table>
                     </div>
 
-                <div class="product-data equalized-column" data-equalized-column-name="pd">
+                <div class="product-data span12">
 
                     @if (Model.DisplayAdminLink) { 
-                        //IMPORTANT: first element must have a margin of 10px otherwise columns aren't eqalized
-                        <div class="clearfix" style="margin-top:10px">
-							<a class="btn btn-primary btn-mini pull-right" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
-								<i class="fa fa-pencil-square-o"></i>
-								@T("Common.Catalog.EditProduct")
-							</a>
-                        </div>
+						<a class="btn btn-default btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+							<i class="fa fa-pencil-square-o"></i>
+							@T("Common.Catalog.EditProduct")
+						</a>
                     }
 
                     <div class="page-title alpha">
@@ -210,7 +208,9 @@
 									</div>
 									@if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
 									{
-										<div class="no-bundled-products">@T("Products.NoBundledItems")</div>
+										<div class="no-bundled-products alert alert-warning" style="margin-top: 10px">
+											@T("Products.NoBundledItems")
+										</div>
 									}
 								</div>
 							}
@@ -252,7 +252,7 @@
                         {
                         <div>
                             <a href="@Url.Action("Sample", "Download", new { id = Model.Id })">
-                                <i class="fa fa-fw fa-arrow-circle-o-down-alt"></i>
+                                <i class="fa fa-fw fa-arrow-circle-o-down"></i>
                                 @T("Products.DownloadSample")
                             </a>
                         </div>
@@ -289,8 +289,6 @@
                 </div>
             
             </div>
-
-			<div class="clear"></div>
             
             <div class="bottom-content">
 
@@ -349,8 +347,7 @@
 <script type="text/javascript">
     $(function () {
         var settings = {
-            galleryWidth: 318,
-            galleryHeight: 250,
+            galleryHeight: 300,
             galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
             showImageDescription: false,
             enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),

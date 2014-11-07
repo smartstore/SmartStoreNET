@@ -10,6 +10,7 @@ using SmartStore.Web.Framework.Controllers;
 namespace SmartStore.Clickatell.Controllers
 {
 
+	[AdminAuthorize]
     public class SmsClickatellController : PluginControllerBase
     {
         private readonly ClickatellSettings _clickatellSettings;

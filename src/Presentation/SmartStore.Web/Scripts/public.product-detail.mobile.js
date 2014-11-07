@@ -83,8 +83,9 @@
 		    var attributesBlock = $(context).find('.attributes').addBack();
 		    
 		    function updateAttrLine(className, newValue) {
+		        
 		        attrLine = attributesBlock.find(className);
-		        if (newValue) {
+		        if (newValue && newValue != "") {
 		            attrLine.find(".value").html(newValue);
 		            attrLine.removeClass("hide");
 		            attrLine.addClass("in");
@@ -104,6 +105,8 @@
 		    updateAttrLine(".attr-width", data.Measure.Width.Text);
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
 		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+
+		    console.log(data.Stock.Availability.Text);
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 

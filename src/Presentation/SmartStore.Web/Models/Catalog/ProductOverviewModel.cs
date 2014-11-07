@@ -83,6 +83,8 @@ namespace SmartStore.Web.Models.Catalog
             public bool AvailableForPreOrder { get; set; }
 
             public bool ForceRedirectionAfterAddingToCart { get; set; }
+
+            public bool CallForPrice { get; set; }
         }
 
         public partial class ColorAttributeModel : ModelBase

@@ -57,14 +57,15 @@
 </script>
 <div style="font-weight: bold; margin-bottom: 3px">@(download != null ? download.Filename : "")</div>
 
-<table class="adminContent" border="0" style="width:100%; border: 1px solid #ccc; background: #f7f7f7">
+<div class="well well-small">
+<table class="adminContent">
         <colgroup>
             <col width="100px">
             <col width="*">
         </colgroup>
         <tr>
             <td class="adminTitle">
-                @T("Admin.Download.UseDownloadURL"):
+				<label for="cbUseDownloadURL@(randomNumber)">@T("Admin.Download.UseDownloadURL"):</label>
             </td>
             <td class="adminData">
                 <input type="checkbox" name="cbUseDownloadURL@(randomNumber)" id="cbUseDownloadURL@(randomNumber)" 
@@ -181,5 +182,5 @@
             </td>
         </tr>
 </table>
-
+</div>
 

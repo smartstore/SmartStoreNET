@@ -13,6 +13,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.WebApi.Controllers
 {
+	[AdminAuthorize]
 	public class WebApiController : PluginControllerBase
 	{
 		private readonly IPermissionService _permissionService;

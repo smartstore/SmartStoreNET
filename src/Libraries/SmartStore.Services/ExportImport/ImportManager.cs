@@ -375,6 +375,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.IsShipEnabled, true);
 				row.SetProperty(result, product, (x) => x.IsFreeShipping);
 				row.SetProperty(result, product, (x) => x.AdditionalShippingCharge);
+				row.SetProperty(result, product, (x) => x.IsEsd);
 				row.SetProperty(result, product, (x) => x.IsTaxExempt);
 				row.SetProperty(result, product, (x) => x.TaxCategoryId, 1);
 				row.SetProperty(result, product, (x) => x.ManageInventoryMethodId);

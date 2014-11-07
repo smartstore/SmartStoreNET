@@ -167,8 +167,8 @@ namespace SmartStore.PayPal
                 PaymentAction = PayPalHelper.GetPaymentAction(Settings),
                 PaymentActionSpecified = true,
                 CancelURL = CommonServices.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "cart",
-                ReturnURL = CommonServices.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/PayPalExpress/GetDetails",
-                //CallbackURL = _webHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/PayPalExpress/ShippingOptions?CustomerID=" + _workContext.CurrentCustomer.Id.ToString(),
+                ReturnURL = CommonServices.WebHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/SmartStore.PayPal/PayPalExpress/GetDetails",
+                //CallbackURL = _webHelper.GetStoreLocation(currentStore.SslEnabled) + "Plugins/SmartStore.PayPal/PayPalExpress/ShippingOptions?CustomerID=" + _workContext.CurrentCustomer.Id.ToString(),
                 //CallbackTimeout = _payPalExpressPaymentSettings.CallbackTimeout.ToString() 
                 ReqConfirmShipping = Settings.ConfirmedShipment.ToString(),
                 NoShipping = Settings.NoShipmentAddress.ToString()
@@ -347,7 +347,6 @@ namespace SmartStore.PayPal
                 };
 
                 result = service.SetExpressCheckout(req);
-                result.Token = result.Any.InnerText;
             }
             return result;
         }

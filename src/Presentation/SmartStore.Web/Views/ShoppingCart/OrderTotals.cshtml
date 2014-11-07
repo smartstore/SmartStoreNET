@@ -6,7 +6,7 @@
         <tbody>
             @if (Model.DisplayWeight)
 		    {
-            <tr>
+            <tr class="lined">
                 <td class="cart-total-left">
                     <span class="nobr">@T("ShoppingCart.Totals.Weight"):</span>
                 </td>
@@ -15,12 +15,12 @@
                 </td>
             </tr>
             }
-            <tr>
+            <tr class="lined">
                 <td class="cart-total-left">
-                    <span class="nobr">@T("ShoppingCart.Totals.SubTotal"):</span>
+                    <span class="nobr"><strong>@T("ShoppingCart.Totals.SubTotal"):</strong></span>
                 </td>
                 <td class="cart-total-right">
-                    <span class="product-price">@Model.SubTotal</span>
+                    <span class="product-price order-total">@Model.SubTotal</span>
                 </td>
             </tr>
             @if (!String.IsNullOrEmpty(Model.SubTotalDiscount))
@@ -46,7 +46,7 @@
                     </td>
                 </tr>
             }
-            <tr>
+            <tr class="lined">
                 <td class="cart-total-left">
                     <span class="nobr">@T("ShoppingCart.Totals.Shipping")</span>
                         @if (Model.RequiresShipping && !String.IsNullOrEmpty(Model.SelectedShippingMethod))
@@ -94,7 +94,7 @@
                 <tr>
                     <td class="cart-total-left">
                         <span class="nobr">
-                            @string.Format(T("ShoppingCart.Totals.TaxRateLine").Text, taxRate.Rate):
+							@taxRate.Label:
                         </span>
                     </td>
                     <td class="cart-total-right">
@@ -167,7 +167,7 @@
                 <tr>
                     <td class="cart-total-left-below">
                         <span class="nobr">
-                            @string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining):
+                            @string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)
                         </span>
                     </td>
                     <td></td>
@@ -187,9 +187,9 @@
                     </td>
                 </tr>
             }
-            <tr class="omega">
+            <tr class="omega lined">
                 <td class="cart-total-left">
-                    <span  class="nobr">@T("ShoppingCart.Totals.OrderTotal"):</span>
+                    <span  class="nobr"><strong>@T("ShoppingCart.Totals.OrderTotal"):</strong></span>
                 </td>
                 <td class="cart-total-right">
                     <span>

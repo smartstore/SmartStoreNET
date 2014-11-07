@@ -177,10 +177,12 @@
 
     function toggleTax() {
         if ($('#@Html.FieldIdFor(model => model.IsTaxExempt)').is(':checked')) {
-            $('#pnlTaxCategory').hide();
+        	$('#pnlTaxCategory').hide();
+        	$('#pnlIsEsd').hide();
         }
         else {
-            $('#pnlTaxCategory').show();
+        	$('#pnlTaxCategory').show();
+        	$('#pnlIsEsd').show();
         }
     }
 </script>
@@ -738,6 +740,15 @@
 			<td class="adminData">
 				@Html.DropDownListFor(model => model.TaxCategoryId, Model.AvailableTaxCategories, new { placeholder = T("Common.PleaseSelect").Text })
 				@Html.ValidationMessageFor(model => model.TaxCategoryId)
+			</td>
+		</tr>
+		<tr id="pnlIsEsd">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IsEsd)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.IsEsd)
+				@Html.ValidationMessageFor(model => model.IsEsd)
 			</td>
 		</tr>
 	</table>

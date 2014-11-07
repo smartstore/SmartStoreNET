@@ -15,6 +15,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Controllers
 {
+	[AdminAuthorize]
 	public class FeedFroogleController : PluginControllerBase
 	{
 		private readonly FroogleSettings _settings;
@@ -43,7 +44,6 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			return RedirectToAction("ConfigurePlugin", "Plugin", new { systemName = _googleService.Helper.SystemName, area = "Admin" });
 		}
 
-		[AdminAuthorize]
 		public ActionResult ProductEditTab(int productId)
 		{
 			var model = new GoogleProductModel { ProductId = productId };

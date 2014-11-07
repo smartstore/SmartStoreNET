@@ -2,11 +2,13 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
+using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Async;
@@ -38,10 +40,6 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
-using SmartStore.Core.IO;
-using System.Net.Mime;
-using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -197,8 +195,6 @@ namespace SmartStore.Admin.Controllers
 			var p = product;
 			var m = model;
 
-			UpdateProductTags(p, ParseProductTags(m.ProductTags));
-
 			p.ProductTypeId = m.ProductTypeId;
 			p.VisibleIndividually = m.VisibleIndividually;
 			p.ProductTemplateId = m.ProductTemplateId;
@@ -248,40 +244,33 @@ namespace SmartStore.Admin.Controllers
 			p.Width = m.Width;
 			p.Height = m.Height;
 
+			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
 			p.TaxCategoryId = m.TaxCategoryId;
-
-			// SEO
-			var service = _localizedEntityService;
-			foreach (var localized in model.Locales)
-			{
-				service.SaveLocalizedValue(product, x => x.Name, localized.Name, localized.LanguageId);
-				service.SaveLocalizedValue(product, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
-				service.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
-				// search engine name
-				var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
-				_urlRecordService.SaveSlug(product, seName, localized.LanguageId);
-			}
 
 			p.UpdatedOnUtc = DateTime.UtcNow;
 			p.AvailableEndDateTimeUtc = p.AvailableEndDateTimeUtc.ToEndOfTheDay();
 			p.SpecialPriceEndDateTimeUtc = p.SpecialPriceEndDateTimeUtc.ToEndOfTheDay();
-
-			_productService.UpdateProduct(product);
-
-			// picture seo names
-			UpdatePictureSeoNames(product);
 		}
 
 		[NonAction]
-		protected void UpdateProductTags(Product product, string[] productTags)
+		protected void UpdateProductTags(Product product, string rawProductTags)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			//product tags
+			var productTags = new List<string>();
+
+			foreach (string str in rawProductTags.SplitSafe(","))
+			{
+				string tag = str.TrimSafe();
+				if (tag.HasValue())
+					productTags.Add(tag);
+			}
+
 			var existingProductTags = product.ProductTags.ToList();
 			var productTagsToRemove = new List<ProductTag>();
+
 			foreach (var existingProductTag in existingProductTags)
 			{
 				bool found = false;
@@ -298,15 +287,18 @@ namespace SmartStore.Admin.Controllers
 					productTagsToRemove.Add(existingProductTag);
 				}
 			}
+
 			foreach (var productTag in productTagsToRemove)
 			{
 				product.ProductTags.Remove(productTag);
 				_productService.UpdateProduct(product);
 			}
+
 			foreach (string productTagName in productTags)
 			{
 				ProductTag productTag = null;
 				var productTag2 = _productTagService.GetProductTagByName(productTagName);
+
 				if (productTag2 == null)
 				{
 					//add new product tag
@@ -320,6 +312,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					productTag = productTag2;
 				}
+
 				if (!product.ProductTagExists(productTag.Id))
 				{
 					product.ProductTags.Add(productTag);
@@ -456,6 +449,8 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		protected void UpdateProductAcl(Product product, ProductModel model)
 		{
+			product.SubjectToAcl = model.SubjectToAcl;
+
 			var existingAclRecords = _aclService.GetAclRecords(product);
 			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
 			foreach (var customerRole in allCustomerRoles)
@@ -479,13 +474,14 @@ namespace SmartStore.Admin.Controllers
 		[NonAction]
 		protected void UpdateStoreMappings(Product product, ProductModel model)
 		{
+			product.LimitedToStores = model.LimitedToStores;
+
 			var existingStoreMappings = _storeMappingService.GetStoreMappings(product);
 			var allStores = _storeService.GetAllStores();
 			foreach (var store in allStores)
 			{
 				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
 				{
-					// new role
 					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
 					{
 						_storeMappingService.InsertStoreMapping(product, store.Id);
@@ -493,7 +489,6 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					// removed role
 					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
 					if (storeMappingToDelete != null)
 					{
@@ -542,9 +537,26 @@ namespace SmartStore.Admin.Controllers
 			var p = product;
 			var m = model;
 
-			// SEO: URL alias
+			// SEO
 			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
+
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(product, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(product, x => x.ShortDescription, localized.ShortDescription, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
+
+				// search engine name
+				var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				_urlRecordService.SaveSlug(product, seName, localized.LanguageId);
+			}
+
+			// picture seo names
+			UpdatePictureSeoNames(product);
+
+			// product tags
+			UpdateProductTags(p, m.ProductTags);
 		}
 
 		#endregion
@@ -749,7 +761,6 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
-			//default values
 			if (setPredefinedValues)
 			{
 				model.MaximumCustomerEnteredPrice = 1000;
@@ -797,12 +808,12 @@ namespace SmartStore.Admin.Controllers
             return result.ToArray();
         }
 
-        #endregion
+		#endregion Utitilies
 
-        #region Methods
+		#region Methods
 
 		#region Misc
-		
+
 		[HttpPost]
 		public ActionResult GetBasePrice(int productId, string basePriceMeasureUnit, decimal basePriceAmount, int basePriceBaseAmount)
 		{
@@ -974,16 +985,24 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-                var product = new Product();
-                product.CreatedOnUtc = DateTime.UtcNow;
-                product.UpdatedOnUtc = DateTime.UtcNow;
+				var product = new Product()
+				{
+					CreatedOnUtc = DateTime.UtcNow,
+					StockQuantity = 10000,
+					OrderMinimumQuantity = 1,
+					OrderMaximumQuantity = 10000,
+					IsShipEnabled = true,
+					AllowCustomerReviews = true,
+					Published = true,
+					VisibleIndividually = true
+				};
+
+				MapModelToProduct(model, product, form);
 
 				if (product.ProductType == ProductType.BundledProduct)
 				{
 					product.BundleTitleText = _localizationService.GetResource("Products.Bundle.BundleIncludes");
 				}
-
-				MapModelToProduct(model, product, form);
 
                 _productService.InsertProduct(product);
 

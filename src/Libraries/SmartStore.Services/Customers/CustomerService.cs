@@ -3,13 +3,18 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Forums;
+using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Localization;
@@ -535,55 +540,149 @@ namespace SmartStore.Services.Customers
         /// <param name="registrationTo">Customer registration to; null to load all customers</param>
         /// <param name="onlyWithoutShoppingCart">A value indicating whether to delete customers only without shopping cart</param>
         /// <returns>Number of deleted customers</returns>
-        public virtual int DeleteGuestCustomers(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart)
+        public virtual int DeleteGuestCustomers(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart, int maxItemsToDelete = 5000)
         {
-            var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
-            if (guestRole == null)
-                throw new SmartException("'Guests' role could not be loaded");
+			var ctx = _customerRepository.Context;
 
-            var query = _customerRepository.Table;
-            if (registrationFrom.HasValue)
-                query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
-            if (registrationTo.HasValue)
-                query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
-            query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Contains(guestRole.Id));
-            if (onlyWithoutShoppingCart)
-                query = query.Where(c => !c.ShoppingCartItems.Any());
-            //no orders
-            query = query.Where(c => !c.Orders.Any());
-            //no customer content
-            query = query.Where(c => !c.CustomerContent.Any());
-            //ensure that customers doesn't have forum posts or topics
-            query = query.Where(c => !c.ForumTopics.Any());
-            query = query.Where(c => !c.ForumPosts.Any());
-            //don't delete system accounts
-            query = query.Where(c => !c.IsSystemAccount);
-            var customers = query.ToList();
+			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+			{
+				var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
+				if (guestRole == null)
+					throw new SmartException("'Guests' role could not be loaded");
+				
+				var query = _customerRepository.Table;
 
-            int numberOfDeletedCustomers = 0;
-            foreach (var c in customers)
-            {
-                try
-                {  
-                    //delete from database
-                    _customerRepository.Delete(c);
-                    numberOfDeletedCustomers++;
+				if (registrationFrom.HasValue)
+					query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
+				if (registrationTo.HasValue)
+					query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
+				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Contains(guestRole.Id));
 
-                    //delete attributes
-                    var attributes = _genericAttributeService.GetAttributesForEntity(c.Id, "Customer");
-                    foreach (var attribute in attributes)
-                    {
-                        _genericAttributeService.DeleteAttribute(attribute);
-                    }
-                }
-                catch (Exception exc)
-                {
-                    Debug.WriteLine(exc);
-                }
-            }
-            
-            return numberOfDeletedCustomers;
+				if (onlyWithoutShoppingCart)
+					query = query.Where(c => !c.ShoppingCartItems.Any());
+
+				// no orders
+				query = JoinWith<Order>(query, x => x.CustomerId);
+
+				// no customer content
+				query = JoinWith<CustomerContent>(query, x => x.CustomerId);
+
+				// no forum posts
+				query = JoinWith<ForumPost>(query, x => x.CustomerId);
+
+				// no forum topics
+				query = JoinWith<ForumTopic>(query, x => x.CustomerId);
+
+				// no blog comments
+				query = JoinWith<BlogComment>(query, x => x.CustomerId);
+
+				// no news comments
+				query = JoinWith<NewsComment>(query, x => x.CustomerId);
+
+				// no product reviews
+				query = JoinWith<ProductReview>(query, x => x.CustomerId);
+
+				// no product review helpfulness
+				query = JoinWith<ProductReviewHelpfulness>(query, x => x.CustomerId);
+
+				// no poll voting
+				query = JoinWith<PollVotingRecord>(query, x => x.CustomerId);
+
+				//don't delete system accounts
+				query = query.Where(c => !c.IsSystemAccount);
+
+				// only distinct items
+				query = from c in query
+						group c by c.Id
+							into cGroup
+							orderby cGroup.Key
+							select cGroup.FirstOrDefault();
+				query = query.OrderBy(c => c.Id);
+
+				var customers = query.Take(maxItemsToDelete).ToList();
+				
+				var crAutoCommit = _customerRepository.AutoCommitEnabled;
+				var gaAutoCommit = _gaRepository.AutoCommitEnabled;
+				_customerRepository.AutoCommitEnabled = false;
+				_gaRepository.AutoCommitEnabled = false;
+				
+				int numberOfDeletedCustomers = 0;
+				foreach (var c in customers)
+				{
+					try
+					{
+						// delete attributes (using GenericAttributeService would incorporate caching... which is bad in long running processes)
+						var gaQuery = from ga in _gaRepository.Table
+									  where ga.EntityId == c.Id &&
+									  ga.KeyGroup == "Customer"
+									  select ga;
+						var attributes = gaQuery.ToList();
+
+						foreach (var attribute in attributes)
+						{
+							_gaRepository.Delete(attribute);
+						}
+						
+						// delete customer
+						_customerRepository.Delete(c);
+						numberOfDeletedCustomers++;
+
+						if (numberOfDeletedCustomers % 1000 == 0)
+						{
+							// save changes all 1000th item
+							try
+							{
+								scope.Commit();
+							}
+							catch (Exception ex) 
+							{
+								Debug.WriteLine(ex);
+							}
+						}
+					}
+					catch (Exception ex)
+					{
+						Debug.WriteLine(ex);
+					}
+				}
+
+				// save the rest
+				scope.Commit();
+
+				_customerRepository.AutoCommitEnabled = crAutoCommit;
+				_gaRepository.AutoCommitEnabled = gaAutoCommit;
+
+				return numberOfDeletedCustomers;
+			}
         }
+
+		private IQueryable<Customer> JoinWith<T>(IQueryable<Customer> query, Expression<Func<T, int>> customerIdSelector) where T : BaseEntity
+		{
+			var inner = _customerRepository.Context.Set<T>().AsNoTracking();
+
+			/* 
+			 * Lamda join created with LinqPad. ORIGINAL:
+				 from c in customers
+					join inner in ctx.Set<TInner>().AsNoTracking() on c.Id equals inner.CustomerId into c_inner
+					from inner in c_inner.DefaultIfEmpty()
+					where !c_inner.Any()
+					select c;
+			*/
+			query = query
+				.GroupJoin(
+					inner,
+					c => c.Id,
+					customerIdSelector,
+					(c, i) => new { Customer = c, Inner = i })
+				.SelectMany(
+					x => x.Inner.DefaultIfEmpty(),
+					(a, b) => new { a, b }
+				)
+				.Where(x => !(x.a.Inner.Any()))
+				.Select(x => x.a.Customer);
+
+			return query;
+		}
 
         #endregion
         

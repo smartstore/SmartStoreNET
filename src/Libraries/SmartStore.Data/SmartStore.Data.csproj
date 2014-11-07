@@ -195,6 +195,10 @@
     <Compile Include="Migrations\201410091620122_NewRes.Designer.cs">
       <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201411071645389_V21Final.cs" />
+    <Compile Include="Migrations\201411071645389_V21Final.Designer.cs">
+      <DependentUpon>201411071645389_V21Final.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -395,6 +399,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201410091620122_NewRes.resx">
       <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411071645389_V21Final.resx">
+      <DependentUpon>201411071645389_V21Final.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

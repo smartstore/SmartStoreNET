@@ -108,26 +108,36 @@
             <div class="form-inline clearfix" style="text-align:right;@(Model.IsAvailable ? "" : "display:none;")">
                 @if (!Model.AddToCart.DisableBuyButton)
                 {
-                    @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
-                    if (Model.AddToCart.AllowedQuantities.Count > 0)
-                    {
-                        @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                    if (!Model.ProductPrice.CallForPrice) 
+                    {                         
+                        @Html.LabelFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-label" })<text>:</text>
+                        if (Model.AddToCart.AllowedQuantities.Count > 0)
+                        {
+                            @Html.DropDownListFor(model => Model.AddToCart.EnteredQuantity, Model.AddToCart.AllowedQuantities, new { @class = "qty-dropdown" })
+                        }
+                        else
+                        {
+                            @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                        }
+
+                        <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
+                            href="#"
+					        rel="nofollow"
+                            data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 
+                            data-form-selector="#product-details-form"
+                            data-type="cart"
+                            data-action="add">
+                            @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
+                            <i class="fa fa-plus-circle"></i>
+                        </a>
                     }
                     else
                     {
-                        @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
+                        <a class="btn btn-warning add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+                            <i class="fa fa-envelope"></i>
+                            @T("Products.CallForPrice.GoToForm")
+                        </a>
                     }
-
-                    <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
-                        href="#"
-					    rel="nofollow"
-                        data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.AddToCart.ProductId, shoppingCartTypeId = (int)ShoppingCartType.ShoppingCart })' 
-                        data-form-selector="#product-details-form"
-                        data-type="cart"
-                        data-action="add">
-                        @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                        <i class="fa fa-plus-circle"></i>
-                    </a>
                 }
             </div>
         

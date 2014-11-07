@@ -1000,7 +1000,6 @@
     <Content Include="Content\image-gallery\css\blueimp-gallery-indicator.css" />
     <Content Include="Content\image-gallery\css\blueimp-gallery-video.css" />
     <Content Include="Content\image-gallery\css\blueimp-gallery.css" />
-    <Content Include="Content\image-gallery\css\blueimp-gallery.min.css" />
     <Content Include="Content\image-gallery\img\error.png" />
     <Content Include="Content\image-gallery\img\error.svg" />
     <Content Include="Content\image-gallery\img\loading.gif" />
@@ -1014,10 +1013,6 @@
     <Content Include="Content\image-gallery\js\blueimp-gallery-vimeo.js" />
     <Content Include="Content\image-gallery\js\blueimp-gallery-youtube.js" />
     <Content Include="Content\image-gallery\js\blueimp-gallery.js" />
-    <Content Include="Content\image-gallery\js\blueimp-gallery.min.js" />
-    <Content Include="Content\image-gallery\js\blueimp-helper.js" />
-    <Content Include="Content\image-gallery\js\jquery.blueimp-gallery.js" />
-    <Content Include="Content\image-gallery\js\jquery.blueimp-gallery.min.js" />
     <Content Include="Content\Images\default-image.jpg" />
     <Content Include="Content\Images\grippy.png" />
     <Content Include="Content\Images\smartstore.net-200-black.png" />

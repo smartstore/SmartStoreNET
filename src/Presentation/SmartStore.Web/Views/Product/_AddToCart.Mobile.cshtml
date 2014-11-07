@@ -1,5 +1,10 @@
 ﻿@model ProductDetailsModel
 @using SmartStore.Web.Models.Catalog;
+
+<!-- base price -->
+<div class="base-price muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
+    @Model.BasePriceInfo
+</div>
 <div class="add-to-cart">
     @if (Model.AddToCart.CustomerEntersPrice)
     {

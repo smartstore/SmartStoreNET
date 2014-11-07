@@ -14,6 +14,7 @@ using SmartStore.Services.Stores;
 namespace SmartStore.DiscountRules.Controllers
 {
 
+	[AdminAuthorize]
     public class DiscountRulesController : PluginControllerBase
     {
         private readonly IDiscountService _discountService;

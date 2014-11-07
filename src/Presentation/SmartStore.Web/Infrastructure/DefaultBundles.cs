@@ -16,7 +16,7 @@ namespace SmartStore.Web.Infrastructure
 			-----------------------------------------------------*/
 			bundles.Add(new CustomScriptBundle("~/bundles/image-gallery").Include(
 				"~/Content/image-gallery/js/blueimp-gallery.js",
-				"~/Content/image-gallery/js/blueimp-gallery-fullscreen.js",
+				//"~/Content/image-gallery/js/blueimp-gallery-fullscreen.js",
 				"~/Content/image-gallery/js/blueimp-gallery-indicator.js",
 				"~/Scripts/jquery.elevatezoom.js",
 				"~/Scripts/smartstore.smartgallery.js"));

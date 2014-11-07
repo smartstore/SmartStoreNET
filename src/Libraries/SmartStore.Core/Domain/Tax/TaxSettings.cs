@@ -68,19 +68,16 @@ namespace SmartStore.Core.Domain.Tax
         /// </summary>
         public bool HideTaxInOrderSummary { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in product list
         /// </summary>
         public bool ShowLegalHintsInProductList { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in product detail
         /// </summary>
         public bool ShowLegalHintsInProductDetails { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in footer
         /// </summary>

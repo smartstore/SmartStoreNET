@@ -40,43 +40,47 @@
     
 }
 
+@if(GetThemeVariable<bool>("DisplayNavbar") )
+{ 
 <div class="container">
-	<div id='megamenu' class='navbar@(GetThemeVariable<bool>("InverseNavbar") ? " navbar-inverse" : "")'>
-	    <div class="navbar-inner">
-	    	<div class="container">
+    <div id='megamenu' class='navbar@(GetThemeVariable<bool>("InverseNavbar") ? " navbar-inverse" : "")@(GetThemeVariable<bool>("DisplayNavbar") ? "" : " hide")'>
+        <div class="navbar-inner">
+            <div class="container">
                 <ul class="nav nav-smart shrinkable" style="margin-right: 0;">
                     @foreach (var node in Model.Root.Children)
-					{
-						var item = node.Value;
+                    {
+                        var item = node.Value;
 
-						if (!item.Visible)
-						{
-							continue;
-						}
+                        if (!item.Visible)
+                        {
+                            continue;
+                        }
 
-						var itemUrl = GetNodeLink(node);				
-						var itemState = node.GetNodePathState(Model.Path);
-						
-                        <li class='@(GetCssClassForNode(node, itemState))'> 
-                        <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">@item.Text
+                        var itemUrl = GetNodeLink(node);
+                        var itemState = node.GetNodePathState(Model.Path);
+
+                        <li class='@(GetCssClassForNode(node, itemState))'>
+                            <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">
+                                @item.Text
                             @if (item.ElementsCount.GetValueOrDefault() > 0)
                             {
                                 <text> (@(item.ElementsCount))</text>
                             }
-                            
+
                             @if (node.HasChildren)
                             {
                                 <i class="fa fa-caret-down chevron"></i>
                             }
                         </a>
-                        
+
                         @if (node.HasChildren)
                         {
                             @CreateDrilldownMenu(node.Children, true)
                         }
 
-                        </li>
-                        if (node.Next != null) {
+                    </li>
+                        if (node.Next != null)
+                        {
                             <li class="divider-vertical"></li>
                         }
                     }
@@ -84,18 +88,20 @@
                 </ul>
 
                 <ul class="nav nav-smart shrink-menu pull-right hide">
-			        <li class="dropdown">
-			            <a class="dropdown-toggle" href="#" data-target="#" onclick="return false;" rel="nofollow">
+                    <li class="dropdown">
+                        <a class="dropdown-toggle" href="#" data-target="#" onclick="return false;" rel="nofollow">
                             <sup>...</sup>
-			            </a>
-			            <div class="dropdown-menu pull-right"></div>
-			        </li>	
-	    		</ul>
+                        </a>
+                        <div class="dropdown-menu pull-right"></div>
+                    </li>
+                </ul>
 
             </div>
         </div>
     </div>
 </div>
+
+}
 
 @helper CreateDrilldownMenu(IEnumerable<TreeNode<MenuItem>> nodes, bool isRoot)
 {

@@ -329,7 +329,6 @@ namespace SmartStore.Admin.Controllers
             model.AuthorizationTransactionId = order.AuthorizationTransactionId;
             model.CaptureTransactionId = order.CaptureTransactionId;
             model.SubscriptionTransactionId = order.SubscriptionTransactionId;
-			// codehint: sm-add
 			model.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
 			model.CaptureTransactionResult = order.CaptureTransactionResult;
 

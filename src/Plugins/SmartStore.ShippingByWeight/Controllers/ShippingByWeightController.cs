@@ -17,6 +17,7 @@ using Telerik.Web.Mvc;
 namespace SmartStore.ShippingByWeight.Controllers
 {
 
+	[AdminAuthorize]
     public class ShippingByWeightController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;

@@ -5,6 +5,7 @@ using System.Net;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using MaxMind.GeoIP;
+using SmDir = SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
 {
@@ -14,12 +15,14 @@ namespace SmartStore.Services.Directory
     public partial class GeoCountryLookup : IGeoCountryLookup
     {
         private readonly IWebHelper _webHelper;
+		private readonly ICountryService _countryService;
 		private readonly ICacheManager _cacheManager;
 
-        public GeoCountryLookup(IWebHelper webHelper, ICacheManager cacheManager)
+		public GeoCountryLookup(IWebHelper webHelper, ICacheManager cacheManager, ICountryService countryService)
         {
             this._webHelper = webHelper;
 			this._cacheManager = cacheManager;
+			this._countryService = countryService;
         }
 
 		private MaxMind.GeoIP.LookupService GetLookupService() 
@@ -96,6 +99,29 @@ namespace SmartStore.Services.Directory
 				return string.Empty;
 			}
         }
+
+		public virtual bool IsEuIpAddress(string ipAddress, out SmDir.Country euCountry)
+		{
+			euCountry = null;
+
+			if (ipAddress.IsEmpty())
+				return false;
+
+			euCountry = _cacheManager.Get("GeoCountryLookup.EuCountry.{0}".FormatInvariant(ipAddress), () => 
+			{
+				var countryCode = LookupCountryCode(ipAddress);
+				if (countryCode.IsEmpty())
+					return (SmDir.Country)null;
+
+				var country = _countryService.GetCountryByTwoLetterIsoCode(countryCode);
+				return country;
+			});
+
+			if (euCountry == null)
+				return false;
+
+			return euCountry.SubjectToVat;
+		}
 
     }
 }

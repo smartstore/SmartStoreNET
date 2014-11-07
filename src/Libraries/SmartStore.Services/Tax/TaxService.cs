@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Configuration;
 
 namespace SmartStore.Services.Tax
@@ -19,17 +20,33 @@ namespace SmartStore.Services.Tax
     /// Tax service
     /// </summary>
     public partial class TaxService : ITaxService
-    {
-        #region Fields
+	{
+		#region Nested classes
 
-        private readonly IAddressService _addressService;
+		private class TaxAddressKey : Tuple<int, int?> // <CustomerId, TaxClassId>
+		{
+			public TaxAddressKey(int customerId, int? taxClassId)
+				: base(customerId, taxClassId)
+			{
+			}
+		}
+
+		#endregion
+
+		#region Fields
+
+		private static readonly DateTime _EUEsdRegulationStart = new DateTime(2015, 01, 01);
+
+		private readonly IAddressService _addressService;
         private readonly IWorkContext _workContext;
         private readonly TaxSettings _taxSettings;
 		private readonly ShoppingCartSettings _cartSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IDictionary<TaxRateCacheKey, decimal> _cachedTaxRates;
+		private readonly IDictionary<TaxAddressKey, Address> _cachedTaxAddresses;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
+		private readonly IGeoCountryLookup _geoCountryLookup;
 
         #endregion
 
@@ -49,7 +66,9 @@ namespace SmartStore.Services.Tax
 			ShoppingCartSettings cartSettings,
             IPluginFinder pluginFinder,
 			ISettingService settingService,
-			IProviderManager providerManager)
+			IGeoCountryLookup geoCountryLookup,
+			IProviderManager providerManager
+			)
         {
             this._addressService = addressService;
 			this._workContext = workContext;
@@ -57,8 +76,10 @@ namespace SmartStore.Services.Tax
 			this._cartSettings = cartSettings;
 			this._pluginFinder = pluginFinder;
 			this._cachedTaxRates = new Dictionary<TaxRateCacheKey, decimal>();
+			this._cachedTaxAddresses = new Dictionary<TaxAddressKey, Address>();
 			this._settingService = settingService;
 			this._providerManager = providerManager;
+			this._geoCountryLookup = geoCountryLookup;
         }
 
         #endregion
@@ -92,8 +113,7 @@ namespace SmartStore.Services.Tax
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="customer">Customer</param>
         /// <returns>Package for tax calculation</returns>
-        protected CalculateTaxRequest CreateCalculateTaxRequest(Product product,
-            int taxCategoryId, Customer customer)
+        protected CalculateTaxRequest CreateCalculateTaxRequest(Product product, int taxCategoryId, Customer customer)
         {
             var calculateTaxRequest = new CalculateTaxRequest();
             calculateTaxRequest.Customer = customer;
@@ -107,52 +127,107 @@ namespace SmartStore.Services.Tax
                     calculateTaxRequest.TaxCategoryId = product.TaxCategoryId;
             }
 
-            calculateTaxRequest.Address = this.GetTaxAddress(customer);
+            calculateTaxRequest.Address = this.GetTaxAddress(customer, taxCategoryId);
             return calculateTaxRequest;
         }
 
-        protected virtual Address GetTaxAddress(Customer customer)
+		/// <summary>
+		/// Gets a value indicating whether the given customer is a consumer (NOT a business/company) within the EU
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		/// <returns><c>true</c> if the customer is a consumer, <c>false</c> otherwise</returns>
+		/// <remarks>
+		/// A customer is assumed to be a consumer if the default tax address doesn't include a company name,
+		/// OR if a company name was specified but the EU VAT number for this record is invalid.
+		/// </remarks>
+		protected virtual bool IsEuConsumer(Customer customer)
+		{
+			if (customer == null)
+				return false;
+
+			var address = customer.BillingAddress;
+			if (address != null && address.Company.IsEmpty())
+			{
+				// BillingAddress is explicitly set, but no CompanyName in there: so we assume a consumer 
+				return true;
+			}
+
+			var country = address == null ? null : address.Country;
+
+			if (country == null)
+			{
+				// No Country or BillingAddress set: try to resolve country from IP address
+				_geoCountryLookup.IsEuIpAddress(customer.LastIpAddress, out country);
+			}
+
+			if (country == null || !country.SubjectToVat)
+			{
+				return false;
+			}
+
+			// It's EU: check VAT number status
+			var vatStatus = (VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId);
+			// companies with invalid VAT numbers are assumed to be consumers
+			return vatStatus != VatNumberStatus.Valid;
+		}
+
+        protected virtual Address GetTaxAddress(Customer customer, int? taxClassId = null)
         {
-            var basedOn = _taxSettings.TaxBasedOn;
+			int customerId = customer != null ? customer.Id : 0;
+			Address address = null;
 
-            if (basedOn == TaxBasedOn.BillingAddress)
-            {
-                if (customer == null || customer.BillingAddress == null)
-                {
-                    basedOn = TaxBasedOn.DefaultAddress;
-                }
-            }
-            if (basedOn == TaxBasedOn.ShippingAddress)
-            {
-                if (customer == null || customer.ShippingAddress == null)
-                {
-                    basedOn = TaxBasedOn.DefaultAddress;
-                }
-            }
+			var cacheKey = new TaxAddressKey(customerId, taxClassId);
+			if (_cachedTaxAddresses.TryGetValue(cacheKey, out address))
+			{
+				return address;
+			}
 
-            Address address = null;
+			var basedOn = _taxSettings.TaxBasedOn;
 
-            switch (basedOn)
-            {
-                case TaxBasedOn.BillingAddress:
-                    {
-                        address = customer.BillingAddress;
-                    }
-                    break;
-                case TaxBasedOn.ShippingAddress:
-                    {
-                        address = customer.ShippingAddress;
-                    }
-                    break;
-                case TaxBasedOn.DefaultAddress:
-                default:
-                    {
-                        address = _addressService.GetAddressById(_taxSettings.DefaultTaxAddressId);
-                    }
-                    break;
-            }
+			// According to the new EU VAT regulations for electronic services from 2015 on,
+			// VAT must be charged in the EU country the customer originates from (BILLING address).
+			// In addition to this, the IP addresses' origin should also be checked for verification.
+			// But don't perform this check, if the merchant did not set a valid ElectronicServiceTaxClassId.
+			if (true /* DateTime.UtcNow > _EUEsdRegulationStart*/)
+			{
+				if (_taxSettings.EuVatEnabled && _taxSettings.ElectronicServiceTaxClassId.GetValueOrDefault() > 0 && taxClassId.GetValueOrDefault() > 0)
+				{
+					if (_taxSettings.ElectronicServiceTaxClassId.Value == taxClassId.Value)
+					{
+						if (IsEuConsumer(customer))
+						{
+							basedOn = TaxBasedOn.BillingAddress;
+						}
+					}
+				}
+			}
 
-            return address;
+			if (basedOn == TaxBasedOn.BillingAddress && (customer == null || customer.BillingAddress == null))
+			{
+				basedOn = TaxBasedOn.DefaultAddress;
+			}
+			if (basedOn == TaxBasedOn.ShippingAddress && (customer == null || customer.ShippingAddress == null))
+			{
+				basedOn = TaxBasedOn.DefaultAddress;
+			}
+
+			switch (basedOn)
+			{
+				case TaxBasedOn.BillingAddress:
+					address = customer.BillingAddress;
+					break;
+				case TaxBasedOn.ShippingAddress:
+					address = customer.ShippingAddress;
+					break;
+				case TaxBasedOn.DefaultAddress:
+				default:
+					address = _addressService.GetAddressById(_taxSettings.DefaultTaxAddressId);
+					break;
+			}
+
+			_cachedTaxAddresses[cacheKey] = address;
+
+			return address;
         }
 
         /// <summary>
@@ -276,24 +351,26 @@ namespace SmartStore.Services.Tax
 
         protected virtual decimal GetTaxRateCore(Product product, int taxCategoryId, Customer customer)
         {
-            //tax request
+			// active tax provider
+			var activeTaxProvider = LoadActiveTaxProvider();
+			if (activeTaxProvider == null)
+			{
+				return decimal.Zero;
+			}
+			
+			// tax request
             var calculateTaxRequest = CreateCalculateTaxRequest(product, taxCategoryId, customer);
 
-            ////make EU VAT exempt validation (the European Union Value Added Tax) (VATFIX)
+			#region Legacy
+			////make EU VAT exempt validation (the European Union Value Added Tax) (VATFIX)
             //if (_taxSettings.EuVatEnabled && IsVatExempt(calculateTaxRequest.Address, calculateTaxRequest.Customer))
             //{
             //    //return zero if VAT is not chargeable
             //    return decimal.Zero;
-            //}
+			//}
+			#endregion
 
-            //active tax provider
-            var activeTaxProvider = LoadActiveTaxProvider();
-            if (activeTaxProvider == null)
-            {
-                return decimal.Zero;
-            }
-
-            //get tax rate
+			//get tax rate
             var calculateTaxResult = activeTaxProvider.Value.GetTaxRate(calculateTaxRequest);
             if (calculateTaxResult.Success)
             {
@@ -603,8 +680,7 @@ namespace SmartStore.Services.Tax
         /// <param name="name">Name (if received)</param>
         /// <param name="address">Address (if received)</param>
         /// <returns>VAT Number status</returns>
-        public virtual VatNumberStatus GetVatNumberStatus(string fullVatNumber,
-            out string name, out string address)
+        public virtual VatNumberStatus GetVatNumberStatus(string fullVatNumber, out string name, out string address)
         {
             name = string.Empty;
             address = string.Empty;
@@ -747,12 +823,6 @@ namespace SmartStore.Services.Tax
             return false;
         }
 
-        /// <summary>
-        /// Gets a value indicating whether EU VAT exempt (the European Union Value Added Tax)
-        /// </summary>
-        /// <param name="address">Address</param>
-        /// <param name="customer">Customer</param>
-        /// <returns>Result</returns>
         public virtual bool IsVatExempt(Address address, Customer customer)
         {
             if (!_taxSettings.EuVatEnabled)

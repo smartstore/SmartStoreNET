@@ -462,7 +462,7 @@ namespace SmartStore.Web.Framework
             {
                 return _cachedTaxDisplayType.Value;
             }
-
+			
             int? taxDisplayType = null;
 
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)

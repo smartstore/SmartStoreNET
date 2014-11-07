@@ -68,19 +68,16 @@ namespace SmartStore.Core.Domain.Tax
         /// </summary>
         public bool HideTaxInOrderSummary { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in product list
         /// </summary>
         public bool ShowLegalHintsInProductList { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in product detail
         /// </summary>
         public bool ShowLegalHintsInProductDetails { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show legal info in footer
         /// </summary>
@@ -140,5 +137,11 @@ namespace SmartStore.Core.Domain.Tax
         /// Gets or sets a value indicating whether we should notify a store owner when a new VAT number is submitted
         /// </summary>
         public bool EuVatEmailAdminWhenNewVatSubmitted { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating the ESD tax class identifier required
+		/// to calculate VAT for electronic services conform to EU VAT regulations (2015)
+		/// </summary>
+		public int? ElectronicServiceTaxClassId { get; set; }
     }
 }

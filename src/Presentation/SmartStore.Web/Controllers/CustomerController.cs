@@ -1210,14 +1210,14 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddressEdit(CustomerAddressEditModel model, int addressId)
+        public ActionResult AddressEdit(CustomerAddressEditModel model, int id)
         {
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
             var customer = _workContext.CurrentCustomer;
             //find address (ensure that it belongs to the current customer)
-            var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
+            var address = customer.Addresses.Where(a => a.Id == id).FirstOrDefault();
             if (address == null)
                 //address is not found
 				return RedirectToAction("Addresses");

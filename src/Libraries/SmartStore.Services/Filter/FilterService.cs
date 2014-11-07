@@ -497,12 +497,12 @@ namespace SmartStore.Services.Filter
 					break;
 			}
 
-			// distinct cause same products can be mapped to sub-categories
-			query =
-				from p in query
-				group p by p.Id into grp
-				orderby grp.Key
-				select grp.FirstOrDefault();
+			// distinct cause same products can be mapped to sub-categories... too slow
+			//query =
+			//	from p in query
+			//	group p by p.Id into grp
+			//	orderby grp.Key
+			//	select grp.FirstOrDefault();
 
 			//query.ToString().Dump();
 			return query;

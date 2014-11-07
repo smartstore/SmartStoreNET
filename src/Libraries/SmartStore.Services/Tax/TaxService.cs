@@ -188,7 +188,7 @@ namespace SmartStore.Services.Tax
 			// VAT must be charged in the EU country the customer originates from (BILLING address).
 			// In addition to this, the IP addresses' origin should also be checked for verification.
 			// But don't perform this check, if the merchant did not set a valid ElectronicServiceTaxClassId.
-			if (true /* DateTime.UtcNow > _EUEsdRegulationStart*/)
+			if (DateTime.UtcNow > _EUEsdRegulationStart)
 			{
 				if (_taxSettings.EuVatEnabled && _taxSettings.ElectronicServiceTaxClassId.GetValueOrDefault() > 0 && taxClassId.GetValueOrDefault() > 0)
 				{

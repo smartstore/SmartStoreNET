@@ -1931,14 +1931,17 @@ namespace SmartStore.Web.Controllers
                         {
                             displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
                             displayTax = !displayTaxRates;
-
+							
                             model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
                             foreach (var tr in taxRates)
                             {
-                                model.TaxRates.Add(new OrderTotalsModel.TaxRate()
+								var rate = _priceFormatter.FormatTaxRate(tr.Key);
+								var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
+								model.TaxRates.Add(new OrderTotalsModel.TaxRate()
                                     {
-                                        Rate = _priceFormatter.FormatTaxRate(tr.Key),
+										Rate = rate,
                                         Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), true, false),
+										Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
                                     });
                             }
                         }

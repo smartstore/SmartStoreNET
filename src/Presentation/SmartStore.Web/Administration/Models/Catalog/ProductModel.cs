@@ -186,6 +186,9 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.AdditionalShippingCharge")]
 		public decimal AdditionalShippingCharge { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsEsd")]
+		public bool IsEsd { get; set; }
+
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.IsTaxExempt")]
 		public bool IsTaxExempt { get; set; }
 

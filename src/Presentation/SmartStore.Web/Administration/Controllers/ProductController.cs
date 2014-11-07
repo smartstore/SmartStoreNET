@@ -244,6 +244,7 @@ namespace SmartStore.Admin.Controllers
 			p.Width = m.Width;
 			p.Height = m.Height;
 
+			p.IsEsd = m.IsEsd;
 			p.IsTaxExempt = m.IsTaxExempt;
 			p.TaxCategoryId = m.TaxCategoryId;
 

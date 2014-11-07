@@ -836,7 +836,7 @@ table.cart .cart-item-row td.product {
 table.cart td.product .short-desc {
     font-size: 12px;
 }
-table.cart .cart-item-row .product-unit-price,
+
 table.cart .cart-item-row .product-subtotal,
 table.cart .cart-item-row td.product > a,
 table.cart .product-bundle-row .bundle-headline {
@@ -880,7 +880,6 @@ table.cart .cart-item-row .qty-input {
 
 .order-summary-content .cart-total td.cart-total-left { 
 	padding-left: 4px; 
-	font-weight: bold; 
 	max-width: 200px;
 	overflow: hidden;
 }
@@ -890,9 +889,8 @@ table.cart .cart-item-row .qty-input {
 }
 .order-summary-content .cart-total td.cart-total-right { 
 	text-align: right; 
-	color: @successText;
 	font-weight: bold;
-	padding-right: 4px; 
+	padding-right: 8px; 
 	
 	& .info {
 		font-weight: normal;
@@ -903,9 +901,18 @@ table.cart .cart-item-row .qty-input {
 .order-summary-content .cart-total .selected-shipping-method {
 	.smaller();
 }
-.order-summary-content .cart-total tr.omega {
+.order-summary-content .cart-total .order-total {
+	.text-success;
+}
+.order-summary-content .cart-total tr td {
+	border-top: none;
+}
+.order-summary-content .cart-total tr.lined td {
+	border-top: 1px solid #ddd;
+}
+.order-summary-content .cart-total tr.omega td {
 	// order totals
-	background-color: #f5f5f5;
+	border-top-width: 2px;
 }
 
 .terms-of-service.alert {

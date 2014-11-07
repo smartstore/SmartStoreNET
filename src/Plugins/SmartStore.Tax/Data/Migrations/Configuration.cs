@@ -11,7 +11,7 @@
 		{
 			AutomaticMigrationsEnabled = false;
 			MigrationsDirectory = @"Data\Migrations";
-			ContextKey = "SmartStore.TaxCountryStateZip";
+			ContextKey = "SmartStore.TaxCountryStateZip"; // DO NOT CHANGE
 		}
 
 		protected override void Seed(TaxRateObjectContext context)

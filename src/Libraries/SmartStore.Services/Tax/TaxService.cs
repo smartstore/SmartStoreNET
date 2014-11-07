@@ -23,10 +23,10 @@ namespace SmartStore.Services.Tax
 	{
 		#region Nested classes
 
-		private class TaxAddressKey : Tuple<int, int?> // <CustomerId, TaxClassId>
+		private class TaxAddressKey : Tuple<int, bool> // <CustomerId, IsEsd>
 		{
-			public TaxAddressKey(int customerId, int? taxClassId)
-				: base(customerId, taxClassId)
+			public TaxAddressKey(int customerId, bool productIsEsd)
+				: base(customerId, productIsEsd)
 			{
 			}
 		}
@@ -35,7 +35,7 @@ namespace SmartStore.Services.Tax
 
 		#region Fields
 
-		private static readonly DateTime _EUEsdRegulationStart = new DateTime(2015, 01, 01);
+		private static readonly DateTime _euEsdRegulationStart = new DateTime(2015, 01, 01);
 
 		private readonly IAddressService _addressService;
         private readonly IWorkContext _workContext;
@@ -127,7 +127,7 @@ namespace SmartStore.Services.Tax
                     calculateTaxRequest.TaxCategoryId = product.TaxCategoryId;
             }
 
-            calculateTaxRequest.Address = this.GetTaxAddress(customer, taxCategoryId);
+            calculateTaxRequest.Address = this.GetTaxAddress(customer, product);
             return calculateTaxRequest;
         }
 
@@ -171,12 +171,14 @@ namespace SmartStore.Services.Tax
 			return vatStatus != VatNumberStatus.Valid;
 		}
 
-        protected virtual Address GetTaxAddress(Customer customer, int? taxClassId = null)
+        protected virtual Address GetTaxAddress(Customer customer, Product product = null)
         {
 			int customerId = customer != null ? customer.Id : 0;
 			Address address = null;
 
-			var cacheKey = new TaxAddressKey(customerId, taxClassId);
+			bool productIsEsd = product != null ? product.IsEsd : false;
+
+			var cacheKey = new TaxAddressKey(customerId, productIsEsd);
 			if (_cachedTaxAddresses.TryGetValue(cacheKey, out address))
 			{
 				return address;
@@ -187,17 +189,13 @@ namespace SmartStore.Services.Tax
 			// According to the new EU VAT regulations for electronic services from 2015 on,
 			// VAT must be charged in the EU country the customer originates from (BILLING address).
 			// In addition to this, the IP addresses' origin should also be checked for verification.
-			// But don't perform this check, if the merchant did not set a valid ElectronicServiceTaxClassId.
-			if (DateTime.UtcNow > _EUEsdRegulationStart)
+			if (DateTime.UtcNow > _euEsdRegulationStart)
 			{
-				if (_taxSettings.EuVatEnabled && _taxSettings.ElectronicServiceTaxClassId.GetValueOrDefault() > 0 && taxClassId.GetValueOrDefault() > 0)
+				if (_taxSettings.EuVatEnabled && productIsEsd)
 				{
-					if (_taxSettings.ElectronicServiceTaxClassId.Value == taxClassId.Value)
+					if (IsEuConsumer(customer))
 					{
-						if (IsEuConsumer(customer))
-						{
-							basedOn = TaxBasedOn.BillingAddress;
-						}
+						basedOn = TaxBasedOn.BillingAddress;
 					}
 				}
 			}

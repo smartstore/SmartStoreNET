@@ -44,6 +44,7 @@ namespace SmartStore.Web.Models.ShoppingCart
         {
             public string Rate { get; set; }
             public string Value { get; set; }
+			public string Label { get; set; }
         }
 
         public partial class GiftCard : EntityModelBase

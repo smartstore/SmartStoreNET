@@ -264,6 +264,7 @@ namespace SmartStore.Services.ExportImport
 				xmlWriter.WriteElementString("IsShipEnabled", null, product.IsShipEnabled.ToString());
 				xmlWriter.WriteElementString("IsFreeShipping", null, product.IsFreeShipping.ToString());
 				xmlWriter.WriteElementString("AdditionalShippingCharge", null, product.AdditionalShippingCharge.ToString());
+				xmlWriter.WriteElementString("IsEsd", null, product.IsEsd.ToString());
 				xmlWriter.WriteElementString("IsTaxExempt", null, product.IsTaxExempt.ToString());
 				xmlWriter.WriteElementString("TaxCategoryId", null, product.TaxCategoryId.ToString());
 				xmlWriter.WriteElementString("ManageInventoryMethodId", null, product.ManageInventoryMethodId.ToString());
@@ -572,6 +573,7 @@ namespace SmartStore.Services.ExportImport
                     "IsShipEnabled",
                     "IsFreeShipping",
                     "AdditionalShippingCharge",
+					"IsEsd",
                     "IsTaxExempt",
                     "TaxCategoryId",
                     "ManageInventoryMethodId",
@@ -764,6 +766,9 @@ namespace SmartStore.Services.ExportImport
 					col++;
 
 					cells[row, col].Value = p.AdditionalShippingCharge;
+					col++;
+
+					cells[row, col].Value = p.IsEsd;
 					col++;
 
 					cells[row, col].Value = p.IsTaxExempt;

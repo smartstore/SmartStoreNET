@@ -16,6 +16,7 @@
 * (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
 * (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
 * (Developer) New IoC method ContainerManager.InjectProperties()
+* Implemented support for EU VAT regulation for digital goods (2008/8/EG directive)
 * Implemented Media Manager for HTML editor (including file upload)
 * Added _CDN_ setting to store configuration. Allows static files to be served through a content delivery network, e.g. cloudfront. (contributed by 'normalc')
 * #393 Web API: Implement OData actions for simpler working with product attributes

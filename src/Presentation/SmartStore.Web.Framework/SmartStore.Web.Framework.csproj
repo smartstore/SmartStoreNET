@@ -240,7 +240,6 @@
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\TabStripCreated.cs" />
-    <Compile Include="Events\ThemeTouched.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
     <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
@@ -333,7 +332,6 @@
     <Compile Include="Themes\IThemeContext.cs" />
     <Compile Include="Themes\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Themes\ThemeableRazorViewEngine.cs" />
-    <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeContext.cs" />
     <Compile Include="UI\Components\BadgeStyle.cs" />
     <Compile Include="UI\Components\Button\Button.cs" />

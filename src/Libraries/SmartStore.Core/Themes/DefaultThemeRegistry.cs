@@ -12,12 +12,12 @@ using SmartStore.Utilities;
 using SmartStore.Core.Caching;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Core.Events;
-using SmartStore.Web.Framework.Events;
 using System.Diagnostics;
 using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
+using System.Web;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Core.Themes
 {
     public partial class DefaultThemeRegistry : DisposableObject, IThemeRegistry
     {
@@ -75,6 +75,26 @@ namespace SmartStore.Web.Framework.Themes
 			return null;
 		}
 
+		private ThemeManifest GetOrAddThemeManifest(string themeName)
+		{
+			var manifest = GetThemeManifest(themeName);
+
+			if (manifest == null)
+			{
+				var folderData = ThemeManifest.CreateThemeFolderDataByName(themeName, GetOrAddThemeManifest, _themesBasePath);
+				if (folderData != null)
+				{
+					manifest = ThemeManifest.Create(folderData);
+					if (manifest != null)
+					{
+						AddThemeManifest(manifest);
+					}
+				}
+			}
+
+			return manifest;
+		}
+
 		public ICollection<ThemeManifest> GetThemeManifests()
 		{
 			return _themes.Values.AsReadOnly();
@@ -97,7 +117,7 @@ namespace SmartStore.Web.Framework.Themes
 			ThemeManifest existing;
 			if (result = _themes.TryRemove(themeName, out existing))
 			{
-				_eventPublisher.Publish(new ThemeTouched(themeName));
+				_eventPublisher.Publish(new ThemeTouchedEvent(themeName));
 			}
 			return result;
 		}
@@ -118,14 +138,14 @@ namespace SmartStore.Web.Framework.Themes
 			if (current == null)
 				return false;
 
-			while (current != null && current.BaseThemeName != null)
+			while (current != null && current.BaseTheme != null)
 			{
-				if (baseTheme.Equals(current.BaseThemeName, StringComparison.OrdinalIgnoreCase))
+				if (baseTheme.Equals(current.BaseTheme.ThemeName, StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
 
-				current = GetThemeManifest(current.BaseThemeName);
+				current = current.BaseTheme;
 			}
 
 			return false;
@@ -133,65 +153,59 @@ namespace SmartStore.Web.Framework.Themes
 
 		private void LoadThemes()
 		{
-			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
 			var virtualBasePath = _themesBasePath;
-			var manifests = new List<ThemeManifest>();
-			foreach (var path in folder.ListDirectories(virtualBasePath))
+			var basePath = CommonHelper.MapPath(virtualBasePath);
+			var dirs = new DirectoryInfo(basePath).EnumerateDirectories("*", SearchOption.TopDirectoryOnly).ToList();
+
+			foreach (var dir in dirs)
 			{
 				try
 				{
-					var manifest = ThemeManifest.Create(CommonHelper.MapPath(path), virtualBasePath);
-					if (manifest != null)
-					{
-						manifests.Add(manifest);
-					}
+					GetOrAddThemeManifest(dir.Name);
+
+					//var manifest = GetOrAddThemeManifest(dir.Name);
+					//if (manifest != null && !_themes.ContainsKey(manifest.ThemeName))
+					//{
+					//	_themes.TryAdd(manifest.ThemeName, manifest);
+					//}
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(path, ex.Message));
-				}
-			}
-
-			var map = manifests.OrderBy(x => x.BaseThemeName).ThenBy(x => x.ThemeName).ToDictionary(x => x.ThemeName);
-
-			foreach (var manifest in map.Values)
-			{
-				if (ValidateThemeInheritance(manifest, map)) 
-				{
-					_themes.TryAdd(manifest.ThemeName, manifest);
+					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(dir.Name, ex.Message));
 				}
 			}
 		}
 
 		private bool ValidateThemeInheritance(ThemeManifest manifest, IDictionary<string, ThemeManifest> map)
 		{
-			var stack = new List<string>();
-
-			while (manifest.BaseThemeName != null)
-			{
-				stack.Add(manifest.ThemeName);
-				
-				if (!map.ContainsKey(manifest.BaseThemeName))
-				{
-					Debug.WriteLine("The base theme does not exist");
-					return false;
-				}
-
-				if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
-				{
-					Debug.WriteLine("Circular reference");
-					return false;
-				}
-
-				manifest = map[manifest.BaseThemeName];
-			}
-
 			return true;
+			//var stack = new List<string>();
+
+			//while (manifest.BaseThemeName != null)
+			//{
+			//	stack.Add(manifest.ThemeName);
+				
+			//	if (!map.ContainsKey(manifest.BaseThemeName))
+			//	{
+			//		Debug.WriteLine("The base theme does not exist");
+			//		return false;
+			//	}
+
+			//	if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
+			//	{
+			//		Debug.WriteLine("Circular reference");
+			//		return false;
+			//	}
+
+			//	manifest = map[manifest.BaseThemeName];
+			//}
+
+			//return true;
 		}
 
         #endregion
 
-		#region Monitoring &  Events
+		#region Monitoring & Events
 
 		private void StartMonitoring()
 		{
@@ -249,27 +263,27 @@ namespace SmartStore.Web.Framework.Themes
 				// config file changes always result in refreshing the corresponding theme manifest
 				var di = new DirectoryInfo(Path.GetDirectoryName(fullPath));
 
-				string oldBaseTheme = null;
+				ThemeManifest oldBaseTheme = null;
 				var oldManifest = this.GetThemeManifest(di.Name);
 				if (oldManifest != null)
 				{
-					oldBaseTheme = oldManifest.BaseThemeName;
+					oldBaseTheme = oldManifest.BaseTheme;
 				}
 
 				try
 				{
-					var newManifest = ThemeManifest.Create(di.FullName);
+					var newManifest = ThemeManifest.Create(di.FullName, GetOrAddThemeManifest, _themesBasePath);
 					if (newManifest != null)
 					{
 						this.AddThemeManifest(newManifest);
 
-						if (oldBaseTheme.IsCaseInsensitiveEqual(newManifest.BaseThemeName))
+						if (!oldBaseTheme.Equals(newManifest.BaseTheme))
 						{
 							baseThemeChangedArgs = new BaseThemeChangedEventArgs
 							{ 
 								ThemeName = newManifest.ThemeName,
-								BaseTheme = newManifest.BaseThemeName,
-								OldBaseTheme = oldBaseTheme
+								BaseTheme = newManifest.BaseTheme != null ? newManifest.BaseTheme.ThemeName : null,
+								OldBaseTheme = oldBaseTheme != null ? oldBaseTheme.ThemeName : null
 							};
 						}
 
@@ -306,10 +320,9 @@ namespace SmartStore.Web.Framework.Themes
 		{
 			TryRemoveManifest(oldName);
 
-			var di = new DirectoryInfo(fullPath);
 			try
 			{
-				var newManifest = ThemeManifest.Create(di.FullName);
+				var newManifest = GetOrAddThemeManifest(name);
 				if (newManifest != null)
 				{
 					this.AddThemeManifest(newManifest);

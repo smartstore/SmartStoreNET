@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.Core.Themes
 {
-    public class ThemeSwitchedMessage
+    public class ThemeSwitchedEvent
     {
         public string OldTheme { get; set; }
         public string NewTheme { get; set; }

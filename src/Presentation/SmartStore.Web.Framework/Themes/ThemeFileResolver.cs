@@ -44,14 +44,8 @@ namespace SmartStore.Web.Framework.Themes
 
 		private void OnBaseThemeChanged(object sender, BaseThemeChangedEventArgs e)
 		{
-			if (e.OldBaseTheme.IsEmpty())
-			{
-				// nothing to invalidate, because we never cached anything before
-				return;
-			}
-
 			// We should be smarter than just clearing the whole cache here. BUT:
-			// Changing the base theme is a very rare case, whereas determining all dependant file is rather sophisticated.
+			// Changing the base theme is a very rare case, whereas determining all dependant files is rather sophisticated.
 			// So, who cares ;-)
 			_files.Clear();
 		}
@@ -148,7 +142,7 @@ namespace SmartStore.Web.Framework.Themes
 			else
 			{
 				currentTheme = ThemeHelper.ResolveCurrentTheme();
-				if (currentTheme.BaseThemeName == null)
+				if (currentTheme.BaseTheme == null)
 				{
 					// dont't bother resolving files: the current theme is not inherited.
 					// Let the current VPP do the work.
@@ -219,9 +213,9 @@ namespace SmartStore.Web.Framework.Themes
 			}
 
 			var manifest = _themeRegistry.GetThemeManifest(themeName);
-			if (manifest != null && manifest.BaseThemeName.HasValue())
+			if (manifest != null && manifest.BaseTheme != null)
 			{
-				var baseLocation = LocateFile(manifest.BaseThemeName, relativePath, out virtualPath, out physicalPath);
+				var baseLocation = LocateFile(manifest.BaseTheme.ThemeName, relativePath, out virtualPath, out physicalPath);
 				return baseLocation;
 			}
 

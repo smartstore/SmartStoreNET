@@ -12,32 +12,22 @@ namespace SmartStore.Core.Themes
     {
         private readonly ThemeManifest _manifest;
 
-        public ThemeManifestMaterializer(string themeName, string virtualPath, string path, XmlDocument doc)
+        public ThemeManifestMaterializer(ThemeFolderData folderData)
         {
-            Guard.ArgumentNotEmpty(() => themeName);
-            Guard.ArgumentNotEmpty(() => path);
-            Guard.ArgumentNotNull(() => doc);
-            Guard.Against<SmartException>(doc.DocumentElement == null, "The provided theme configuration document must have a root element.");
+			Guard.ArgumentNotNull(() => folderData);
 
             _manifest = new ThemeManifest();
 
-            _manifest.ThemeName = themeName;
-            _manifest.Location = virtualPath;
-            _manifest.Path = path;
-            _manifest.ConfigurationNode = doc.DocumentElement;
+			_manifest.ThemeName = folderData.FolderName;
+			_manifest.BaseTheme = folderData.BaseTheme;
+            _manifest.Location = folderData.VirtualBasePath;
+            _manifest.Path = folderData.FullPath;
+            _manifest.ConfigurationNode = folderData.Configuration.DocumentElement;
         }
         
         public ThemeManifest Materialize()
         {
-
             var root = _manifest.ConfigurationNode;
-
-			_manifest.BaseThemeName = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
-			if (_manifest.BaseThemeName != null && _manifest.BaseThemeName.IsCaseInsensitiveEqual(_manifest.ThemeName))
-			{
-				// Don't let theme point to itself!
-				_manifest.BaseThemeName = null;
-			}
 
 			_manifest.ThemeTitle = root.GetAttribute("title") ?? _manifest.ThemeName;
             _manifest.SupportRtl = root.GetAttribute("supportRTL").ToBool();
@@ -91,7 +81,7 @@ namespace SmartStore.Core.Themes
 
         private IDictionary<string, ThemeVariableInfo> MaterializeVariables()
         {
-            var vars = new Dictionary<string, ThemeVariableInfo>();
+            var vars = new Dictionary<string, ThemeVariableInfo>(StringComparer.OrdinalIgnoreCase);
             var root = _manifest.ConfigurationNode;
             var xndVars = root.SelectNodes(@"Vars/Var").Cast<XmlElement>();
 
@@ -107,6 +97,34 @@ namespace SmartStore.Core.Themes
                     vars.Add(info.Name, info);
                 }
             }
+
+			if (_manifest.BaseTheme != null)
+			{
+				// clone all base variables
+				var baseVars = _manifest.BaseTheme.Variables.Values.Select(x => new ThemeVariableInfo 
+				{
+					Name = x.Name,
+					DefaultValue = x.DefaultValue,
+					Type = x.Type,
+					SelectRef = x.SelectRef,
+					Manifest = _manifest
+				}).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+
+				// override variables
+				foreach (var v in vars)
+				{
+					if (!baseVars.ContainsKey(v.Key))
+					{
+						baseVars.Add(v.Key, v.Value);
+					}
+					else
+					{
+						baseVars[v.Key].DefaultValue = v.Value.DefaultValue;
+					}
+				}
+
+				vars = baseVars;
+			}
 
             return vars;
         }

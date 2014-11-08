@@ -1,10 +1,10 @@
 ﻿using System;
 
-namespace SmartStore.Web.Framework.Events
+namespace SmartStore.Core.Themes
 {
-	public class ThemeTouched
+	public class ThemeTouchedEvent
 	{
-		public ThemeTouched(string themeName)
+		public ThemeTouchedEvent(string themeName)
 		{
 			Guard.ArgumentNotEmpty(() => themeName);
 			this.ThemeName = themeName;

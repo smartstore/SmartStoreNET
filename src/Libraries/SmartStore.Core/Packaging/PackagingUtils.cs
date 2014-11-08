@@ -126,7 +126,7 @@ namespace SmartStore.Core.Packaging
 					filePath = Path.Combine(HostingEnvironment.MapPath("~/"), filePath);
 					if (isTheme)
 					{
-						var themeManifest = ThemeManifest.Create(Path.GetDirectoryName(filePath));
+						var themeManifest = ThemeManifest.Create(Path.GetDirectoryName(filePath), null);
 						if (themeManifest != null)
 						{
 							descriptor = themeManifest.ConvertToExtensionDescriptor();

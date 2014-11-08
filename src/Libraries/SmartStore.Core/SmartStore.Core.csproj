@@ -339,6 +339,8 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Themes\DefaultThemeRegistry.cs" />
+    <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
@@ -531,7 +533,7 @@
     <Compile Include="Themes\IThemeRegistry.cs" />
     <Compile Include="Themes\ThemeManifest.cs" />
     <Compile Include="Themes\ThemeManifestMaterializer.cs" />
-    <Compile Include="Themes\ThemeSwitchedMessage.cs" />
+    <Compile Include="Themes\ThemeSwitchedEvent.cs" />
     <Compile Include="Themes\ThemeVariableInfo.cs" />
     <Compile Include="Themes\ThemeVariableType.cs" />
     <Compile Include="Utilities\ActionDisposable.cs" />

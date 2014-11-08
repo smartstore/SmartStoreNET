@@ -155,7 +155,7 @@ namespace SmartStore.Admin.Controllers
 
             if (themeSwitched)
             {
-                _services.EventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
+                _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
                     IsMobile = mobileThemeSwitched,
                     OldTheme = mobileThemeSwitched ? themeSettings.DefaultMobileTheme : themeSettings.DefaultDesktopTheme,
                     NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme

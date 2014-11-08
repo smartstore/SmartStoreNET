@@ -4,10 +4,21 @@ using System.Collections.Generic;
 using System.Xml;
 using SmartStore.Collections;
 using System.IO;
+using SmartStore.Utilities;
+using System.Web;
 
 namespace SmartStore.Core.Themes
 {
-    
+
+	internal class ThemeFolderData
+	{
+		public string FolderName { get; set; }
+		public string FullPath { get; set; }
+		public string VirtualBasePath { get; set; }
+		public XmlDocument Configuration { get; set; }
+		public ThemeManifest BaseTheme { get; set; }
+	}
+
 	public class ThemeManifest : ComparableObject<ThemeManifest>
     {
 
@@ -17,10 +28,24 @@ namespace SmartStore.Core.Themes
         {
         }
 
-		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes")
+		internal static ThemeFolderData CreateThemeFolderDataByName(string themeName, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
 		{
-			Guard.ArgumentNotEmpty(() => themePath);
-			Guard.ArgumentNotEmpty(() => virtualBasePath);
+			if (themeName.IsEmpty())
+				return null;
+
+			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
+			var themePath = CommonHelper.MapPath(VirtualPathUtility.Combine(virtualBasePath, themeName));
+
+			if (!Directory.Exists(themePath))
+				return null;
+
+			return CreateThemeFolderData(themePath, baseThemeResolver, virtualBasePath);
+		}
+
+		internal static ThemeFolderData CreateThemeFolderData(string themePath, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
+		{
+			if (themePath.IsEmpty() || virtualBasePath.IsEmpty())
+				return null;
 
 			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
 			var themeDirectory = new DirectoryInfo(themePath);
@@ -30,19 +55,63 @@ namespace SmartStore.Core.Themes
 			{
 				var doc = new XmlDocument();
 				doc.Load(themeConfigFile.FullName);
-				return ThemeManifest.Create(
-					themeDirectory.Name,
-					virtualBasePath,
-					themeDirectory.FullName,
-					doc);
+
+				Guard.Against<SmartException>(doc.DocumentElement == null, "The theme configuration document must have a root element.");
+
+				var root = doc.DocumentElement;
+
+				ThemeManifest baseTheme = null;
+				var baseThemeName = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
+				if (baseThemeName != null && baseThemeName.IsCaseInsensitiveEqual(themeDirectory.Name))
+				{
+					// Don't let theme point to itself!
+					baseThemeName = null;
+				}
+
+				if (baseThemeName.HasValue())
+				{
+					if (baseThemeResolver == null) 
+					{
+						throw Error.Argument("baseThemeResolver", "Argument 'baseThemeResolver' cannot be null if theme is a child theme (path of affected theme: {0})", themePath);
+					}
+
+					baseTheme = baseThemeResolver(baseThemeName);
+					if (baseTheme == null)
+					{
+						throw Error.Application("The base theme '{0}' for theme '{1}' does not exist or could not be created.", baseThemeName, themeDirectory.Name);
+					}
+				}
+
+				return new ThemeFolderData 
+				{ 
+					FolderName = themeDirectory.Name,
+					FullPath = themeDirectory.FullName,
+					Configuration = doc,
+					VirtualBasePath = virtualBasePath,
+					BaseTheme = baseTheme
+				};
 			}
 
 			return null;
 		}
 
-        public static ThemeManifest Create(string themeName, string virtualPath, string path, XmlDocument doc)
+		public static ThemeManifest Create(string themePath, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
+		{
+			Guard.ArgumentNotEmpty(() => themePath);
+			Guard.ArgumentNotEmpty(() => virtualBasePath);
+
+			var folderData = CreateThemeFolderData(themePath, baseThemeResolver, virtualBasePath);
+			if (folderData != null)
+			{
+				return Create(folderData);
+			}
+
+			return null;
+		}
+
+        internal static ThemeManifest Create(ThemeFolderData folderData)
         {
-            var materializer = new ThemeManifestMaterializer(themeName, virtualPath, path, doc);
+			var materializer = new ThemeManifestMaterializer(folderData);
             return materializer.Materialize();
         }
 
@@ -105,10 +174,10 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
-		public string BaseThemeName
+		public ThemeManifest BaseTheme
 		{
 			get;
-			protected internal set;
+			internal set;
 		}
 
         public string ThemeTitle 
@@ -129,10 +198,10 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
-        public IDictionary<string, ThemeVariableInfo> Variables 
-		{ 
-			get; 
-			internal set; 
+		public IDictionary<string, ThemeVariableInfo> Variables
+		{
+			get;
+			internal set;
 		}
 
         public Multimap<string, string> Selects { get; internal set; }

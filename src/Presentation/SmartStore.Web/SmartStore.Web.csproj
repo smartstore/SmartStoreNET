@@ -1980,7 +1980,6 @@
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
     <Content Include="Themes\Alpha\preview.png" />
-    <Content Include="Themes\Gamma\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
     <Content Include="Themes\Mobile\Content\images\ico-forum-post-high.gif" />
@@ -2221,17 +2220,9 @@
     <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
     <Content Include="Themes\Alpha\Content\bootstrap.less" />
-    <Content Include="Themes\Gamma\theme.config">
-      <SubType>Designer</SubType>
-    </Content>
-    <Content Include="Themes\Gamma\Views\Common\ShopBar.cshtml" />
-    <Content Include="Themes\Gamma\Views\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />
-    <Folder Include="Themes\Gamma\Content\" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

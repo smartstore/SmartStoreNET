@@ -716,9 +716,10 @@ namespace SmartStore
 		/// <summary>Debug.WriteLine</summary>
 		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
-		public static void Dump(this string value) 
+		public static void Dump(this string value, bool appendMarks = false) 
         {
 			Debug.WriteLine(value);
+			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
 		}
 		
 		/// <summary>Smart way to create a HTML attribute with a leading space.</summary>

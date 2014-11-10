@@ -1,4 +1,4 @@
-#Release Notes#
+﻿#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -107,6 +107,7 @@
 * #493 Postfinance plugin does not work if shopname includes a "umlaut"
 * #237 Mobile theme: inactive attribute combinations should not be added to cart
 * #178 Mobile theme doesn't display base price
+* Ipayment: Capturing did not work because the security was not transmitted
 
 
 ##SmartStore.NET 2.0.2#

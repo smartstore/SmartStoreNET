@@ -748,34 +748,36 @@ namespace SmartStore.Services.Catalog
 
             if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
             {
-				// ACL
-                query = from p in query
-                        join acl in _aclRepository.Table on p.Id equals acl.EntityId into p_acl
-                        from acl in p_acl.DefaultIfEmpty()
-                        where !p.SubjectToAcl || (acl.EntityName == "Product" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                        select p;
+				query = 
+					from p in query
+					join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
+					from acl in pacl.DefaultIfEmpty()
+					where !p.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+					select p;
             }
 
 			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
-				//Store mapping
-				query = from p in query
-						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
-						from sm in p_sm.DefaultIfEmpty()
-						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.StoreId == sm.StoreId)
-						select p;
+				query = 
+					from p in query
+					join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+					from sm in psm.DefaultIfEmpty()
+					where !p.LimitedToStores || ctx.StoreId == sm.StoreId
+					select p;
 			}
 
             // search by specs
             if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
             {
-                query = from p in query
-                        where !ctx.FilteredSpecs
-                                   .Except(
-                                       p.ProductSpecificationAttributes.Where(psa => psa.AllowFiltering).Select(
-                                           psa => psa.SpecificationAttributeOptionId))
-                                   .Any()
-                        select p;
+                query = 
+					from p in query
+					where !ctx.FilteredSpecs.Except
+					(
+						p.ProductSpecificationAttributes
+							.Where(psa => psa.AllowFiltering)
+							.Select(psa => psa.SpecificationAttributeOptionId)
+					).Any()
+					select p;
             }
 
             // category filtering
@@ -785,7 +787,7 @@ namespace SmartStore.Services.Catalog
                 if (ctx.MatchAllcategories)
                 {
                     query = from p in query
-                                where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+                            where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
                             from pc in p.ProductCategories
                             where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
                             select p;
@@ -824,15 +826,6 @@ namespace SmartStore.Services.Catalog
                         from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
                         select p;
             }
-
-            //// only distinct products (group by ID)
-            //// if we use standard Distinct() method, then all fields will be compared (low performance)
-            //// it'll not work in SQL Server Compact when searching products by a keyword)
-            //query = from p in query
-            //        group p by p.Id
-            //            into pGroup
-            //            orderby pGroup.Key
-            //            select pGroup.FirstOrDefault();
 
             return query;
         }

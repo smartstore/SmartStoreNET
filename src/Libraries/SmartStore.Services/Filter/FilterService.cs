@@ -22,35 +22,29 @@ namespace SmartStore.Services.Filter
 		private readonly ICategoryService _categoryService;
 		private readonly IStoreContext _storeContext;
 		private readonly CatalogSettings _catalogSettings;
+		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
 
 		private IQueryable<Product> _products;
-		private bool? _includeFeatured;
 
 		public FilterService(IProductService productService,
 			ICategoryService categoryService,
 			IStoreContext storeContext,
-			CatalogSettings catalogSettings)
+			CatalogSettings catalogSettings,
+			IRepository<Product> productRepository,
+			IRepository<ProductCategory> productCategoryRepository)
 		{
 			_productService = productService;
 			_categoryService = categoryService;
 			_storeContext = storeContext;
 			_catalogSettings = catalogSettings;
+			_productRepository = productRepository;
+			_productCategoryRepository = productCategoryRepository;
 		}
 
 		public static int MaxDisplayCriteria { get { return 4; } }
-
 		public static string ShortcutPrice { get { return "_Price"; } }
 		public static string ShortcutSpecAttribute { get { return "_SpecId"; } }
-
-		public bool IncludeFeatured
-		{
-			get
-			{
-				if (_includeFeatured == null)
-					_includeFeatured = EngineContext.Current.Resolve<CatalogSettings>().IncludeFeaturedProductsInNormalLists;
-				return _includeFeatured ?? false;
-			}
-		}
 
 		// helper
 		private string ValidateValue(string value, string alternativeValue)
@@ -164,13 +158,43 @@ namespace SmartStore.Services.Filter
 			{
 				var searchContext = new ProductSearchContext()
 				{
-					CategoryIds = categoryIds,
-					FeaturedProducts = IncludeFeatured,
+					FeaturedProducts = _catalogSettings.IncludeFeaturedProductsInNormalLists,
 					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
 				};
 
-				_products = _productService.PrepareProductSearchQuery(searchContext);
+				if (categoryIds != null && categoryIds.Count > 1)
+				{
+					_products = _productService.PrepareProductSearchQuery(searchContext);
+
+					var distinctIds = (
+						from p in _productRepository.Table
+						join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+						where categoryIds.Contains(pc.CategoryId)
+						select p.Id).Distinct();
+
+					_products =
+						from p in _products
+						join x in distinctIds on p.Id equals x
+						select p;
+				}
+				else
+				{
+					searchContext.CategoryIds = categoryIds;
+
+					_products = _productService.PrepareProductSearchQuery(searchContext);
+				}
+
+				//string.Join(", ", distinctIds.ToList()).Dump();
+
+				//_products
+				//	.Select(x => new { x.Id, x.Name })
+				//	.ToList()
+				//	.ForEach(x => {
+				//		"{0} {1}".FormatWith(x.Id, x.Name).Dump();
+				//	});
+
+				//_products.ToString().Dump(true);
 			}
 			return _products;
 		}
@@ -220,7 +244,7 @@ namespace SmartStore.Services.Filter
 		}
 		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
 		{
-			bool includeFeatured = IncludeFeatured;
+			bool includeFeatured = _catalogSettings.IncludeFeaturedProductsInNormalLists;
 			var query = ProductFilter(context);
 
 			var manus =
@@ -433,15 +457,17 @@ namespace SmartStore.Services.Filter
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
-				bool includeFeatured = IncludeFeatured;
+				bool includeFeatured = _catalogSettings.IncludeFeaturedProductsInNormalLists;
 
-				var pmq = (
+				var pmq =
 					from p in query
 					from pm in p.ProductManufacturers
 					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct) && !pm.Manufacturer.Deleted
-					select pm).Where(sql.WhereClause.ToString(), sql.Values.ToArray());
+					select pm;
 
-				query = pmq.Select(pm => pm.Product);
+				query = pmq
+					.Where(sql.WhereClause.ToString(), sql.Values.ToArray())
+					.Select(pm => pm.Product);
 			}
 
 			// specification attribute

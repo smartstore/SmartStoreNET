@@ -1,0 +1,245 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.SmartStore.AmazonPay" AppendRootKey="false">
+		<Value>Pay with Amazon</Value>
+	</LocaleResource>
+  <LocaleResource Name="Plugins.FriendlyName.Widgets.AmazonPay" AppendRootKey="false">
+    <Value>Pay with Amazon</Value>
+  </LocaleResource>
+
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<p>Instructions to set up "Pay with Amazon":</p><ul>
+			<li>Enter your Amazon credentials in the fields provided below. You can find these credentials in your <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> account.</li>
+			<li>You can find the Merchant ID in Seller Central at Settings - Integration Settings.</li>
+			<li>You can find both access keys in Seller Central at Integration - MWS Access Key.</li>
+			<li>If you would like to receive instant payment notifications (SSL required!) enter the IPN URL listed bewlow under Settings - Integration Settings - Instant Notification Settings - Merchant URL.</li>
+			</ul>
+			<p>Note! You get the billing address of the customer after the payment has been authorised by Amazon, so usually shortly after the order confirmation E-mail has been sent to the customer. To avoid misunderstandings, it is therefore advisable to remove the placeholder for the billing address from the message template for order confirmations.
+			</p>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="MissingOrderReferenceId">
+		<Value>There was no order reference ID transmitted by Amazon!</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentMethodNotActive">
+		<Value>Payment method "Pay with Amazon" is not available for store "{0}".</Value>
+	</LocaleResource>
+	<LocaleResource Name="MissingCheckoutSessionState">
+		<Value>Missing checkout session state for "Pay with Amazon". Your payment cannot be processed. Please go to your shopping cart and checkout again.</Value>
+	</LocaleResource>
+	<LocaleResource Name="OrderNotFound">
+		<Value>Cannot find an order with the payment method "Pay with Amazon" and the identification {0}.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AuthorizationHardDeclineMessage">
+		<Value>
+			<![CDATA[<p>Unfortunately Amazon Payments declined the payment for your order in our online shop. Please contact us.</p>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="SelectionText">
+		<Value>or</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonPaymentsReports">
+		<Value>Amazon Payments reports</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShippingToCountryNotAllowed">
+		<Value>Shipping to the selected country is not allowed. Please choose an other shipping address.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigSaveNote">
+		<Value>The settings were successfully saved. Please restart the application if "Updating the payment status" has been changed.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigGroups">
+		<Value>Access data;Data exchange;Layout;Miscellaneous</Value>
+	</LocaleResource>
+	<LocaleResource Name="OrderNoteStrings">
+		<Value><![CDATA[The function "{0}" of the Amazon Payment API was called.;Response;The billing address from Amazon was applied.{0};Data from Amazon has been processed:<br />{0}The billing address from Amazon was not applied because it is missing or billing to that country is deactivated.{0};]]></Value>
+	</LocaleResource>
+	<LocaleResource Name="MessageStrings">
+		<Value>Message type;Message ID;Authorization ID;Capture ID;Refund ID;Reference ID;State;State update;Fee;Authorized amount;Captured amount;Refunded amount;Capture now;Creation;Expiration</Value>
+	</LocaleResource>
+	<LocaleResource Name="UseSandbox">
+		<Value>Use Sandbox</Value>
+	</LocaleResource>
+	<LocaleResource Name="UseSandbox.Hint">
+		<Value>Check to use the sandbox (testing environment).</Value>
+	</LocaleResource>
+	<LocaleResource Name="SellerId">
+		<Value>Your Merchant ID</Value>
+	</LocaleResource>
+	<LocaleResource Name="SellerId.Hint">
+		<Value>The Merchant ID you received during registration at Amazon's Seller Central.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Marketplace">
+		<Value>Marketplace</Value>
+	</LocaleResource>
+	<LocaleResource Name="Marketplace.Hint">
+		<Value>The country where you registered your Amazon seller account.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Marketplace.De">
+		<Value>Germany</Value>
+	</LocaleResource>
+	<LocaleResource Name="Marketplace.Uk">
+		<Value>United Kingdom of Great Britain</Value>
+	</LocaleResource>
+	<LocaleResource Name="AccessKey">
+		<Value>Your access key</Value>
+	</LocaleResource>
+	<LocaleResource Name="AccessKey.Hint">
+		<Value>You can find the access key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SecretKey">
+		<Value>Your secret key</Value>
+	</LocaleResource>
+	<LocaleResource Name="SecretKey.Hint">
+		<Value>You can find the secret key at Amazon's Seller Central under Integration - MWS Access Key.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonColor">
+		<Value>Amazon login button color</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonColor.Hint">
+		<Value>The prefered color of the Amazon login button on shopping cart page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonColor.Orange">
+		<Value>Orange</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonColor.Tan">
+		<Value>Light gray</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonSize">
+		<Value>Size of Amazon login button</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonSize.Hint">
+		<Value>The size of the "Pay with Amazon" button on the shopping cart page.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonSize.Medium">
+		<Value>Medium (126 x 24 pixel)</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonSize.Large">
+		<Value>Large (151 x 27 pixel)</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonButtonSize.Xlarge">
+		<Value>Extra large (173 x 27 ixel)</Value>
+	</LocaleResource>
+	<LocaleResource Name="DataFetching">
+		<Value>Updating the payment status</Value>
+	</LocaleResource>
+	<LocaleResource Name="DataFetching.Hint">
+		<Value>Determines the method used to update the payment status.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DataFetching.Warning">
+		<Value>IPN (instant payment notification) requires valid SSL certificate to be installed on this server. Pay attention that the SSL certificate must be issued by a trusted Certificate Authority, self-signed certificates are not permittted.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DataFetching.Ipn">
+		<Value>IPN (Instant Payment Notification)</Value>
+	</LocaleResource>
+	<LocaleResource Name="DataFetching.Polling">
+		<Value>Data polling</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnUrl">
+		<Value>IPN URL</Value>
+	</LocaleResource>
+	<LocaleResource Name="IpnUrl.Hint">
+		<Value>Please enter this URL at Amazon Seller Central under Integration Settings - Instant Notification Settings - Merchant URL.</Value>
+	</LocaleResource>	
+	<LocaleResource Name="TransactionType">
+		<Value>Payment action</Value>
+	</LocaleResource>
+	<LocaleResource Name="TransactionType.Hint">
+		<Value>Determines when to debit the customer account.</Value>
+	</LocaleResource>
+	<LocaleResource Name="TransactionType.AuthAndCapture">
+		<Value>Immediately debit</Value>
+	</LocaleResource>
+	<LocaleResource Name="TransactionType.Auth">
+		<Value>Authorize immediately, debit when goods are shipped</Value>
+	</LocaleResource>
+	<LocaleResource Name="TransactionType.Warning">
+		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Payments first.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SaveEmailAndPhone">
+		<Value>Apply customer data</Value>
+	</LocaleResource>
+	<LocaleResource Name="SaveEmailAndPhone.Hint">
+		<Value>Determines whether and when the Amazon email address and telephone number of the customer should be saved.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonPaySaveDataType.OnlyIfEmpty">
+		<Value>Only if empty</Value>
+	</LocaleResource>
+	<LocaleResource Name="AmazonPaySaveDataType.Always">
+		<Value>Always</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShowButtonInMiniShoppingCart">
+		<Value>Show button in mini shopping cart</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShowButtonInMiniShoppingCart.Hint">
+		<Value>Determines to show the "Pay with Amazon" button in the mini shopping cart too.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddressWidgetWidth">
+		<Value>Width of address widget</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddressWidgetWidth.Hint">
+		<Value>Valid values for one-column widgets are 200 to 399 pixel and for two-column widgets 400 to 600 pixel.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddressWidgetHeight">
+		<Value>Height of address widget</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddressWidgetHeight.Hint">
+		<Value>Valid values are 228 to 400 pixel.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentWidgetWidth">
+		<Value>Width of payment widget</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentWidgetWidth.Hint">
+		<Value>Valid values for one-column widgets are 200 to 399 pixel and for two-column widgets 400 to 600 pixel.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentWidgetHeight">
+		<Value>Height of payment widget</Value>
+	</LocaleResource>
+	<LocaleResource Name="PaymentWidgetHeight.Hint">
+		<Value>Valid values are 228 to 400 pixel.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFee">
+		<Value>Additional fee</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFee.Hint">
+		<Value>Enter additional fee to charge your customers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFee.Warning">
+		<Value>This option requires a permission through Amazon Payments. Please do not calculate additional fees without contacting Amazon Payments first.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFeePercentage">
+		<Value>Additional fee percentage</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalFeePercentage.Hint">
+		<Value>Determines whether to apply a percentage additional fee to the order total. If not enabled, a fixed value is used.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddOrderNotes">
+		<Value>Create order notes</Value>
+	</LocaleResource>
+	<LocaleResource Name="AddOrderNotes.Hint">
+		<Value>Determines that order notes should be created in context of the data exchange with Amazon Payments.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PollingTaskMinutes">
+		<Value>Frequency (in minutes)</Value>
+	</LocaleResource>
+	<LocaleResource Name="PollingTaskMinutes.Hint">
+		<Value>Determines how often status of the different object shall be polled from Amazon Payments servers.</Value>
+	</LocaleResource>
+	<LocaleResource Name="PollingMaxOrderCreationDays">
+		<Value>Maximal order age (in days)</Value>
+	</LocaleResource>
+	<LocaleResource Name="PollingMaxOrderCreationDays.Hint">
+		<Value>Determines that only orders which are not older than x days to be included in payment data updates.</Value>
+	</LocaleResource>
+	<LocaleResource Name="InformCustomerAboutErrors">
+		<Value>Inform about a refusal of an authorization</Value>
+	</LocaleResource>
+	<LocaleResource Name="InformCustomerAboutErrors.Hint">
+		<Value>Determines to create order notes in case of a declination of an Amazon payment, which are visible for customers too. In addition the customer is informed by email about the case.</Value>
+	</LocaleResource>
+	<LocaleResource Name="InformCustomerAddErrors">
+		<Value>Append error message</Value>
+	</LocaleResource>
+	<LocaleResource Name="InformCustomerAddErrors.Hint">
+		<Value>Determines to append the error message to the order note and email.</Value>
+	</LocaleResource>
+</Language>

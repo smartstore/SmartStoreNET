@@ -1,0 +1,66 @@
+﻿@using SmartStore.Web.Models.Checkout;
+
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+@{
+	Layout = "~/Views/Shared/_Root.cshtml";
+	
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+
+<div class="page checkout-page">
+    <div class="page-title">
+        <h1>@T("Checkout.ShippingAddress")</h1>
+    </div>
+
+    <div class="page-body checkout-data">
+		@Html.Widget("mobile_checkout_shipping_address_top")
+
+		@if (Model.Warning.HasValue())
+		{
+			<div class="message-error">
+				<ul>
+					<li>@Model.Warning</li>
+				</ul>
+			</div>
+		}
+
+		<div class="amazon-pay-widget clearfix">
+			<div id="@Model.GetWidgetId"></div>
+		</div>
+
+		@Html.Widget("mobile_checkout_shipping_address_middle")
+
+		<div class="block clearfix buttons">
+
+			<a id="AmazonPayNextCheckoutStep" data-role="button" href="@Url.Action("ShippingMethod", "Checkout", new { area = "" })" data-corners="true" data-shadow="true" data-iconshadow="true" 
+			   data-wrapperels="span" data-theme="b" class="ui-btn ui-shadow ui-btn-corner-all ui-btn-up-b">
+				<span class="ui-btn-inner"><span class="ui-btn-text">@T("Checkout.NextButton")</span></span>
+			</a>
+		</div>
+
+		@Html.Widget("mobile_checkout_shipping_address_bottom")
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		try {
+			new OffAmazonPayments.Widgets.AddressBook({
+				sellerId: '@Model.SellerId',
+				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				onAddressSelect: function (orderReference) {
+				},
+				design: {
+					designMode: 'smartphoneCollapsible'
+				},
+				onError: function (e) {
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+				}
+			}).bind('@Model.GetWidgetId');
+		}
+		catch (e) {
+			alert(e.description);
+		}
+	});
+</script>

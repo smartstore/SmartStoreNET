@@ -1,0 +1,14 @@
+﻿.config-logo {
+	width: 339px;
+	height: 74px;
+}
+
+.amazon-pay-button .selection-text {
+    text-align: right;
+    font-weight: bold;
+    padding: 12px 15px 5px 0;
+}
+
+.amazon-pay-button .button-container {
+	text-align: right;
+}

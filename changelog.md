@@ -3,11 +3,13 @@
 ##SmartStore.NET 2.1#
 
 ###New Features###
-* (Developer) Overhauled plugin architecture:
+* (Developer) *Overhauled plugin architecture*:
 	- Plugins are regular MVC areas now
 	- No embedded views anymore. Views get copied to the deployment folder
 	- No cumbersome return View("Very.Long.View.Identifier") anymore
 	- Views in plugin source folders can be edited during debug. The changes are reflected without plugin recompilation.
+* (Developer) *Theme inheritance*: create derived child themes with minimum effort by overriding only small parts (static files and even variables).
+* New payment plugin *Pay with Amazon*
 * (Developer) Model binding for plugin tab views: models from plugin tabs get automatically materialized and bound to TabbableModel.CustomProperties[MyKey]. Extended the SmartModelBinder for this.
 * (Developer) New event _ModelBoundEvent_. Consume this in plugins to persist plugin specific models.
 * (Admin) Added _GMC_ tab to product edit view. This is more a coding example for the above stuff rather than a new feature.

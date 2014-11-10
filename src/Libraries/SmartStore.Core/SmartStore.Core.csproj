@@ -107,6 +107,7 @@
     </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -421,7 +422,6 @@
     <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
     <Compile Include="Infrastructure\ValueObject.cs" />
-    <Compile Include="Collections\IPersistentCollection.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -486,7 +486,6 @@
     <Compile Include="IPageable.cs" />
     <Compile Include="Linq\LinqContainsPredicateBuilder.cs" />
     <Compile Include="Linq\PredicateBuilder.cs" />
-    <Compile Include="Collections\PersistentCollection.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
     <Compile Include="Plugins\IPreApplicationStart.cs" />
     <Compile Include="Plugins\PluginFileParser.cs" />

@@ -28,7 +28,7 @@
 	
 	x.Add().Text(T("Admin.Catalog.Products.Inventory").Text)
 		.Name("tab-inventory")
-		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct)
+		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct || (Model.ProductTypeId == (int)ProductType.BundledProduct && !Model.BundlePerItemShoppingCart))
 		.Icon("fa fa-archive fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Inventory" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Inventory" })

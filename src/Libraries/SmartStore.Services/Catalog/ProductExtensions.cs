@@ -220,19 +220,15 @@ namespace SmartStore.Services.Catalog
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            bool displayDeliveryTime = true;
-
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
 				return (product.StockQuantity > 0);
 			}
-
-            return displayDeliveryTime;
+            return true;
         }
 
 
-        public static bool ProductTagExists(this Product product,
-            int productTagId)
+        public static bool ProductTagExists(this Product product, int productTagId)
         {
             if (product == null)
                 throw new ArgumentNullException("product");

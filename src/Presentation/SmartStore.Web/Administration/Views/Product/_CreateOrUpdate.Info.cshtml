@@ -61,7 +61,7 @@
             $('a[href=#tab-inventory]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
         }
         else if (selectedProductTypeId == '@((int)ProductType.BundledProduct)') {
-        	$('a[href=#tab-inventory]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
+        	//$('a[href=#tab-inventory]').parent().addClass("hide"); // specified in _CreateOrUpdate.cshtml
         }
     }
 
@@ -152,7 +152,7 @@
             $('#pnlHeight').show();
         }
         else {
-            $('#pnlDeliveryTime').hide();   //codehint: sm-add
+            $('#pnlDeliveryTime').hide();
             $('#pnlFreeShipping').hide();
             $('#pnlAdditionalShippingCharge').hide();
             $('#pnlWeight').hide();

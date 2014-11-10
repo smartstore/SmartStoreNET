@@ -143,18 +143,20 @@
     </div>
     
     <script>
-        $(document).ready(function () {
-            $('#btnRefreshBundleItems').click(function () {
-                $("#bundleitems-grid").data('tGrid').ajaxRequest();
-                return false;
-            });
+	$(document).ready(function () {
+		$('#btnRefreshBundleItems').click(function () {
+			$("#bundleitems-grid").data('tGrid').ajaxRequest();
+			return false;
+		});
 
-        	$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').change(function () {
-        		$('#TierPriceContainer').toggle(
-					!$('#@Html.FieldIdFor(model => model.BundlePerItemPricing)').is(':checked')
-				);
-        	}).trigger('change');
+		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemPricing)', function () {
+            $('#TierPriceContainer').toggle(!$(this).is(':checked'));
         });
+
+        $(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemShoppingCart)', function () {
+        	$('a[href=#tab-inventory]').parent().toggle(!$(this).is(':checked'));
+        });
+	});
     </script>
 }
 else

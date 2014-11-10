@@ -933,7 +933,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 			var model = new ProductAskQuestionModel()
 			{
-				ProductId = id
+				Id = id
 			};
 
 			return PartialView(model);
@@ -949,7 +949,7 @@ namespace SmartStore.Web.Controllers
 			var customer = _services.WorkContext.CurrentCustomer;
 
 			var model = new ProductAskQuestionModel();
-			model.ProductId = product.Id;
+			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.SenderEmail = customer.Email;
@@ -965,7 +965,7 @@ namespace SmartStore.Web.Controllers
 		[CaptchaValidator]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
-			var product = _productService.GetProductById(model.ProductId);
+			var product = _productService.GetProductById(model.Id);
 			if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
@@ -1000,7 +1000,7 @@ namespace SmartStore.Web.Controllers
 
 			// If we got this far, something failed, redisplay form
 			var customer = _services.WorkContext.CurrentCustomer;
-			model.ProductId = product.Id;
+			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;

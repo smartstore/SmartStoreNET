@@ -168,8 +168,8 @@ namespace SmartStore.Services.Filter
 					_products = _productService.PrepareProductSearchQuery(searchContext);
 
 					var distinctIds = (
-						from p in _productRepository.Table
-						join pc in _productCategoryRepository.Table on p.Id equals pc.ProductId
+						from p in _productRepository.TableUntracked
+						join pc in _productCategoryRepository.TableUntracked on p.Id equals pc.ProductId
 						where categoryIds.Contains(pc.CategoryId)
 						select p.Id).Distinct();
 
@@ -487,7 +487,7 @@ namespace SmartStore.Services.Filter
 
 				var specRepository = EngineContext.Current.Resolve<IRepository<ProductSpecificationAttribute>>();
 
-				var saq = specRepository.Table
+				var saq = specRepository.TableUntracked
 					.Where(a => a.AllowFiltering)
 					.Where(sql.WhereClause.ToString(), sql.Values.ToArray())
 					.GroupBy(a => a.ProductId)

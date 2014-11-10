@@ -153,6 +153,7 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
@@ -272,7 +273,6 @@
     <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
-    <Compile Include="Collections\ThreadSafeList.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="ComponentModel\Expando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />

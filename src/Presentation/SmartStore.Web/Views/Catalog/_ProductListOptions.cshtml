@@ -1,12 +1,12 @@
 ﻿@model PagingFilteringModel
 @using SmartStore.Web.Models.Catalog;
 
-@* codehint: sm-add (whole file) *@
-
-@helper CreateOptionChooser(IList<ListOptionItem> options, string label = "", bool rightFloat = false) {
+@helper CreateOptionChooser(IList<ListOptionItem> options, string label = "", bool rightFloat = false)
+{
     var selectedOption = options.FirstOrDefault(x => x.Selected);
     var floatClass = rightFloat ? "pull-right" : "pull-left";
-    if (label.HasValue()) {
+    if (label.HasValue())
+	{
         <label class="@floatClass">@label</label>
     }
     <div class="btn-group @floatClass">
@@ -15,7 +15,8 @@
             <span class="fa fa-caret-down"></span>
         </a>
         <ul class="dropdown-menu">
-            @foreach(var opt in options) {
+            @foreach(var opt in options)
+			{
                 <li @Html.Attr("class", "disabled", opt.Selected)>
                     <a href="@opt.Url">@opt.Text</a>
                 </li>
@@ -25,7 +26,6 @@
 }
 
 <div class="product-list-options well well-small clearfix">
-
     @if (Model.AllowProductViewModeChanging)
     {
         <div class="product-viewmode pull-right">
@@ -55,5 +55,4 @@
     {
         @CreateOptionChooser(Model.PageSizeOptions, T("Categories.PageSize").Text)
     }
-
 </div>

@@ -1551,17 +1551,13 @@ namespace SmartStore.Web.Controllers
 					}
 
 					var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
-					var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize={0}", null);
+					var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize=__pagesize__", null);
 					sortUrl = _services.WebHelper.RemoveQueryString(sortUrl, "pagenumber");
 
 					foreach (var pageSize in pageSizes)
 					{
 						int temp = 0;
-						if (!int.TryParse(pageSize, out temp))
-						{
-							continue;
-						}
-						if (temp <= 0)
+						if (!int.TryParse(pageSize, out temp) || temp <= 0)
 						{
 							continue;
 						}
@@ -1569,7 +1565,7 @@ namespace SmartStore.Web.Controllers
 						model.PageSizeOptions.Add(new ListOptionItem()
 						{
 							Text = pageSize,
-							Url = String.Format(sortUrl, pageSize),
+							Url = sortUrl.Replace("__pagesize__", pageSize),
 							Selected = pageSize.Equals(command.PageSize.ToString(), StringComparison.InvariantCultureIgnoreCase)
 						});
 					}

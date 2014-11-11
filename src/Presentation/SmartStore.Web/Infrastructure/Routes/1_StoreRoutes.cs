@@ -199,6 +199,17 @@ namespace SmartStore.Web.Infrastructure
                 new[] { "SmartStore.Web.Controllers" });
 
 
+            /* Passwordrecovery
+            ----------------------------------------*/
+            routes.MapLocalizedRoute("PasswordRecovery",
+                            "passwordrecovery",
+                            new { controller = "Customer", action = "PasswordRecovery" },
+                            new[] { "SmartStore.Web.Controllers" });
+            routes.MapLocalizedRoute("PasswordRecoveryConfirm",
+                            "passwordrecovery/confirm",
+                            new { controller = "Customer", action = "PasswordRecoveryConfirm" },
+                            new[] { "SmartStore.Web.Controllers" });
+
 			/* Blog
 			----------------------------------------*/
 

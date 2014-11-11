@@ -687,7 +687,8 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance();
+			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
+
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();
 

@@ -66,7 +66,7 @@ namespace SmartStore.Packager
 		{
 			//string virtualPath = "~/Themes/{0}".FormatInvariant(themeName);
 
-			var manifest = ThemeManifest.Create(_vpp.MapPath(virtualPath), (s) => null);
+			var manifest = ThemeManifest.Create(_vpp.MapPath(virtualPath));
 
 			if (manifest != null)
 			{

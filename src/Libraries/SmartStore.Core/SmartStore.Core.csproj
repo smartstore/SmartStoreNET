@@ -154,6 +154,7 @@
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
@@ -341,6 +342,7 @@
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
+    <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />

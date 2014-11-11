@@ -23,10 +23,10 @@ namespace SmartStore.Core.Caching
         {
             get
             {
-                if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+                if (HttpRuntime.Cache == null)
                     return Enumerable.Empty<KeyValuePair<string, object>>();
 
-				return from entry in HttpContext.Current.Cache.Cast<DictionaryEntry>()
+				return from entry in HttpRuntime.Cache.Cast<DictionaryEntry>()
                        let key = entry.Key.ToString()
                        where key.StartsWith(REGION_NAME)
                        select new KeyValuePair<string, object>(
@@ -37,10 +37,10 @@ namespace SmartStore.Core.Caching
 
 		public object Get(string key)
         {
-			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+			if (HttpRuntime.Cache == null)
                 return null;
 
-			var value = HttpContext.Current.Cache.Get(BuildKey(key));
+			var value = HttpRuntime.Cache.Get(BuildKey(key));
 
 			if (value.Equals(FAKE_NULL))
 				return null;
@@ -50,7 +50,7 @@ namespace SmartStore.Core.Caching
 
 		public void Set(string key, object value, int? cacheTime)
 		{
-			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+			if (HttpRuntime.Cache == null)
 				return;
 			
 			key = BuildKey(key);
@@ -61,23 +61,23 @@ namespace SmartStore.Core.Caching
 				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
 			}
 
-			HttpContext.Current.Cache.Insert(key, value ?? FAKE_NULL, null, absoluteExpiration, Cache.NoSlidingExpiration);
+			HttpRuntime.Cache.Insert(key, value ?? FAKE_NULL, null, absoluteExpiration, Cache.NoSlidingExpiration);
 		}
 
         public bool Contains(string key)
         {
-			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+			if (HttpRuntime.Cache == null)
                 return false;
 
-			return HttpContext.Current.Cache.Get(BuildKey(key)) != null;
+			return HttpRuntime.Cache.Get(BuildKey(key)) != null;
         }
 
         public void Remove(string key)
         {
-			if (HttpContext.Current == null || HttpContext.Current.Cache == null)
+			if (HttpRuntime.Cache == null)
                 return;
 
-			HttpContext.Current.Cache.Remove(BuildKey(key));
+			HttpRuntime.Cache.Remove(BuildKey(key));
         }
 
         public static string BuildKey(string key)

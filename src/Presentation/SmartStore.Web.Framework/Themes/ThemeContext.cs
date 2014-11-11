@@ -76,7 +76,13 @@ namespace SmartStore.Web.Framework.Themes
                 // ensure that theme exists
                 if (!_themeRegistry.ThemeManifestExists(theme))
                 {
-                    theme = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme).FirstOrDefault().ThemeName;
+                    var manifest = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme && x.State == ThemeManifestState.Active).FirstOrDefault();
+					if (manifest == null)
+					{
+						// no active theme in system. Throw!
+						throw Error.Application("At least one desktop theme must be in active state, but the theme registry does not contain a valid theme package.");
+					}
+					theme = manifest.ThemeName;
                     if (isCustomerSpecific)
                     {
                         // the customer chosen theme does not exists (anymore). Invalidate it!

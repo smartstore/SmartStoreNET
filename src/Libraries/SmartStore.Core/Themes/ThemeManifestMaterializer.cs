@@ -19,7 +19,7 @@ namespace SmartStore.Core.Themes
             _manifest = new ThemeManifest();
 
 			_manifest.ThemeName = folderData.FolderName;
-			_manifest.BaseTheme = folderData.BaseTheme;
+			_manifest.BaseThemeName = folderData.BaseTheme;
             _manifest.Location = folderData.VirtualBasePath;
             _manifest.Path = folderData.FullPath;
             _manifest.ConfigurationNode = folderData.Configuration.DocumentElement;
@@ -97,34 +97,6 @@ namespace SmartStore.Core.Themes
                     vars.Add(info.Name, info);
                 }
             }
-
-			if (_manifest.BaseTheme != null)
-			{
-				// clone all base variables
-				var baseVars = _manifest.BaseTheme.Variables.Values.Select(x => new ThemeVariableInfo 
-				{
-					Name = x.Name,
-					DefaultValue = x.DefaultValue,
-					Type = x.Type,
-					SelectRef = x.SelectRef,
-					Manifest = _manifest
-				}).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
-
-				// override variables
-				foreach (var v in vars)
-				{
-					if (!baseVars.ContainsKey(v.Key))
-					{
-						baseVars.Add(v.Key, v.Value);
-					}
-					else
-					{
-						baseVars[v.Key].DefaultValue = v.Value.DefaultValue;
-					}
-				}
-
-				vars = baseVars;
-			}
 
             return vars;
         }

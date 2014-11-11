@@ -45,6 +45,14 @@ namespace SmartStore.Core.Themes
 		bool IsChildThemeOf(string themeName, string baseTheme);
 
 		/// <summary>
+		/// Gets all derived child themes 
+		/// </summary>
+		/// <param name="themeName">The name of the theme to get the children for</param>
+		/// <param name="deep">When <c>true</c>, the method gets all child themes in the hierarchy chain, otherwise it only returns direct children.</param>
+		/// <returns>The manifests of matching themes</returns>
+		IEnumerable<ThemeManifest> GetChildrenOf(string themeName, bool deep = true);
+
+		/// <summary>
 		/// Event raised when an inheritable (static) theme file has been created or deleted,
 		/// OR when the <c>theme.config</c> file has been modified.
 		/// </summary>

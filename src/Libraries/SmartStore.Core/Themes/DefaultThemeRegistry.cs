@@ -1,21 +1,16 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.IO;
 using System.Linq;
-using System.Threading;
-using System.Xml;
-using SmartStore.Core;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Utilities.Threading;
-using SmartStore.Core.Themes;
-using SmartStore.Utilities;
-using SmartStore.Core.Caching;
-using SmartStore.Core.IO.WebSite;
-using SmartStore.Core.Events;
-using System.Diagnostics;
-using System.Collections.Concurrent;
 using System.Text.RegularExpressions;
-using System.Web;
+using System.Threading;
+using SmartStore.Collections;
+using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.IO.WebSite;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Themes
 {
@@ -37,14 +32,17 @@ namespace SmartStore.Core.Themes
 
 		#region Constructors
 
-		public DefaultThemeRegistry(IEventPublisher eventPublisher)
+		public DefaultThemeRegistry(IEventPublisher eventPublisher, bool? enableMonitoring, string themesBasePath, bool autoLoadThemes)
         {
-			this._enableMonitoring = CommonHelper.GetAppSetting<bool>("sm:MonitorThemesFolder", true);
-			this._themesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
+			this._enableMonitoring = enableMonitoring ?? CommonHelper.GetAppSetting<bool>("sm:MonitorThemesFolder", true);
+			this._themesBasePath = themesBasePath.NullEmpty() ?? CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 			this._eventPublisher = eventPublisher;
-			
-			// load all themes initially
-			LoadThemes();
+
+			if (autoLoadThemes)
+			{
+				// load all themes initially
+				LoadThemes();
+			}
 
 			if (_enableMonitoring)
 			{
@@ -57,12 +55,18 @@ namespace SmartStore.Core.Themes
 
 		#region IThemeRegistry
 
-        public bool ThemeManifestExists(string themeName)
+		public bool ThemeManifestExists(string themeName)
         {
             if (themeName.IsEmpty())
                 return false;
 
-			return _themes.ContainsKey(themeName);
+			ThemeManifest manifest;
+			if (_themes.TryGetValue(themeName, out manifest))
+			{
+				return manifest.State == ThemeManifestState.Active;
+			}
+
+			return false;
         }
 
 		public ThemeManifest GetThemeManifest(string themeName)
@@ -75,26 +79,6 @@ namespace SmartStore.Core.Themes
 			return null;
 		}
 
-		private ThemeManifest GetOrAddThemeManifest(string themeName)
-		{
-			var manifest = GetThemeManifest(themeName);
-
-			if (manifest == null)
-			{
-				var folderData = ThemeManifest.CreateThemeFolderDataByName(themeName, GetOrAddThemeManifest, _themesBasePath);
-				if (folderData != null)
-				{
-					manifest = ThemeManifest.Create(folderData);
-					if (manifest != null)
-					{
-						AddThemeManifest(manifest);
-					}
-				}
-			}
-
-			return manifest;
-		}
-
 		public ICollection<ThemeManifest> GetThemeManifests()
 		{
 			return _themes.Values.AsReadOnly();
@@ -105,10 +89,18 @@ namespace SmartStore.Core.Themes
 			Guard.ArgumentNotNull(() => manifest);
 
 			TryRemoveManifest(manifest.ThemeName);
-			if (ValidateThemeInheritance(manifest, _themes))
+			
+			ThemeManifest baseManifest = null;
+			if (manifest.BaseThemeName != null)
 			{
-				_themes.TryAdd(manifest.ThemeName, manifest);
+				if (!_themes.TryGetValue(manifest.BaseThemeName, out baseManifest))
+				{
+					throw new SmartException("Theme '{0}' is derived from '{1}', which does not exist. Please deploy theme '{1}' first.".FormatCurrent(manifest.ThemeName, manifest.BaseThemeName));
+				}
 			}
+
+			manifest.BaseTheme = baseManifest;
+			_themes.TryAdd(manifest.ThemeName, manifest);
 		}
 
 		private bool TryRemoveManifest(string themeName)
@@ -118,6 +110,16 @@ namespace SmartStore.Core.Themes
 			if (result = _themes.TryRemove(themeName, out existing))
 			{
 				_eventPublisher.Publish(new ThemeTouchedEvent(themeName));
+
+				existing.BaseTheme = null;
+
+				//// remove all derived themes also
+				//var children = GetChildrenOf(themeName, true);
+				//foreach (var child in children)
+				//{
+				//	child.BaseTheme = null;
+				//	_eventPublisher.Publish(new ThemeTouchedEvent(child.ThemeName));
+				//}
 			}
 			return result;
 		}
@@ -151,57 +153,109 @@ namespace SmartStore.Core.Themes
 			return false;
 		}
 
+		public IEnumerable<ThemeManifest> GetChildrenOf(string themeName, bool deep = true)
+		{
+			Guard.ArgumentNotEmpty(() => themeName);
+
+			if (!ThemeManifestExists(themeName))
+				Enumerable.Empty<ThemeManifest>();
+
+			var derivedThemes = _themes.Values.Where(x => x.BaseTheme != null && !x.ThemeName.IsCaseInsensitiveEqual(themeName));
+			if (!deep)
+			{
+				derivedThemes = derivedThemes.Where(x => x.BaseTheme.ThemeName.IsCaseInsensitiveEqual(themeName));
+			}
+			else
+			{
+				derivedThemes = derivedThemes.Where(x => IsChildThemeOf(x.ThemeName, themeName));
+			}
+
+			return derivedThemes;
+		}
+
 		private void LoadThemes()
 		{
-			var virtualBasePath = _themesBasePath;
-			var basePath = CommonHelper.MapPath(virtualBasePath);
-			var dirs = new DirectoryInfo(basePath).EnumerateDirectories("*", SearchOption.TopDirectoryOnly).ToList();
+			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
+			var folderDatas = new List<ThemeFolderData>();
+			var dirs = folder.ListDirectories(_themesBasePath);
 
-			foreach (var dir in dirs)
+			// create folder (meta)datas first
+			foreach (var path in dirs)
 			{
 				try
 				{
-					GetOrAddThemeManifest(dir.Name);
-
-					//var manifest = GetOrAddThemeManifest(dir.Name);
-					//if (manifest != null && !_themes.ContainsKey(manifest.ThemeName))
-					//{
-					//	_themes.TryAdd(manifest.ThemeName, manifest);
-					//}
+					var folderData = ThemeManifest.CreateThemeFolderData(CommonHelper.MapPath(path), _themesBasePath);
+					if (folderData != null)
+					{
+						folderDatas.Add(folderData);
+					}
 				}
 				catch (Exception ex)
 				{
-					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(dir.Name, ex.Message));
+					Debug.WriteLine("ERR - unable to create folder data for folder '{0}': {1}".FormatCurrent(path, ex.Message));
+				}
+			}
+
+			// perform topological sort (BaseThemes first...)
+			IEnumerable<ThemeFolderData> sortedThemeFolders;
+			try
+			{
+				sortedThemeFolders = folderDatas.ToArray().SortTopological(StringComparer.OrdinalIgnoreCase).Cast<ThemeFolderData>();
+			}
+			catch (CyclicDependencyException)
+			{
+				throw new CyclicDependencyException("Cyclic theme dependencies detected. Please check the 'baseTheme' attribute of your themes and ensure that they do not reference themselves (in)directly.");
+			}
+			catch
+			{
+				throw;
+			}
+
+			// create theme manifests
+			foreach (var themeFolder in sortedThemeFolders)
+			{
+				try
+				{
+					var manifest = ThemeManifest.Create(themeFolder);
+					if (manifest != null)
+					{
+						//_themes.TryAdd(manifest.ThemeName, manifest);
+						AddThemeManifest(manifest);
+					}
+				}
+				catch (Exception ex)
+				{
+					Debug.WriteLine("ERR - unable to create manifest for theme '{0}': {1}".FormatCurrent(themeFolder.FolderName, ex.Message));
 				}
 			}
 		}
 
-		private bool ValidateThemeInheritance(ThemeManifest manifest, IDictionary<string, ThemeManifest> map)
-		{
-			return true;
-			//var stack = new List<string>();
+		//private bool ValidateThemeInheritance(ThemeManifest manifest, IDictionary<string, ThemeManifest> map)
+		//{
+		//	return true;
+		//	//var stack = new List<string>();
 
-			//while (manifest.BaseThemeName != null)
-			//{
-			//	stack.Add(manifest.ThemeName);
+		//	//while (manifest.BaseThemeName != null)
+		//	//{
+		//	//	stack.Add(manifest.ThemeName);
 				
-			//	if (!map.ContainsKey(manifest.BaseThemeName))
-			//	{
-			//		Debug.WriteLine("The base theme does not exist");
-			//		return false;
-			//	}
+		//	//	if (!map.ContainsKey(manifest.BaseThemeName))
+		//	//	{
+		//	//		Debug.WriteLine("The base theme does not exist");
+		//	//		return false;
+		//	//	}
 
-			//	if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
-			//	{
-			//		Debug.WriteLine("Circular reference");
-			//		return false;
-			//	}
+		//	//	if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
+		//	//	{
+		//	//		Debug.WriteLine("Circular reference");
+		//	//		return false;
+		//	//	}
 
-			//	manifest = map[manifest.BaseThemeName];
-			//}
+		//	//	manifest = map[manifest.BaseThemeName];
+		//	//}
 
-			//return true;
-		}
+		//	//return true;
+		//}
 
         #endregion
 
@@ -272,7 +326,12 @@ namespace SmartStore.Core.Themes
 
 				try
 				{
-					var newManifest = ThemeManifest.Create(di.FullName, GetOrAddThemeManifest, _themesBasePath);
+					if ((new FileInfo(fullPath)).IsFileLocked())
+					{
+						return;
+					}
+
+					var newManifest = ThemeManifest.Create(di.FullName, _themesBasePath);
 					if (newManifest != null)
 					{
 						this.AddThemeManifest(newManifest);
@@ -322,7 +381,7 @@ namespace SmartStore.Core.Themes
 
 			try
 			{
-				var newManifest = GetOrAddThemeManifest(name);
+				var newManifest = GetThemeManifest(name);
 				if (newManifest != null)
 				{
 					this.AddThemeManifest(newManifest);

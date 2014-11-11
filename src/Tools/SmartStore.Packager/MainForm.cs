@@ -208,7 +208,7 @@ namespace SmartStore.Packager
 				{
 					if (isTheme)
 					{
-						var manifest = ThemeManifest.Create(vpp.MapPath(dir), (s) => null);
+						var manifest = ThemeManifest.Create(vpp.MapPath(dir));
 						lstThemes.Items.Add(new ExtensionInfo(dir, manifest.ThemeName));
 					}
 					else

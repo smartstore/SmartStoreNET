@@ -10,41 +10,41 @@ using System.Web;
 namespace SmartStore.Core.Themes
 {
 
-	internal class ThemeFolderData
-	{
-		public string FolderName { get; set; }
-		public string FullPath { get; set; }
-		public string VirtualBasePath { get; set; }
-		public XmlDocument Configuration { get; set; }
-		public ThemeManifest BaseTheme { get; set; }
-	}
-
 	public class ThemeManifest : ComparableObject<ThemeManifest>
     {
-
-        #region Ctor
 
         internal ThemeManifest()
         {
         }
 
-		internal static ThemeFolderData CreateThemeFolderDataByName(string themeName, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
+		#region Methods
+
+		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes/")
 		{
-			if (themeName.IsEmpty())
-				return null;
+			Guard.ArgumentNotEmpty(() => themePath);
 
-			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
-			var themePath = CommonHelper.MapPath(VirtualPathUtility.Combine(virtualBasePath, themeName));
+			var folderData = CreateThemeFolderData(themePath, virtualBasePath);
+			if (folderData != null)
+			{
+				return Create(folderData);
+			}
 
-			if (!Directory.Exists(themePath))
-				return null;
-
-			return CreateThemeFolderData(themePath, baseThemeResolver, virtualBasePath);
+			return null;
 		}
 
-		internal static ThemeFolderData CreateThemeFolderData(string themePath, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
+		internal static ThemeManifest Create(ThemeFolderData folderData)
 		{
-			if (themePath.IsEmpty() || virtualBasePath.IsEmpty())
+			Guard.ArgumentNotNull(() => folderData);
+
+			var materializer = new ThemeManifestMaterializer(folderData);
+			var manifest = materializer.Materialize();
+
+			return manifest;
+		}
+
+		internal static ThemeFolderData CreateThemeFolderData(string themePath, string virtualBasePath = "~/Themes/")
+		{
+			if (themePath.IsEmpty())
 				return null;
 
 			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
@@ -60,30 +60,15 @@ namespace SmartStore.Core.Themes
 
 				var root = doc.DocumentElement;
 
-				ThemeManifest baseTheme = null;
-				var baseThemeName = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
-				if (baseThemeName != null && baseThemeName.IsCaseInsensitiveEqual(themeDirectory.Name))
+				var baseTheme = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
+				if (baseTheme != null && baseTheme.IsCaseInsensitiveEqual(themeDirectory.Name))
 				{
 					// Don't let theme point to itself!
-					baseThemeName = null;
+					baseTheme = null;
 				}
 
-				if (baseThemeName.HasValue())
+				return new ThemeFolderData
 				{
-					if (baseThemeResolver == null) 
-					{
-						throw Error.Argument("baseThemeResolver", "Argument 'baseThemeResolver' cannot be null if theme is a child theme (path of affected theme: {0})", themePath);
-					}
-
-					baseTheme = baseThemeResolver(baseThemeName);
-					if (baseTheme == null)
-					{
-						throw Error.Application("The base theme '{0}' for theme '{1}' does not exist or could not be created.", baseThemeName, themeDirectory.Name);
-					}
-				}
-
-				return new ThemeFolderData 
-				{ 
 					FolderName = themeDirectory.Name,
 					FullPath = themeDirectory.FullName,
 					Configuration = doc,
@@ -95,31 +80,11 @@ namespace SmartStore.Core.Themes
 			return null;
 		}
 
-		public static ThemeManifest Create(string themePath, Func<string, ThemeManifest> baseThemeResolver, string virtualBasePath = "~/Themes")
-		{
-			Guard.ArgumentNotEmpty(() => themePath);
-			Guard.ArgumentNotEmpty(() => virtualBasePath);
+		#endregion
 
-			var folderData = CreateThemeFolderData(themePath, baseThemeResolver, virtualBasePath);
-			if (folderData != null)
-			{
-				return Create(folderData);
-			}
+		#region Properties
 
-			return null;
-		}
-
-        internal static ThemeManifest Create(ThemeFolderData folderData)
-        {
-			var materializer = new ThemeManifestMaterializer(folderData);
-            return materializer.Materialize();
-        }
-
-        #endregion
-
-        #region Properties
-
-        public XmlElement ConfigurationNode 
+		public XmlElement ConfigurationNode 
 		{ 
 			get; 
 			protected internal set; 
@@ -174,6 +139,12 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
+		internal string BaseThemeName
+		{
+			get;
+			set;
+		}
+
 		public ThemeManifest BaseTheme
 		{
 			get;
@@ -198,21 +169,102 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
+		private IDictionary<string, ThemeVariableInfo> _variables;
 		public IDictionary<string, ThemeVariableInfo> Variables
 		{
-			get;
-			internal set;
+			get
+			{
+				if (this.BaseTheme == null)
+				{
+					return _variables;
+				}
+
+				var baseVars = this.BaseTheme.Variables;
+				var merged = new Dictionary<string, ThemeVariableInfo>(baseVars, StringComparer.OrdinalIgnoreCase);
+				foreach (var localVar in _variables)
+				{
+					if (merged.ContainsKey(localVar.Key))
+					{
+						// Overridden var in child: update existing.
+						var baseVar = merged[localVar.Key];
+						merged[localVar.Key] = new ThemeVariableInfo 
+						{
+							Name = baseVar.Name,
+							Type = baseVar.Type,
+							SelectRef = baseVar.SelectRef,
+							DefaultValue = localVar.Value.DefaultValue,
+							Manifest = localVar.Value.Manifest
+						};
+					}
+					else
+					{
+						// New var in child: add to list.
+						merged.Add(localVar.Key, localVar.Value);
+					}
+				}
+
+				return merged;
+			}
+			internal set
+			{
+				_variables = value;
+			}
 		}
 
-        public Multimap<string, string> Selects { get; internal set; }
+		private Multimap<string, string> _selects; 
+        public Multimap<string, string> Selects 
+		{
+			get
+			{
+				if (this.BaseTheme == null)
+				{
+					return _selects;
+				}
+
+				var baseSelects = this.BaseTheme.Selects;
+				var merged = new Multimap<string, string>();
+				baseSelects.Each(x => merged.AddRange(x.Key, x.Value));
+				foreach (var localSelect in _selects)
+				{
+					if (!merged.ContainsKey(localSelect.Key))
+					{
+						// New Select in child: add to list.
+						merged.AddRange(localSelect.Key, localSelect.Value);
+					}
+					else
+					{
+						// Do nothing: we don't support overriding Selects
+					}
+				}
+
+				return merged;
+			}
+			internal set
+			{
+				_selects = value;
+			}
+		}
+
+		public ThemeManifestState State
+		{
+			get;
+			protected internal set;
+		}
 
         internal string FullPath
         {
             get { return System.IO.Path.Combine(this.Path, "theme.config"); }
-        }
+		}
 
-        #endregion
+		#endregion
 
+	}
+
+	public enum ThemeManifestState
+	{
+		HasCyclicDependency = -2,
+		MissingBaseTheme = -1,
+		Active = 0,
 	}
 
 }

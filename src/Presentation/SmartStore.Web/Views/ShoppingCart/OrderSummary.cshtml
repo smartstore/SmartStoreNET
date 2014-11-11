@@ -230,6 +230,11 @@
 <div class="order-summary-content">
 	@Html.Widget("order_summary_content_before")
 	@Html.Partial("_OrderReviewData", Model.OrderReviewData)
+   
+    @if (Model.DisplayCommentBox && !Model.IsEditable)
+    {
+        @Html.Partial("_CommentBox", Model)
+    }
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {
@@ -344,13 +349,6 @@
 						@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
 						@Html.Partial("EstimateShipping", Model.EstimateShipping)
 					</div>
-				}
-				else
-				{
-					if (Model.DisplayCommentBox)
-					{
-						@Html.Partial("_CommentBox", Model)
-					}
 				}
 			</div>
 

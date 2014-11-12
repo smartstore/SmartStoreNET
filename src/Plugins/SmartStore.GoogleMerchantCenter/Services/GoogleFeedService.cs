@@ -475,21 +475,16 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			bool insert = (product == null);
 			var utcNow = DateTime.UtcNow;
 
-			if (insert)
+			if (product == null)
 			{
 				product = new GoogleProductRecord()
 				{
 					ProductId = pk,
-					CreatedOnUtc = utcNow,
-					UpdatedOnUtc = utcNow
+					CreatedOnUtc = utcNow
 				};
 			}
-			else
-			{
-				product.UpdatedOnUtc = utcNow;
-			}
 
-			switch(name)
+			switch (name)
 			{
 				case "Taxonomy":
 					product.Taxonomy = value;
@@ -514,8 +509,14 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					break;
 			}
 
-			product.IsTouched = product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
-				product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue();
+			product.UpdatedOnUtc = utcNow;
+			product.IsTouched = product.IsTouched();
+
+			if (!insert && !product.IsTouched)
+			{
+				_gpRepository.Delete(product);
+				return;
+			}
 
 			if (insert)
 			{

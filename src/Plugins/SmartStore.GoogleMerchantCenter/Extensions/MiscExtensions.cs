@@ -1,4 +1,5 @@
 ﻿using System.Web.Mvc;
+using SmartStore.GoogleMerchantCenter.Domain;
 
 namespace SmartStore.GoogleMerchantCenter
 {
@@ -19,6 +20,16 @@ namespace SmartStore.GoogleMerchantCenter
 				"{3}</a>";
 
 			return skeleton.FormatWith(fieldName, fieldName.ToLower(), type, displayText);
+		}
+
+		public static bool IsTouched(this GoogleProductRecord product)
+		{
+			if (product != null)
+			{
+				return product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
+					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue();
+			}
+			return false;
 		}
 	}
 }

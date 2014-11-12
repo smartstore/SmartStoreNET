@@ -1,8 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
-using System.Web.Routing;
 using SmartStore.Core.Events;
 using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
@@ -46,30 +42,17 @@ namespace SmartStore.GoogleMerchantCenter
 			if (model == null)
 				return;
 
+			var utcNow = DateTime.UtcNow;
 			var entity = _googleService.GetGoogleProductRecord(model.ProductId);
 			var insert = (entity == null);
-			var delete = model.Taxonomy.IsEmpty() && model.AgeGroup.IsEmpty() && model.Color.IsEmpty() && model.Gender.IsEmpty() && model.Size.IsEmpty() && model.Pattern.IsEmpty() && model.Material.IsEmpty();
 
-			if (insert && delete)
-			{
-				// nothing to do
-				return;
-			}
-
-			if (insert)
+			if (entity == null)
 			{
 				entity = new GoogleProductRecord()
 				{
-					ProductId = model.ProductId
+					ProductId = model.ProductId,
+					CreatedOnUtc = utcNow
 				};
-			}
-			else
-			{
-				if (delete)
-				{
-					_googleService.DeleteGoogleProductRecord(entity);
-					return;
-				}
 			}
 
 			// map objects
@@ -80,6 +63,15 @@ namespace SmartStore.GoogleMerchantCenter
 			entity.Taxonomy = model.Taxonomy;
 			entity.Material = model.Material;
 			entity.Pattern = model.Pattern;
+			entity.UpdatedOnUtc = utcNow;
+
+			entity.IsTouched = entity.IsTouched();
+
+			if (!insert && !entity.IsTouched)
+			{
+				_googleService.DeleteGoogleProductRecord(entity);
+				return;
+			}
 
 			if (insert)
 			{

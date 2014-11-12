@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Globalization;
 using System.Web.Mvc;
 using SmartStore.Core.Localization;
@@ -9,8 +7,6 @@ using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Controllers

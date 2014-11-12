@@ -1,10 +1,8 @@
 ﻿using System.Data.Entity.Migrations;
 using System.Web.Routing;
 using SmartStore.Core.Plugins;
-using SmartStore.GoogleMerchantCenter.Data;
 using SmartStore.GoogleMerchantCenter.Data.Migrations;
 using SmartStore.GoogleMerchantCenter.Services;
-using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 
@@ -14,18 +12,15 @@ namespace SmartStore.GoogleMerchantCenter
     {
         private readonly IGoogleFeedService _googleService;
         private readonly ISettingService _settingService;
-        private readonly GoogleProductObjectContext _objectContext;
 		private readonly ILocalizationService _localizationService;
 
         public FroogleFeedPlugin(
 			IGoogleFeedService googleService,
             ISettingService settingService,
-            GoogleProductObjectContext objectContext,
 			ILocalizationService localizationService)
         {
             _googleService = googleService;
             _settingService = settingService;
-            _objectContext = objectContext;
 			_localizationService = localizationService;
         }
 

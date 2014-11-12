@@ -43,6 +43,7 @@ namespace SmartStore.PayPal
         private readonly IShippingService _shippingService;
         private readonly ICustomerService _customerService;
         private readonly ICountryService _countryService;
+        private readonly HttpContextBase _httpContext;
         
         public PayPalExpress(
             ICurrencyService currencyService,
@@ -53,7 +54,8 @@ namespace SmartStore.PayPal
             IGiftCardService giftCardService,
             IShippingService shippingService,
             ICustomerService customerService,
-            ICountryService countryService)
+            ICountryService countryService,
+            HttpContextBase httpContext)
         {
             _currencyService = currencyService;
             _currencySettings = currencySettings;
@@ -64,6 +66,7 @@ namespace SmartStore.PayPal
             _shippingService = shippingService;
             _customerService = customerService;
             _countryService = countryService;
+            _httpContext = httpContext;
         }
 
 		protected override string GetResourceRootKey()
@@ -330,24 +333,15 @@ namespace SmartStore.PayPal
             req.SetExpressCheckoutRequest.SetExpressCheckoutRequestDetails.Custom = processPaymentRequest.OrderGuid.ToString();
             req.SetExpressCheckoutRequest.SetExpressCheckoutRequestDetails = details;
 
-
             using (var service = new PayPalAPIAASoapBinding())
             {
                 service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-
-                service.RequesterCredentials = new CustomSecurityHeaderType
-                {
-                    Credentials = new UserIdPasswordType
-                    {
-                        Username = Settings.ApiAccountName,
-                        Password = Settings.ApiAccountPassword,
-                        Signature = Settings.Signature,
-                        Subject = ""
-                    }
-                };
-
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
                 result = service.SetExpressCheckout(req);
             }
+            
+            _httpContext.GetCheckoutState().CustomProperties.Add("PayPalExpressButtonUsed", true);
+
             return result;
         }
 
@@ -365,18 +359,7 @@ namespace SmartStore.PayPal
                 };
 
                 service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-
-                service.RequesterCredentials = new CustomSecurityHeaderType
-                {
-                    Credentials = new UserIdPasswordType
-                    {
-                        Username = Settings.ApiAccountName,
-                        Password = Settings.ApiAccountPassword,
-                        Signature = Settings.Signature,
-                        Subject = ""
-                    }
-                };
-
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
                 result = service.GetExpressCheckoutDetails(req);
             }
             return result;
@@ -575,18 +558,7 @@ namespace SmartStore.PayPal
             using (var service = new PayPalAPIAASoapBinding())
             {
                 service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-
-                service.RequesterCredentials = new CustomSecurityHeaderType
-                {
-                    Credentials = new UserIdPasswordType
-                    {
-                        Username = Settings.ApiAccountName,
-                        Password = Settings.ApiAccountPassword,
-                        Signature = Settings.Signature,
-                        Subject = ""
-                    }
-                };
-
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
                 result = service.DoExpressCheckoutPayment(req);
             }
             return result;

@@ -182,7 +182,22 @@ namespace SmartStore.PayPal.Services
             return "109";
         }
 
+        /// <summary>
+        /// Gets API credentials
+        /// </summary>
+        /// <returns></returns>
+        public static CustomSecurityHeaderType GetPaypalApiCredentials(PayPalApiSettingsBase settings)
+        {
+            CustomSecurityHeaderType customSecurityHeaderType = new CustomSecurityHeaderType();
 
+            customSecurityHeaderType.Credentials = new UserIdPasswordType();
+            customSecurityHeaderType.Credentials.Username = settings.ApiAccountName;
+            customSecurityHeaderType.Credentials.Password = settings.ApiAccountPassword;
+            customSecurityHeaderType.Credentials.Signature = settings.Signature;
+            customSecurityHeaderType.Credentials.Subject = "";
+
+            return customSecurityHeaderType;
+        }
         /// <summary>
         /// Get Paypal country code
         /// </summary>

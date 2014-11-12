@@ -147,13 +147,7 @@ namespace SmartStore.PayPal
             using (var service = new PayPalAPIAASoapBinding())
             {
                 service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = new CustomSecurityHeaderType();
-                service.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service.RequesterCredentials.Credentials.Username = Settings.ApiAccountName;
-                service.RequesterCredentials.Credentials.Password = Settings.ApiAccountPassword;
-                service.RequesterCredentials.Credentials.Signature = Settings.Signature;
-                service.RequesterCredentials.Credentials.Subject = "";
-
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
                 DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
                 string error = "";
@@ -266,13 +260,7 @@ namespace SmartStore.PayPal
 			using (var service = new PayPalAPIAASoapBinding())
 			{
                 service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-				service.RequesterCredentials = new CustomSecurityHeaderType();
-				service.RequesterCredentials.Credentials = new UserIdPasswordType();
-                service.RequesterCredentials.Credentials.Username = Settings.ApiAccountName;
-                service.RequesterCredentials.Credentials.Password = Settings.ApiAccountPassword;
-                service.RequesterCredentials.Credentials.Signature = Settings.Signature;
-				service.RequesterCredentials.Credentials.Subject = "";
-
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
 				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";

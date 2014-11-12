@@ -112,6 +112,8 @@
     <Compile Include="Controllers\PayPalStandardController.cs" />
     <Compile Include="Controllers\PayPalDirectController.cs" />
     <Compile Include="Controllers\PayPalExpressController.cs" />
+    <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Filters\PayPalExpressCheckoutFilter.cs" />
     <Compile Include="Models\ApiConfigurationModels.cs" />
     <Compile Include="Models\PayPalStandardConfigurationModel.cs" />
     <Compile Include="Models\PayPalDirectPaymentInfoModel.cs" />
@@ -154,6 +156,11 @@
     <ProjectReference Include="..\..\Presentation\SmartStore.Web.Framework\SmartStore.Web.Framework.csproj">
       <Project>{75fd4163-333c-4dd5-854d-2ef294e45d94}</Project>
       <Name>SmartStore.Web.Framework</Name>
+      <Private>False</Private>
+    </ProjectReference>
+    <ProjectReference Include="..\..\Presentation\SmartStore.Web\SmartStore.Web.csproj">
+      <Project>{4f1f649c-1020-45be-a487-f416d9297ff3}</Project>
+      <Name>SmartStore.Web</Name>
       <Private>False</Private>
     </ProjectReference>
   </ItemGroup>

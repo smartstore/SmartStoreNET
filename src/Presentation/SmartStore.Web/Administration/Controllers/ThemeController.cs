@@ -334,6 +334,16 @@ namespace SmartStore.Admin.Controllers
 			return error;
 		}
 
+		public ActionResult ReloadThemes(int? storeId)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
+			{
+				_themeRegistry.ReloadThemes();
+			}
+	
+			return RedirectToAction("List", new { storeId = storeId });
+		}
+
         public ActionResult Reset(string theme, int storeId)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))

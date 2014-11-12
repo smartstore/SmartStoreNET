@@ -42,7 +42,7 @@ namespace SmartStore.Core.Themes
 			if (autoLoadThemes)
 			{
 				// load all themes initially
-				LoadThemes();
+				ReloadThemes();
 			}
 
 			CreateFileSystemWatchers();
@@ -207,8 +207,10 @@ namespace SmartStore.Core.Themes
 			return derivedThemes;
 		}
 
-		private void LoadThemes()
+		public void ReloadThemes()
 		{
+			_themes.Clear();
+			
 			var folder = EngineContext.Current.Resolve<IWebSiteFolder>();
 			var folderDatas = new List<ThemeFolderData>();
 			var dirs = folder.ListDirectories(_themesBasePath);

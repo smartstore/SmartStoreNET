@@ -20,6 +20,10 @@
                 <i class="fa fa-check"></i>
                 @T("Admin.Common.Save")
             </button>
+			<a href='@Url.Action("ReloadThemes", new { storeId = Model.StoreId })' class="btn">
+				<i class="fa fa-refresh"></i>
+				@T("Admin.Configuration.Themes.Reload")
+			</a>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
 				<i class="fa fa-upload"></i>
 				@T("Admin.Packaging.UploadTheme")

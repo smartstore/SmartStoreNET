@@ -71,6 +71,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.MissingBaseTheme",
 				"Error: Base theme '{0}' not found",
 				"Fehler: Basis-Theme '{0}' nicht gefunden");
+			builder.AddOrUpdate("Admin.Configuration.Themes.Reload",
+				"Reload themes",
+				"Themes aktualisieren");
+
+			builder.AddOrUpdate("Common.Reload", "Reload", "Neu laden");
+			builder.AddOrUpdate("Common.Refresh", "Refresh", "Aktualisieren");
 			
 		}
 

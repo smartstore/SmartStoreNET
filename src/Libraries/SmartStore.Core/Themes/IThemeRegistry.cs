@@ -68,6 +68,11 @@ namespace SmartStore.Core.Themes
 		void StopMonitoring();
 
 		/// <summary>
+		/// Clears all parsed theme manifests and reloads them
+		/// </summary>
+		void ReloadThemes();
+
+		/// <summary>
 		/// Event raised when an inheritable (static) theme file has been created or deleted,
 		/// OR when the <c>theme.config</c> file has been modified.
 		/// </summary>

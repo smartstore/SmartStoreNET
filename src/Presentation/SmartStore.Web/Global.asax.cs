@@ -41,7 +41,7 @@ namespace SmartStore.Web
 
 		public static void RegisterRoutes(RouteCollection routes, bool databaseInstalled = true)
         {
-			routes.IgnoreRoute("favicon.ico");
+			//routes.IgnoreRoute("favicon.ico");
             routes.IgnoreRoute("{resource}.axd/{*pathInfo}");
 			routes.IgnoreRoute("{resource}.ashx/{*pathInfo}");
 			routes.IgnoreRoute(".db/{*virtualpath}");

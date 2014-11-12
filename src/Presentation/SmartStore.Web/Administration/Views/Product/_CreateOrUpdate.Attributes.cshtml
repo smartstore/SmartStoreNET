@@ -11,8 +11,12 @@
         {
             <script>
                 function onProductVariantAttributeEdit(e) {
-                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+                	$(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+                	$(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+
+                	if (parseInt(e.dataItem['Id']) === 0) {
+                		$(e.form).find('#IsRequired').prop('checked', true);
+                	}
                 }
             </script>
 			
@@ -63,17 +67,6 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
             .EnableCustomBinding(true))
-
-            <script type="text/javascript">
-                function onProductVariantAttributeEdit(e) {
-                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
-
-                    if (parseInt(e.dataItem['Id']) === 0) {
-                    	$(e.form).find('#IsRequired').prop('checked', true);
-                    }
-                }
-            </script>
         }
         else
         {
@@ -101,8 +94,8 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div style="margin: 10px 0">
-                <button class="btn btn-warning add-new-combination">
+            <div>
+                <button class="btn btn-warning btn-above add-new-combination">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
@@ -216,8 +209,8 @@
                     .EnableCustomBinding(true))
             </div>
 
-            <div style="margin-top:12px;">
-                <button class="btn btn-warning add-new-combination">
+            <div>
+                <button class="btn btn-warning btn-below add-new-combination">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>

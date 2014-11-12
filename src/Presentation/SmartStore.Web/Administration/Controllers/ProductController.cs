@@ -4115,8 +4115,10 @@ namespace SmartStore.Admin.Controllers
 			{
 				Data = new
 				{
-					Message = _localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.{0}".FormatWith(
-						exists ? "CombiExists" : "CombiNotExists")),
+					Message = _localizationService.GetResource(exists ?
+						"Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists" :
+						"Admin.Catalog.Products.Variants.ProductVariantAttributes.AttributeCombinations.CombiNotExists"
+					),
 					HasWarning = exists
 				}
 			};

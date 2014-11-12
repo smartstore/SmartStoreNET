@@ -10,17 +10,6 @@
     Layout = null;
 }
 
-@functions {
-    protected override string ThemeName
-    {
-        get
-        {
-            return "Alpha";
-        }
-    }
-}
-
-
 @(Html.SmartStore().TabStrip().Name("theme-alpha-edit").HtmlAttributes(new { @class="theme-edit" }).Items(x =>
 {
     var tabCommon = x.Add().Text(T("Common.General").Text).Content(@TabCommon()).Selected(true);
@@ -172,15 +161,15 @@
         @ThemeVarEditor("TableBackgroundAccent")
         @ThemeVarEditor("TableBackgroundHover")
         @ThemeVarEditor("TableBorder")
-        @ThemeVarEditor("ContainerBackground", "Container")
-        @ThemeVarEditor("ContainerBorder")
-        @ThemeVarEditor("ContainerRadius")
-        @ThemeVarEditor("ContainerBodyLinkColor")
-        @ThemeVarEditor("ContainerHeaderBackground")
-        @ThemeVarEditor("ContainerHeaderFontColor")
-        @ThemeVarEditor("ContainerHeaderHeight")
-        @ThemeVarEditor("ContainerBodyBackground")
+
+		@ThemeVarEditor("ContainerRadius", "Container")
+		@ThemeVarEditor("ContainerHeaderBackground")
+		@ThemeVarEditor("ContainerHeaderFontColor")
+		@ThemeVarEditor("ContainerHeaderHeight")
+		@ThemeVarEditor("ContainerBodyBackground")
         @ThemeVarEditor("ContainerBodyFontColor")
+		@ThemeVarEditor("ContainerBodyLinkColor")
+		@ThemeVarEditor("ContainerBorder")
 
     </table>
 }

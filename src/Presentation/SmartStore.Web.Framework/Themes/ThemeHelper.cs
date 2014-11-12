@@ -5,6 +5,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
@@ -64,26 +65,39 @@ namespace SmartStore.Web.Framework.Themes
 			return s_inheritableThemeFilePattern.IsMatch(virtualPath);
 		}
 
-		internal static ThemeManifest ResolveCurrentTheme(bool tryGetOverriddenTheme = false)
+		internal static ThemeManifest ResolveCurrentTheme(RouteData routeData = null, bool tryGetOverriddenTheme = false)
 		{
 			if (tryGetOverriddenTheme)
 			{
 				var themeName = string.Empty;
 
-				var httpContext = HttpContext.Current;
-				if (httpContext != null && httpContext.Items != null)
+				if (routeData != null)
 				{
-					if (httpContext.Items.Contains(OverriddenThemeNameKey))
+					object themeOverride;
+					if (routeData.DataTokens != null && routeData.DataTokens.TryGetValue("ThemeOverride", out themeOverride))
 					{
-						themeName = (string)httpContext.Items[OverriddenThemeNameKey];
-						if (themeName.HasValue())
+						themeName = themeOverride as string;
+					}
+				}
+
+				if (themeName.IsEmpty())
+				{
+					var httpContext = HttpContext.Current;
+					if (httpContext != null && httpContext.Items != null)
+					{
+						if (httpContext.Items.Contains(OverriddenThemeNameKey))
 						{
-							var manifest = EngineContext.Current.Resolve<IThemeRegistry>().GetThemeManifest(themeName);
-							if (manifest != null)
-							{
-								return manifest;
-							}
+							themeName = (string)httpContext.Items[OverriddenThemeNameKey];
 						}
+					}
+				}
+
+				if (themeName.HasValue())
+				{
+					var manifest = EngineContext.Current.Resolve<IThemeRegistry>().GetThemeManifest(themeName);
+					if (manifest != null)
+					{
+						return manifest;
 					}
 				}
 			}

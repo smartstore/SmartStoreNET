@@ -140,7 +140,7 @@
 							@if (theme.IsConfigurable && !isBroken)
 							{
 								<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle pull-right@(isBroken ? " disabled" : "")" title="@T("Admin.Common.Configure")">
-									<i class="fa fa-cog"></i>
+									<i class="fa fa-paint-brush"></i>
 								</a>
 							}
 						</div>

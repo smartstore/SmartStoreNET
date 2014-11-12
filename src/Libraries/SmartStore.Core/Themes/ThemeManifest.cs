@@ -279,6 +279,36 @@ namespace SmartStore.Core.Themes
 
 		#endregion
 
+		#region Dispose
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				BaseTheme = null;
+				if (_variables != null) 
+				{
+					foreach (var pair in _variables)
+					{
+						pair.Value.Dispose();
+					}
+					_variables.Clear();
+				}
+			}
+		}
+
+		~ThemeManifest()
+        {
+            Dispose(false);
+        }
+
+		#endregion
 	}
 
 	public enum ThemeManifestState

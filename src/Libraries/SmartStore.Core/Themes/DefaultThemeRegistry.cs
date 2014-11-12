@@ -170,15 +170,18 @@ namespace SmartStore.Core.Themes
 			if (current == null)
 				return false;
 
-			var currentBaseName = current.BaseThemeName;
-			while (currentBaseName != null)
+			while (current.BaseThemeName != null)
 			{
-				if (baseTheme.Equals(currentBaseName, StringComparison.OrdinalIgnoreCase))
+				if (baseTheme.Equals(current.BaseThemeName, StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
 
-				currentBaseName = current.BaseThemeName;
+				if (!_themes.TryGetValue(current.BaseThemeName, out current)) 
+				{
+					return false;
+				}
+				//currentBaseName = current.BaseThemeName;
 			}
 
 			return false;

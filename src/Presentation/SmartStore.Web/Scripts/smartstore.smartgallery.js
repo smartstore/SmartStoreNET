@@ -321,8 +321,6 @@
 							scrollers.height(parentHeight - scrollers.verticalCushioning());
 						}
 					}
-					
-					console.log(thumbWrapperWidth, toInt(listWrapper.css('margin-left')));
 
 					thumbWrapperWidth += listWrapper.horizontalCushioning() - thumbsLoaded + 1;
 
@@ -503,7 +501,6 @@
 
 					if (options.filter) {
 						links = links.filter(options.filter);
-						console.log(links);
 					}
 
 					return new blueimp.Gallery(links, options);

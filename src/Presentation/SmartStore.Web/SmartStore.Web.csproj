@@ -1523,6 +1523,8 @@
     <Content Include="Scripts\jquery.serialScroll.js" />
     <Content Include="Scripts\underscore.js" />
     <Content Include="Scripts\underscore.min.js" />
+    <Content Include="Themes\AlphaBlack\preview.png" />
+    <Content Include="Themes\AlphaBlue\preview.png" />
     <Content Include="Themes\Alpha\Content\images\color-overlay.png" />
     <Content Include="Themes\Alpha\Content\images\deliv-bg-aero.png" />
     <Content Include="Themes\Alpha\Content\images\gradient.png" />
@@ -2220,6 +2222,10 @@
     <Content Include="Views\Shared\EditorTemplates\Int32.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Time.cshtml" />
     <Content Include="Themes\Alpha\Content\bootstrap.less" />
+    <Content Include="Themes\AlphaBlack\theme.config" />
+    <Content Include="Themes\AlphaBlack\Views\Web.config" />
+    <Content Include="Themes\AlphaBlue\Views\Web.config" />
+    <Content Include="Themes\AlphaBlue\theme.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

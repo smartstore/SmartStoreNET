@@ -252,9 +252,9 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             {
                 if (_themeManifest == null)
                 {
-                    EnsureThemeContextInitialized();
-                    _themeManifest = _themeRegistry.GetThemeManifest(this.ThemeName);
+					_themeManifest = ThemeHelper.ResolveCurrentTheme(this.ViewContext.RouteData, true);
                 }
+
                 return _themeManifest;
             }
         }
@@ -262,6 +262,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         /// <summary>
         /// Gets the current theme name. Override this in configuration views.
         /// </summary>
+		[Obsolete("The theme name gets resolved automatically now. No need to override anymore.")]
         protected virtual string ThemeName
         {
             get

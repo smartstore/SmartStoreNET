@@ -3,7 +3,10 @@
     $(function () {
         $(".sm-colorbox").colorpicker();
         $(".sm-colorbox .colorval").on("keyup change", function (e) {
-            $(this).parent().data("colorpicker").setValue($(this).val());
+        	var el = $(this);
+        	var picker = el.parent().data("colorpicker");
+        	var val = el.val();
+        	picker.setValue(val || el.attr('placeholder'));
         })
     });
 }(jQuery));

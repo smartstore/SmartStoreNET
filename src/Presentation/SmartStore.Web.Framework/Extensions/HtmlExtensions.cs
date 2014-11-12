@@ -462,16 +462,24 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(sb.ToString());
         }
 
-        public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
+		public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color)
+		{
+			return ColorBox(html, name, color, null);
+		}
+
+        public static MvcHtmlString ColorBox(this HtmlHelper html, string name, string color, string defaultColor)
         {
             var sb = new StringBuilder();
 
-            sb.AppendFormat("<div class='input-append color sm-colorbox' data-color='{0}' data-color-format='hex'>", color);
+			defaultColor = defaultColor.EmptyNull();
+			var isDefault = color.IsCaseInsensitiveEqual(defaultColor);
 
-            sb.AppendFormat(html.TextBox(name, color, new { @class = "span2 colorval" }).ToHtmlString());
+            sb.AppendFormat("<span class='input-append color sm-colorbox' data-color='{0}' data-color-format='hex'>", color);
+
+            sb.AppendFormat(html.TextBox(name, isDefault ? "" : color, new { @class = "span2 colorval", placeholder = defaultColor }).ToHtmlString());
             sb.AppendFormat("<span class='add-on'><i style='background-color:{0}; border:1px solid #bbb'></i></span>", color);
 
-            sb.Append("</div>");
+            sb.Append("</span>");
 
             var bootstrapJsRoot = "~/Content/bootstrap/js/";
             html.AppendScriptParts(false,

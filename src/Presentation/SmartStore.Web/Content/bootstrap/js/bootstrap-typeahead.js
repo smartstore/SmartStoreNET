@@ -45,9 +45,14 @@
 
   , select: function () {
       var val = this.$menu.find('.active').attr('data-value')
-      this.$element
+	  // codehint: deleted ('change' results in js error)
+  	  /*this.$element
         .val(this.updater(val))
-        .change()
+        .change()*/
+
+      this.$element.val(this.updater(val));
+      this.$element.trigger("change");
+
       return this.hide()
     }
 

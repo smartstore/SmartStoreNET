@@ -63,6 +63,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.ProductHasBeenAddedToTheCart.Link").Value("de", "Das Produkt wurde Ihrem <a href='{0}'>Warenkorb</a> hinzugefügt");
 			builder.AddOrUpdate("Products.ProductNotAddedToTheCart.Link").Value("de", "Produkt konnte Ihrem Warenkorb nicht hinzugefügt werden.");
 			builder.AddOrUpdate("Products.RecentlyViewedProducts").Value("de", "Zuletzt angesehen");
+
+			// Theme inheritance
+			builder.AddOrUpdate("Admin.Configuration.Themes.IsBasedOn",
+				"Based on",
+				"Basiert auf");
+			builder.AddOrUpdate("Admin.Configuration.Themes.MissingBaseTheme",
+				"Error: Base theme '{0}' not found",
+				"Fehler: Basis-Theme '{0}' nicht gefunden");
 			
 		}
 

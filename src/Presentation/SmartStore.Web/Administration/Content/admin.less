@@ -1251,31 +1251,50 @@ table.payment-method-features td {
 
 /* Themes */
 #theme-list {
-	margin-top: 12px;
-}
-#theme-list .theme-line {
-	padding: 12px 0; 
-	border-top: 1px solid #ccc; 
-	position: relative;
-}
-#theme-list .theme-line.active {
-	background-color: #f9f9f9;
-}
-#theme-list .theme-line .preview-image {
-	width: 300px; 
-	margin-right: 16px;
+	max-width: 1360px;
 
-	img { width: 290px; min-height: 250px }
+	.theme-item {
+		position: relative; 
+		float: left; 
+		width: 250px; 
+		box-sizing: border-box;
+		margin: 0 20px 20px 0; 
+		border: 1px solid #ccc;
+	}
+	.theme-thumbnail-wrapper,
+	.theme-data {
+		padding: 8px;
+	}
+	.theme-thumbnail {
+		height: 220px;
+		background-size: cover;
+	}
+	.theme-data h4 {
+		margin-top: 0;
+		color: #333;
+	}
+	.theme-data h4 > small {
+		.smaller();
+		font-weight: normal;
+	}
+	.theme-info {
+		font-size: 12px;
+		line-height: 16px;
+	}
+	.theme-buttons {
+		margin-top: 15px;
+	}
+	.theme-broken-badge {
+		position: absolute;
+		background-color: @red;
+		color: #fff;
+		right: 0;
+		bottom: 0;
+		padding: 8px 12px;
+		font-size: 20px;
+	}
 }
-#theme-list .theme-line .theme-name {
-	font-size: 22px;
-	padding-bottom: 20px;
-}
-#theme-list .theme-line .buttons {
-	margin-top: 12px; 
-	position: absolute; 
-	bottom: 12px;
-}
+
 
 .slides-title {
 	position: relative;

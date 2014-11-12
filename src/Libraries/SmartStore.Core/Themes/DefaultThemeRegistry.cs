@@ -22,6 +22,7 @@ namespace SmartStore.Core.Themes
 		private readonly string _themesBasePath;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ConcurrentDictionary<string, ThemeManifest> _themes = new ConcurrentDictionary<string, ThemeManifest>(StringComparer.InvariantCultureIgnoreCase);
+		private readonly ConcurrentDictionary<EventThrottleKey, Timer> _eventQueue = new ConcurrentDictionary<EventThrottleKey, Timer>();
 
 		private readonly Regex _fileFilterPattern = new Regex(@"^\.(config|png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
@@ -44,11 +45,10 @@ namespace SmartStore.Core.Themes
 				LoadThemes();
 			}
 
-			if (_enableMonitoring)
-			{
-				// start FS watcher
-				StartMonitoring();
-			}
+			CreateFileSystemWatchers();
+
+			// start FS watcher
+			this.StartMonitoring(false);
         }
 
 		#endregion 
@@ -79,28 +79,56 @@ namespace SmartStore.Core.Themes
 			return null;
 		}
 
-		public ICollection<ThemeManifest> GetThemeManifests()
+		public ICollection<ThemeManifest> GetThemeManifests(bool includeHidden = false)
 		{
-			return _themes.Values.AsReadOnly();
+			var allThemes = _themes.Values;
+
+			if (includeHidden)
+			{
+				return allThemes.AsReadOnly();
+			}
+			else
+			{
+				return allThemes.Where(x => x.State == ThemeManifestState.Active).AsReadOnly();
+			}
 		}
 
 		public void AddThemeManifest(ThemeManifest manifest)
 		{
+			AddThemeManifestInternal(manifest, false);
+		}
+
+		private void AddThemeManifestInternal(ThemeManifest manifest, bool isInit)
+		{
 			Guard.ArgumentNotNull(() => manifest);
 
-			TryRemoveManifest(manifest.ThemeName);
-			
+			bool removed = false;
+			if (!isInit)
+			{
+				removed = TryRemoveManifest(manifest.ThemeName);
+			}
+
 			ThemeManifest baseManifest = null;
 			if (manifest.BaseThemeName != null)
 			{
 				if (!_themes.TryGetValue(manifest.BaseThemeName, out baseManifest))
 				{
-					throw new SmartException("Theme '{0}' is derived from '{1}', which does not exist. Please deploy theme '{1}' first.".FormatCurrent(manifest.ThemeName, manifest.BaseThemeName));
+					manifest.State = ThemeManifestState.MissingBaseTheme;
 				}
 			}
 
 			manifest.BaseTheme = baseManifest;
-			_themes.TryAdd(manifest.ThemeName, manifest);
+			var added = _themes.TryAdd(manifest.ThemeName, manifest);
+			if (added && !isInit)
+			{
+				// post process
+				var children = GetChildrenOf(manifest.ThemeName, false);
+				foreach (var child in children)
+				{
+					child.BaseTheme = manifest;
+					child.State = ThemeManifestState.Active;
+				}
+			}
 		}
 
 		private bool TryRemoveManifest(string themeName)
@@ -113,14 +141,16 @@ namespace SmartStore.Core.Themes
 
 				existing.BaseTheme = null;
 
-				//// remove all derived themes also
-				//var children = GetChildrenOf(themeName, true);
-				//foreach (var child in children)
-				//{
-				//	child.BaseTheme = null;
-				//	_eventPublisher.Publish(new ThemeTouchedEvent(child.ThemeName));
-				//}
+				// set all direct children as broken
+				var children = GetChildrenOf(themeName, false);
+				foreach (var child in children)
+				{
+					child.BaseTheme = null;
+					child.State = ThemeManifestState.MissingBaseTheme;
+					_eventPublisher.Publish(new ThemeTouchedEvent(child.ThemeName));
+				}
 			}
+
 			return result;
 		}
 
@@ -140,14 +170,15 @@ namespace SmartStore.Core.Themes
 			if (current == null)
 				return false;
 
-			while (current != null && current.BaseTheme != null)
+			var currentBaseName = current.BaseThemeName;
+			while (currentBaseName != null)
 			{
-				if (baseTheme.Equals(current.BaseTheme.ThemeName, StringComparison.OrdinalIgnoreCase))
+				if (baseTheme.Equals(currentBaseName, StringComparison.OrdinalIgnoreCase))
 				{
 					return true;
 				}
 
-				current = current.BaseTheme;
+				currentBaseName = current.BaseThemeName;
 			}
 
 			return false;
@@ -160,10 +191,10 @@ namespace SmartStore.Core.Themes
 			if (!ThemeManifestExists(themeName))
 				Enumerable.Empty<ThemeManifest>();
 
-			var derivedThemes = _themes.Values.Where(x => x.BaseTheme != null && !x.ThemeName.IsCaseInsensitiveEqual(themeName));
+			var derivedThemes = _themes.Values.Where(x => x.BaseThemeName != null && !x.ThemeName.IsCaseInsensitiveEqual(themeName));
 			if (!deep)
 			{
-				derivedThemes = derivedThemes.Where(x => x.BaseTheme.ThemeName.IsCaseInsensitiveEqual(themeName));
+				derivedThemes = derivedThemes.Where(x => x.BaseThemeName.IsCaseInsensitiveEqual(themeName));
 			}
 			else
 			{
@@ -219,8 +250,7 @@ namespace SmartStore.Core.Themes
 					var manifest = ThemeManifest.Create(themeFolder);
 					if (manifest != null)
 					{
-						//_themes.TryAdd(manifest.ThemeName, manifest);
-						AddThemeManifest(manifest);
+						AddThemeManifestInternal(manifest, true);
 					}
 				}
 				catch (Exception ex)
@@ -230,38 +260,11 @@ namespace SmartStore.Core.Themes
 			}
 		}
 
-		//private bool ValidateThemeInheritance(ThemeManifest manifest, IDictionary<string, ThemeManifest> map)
-		//{
-		//	return true;
-		//	//var stack = new List<string>();
-
-		//	//while (manifest.BaseThemeName != null)
-		//	//{
-		//	//	stack.Add(manifest.ThemeName);
-				
-		//	//	if (!map.ContainsKey(manifest.BaseThemeName))
-		//	//	{
-		//	//		Debug.WriteLine("The base theme does not exist");
-		//	//		return false;
-		//	//	}
-
-		//	//	if (stack.Contains(manifest.BaseThemeName, StringComparer.OrdinalIgnoreCase))
-		//	//	{
-		//	//		Debug.WriteLine("Circular reference");
-		//	//		return false;
-		//	//	}
-
-		//	//	manifest = map[manifest.BaseThemeName];
-		//	//}
-
-		//	//return true;
-		//}
-
         #endregion
 
 		#region Monitoring & Events
 
-		private void StartMonitoring()
+		private void CreateFileSystemWatchers()
 		{
 			_monitorFiles = new FileSystemWatcher();
 			_monitorFiles.Path = CommonHelper.MapPath(_themesBasePath);
@@ -269,13 +272,13 @@ namespace SmartStore.Core.Themes
 			_monitorFiles.Filter = "*.*";
 			_monitorFiles.NotifyFilter = NotifyFilters.CreationTime | NotifyFilters.LastWrite | NotifyFilters.FileName;
 			_monitorFiles.IncludeSubdirectories = true;
-			_monitorFiles.EnableRaisingEvents = true;
 			_monitorFiles.Changed += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Modified);
 			_monitorFiles.Deleted += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Deleted);
 			_monitorFiles.Created += (s, e) => OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Created);
-			_monitorFiles.Renamed += (s, e) => { 
+			_monitorFiles.Renamed += (s, e) =>
+			{
 				OnThemeFileChanged(e.OldName, e.OldFullPath, ThemeFileChangeType.Deleted);
-				OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Created); 
+				OnThemeFileChanged(e.Name, e.FullPath, ThemeFileChangeType.Created);
 			};
 
 			_monitorFolders = new FileSystemWatcher();
@@ -283,13 +286,76 @@ namespace SmartStore.Core.Themes
 			_monitorFolders.Filter = "*";
 			_monitorFolders.NotifyFilter = NotifyFilters.DirectoryName;
 			_monitorFolders.IncludeSubdirectories = false;
-			_monitorFolders.EnableRaisingEvents = true;
 			_monitorFolders.Renamed += (s, e) => OnThemeFolderRenamed(e.Name, e.FullPath, e.OldName, e.OldFullPath);
 			_monitorFolders.Deleted += (s, e) => OnThemeFolderDeleted(e.Name, e.FullPath);
 		}
 
+		public void StartMonitoring(bool force)
+		{
+			var shouldStart = force || _enableMonitoring;
+
+			if (shouldStart && !_monitorFiles.EnableRaisingEvents)
+				_monitorFiles.EnableRaisingEvents = true;
+			if (shouldStart && !_monitorFolders.EnableRaisingEvents)
+				_monitorFolders.EnableRaisingEvents = true;
+		}
+
+		public void StopMonitoring()
+		{
+			if (_monitorFiles.EnableRaisingEvents)
+				_monitorFiles.EnableRaisingEvents = false;
+			if (_monitorFolders.EnableRaisingEvents)
+				_monitorFolders.EnableRaisingEvents = false;
+		}
+
+		private bool ShouldThrottleEvent(EventThrottleKey key)
+		{
+			Timer timer;
+			if (_eventQueue.TryGetValue(key, out timer))
+			{
+				// do nothing. The same event was published a tick ago.
+				return true;
+			}
+
+			_eventQueue[key] = new Timer(RemoveFromEventQueue, key, 500, Timeout.Infinite);
+			return false;
+		}
+
+		private void RemoveFromEventQueue(object key)
+		{
+			Timer timer;
+			if (_eventQueue.TryRemove((EventThrottleKey)key, out timer))
+			{
+				timer.Dispose();
+			}
+		}
+
+		private void WaitForUnlock(string fullPath)
+		{
+			try
+			{
+				var fi = new FileInfo(fullPath);
+				for (var i = 0; i < 5; i++)
+				{
+					if (!fi.IsFileLocked())
+					{
+						return;
+					}
+					Thread.Sleep(50);
+				}
+			}
+			finally { }
+		}
+
 		private void OnThemeFileChanged(string name, string fullPath, ThemeFileChangeType changeType)
 		{
+			// Enable event throttling by allowing the very same event to be published only all 500 ms.
+			var throttleKey = new EventThrottleKey(name, changeType);
+			if (ShouldThrottleEvent(throttleKey))
+			{
+				return;
+			}
+			
 			if (!_fileFilterPattern.IsMatch(Path.GetExtension(name)))
 				return;
 
@@ -317,32 +383,31 @@ namespace SmartStore.Core.Themes
 				// config file changes always result in refreshing the corresponding theme manifest
 				var di = new DirectoryInfo(Path.GetDirectoryName(fullPath));
 
-				ThemeManifest oldBaseTheme = null;
+				string oldBaseThemeName = null;
 				var oldManifest = this.GetThemeManifest(di.Name);
 				if (oldManifest != null)
 				{
-					oldBaseTheme = oldManifest.BaseTheme;
+					oldBaseThemeName = oldManifest.BaseThemeName;
 				}
 
 				try
 				{
-					if ((new FileInfo(fullPath)).IsFileLocked())
-					{
-						return;
-					}
+					// FS watcher in conjunction with some text editors fires change events twice and locks the file.
+					// Let's wait max. 250 ms till the lock is gone (hopefully).
+					WaitForUnlock(fullPath);
 
 					var newManifest = ThemeManifest.Create(di.FullName, _themesBasePath);
 					if (newManifest != null)
 					{
-						this.AddThemeManifest(newManifest);
+						this.AddThemeManifestInternal(newManifest, false);
 
-						if (!oldBaseTheme.Equals(newManifest.BaseTheme))
+						if (!oldBaseThemeName.IsCaseInsensitiveEqual(newManifest.BaseThemeName))
 						{
 							baseThemeChangedArgs = new BaseThemeChangedEventArgs
 							{ 
 								ThemeName = newManifest.ThemeName,
 								BaseTheme = newManifest.BaseTheme != null ? newManifest.BaseTheme.ThemeName : null,
-								OldBaseTheme = oldBaseTheme != null ? oldBaseTheme.ThemeName : null
+								OldBaseTheme = oldBaseThemeName
 							};
 						}
 
@@ -353,7 +418,7 @@ namespace SmartStore.Core.Themes
 						// something went wrong (most probably no 'theme.config'): remove the manifest
 						TryRemoveManifest(di.Name);
 					}
-				}
+				} 
 				catch (Exception ex)
 				{
 					TryRemoveManifest(di.Name);
@@ -384,7 +449,7 @@ namespace SmartStore.Core.Themes
 				var newManifest = GetThemeManifest(name);
 				if (newManifest != null)
 				{
-					this.AddThemeManifest(newManifest);
+					this.AddThemeManifestInternal(newManifest, false);
 					Debug.WriteLine("Changed theme manifest for '{0}'".FormatCurrent(name));
 				}
 			}
@@ -451,12 +516,14 @@ namespace SmartStore.Core.Themes
 			{
 				if (_monitorFiles != null)
 				{
+					_monitorFiles.EnableRaisingEvents = false;
 					_monitorFiles.Dispose();
 					_monitorFiles = null;
 				}
 
 				if (_monitorFolders != null)
 				{
+					_monitorFolders.EnableRaisingEvents = false;
 					_monitorFolders.Dispose();
 					_monitorFolders = null;
 				}
@@ -465,6 +532,13 @@ namespace SmartStore.Core.Themes
 
 		#endregion
 
+		private class EventThrottleKey : Tuple<string, ThemeFileChangeType>
+		{
+			public EventThrottleKey(string name, ThemeFileChangeType changeType)
+				: base(name, changeType)
+			{
+			}
+		}
 	}
 
 }

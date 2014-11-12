@@ -683,7 +683,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        //store theme
         [ChildActionOnly]
         public ActionResult StoreThemeSelector()
         {
@@ -711,6 +710,7 @@ namespace SmartStore.Web.Controllers
                 .ToList();
             return PartialView(model);
         }
+
         public ActionResult StoreThemeSelected(string themeName)
         {
             _themeContext.WorkingDesktopTheme = themeName;

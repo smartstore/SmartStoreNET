@@ -3,6 +3,7 @@ using System.Linq;
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Collections;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Configuration;
 using SmartStore.Core.Themes;
@@ -105,10 +106,13 @@ namespace SmartStore.Admin.Controllers
 
         private IList<ThemeManifestModel> GetThemes(bool mobile, ThemeSettings themeSettings)
         {
-            var themes = from m in _themeRegistry.GetThemeManifests()
+            var themes = from m in _themeRegistry.GetThemeManifests(true)
                                 where m.MobileTheme == mobile
                                 select PrepareThemeManifestModel(m, themeSettings);
-            return themes.OrderByDescending(x => x.IsActive).ThenBy(x => x.Name).ToList();
+
+			var sortedThemes = themes.ToArray().SortTopological(StringComparer.OrdinalIgnoreCase).Cast<ThemeManifestModel>();
+
+			return sortedThemes.OrderByDescending(x => x.IsActive).ToList();
         }
 
 		protected virtual ThemeManifestModel PrepareThemeManifestModel(ThemeManifest manifest, ThemeSettings themeSettings)
@@ -116,6 +120,7 @@ namespace SmartStore.Admin.Controllers
             var model = new ThemeManifestModel
                 {
                     Name = manifest.ThemeName,
+					BaseTheme = manifest.BaseThemeName,
                     Title = manifest.ThemeTitle,
                     Description = manifest.PreviewText,
                     Author = manifest.Author,
@@ -123,7 +128,8 @@ namespace SmartStore.Admin.Controllers
                     IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,
                     PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
-                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName
+                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName,
+					State = manifest.State
                 };
 
 			if (HostingEnvironment.VirtualPathProvider.FileExists("{0}/{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location, manifest.ThemeName)))

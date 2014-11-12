@@ -9,8 +9,9 @@ namespace SmartStore.Core.Themes
 		/// <summary>
 		/// Gets all registered theme manifests
 		/// </summary>
+		/// <param name="includeHidden">Specifies whether inactive themes should also be included in the return list</param>
 		/// <returns>A collection of manifests</returns>
-		ICollection<ThemeManifest> GetThemeManifests();
+		ICollection<ThemeManifest> GetThemeManifests(bool includeHidden = false);
 		
 		/// <summary>
 		/// Gets a single theme manifest by theme name
@@ -51,6 +52,20 @@ namespace SmartStore.Core.Themes
 		/// <param name="deep">When <c>true</c>, the method gets all child themes in the hierarchy chain, otherwise it only returns direct children.</param>
 		/// <returns>The manifests of matching themes</returns>
 		IEnumerable<ThemeManifest> GetChildrenOf(string themeName, bool deep = true);
+
+		/// <summary>
+		/// Starts/resumes raising file system events
+		/// </summary>
+		/// <param name="force">
+		/// When <c>true</c>, monitoring gets started regardless of the global setting (web.config > appSettings > sm:MonitorThemesFolder),
+		/// otherwise this method does nothing when the setting is <c>false</c>.
+		/// </param>
+		void StartMonitoring(bool force);
+
+		/// <summary>
+		/// Stops/pauses raising file system events
+		/// </summary>
+		void StopMonitoring();
 
 		/// <summary>
 		/// Event raised when an inheritable (static) theme file has been created or deleted,

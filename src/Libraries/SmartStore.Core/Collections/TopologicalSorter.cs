@@ -71,7 +71,10 @@ namespace SmartStore.Collections
 				{
 					for (int j = 0; j < items[i].DependsOn.Length; j++)
 					{
-						sorter.AddEdge(i, indexes[items[i].DependsOn[j]]);
+						if (indexes.ContainsKey(items[i].DependsOn[j]))
+						{
+							sorter.AddEdge(i, indexes[items[i].DependsOn[j]]);
+						}
 					}
 				}
 			}

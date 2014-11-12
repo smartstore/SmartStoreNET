@@ -74,6 +74,7 @@ namespace SmartStore.Core.Packaging
 			{
 				ExtensionType = "Plugin",
 				Location = "~/Plugins",
+				Path = pluginDescriptor.PhysicalPath,
 				Id = pluginDescriptor.FolderName,
 				Author = pluginDescriptor.Author,
 				MinAppVersion = pluginDescriptor.MinAppVersion,
@@ -81,7 +82,7 @@ namespace SmartStore.Core.Packaging
 				Name = pluginDescriptor.FriendlyName,
 				Description = pluginDescriptor.Description,
 				WebSite = string.Empty, // TODO: (pkg) Add author url to plugin manifests,
-				Tags = string.Empty // TODO: (pkg) Add tags to plugin manifests
+				Tags = string.Empty // TODO: (pkg) Add tags to plugin manifests,
 			};
 
 			return descriptor;
@@ -93,6 +94,7 @@ namespace SmartStore.Core.Packaging
 			{
 				ExtensionType = "Theme",
 				Location = "~/Themes",
+				Path = themeManifest.Path,
 				Id = themeManifest.ThemeName,
 				Author = themeManifest.Author.HasValue() ? themeManifest.Author : "[Unknown]",
 				MinAppVersion = SmartStoreVersion.Version, // TODO: (pkg) Add SupportedVersion to theme manifests
@@ -100,7 +102,7 @@ namespace SmartStore.Core.Packaging
 				Name = themeManifest.ThemeTitle,
 				Description = string.Empty, // TODO: (pkg) Add description to theme manifests
 				WebSite = string.Empty, // TODO: (pkg) Add author url to theme manifests,
-				Tags = string.Empty // TODO: (pkg) Add tags to theme manifests
+				Tags = string.Empty // TODO: (pkg) Add tags to theme manifests,
 			};
 
 			return descriptor;
@@ -126,7 +128,7 @@ namespace SmartStore.Core.Packaging
 					filePath = Path.Combine(HostingEnvironment.MapPath("~/"), filePath);
 					if (isTheme)
 					{
-						var themeManifest = ThemeManifest.Create(Path.GetDirectoryName(filePath), null);
+						var themeManifest = ThemeManifest.Create(Path.GetDirectoryName(filePath));
 						if (themeManifest != null)
 						{
 							descriptor = themeManifest.ConvertToExtensionDescriptor();

@@ -12,5 +12,6 @@ namespace SmartStore.Core.Packaging
 		public string Version { get; set; }
 		public string Type { get; set; }
 		public string Path { get; set; }
+		public ExtensionDescriptor ExtensionDescriptor { get; set; }
 	}
 }

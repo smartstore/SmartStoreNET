@@ -139,10 +139,10 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
-		internal string BaseThemeName
+		public string BaseThemeName
 		{
 			get;
-			set;
+			internal set;
 		}
 
 		public ThemeManifest BaseTheme
@@ -245,10 +245,31 @@ namespace SmartStore.Core.Themes
 			}
 		}
 
+		private ThemeManifestState _state;
 		public ThemeManifestState State
 		{
-			get;
-			protected internal set;
+			get
+			{
+				if (_state == ThemeManifestState.Active)
+				{
+					// active state does not mean, that it actually IS active: check state of base themes!
+					var baseTheme = this.BaseTheme;
+					while (baseTheme != null)
+					{
+						if (baseTheme.State != ThemeManifestState.Active)
+						{
+							return baseTheme.State;
+						}
+						baseTheme = baseTheme.BaseTheme;
+					}
+				}
+
+				return _state;
+			}
+			protected internal set
+			{
+				_state = value;
+			}
 		}
 
         internal string FullPath
@@ -262,7 +283,6 @@ namespace SmartStore.Core.Themes
 
 	public enum ThemeManifestState
 	{
-		HasCyclicDependency = -2,
 		MissingBaseTheme = -1,
 		Active = 0,
 	}

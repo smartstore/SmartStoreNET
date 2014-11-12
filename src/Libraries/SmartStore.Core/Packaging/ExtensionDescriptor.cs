@@ -5,7 +5,7 @@ using System.Linq;
 namespace SmartStore.Core.Packaging
 {
 
-	internal class ExtensionDescriptor
+	public class ExtensionDescriptor
 	{
 		/// <summary>
 		/// Virtual path base, "~/Themes" or "~/Plugins"

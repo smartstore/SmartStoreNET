@@ -63,7 +63,8 @@ namespace SmartStore.Web.Framework.Themes
                 {
 					if (_workContext.CurrentCustomer != null)
 					{
-						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);										isCustomerSpecific = theme.HasValue();
+						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);										
+						isCustomerSpecific = theme.HasValue();
 					}
                 }
 
@@ -76,7 +77,7 @@ namespace SmartStore.Web.Framework.Themes
                 // ensure that theme exists
                 if (!_themeRegistry.ThemeManifestExists(theme))
                 {
-                    var manifest = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme && x.State == ThemeManifestState.Active).FirstOrDefault();
+                    var manifest = _themeRegistry.GetThemeManifests().Where(x => !x.MobileTheme).FirstOrDefault();
 					if (manifest == null)
 					{
 						// no active theme in system. Throw!

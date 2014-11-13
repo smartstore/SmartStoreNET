@@ -1,8 +1,11 @@
 ﻿@model GiftCardModel
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Core.Domain.Catalog;
+
 @Html.ValidationSummary(false)
+
 @Html.HiddenFor(model => model.Id)
+
 @Html.SmartStore().TabStrip().Name("giftcard-edit").Items(x =>
 {
     x.Add().Text(T("Admin.GiftCards.Info").Text).Content(TabInfo()).Selected(true);
@@ -14,29 +17,42 @@
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "giftcard-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
-    { <script type="text/javascript">
-    $(document).ready(function () {
+{
+	<script type="text/javascript">
+		$(document).ready(function () {
 
-        $("#@Html.FieldIdFor(model => model.GiftCardTypeId)").change(toggleGiftCardType);
-        
-        toggleGiftCardType();
-    });
+			$("#@Html.FieldIdFor(model => model.GiftCardTypeId)").change(function () {
+				if ($(this).val() == '@((int)GiftCardType.Virtual)') {
+					$('#pnlRecipientEmail').show();
+					$('#pnlSenderEmail').show();
+					$('#pnlNotifyRecipient').show();
+				}
+				else {
+					$('#pnlRecipientEmail').hide();
+					$('#pnlSenderEmail').hide();
+					$('#pnlNotifyRecipient').hide();
+				}
+			}).trigger('change');
 
-    function toggleGiftCardType() {
-        var selectedGiftCardTypeId = $("#@Html.FieldIdFor(model => model.GiftCardTypeId)").val();
-        if (selectedGiftCardTypeId == @(((int)GiftCardType.Virtual).ToString())) {
-            $('#pnlRecipientEmail').show();
-            $('#pnlSenderEmail').show();
-            $('#pnlNotifyRecipient').show();
-        }
-        else {
-            $('#pnlRecipientEmail').hide();
-            $('#pnlSenderEmail').hide();
-            $('#pnlNotifyRecipient').hide();
-        }
-    }
+            $('#generateCouponCode').click(function () {
+                $.ajax({
+                    cache:false,
+                    type: "POST",
+                    url: "@(Url.Action("GenerateCouponCode", "GiftCard"))",
+                    success: function (data) {
+                         $('#@Html.FieldIdFor(model => model.GiftCardCouponCode)').val(data.CouponCode);
+                    },
+                    error:function (xhr, ajaxOptions, thrownError){
+                        alert('Failed to generate code.')
+                    }  
+                });
+            });
+
+		});
     </script>
+	
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -54,7 +70,7 @@
                     @Html.SmartLabelFor(model => model.PurchasedWithOrderId)
                 </td>
                 <td class="adminData">
-                    <a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@T("Admin.Common.View")</a>
+                    <a href="@Url.Action("Edit", "Order", new { Id = Model.PurchasedWithOrderId.Value })">@Model.PurchasedWithOrderId.Value</a>
                 </td>
             </tr>
         }
@@ -98,24 +114,6 @@
                 <button type="button" name="generateCouponCode" id="generateCouponCode" class="btn">
 					<i class="fa fa-gear"></i>&nbsp;@T("Admin.GiftCards.Fields.GiftCardCouponCode.Generate")
 				</button>
-
-                <script type="text/javascript">
-        $(document).ready(function () {
-            $('#generateCouponCode').click(function () {
-                $.ajax({
-                    cache:false,
-                    type: "POST",
-                    url: "@(Url.Action("GenerateCouponCode", "GiftCard"))",
-                    success: function (data) {
-                         $('#@Html.FieldIdFor(model => model.GiftCardCouponCode)').val(data.CouponCode);
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert('Failed to generate code.')
-                    }  
-                });
-            });
-        });
-                </script>
             </td>
         </tr>
         <tr>
@@ -170,7 +168,8 @@
                     @Html.SmartLabelFor(model => model.IsRecipientNotified)
                 </td>
                 <td class="adminData">
-                    @Model.IsRecipientNotified.ToString()
+					@T(Model.IsRecipientNotified ? "Admin.Common.Yes" : "Admin.Common.No")
+					&nbsp;
                     <button type="submit" name="notifyRecipient" value="notifyRecipient" class="btn">
 						<i class="fa fa-envelope"></i>&nbsp;@T("Admin.GiftCards.Fields.IsRecipientNotified.Notify")
 					</button>

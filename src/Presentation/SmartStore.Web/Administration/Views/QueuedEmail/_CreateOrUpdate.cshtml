@@ -90,14 +90,6 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.CreatedOn)
-        </td>
-        <td class="adminData">
-            @Html.DisplayFor(model => model.CreatedOn)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.SentTries)
         </td>
         <td class="adminData">
@@ -116,7 +108,7 @@
             }
             else
             {
-                <text>Not sent yet</text>
+				@("".NaIfEmpty())
             }
         </td>
     </tr>
@@ -126,6 +118,14 @@
         </td>
         <td class="adminData">
             @Html.DisplayFor(model => model.EmailAccountName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CreatedOn)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.CreatedOn)
         </td>
     </tr>
 </table>

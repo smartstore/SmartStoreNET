@@ -54,7 +54,7 @@
                                 $.each(data, function(id, option) {
                                     ddlStates.append($('<option></option>').val(option.id).html(option.name));
                                 });
-                                ddlStates.trigger("change"); // codehint: sm-add
+                                ddlStates.trigger("change");
                             },
                             error:function (xhr, ajaxOptions, thrownError){
                                 alert('Failed to retrieve states.')
@@ -111,7 +111,7 @@
                 @if (Model.Id > 0)
                 {
                     <button type="submit" name="changepassword" value="changepassword" class="btn">
-                        <i class="fa fa-gear"></i>&nbsp;Change password
+                        <i class="fa fa-gear"></i>&nbsp;@T("Account.ChangePassword")
 					</button>
                 }
             </td>
@@ -299,7 +299,7 @@
                 @Html.SmartLabelFor(model => model.AdminComment)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.AdminComment, new { style = "Width: 250px; Height: 200px;" })
+                @Html.TextAreaFor(model => model.AdminComment)
                 @Html.ValidationMessageFor(model => model.AdminComment)
             </td>
         </tr>
@@ -577,7 +577,7 @@
     <div class="clear">
     </div>
 
-	<button type="button" class="btn btn-primary btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
+	<button type="button" class="btn btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
 		<i class="fa fa-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
 	</button>
 }
@@ -639,20 +639,17 @@
         </tr>
     </table>
 }
-@helper TabImpersonate()
-    {
-    <table class="adminContent">
-        <tr>
-            <td>
-				@T("Admin.Customers.Customers.Impersonate.Description1")
-				<br />
-				@T("Admin.Customers.Customers.Impersonate.Description2")
-				<br /><br />
 
-				<button type="submit" name="impersonate" value="impersonate" class="btn">
-					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
-				</button>
-            </td>
-        </tr>
-    </table>
+@helper TabImpersonate()
+{
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		<p>@T("Admin.Customers.Customers.Impersonate.Description1")</p>
+		<p>@T("Admin.Customers.Customers.Impersonate.Description2")</p>
+	</div>
+	<p>
+		<button type="submit" name="impersonate" value="impersonate" class="btn">
+			<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
+		</button>
+	</p>
 }

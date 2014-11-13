@@ -61,7 +61,12 @@ namespace SmartStore.PayPal.Filters
                 //delete property for backward navigation
                 _httpContext.GetCheckoutState().CustomProperties.Remove("PayPalExpressButtonUsed");
 
-                filterContext.Result = new RedirectResult("~/Checkout/Confirm/");
+                filterContext.Result = new RedirectToRouteResult(
+                    new RouteValueDictionary {
+                        { "Controller", "Checkout" }, 
+                        { "Action", "Confirm" },
+                        { "area", null }
+                    });
             }
 		}
 

@@ -206,7 +206,7 @@
                 @Html.SmartLabelFor(model => model.CustomerId)
             </td>
             <td class="adminData">
-                <a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@T("Admin.Common.View")</a>
+                <a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerName</a>
             </td>
         </tr>
         <tr>

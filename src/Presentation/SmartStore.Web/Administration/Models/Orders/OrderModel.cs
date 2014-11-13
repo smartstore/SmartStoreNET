@@ -1,16 +1,14 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
-using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
@@ -39,6 +37,8 @@ namespace SmartStore.Admin.Models.Orders
         //customer info
         [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerName { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
         public string CustomerEmail { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerIP")]
@@ -182,7 +182,7 @@ namespace SmartStore.Admin.Models.Orders
         public string CaptureTransactionId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.SubscriptionTransactionID")]
         public string SubscriptionTransactionId { get; set; }
-		// codehint: sm-add
+
 		[SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionResult")]
 		public string AuthorizationTransactionResult { get; set; }
 		[SmartResourceDisplayName("Admin.Orders.Fields.CaptureTransactionResult")]

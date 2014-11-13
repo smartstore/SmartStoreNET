@@ -12,11 +12,6 @@
 	});
 </script>
 
-<div class="alert alert-info fade in">
-	<button class="close" data-dismiss="alert">&#215;</button>
-	@T("Admin.Orders.Products.AddNew.Note2")
-</div>
-
 @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
 @using (Html.BeginForm("AddProductToOrderDetails", "Order",
     new RouteValueDictionary(new { orderId = Model.OrderId, productId = Model.ProductId }),
@@ -112,9 +107,6 @@
 			<div class="clear"></div>
 			<p></p>
 
-			<div style="margin-top: 10px;">
-				<button type="submit" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Orders.Products.AddNew")</button>
-			</div>
 			<table class="adminContent">
 				<tr>
 					<td class="adminTitle">

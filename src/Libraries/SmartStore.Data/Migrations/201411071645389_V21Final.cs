@@ -64,6 +64,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Products.ProductNotAddedToTheCart.Link").Value("de", "Produkt konnte Ihrem Warenkorb nicht hinzugefügt werden.");
 			builder.AddOrUpdate("Products.RecentlyViewedProducts").Value("de", "Zuletzt angesehen");
 
+			builder.AddOrUpdate("Admin.Catalog.Attributes.CheckoutAttributes.Deleted").Value("de", "Das Attribut wurde erfolgreich gelöscht.");
+
 			// Theme inheritance
 			builder.AddOrUpdate("Admin.Configuration.Themes.IsBasedOn",
 				"Based on",
@@ -77,7 +79,8 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Common.Reload", "Reload", "Neu laden");
 			builder.AddOrUpdate("Common.Refresh", "Refresh", "Aktualisieren");
-			
+
+			builder.AddOrUpdate("Admin.Orders.PdfInvoice", "Order as PDF", "Auftrag als PDF");
 		}
 
 

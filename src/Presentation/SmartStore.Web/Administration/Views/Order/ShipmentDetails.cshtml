@@ -32,7 +32,10 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.TrackingNumber)
-                <input type="submit" name="settrackingnumber" value="@T("Admin.Orders.Shipments.TrackingNumber.Button")" id="settrackingnumber" class="btn" />
+
+				<button type="submit" id="settrackingnumber" name="settrackingnumber" class="btn" value="@T("Admin.Orders.Shipments.TrackingNumber.Button")">
+					<i class="fa fa-pencil-square-o"></i>&nbsp;@T("Admin.Orders.Shipments.TrackingNumber.Button")
+				</button>
             </td>
         </tr>
         <tr>
@@ -51,8 +54,11 @@
                 @Model.ShippedDate
                 @if (Model.CanShip)
                 {
-                    <input type="submit" name="setasshipped" value="@T("Admin.Orders.Shipments.ShippedDate.Button")" id="setasshipped" class="btn" />
-                }
+					<text>&nbsp;</text>
+					<button type="submit" id="setasshipped" name="setasshipped" class="btn" value="@T("Admin.Orders.Shipments.ShippedDate.Button")">
+						<i class="fa fa-check"></i>&nbsp;@T("Admin.Orders.Shipments.ShippedDate.Button")
+					</button>
+				}
             </td>
         </tr>
         <tr>
@@ -63,25 +69,24 @@
                 @Model.DeliveryDate
                 @if (Model.CanDeliver)
                 {
-                    <input type="submit" name="setasdelivered" value="@T("Admin.Orders.Shipments.DeliveryDate.Button")" id="setasdelivered" class="btn" />
-                }
+					<text>&nbsp;</text>
+					<button type="submit" id="setasdelivered" name="setasdelivered" class="btn" value="@T("Admin.Orders.Shipments.DeliveryDate.Button")">
+						<i class="fa fa-check"></i>&nbsp;@T("Admin.Orders.Shipments.DeliveryDate.Button")
+					</button>
+				}
             </td>
         </tr>
     </table>
+
+	<h3>@T("Admin.Orders.Shipments.Products")</h3>
+	
     <table class="adminContent">
-        <tr>
-            <td class="adminData">
-                <strong>@T("Admin.Orders.Shipments.Products")</strong>
-            </td>
-        </tr>
         <tr>
             <td class="adminData">
 
                 <div class="t-widget t-grid">
 
                 <table class="table table-hover">
-                    <col />
-                    <col />
                     <thead>
                         <tr class="t-grid-header">
                             <th class="t-header">

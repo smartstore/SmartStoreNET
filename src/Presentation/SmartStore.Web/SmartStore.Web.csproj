@@ -1976,7 +1976,6 @@
     <Content Include="Scripts\smartstore.system.js" />
     <Content Include="Themes\Alpha\Content\images\ajax_loader_large.gif" />
     <Content Include="Themes\Alpha\Content\images\ajax_loader_small.gif" />
-    <Content Include="Themes\Alpha\Content\images\bbeditor-button-bg.gif" />
     <Content Include="Themes\Alpha\Content\images\ico-delete.gif" />
     <Content Include="Themes\Alpha\Content\images\ico-edit.gif" />
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
@@ -2165,7 +2164,6 @@
     <Content Include="Views\News\HomePageNews.cshtml" />
     <Content Include="Views\Catalog\SearchBox.cshtml" />
     <Content Include="Views\ShoppingCart\OrderSummary.cshtml" />
-    <Content Include="Themes\Alpha\Content\site.less" />
     <Content Include="Themes\Alpha\Content\theme.less" />
     <Content Include="Themes\Alpha\Content\variables.custom.less" />
     <Content Include="Themes\Alpha\Content\variables.less" />
@@ -2226,6 +2224,33 @@
     <Content Include="Themes\AlphaBlack\Views\Web.config" />
     <Content Include="Themes\AlphaBlue\Views\Web.config" />
     <Content Include="Themes\AlphaBlue\theme.config" />
+    <Content Include="Themes\Alpha\Content\blocks.less" />
+    <Content Include="Themes\Alpha\Content\blog.less" />
+    <Content Include="Themes\Alpha\Content\cart.less" />
+    <Content Include="Themes\Alpha\Content\catalog.less" />
+    <Content Include="Themes\Alpha\Content\checkout.less" />
+    <Content Include="Themes\Alpha\Content\common.less" />
+    <Content Include="Themes\Alpha\Content\custom.less" />
+    <Content Include="Themes\Alpha\Content\datalist.less" />
+    <Content Include="Themes\Alpha\Content\footer.less" />
+    <Content Include="Themes\Alpha\Content\forum.less" />
+    <Content Include="Themes\Alpha\Content\header.less" />
+    <Content Include="Themes\Alpha\Content\layout.less" />
+    <Content Include="Themes\Alpha\Content\listscroller.less" />
+    <Content Include="Themes\Alpha\Content\login.less" />
+    <Content Include="Themes\Alpha\Content\misc.less" />
+    <Content Include="Themes\Alpha\Content\nav.less" />
+    <Content Include="Themes\Alpha\Content\news.less" />
+    <Content Include="Themes\Alpha\Content\pages.less" />
+    <Content Include="Themes\Alpha\Content\paginator.less" />
+    <Content Include="Themes\Alpha\Content\poll.less" />
+    <Content Include="Themes\Alpha\Content\product.less" />
+    <Content Include="Themes\Alpha\Content\productfilter.less" />
+    <Content Include="Themes\Alpha\Content\profile.less" />
+    <Content Include="Themes\Alpha\Content\rating.less" />
+    <Content Include="Themes\Alpha\Content\shopbar.less" />
+    <Content Include="Themes\Alpha\Content\skin.less" />
+    <Content Include="Themes\Alpha\Content\typo.less" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

@@ -1,0 +1,83 @@
+//
+// Common Page Styles
+// --------------------------------------------------
+
+.page-title {
+	h1 { font-size: 32px; line-height: 36px }
+	h2 { font-size: 26px; line-height: 30px }
+	h3 { font-size: 20px; line-height: 24px }
+	h4, h5, h6 { font-size: 14px; line-height: 16px }
+}
+.category-page h1.page-title,
+.product-details-page .page-title h1 {
+    font-size: 26px; 
+    line-height: 30px;
+}
+
+.not-found-page .page-title h1 {
+	color: mix(@textColor, @bodyBackground, 30%);
+	font-family: @baseFontFamily;
+}
+
+.page.order-list-page .buttons .btn,
+.page.address-list-page .btn {
+	margin: 5px 0;
+}
+
+.page.address-list-page .address-item label {
+	display: inline;
+}
+
+.block-title a.link-rss,
+.page-title a.link-rss {
+	float: right;
+	font-family: @baseFontFamily;
+	font-size: @baseFontSize;
+	line-height: @baseLineHeight; 
+	font-weight: bold;
+	text-decoration: none;
+	text-transform: uppercase;
+	color: @successText !important;
+	&:hover { color: darken(@successText, 10%) !important }
+	.icon-rss { color: #999 }
+}
+
+
+/* Compare products
+================================================ */
+
+.compare-products-table td {
+	.small();
+}
+.compare-products-table tr.product-name {
+	background-color: #e5e5e5;
+}
+.compare-products-table tr.product-name a {
+	color: #888;
+	text-decoration: none;
+	&:hover { color: #555 }
+}
+
+
+/* TellAFriend
+================================================ */
+
+.email-a-friend-page .personal-message{width:350px;height:150px;}
+
+
+/* Search
+================================================ */
+
+.search-page .price-from,
+.search-page .price-to {
+	width: 40px;
+}
+
+
+/* ContactUs
+================================================ */
+
+.contact-page .enquiry {
+	width: 350px;
+	height: 150px;
+}

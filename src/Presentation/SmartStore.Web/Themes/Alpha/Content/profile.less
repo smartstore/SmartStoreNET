@@ -1,0 +1,162 @@
+//
+// Customer Account & Profile Styles
+// --------------------------------------------------
+
+
+.profile-page{}
+.profile-page .page-body { }
+.profile-page .profile-info-box { }
+.profile-page .profile-info-box, .profile-page .user-last-posts { }
+.profile-page .profile-info-box .title {}
+.profile-page .profile-info-box .profile-stat { font-weight: bold; padding: 2px; }
+.profile-page .profile-info-box .profile-stat .profile-stat-value { font-weight: 400; }
+.profile-page .profile-info-box .user-details { padding: 10px; height: 100%; text-align: center; }
+.profile-page .profile-info-box .user-details .avatar { margin-bottom: 5px; }
+.profile-page .profile-info-box .user-details .avatar .avatar-img { }
+.profile-page .profile-info-box .user-stats { padding: 10px 20px; }
+.profile-page .profile-info-box .user-stats .title { text-transform: uppercase; margin-bottom: 10px; font-size: 18px}
+.profile-page .user-last-posts{}
+.profile-page .user-last-posts .topic{ border: solid 1px #F3F3F3; margin-bottom: 10px;}
+.profile-page .user-last-posts .topic-title{font-weight:700;line-height:20px;background:#e3f3f3;padding:3px;}
+.profile-page .user-last-posts .topic-body{padding:10px;}
+.profile-page .user-last-posts .topic-body a{color:#f93;text-decoration:underline;}
+.profile-page .user-last-posts .topic-body .quote{padding:5px;border:dashed 1px #000;background-color:#fff;}
+.profile-page .user-last-posts .topic-data{background:#f3f3f3;padding:3px;color:#555;font-size:.9em;}
+.profile-page .user-last-posts .posts-table{width:100%;border:0px;border-collapse:collapse;border-spacing:0;empty-cells:show;}
+
+
+
+.table-order-items {
+	border-bottom: 1px solid #ddd;
+}
+
+.username-available-status{color:green;padding-left:5px;}
+.username-not-available-status{color:red;padding-left:5px;}
+.account-signature-text{height:100px;width:500px;border:solid 1px #E3E3E3;vertical-align:top;}
+
+.avatar-page{padding:10px;}
+.avatar-page .buttons{margin:5px 0;}
+
+.address-list-page .add-button {
+	margin: 12px 0;
+}
+
+.address-list-page .address-item {
+	margin: 12px 0 30px;
+}
+
+.address-list-page .address-item .title {
+	border-bottom: 1px solid #ddd;
+	padding-bottom: 12px;
+}
+
+.back-in-stock-subscription-list-page .buttons {
+	margin: 12px 0;
+}
+
+/* Order Details
+================================================ */
+
+.order-details{}
+.order-details .page-title{text-align:left;}
+.order-details .page-body{}
+.order-details .order-overview{text-align:left;padding-bottom:10px;}
+.order-details .order-overview .order-total-top{text-align:right;}
+.order-details .order-details-box{text-align:left;padding:10px;border:1px solid #d7d7d7;height:auto;}
+.order-details .order-overview .order-overview-table, .order-details .order-details-box .order-details-table{width:100%;border:0px;border-collapse:collapse;border-spacing:0;}
+.order-details .order-details-box .order-details-table .billinginfo,.order-details .order-details-box .order-details-table .shippinginfo{width:50%;vertical-align:top;}
+.order-details .order-details-box .repost{margin:10px 0px 10px 0px;}
+.order-details .order-details-box .repost .hint{margin:0px;}
+.order-details .products-box,.order-details .shipments-box,.order-details .ordernotes-box{}
+.order-details .actions{margin:10px 0px 10px 0px;}
+
+.order-details .checkout-attributes {
+	text-align: right;
+}
+.order-details .cart-total-right {
+	text-align: right;
+	color: @successText;
+}
+.order-details .cart-total tr:last-child {
+	background-color: #f5f5f5;
+}
+
+/* Shipments
+================================================ */
+
+.shipment-details{}
+.shipment-details .page-title{text-align:left;}
+.shipment-details .page-body{border:1px solid #d7d7d7;padding:10px;}
+.shipment-details .overview{text-align:left;padding-bottom:10px;}
+.shipment-details .tracking-url{color:#f93;text-decoration:none;}
+.shipment-details .products-box,.shipment-details .shipment-status-events-box{text-align:left;height:auto;}
+
+
+
+/* Forum Subscriptions
+================================================ */
+
+.forum-subscriptions-page{}
+.forum-subscriptions-page .subscription-list{
+	.rowcheckbox {
+		
+	}
+}
+.forum-subscriptions-page .description{}
+.forum-subscriptions-page .no-data{}
+.forum-subscriptions-page .buttons{margin-bottom:5px;margin-top:5px;text-align:left;}
+
+
+/* Return Requests
+================================================ */
+
+.return-request-list-page{}
+.return-request-list-page .request-item{}
+.return-request-list-page .request-item .title{font-size:13px;}
+.return-request-list-page .request-item .info{}
+.reward-points-page{}
+.reward-points-page .reward-points-overview{padding:10px 10px 5px 0;width:100%;}
+.reward-points-page .reward-points-history{}
+
+.return-request-page{}
+.return-request-page .products-box{}
+.return-request-page .why{}
+.return-request-page .why .return-reasons{}
+.return-request-page .why .return-actions{}
+.return-request-page .why .comment{width:350px;height:150px;}
+.return-request-page .buttons{}
+
+
+/* Private Messages
+================================================ */
+
+.private-message-send-page table.post-message {
+	width:100%;
+	vertical-align:middle;
+	border-collapse:collapse;
+}
+.private-message-send-page table.post-message td {
+	padding:4px;
+}
+.private-message-send-page table.post-message td.fieldname {
+	font-weight: bold;
+	width: 20%;
+	text-align: right;
+}
+.private-message-send-page table.post-message td.options {
+	text-align:right;
+}
+.private-message-view-page td.options {
+	padding: 20px 0;
+}
+.private-message-view-page td.fieldname {
+	font-weight: bold;
+	text-align: right;
+	padding-right: 10px;
+}
+.pm-unread{
+	font-weight:bold;
+	background: #f7f7f7;
+}
+
+

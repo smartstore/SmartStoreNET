@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Linq;
+using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
@@ -21,6 +22,7 @@ namespace SmartStore.Web.Framework.Themes
         private readonly ThemeSettings _themeSettings;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
+		private readonly HttpRequestBase _httpRequest;
 
         private bool _desktopThemeIsCached;
         private string _cachedDesktopThemeName;
@@ -35,7 +37,8 @@ namespace SmartStore.Web.Framework.Themes
             IGenericAttributeService genericAttributeService,
             ThemeSettings themeSettings, 
             IThemeRegistry themeRegistry,
-            IMobileDeviceHelper mobileDeviceHelper)
+            IMobileDeviceHelper mobileDeviceHelper,
+			HttpRequestBase httpRequest)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -43,6 +46,7 @@ namespace SmartStore.Web.Framework.Themes
             this._themeSettings = themeSettings;
             this._themeRegistry = themeRegistry;
             this._mobileDeviceHelper = mobileDeviceHelper;
+			this._httpRequest = httpRequest;
         }
 
         /// <summary>
@@ -121,17 +125,17 @@ namespace SmartStore.Web.Framework.Themes
                 if (_mobileThemeIsCached)
                     return _cachedMobileThemeName;
 
-                //default store theme
+                // default store theme
                 string theme = _themeSettings.DefaultMobileTheme;
 
-                //ensure that theme exists
+                // ensure that theme exists
                 if (!_themeRegistry.ThemeManifestExists(theme))
                     theme = _themeRegistry.GetThemeManifests()
                         .Where(x => x.MobileTheme)
                         .FirstOrDefault()
                         .ThemeName;
 
-                //cache theme
+                // cache theme
                 this._cachedMobileThemeName = theme;
                 this._mobileThemeIsCached = true;
                 return theme;
@@ -144,20 +148,30 @@ namespace SmartStore.Web.Framework.Themes
             {
                 if (_currentTheme == null)
                 {
-                    bool useMobileDevice = _mobileDeviceHelper.IsMobileDevice()
-                        && _mobileDeviceHelper.MobileDevicesSupported()
-                        && !_mobileDeviceHelper.CustomerDontUseMobileVersion();
+					var themeOverride = _httpRequest.GetThemeOverride();
+					if (themeOverride != null)
+					{
+						// the theme to be used can be overwritten on request basis (e.g. for live preview, editing etc.)
+						_currentTheme = _themeRegistry.GetThemeManifest(themeOverride);
+					}
+					else
+					{
+						bool useMobileDevice = _mobileDeviceHelper.IsMobileDevice()
+							&& _mobileDeviceHelper.MobileDevicesSupported()
+							&& !_mobileDeviceHelper.CustomerDontUseMobileVersion();
 
-                    if (useMobileDevice)
-                    {
-                        _currentTheme = _themeRegistry.GetThemeManifest(this.WorkingMobileTheme);
-                    }
-                    else
-                    {
-                        _currentTheme = _themeRegistry.GetThemeManifest(this.WorkingDesktopTheme);
-                    }
+						if (useMobileDevice)
+						{
+							_currentTheme = _themeRegistry.GetThemeManifest(this.WorkingMobileTheme);
+						}
+						else
+						{
+							_currentTheme = _themeRegistry.GetThemeManifest(this.WorkingDesktopTheme);
+						}
+					}
 
                 }
+
                 return _currentTheme;
             }
         }

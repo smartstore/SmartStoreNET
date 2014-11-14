@@ -16,12 +16,10 @@ namespace SmartStore.Web.Framework.Themes
     public class ThemingVirtualPathProvider : VirtualPathProvider
     {
 		private readonly VirtualPathProvider _previous;
-		private readonly ThemeFileResolver _resolver;
 
         public ThemingVirtualPathProvider(VirtualPathProvider previous)
         {
             _previous = previous;
-			_resolver = new ThemeFileResolver();
         }
 
         public override bool FileExists(string virtualPath)
@@ -62,7 +60,7 @@ namespace SmartStore.Web.Framework.Themes
         {
 
             bool isLess;
-			if (!IsStyleSheet(virtualPath, out isLess))
+			if (!ThemeHelper.IsStyleSheet(virtualPath, out isLess))
 			{
 				return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
 			}
@@ -134,18 +132,9 @@ namespace SmartStore.Web.Framework.Themes
 
 		private InheritedThemeFileResult GetResolveResult(string virtualPath)
 		{
-			var result = _resolver.Resolve(virtualPath);
+			var result = EngineContext.Current.Resolve<IThemeFileResolver>().Resolve(virtualPath);
 			return result;
 		}
-
-        private static bool IsStyleSheet(string virtualPath, out bool isLess)
-        {
-            bool isCss = false;
-            isLess = virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
-            if (!isLess)
-                isCss = virtualPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
-            return isLess || isCss;
-        }
 
     }
 }

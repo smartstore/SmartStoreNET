@@ -277,6 +277,11 @@ namespace SmartStore.Core.Themes
             get { return System.IO.Path.Combine(this.Path, "theme.config"); }
 		}
 
+		public override string ToString()
+		{
+			return "{0} (Parent: {1}, State: {2})".FormatInvariant(ThemeName, BaseThemeName ?? "-", State.ToString());
+		}
+
 		#endregion
 
 		#region Dispose

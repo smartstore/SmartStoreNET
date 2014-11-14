@@ -20,8 +20,8 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Themes
 {
-
-    public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase
+	
+	public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase
     {
 		
 		public LessCssHttpHandler()
@@ -61,25 +61,25 @@ namespace SmartStore.Web.Framework.Themes
 
             if (IsThemeableRequest())
             {
-				var qs = QueryString.Current;
-				if (qs.Count > 0)
+				var httpContext = HttpContext.Current;
+				if (httpContext != null && httpContext.Request != null)
 				{
-					var httpContext = HttpContext.Current;
-					if (httpContext != null && httpContext.Items != null)
+					var qs = QueryString.Current;
+					if (qs.Count > 0)
 					{
 						// required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
 						if (qs.Contains("storeId"))
 						{
-							httpContext.Items.Add(ThemeHelper.OverriddenStoreIdKey, qs["storeId"].ToInt());
+							httpContext.Request.SetStoreOverride(qs["storeId"].ToInt());
 						}
 						if (qs.Contains("theme"))
 						{
-							httpContext.Items.Add(ThemeHelper.OverriddenThemeNameKey, qs["theme"]);
+							httpContext.Request.SetThemeOverride(qs["theme"]);
 						}
 					}
 				}
 				
-				cacheKey += "_" + ThemeHelper.ResolveCurrentTheme().ThemeName + "_" + ThemeHelper.ResolveCurrentStoreId();
+				cacheKey += "_" + EngineContext.Current.Resolve<IThemeContext>().CurrentTheme.ThemeName + "_" + EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
             }
 
             return cacheKey;

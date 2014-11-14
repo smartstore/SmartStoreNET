@@ -65,6 +65,11 @@ a:hover {
 	padding: 0;
 }
 
+body:not(.popup) #page {
+	min-width: 900px;
+}
+
+
 
 /* Warning panel message
 -------------------------------------------------------------- */
@@ -775,10 +780,9 @@ legend {
 }
 
 /* MASTER CONTENT */
-#content .cph {
+.cph {
    padding-top: 55px;
 }
-
 
 /* WIDGETS */
 .widget {
@@ -1251,7 +1255,8 @@ table.payment-method-features td {
 
 /* Themes */
 #theme-list {
-	max-width: 1360px;
+	min-width: 820px; // 3 items in a row
+	max-width: 1360px; // 5 items
 
 	.theme-item {
 		position: relative; 

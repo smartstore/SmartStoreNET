@@ -18,9 +18,6 @@ namespace SmartStore.Web.Framework.Themes
 		private static readonly Regex s_inheritableThemeFilePattern;
 		private static readonly Regex s_themeVarsPattern;
 
-		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
-		internal const string OverriddenThemeNameKey = "OverriddenThemeName";
-
 		public static readonly string ThemesBasePath;
 
 		static ThemeHelper()
@@ -65,64 +62,32 @@ namespace SmartStore.Web.Framework.Themes
 			return s_inheritableThemeFilePattern.IsMatch(virtualPath);
 		}
 
-		internal static ThemeManifest ResolveCurrentTheme(RouteData routeData = null, bool tryGetOverriddenTheme = false)
+		internal static bool IsAdminArea()
 		{
-			if (tryGetOverriddenTheme)
+			if (HttpContext.Current != null)
 			{
-				var themeName = string.Empty;
-
-				if (routeData != null)
-				{
-					object themeOverride;
-					if (routeData.DataTokens != null && routeData.DataTokens.TryGetValue("ThemeOverride", out themeOverride))
-					{
-						themeName = themeOverride as string;
-					}
-				}
-
-				if (themeName.IsEmpty())
-				{
-					var httpContext = HttpContext.Current;
-					if (httpContext != null && httpContext.Items != null)
-					{
-						if (httpContext.Items.Contains(OverriddenThemeNameKey))
-						{
-							themeName = (string)httpContext.Items[OverriddenThemeNameKey];
-						}
-					}
-				}
-
-				if (themeName.HasValue())
-				{
-					var manifest = EngineContext.Current.Resolve<IThemeRegistry>().GetThemeManifest(themeName);
-					if (manifest != null)
-					{
-						return manifest;
-					}
-				}
+				return HttpContext.Current.Request.IsAdminArea();
 			}
 
+			return false;
+		}
+
+		internal static bool IsStyleSheet(string virtualPath, out bool isLess)
+		{
+			bool isCss = false;
+			isLess = virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
+			if (!isLess)
+				isCss = virtualPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
+			return isLess || isCss;
+		}
+
+		internal static ThemeManifest ResolveCurrentTheme()
+		{
 			return EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
 		}
 
-		internal static int ResolveCurrentStoreId(bool tryGetOverriddenStoreId = false)
+		internal static int ResolveCurrentStoreId()
 		{
-			if (tryGetOverriddenStoreId)
-			{
-				int storeId = 0;
-
-				var httpContext = HttpContext.Current;
-				if (httpContext != null && httpContext.Items != null)
-				{
-					if (httpContext.Items.Contains(OverriddenStoreIdKey))
-					{
-						storeId = (int)httpContext.Items[OverriddenStoreIdKey];
-						if (storeId > 0)
-							return storeId;
-					}
-				}
-			}
-
 			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
 		}
 

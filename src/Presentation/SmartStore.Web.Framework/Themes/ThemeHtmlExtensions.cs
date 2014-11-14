@@ -60,7 +60,7 @@ namespace SmartStore.Web.Framework.Themes
 				strValue = value.ToString();
 			}
 
-			var currentTheme = ThemeHelper.ResolveCurrentTheme(html.ViewContext.RouteData, true);
+			var currentTheme = ThemeHelper.ResolveCurrentTheme();
 			var isDefault = strValue.IsCaseInsensitiveEqual(info.DefaultValue);
 
 			MvcHtmlString control;

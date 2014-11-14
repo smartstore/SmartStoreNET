@@ -216,18 +216,14 @@ namespace SmartStore.Web.Framework.Themes
 			return result ?? "en";
 		}
 
-		protected virtual string GetCurrentTheme(ControllerContext controllerContext, bool mobile)
+		protected virtual string GetCurrentThemeName(ControllerContext controllerContext, bool mobile)
 		{
-			object themeOverride;
-			if (controllerContext.RouteData.DataTokens.TryGetValue("ThemeOverride", out themeOverride))
+			string themeOverride = controllerContext.HttpContext.Request.GetThemeOverride();
+			if (themeOverride.HasValue())
 			{
-				var theme = themeOverride as string;
-				if (!string.IsNullOrEmpty(theme))
-				{
-					return theme;
-				}
+				return themeOverride;
 			}
-
+			
 			var themeContext = EngineContext.Current.Resolve<IThemeContext>();
 			if (mobile)
 				//mobile theme
@@ -250,7 +246,7 @@ namespace SmartStore.Web.Framework.Themes
 				throw new ArgumentException("View name cannot be null or empty.", "viewName");
 			}
 
-			var theme = GetCurrentTheme(controllerContext, mobile);
+			var theme = GetCurrentThemeName(controllerContext, mobile);
 
 			string controllerName = controllerContext.RouteData.GetRequiredString("controller");
 			string viewPath = this.GetPath(controllerContext, this.ViewLocationFormats, this.AreaViewLocationFormats, "ViewLocationFormats", viewName, controllerName, theme, "View", useCache, mobile, out viewLocationsSearched);
@@ -279,7 +275,7 @@ namespace SmartStore.Web.Framework.Themes
 				throw new ArgumentException("Partial view name cannot be null or empty.", "partialViewName");
 			}
 
-			var theme = GetCurrentTheme(controllerContext, mobile);
+			var theme = GetCurrentThemeName(controllerContext, mobile);
 
 			string controllerName = controllerContext.RouteData.GetRequiredString("controller");
 			string partialPath = this.GetPath(controllerContext, this.PartialViewLocationFormats, this.AreaPartialViewLocationFormats, "PartialViewLocationFormats", partialViewName, controllerName, theme, "Partial", useCache, mobile, out searched);
@@ -297,7 +293,6 @@ namespace SmartStore.Web.Framework.Themes
 
 		public override ViewEngineResult FindView(ControllerContext controllerContext, string viewName, string masterName, bool useCache)
 		{
-			var mobileDeviceHelper = EngineContext.Current.Resolve<IMobileDeviceHelper>();
 			bool useMobileDevice = this.IsMobileDevice();
 
 			string overrideViewName = useMobileDevice ?

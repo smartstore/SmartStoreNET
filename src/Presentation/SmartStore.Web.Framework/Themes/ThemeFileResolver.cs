@@ -15,15 +15,20 @@ using System.Text.RegularExpressions;
 
 namespace SmartStore.Web.Framework.Themes
 {
-	
-	internal class ThemeFileResolver : DisposableObject
+
+	public interface IThemeFileResolver
+	{
+		InheritedThemeFileResult Resolve(string virtualPath);
+	}
+
+	public class ThemeFileResolver : DisposableObject, IThemeFileResolver
 	{
 		private readonly ConcurrentDictionary<FileKey, InheritedThemeFileResult> _files = new ConcurrentDictionary<FileKey, InheritedThemeFileResult>();
 		private readonly IThemeRegistry _themeRegistry;
 
-		public ThemeFileResolver()
+		public ThemeFileResolver(IThemeRegistry themeRegistry)
 		{
-			this._themeRegistry = EngineContext.Current.Resolve<IThemeRegistry>();
+			this._themeRegistry = themeRegistry;
 
 			// listen to file monitoring events
 			this._themeRegistry.ThemeFolderDeleted += OnThemeFolderDeleted;
@@ -133,14 +138,31 @@ namespace SmartStore.Web.Framework.Themes
 			TokenizePath(virtualPath, out requestedThemeName, out relativePath);
 
 			ThemeManifest currentTheme;
-
-			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin;
+			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin; // ThemeHelper.IsAdminArea()
 			if (isAdmin)
 			{
 				currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
 			}
 			else
 			{
+				bool isLess = false;
+				if (ThemeHelper.IsStyleSheet(virtualPath, out isLess))
+				{
+					// special consideration for LESS files: they can be validated
+					// in the backend. For validation, a "theme" query is appended 
+					// to the url. During validation we must work with the actual
+					// requested theme instead dynamically resolving the working theme.
+					var httpContext = HttpContext.Current;
+					if (httpContext != null && httpContext.Request != null)
+					{
+						var qs = httpContext.Request.QueryString;
+						if (qs["theme"].HasValue())
+						{
+							httpContext.Request.SetThemeOverride(qs["theme"]);
+						}
+					}
+				}
+				
 				currentTheme = ThemeHelper.ResolveCurrentTheme();
 				if (currentTheme.BaseTheme == null)
 				{
@@ -245,7 +267,7 @@ namespace SmartStore.Web.Framework.Themes
 
 	}
 
-	internal class InheritedThemeFileResult
+	public class InheritedThemeFileResult
 	{
 		/// <summary>
 		/// The unrooted relative path of the file (without <c>~/Themes/ThemeName/</c>)

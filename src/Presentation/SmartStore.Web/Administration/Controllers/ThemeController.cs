@@ -27,6 +27,7 @@ using SmartStore.Services;
 using SmartStore.Core.Localization;
 using System.Diagnostics;
 using SmartStore.Web.Framework.Themes;
+using System.Web;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -41,6 +42,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IPackageManager _packageManager;
 		private readonly ICommonServices _services;
+		private readonly Lazy<IThemeFileResolver> _themeFileResolver;
 
 	    #endregion
 
@@ -52,7 +54,8 @@ namespace SmartStore.Admin.Controllers
             IThemeVariablesService themeVarService,
 			IStoreService storeService,
 			IPackageManager packageManager,
-			ICommonServices services)
+			ICommonServices services,
+			Lazy<IThemeFileResolver> themeFileResolver)
 		{
             this._settingService = settingService;
             this._themeVarService = themeVarService;
@@ -60,6 +63,7 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._packageManager = packageManager;
 			this._services = services;
+			this._themeFileResolver = themeFileResolver;
 
 			this.T = NullLocalizer.Instance;
 		}
@@ -206,7 +210,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public async Task<ActionResult> Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
+		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -225,7 +229,7 @@ namespace SmartStore.Admin.Controllers
 
 			// check for parsing error
 			var manifest = _themeRegistry.GetThemeManifest(theme);
-			string error = await ValidateLess(manifest, storeId);
+			string error = ValidateLess(manifest, storeId);
 			if (error.HasValue())
 			{
 				// restore previous vars
@@ -287,20 +291,31 @@ namespace SmartStore.Admin.Controllers
 		/// <param name="theme">Theme name</param>
 		/// <param name="storeId">Stored Id</param>
 		/// <returns>The error message when a parsing error occured, <c>null</c> otherwise</returns>
-		private async Task<string> ValidateLess(ThemeManifest manifest, int storeId)
+		private string ValidateLess(ThemeManifest manifest, int storeId)
 		{
+			
 			string error = string.Empty;
-			var url = "{0}Themes/{1}/Content/theme.less?storeId={2}&theme={1}".FormatInvariant(
+
+			var virtualPath = "~/Themes/{0}/Content/theme.less".FormatCurrent(manifest.ThemeName);
+			var resolver = this._themeFileResolver.Value;
+			var file = resolver.Resolve(virtualPath);
+			if (file != null)
+			{
+				virtualPath = file.ResultVirtualPath;
+			}
+
+			var url = "{0}{1}?storeId={2}&theme={3}".FormatInvariant(
 				_services.WebHelper.GetStoreLocation().EnsureEndsWith("/"), 
-				manifest.ThemeName,
-				storeId);
+				VirtualPathUtility.ToAbsolute(virtualPath).TrimStart('/'),
+				storeId,
+				manifest.ThemeName);
 
 			HttpWebRequest request = WebRequest.CreateHttp(url);
 			WebResponse response = null;
 
 			try
 			{
-				response = await request.GetResponseAsync();
+				response = request.GetResponse();
 			}
 			catch (WebException ex)
 			{
@@ -324,6 +339,10 @@ namespace SmartStore.Admin.Controllers
 						}
 					}
 				}
+			}
+			catch (Exception ex)
+			{
+				var x = ex.Message;
 			}
 			finally
 			{

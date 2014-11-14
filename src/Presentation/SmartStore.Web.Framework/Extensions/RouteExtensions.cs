@@ -6,7 +6,8 @@ using System.Web.Mvc;
 using System.Threading.Tasks;
 using System.Web.Routing;
 
-namespace SmartStore.Web.Framework
+// use base SmartStore Namespace to ensure the extension methods are always available
+namespace SmartStore
 {
 	public static class RouteExtensions
 	{

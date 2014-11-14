@@ -674,12 +674,16 @@ namespace SmartStore.Web.Controllers
 			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod && !model.DisplayRewardPoints))
             {
                 // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
-				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method
+				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
+
 				_genericAttributeService.SaveAttribute<string>(
 					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					(isPaymentWorkflowRequired || !model.PaymentMethods.Any()) ? null : model.PaymentMethods[0].PaymentMethodSystemName,
+					(!isPaymentWorkflowRequired || !model.PaymentMethods.Any()) ? null : model.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
+
+				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;
+
 				return RedirectToAction("Confirm");
             }
 

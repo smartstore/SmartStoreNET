@@ -189,6 +189,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string PaymentMethod { get; set; }
 			public string PaymentSummary { get; set; }
+
+			public bool IsPaymentSelectionSkipped { get; set; }
         }
 		#endregion
     }

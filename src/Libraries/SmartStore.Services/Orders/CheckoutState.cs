@@ -25,7 +25,12 @@ namespace SmartStore.Services.Orders
 		}
 
 		/// <summary>
-		/// Use this dictionary for any custom data required along checkout flow
+		/// Indicated whether the page with the payment method selection was skipped during checkout.
+		/// </summary>
+		public bool IsPaymentSelectionSkipped { get; set; }
+
+		/// <summary>
+		/// Use this dictionary for any custom data required along checkout flow.
 		/// </summary>
 		public IDictionary<string, object> CustomProperties { get; set; }
 	}

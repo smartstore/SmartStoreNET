@@ -85,6 +85,8 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Orders.Fields.Affiliate", "Affiliate", "Partner");
 			builder.AddOrUpdate("Admin.Customers.Customers.Fields.Affiliate", "Affiliate", "Partner");
+
+			builder.Delete("Admin.Affiliates.Customers.Name");
 		}
 
 

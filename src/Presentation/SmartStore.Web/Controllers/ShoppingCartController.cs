@@ -815,12 +815,17 @@ namespace SmartStore.Web.Controllers
 					if (shippingOption != null)
 						model.OrderReviewData.ShippingMethod = shippingOption.Name;
 				}
+
 				//payment info
 				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
+
+				var checkoutState = _httpContext.GetCheckoutState();
 				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
-				model.OrderReviewData.PaymentSummary = _httpContext.GetCheckoutState().PaymentSummary;
+				model.OrderReviewData.PaymentSummary = checkoutState.PaymentSummary;
+				model.OrderReviewData.IsPaymentSelectionSkipped = checkoutState.IsPaymentSelectionSkipped;
 			}
 			#endregion
 

@@ -159,7 +159,9 @@
                                 .HtmlAttributes(new { style = "text-align:center" })
                                 .HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                            columns.Bound(x => x.OrderNumber);
+                            columns.Bound(x => x.OrderNumber)
+								.Template(x => Html.ActionLink(x.OrderNumber, "Edit", new { id = x.Id }))
+								.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= OrderNumber #></a>");
                             columns.Bound(x => x.OrderStatus);
                             columns.Bound(x => x.PaymentStatus);
                             columns.Bound(x => x.ShippingStatus);

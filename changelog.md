@@ -1,4 +1,4 @@
-﻿#Release Notes#
+#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -110,6 +110,7 @@
 * #237 Mobile theme: inactive attribute combinations should not be added to cart
 * #178 Mobile theme doesn't display base price
 * Ipayment: Capturing did not work because the security was not transmitted
+* #405 "Reset Password" Link in Emails is wrong with SSL secured sites 
 
 
 ##SmartStore.NET 2.0.2#

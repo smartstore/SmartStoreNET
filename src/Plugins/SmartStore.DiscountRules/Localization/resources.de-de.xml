@@ -138,12 +138,6 @@
       <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
         <Value>Legt fest, ob sich der angegebene Betrag auf die Zwischensumme im aktuellen Warenkorb oder - wenn inaktiv - auf die Summe aller zuvor vom Kunden getätigten Bestellungen bezieht.</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts">
-        <Value>Positions-Rabatte berücksichtigen</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts.Hint">
-        <Value>Wenn aktiv, ist der Vergleichswert die Warenkorbsumme abzüglich aller Positions-Rabatte.</Value>
-      </LocaleResource>
     </Children>
   </LocaleResource>
 

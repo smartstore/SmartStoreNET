@@ -2,14 +2,13 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Localization;
 using SmartStore.DiscountRules.Models;
 using SmartStore.Services.Customers;
-using SmartStore.Services.Discounts;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Localization;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Discounts;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.DiscountRules.Controllers
 {
@@ -327,7 +326,7 @@ namespace SmartStore.DiscountRules.Controllers
 				var model = new HadSpentAmountModel();
 				model.SpentAmount = req != null ? req.SpentAmount : decimal.Zero;
 				model.LimitToCurrentBasketSubTotal = settings.LimitToCurrentBasketSubTotal;
-				model.BasketSubTotalIncludesDiscounts = settings.BasketSubTotalIncludesDiscounts;
+
 				return model;
 			});
 		}

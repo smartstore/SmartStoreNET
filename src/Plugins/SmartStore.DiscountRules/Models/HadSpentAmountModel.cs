@@ -1,6 +1,4 @@
-﻿using System.Collections.Generic;
-using System.Web.Mvc;
-using SmartStore.Web.Framework;
+﻿using SmartStore.Web.Framework;
 
 namespace SmartStore.DiscountRules.Models
 {
@@ -11,8 +9,5 @@ namespace SmartStore.DiscountRules.Models
 
 		[SmartResourceDisplayName("Plugins.DiscountRules.HadSpentAmount.Fields.LimitToCurrentBasketSubTotal")]
 		public bool LimitToCurrentBasketSubTotal { get; set; }
-
-		[SmartResourceDisplayName("Plugins.DiscountRules.HadSpentAmount.Fields.BasketSubTotalIncludesDiscounts")]
-		public bool BasketSubTotalIncludesDiscounts { get; set; }
     }
 }

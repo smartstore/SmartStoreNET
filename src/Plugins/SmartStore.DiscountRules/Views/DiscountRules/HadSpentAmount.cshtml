@@ -23,8 +23,7 @@
 		window[prefix + '_getSettings'] = function () {
 			return JSON.stringify(
             {
-                LimitToCurrentBasketSubTotal: $("#@Html.FieldIdFor(model => model.LimitToCurrentBasketSubTotal)").prop('checked'),
-                BasketSubTotalIncludesDiscounts: $("#@Html.FieldIdFor(model => model.BasketSubTotalIncludesDiscounts)").prop('checked')
+                LimitToCurrentBasketSubTotal: $("#@Html.FieldIdFor(model => model.LimitToCurrentBasketSubTotal)").prop('checked')
             });
 		};
 
@@ -57,15 +56,6 @@
 		<td class="adminData">
 			@Html.CheckBoxFor(model => model.LimitToCurrentBasketSubTotal, new { data_routeparam = "settings", data_routevalue = ViewData.TemplateInfo.HtmlFieldPrefix + "_getSettings" })
 			@Html.ValidationMessageFor(model => model.LimitToCurrentBasketSubTotal)
-		</td>
-	</tr>
-	<tr id="pnlBasketSubTotalIncludesDiscounts">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.BasketSubTotalIncludesDiscounts)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.BasketSubTotalIncludesDiscounts)
-			@Html.ValidationMessageFor(model => model.BasketSubTotalIncludesDiscounts)
 		</td>
 	</tr>
 	<tr>

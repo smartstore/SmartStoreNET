@@ -50,7 +50,7 @@ namespace SmartStore.DiscountRules
 
 			if (settings.LimitToCurrentBasketSubTotal)
 			{
-				return CheckCurrentSubTotalRequirement(request, settings.BasketSubTotalIncludesDiscounts);
+				return CheckCurrentSubTotalRequirement(request);
 			}
 			else
 			{
@@ -86,7 +86,7 @@ namespace SmartStore.DiscountRules
 			return spentAmount >= request.DiscountRequirement.SpentAmount;
 		}
 
-		private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request, bool includingDiscount = true)
+		private bool CheckCurrentSubTotalRequirement(CheckDiscountRequirementRequest request)
 		{
 			var cartItems = request.Customer.GetCartItems(ShoppingCartType.ShoppingCart, request.Store.Id);
 
@@ -94,8 +94,7 @@ namespace SmartStore.DiscountRules
 			decimal taxRate = decimal.Zero;
 			foreach (var sci in cartItems)
 			{
-				// stackoverflow!
-				//spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, includingDiscount), out taxRate);
+				// includeDiscounts == true produces a stack overflow!
 				spentAmount += sci.Item.Quantity * _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, false), out taxRate);
 			}
 

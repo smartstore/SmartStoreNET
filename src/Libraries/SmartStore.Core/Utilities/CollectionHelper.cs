@@ -184,7 +184,7 @@ namespace SmartStore.Utilities
 
         public static string ToUnsortedHtmlList(IEnumerable data, string ulClassName, string liClassName)
         {
-            if (data == null && !data.HasItems())
+            if (!data.HasItems())
                 return String.Empty;
 
             StringBuilder ul = new StringBuilder();

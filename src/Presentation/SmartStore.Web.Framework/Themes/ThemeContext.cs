@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.Themes
         private readonly ThemeSettings _themeSettings;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
-		private readonly HttpRequestBase _httpRequest;
+		private readonly HttpContextBase _httpContext;
 
         private bool _desktopThemeIsCached;
         private string _cachedDesktopThemeName;
@@ -38,7 +38,7 @@ namespace SmartStore.Web.Framework.Themes
             ThemeSettings themeSettings, 
             IThemeRegistry themeRegistry,
             IMobileDeviceHelper mobileDeviceHelper,
-			HttpRequestBase httpRequest)
+			HttpContextBase httpContext)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -46,7 +46,7 @@ namespace SmartStore.Web.Framework.Themes
             this._themeSettings = themeSettings;
             this._themeRegistry = themeRegistry;
             this._mobileDeviceHelper = mobileDeviceHelper;
-			this._httpRequest = httpRequest;
+			this._httpContext = httpContext;
         }
 
         /// <summary>
@@ -148,7 +148,7 @@ namespace SmartStore.Web.Framework.Themes
             {
                 if (_currentTheme == null)
                 {
-					var themeOverride = _httpRequest.GetThemeOverride();
+					var themeOverride = _httpContext.Request.GetThemeOverride() ?? _httpContext.Session.GetThemeOverride();
 					if (themeOverride != null)
 					{
 						// the theme to be used can be overwritten on request basis (e.g. for live preview, editing etc.)
@@ -174,6 +174,10 @@ namespace SmartStore.Web.Framework.Themes
 
                 return _currentTheme;
             }
+			set
+			{
+				_currentTheme = value;
+			}
         }
 
     }

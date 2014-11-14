@@ -17,8 +17,8 @@ namespace SmartStore.Web.Framework.Themes
         string WorkingMobileTheme { get; }
 
         /// <summary>
-        /// Gets the manifest of the current active theme
+        /// Gets or sets the manifest of the current working theme
         /// </summary>
-        ThemeManifest CurrentTheme { get; }
+		ThemeManifest CurrentTheme { get; set; }
     }
 }

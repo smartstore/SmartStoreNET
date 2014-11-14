@@ -76,7 +76,7 @@ namespace SmartStore.Data
                 if (entities == null)
                     throw new ArgumentNullException("entities");
 
-                if (entities.HasItems())
+                if (entities.Any())
                 {
                     if (batchSize <= 0)
                     {

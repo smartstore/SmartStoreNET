@@ -276,7 +276,7 @@ namespace SmartStore.Web.Framework
                     if (_httpContext != null && _httpContext.Request != null && _httpContext.Request.UserLanguages != null)
                     {
                         var userLangs = _httpContext.Request.UserLanguages.Select(x => x.Split(new[] { ';' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
-                        if (userLangs.HasItems())
+                        if (userLangs.Any())
                         {
                             foreach (var culture in userLangs)
                             {

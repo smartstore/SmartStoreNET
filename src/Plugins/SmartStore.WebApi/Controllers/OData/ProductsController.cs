@@ -330,7 +330,7 @@ namespace SmartStore.WebApi.Controllers.OData
 					{
 						foreach (var dstVal in attribute.ProductVariantAttributeValues.ToList())
 						{
-							if (!srcAttr.Values.Exists(x => x.Name.IsCaseInsensitiveEqual(dstVal.Name)))
+							if (!srcAttr.Values.Any(x => x.Name.IsCaseInsensitiveEqual(dstVal.Name)))
 								_productAttributeService.Value.DeleteProductVariantAttributeValue(dstVal);
 						}
 					}

@@ -84,7 +84,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             foreach (var id in taxIds)
             {
                 decimal rate = 0;
-                if (_data.FixedTaxRates.HasItems() && _data.FixedTaxRates.Length > i)
+                if (_data.FixedTaxRates.Any() && _data.FixedTaxRates.Length > i)
                 {
                     rate = _data.FixedTaxRates[i];
                 }

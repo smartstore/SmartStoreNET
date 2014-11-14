@@ -532,7 +532,7 @@ namespace SmartStore.Services.Orders
                         }
                     }
 
-					if (!found && bundleItem != null && bundleItem.FilterAttributes && !bundleItem.AttributeFilters.Exists(x => x.AttributeId == pva2.ProductAttributeId))
+					if (!found && bundleItem != null && bundleItem.FilterAttributes && !bundleItem.AttributeFilters.Any(x => x.AttributeId == pva2.ProductAttributeId))
 					{
 						found = true;	// attribute is filtered out on bundle item level... it cannot be selected by customer
 					}

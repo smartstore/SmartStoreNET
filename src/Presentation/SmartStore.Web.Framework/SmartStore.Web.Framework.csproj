@@ -251,7 +251,6 @@
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Themes\ThemeFileResolver.cs" />
     <Compile Include="Themes\InheritedVirtualThemeFile.cs" />
-    <Compile Include="Themes\ThemeHttpExtensions.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />

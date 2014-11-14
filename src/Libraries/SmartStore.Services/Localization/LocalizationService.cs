@@ -535,7 +535,7 @@ namespace SmartStore.Services.Localization
 
 				if (languageCode.HasValue() && language != null)
 				{
-					if (filterLanguages != null && !filterLanguages.Exists(x => x.Id == language.Id))
+					if (filterLanguages != null && !filterLanguages.Any(x => x.Id == language.Id))
 					{
 						continue;
 					}
@@ -571,7 +571,7 @@ namespace SmartStore.Services.Localization
 
         public virtual XmlDocument FlattenResourceFile(XmlDocument source)
         {
-            Guard.NotNull(() => source);
+            Guard.ArgumentNotNull(() => source);
 
             if (!source.SelectNodes("//Children").HasItems())
             {

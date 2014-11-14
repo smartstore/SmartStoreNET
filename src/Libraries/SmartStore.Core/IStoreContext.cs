@@ -15,7 +15,7 @@ namespace SmartStore.Core
 		/// <summary>
 		/// Gets or sets the current store
 		/// </summary>
-		Store CurrentStore { get; }
+		Store CurrentStore { get; set; }
 
 		/// <summary>
 		/// IsSingleStoreMode ? 0 : CurrentStore.Id

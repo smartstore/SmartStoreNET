@@ -21,16 +21,6 @@ namespace SmartStore.Core
             this.Init(pageable);
         }
 
-        protected PagedListBase(IEnumerable source, int pageIndex, int pageSize)
-        {
-            Guard.ArgumentNotNull(source, "source");
-            Guard.PagingArgsValid(pageIndex, pageSize, "pageIndex", "pageSize");
-
-            this.PageIndex = pageIndex;
-            this.PageSize = pageSize;
-            this.TotalCount = source.GetCount();
-        }
-
         protected PagedListBase(int pageIndex, int pageSize, int totalItemsCount)
         {
             Guard.PagingArgsValid(pageIndex, pageSize, "pageIndex", "pageSize");

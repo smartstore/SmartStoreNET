@@ -17,15 +17,15 @@ namespace SmartStore.Web.Framework
 	{
 		private readonly IStoreService _storeService;
 		private readonly IWebHelper _webHelper;
-		private readonly HttpRequestBase _httpRequest;
+		private readonly HttpContextBase _httpContext;
 
 		private Store _currentStore;
 
-		public WebStoreContext(IStoreService storeService, IWebHelper webHelper, HttpRequestBase httpRequest)
+		public WebStoreContext(IStoreService storeService, IWebHelper webHelper, HttpContextBase httpContext)
 		{
 			this._storeService = storeService;
 			this._webHelper = webHelper;
-			this._httpRequest = httpRequest;
+			this._httpContext = httpContext;
 		}
 
 		/// <summary>
@@ -37,7 +37,7 @@ namespace SmartStore.Web.Framework
 			{
 				if (_currentStore == null)
 				{
-					int? storeOverride = _httpRequest.GetStoreOverride();
+					int? storeOverride = _httpContext.Request.GetStoreOverride() ?? _httpContext.Session.GetStoreOverride();
 					if (storeOverride.HasValue)
 					{
 						// the store to be used can be overwritten on request basis (e.g. for theme preview, editing etc.)
@@ -64,6 +64,10 @@ namespace SmartStore.Web.Framework
 				}
 
 				return _currentStore;
+			}
+			set
+			{
+				_currentStore = value;
 			}
 		}
 

@@ -107,7 +107,8 @@
                 {
                     <script type="text/javascript">
                         $(function () {
-                            $('.confirm-order-next-step-button').click(function () {
+                            var checkoutButton = $(".confirm-order-next-step-button");
+                            checkoutButton.click(function () {
 
                                 $("#customercommenthidden").val($("#CustomerComment").val());
 
@@ -116,18 +117,23 @@
                                 @if (Model.TermsOfServiceEnabled)
                                 {
                                         <text>
-                                if (!$('#termsofservice').is(':checked')) {
-                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
-                                    termOfServiceOk = false;
-                                    $.scrollTo($('#termsofservice'), 800, { offset: -70 });
-                                }
-                                else {
-                                    termOfServiceOk = true;
-                                }
+                                    if (!$('#termsofservice').is(':checked')) {
+                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                        termOfServiceOk = false;
+                                        $.scrollTo($('#termsofservice'), 800, { offset: -70 });
+                                    }
+                                    else {
+                                        termOfServiceOk = true;
+                                    }
                                         </text>
                                 }
                                 if (termOfServiceOk) {
-                                    //$('#startcheckout').trigger("click");
+
+                                    checkoutButton.attr("disabled", "disabled");
+                                    checkoutButton.find(".fa-caret-right")
+                                        .removeClass("fa-caret-right")
+                                        .addClass("fa-spinner fa-spin");
+
                                     $('#confirm-order-form').submit();
                                 }
                             });

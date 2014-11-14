@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Html;
+using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -77,6 +78,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly ICustomerService _customerService;
 		private readonly PluginMediator _pluginMediator;
+		private readonly IAffiliateService _affiliateService;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -112,6 +114,7 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			ICustomerService customerService,
 			PluginMediator pluginMediator,
+			IAffiliateService affiliateService,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings)
 		{
@@ -149,6 +152,7 @@ namespace SmartStore.Admin.Controllers
 			this._eventPublisher = eventPublisher;
 			this._customerService = customerService;
 			this._pluginMediator = pluginMediator;
+			this._affiliateService = affiliateService;
 
             this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -179,7 +183,7 @@ namespace SmartStore.Admin.Controllers
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.OrderNumber = order.GetOrderNumber();
             model.OrderGuid = order.OrderGuid;
-			model.StoreName = store != null ? store.Name : "Unknown";
+			model.StoreName = (store != null ? store.Name : "".NaIfEmpty());
             model.CustomerId = order.CustomerId;
 			model.CustomerName = order.Customer.GetFullName();
             model.CustomerIp = order.CustomerIp;
@@ -191,6 +195,13 @@ namespace SmartStore.Admin.Controllers
             model.TaxDisplayType = _taxSettings.TaxDisplayType;
             model.AffiliateId = order.AffiliateId;
             model.CustomerComment = order.CustomerOrderComment;
+
+			if (order.AffiliateId != 0)
+			{
+				var affiliate = _affiliateService.GetAffiliateById(order.AffiliateId);
+				if (affiliate != null && affiliate.Address != null)
+					model.AffiliateFullName = affiliate.Address.GetFullName();
+			}
 
             #region Order totals
 

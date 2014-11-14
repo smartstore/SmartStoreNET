@@ -196,6 +196,17 @@
                 @Model.StoreName
             </td>
         </tr>
+		@if (Model.AffiliateId != 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AffiliateId)
+				</td>
+				<td class="adminData">
+					<a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId })">@Model.AffiliateFullName</a>
+				</td>
+			</tr>
+		}
         <tr class="adminSeparator">
             <td colspan="2">
                 <hr />
@@ -239,17 +250,6 @@
                 </td>
             </tr>
         }        
-    @if (Model.AffiliateId.HasValue && Model.AffiliateId.Value > 0)
-    {
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.AffiliateId)
-        </td>
-        <td class="adminData">
-            <a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId.Value })">@Model.AffiliateId.Value - @T("Admin.Common.View")</a>
-        </td>
-    </tr>
-    }
         @if (Model.AllowCustomersToSelectTaxDisplayType || Model.TaxDisplayType == TaxDisplayType.IncludingTax)
         {
             <tr>

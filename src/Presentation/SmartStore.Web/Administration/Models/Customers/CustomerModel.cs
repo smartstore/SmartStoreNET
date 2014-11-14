@@ -119,8 +119,8 @@ namespace SmartStore.Admin.Models.Customers
         public bool Active { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Affiliate")]
-        public int? AffiliateId { get; set; }
-
+        public int AffiliateId { get; set; }
+		public string AffiliateFullName { get; set; }
 
 
 

@@ -81,6 +81,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Refresh", "Refresh", "Aktualisieren");
 
 			builder.AddOrUpdate("Admin.Orders.PdfInvoice", "Order as PDF", "Auftrag als PDF");
+			builder.AddOrUpdate("Order.GetPDFInvoice", "Order as PDF", "Auftrag als PDF");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.Affiliate", "Affiliate", "Partner");
+			builder.AddOrUpdate("Admin.Customers.Customers.Fields.Affiliate", "Affiliate", "Partner");
 		}
 
 

@@ -45,7 +45,8 @@ namespace SmartStore.Admin.Models.Orders
         public string CustomerIp { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.Affiliate")]
-        public int? AffiliateId { get; set; }
+        public int AffiliateId { get; set; }
+		public string AffiliateFullName { get; set; }
 
         //totals
         public bool AllowCustomersToSelectTaxDisplayType { get; set; }

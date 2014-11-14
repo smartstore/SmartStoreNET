@@ -20,6 +20,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -81,6 +82,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
+		private readonly IAffiliateService _affiliateService;
 
         #endregion
 
@@ -108,7 +110,8 @@ namespace SmartStore.Admin.Controllers
             IForumService forumService, IOpenAuthenticationService openAuthenticationService,
 			AddressSettings addressSettings, IStoreService storeService,
 			IEventPublisher eventPublisher,
-			PluginMediator pluginMediator)
+			PluginMediator pluginMediator,
+			IAffiliateService affiliateService)
         {
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -144,6 +147,7 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._eventPublisher = eventPublisher;
 			this._pluginMediator = pluginMediator;
+			this._affiliateService = affiliateService;
         }
 
         #endregion
@@ -574,8 +578,7 @@ namespace SmartStore.Admin.Controllers
             model.AdminComment = customer.AdminComment;
             model.IsTaxExempt = customer.IsTaxExempt;
             model.Active = customer.Active;
-            model.AffiliateId = customer.AffiliateId;
-			model.TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
+            model.TimeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
             model.UsernamesEnabled = _customerSettings.UsernamesEnabled;
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.AllowCustomersToSetTimeZone = _dateTimeSettings.AllowCustomersToSetTimeZone;
@@ -589,6 +592,14 @@ namespace SmartStore.Admin.Controllers
             model.LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc);
             model.LastIpAddress = customer.LastIpAddress;
             model.LastVisitedPage = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+			model.AffiliateId = customer.AffiliateId;
+
+			if (customer.AffiliateId != 0)
+			{
+				var affiliate = _affiliateService.GetAffiliateById(customer.AffiliateId);
+				if (affiliate != null && affiliate.Address != null)
+					model.AffiliateFullName = affiliate.Address.GetFullName();
+			}
             
             //form fields
             model.FirstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);

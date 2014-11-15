@@ -687,6 +687,8 @@ namespace SmartStore.Web.Controllers
 				return RedirectToAction("Confirm");
             }
 
+			_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = false;
+
             return View(model);
         }
 

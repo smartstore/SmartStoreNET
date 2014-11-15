@@ -27,30 +27,16 @@
 
         $("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
         $("#@Html.FieldIdFor(model => model.SecuritySettings.CaptchaEnabled)").click(toggleReCaptcha);
-        $("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").click(toggleSocialLinks);
         $("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
 
-        toggleSocialLinks();
         toggleStoreClosed();
         toggleReCaptcha();
         toggleSeoLanguageUrls();
-    });
 
-    function toggleSocialLinks() {
-        if ($('#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)').is(':checked')) {
-            $('#facebookLink').show();
-            $('#googlePlusLink').show();
-            $('#twitterLink').show();
-            $('#pinterestLink').show();
-        }
-        else {
-            $('#facebookLink').hide();
-            $('#googlePlusLink').hide();
-            $('#twitterLink').hide();
-            $('#pinterestLink').hide();
-        }
-    }
-    
+    	$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
+    		$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
+        }).trigger('change');
+    });    
 
     function toggleStoreClosed() {
         if ($('#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)').is(':checked')) {
@@ -767,7 +753,7 @@
 
 @helper TabSocialSettings()
 {
-    <table class="adminContent">
+    <table id="SocialLinkTable" class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
@@ -777,7 +763,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
         </tr>
-        <tr id="facebookLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
             </td>
@@ -786,7 +772,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
             </td>
         </tr>
-        <tr id="googlePlusLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
             </td>
@@ -795,7 +781,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
             </td>
         </tr>
-        <tr id="twitterLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
             </td>
@@ -804,7 +790,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
             </td>
         </tr>
-        <tr id="pinterestLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
             </td>
@@ -813,7 +799,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
             </td>
         </tr>
-        <tr id="youtubeLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
             </td>

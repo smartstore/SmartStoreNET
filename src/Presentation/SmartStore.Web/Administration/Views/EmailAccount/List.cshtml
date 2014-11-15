@@ -26,20 +26,30 @@
                     {
 						columns.Bound(x => x.Email)
 							.Template(x => Html.ActionLink(x.Email, "Edit", new { id = x.Id }))
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Email ></a>")
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Email #></a>")
 							.Width(400);
                         columns.Bound(x => x.DisplayName);
-                        columns.Bound(x => x.IsDefaultEmailAccount)
-                            .Template(item => @Html.SymbolForBool(item.IsDefaultEmailAccount))
-                            .ClientTemplate(@Html.SymbolForBool("IsDefaultEmailAccount"))
-                            .Width(100)
+						columns.Bound(x => x.Host);
+						columns.Bound(x => x.Port)
 							.Centered();
-                        columns.Command(commands => commands.Select().Text(T("Admin.Telerik.GridLocalization.Select").ToString()))                            
-							.Title(T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text)
-							.Width(100);
+						columns.Bound(x => x.EnableSsl)
+							.Template(item => @Html.SymbolForBool(item.EnableSsl))
+							.ClientTemplate(@Html.SymbolForBool("EnableSsl"))
+							.Centered();
+						columns.Bound(x => x.IsDefaultEmailAccount)
+                            .Centered()
+							.Template(
+							@<a href='@Url.Action("List", new { id = item.Id })' class="btn" @Html.Attr("disabled", "disabled", item.IsDefaultEmailAccount) title='@T("Admin.Configuration.EmailAccounts.Fields.MarkAsDefaultEmail").Text'>
+								@if (item.IsDefaultEmailAccount)
+									{
+									<i class="fa fa-check"></i>
+									}
+								@T("Admin.Telerik.GridLocalization.Select")
+							</a>
+							)
+                            .Width(100);
                     })
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "EmailAccount"))
-                    .EnableCustomBinding(true))
+				)
         </td>
     </tr>
 </table>

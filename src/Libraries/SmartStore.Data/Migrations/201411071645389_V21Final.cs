@@ -86,6 +86,16 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Orders.Fields.Affiliate", "Affiliate", "Partner");
 			builder.AddOrUpdate("Admin.Customers.Customers.Fields.Affiliate", "Affiliate", "Partner");
 
+			builder.AddOrUpdate("Admin.Configuration.DeliveryTime.BackToList", "Back to delivery times list", "Zurück zur Lieferzeitenliste");
+
+			builder.AddOrUpdate("Admin.Configuration.Measures.Weights.Description",
+				"NOTE: if you change your primary weight, then do not forget to update the appropriate ratios of the units.",
+				"Achtung: Wenn die Standardgewichtseinheit geändert wird, müssen auch die zugehörigen Umrechnungseinheiten (Verhältnis) angepasst werden.");
+
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.Seconds.Positive",
+				"Seconds should be positive.",
+				"Sekunden müssen größer als 0 sein.");
+
 			builder.Delete("Admin.Affiliates.Customers.Name");
 		}
 

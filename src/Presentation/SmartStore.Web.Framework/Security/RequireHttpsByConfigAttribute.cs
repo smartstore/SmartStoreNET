@@ -56,7 +56,7 @@ namespace SmartStore.Web.Framework.Security
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
 								var webHelper = EngineContext.Current.Resolve<IWebHelper>();
                                 string url = webHelper.GetThisPageUrl(true, true);
-                                filterContext.Result = new RedirectResult(url);
+                                filterContext.Result = new RedirectResult(url, true);
                             }
                         }
                     }
@@ -70,7 +70,7 @@ namespace SmartStore.Web.Framework.Security
                             // redirect to HTTP version of page
                             // string url = "http://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
                             string url = webHelper.GetThisPageUrl(true, false);
-                            filterContext.Result = new RedirectResult(url);
+                            filterContext.Result = new RedirectResult(url, true);
                         }
                     }
                     break;

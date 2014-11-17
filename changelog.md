@@ -111,6 +111,7 @@
 * #178 Mobile theme doesn't display base price
 * Ipayment: Capturing did not work because the security was not transmitted
 * #405 "Reset Password" Link in Emails is wrong with SSL secured sites 
+* #471 Checkout: Redirecting to external payment page could take a while. Clicking "Buy" button again might cancel the redirecting.
 
 
 ##SmartStore.NET 2.0.2#

@@ -2,12 +2,9 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text.RegularExpressions;
-using System.Web;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Optimization;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 

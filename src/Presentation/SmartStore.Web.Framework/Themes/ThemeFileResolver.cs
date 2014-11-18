@@ -1,17 +1,12 @@
 ﻿using System;
 using System.Collections.Concurrent;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.IO;
+using System.Linq;
 using System.Web;
 using System.Web.Hosting;
-using SmartStore.Core.Themes;
-using SmartStore.Utilities;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core;
-using System.Text.RegularExpressions;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
 
 namespace SmartStore.Web.Framework.Themes
 {
@@ -158,7 +153,7 @@ namespace SmartStore.Web.Framework.Themes
 						var qs = httpContext.Request.QueryString;
 						if (qs["theme"].HasValue())
 						{
-							httpContext.Request.SetThemeOverride(qs["theme"]);
+							EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
 						}
 					}
 				}

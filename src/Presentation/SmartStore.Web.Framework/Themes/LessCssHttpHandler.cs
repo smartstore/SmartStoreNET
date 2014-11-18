@@ -1,18 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Text;
 using System.Web;
 using System.Web.Caching;
-using System.Web.Hosting;
-using System.Web.Optimization;
 using System.Web.SessionState;
 using BundleTransformer.Core;
-using BundleTransformer.Core.Assets;
 using BundleTransformer.Core.Configuration;
 using BundleTransformer.Core.FileSystem;
-using BundleTransformer.Less.HttpHandlers;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
@@ -20,8 +12,8 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Themes
 {
-	
-	public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase
+
+	public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase 
     {
 		
 		public LessCssHttpHandler()
@@ -35,7 +27,9 @@ namespace SmartStore.Web.Framework.Themes
             IVirtualFileSystemWrapper virtualFileSystemWrapper,
             AssetHandlerSettings assetHandlerConfig)
             : base(cache, virtualFileSystemWrapper, assetHandlerConfig)
-        { }
+        {
+			var session = HttpContext.Current.Session;
+		}
 
         private bool IsThemeableRequest()
         {
@@ -68,13 +62,13 @@ namespace SmartStore.Web.Framework.Themes
 					if (qs.Count > 0)
 					{
 						// required for Theme editing validation: See Admin.Controllers.ThemeController.ValidateLess()
-						if (qs.Contains("storeId"))
-						{
-							httpContext.Request.SetStoreOverride(qs["storeId"].ToInt());
-						}
 						if (qs.Contains("theme"))
 						{
-							httpContext.Request.SetThemeOverride(qs["theme"]);
+							EngineContext.Current.Resolve<IThemeContext>().SetRequestTheme(qs["theme"]);
+						}
+						if (qs.Contains("storeId"))
+						{
+							EngineContext.Current.Resolve<IStoreContext>().SetRequestStore(qs["storeId"].ToInt());
 						}
 					}
 				}

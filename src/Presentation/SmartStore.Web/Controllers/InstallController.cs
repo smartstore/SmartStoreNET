@@ -6,6 +6,7 @@ using System.Security.Principal;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
+using System.Web.SessionState;
 using System.Web.Caching;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -30,6 +31,7 @@ using SmartStore.Utilities;
 namespace SmartStore.Web.Controllers
 {
 
+	[SessionState(SessionStateBehavior.ReadOnly)]
     public partial class InstallController : Controller
     {
         #region Fields

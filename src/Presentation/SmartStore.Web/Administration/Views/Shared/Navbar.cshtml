@@ -40,13 +40,13 @@
 				<ul class="dropdown-menu">
 					<li>
 						<a href="@Url.Action("Edit", "Customer", new { id = currentCustomer.Id, area = "Admin" })">
-							<i class="fa fa-user"></i>
+							<i class="fa fa-fw fa-user"></i>
 							Account
 						</a>
 					</li>
 					<li>
 						<a href="@Url.Action("Logout", "Customer", new { area = "" })" class="disabled">
-							<i class="fa fa-sign-out"></i>
+							<i class="fa fa-fw fa-sign-out"></i>
 							@T("Admin.Header.Logout")
 						</a>
 					</li>
@@ -56,7 +56,7 @@
 
 		<div class="btn-group toppad pull-right">
 			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Help")' data-toggle="dropdown">
-				<i class="fa fa-question-circle"></i>
+				<i class="fa fa-fw fa-question-circle"></i>
 			</button>
 			<ul class="dropdown-menu">
 				@*<li>
@@ -67,13 +67,13 @@
 				</li>*@
 				<li>
 					<a href="@communityUrl" data-lang="@currentLanguageCode" target="help">
-						<i class="fa fa-comment"></i>
+						<i class="fa fa-fw fa-comment"></i>
 						@T("Admin.Help.Forums")
 					</a>
 				</li>
 				<li>
 					<a href="@Url.Action("About", "Home", new { area = "Admin" })">
-						<i class="fa fa-info-circle"></i>
+						<i class="fa fa-fw fa-info-circle"></i>
 						@T("Admin.Common.About") SmartStore.NET
 					</a>
 				</li>
@@ -84,31 +84,34 @@
 
 		<div class="btn-group toppad pull-right">
 			<button class="btn dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
-				<i class="fa fa-gear"></i>
+				<i class="fa fa-fw fa-gear"></i>
 			</button>
 			<ul class="dropdown-menu">
 				@foreach (var store in stores)
 				{
 					<li>
 						<a href="@store.Url" title="@T("Admin.Header.PublicStore") - @store.Name">
-							<i class="fa fa-globe"></i>
+							<i class="fa fa-fw fa-globe"></i>
 							@store.Name.Truncate(32, "...")
 						</a>
 					</li>
 				}
-				@if (stores.Count > 1)
-				{
-					<li class="divider"></li>
-				}
+				<li>
+					<a href='@Url.Action("Preview", "Theme")'>
+						<i class="fa fa-fw fa-eye"></i>
+						Vorschaumodus
+					</a>
+				</li>
+				<li class="divider"></li>
 				<li>
 					<a href="@Url.Action("ClearCache", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-						<i class="fa fa-trash-o"></i>
+						<i class="fa fa-fw fa-trash-o"></i>
 						@T("Admin.Header.ClearCache")
 					</a>
 				</li>
 				<li>
 					<a id="restart-application" href="#" data-url="@Url.Action("RestartApplication", "Common", new { previousUrl = Request.RawUrl, area = "Admin" })">
-						<i class="fa fa-power-off"></i>
+						<i class="fa fa-fw fa-power-off"></i>
 						@T("Admin.Header.RestartApplication")
 					</a>
 				</li>

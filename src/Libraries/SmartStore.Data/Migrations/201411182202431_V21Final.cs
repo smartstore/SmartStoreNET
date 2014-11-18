@@ -1,19 +1,17 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
 	using SmartStore.Data.Setup;
 
 	public partial class V21Final : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
-    {
+	{
 		public override void Up()
 		{
-			AddColumn("dbo.Product", "IsEsd", c => c.Boolean(nullable: false));
 		}
 
 		public override void Down()
 		{
-			DropColumn("dbo.Product", "IsEsd");
 		}
 
 		public bool RollbackOnFailure
@@ -76,6 +74,22 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.Reload",
 				"Reload themes",
 				"Themes aktualisieren");
+
+			// Theme Preview
+			builder.AddOrUpdate("Admin.Configuration.Themes.Preview",
+				"Preview",
+				"Vorschau");
+			builder.AddOrUpdate("Admin.Configuration.Themes.Theme",
+				"Theme",
+				"Theme");
+			builder.AddOrUpdate("Admin.Configuration.Themes.PreviewMode",
+				"Preview Mode",
+				"Vorschaumodus");
+			builder.AddOrUpdate("Admin.Configuration.Themes.ExitPreviewMode",
+				"Exit preview mode",
+				"Vorschau beenden");
+
+			builder.AddOrUpdate("Common.Apply", "Apply", "Übernehmen");
 
 			builder.AddOrUpdate("Common.Reload", "Reload", "Neu laden");
 			builder.AddOrUpdate("Common.Refresh", "Refresh", "Aktualisieren");

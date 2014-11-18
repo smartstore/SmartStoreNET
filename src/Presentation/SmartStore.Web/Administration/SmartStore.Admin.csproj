@@ -62,6 +62,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    </Reference>
     <Reference Include="AutoMapper, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
@@ -191,6 +195,8 @@
     <Compile Include="Controllers\TopicController.cs" />
     <Compile Include="Controllers\WidgetController.cs" />
     <Compile Include="Extensions\HtmlHelperExtensions.cs" />
+    <Compile Include="Infrastructure\DependencyRegistrar.cs" />
+    <Compile Include="Infrastructure\PreviewModeFilter.cs" />
     <Compile Include="Infrastructure\RouteProvider.cs" />
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
@@ -445,6 +451,8 @@
     <Content Include="Views\Shared\_Providers.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\RichEditor.cshtml" />
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
+    <Content Include="Views\Theme\PreviewTool.cshtml" />
+    <Content Include="Views\Shared\_AdminRoot.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

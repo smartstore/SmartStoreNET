@@ -1,11 +1,8 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 
@@ -16,7 +13,9 @@ namespace SmartStore.Web.Framework.Themes
     /// </summary>
     public partial class ThemeContext : IThemeContext
     {
-        private readonly IWorkContext _workContext;
+		internal const string OverriddenThemeNameKey = "OverriddenThemeName";
+		
+		private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ThemeSettings _themeSettings;
@@ -142,16 +141,75 @@ namespace SmartStore.Web.Framework.Themes
             }
         }
 
+		public void SetRequestTheme(string theme)
+		{
+			try
+			{
+				var dataTokens = _httpContext.Request.RequestContext.RouteData.DataTokens;
+				if (theme.HasValue())
+				{
+					dataTokens[OverriddenThemeNameKey] = theme;
+				}
+				else if (dataTokens.ContainsKey(OverriddenThemeNameKey))
+				{
+					dataTokens.Remove(OverriddenThemeNameKey);
+				}
+
+				_currentTheme = null;
+			}
+			catch { }
+		}
+
+		public string GetRequestTheme()
+		{
+			try
+			{
+				return (string)_httpContext.Request.RequestContext.RouteData.DataTokens[OverriddenThemeNameKey];
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
+		public void SetPreviewTheme(string theme)
+		{
+			try
+			{
+				_httpContext.SetPreviewModeValue(OverriddenThemeNameKey, theme);
+				_currentTheme = null;
+			}
+			catch { }
+		}
+
+		public string GetPreviewTheme()
+		{
+			try
+			{
+				var cookie = _httpContext.GetPreviewModeCookie(false);
+				if (cookie != null)
+				{
+					return cookie.Values[OverriddenThemeNameKey];
+				}
+
+				return null;
+			}
+			catch
+			{
+				return null;
+			}
+		}
+
         public ThemeManifest CurrentTheme
         {
             get
             {
-                if (_currentTheme == null)
+				if (_currentTheme == null)
                 {
-					var themeOverride = _httpContext.Request.GetThemeOverride() ?? _httpContext.Session.GetThemeOverride();
+					var themeOverride = GetRequestTheme() ?? GetPreviewTheme();
 					if (themeOverride != null)
 					{
-						// the theme to be used can be overwritten on request basis (e.g. for live preview, editing etc.)
+						// the theme to be used can be overwritten on request/session basis (e.g. for live preview, editing etc.)
 						_currentTheme = _themeRegistry.GetThemeManifest(themeOverride);
 					}
 					else
@@ -174,10 +232,6 @@ namespace SmartStore.Web.Framework.Themes
 
                 return _currentTheme;
             }
-			set
-			{
-				_currentTheme = value;
-			}
         }
 
     }

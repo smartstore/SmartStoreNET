@@ -1,13 +1,9 @@
-﻿using System;
-using System.Linq;
-using System.Web.Mvc;
-using System.Web.Routing;
+﻿using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Themes;
-using SmartStore.Services.Security;
 using SmartStore.Services.Themes;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Themes;
 
 namespace SmartStore.Web.Controllers
 {
@@ -18,16 +14,23 @@ namespace SmartStore.Web.Controllers
 
         private readonly IThemeRegistry _themeRegistry;
         private readonly IThemeVariablesService _themeVarService;
+		private readonly IThemeContext _themeContext;
+		private readonly IStoreContext _storeContext;
 
 	    #endregion
 
 		#region Constructors
 
-        public ThemeController(IThemeRegistry themeRegistry, IThemeVariablesService themeVarService)
+        public ThemeController(
+			IThemeRegistry themeRegistry, 
+			IThemeVariablesService themeVarService,
+			IThemeContext themeContext,
+			IStoreContext storeContext)
 		{
-            //this._permissionService = permissionService;
             this._themeRegistry = themeRegistry;
             this._themeVarService = themeVarService;
+			this._themeContext = themeContext;
+			this._storeContext = storeContext;
 		}
 
 		#endregion 
@@ -39,9 +42,13 @@ namespace SmartStore.Web.Controllers
         {
             if (theme.HasValue())
             {
-				this.Request.SetThemeOverride(theme);
-				this.Request.SetStoreOverride(storeId);
+				_themeContext.SetRequestTheme(theme);
             }
+
+			if (storeId > 0)
+			{
+				_storeContext.SetRequestStore(storeId);
+			}
 
             var model = TempData["OverriddenThemeVars"] ?? _themeVarService.GetThemeVariables(theme, storeId);
 

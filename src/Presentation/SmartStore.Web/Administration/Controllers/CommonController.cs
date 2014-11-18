@@ -794,7 +794,6 @@ namespace SmartStore.Admin.Controllers
 
         #endregion
 
-
         #region Generic Attributes
 
         [ChildActionOnly]

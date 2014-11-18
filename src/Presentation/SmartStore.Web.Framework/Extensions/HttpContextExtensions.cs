@@ -1,19 +1,15 @@
-﻿using System.Web;
-using System.Web.Routing;
+﻿using System;
 using System.IO;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Services.Orders;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Web.Framework.Themes;
-using SmartStore.Core;
-using System.Web.SessionState;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
     public static class HttpContextExtensions
 	{
-		internal const string OverriddenThemeNameKey = "OverriddenThemeName";
-		internal const string OverriddenStoreIdKey = "OverriddenStoreId";
 
 		public static bool IsAdminArea(this HttpRequest request)
 		{
@@ -118,187 +114,68 @@ namespace SmartStore
 			httpContext.Session.SafeRemove(CheckoutState.CheckoutStateSessionKey);
 		}
 
-		#region Theme & Store overrides (Request basis > Admin/LESS validation)
-
-		public static void SetThemeOverride(this HttpRequest request, string theme)
+		internal static HttpCookie GetPreviewModeCookie(this HttpContextBase context, bool createIfMissing)
 		{
-			SetThemeOverride(new HttpRequestWrapper(request), theme);
-		}
-
-		public static void SetStoreOverride(this HttpRequest request, int? storeId)
-		{
-			SetStoreOverride(new HttpRequestWrapper(request), storeId);
-		}
-
-		public static string GetThemeOverride(this HttpRequest request)
-		{
-			return GetThemeOverride(new HttpRequestWrapper(request));
-		}
-
-		public static int? GetStoreOverride(this HttpRequest request)
-		{
-			return GetStoreOverride(new HttpRequestWrapper(request));
-		}
-
-		public static void SetThemeOverride(this HttpRequestBase request, string theme)
-		{
-			try
-			{
-				var dataTokens = request.RequestContext.RouteData.DataTokens;
-				if (theme.HasValue())
-				{
-					dataTokens[OverriddenThemeNameKey] = theme;
-				}
-				else if (dataTokens.ContainsKey(OverriddenThemeNameKey))
-				{
-					dataTokens.Remove(OverriddenThemeNameKey);
-				}
-
-				EngineContext.Current.Resolve<IThemeContext>().CurrentTheme = null;
-			}
-			catch { }
-		}
-
-		public static void SetStoreOverride(this HttpRequestBase request, int? storeId)
-		{
-			try
-			{
-				var dataTokens = request.RequestContext.RouteData.DataTokens;
-				if (storeId.GetValueOrDefault() > 0)
-				{
-					dataTokens[OverriddenStoreIdKey] = storeId.Value;
-				}
-				else if (dataTokens.ContainsKey(OverriddenStoreIdKey))
-				{
-					dataTokens.Remove(OverriddenStoreIdKey);
-				}
-
-				EngineContext.Current.Resolve<IStoreContext>().CurrentStore = null;
-			}
-			catch { }
-		}
-
-		public static string GetThemeOverride(this HttpRequestBase request)
-		{
-			try
-			{
-				return (string)request.RequestContext.RouteData.DataTokens[OverriddenThemeNameKey];
-			}
-			catch
-			{
+			if (context == null)
 				return null;
+
+			var cookie = context.Request.Cookies.Get("sm.PreviewModeOverrides");
+
+			if (cookie == null && createIfMissing)
+			{
+				cookie = new HttpCookie("sm.PreviewModeOverrides");
+				context.Request.Cookies.Set(cookie);
 			}
+
+			if (cookie != null)
+			{
+				// when cookie gets created or touched, extend its lifetime
+				cookie.Expires = DateTime.UtcNow.AddMinutes(20);
+			}
+
+			return cookie;
 		}
 
-		public static int? GetStoreOverride(this HttpRequestBase request)
+		internal static void SetPreviewModeValue(this HttpContextBase context, string key, string value)
 		{
-			try
+			if (context == null)
+				return;
+
+			var cookie = context.GetPreviewModeCookie(value.HasValue());
+			if (cookie != null)
 			{
-				var value = request.RequestContext.RouteData.DataTokens[OverriddenStoreIdKey];
-				if (value != null)
+				if (value.HasValue())
 				{
-					return (int)value;
+					cookie.Values[key] = value;
 				}
-
-				return null;
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		#endregion
-
-
-		#region Theme & Store overrides (Session basis > Preview mode)
-
-		public static void SetThemeOverride(this HttpSessionState session, string theme)
-		{
-			SetThemeOverride(new HttpSessionStateWrapper(session), theme);
-		}
-
-		public static void SetStoreOverride(this HttpSessionState session, int? storeId)
-		{
-			SetStoreOverride(new HttpSessionStateWrapper(session), storeId);
-		}
-
-		public static string GetThemeOverride(this HttpSessionState session)
-		{
-			return GetThemeOverride(new HttpSessionStateWrapper(session));
-		}
-
-		public static int? GetStoreOverride(this HttpSessionState session)
-		{
-			return GetStoreOverride(new HttpSessionStateWrapper(session));
-		}
-
-		public static void SetThemeOverride(this HttpSessionStateBase session, string theme)
-		{
-			try
-			{
-				if (theme.HasValue())
+				else
 				{
-					session[OverriddenThemeNameKey] = theme;
+					cookie.Values.Remove(key);
 				}
-				else if (session[OverriddenThemeNameKey] != null)
-				{
-					session.Remove(OverriddenThemeNameKey);
-				}
-
-				EngineContext.Current.Resolve<IThemeContext>().CurrentTheme = null;
 			}
-			catch { }
 		}
 
-		public static void SetStoreOverride(this HttpSessionStateBase session, int? storeId)
+		public static IDisposable PreviewModeCookie(this HttpContextBase context)
 		{
-			try
-			{
-				if (storeId.GetValueOrDefault() > 0)
+			var disposable = new ActionDisposable(() => {
+				var cookie = GetPreviewModeCookie(context, false);
+				if (cookie != null)
 				{
-					session[OverriddenStoreIdKey] = storeId.Value;
-				}
-				else if (session[OverriddenStoreIdKey] != null)
-				{
-					session.Remove(OverriddenStoreIdKey);
-				}
+					if (!cookie.HasKeys)
+					{
+						cookie.Expires = DateTime.UtcNow.AddYears(-10);
+					}
+					else
+					{
+						cookie.Expires = DateTime.UtcNow.AddMinutes(20);
+					}
 
-				EngineContext.Current.Resolve<IThemeContext>().CurrentTheme = null;
-			}
-			catch { }
+					context.Response.SetCookie(cookie);
+				}
+			});
+
+			return disposable;
 		}
 
-		public static string GetThemeOverride(this HttpSessionStateBase session)
-		{
-			try
-			{
-				return (string)session[OverriddenThemeNameKey];
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		public static int? GetStoreOverride(this HttpSessionStateBase session)
-		{
-			try
-			{
-				var value = session[OverriddenStoreIdKey];
-				if (value != null)
-				{
-					return (int)value;
-				}
-
-				return null;
-			}
-			catch
-			{
-				return null;
-			}
-		}
-
-		#endregion
 	}
 }

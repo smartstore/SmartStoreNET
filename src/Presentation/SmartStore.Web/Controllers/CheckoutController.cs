@@ -122,14 +122,15 @@ namespace SmartStore.Web.Controllers
         [NonAction]
 		protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
         {
-            bool result = true;
-
             //check whether order total equals zero
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, ignoreRewardPoints);
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
-                result = false;
+                return false;
 
-            return result;
+			if (_httpContext.GetCheckoutState().IsPaymentSelectionSkipped)
+				return false;
+
+            return true;
         }
 
         [NonAction]
@@ -801,8 +802,8 @@ namespace SmartStore.Web.Controllers
                     //Check whether payment workflow is required
                     if (IsPaymentWorkflowRequired(cart))
 						return RedirectToAction("PaymentMethod");
-                    else
-                        processPaymentRequest = new ProcessPaymentRequest();
+
+					processPaymentRequest = new ProcessPaymentRequest();
                 }
                 
                 //prevent 2 orders being placed within an X seconds time frame

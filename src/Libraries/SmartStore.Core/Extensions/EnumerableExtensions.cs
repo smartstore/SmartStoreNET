@@ -157,6 +157,11 @@ namespace SmartStore
                 return source.OrderByDescending(x => x.Ordinal);
         }
 
+        public static bool Exists<T>(this IEnumerable<T> source, Func<T, bool> func)
+        {
+            return source.Count(func) > 0;
+        }
+
         #endregion
 
         #region Multimap

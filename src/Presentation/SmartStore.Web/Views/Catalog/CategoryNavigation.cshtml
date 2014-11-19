@@ -48,14 +48,14 @@
         </div>
         <div class="block-body listbox">
             <nav class="nav-category">
-                @CreateMenu(Model.Root.Children)
+                @CreateMenu(Model.Root.Children, "level-1")
             </nav>
         </div>
     </div>
 }
 
-@helper CreateMenu(IEnumerable<TreeNode<MenuItem>> nodes) {
-    <ul>
+@helper CreateMenu(IEnumerable<TreeNode<MenuItem>> nodes, string menuSelector) {
+    <ul class="@menuSelector">
         @foreach (var node in nodes)
         {
             var state = node.GetNodePathState(Model.Path);
@@ -69,7 +69,7 @@
                 </a>
                 @if (ShouldRenderChildren(state))
                 {
-                    @CreateMenu(node.Children)
+                    @CreateMenu(node.Children, "sub-level-" + (node.Depth + 2))
                 }
             </li>
         }

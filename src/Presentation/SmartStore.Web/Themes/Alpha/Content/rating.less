@@ -2,10 +2,8 @@
 // Review & Rating Styles
 // --------------------------------------------------
 
-
 /* Ratings
 ================================================ */
-
 .rating {
 	display: inline-block;
 	vertical-align: top;
@@ -16,48 +14,41 @@
 	background-repeat: repeat-x;
 	background-position: 0 50%;
 }
-
 .rating > div {
 	height: 16px;
 	background-image: url('images/star-on.png');
 }
-
 .rating.rating-small {
 	height: 11px;
 	width: 60px;
 	padding: 1px 0;
 	background-image: url('images/star-off-12.png');
 }
-
 .rating.rating-small > div {
 	height: 11px;
 	background-image: url('images/star-on-12.png');
 }
 
-
 /* Reviews
 ================================================ */
-.product-reviews-page .write-review .inputs { margin-bottom:12px; }
-.product-reviews-page .write-review .captcha-box{ margin-bottom:12px; }
+.product-reviews-page .write-review .inputs,
+.product-reviews-page .write-review .captcha-box { 
+    margin-bottom:12px;
+}
 .product-reviews-page .write-review .review-title { width:350px; }
-.product-reviews-page .write-review .review-text{width:350px;height:150px;}
-.product-reviews-page .write-review .review-rating{display:inline-block;}
-.product-reviews-page .write-review .review-rating input{vertical-align:bottom;}
-.product-reviews-page .write-review .buttons{text-align:left;}
+.product-reviews-page .write-review .review-text{ width:350px; height:150px; }
+.product-reviews-page .write-review .review-rating{ display:inline-block; }
+.product-reviews-page .write-review .review-rating input{ vertical-align:bottom; }
+.product-reviews-page .write-review .buttons{ text-align:left; }
 
 .product-review-item {
 	padding: 12px 0;
 	.hr();
 }
-
 .product-review-item .review-title .rating {
 	margin-right: 8px;
 }
-
-.product-review-item .review-text {
-	margin-top: 12px;
-}
-
+.product-review-item .review-text,
 .product-review-vote {
 	margin-top: 12px;
 }
@@ -75,7 +66,6 @@
 	font-weight: bold;
 	.smaller();
 }
-
 .product-review-vote .fa-thumbs-up,
 .product-review-vote .fa-thumbs-down {
 	font-size: 16px;

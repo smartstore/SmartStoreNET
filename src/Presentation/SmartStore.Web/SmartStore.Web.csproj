@@ -2233,14 +2233,11 @@
     <Content Include="Themes\Alpha\Content\forum.less" />
     <Content Include="Themes\Alpha\Content\header.less" />
     <Content Include="Themes\Alpha\Content\layout.less" />
-    <Content Include="Themes\Alpha\Content\listscroller.less" />
     <Content Include="Themes\Alpha\Content\login.less" />
     <Content Include="Themes\Alpha\Content\misc.less" />
     <Content Include="Themes\Alpha\Content\nav.less" />
-    <Content Include="Themes\Alpha\Content\news.less" />
     <Content Include="Themes\Alpha\Content\pages.less" />
     <Content Include="Themes\Alpha\Content\paginator.less" />
-    <Content Include="Themes\Alpha\Content\poll.less" />
     <Content Include="Themes\Alpha\Content\product.less" />
     <Content Include="Themes\Alpha\Content\productfilter.less" />
     <Content Include="Themes\Alpha\Content\profile.less" />

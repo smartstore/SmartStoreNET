@@ -21,7 +21,6 @@
 		background-color: #f9f9f9;
 		border-color: #f9f9f9;
 	}
-	.opt-data { }
 	.opt-info { 
 		margin-top: 6px;
 		margin-left: 32px;
@@ -52,10 +51,6 @@
 	.opt-info .media-body { 
 		.muted();
 	}
-
-	.opt-radio { }
-	.opt-branding { }
-	.opt-fee { }
 	.opt-control {
 		padding-right: 100px;
 	}
@@ -68,7 +63,6 @@
 		margin-left: 12px;
 		.text-overflow();
 	}
-	.opt-description { }
 }
 
 
@@ -95,7 +89,7 @@
 	cursor: default;
 	.transition(opacity .1s linear);
 }
-.order-progress li.visited .order-progress-step {
+.order-progress .visited .order-progress-step {
 	cursor: pointer;
 	color: #333;
 	.opacity(75);
@@ -103,7 +97,7 @@
 		.opacity(100);
 	}
 }
-.order-progress li.active .order-progress-step {
+.order-progress .active .order-progress-step {
 	.opacity(100);
 	background: #f2f2f2;
 	color: #333;
@@ -111,7 +105,7 @@
 	.border-radius(4px);
 	.box-shadow(~"inset 0 2px 8px rgba(0,0,0,.08)");
 }
-.order-progress li.inactive .order-progress-step {
+.order-progress .inactive .order-progress-step {
 	.opacity(50);
 }
 .order-progress .order-progress-step:before {
@@ -130,7 +124,6 @@
 	text-decoration: inherit;
 	.opacity(75);
 }
-.order-progress .order-progress-step.step-cart:before 		{ }
 .order-progress .order-progress-step.step-address:before	{ content: '\f015' /* fa-home */; }
 .order-progress .order-progress-step.step-shipping:before 	{ content: '\f0d1' /* fa-truck */; }
 .order-progress .order-progress-step.step-payment:before 	{ content: '\f09d' /* fa-creditcard */ }
@@ -202,30 +195,24 @@
 	margin: 10px 0;
 }
 
-.checkout-data a.change-checkout-data {
+.checkout-data .change-checkout-data {
 	font-weight: normal;
 	text-transform: none;
 	color: @linkColor;
 	&:hover { color: @linkColorHover }
 }
 
-.checkout-confirm-page .comment-box {
-
-    textarea {
-        width: 99%;
-        height: 50px;
-    }
+.checkout-confirm-page .comment-box textarea {
+    width: 99%;
+    height: 50px;
 }
 
 .checkout-confirm-page .order-summary-content form {
-    border: 1px solid #bbb;
+    border-bottom: none;
     background: #efefef;
     margin: 0 !important;
     padding-bottom: 20px;
     .border-radius(@baseBlockRadius @baseBlockRadius 0 0);
-}
-.checkout-confirm-page .order-summary-content form {
-    border-bottom: none;
 }
 .checkout-confirm-page .checkout-data > .confirm-order {
     border: 1px solid #bbb;

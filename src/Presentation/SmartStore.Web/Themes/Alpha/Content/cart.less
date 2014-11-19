@@ -26,42 +26,42 @@
 	font-size: 24px;
 }
 
-table.cart {
+.cart {
 	border-bottom: 1px solid #ddd;
 	margin-top: 20px;
 }
 
-table.cart .omega {
+.cart .omega {
 	text-align: right;
 }
 
-table.cart .unit-price {
+.cart .unit-price {
 	text-align: right;
 }
 
-table.cart .cart-item-row td.remove,
-table.cart .cart-item-row td.addtocart {
+.cart .cart-item-row .remove,
+.cart .cart-item-row .addtocart {
 	text-align: center;
 	vertical-align: top;
 }
 
-table.cart .cart-item-row td.productpicture img {
+.cart .cart-item-row .productpicture img {
 	max-width: 70px;
 }
-table.cart .cart-item-row td.product {
+.cart .cart-item-row .product {
     width: 100%;
 }
 
-table.cart td.product .short-desc {
+.cart .product .short-desc {
     font-size: 12px;
 }
 
-table.cart .cart-item-row .product-subtotal,
-table.cart .cart-item-row td.product > a,
-table.cart .product-bundle-row .bundle-headline {
+.cart .cart-item-row .product-subtotal,
+.cart .cart-item-row .product > a,
+.cart .product-bundle-row .bundle-headline {
     font-weight: bold;
 }
-table.cart .cart-item-row .qty-input {
+.cart .cart-item-row .qty-input {
 	width: 32px;
 }
 .order-summary-content .cart-footer {
@@ -97,7 +97,7 @@ table.cart .cart-item-row .qty-input {
 	font-weight: bold;
 }
 
-.order-summary-content .cart-total td.cart-total-left { 
+.order-summary-content .cart-total .cart-total-left { 
 	padding-left: 4px; 
 	max-width: 200px;
 	overflow: hidden;
@@ -106,7 +106,7 @@ table.cart .cart-item-row .qty-input {
 	text-align: right; 
 	vertical-align: top; 
 }
-.order-summary-content .cart-total td.cart-total-right { 
+.order-summary-content .cart-total .cart-total-right { 
 	text-align: right; 
 	font-weight: bold;
 	padding-right: 8px; 
@@ -126,10 +126,10 @@ table.cart .cart-item-row .qty-input {
 .order-summary-content .cart-total tr td {
 	border-top: none;
 }
-.order-summary-content .cart-total tr.lined td {
+.order-summary-content .cart-total .lined td {
 	border-top: 1px solid #ddd;
 }
-.order-summary-content .cart-total tr.omega td {
+.order-summary-content .cart-total .omega td {
 	// order totals
 	border-top-width: 2px;
 }

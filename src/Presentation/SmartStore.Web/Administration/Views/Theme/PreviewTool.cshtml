@@ -14,6 +14,7 @@
 	var themes = (IList<SelectListItem>)ViewBag.Themes;
 	var stores = (IList<SelectListItem>)ViewBag.Stores;
 	var disableApply = (bool)ViewBag.DisableApply;
+	var toolOpen = (bool)ViewBag.ToolOpen;
 }
 
 <style type="text/css">
@@ -129,7 +130,7 @@
 	}
 </style>
 
-<div class="previewmode-wrapper">
+<div class="previewmode-wrapper@(toolOpen ? " open" : "")">
 	<div id="previewmode">
 		@using (Html.BeginForm("PreviewTool", "Theme", new { area = "admin" }, FormMethod.Post))
 		{
@@ -165,8 +166,8 @@
 	$(function () {
 		$('.toggle-preview').on('click', function (e) {
 			e.preventDefault();
-			var wrapper = $('.previewmode-wrapper');
-			wrapper.toggleClass("open");
+			var wrapper = $('.previewmode-wrapper').toggleClass("open");
+			_.setCookie("sm:PreviewToolOpen", wrapper.hasClass("open") ? "True" : "False");
 			return false;
 		});
 

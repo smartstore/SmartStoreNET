@@ -1,5 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
+using System.Runtime.Serialization.Formatters.Binary;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
@@ -107,6 +110,5 @@ namespace SmartStore.Web.Framework.Controllers
 			var customer = workContext.CurrentCustomer;
 			Logger.Error(exc.Message, exc, customer);
 		}
-
 	}
 }

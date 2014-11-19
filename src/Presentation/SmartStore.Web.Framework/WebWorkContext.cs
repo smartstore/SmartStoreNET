@@ -50,7 +50,8 @@ namespace SmartStore.Web.Framework
         private Language _cachedLanguage;
         private Customer _cachedCustomer;
         private Currency _cachedCurrency;
-        private Customer _originalCustomerIfImpersonated; 
+        private Customer _originalCustomerIfImpersonated;
+		private bool? _isAdmin;
 
         public WebWorkContext(Func<string, ICacheManager> cacheManager,
             HttpContextBase httpContext,
@@ -504,10 +505,23 @@ namespace SmartStore.Web.Framework
             return _cachedTaxDisplayType.Value;
         }
 
-		/// <summary>
-		/// Get or set value indicating whether we're in admin area
-		/// </summary>
-		public bool IsAdmin { get; set; }
+
+		public bool IsAdmin 
+		{
+			get
+			{
+				if (!_isAdmin.HasValue)
+				{
+					_isAdmin = _httpContext.Request.IsAdminArea();
+				}
+
+				return _isAdmin.Value;
+			}
+			set
+			{
+				_isAdmin = value;
+			}
+		}
 
         public bool IsPublishedLanguage(string seoCode, int storeId = 0)
         {

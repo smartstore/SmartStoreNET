@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Web.Routing;
 
 namespace SmartStore.Services.Orders
 {
+	[Serializable]
 	public partial class CheckoutState
 	{
 		public CheckoutState()

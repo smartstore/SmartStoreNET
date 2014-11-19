@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
@@ -22,11 +23,13 @@ namespace SmartStore.Web.Framework.Controllers
         /// Initialize controller
         /// </summary>
         /// <param name="requestContext">Request context</param>
-        protected override void Initialize(System.Web.Routing.RequestContext requestContext)
+        protected override void Initialize(RequestContext requestContext)
         {
-            //set work context to admin mode
-            EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
-
+			var routeData = requestContext.RouteData;
+			if (routeData != null && !routeData.DataTokens.ContainsKey("ParentActionViewContext"))
+			{
+				EngineContext.Current.Resolve<IWorkContext>().IsAdmin = true;
+			}
             base.Initialize(requestContext);
         }
         

@@ -1524,7 +1524,6 @@ namespace SmartStore.Web.Controllers
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
 
-
             if (ModelState.IsValid)
             {
                 try

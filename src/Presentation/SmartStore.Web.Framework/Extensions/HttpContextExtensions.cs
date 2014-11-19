@@ -15,14 +15,10 @@ namespace SmartStore
 		{
 			if (request != null)
 			{
-				var area = request.RequestContext.RouteData.GetAreaName();
-				if (area != null)
-				{
-					return area.IsCaseInsensitiveEqual("admin");
-				}
+				return IsAdminArea(new HttpRequestWrapper(request));
 			}
 
-			return false;
+			return false;		
 		}
 
 		public static bool IsAdminArea(this HttpRequestBase request)
@@ -36,6 +32,34 @@ namespace SmartStore
 					{
 						return area.IsCaseInsensitiveEqual("admin");
 					}
+				}
+
+				return false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsPublicArea(this HttpRequest request)
+		{
+			if (request != null)
+			{
+				return IsPublicArea(new HttpRequestWrapper(request));
+			}
+
+			return false;
+		}
+
+		public static bool IsPublicArea(this HttpRequestBase request)
+		{
+			try
+			{
+				if (request != null)
+				{
+					var area = request.RequestContext.RouteData.GetAreaName();
+					return area.IsEmpty();
 				}
 
 				return false;

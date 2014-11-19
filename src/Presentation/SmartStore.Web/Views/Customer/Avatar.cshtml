@@ -22,6 +22,11 @@
             @if (!ViewData.ModelState.IsValid) {
                 @Html.ValidationSummary(true)
             }
+			
+			@if (!Model.AvatarUrl.HasValue())
+			{
+				<div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
+			}
 
             <div class="section-body clearfix">
                 @if (!String.IsNullOrEmpty(Model.AvatarUrl))
@@ -32,7 +37,6 @@
                 }
 
                 <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left"/>
-
             </div>
 
 
@@ -47,10 +51,6 @@
                         @T("Account.Avatar.RemoveAvatar")
                     </button>
                 }
-				else
-				{
-					<p style="margin-top: 12px">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</p>
-				}
             </div>
 
         </div>

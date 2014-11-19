@@ -50,18 +50,21 @@ namespace SmartStore.Web.Framework.Controllers
 
         public override bool IsValidForRequest(ControllerContext controllerContext, MethodInfo methodInfo)
         {
-			var form = controllerContext.HttpContext.Request.Form;
+			return IsValidForRequest(controllerContext.HttpContext.Request.Form);
+		}
 
+		protected internal virtual bool IsValidForRequest(NameValueCollection form)
+		{
 			try
 			{
 				bool isMatch = false;
 				if (_rule == FormValueRequirementRule.MatchAny)
 				{
-					isMatch = _submitButtonNames.Any(x => IsMatch(controllerContext.HttpContext.Request.Form, x));
+					isMatch = _submitButtonNames.Any(x => IsMatch(form, x));
 				}
 				else
 				{
-					isMatch = _submitButtonNames.All(x => IsMatch(controllerContext.HttpContext.Request.Form, x));
+					isMatch = _submitButtonNames.All(x => IsMatch(form, x));
 				}
 				return isMatch;
 			}
@@ -71,45 +74,7 @@ namespace SmartStore.Web.Framework.Controllers
 			}
 
 			return false;
-
-			//foreach (string buttonName in _submitButtonNames)
-			//{
-			//	try
-			//	{
-			//		string value = "";
-			//		switch (_requirement)
-			//		{
-			//			case FormValueRequirement.Equal:
-			//				// do not iterate because "Invalid request" exception can be thrown
-			//				value = form[buttonName];
-			//				break;
-			//			case FormValueRequirement.StartsWith:
-			//				var firstMatch = form.AllKeys.FirstOrDefault(x => x.StartsWith(buttonName, StringComparison.InvariantCultureIgnoreCase));
-			//				if (firstMatch != null)
-			//				{
-			//					value = form[firstMatch];
-			//				}
-			//				break;
-			//		}
-
-			//		if (!_inverse)
-			//		{
-			//			if (!String.IsNullOrEmpty(value))
-			//				return true;
-			//		}
-			//		else
-			//		{
-			//			if (String.IsNullOrEmpty(value))
-			//				return true;
-			//		}
-			//	}
-			//	catch (Exception exc)
-			//	{
-			//		Debug.WriteLine(exc.Message);
-			//	}
-			//}
-			//return false;
-        }
+		}
 
 		private bool IsMatch(NameValueCollection form, string key)
 		{

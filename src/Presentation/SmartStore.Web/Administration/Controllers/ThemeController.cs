@@ -526,6 +526,8 @@ namespace SmartStore.Admin.Controllers
 
 			var themeSettings = _settingService.LoadSetting<ThemeSettings>(currentStore.Id);
 			ViewBag.DisableApply = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(currentTheme.ThemeName);
+			var cookie = Request.Cookies["sm:PreviewToolOpen"];
+			ViewBag.ToolOpen = cookie != null ? cookie.Value.ToBool() : false;
 
 			return PartialView();
 		}

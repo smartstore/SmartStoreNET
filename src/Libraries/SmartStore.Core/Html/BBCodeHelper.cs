@@ -15,7 +15,7 @@ namespace SmartStore.Core.Html
         private static readonly Regex regexUnderLine = new Regex(@"\[u\](.+?)\[/u\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl1 = new Regex(@"\[url\=([^\]]+)\]([^\]]+)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         private static readonly Regex regexUrl2 = new Regex(@"\[url\](.+?)\[/url\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-        private static readonly Regex regexQuote = new Regex(@"\[quote\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static readonly Regex regexQuote = new Regex(@"\[quote(=.+?)?\](.+?)\[/quote\]", RegexOptions.Compiled | RegexOptions.IgnoreCase);
         #endregion
 
         #region Methods
@@ -70,7 +70,30 @@ namespace SmartStore.Core.Html
 
             if (replaceQuote)
             {
-                text = regexQuote.Replace(text, "<blockquote class='muted'>$1</blockquote>");
+				while (regexQuote.IsMatch(text))
+				{
+					text = regexQuote.Replace(text, (m) =>
+					{
+						var from = m.Groups[1].Value;
+						var quote = m.Groups[2].Value;
+
+						if (quote.IsEmpty())
+						{
+							return "";
+						}
+
+						string result = "";
+						if (from.HasValue())
+						{
+							result += "<span class='quotefrom'>{0}:</span>".FormatCurrent(from.Substring(1));
+						}
+
+						result += "<blockquote class='muted'>{0}</blockquote>".FormatCurrent(quote);
+
+						return result;
+					});
+				}
+
             }
 
             if (replaceCode)

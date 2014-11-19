@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Linq;
 using System.Diagnostics;
 using System.Reflection;
 using System.Web.Mvc;
+using System.Collections.Specialized;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -10,87 +12,154 @@ namespace SmartStore.Web.Framework.Controllers
     {
         private readonly string[] _submitButtonNames;
         private readonly FormValueRequirement _requirement;
+		private readonly FormValueRequirementRule _rule;
 		private readonly bool _inverse;
 
         public FormValueRequiredAttribute(params string[] submitButtonNames):
-            this(FormValueRequirement.Equal, false, submitButtonNames)
+            this(FormValueRequirement.Equal, FormValueRequirementRule.MatchAny, false, submitButtonNames)
         {
         }
 
         public FormValueRequiredAttribute(FormValueRequirement requirement, params string[] submitButtonNames)
-			: this(requirement, false, submitButtonNames)
+			: this(requirement, FormValueRequirementRule.MatchAny, false, submitButtonNames)
         {
         }
 
-		protected internal FormValueRequiredAttribute(FormValueRequirement requirement, bool inverse, params string[] submitButtonNames)
+		public FormValueRequiredAttribute(FormValueRequirementRule rule, params string[] submitButtonNames)
+			: this(FormValueRequirement.Equal, rule, false, submitButtonNames)
+		{
+		}
+
+		public FormValueRequiredAttribute(FormValueRequirement requirement, FormValueRequirementRule rule, params string[] submitButtonNames)
+			: this(requirement, rule, false, submitButtonNames)
+		{
+		}
+
+		protected internal FormValueRequiredAttribute(
+			FormValueRequirement requirement, 
+			FormValueRequirementRule rule, 
+			bool inverse, 
+			params string[] submitButtonNames)
 		{
 			// at least one submit button should be found (or being absent if 'inverse')
 			this._submitButtonNames = submitButtonNames;
 			this._requirement = requirement;
+			this._rule = rule;
 			this._inverse = inverse;
 		}
 
         public override bool IsValidForRequest(ControllerContext controllerContext, MethodInfo methodInfo)
         {
-            foreach (string buttonName in _submitButtonNames)
-            {
-                try
-                {
-                    string value = "";
-                    switch (this._requirement)
-                    {
-                        case FormValueRequirement.Equal:
-                            {
-                                // do not iterate because "Invalid request" exception can be thrown
-                                value = controllerContext.HttpContext.Request.Form[buttonName];
-                            }
-                            break;
-                        case FormValueRequirement.StartsWith:
-                            {
-                                foreach (var formValue in controllerContext.HttpContext.Request.Form.AllKeys)
-                                {
-                                    if (formValue.StartsWith(buttonName, StringComparison.InvariantCultureIgnoreCase))
-                                    {
-                                        value = controllerContext.HttpContext.Request.Form[formValue];
-                                        break;
-                                    }
-                                }
-                            }
-                            break;
-                    }
+			var form = controllerContext.HttpContext.Request.Form;
 
-					if (!_inverse)
-					{
-						if (!String.IsNullOrEmpty(value))
-							return true;
-					}
-					else
-					{
-						if (String.IsNullOrEmpty(value))
-							return true;
-					}
-                }
-                catch (Exception exc)
-                {
-                    Debug.WriteLine(exc.Message);
-                }
-            }
-            return false;
+			try
+			{
+				bool isMatch = false;
+				if (_rule == FormValueRequirementRule.MatchAny)
+				{
+					isMatch = _submitButtonNames.Any(x => IsMatch(controllerContext.HttpContext.Request.Form, x));
+				}
+				else
+				{
+					isMatch = _submitButtonNames.All(x => IsMatch(controllerContext.HttpContext.Request.Form, x));
+				}
+				return isMatch;
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex.Message);
+			}
+
+			return false;
+
+			//foreach (string buttonName in _submitButtonNames)
+			//{
+			//	try
+			//	{
+			//		string value = "";
+			//		switch (_requirement)
+			//		{
+			//			case FormValueRequirement.Equal:
+			//				// do not iterate because "Invalid request" exception can be thrown
+			//				value = form[buttonName];
+			//				break;
+			//			case FormValueRequirement.StartsWith:
+			//				var firstMatch = form.AllKeys.FirstOrDefault(x => x.StartsWith(buttonName, StringComparison.InvariantCultureIgnoreCase));
+			//				if (firstMatch != null)
+			//				{
+			//					value = form[firstMatch];
+			//				}
+			//				break;
+			//		}
+
+			//		if (!_inverse)
+			//		{
+			//			if (!String.IsNullOrEmpty(value))
+			//				return true;
+			//		}
+			//		else
+			//		{
+			//			if (String.IsNullOrEmpty(value))
+			//				return true;
+			//		}
+			//	}
+			//	catch (Exception exc)
+			//	{
+			//		Debug.WriteLine(exc.Message);
+			//	}
+			//}
+			//return false;
         }
+
+		private bool IsMatch(NameValueCollection form, string key)
+		{
+			string value = "";
+
+			if (_requirement == FormValueRequirement.Equal)
+			{
+				// do not iterate because "Invalid request" exception can be thrown
+				value = form[key];
+			}
+			else
+			{
+				var firstMatch = form.AllKeys.FirstOrDefault(x => x.StartsWith(key, StringComparison.InvariantCultureIgnoreCase));
+				if (firstMatch != null)
+				{
+					value = form[firstMatch];
+				}
+			}
+
+			if (_inverse)
+			{
+				return value.IsEmpty();
+			}
+
+			return value.HasValue();
+		}
     }
 
 	[AttributeUsage(AttributeTargets.Method, AllowMultiple = true)]
 	public class FormValueAbsentAttribute : FormValueRequiredAttribute
 	{
 		public FormValueAbsentAttribute(params string[] submitButtonNames):
-            base(FormValueRequirement.Equal, true, submitButtonNames)
+            base(FormValueRequirement.Equal, FormValueRequirementRule.MatchAny, true, submitButtonNames)
         {
         }
 
 		public FormValueAbsentAttribute(FormValueRequirement requirement, params string[] submitButtonNames)
-			: base(requirement, true, submitButtonNames)
+			: base(requirement, FormValueRequirementRule.MatchAny, true, submitButtonNames)
         {
         }
+
+		public FormValueAbsentAttribute(FormValueRequirementRule rule, params string[] submitButtonNames)
+			: base(FormValueRequirement.Equal, rule, true, submitButtonNames)
+		{
+		}
+
+		public FormValueAbsentAttribute(FormValueRequirement requirement, FormValueRequirementRule rule, params string[] submitButtonNames)
+			: base(requirement, rule, true, submitButtonNames)
+		{
+		}
 	}
 
     public enum FormValueRequirement
@@ -98,4 +167,10 @@ namespace SmartStore.Web.Framework.Controllers
         Equal,
         StartsWith
     }
+
+	public enum FormValueRequirementRule
+	{
+		MatchAny,
+		MatchAll
+	}
 }

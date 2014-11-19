@@ -530,7 +530,9 @@ namespace SmartStore.Admin.Controllers
 			return PartialView();
 		}
 
-		[HttpPost,  ActionName("PreviewTool"), FormValueAbsent(FormValueRequirement.StartsWith, "PreviewMode.")]
+		[HttpPost,  ActionName("PreviewTool")]
+		[FormValueRequired(FormValueRequirementRule.MatchAll, "theme", "storeId")]
+		[FormValueAbsent(FormValueRequirement.StartsWith, "PreviewMode.")]
 		public ActionResult PreviewToolPost(string theme, int storeId, string returnUrl)
 		{
 			// Refreshes the preview mode (after a select change)

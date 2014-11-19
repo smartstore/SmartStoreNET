@@ -111,6 +111,14 @@ namespace SmartStore.Data.Migrations
 				"Sekunden müssen größer als 0 sein.");
 
 			builder.Delete("Admin.Affiliates.Customers.Name");
+
+			// Avatars
+			builder.AddOrUpdate("Account.Avatar.MaximumUploadedFileSize",
+				"Maximum avatar size is {0}",
+				"Die maximale Größe des Avatars beträgt {0}");
+			builder.AddOrUpdate("Account.Avatar.UploadRules",
+				"Avatar must be in GIF, PNG or JPG format with the maximum size of {0}",
+				"Ein Avatar muss im GIF-, PNG- oder JPG-Format vorliegen und darf {0} nicht überschreiten.");
 		}
 
 

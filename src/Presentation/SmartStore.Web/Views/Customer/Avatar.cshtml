@@ -33,21 +33,10 @@
 
                 <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left"/>
 
-                @*<a class="btn" onclick="$('#uploadedFile').click();">@T("Common.Browse")</a>*@
-                
-                @*<script type="text/javascript">
-                    $(function() {
-                        $('#uploadedFile').change(function () {
-                            $('#uploadFileDisplay').val($(this).val());
-                            $('.img-polaroid').attr("src", $(this).val());
-                        });
-                    });
-                </script>*@
-
             </div>
 
 
-            <div class="well xwell-small" style="margin-top: 20px">
+            <div class="well" style="margin-top: 20px">
                 <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-primary upload-avatar-button">
                     <i class="fa fa-upload"></i>
                     @T("Common.Upload")
@@ -57,8 +46,11 @@
                     <button type="submit" name="remove-avatar" value="remove-avatar" class="btn btn-danger upload-avatar-button">
                         @T("Account.Avatar.RemoveAvatar")
                     </button>
-                    <p style="margin-top: 12px">@T("Account.Avatar.UploadRules")</p>
                 }
+				else
+				{
+					<p style="margin-top: 12px">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</p>
+				}
             </div>
 
         </div>

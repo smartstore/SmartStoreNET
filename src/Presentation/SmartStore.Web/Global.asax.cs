@@ -98,7 +98,7 @@ namespace SmartStore.Web
 				ViewEngines.Engines.Add(new ThemeableRazorViewEngine());
 
 				// Global filters
-				RegisterGlobalFilters(GlobalFilters.Filters);
+				RegisterGlobalFilters(GlobalFilters.Filters); 
 				
 				// Bundles
 				RegisterBundles(BundleTable.Bundles);

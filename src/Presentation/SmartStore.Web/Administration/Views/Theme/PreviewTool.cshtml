@@ -140,7 +140,7 @@
 				<label class="previewmode-label">@T("Admin.Configuration.Themes.Theme"):</label>
 				@Html.DropDownList("theme", themes, new { @class = "noskin" })
 
-				<label class="previewmode-label">@("Admin.Common.Store"):</label>
+				<label class="previewmode-label">@T("Admin.Common.Store"):</label>
 				@Html.DropDownList("storeId", stores, new { @class = "noskin" })
 
 				@Html.Hidden("returnUrl", Request.RawUrl)

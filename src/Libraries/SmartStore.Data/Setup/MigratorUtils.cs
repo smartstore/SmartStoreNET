@@ -112,7 +112,7 @@ namespace SmartStore.Data.Setup
 			if (!File.Exists(headPath))
 				return;
 
-			string resHead = File.ReadAllText(headPath);
+			string resHead = File.ReadAllText(headPath).Trim();
 			if (!MigratorUtils.IsValidMigrationId(resHead))
 				return;
 

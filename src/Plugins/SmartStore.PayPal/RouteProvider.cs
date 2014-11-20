@@ -70,7 +70,7 @@ namespace SmartStore.PayPal
                  new { controller = "PayPalStandard", action = "CancelOrder" },
                  new[] { "SmartStore.PayPal.Controllers" }
             )
-            .DataTokens["area"] = "Payments.PayPal";
+            .DataTokens["area"] = "SmartStore.PayPal";
         }
 
         public int Priority

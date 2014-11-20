@@ -453,6 +453,7 @@
     <Content Include="Views\Plugin\EditProviderPopup.cshtml" />
     <Content Include="Views\Theme\PreviewTool.cshtml" />
     <Content Include="Views\Shared\_AdminRoot.cshtml" />
+    <Content Include="Views\Home\MarketplaceFeed.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

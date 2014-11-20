@@ -3,6 +3,8 @@ using System.Net;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using System.Xml;
+using System.Collections.Generic;
+using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Common;
@@ -72,6 +74,31 @@ namespace SmartStore.Admin.Controllers
                 return Content("");
             }
         }
+
+		[ChildActionOnly]
+		public ActionResult MarketplaceFeed()
+		{
+			try
+			{
+				string url = "http://community.smartstore.com/index.php?/rss/downloads/";
+
+				var request = WebRequest.Create(url);
+				request.Timeout = 5000;
+
+				using (WebResponse response = request.GetResponse())
+				{
+					using (var reader = XmlReader.Create(response.GetResponseStream()))
+					{
+						var feed = SyndicationFeed.Load(reader);
+						return PartialView(feed);
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				return Content("<div class='alert alert-error'>{0}</div>".FormatCurrent(ex.Message));
+			}
+		}
 
         [HttpPost]
         public ActionResult SmartStoreNewsHideAdv()

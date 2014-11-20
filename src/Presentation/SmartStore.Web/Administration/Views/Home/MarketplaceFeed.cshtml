@@ -1,0 +1,14 @@
+﻿@model System.ServiceModel.Syndication.SyndicationFeed
+
+@foreach (var item in Model.Items)
+{
+	<div style="margin-bottom: 10px">
+		<div style="font-weight:bold; margin-bottom: 4px">@item.Title.Text</div>
+		<div>@item.Summary.Text.RemoveHtml().Truncate(200, "...")</div>
+		<div>@item.PublishDate.LocalDateTime.ToString()</div>
+		<div>
+			<a href="@item.Links.FirstOrDefault().Uri.ToString()" target="MarketplaceWindow">Mehr...</a>
+		</div>
+	</div>
+}
+

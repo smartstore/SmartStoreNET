@@ -9,73 +9,35 @@
         @T("Admin.Dashboard.StoreStatistics")
     </div>
 </div>
-<table class="dashboard">
-    @Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_top" })
-    <tr>
-        
-        <td class="leftcol" style="width: 25%; min-width: 240px; padding-right: 20px; vertical-align: top">
-            
-            @Html.Action("ReportRegisteredCustomers", "Customer")
-            @Html.Action("OrderIncompleteReport", "Order")
 
-@*            <div class="widget">
-		<div class="widget-header">
-			<i class="fa fa-bookmark"></i>
-			<h3>Shortcuts</h3>
-		</div>
-		<div class="widget-content">
-			<div class="shortcuts">
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Neues Produkt</span>
-				</a>
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Shortcut</span>
-				</a>
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Shortcut</span>
-				</a>
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Shortcut</span>
-				</a>
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Shortcut</span>
-				</a>
-				<a class="shortcut" href="#">
-					<i class="shortcut-icon fa fa-list-alt"></i>
-					<span class="shortcut-label">Shortcut</span>
-				</a>
+<div class="dashboard">
+	@Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_top" })
+
+	<div class="row-fluid">
+		<div class="span10 orderaveragereport">
+			@Html.Action("OrderAverageReport", "Order")
+			<div class="row-fluid">
+				<div class="span6">
+					@Html.Action("BestsellersBriefReportByQuantity", "Order")
+				</div>
+				<div class="span6">
+					@Html.Action("BestsellersBriefReportByAmount", "Order")
+				</div>
+			</div>
+			<div class="row-fluid">
+				<div class="span6">
+					@Html.Action("ReportRegisteredCustomers", "Customer")
+				</div>
+				<div class="span6">
+					@Html.Action("OrderIncompleteReport", "Order")	
+				</div>
 			</div>
 		</div>
-	</div>*@
 
-        </td>
+		<div class="span2">
+			@*@Html.Action("MarketplaceFeed")*@
+		</div>
+	</div>
 
-        <td class="maincol" style="vertical-align: top">
-            <table class="stats">
-                <tbody>
-                    <tr>
-                        <td class="orderaveragereport">
-                            @Html.Action("OrderAverageReport", "Order")
-                        </td>
-                    </tr>
-                </tbody>
-            </table>
-            <table class="stats">
-                <tr>
-                    <td class="bestsellers alpha">
-                        @Html.Action("BestsellersBriefReportByQuantity", "Order")
-                    </td>
-                    <td class="bestsellers omega">
-                        @Html.Action("BestsellersBriefReportByAmount", "Order")
-                    </td>
-                </tr>
-            </table>
-        </td>
-    </tr>
-    @Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_bottom" })
-</table>
+	@Html.Action("WidgetsByZone", "Widget", new { widgetZone = "admin_dashboard_bottom" })
+</div>

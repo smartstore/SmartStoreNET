@@ -16,6 +16,6 @@
     </div>
     @foreach (var forumGroup in Model.ForumGroups)
     {
-        Html.RenderPartial("_ForumGroup", forumGroup);
+		Html.RenderPartial("_ForumGroupPartial", forumGroup);
     }
 </div>

@@ -36,6 +36,7 @@
     <IISExpressAnonymousAuthentication />
     <IISExpressWindowsAuthentication />
     <IISExpressUseClassicPipelineMode />
+    <NuGetPackageImportStamp>7e91da2d</NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <DebugSymbols>true</DebugSymbols>
@@ -2138,7 +2139,7 @@
     <Content Include="Views\Customer\BackInStockSubscriptions.Mobile.cshtml" />
     <Content Include="Views\Customer\ForumSubscriptions.Mobile.cshtml" />
     <Content Include="Views\Boards\_SearchBox.Mobile.cshtml" />
-    <Content Include="Views\Boards\_ForumGroup.Mobile.cshtml" />
+    <Content Include="Views\Boards\_ForumGroupPartial.Mobile.cshtml" />
     <Content Include="Views\Boards\_ActiveTopics.Mobile.cshtml" />
     <Content Include="Views\Boards\_ForumPost.Mobile.cshtml" />
     <Content Include="Views\Boards\_CreateUpdateTopic.Mobile.cshtml" />
@@ -2409,7 +2410,7 @@
     <Content Include="Views\Boards\_CreateUpdatePost.cshtml" />
     <Content Include="Views\Boards\_CreateUpdateTopic.cshtml" />
     <Content Include="Views\Boards\ForumBreadcrumb.cshtml" />
-    <Content Include="Views\Boards\_ForumGroup.cshtml" />
+    <Content Include="Views\Boards\_ForumGroupPartial.cshtml" />
     <Content Include="Views\Boards\_ForumPost.cshtml" />
     <Content Include="Views\Boards\LastPost.cshtml" />
     <Content Include="Views\Boards\_SearchBox.cshtml" />

@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 <div class="ask-a-question">
-    <a href="@Url.Action("AskQuestion", new { id = Model.ProductId })" data-role="button" data-ajax="false">
+    <a href="@Url.Action("AskQuestion", new { id = Model.Id })" data-role="button" data-ajax="false">
         @T("Products.AskQuestion")
     </a>
 </div>

@@ -83,7 +83,7 @@ namespace SmartStore.Admin.Controllers
 				string url = "http://community.smartstore.com/index.php?/rss/downloads/";
 
 				var request = WebRequest.Create(url);
-				request.Timeout = 5000;
+				request.Timeout = 3000;
 
 				using (WebResponse response = request.GetResponse())
 				{

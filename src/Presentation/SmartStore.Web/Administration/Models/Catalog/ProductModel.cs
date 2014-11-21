@@ -725,7 +725,7 @@ namespace SmartStore.Admin.Models.Catalog
 			public bool IsRequired { get; set; }
 
 			public int AttributeControlTypeId { get; set; }
-			[SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.Attributes.Fields.AttributeControlType")]
+            [SmartResourceDisplayName("Admin.Catalog.Attributes.AttributeControlType")]
 			[UIHint("AttributeControlType")]
 			public string AttributeControlType { get; set; }
 

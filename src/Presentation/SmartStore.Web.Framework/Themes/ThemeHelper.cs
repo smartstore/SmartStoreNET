@@ -72,12 +72,12 @@ namespace SmartStore.Web.Framework.Themes
 			return false;
 		}
 
-		internal static bool IsStyleSheet(string virtualPath, out bool isLess)
+		internal static bool IsStyleSheet(string path, out bool isLess)
 		{
 			bool isCss = false;
-			isLess = virtualPath.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
+			isLess = path.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
 			if (!isLess)
-				isCss = virtualPath.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
+				isCss = path.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
 			return isLess || isCss;
 		}
 

@@ -128,9 +128,22 @@ namespace SmartStore.Web.Framework.Themes
 				return null;
 			}
 
+			bool isExplicit = false;
+
 			string requestedThemeName;
 			string relativePath;
-			TokenizePath(virtualPath, out requestedThemeName, out relativePath);
+			string query;
+
+			virtualPath = TokenizePath(virtualPath, out requestedThemeName, out relativePath, out query);
+
+			Func<InheritedThemeFileResult> nullOrFile = () =>
+			{
+				if (isExplicit)
+				{
+					return new InheritedThemeFileResult { IsExplicit = true, OriginalVirtualPath = virtualPath };
+				}
+				return null;
+			};
 
 			ThemeManifest currentTheme;
 			var isAdmin = EngineContext.Current.Resolve<IWorkContext>().IsAdmin; // ThemeHelper.IsAdminArea()
@@ -141,7 +154,7 @@ namespace SmartStore.Web.Framework.Themes
 			else
 			{
 				bool isLess = false;
-				if (ThemeHelper.IsStyleSheet(virtualPath, out isLess))
+				if (ThemeHelper.IsStyleSheet(relativePath, out isLess) && isLess)
 				{
 					// special consideration for LESS files: they can be validated
 					// in the backend. For validation, a "theme" query is appended 
@@ -157,13 +170,28 @@ namespace SmartStore.Web.Framework.Themes
 						}
 					}
 				}
-				
-				currentTheme = ThemeHelper.ResolveCurrentTheme();
+
+				if (isLess && query != null && query.StartsWith("explicit", StringComparison.OrdinalIgnoreCase))
+				{
+					// special case to support LESS @import declarations
+					// within inherited LESS files. Snenario: an inheritor wishes to
+					// include the same file from it's base theme (e.g. custom.less) just to tweak it
+					// a bit for his child theme. Without the 'explicit' query the resolution starting point
+					// for custom.less would be the CURRENT theme's folder, and NOT the requested one's,
+					// which inevitably would result in a cyclic dependency.
+					currentTheme = _themeRegistry.GetThemeManifest(requestedThemeName);
+					isExplicit = true;
+				}
+				else
+				{
+					currentTheme = ThemeHelper.ResolveCurrentTheme();
+				}
+
 				if (currentTheme.BaseTheme == null)
 				{
 					// dont't bother resolving files: the current theme is not inherited.
 					// Let the current VPP do the work.
-					return null;
+					return nullOrFile();
 				}
 			}
 
@@ -171,7 +199,7 @@ namespace SmartStore.Web.Framework.Themes
 			{
 				if (!_themeRegistry.IsChildThemeOf(currentTheme.ThemeName, requestedThemeName))
 				{
-					return null;
+					return nullOrFile();
 				}
 			}
 
@@ -200,17 +228,33 @@ namespace SmartStore.Web.Framework.Themes
 				return null;
 			});
 
+			if (result == null)
+			{
+				return nullOrFile();
+			}
+
 			return result;
 		}
 
-		private void TokenizePath(string virtualPath, out string themeName, out string relativePath)
+		private string TokenizePath(string virtualPath, out string themeName, out string relativePath, out string query)
 		{
 			themeName = null;
 			relativePath = null;
+			query = null;
 
 			var unrooted = virtualPath.Substring(ThemeHelper.ThemesBasePath.Length); // strip "~/Themes/"
 			themeName = unrooted.Substring(0, unrooted.IndexOf('/'));
 			relativePath = unrooted.Substring(themeName.Length + 1);
+
+			var idx = relativePath.IndexOf('?');
+			if (idx > 0)
+			{
+				query = relativePath.Substring(idx + 1);
+				relativePath = relativePath.Substring(0, idx);
+			}
+
+			// strip out query
+			return "{0}{1}/{2}".FormatCurrent(ThemeHelper.ThemesBasePath, themeName, relativePath);
 		}
 
 		/// <summary>
@@ -293,6 +337,8 @@ namespace SmartStore.Web.Framework.Themes
 		/// The name of the resulting theme where the file is actually located
 		/// </summary>
 		public string ResultThemeName { get; set; }
+
+		internal bool IsExplicit { get; set; }
 	}
 
 }

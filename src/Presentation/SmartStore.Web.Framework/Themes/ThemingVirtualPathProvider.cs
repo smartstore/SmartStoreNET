@@ -29,7 +29,14 @@ namespace SmartStore.Web.Framework.Themes
 			var result = GetResolveResult(virtualPath);
 			if (result != null)
 			{
-				return true;
+				if (!result.IsExplicit)
+				{
+					return true;
+				}
+				else
+				{
+					virtualPath = result.OriginalVirtualPath;
+				}
 			}
 
 			return _previous.FileExists(virtualPath);
@@ -47,7 +54,14 @@ namespace SmartStore.Web.Framework.Themes
 			var result = GetResolveResult(virtualPath);
 			if (result != null)
 			{
-				return new InheritedVirtualThemeFile(result);
+				if (!result.IsExplicit)
+				{
+					return new InheritedVirtualThemeFile(result);
+				}
+				else
+				{
+					virtualPath = result.OriginalVirtualPath;
+				}
 			}
 
             return _previous.GetFile(virtualPath);
@@ -116,7 +130,7 @@ namespace SmartStore.Web.Framework.Themes
 				var result = GetResolveResult(dep);
 				if (result != null)
 				{
-					fileNames.Add(result.ResultPhysicalPath);
+					fileNames.Add(result.IsExplicit ? HostingEnvironment.MapPath(result.OriginalVirtualPath) : result.ResultPhysicalPath);
 				}
 				else
 				{

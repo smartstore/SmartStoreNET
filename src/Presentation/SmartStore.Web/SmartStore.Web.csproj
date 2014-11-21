@@ -2246,6 +2246,7 @@
     <Content Include="Themes\Alpha\Content\shopbar.less" />
     <Content Include="Themes\Alpha\Content\skin.less" />
     <Content Include="Themes\Alpha\Content\typo.less" />
+    <Content Include="Themes\AlphaBlack\Content\custom.less" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

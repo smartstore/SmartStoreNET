@@ -1,11 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
+using System.Xml.Serialization;
 using Autofac;
 using OffAmazonPaymentsService;
 using SmartStore.AmazonPay.Api;
@@ -107,7 +109,7 @@ namespace SmartStore.AmazonPay.Services
 
 		private string GetPluginUrl(string action, bool useSsl = false)
 		{
-			string pluginUrl = "{0}Plugins/PaymentsAmazonPay/{1}".FormatWith(_services.WebHelper.GetStoreLocation(useSsl), action);
+			string pluginUrl = "{0}Plugins/SmartStore.AmazonPay/AmazonPay/{1}".FormatWith(_services.WebHelper.GetStoreLocation(useSsl), action);
 			return pluginUrl;
 		}
 
@@ -131,6 +133,41 @@ namespace SmartStore.AmazonPay.Services
 				return shoppingCartTotal;
 			}
 			return null;
+		}
+
+		private void SerializeOrderAttribute(AmazonPayOrderAttribute attribute, Order order)
+		{
+			if (attribute != null)
+			{
+				var sb = new StringBuilder();
+				using (var writer = new StringWriter(sb))
+				{
+					var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
+					serializer.Serialize(writer, attribute);
+
+					_genericAttributeService.SaveAttribute<string>(order, AmazonPayCore.AmazonPayOrderAttributeKey, sb.ToString(), order.StoreId);
+				}
+			}
+		}
+		private AmazonPayOrderAttribute DeserializeOrderAttribute(Order order)
+		{
+			var serialized = order.GetAttribute<string>(AmazonPayCore.AmazonPayOrderAttributeKey, _genericAttributeService, order.StoreId);
+
+			if (!serialized.HasValue())
+			{
+				var attribute = new AmazonPayOrderAttribute();
+				
+				// legacy < v.1.14
+				attribute.OrderReferenceId = order.GetAttribute<string>(AmazonPayCore.SystemName + ".OrderReferenceId", order.StoreId);
+
+				return attribute;
+			}
+
+			using (var reader = new StringReader(serialized))
+			{
+				var serializer = new XmlSerializer(typeof(AmazonPayOrderAttribute));
+				return (AmazonPayOrderAttribute)serializer.Deserialize(reader);
+			}
 		}
 
 		public void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null)
@@ -209,6 +246,7 @@ namespace SmartStore.AmazonPay.Services
 				else
 				{
 					anyString = orderNoteStrings.SafeGet((int)note);
+					anyString = anyString.Replace("{0}", "");
 				}
 
 				if (anyString.HasValue())
@@ -390,7 +428,7 @@ namespace SmartStore.AmazonPay.Services
 					}
 
 					string storeLocation = _services.WebHelper.GetStoreLocation(store.SslEnabled);
-					model.LoginHandlerUrl = "{0}Plugins/SmartStore.AmazonPay.ShoppingCart/AmazonPayShoppingCart/LoginHandler".FormatWith(storeLocation);
+					model.LoginHandlerUrl = "{0}Plugins/SmartStore.AmazonPay/AmazonPayShoppingCart/LoginHandler".FormatWith(storeLocation);
 				}
 				else
 				{
@@ -564,9 +602,9 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var client = new AmazonPayClient(settings);
 
-				string orderReferenceId = order.GetAttribute<string>(AmazonPayCore.AmazonPayOrderReferenceIdKey, order.StoreId);
+				var orderAttribute = DeserializeOrderAttribute(order);
 
-				_api.CloseOrderReference(client, orderReferenceId);
+				_api.CloseOrderReference(client, orderAttribute.OrderReferenceId);
 			}
 			catch (OffAmazonPaymentsServiceException exc)
 			{
@@ -580,16 +618,24 @@ namespace SmartStore.AmazonPay.Services
 
 		private void ProcessAuthorizationResult(AmazonPayClient client, Order order, AmazonPayApiData data, OffAmazonPaymentsService.Model.AuthorizationDetails details)
 		{
-			if (order.PaymentStatus == PaymentStatus.Pending && !data.State.IsCaseInsensitiveEqual("Closed"))
+			string formattedAddress;
+			var orderAttribute = DeserializeOrderAttribute(order);
+
+			if (!orderAttribute.IsBillingAddressApplied)
 			{
-				string formattedAddress;
 				if (_api.FulfillBillingAddress(client.Settings, order, details, out formattedAddress))
 				{
 					AddOrderNote(client.Settings, order, AmazonPayOrderNote.BillingAddressApplied, formattedAddress);
+
+					orderAttribute.IsBillingAddressApplied = true;
+					SerializeOrderAttribute(orderAttribute, order);
 				}
-				else
+				else if (formattedAddress.HasValue())
 				{
 					AddOrderNote(client.Settings, order, AmazonPayOrderNote.BillingAddressCountryNotAllowed, formattedAddress);
+
+					orderAttribute.IsBillingAddressApplied = true;
+					SerializeOrderAttribute(orderAttribute, order);
 				}
 			}
 
@@ -598,14 +644,23 @@ namespace SmartStore.AmazonPay.Services
 
 			string newResult = data.State.Grow(data.ReasonCode, " ");
 
-			if (data.State.IsCaseInsensitiveEqual("Open") && _orderProcessingService.CanMarkOrderAsAuthorized(order))
+			if (_orderProcessingService.CanMarkOrderAsAuthorized(order))
 			{
 				_orderProcessingService.MarkAsAuthorized(order);
+			}
+
+			if (data.State.IsCaseInsensitiveEqual("Closed") && data.ReasonCode.IsCaseInsensitiveEqual("OrderReferenceCanceled") && _orderProcessingService.CanVoidOffline(order))
+			{
+				_orderProcessingService.VoidOffline(order);		// cancelation at amazon seller central
 			}
 
 			if (!newResult.IsCaseInsensitiveEqual(order.AuthorizationTransactionResult))
 			{
 				order.AuthorizationTransactionResult = newResult;
+
+				if (order.CaptureTransactionId.IsNullOrEmpty() && data.CaptureId.HasValue())
+					order.CaptureTransactionId = data.CaptureId;	// captured at amazon seller central
+
 				_orderService.UpdateOrder(order);
 
 				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
@@ -951,7 +1006,12 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 
-				_genericAttributeService.SaveAttribute<string>(request.Order, AmazonPayCore.AmazonPayOrderReferenceIdKey, state.OrderReferenceId, request.Order.StoreId);
+				var orderAttribute = new AmazonPayOrderAttribute()
+				{
+					OrderReferenceId = state.OrderReferenceId
+				};
+
+				SerializeOrderAttribute(orderAttribute, request.Order);
 			}
 			catch (Exception exc)
 			{
@@ -1042,9 +1102,9 @@ namespace SmartStore.AmazonPay.Services
 					var settings = _settingService.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 					var client = new AmazonPayClient(settings);
 
-					string orderReferenceId = request.Order.GetAttribute<string>(AmazonPayCore.AmazonPayOrderReferenceIdKey, request.Order.StoreId);
+					var orderAttribute = DeserializeOrderAttribute(request.Order);
 
-					_api.CancelOrderReference(client, orderReferenceId);
+					_api.CancelOrderReference(client, orderAttribute.OrderReferenceId);
 				}
 			}
 			catch (OffAmazonPaymentsServiceException exc)
@@ -1120,6 +1180,7 @@ namespace SmartStore.AmazonPay.Services
 					from x in _orderRepository.Table
 					where x.PaymentMethodSystemName == AmazonPayCore.SystemName && x.CreatedOnUtc > isTooOld &&
 						!x.Deleted && x.OrderStatusId < (int)OrderStatus.Complete && x.PaymentStatusId != (int)PaymentStatus.Voided
+					orderby x.Id descending
 					select x;
 
 				var orders = query.ToList();
@@ -1132,43 +1193,19 @@ namespace SmartStore.AmazonPay.Services
 					{
 						if (order.AuthorizationTransactionId.HasValue())
 						{
-							var state = order.AuthorizationTransactionResult.EmptyNull().ToLowerInvariant();
+							var details = _api.GetAuthorizationDetails(client, order.AuthorizationTransactionId, out data);
 
-							if (!(state.StartsWith("declined") || state.StartsWith("closed")))
-							{
-								var details = _api.GetAuthorizationDetails(client, order.AuthorizationTransactionId, out data);
-
-								ProcessAuthorizationResult(client, order, data, details);
-							}
+							ProcessAuthorizationResult(client, order, data, details);
 						}
 
-						if (order.CaptureTransactionId.HasValue())
+						if (order.CaptureTransactionId.HasValue() && (_orderProcessingService.CanMarkOrderAsPaid(order) || _orderProcessingService.CanVoidOffline(order)))
 						{
-							string state = order.CaptureTransactionResult.EmptyNull().ToLowerInvariant();
+							var details = _api.GetCaptureDetails(client, order.CaptureTransactionId, out data);
 
-							if (!(state.StartsWith("declined") || state.StartsWith("completed") || state.StartsWith("closed")))
-							{
-								var details = _api.GetCaptureDetails(client, order.CaptureTransactionId, out data);
-
-								ProcessCaptureResult(client, order, data);
-							}
+							ProcessCaptureResult(client, order, data);
 						}
 
-						// refund... what to do??
-						//if (order.PaymentStatus == PaymentStatus.Refunded || order.PaymentStatus == PaymentStatus.PartiallyRefunded)
-						//{
-						//	var refundIds = _genericAttributeService.GetAttributes(AmazonPayCore.AmazonPayRefundIdKey, "Order")
-						//		.Where(x => x.EntityId == order.Id)
-						//		.Select(x => x.Value)
-						//		.ToList();
-
-						//	foreach (string refundId in refundIds)
-						//	{
-						//		_api.GetRefundDetails(client, refundId, out data);
-
-						//		ProcessRefundResult(client, order, data);
-						//	}
-						//}
+						// TODO... reflect refund(s) made at Amazon seller central?
 					}
 					catch (OffAmazonPaymentsServiceException exc)
 					{

@@ -1,5 +1,11 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.14##
+
+###Bugfixes###
+* Data polling did not reflect the transaction status correctly if the action took place at amazon seller central
+
+
 ##Pay with Amazon 1.13##
 
 ###Bugfixes###

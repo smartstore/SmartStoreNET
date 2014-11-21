@@ -67,7 +67,7 @@ namespace SmartStore.AmazonPay.Filters
 
 			var routeValues = new RouteValueDictionary(new { action = actionName, controller = "AmazonPayCheckout" });
 
-			filterContext.Result = new RedirectToRouteResult("SmartStore.AmazonPay.Checkout", routeValues);
+			filterContext.Result = new RedirectToRouteResult("SmartStore.AmazonPay", routeValues);
 		}
 	}
 }

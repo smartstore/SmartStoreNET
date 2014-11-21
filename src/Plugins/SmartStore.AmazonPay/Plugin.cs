@@ -1,11 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Web.Routing;
-using SmartStore.Core.Plugins;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.AmazonPay.Controllers;
 using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Orders;

@@ -1,6 +1,8 @@
 ﻿.config-logo {
 	width: 339px;
 	height: 74px;
+	float: right;
+	margin-bottom: 5px;
 }
 
 .amazon-pay-button .selection-text {

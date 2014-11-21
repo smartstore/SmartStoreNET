@@ -9,24 +9,17 @@ namespace SmartStore.AmazonPay
 	{
 		public void RegisterRoutes(RouteCollection routes)
 		{
-			// for backward compatibility (IPN!)
 			routes.MapRoute("SmartStore.AmazonPay",
-					"Plugins/PaymentsAmazonPay/{action}",
+					"Plugins/SmartStore.AmazonPay/{controller}/{action}",
 					new { controller = "AmazonPay" },
 					new[] { "SmartStore.AmazonPay.Controllers" }
 			)
 			.DataTokens["area"] = AmazonPayCore.SystemName;
 
-			routes.MapRoute("SmartStore.AmazonPay.Checkout",
-					"Plugins/SmartStore.AmazonPay.Checkout/{controller}/{action}",
-					new { controller = "AmazonPayCheckout" },
-					new[] { "SmartStore.AmazonPay.Controllers" }
-			)
-			.DataTokens["area"] = AmazonPayCore.SystemName;
-
-			routes.MapRoute("SmartStore.AmazonPay.ShoppingCart",
-					"Plugins/SmartStore.AmazonPay.ShoppingCart/{controller}/{action}",
-					new { controller = "AmazonPayShoppingCart" },
+			// for backward compatibility (IPN!)
+			routes.MapRoute("SmartStore.AmazonPay.Legacy",
+					"Plugins/PaymentsAmazonPay/{action}",
+					new { controller = "AmazonPay" },
 					new[] { "SmartStore.AmazonPay.Controllers" }
 			)
 			.DataTokens["area"] = AmazonPayCore.SystemName;

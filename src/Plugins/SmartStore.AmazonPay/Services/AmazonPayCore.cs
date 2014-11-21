@@ -1,19 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.AmazonPay.Api;
 using SmartStore.AmazonPay.Settings;
+using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.AmazonPay.Services
 {
 	public static class AmazonPayCore
 	{
-		public static string AppVersion { get { return "1.13"; } }
+		public static string AppVersion { get { return "1.14"; } }
 		public static string AppName { get { return "SmartStore.Net " + SystemName; } }
 		public static string SystemName { get { return "SmartStore.AmazonPay"; } }
 		public static string AmazonPayCheckoutStateKey { get { return SystemName + ".CheckoutState"; } }
-		public static string AmazonPayOrderReferenceIdKey { get { return SystemName + ".OrderReferenceId"; } }
+		public static string AmazonPayOrderAttributeKey { get { return SystemName + ".OrderAttribute"; } }
 		public static string AmazonPayRefundIdKey { get { return SystemName + ".RefundId"; } }
 		public static string DataPollingTaskType { get { return "SmartStore.AmazonPay.DataPollingTask, SmartStore.AmazonPay"; } }
 
@@ -40,6 +40,14 @@ namespace SmartStore.AmazonPay.Services
 	{
 		public Guid OrderGuid { get; set; }
 		public List<string> Errors { get; set; }
+	}
+
+
+	[Serializable]
+	public class AmazonPayOrderAttribute
+	{
+		public string OrderReferenceId { get; set; }
+		public bool IsBillingAddressApplied { get; set; }
 	}
 
 

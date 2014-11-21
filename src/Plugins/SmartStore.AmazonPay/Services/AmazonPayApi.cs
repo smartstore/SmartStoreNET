@@ -18,6 +18,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Common;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -28,19 +29,22 @@ namespace SmartStore.AmazonPay.Api
 		private readonly IOrderService _orderService;
 		private readonly ILocalizationService _localizationService;
 		private readonly IAddressService _addressService;
+		private readonly IDateTimeHelper _dateTimeHelper;
 
 		public AmazonPayApi(
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			IOrderService orderService,
 			ILocalizationService localizationService,
-			IAddressService addressService)
+			IAddressService addressService,
+			IDateTimeHelper dateTimeHelper)
 		{
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
 			_orderService = orderService;
 			_localizationService = localizationService;
 			_addressService = addressService;
+			_dateTimeHelper = dateTimeHelper;
 		}
 
 		private string GetRandomId(string prefix)
@@ -597,7 +601,9 @@ namespace SmartStore.AmazonPay.Api
 				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.MessageTyp), data.MessageType.NaIfEmpty()));
 
 				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.State), state));
-				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.StateUpdate), data.StateLastUpdate.ToString()));
+
+				var stateDate = _dateTimeHelper.ConvertToUserTime(data.StateLastUpdate, DateTimeKind.Utc);
+				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.StateUpdate), stateDate.ToString()));
 
 				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.MessageId), data.MessageId.NaIfEmpty()));
 
@@ -630,10 +636,14 @@ namespace SmartStore.AmazonPay.Api
 				if (data.CaptureNow.HasValue)
 					sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.CaptureNow), data.CaptureNow.Value.ToString()));
 
-				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.Creation), data.Creation.ToString()));
+				var creationDate = _dateTimeHelper.ConvertToUserTime(data.Creation, DateTimeKind.Utc);
+				sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.Creation), creationDate.ToString()));
 
 				if (data.Expiration.HasValue)
-					sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.Expiration), data.Expiration.Value.ToString()));
+				{
+					var expirationDate = _dateTimeHelper.ConvertToUserTime(data.Expiration.Value, DateTimeKind.Utc);
+					sb.AppendLine("{0}: {1}".FormatWith(strings.SafeGet((int)AmazonPayMessage.Expiration), expirationDate.ToString()));
+				}
 			}
 			catch (Exception exc)
 			{

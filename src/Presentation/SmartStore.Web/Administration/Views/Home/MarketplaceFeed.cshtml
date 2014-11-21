@@ -1,14 +1,38 @@
-﻿@model System.ServiceModel.Syndication.SyndicationFeed
+﻿@model List<FeedItemModel>
 
-@foreach (var item in Model.Items)
-{
-	<div style="margin-bottom: 10px">
-		<div style="font-weight:bold; margin-bottom: 4px">@item.Title.Text</div>
-		<div>@item.Summary.Text.RemoveHtml().Truncate(200, "...")</div>
-		<div>@item.PublishDate.LocalDateTime.ToString()</div>
-		<div>
-			<a href="@item.Links.FirstOrDefault().Uri.ToString()" target="MarketplaceWindow">Mehr...</a>
+<div style="text-transform: uppercase; font-size: 18px; padding-bottom: 15px">
+	<i class="fa fa-rss" style="font-size: 20px"></i>
+	Marketplace News
+</div>
+
+<div style="margin-top: 15px">
+	@foreach (var item in Model.Take(6))
+	{
+		<div style="margin-bottom: 15px; padding-bottom: 15px; border-bottom: 1px solid #ddd">
+			<div style="font-weight:bold; margin-bottom: 4px">
+				@if (item.Link.HasValue())
+				{
+					<a href="@item.Link" target="MarketplaceWindow"><strong>@item.Title</strong></a>
+				}
+				else
+				{
+					<strong>@item.Title</strong>
+				}
+			</div>
+
+			@*<div class="muted">@item.PublishDate</div>*@
+			<div>
+				@item.Summary
+				@if (item.Link.HasValue())
+				{
+					<a href="@item.Link">@T("Products.Longdesc.More").Text.ToLower()...</a>
+				}
+			</div>
+
 		</div>
-	</div>
-}
+	}
 
+	<a class="btn btn-primary btn-large btn-block" href="http://community.smartstore.com/index.php?/files/" target="MarketplaceWindow">
+		Visit Marketplace
+	</a>
+</div>

@@ -225,6 +225,7 @@
     <Compile Include="Models\Catalog\CopyProductModel.cs" />
     <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Cms\WidgetModel.cs" />
+    <Compile Include="Models\Common\FeedItemModel.cs" />
     <Compile Include="Models\Common\GenericAttributeModel.cs" />
     <Compile Include="Models\Common\LanguageSelectorModel.cs" />
     <Compile Include="Models\Common\MaintenanceModel.cs" />

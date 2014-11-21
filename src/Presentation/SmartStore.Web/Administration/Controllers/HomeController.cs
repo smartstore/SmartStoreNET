@@ -3,13 +3,16 @@ using System.Net;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using System.Xml;
+using System.Linq;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Admin.Models.Common;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -84,13 +87,30 @@ namespace SmartStore.Admin.Controllers
 
 				var request = WebRequest.Create(url);
 				request.Timeout = 3000;
-
+				
 				using (WebResponse response = request.GetResponse())
 				{
 					using (var reader = XmlReader.Create(response.GetResponseStream()))
 					{
 						var feed = SyndicationFeed.Load(reader);
-						return PartialView(feed);
+						var model = new List<FeedItemModel>();
+						foreach (var item in feed.Items)
+						{
+							var modelItem = new FeedItemModel();
+							modelItem.Title = item.Title.Text;
+							modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
+							modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
+
+							var link = item.Links.FirstOrDefault();
+							if (link != null)
+							{
+								modelItem.Link = link.Uri.ToString();
+							}
+
+							model.Add(modelItem);
+						}
+
+						return PartialView(model);
 					}
 				}
 			}

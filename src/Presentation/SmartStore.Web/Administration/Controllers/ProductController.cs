@@ -985,19 +985,18 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				var product = new Product()
-				{
-					CreatedOnUtc = DateTime.UtcNow,
-					StockQuantity = 10000,
-					OrderMinimumQuantity = 1,
-					OrderMaximumQuantity = 10000,
-					IsShipEnabled = true,
-					AllowCustomerReviews = true,
-					Published = true,
-					VisibleIndividually = true
-				};
+				var product = new Product();
 
 				MapModelToProduct(model, product, form);
+
+				product.CreatedOnUtc = DateTime.UtcNow;
+				product.StockQuantity = 10000;
+				product.OrderMinimumQuantity = 1;
+				product.OrderMaximumQuantity = 10000;
+				product.IsShipEnabled = true;
+				product.AllowCustomerReviews = true;
+				product.Published = true;
+				product.VisibleIndividually = true;
 
 				if (product.ProductType == ProductType.BundledProduct)
 				{

@@ -284,7 +284,8 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var itemData in items.Where(x => x.IsValid()))
 				{
-					var itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData);
+					decimal itemPrice = (itemData.PriceOverride ?? GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData));
+
 					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
 

@@ -17,6 +17,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		public ProductBundleItem Item { get; private set; }
 		public decimal AdditionalCharge { get; set; }
+		public decimal? PriceOverride { get; set; }
 	}
 
 	public partial class ProductBundleItemOrderData

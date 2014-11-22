@@ -1,4 +1,4 @@
-#Release Notes#
+﻿#Release Notes#
 
 ##SmartStore.NET 2.1#
 
@@ -114,6 +114,7 @@
 * Ipayment: Capturing did not work because the security was not transmitted
 * #405 "Reset Password" Link in Emails is wrong with SSL secured sites 
 * #471 Checkout: Redirecting to external payment page could take a while. Clicking "Buy" button again might cancel the redirecting.
+* Pricing not considered attribute combination prices for bundles with per item pricing
 
 
 ##SmartStore.NET 2.0.2#

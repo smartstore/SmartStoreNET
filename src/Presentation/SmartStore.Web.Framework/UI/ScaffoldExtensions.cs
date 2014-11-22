@@ -50,8 +50,7 @@ namespace SmartStore.Web.Framework.UI
 			if (id != 0)
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-
-				namePart = "<a href=\"{0}{1}\">{2}</a>".FormatInvariant(url, id, helper.Encode(name));
+				namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, helper.Encode(name));
 			}
 			else
 			{

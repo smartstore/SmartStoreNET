@@ -58,40 +58,24 @@
 // Set corners individual because sometimes a single button can be in a .btn-group and we need :first-child and :last-child to both match
 .btn-group > .btn:first-child {
   margin-left: 0;
-     -webkit-border-top-left-radius: @baseBorderRadius;
-         -moz-border-radius-topleft: @baseBorderRadius;
              border-top-left-radius: @baseBorderRadius;
-  -webkit-border-bottom-left-radius: @baseBorderRadius;
-      -moz-border-radius-bottomleft: @baseBorderRadius;
           border-bottom-left-radius: @baseBorderRadius;
 }
 // Need .dropdown-toggle since :last-child doesn't apply given a .dropdown-menu immediately after it
 .btn-group > .btn:last-child,
 .btn-group > .dropdown-toggle {
-     -webkit-border-top-right-radius: @baseBorderRadius;
-         -moz-border-radius-topright: @baseBorderRadius;
              border-top-right-radius: @baseBorderRadius;
-  -webkit-border-bottom-right-radius: @baseBorderRadius;
-      -moz-border-radius-bottomright: @baseBorderRadius;
           border-bottom-right-radius: @baseBorderRadius;
 }
 // Reset corners for large buttons
 .btn-group > .btn.large:first-child {
   margin-left: 0;
-     -webkit-border-top-left-radius: @borderRadiusLarge;
-         -moz-border-radius-topleft: @borderRadiusLarge;
              border-top-left-radius: @borderRadiusLarge;
-  -webkit-border-bottom-left-radius: @borderRadiusLarge;
-      -moz-border-radius-bottomleft: @borderRadiusLarge;
           border-bottom-left-radius: @borderRadiusLarge;
 }
 .btn-group > .btn.large:last-child,
 .btn-group > .large.dropdown-toggle {
-     -webkit-border-top-right-radius: @borderRadiusLarge;
-         -moz-border-radius-topright: @borderRadiusLarge;
              border-top-right-radius: @borderRadiusLarge;
-  -webkit-border-bottom-right-radius: @borderRadiusLarge;
-      -moz-border-radius-bottomright: @borderRadiusLarge;
           border-bottom-right-radius: @borderRadiusLarge;
 }
 

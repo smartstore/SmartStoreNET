@@ -125,8 +125,6 @@
     
     overflow: hidden;
     -webkit-transition: all 0.1s ease-in;
-       -moz-transition: all 0.1s ease-in;
-        -ms-transition: all 0.1s ease-in;
          -o-transition: all 0.1s ease-in;
             transition: all 0.1s ease-in;
 	
@@ -154,7 +152,6 @@
 .sg-scroll-forward {
 	position: absolute;
     -webkit-box-shadow: 0 0 4px rgba(0,0,0, .15);
-       -moz-box-shadow: 0 0 4px rgba(0,0,0, .15);
             box-shadow: 0 0 4px rgba(0,0,0, .15);
 	z-index: 30;
 	height: 100%;
@@ -198,7 +195,6 @@
 .zoomWindow,
 .zoomLens {
    -webkit-box-shadow: 0 0 10px rgba(0,0,0, 0.4);
-      -moz-box-shadow: 0 0 10px rgba(0,0,0, 0.4);
            box-shadow: 0 0 10px rgba(0,0,0, 0.4);
     display: none;
 }

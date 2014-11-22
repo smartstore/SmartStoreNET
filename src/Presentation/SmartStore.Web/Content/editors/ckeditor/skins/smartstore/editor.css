@@ -16,8 +16,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	-webkit-box-sizing: content-box;
 	position: static;
 	-webkit-transition: none;
-	-moz-transition: none;
-	-ms-transition: none;
 	transition: none;
 }
 
@@ -35,8 +33,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	-webkit-box-sizing: content-box;
 	position: static;
 	-webkit-transition: none;
-	-moz-transition: none;
-	-ms-transition: none;
 	transition: none;
 	border-collapse: collapse;
 	font: normal normal normal 12px Arial,Helvetica,Tahoma,Verdana,Sans-Serif;
@@ -82,7 +78,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	display: block;
 	border: 1px solid #ccc;
 	padding: 0;
-	-moz-box-shadow: 0 0 3px rgba(0,0,0,.15);
 	-webkit-box-shadow: 0 0 3px rgba(0,0,0,.15);
 	box-shadow: 0 0 3px rgba(0,0,0,.15);
 }
@@ -111,7 +106,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	border-bottom: 1px solid #b6b6b6;
 	padding: 6px 8px 2px;
 	white-space: normal;
-	-moz-box-shadow: 0 1px 0 #fff inset;
 	-webkit-box-shadow: 0 1px 0 #fff inset;
 	box-shadow: 0 1px 0 #fff inset;
 	background: #f5f5f5;
@@ -126,7 +120,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	padding: 6px 8px 2px;
 	position: relative;
 	border-top: 1px solid #bfbfbf;
-	-moz-box-shadow: 0 1px 0 #fff inset;
 	-webkit-box-shadow: 0 1px 0 #fff inset;
 	box-shadow: 0 1px 0 #fff inset;
 	background: #f5f5f5;
@@ -151,7 +144,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	vertical-align: bottom;
 	margin-top: 6px;
 	margin-bottom: 2px;
-	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.3);
 	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.3);
 	box-shadow: 0 1px 0 rgba(255,255,255,.3);
 }
@@ -198,10 +190,7 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	background-color: #fff;
 	border: 1px solid #ccc;
 	border: 1px solid rgba(0,0,0, 0.2);
-	-moz-border-radius: 0;
-	-webkit-border-radius: 0;
 	border-radius: 0;
-	-moz-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	-webkit-box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
 	
@@ -250,8 +239,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 		text-decoration: none;
 		overflow: hidden;
 		text-overflow: ellipsis;
-		-moz-border-radius: 0;
-		-webkit-border-radius: 0;
 		border-radius: 0;
 	}
 
@@ -267,7 +254,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	.cke_panel_listItem.cke_selected a {
 		border: 1px solid #dedede;
 		background-color: #f2f2f2;
-		-moz-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 		-webkit-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 		box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 	}
@@ -275,7 +261,6 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	.cke_panel_listItem a:hover, .cke_panel_listItem a:focus, .cke_panel_listItem a:active {
 		border-color: #dedede;
 		background-color: #f2f2f2;
-		-moz-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 		-webkit-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 		box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 	}
@@ -299,18 +284,12 @@ For licensing, see LICENSE.md or http://ckeditor.com/license
 	color: #474747;
 	text-shadow: 0 1px 0 rgba(255,255,255,.75);
 	border-bottom: 1px solid #b6b6b6;
-	-moz-border-radius: 2px 2px 0 0;
-	-webkit-border-radius: 2px 2px 0 0;
 	border-radius: 2px 2px 0 0;
-	-moz-box-shadow: 0 1px 0 #fff inset;
 	-webkit-box-shadow: 0 1px 0 #fff inset;
 	box-shadow: 0 1px 0 #fff inset;
 	background: #cfd1cf;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#f5f5f5),to(#cfd1cf));
-	background-image: -moz-linear-gradient(top,#f5f5f5,#cfd1cf);
 	background-image: -webkit-linear-gradient(top,#f5f5f5,#cfd1cf);
 	background-image: -o-linear-gradient(top,#f5f5f5,#cfd1cf);
-	background-image: -ms-linear-gradient(top,#f5f5f5,#cfd1cf);
 	background-image: linear-gradient(top,#f5f5f5,#cfd1cf);
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#f5f5f5',endColorstr='#cfd1cf');
 }
@@ -384,18 +363,12 @@ a:hover.cke_colorauto, a:hover.cke_colormore, a:focus.cke_colorauto, a:focus.cke
 	margin: 0 6px 5px 0;
 	border: 1px solid #ccc;
 	border-bottom-color: #c2c2c2;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	background: #f2f2f2;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#e4e4e4));
-	background-image: -moz-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -ms-linear-gradient(top,#fff,#e4e4e4);
 	background-image: linear-gradient(top,#fff,#f2f2f2);
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
@@ -445,14 +418,10 @@ a.cke_button_on:hover {
 }
 
 .cke_ltr .cke_button:last-child, .cke_rtl .cke_button:first-child {
-	-moz-border-radius: 0 2px 2px 0;
-	-webkit-border-radius: 0 2px 2px 0;
 	border-radius: 0 2px 2px 0;
 }
 
 .cke_ltr .cke_button:first-child, .cke_rtl .cke_button:last-child {
-	-moz-border-radius: 2px 0 0 2px;
-	-webkit-border-radius: 2px 0 0 2px;
 	border-radius: 2px 0 0 2px;
 }
 
@@ -468,7 +437,6 @@ a.cke_button_on:hover {
 
 .cke_button_on, .cke_button_off:active,
 .cke_combo_off a.cke_combo_button:active, .cke_combo_on a.cke_combo_button {
-	-moz-box-shadow: inset 0 3px 6px rgba(0,0,0,.1);
 	-webkit-box-shadow: inset 0 3px 6px rgba(0,0,0,.1);
 	box-shadow: inset 0 3px 6px rgba(0,0,0,.1);
 	background: #e6e6e6;
@@ -502,11 +470,8 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 
 .cke_combo_off a.cke_combo_button:hover, .cke_combo_off a.cke_combo_button:focus {
 	background-color: #ccc;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#f4f4f4),to(#dcdcdc));
-	background-image: -moz-linear-gradient(top,#f4f4f4,#dcdcdc);
 	background-image: -webkit-linear-gradient(top,#f4f4f4,#dcdcdc);
 	background-image: -o-linear-gradient(top,#f4f4f4,#dcdcdc);
-	background-image: -ms-linear-gradient(top,#f4f4f4,#dcdcdc);
 	background-image: linear-gradient(top,#f4f4f4,#dcdcdc);
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#f4f4f4',endColorstr='#dcdcdc');
 }
@@ -585,14 +550,12 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	height: 18px;
 	width: 1px;
 	-webkit-box-shadow: 1px 0 1px rgba(255,255,255,.5);
-	-moz-box-shadow: 1px 0 1px rgba(255,255,255,.5);
 	box-shadow: 1px 0 1px rgba(255,255,255,.5);
 }
 
 .cke_rtl .cke_toolbar_separator {
 	float: right;
 	-webkit-box-shadow: -1px 0 1px rgba(255,255,255,.1);
-	-moz-box-shadow: -1px 0 1px rgba(255,255,255,.1);
 	box-shadow: -1px 0 1px rgba(255,255,255,.1);
 }
 
@@ -621,29 +584,20 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	text-align: center;
 	border: 1px solid #a6a6a6;
 	border-bottom-color: #979797;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	background: #e4e4e4;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#e4e4e4));
-	background-image: -moz-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -ms-linear-gradient(top,#fff,#e4e4e4);
 	background-image: linear-gradient(top,#fff,#e4e4e4);
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
 
 	.cke_toolbox_collapser:hover {
 		background: #ccc;
-		background-image: -webkit-gradient(linear,left top,left bottom,from(#f2f2f2),to(#ccc));
-		background-image: -moz-linear-gradient(top,#f2f2f2,#ccc);
 		background-image: -webkit-linear-gradient(top,#f2f2f2,#ccc);
 		background-image: -o-linear-gradient(top,#f2f2f2,#ccc);
-		background-image: -ms-linear-gradient(top,#f2f2f2,#ccc);
 		background-image: linear-gradient(top,#f2f2f2,#ccc);
 		filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#f2f2f2',endColorstr='#cccccc');
 	}
@@ -756,7 +710,6 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 .cke_menubutton_on {
 	border: 1px solid #dedede;
 	background-color: #f2f2f2;
-	-moz-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 	-webkit-box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 	box-shadow: 0 0 2px rgba(0,0,0,.1) inset;
 }
@@ -837,18 +790,12 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 	margin: 0 6px 5px 0;
 	border: 1px solid #ccc;
 	border-bottom-color: #c2c2c2;
-	-moz-border-radius: 3px;
-	-webkit-border-radius: 3px;
 	border-radius: 3px;
-	-moz-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	-webkit-box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	box-shadow: 0 1px 0 rgba(255,255,255,.5),0 0 2px rgba(255,255,255,.15) inset,0 1px 0 rgba(255,255,255,.15) inset;
 	background: #f2f2f2;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(#fff),to(#e4e4e4));
-	background-image: -moz-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -webkit-linear-gradient(top,#fff,#e4e4e4);
 	background-image: -o-linear-gradient(top,#fff,#e4e4e4);
-	background-image: -ms-linear-gradient(top,#fff,#e4e4e4);
 	background-image: linear-gradient(top,#fff,#e4e4e4);
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#e4e4e4');
 }
@@ -956,12 +903,8 @@ a.cke_button_off:hover, a.cke_button_off:focus, a.cke_button_off:active {
 a.cke_path_item:hover, a.cke_path_item:focus, a.cke_path_item:active {
 	background-color: #e9e9e9;
 	color: #333;
-	/*text-shadow: 0 1px 0 rgba(255,255,255,.5);*/
-	-moz-border-radius: 2px;
-	-webkit-border-radius: 2px;
 	border-radius: 2px;
 	text-decoration: none;
-	-moz-box-shadow: 0 0 4px rgba(0,0,0,.5) inset,0 1px 0 rgba(255,255,255,.5);
 	-webkit-box-shadow: 0 0 4px rgba(0,0,0,.5) inset,0 1px 0 rgba(255,255,255,.5);
 	box-shadow: 0 0 2px rgba(0,0,0,.5) inset;
 }

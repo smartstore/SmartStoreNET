@@ -119,6 +119,33 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Account.Avatar.UploadRules",
 				"Avatar must be in GIF, PNG or JPG format with the maximum size of {0}",
 				"Ein Avatar muss im GIF-, PNG- oder JPG-Format vorliegen und darf {0} nicht überschreiten.");
+			
+			// Misc
+			builder.AddOrUpdate("Admin.Catalog.Attributes.AttributeControlType",
+				"Control type",
+				"Typ");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.AttributeControlType.Hint",
+				"Choose how to display your attribute values.",
+				"Bestimmt den Steuerelement-Typen für die Erfassung der Attribut-Werte");
+			builder.AddOrUpdate("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Sku").Value("#");
+			builder.AddOrUpdate("Admin.Catalog.Products.Fields.SeName").Value("en", "URL Alias");
+			builder.AddOrUpdate("Admin.Catalog.Manufacturers.Fields.SeName").Value("en", "URL alias");
+			builder.AddOrUpdate("Admin.Catalog.Categories.Fields.SeName").Value("en", "URL alias");
+
+
+			// Marketplace
+			builder.AddOrUpdate("Admin.Marketplace",
+				"Marketplace",
+				"Marketplace");
+			builder.AddOrUpdate("Admin.Marketplace.News",
+				"Marketplace News",
+				"Marketplace News");
+			builder.AddOrUpdate("Admin.Marketplace.ComingSoon",
+				"In the SmartStore.NET Marketplace we offer modules, themes & language packages, which will make your shop better and more successful. Once we are ready to go, you'll be informed about the latest extensions here. Stay tuned...",
+				"Im SmartStore.NET Marketplace werden Module, Themes & Sprachpakete angeboten, die Ihren Onlineshop besser, flexibler und erfolgreicher machen sollen. Sobald wir die Arbeiten am Marketplace abgeschlossen haben, werden Sie hier über die neuesten Erweiterungen informiert.");
+			builder.AddOrUpdate("Admin.Marketplace.Visit",
+				"Visit Marketplace",
+				"Zum Marketplace");
 		}
 
 

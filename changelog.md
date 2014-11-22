@@ -11,6 +11,7 @@
 * (Developer) *Theme inheritance*: create derived child themes with minimum effort by overriding only small parts (static files and even variables).
 * *Preview Mode*: virtually test themes and stores more easily
 * New payment plugin *Pay with Amazon*
+* Support for *hierarchical SEO slugs*, e.g.: samsung/galaxy/s5/16gb/white
 * (Developer) Model binding for plugin tab views: models from plugin tabs get automatically materialized and bound to TabbableModel.CustomProperties[MyKey]. Extended the SmartModelBinder for this.
 * (Developer) New event _ModelBoundEvent_. Consume this in plugins to persist plugin specific models.
 * (Admin) Added _GMC_ tab to product edit view. This is more a coding example for the above stuff rather than a new feature.

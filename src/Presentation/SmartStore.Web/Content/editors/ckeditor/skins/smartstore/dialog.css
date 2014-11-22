@@ -297,11 +297,8 @@ a.cke_dialog_ui_button {
 	border-color: rgba(0,0,0, .15);
 	border-radius: 2px;
 	background-color: #f2f2f2;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255, 1)),to(rgba(255,255,255, 1)));
-	background-image: -moz-linear-gradient(top,rgba(255,255,255, 1),rgba(255,255,255, 0));
 	background-image: -webkit-linear-gradient(top,rgba(255,255,255, 1),rgba(255,255,255, 0));
 	background-image: -o-linear-gradient(top,rgba(255,255,255, 1),rgba(255,255,255, 0));
-	background-image: -ms-linear-gradient(top,rgba(255,255,255, 1),rgba(255,255,255, 0));
 	background-image: linear-gradient(top,rgba(255,255,255, 1),rgba(255,255,255, 0));
 	filter: progid:DXImageTransform.Microsoft.gradient(gradientType=0,startColorstr='#ffffff',endColorstr='#f2f2f2');
 }
@@ -354,11 +351,8 @@ span.cke_dialog_ui_button {
 a.cke_dialog_ui_button_ok {
 	color: #fff;
 	background: #428bca;
-	background-image: -webkit-gradient(linear,left top,left bottom,from(rgba(255,255,255,  0.4)),to(rgba(255,255,255, 1)));
-	background-image: -moz-linear-gradient(top,rgba(255,255,255,  0.4),rgba(255,255,255, 0));
 	background-image: -webkit-linear-gradient(top,rgba(255,255,255,  0.4),rgba(255,255,255, 0));
 	background-image: -o-linear-gradient(top,rgba(255,255,255,  0.4),rgba(255,255,255, 0));
-	background-image: -ms-linear-gradient(top,rgba(255,255,255,  0.4),rgba(255,255,255, 0));
 	background-image: linear-gradient(to bottom, rgba(255,255,255, 0.4) 0, rgba(255,255,255, 0) 100%);
 	border-color: #357ebd;
 }

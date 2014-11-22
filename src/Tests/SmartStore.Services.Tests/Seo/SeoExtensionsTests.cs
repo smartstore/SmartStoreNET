@@ -23,7 +23,7 @@ namespace SmartStore.Services.Tests.Seo
         [Test]
         public void Should_remove_illegal_chars()
         {
-			SeoHelper.GetSeName("test!@#$%^&*()+<>?/", false, false).ShouldEqual("test");
+			SeoHelper.GetSeName("test!@#$%^&*()+<>?", false, false).ShouldEqual("test");
         }
 
         [Test]

@@ -779,12 +779,15 @@ legend {
 	overflow: hidden;
 }
 
+.widget-table {
+	.box-shadow(1px 1px 2px rgba(0,0,0, 0.07));
+}
+
 .widget-header {
 	position: relative;
 	height: 40px;
 	line-height: 40px;
 	border: 1px solid #d5d5d5;
-	.border-radius(4px 4px 0 0);
 	.background-clip(padding-box);
 	#gradient > .vertical(#fafafa, #e9e9e9);
 
@@ -809,8 +812,6 @@ legend {
 		line-height: 18px;
 		font-weight: 400;
 		text-transform: uppercase;
-		
-		text-shadow: 1px 1px 2px rgba(255,255,255,.5);
 	}
 }
 
@@ -818,18 +819,12 @@ legend {
 	padding: 20px 15px 15px;
 	background: #fff;
 	border: 1px solid #d5d5d5;
-	.border-radius(5px);
+	position: relative;
 	zoom: 1;
 }
 
 .widget-header + .widget-content {
 	border-top: none;
-	-webkit-border-top-left-radius: 0;
-	-webkit-border-top-right-radius: 0;
-	-moz-border-radius-topleft: 0;
-	-moz-border-radius-topright: 0;
-	border-top-left-radius: 0;
-	border-top-right-radius: 0;
 }
 
 .widget-nopad .widget-content {
@@ -855,6 +850,12 @@ legend {
 .widget-table .table {
 	margin-bottom: 0;
 	border: none;
+	table-layout: fixed;
+}
+
+.widget-table .table td,
+.widget-table .table th {
+	.text-overflow();
 }
 
 .widget-table .table tr td:first-child {
@@ -863,51 +864,11 @@ legend {
 
 .widget-table .table tr th:first-child {
 	border-left: none;
+	width: 50%;
 }
 
 
 /* DASHBOARD */
-
-.shortcuts {
-	text-align: center;	
-}
-
-.shortcuts .shortcut { 
-	width: 28%;
-	display: inline-block;
-	padding: 12px 0;
-	margin: 0 .9% 1em;
-	vertical-align: top;	
-	
-	text-decoration: none;
-	
-	background: #F3F3F3;
-	
-	border-radius: 5px;
-}
-
-.shortcuts .shortcut .shortcut-icon {
-	margin-top: .25em;
-	margin-bottom: .25em;
-	
-	font-size: 32px;
-	color: #888;
-}
-
-.shortcuts .shortcut:hover {
-	background: #E8E8E8;
-}
-
-.shortcuts .shortcut:hover .shortcut-icon {
-	color: #666;
-}
-
-.shortcuts .shortcut-label {
-	display: block;
-	
-	font-weight: 400;
-	color: #666;
-}
 
 
 .stats-today .widget-content {
@@ -955,62 +916,24 @@ legend {
 	color: #333;
 }
 
-
-table.dashboard {
-    width: 100%;
-	margin: 0 auto;
-    border-collapse: collapse;
+.marketplace-feed-title {
+	text-transform: uppercase; 
+	font-size: 18px; 
+	margin-bottom: 30px;
+	.fa { font-size: 20px; }
 }
 
-table.dashboard td.maincol {
-    vertical-align: top;
+.marketplace-feed-item {
+	margin-bottom: 15px; 
+	padding-bottom: 15px; 
+	border-bottom: 1px solid #ddd;
+	&:last-child { border-bottom: none; }
 }
-table.dashboard td.splitcol {
-    width: 50%;
-    vertical-align: top;
+
+.marketplace-feed-item-title {
+	margin-bottom: 4px;
 }
-table.dashboard td.rightcol {
-    width: 215px;
-    background: #f3f3f3;
-    padding: 10px 5px 5px;
-    vertical-align: top;
-}
-table.stats {
-    width: 100%;
-}
-table.stats td.orderaveragereport {
-    width: 100%;
-    vertical-align: top;
-}
-table.stats td.orderstatistics {
-    width: 50%;
-    vertical-align: top;
-	padding-right: 10px;
-}
-table.stats td.customerstatistics {
-    width: 50%;
-    vertical-align: top;
-    padding-left: 10px;
-}
-table.stats td.bestsellers {
-    width: 50%;
-    vertical-align: top;
-	padding-right: 10px;
-}
-table.stats td.bestsellers.alpha {
-	padding-right: 10px;
-}
-table.stats td.bestsellers.omega {
-	padding-left: 10px;
-}
-.statisticsTitle {
-	font-family: @pageTitleFontFamily;
-    font-weight:  @pageTitleFontWeight;
-	color: #a1a1a1;
-	margin-bottom: 12px;
-	font-size: 20px;
-	line-height: 30px;
-}
+
 
 /* ORDER EDITING */
 table.order-edit {

@@ -42,7 +42,6 @@
 	opacity: 0.95;
 	padding: 10px 0;
 	-webkit-transition: all 0.4s ease-in-out;
-	   -moz-transition: all 0.4s ease-in-out;
 	        transition: all 0.4s ease-in-out;
 }
 .blueimp-gallery > .indicator.out {

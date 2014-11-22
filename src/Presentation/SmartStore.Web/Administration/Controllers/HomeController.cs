@@ -1,18 +1,16 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using System.Xml;
-using System.Linq;
-using System.Collections.Generic;
-using System.Threading.Tasks;
+using SmartStore.Admin.Models.Common;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Services.Configuration;
+using SmartStore.Services;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Admin.Models.Common;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -21,20 +19,17 @@ namespace SmartStore.Admin.Controllers
     {
         #region Fields
 
-		private readonly IStoreContext _storeContext;
-        private readonly CommonSettings _commonSettings;
-        private readonly ISettingService _settingService;
+		private readonly ICommonServices _services;
+		private readonly CommonSettings _commonSettings;
 
         #endregion
 
         #region Ctor
 
-		public HomeController(IStoreContext storeContext, 
-            CommonSettings commonSettings, ISettingService settingService)
+		public HomeController(ICommonServices services, CommonSettings commonSettings)
         {
-			this._storeContext = storeContext;
             this._commonSettings = commonSettings;
-            this._settingService = settingService;
+			this._services = services;
         }
 
         #endregion
@@ -60,7 +55,7 @@ namespace SmartStore.Admin.Controllers
                     SmartStoreVersion.CurrentVersion,
                     Request.Url.IsLoopback,
                     _commonSettings.HideAdvertisementsOnAdminArea,
-					_storeContext.CurrentStore.Url);
+					_services.StoreContext.CurrentStore.Url);
 
                 //specify timeout (5 secs)
                 var request = WebRequest.Create(feedUrl);
@@ -81,50 +76,61 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult MarketplaceFeed()
 		{
-			try
-			{
-				string url = "http://community.smartstore.com/index.php?/rss/downloads/";
-
-				var request = WebRequest.Create(url);
-				request.Timeout = 3000;
-				
-				using (WebResponse response = request.GetResponse())
+			var result = _services.Cache.Get("Dashboard.MarketplaceFeed", () => {
+				try
 				{
-					using (var reader = XmlReader.Create(response.GetResponseStream()))
-					{
-						var feed = SyndicationFeed.Load(reader);
-						var model = new List<FeedItemModel>();
-						foreach (var item in feed.Items)
-						{
-							var modelItem = new FeedItemModel();
-							modelItem.Title = item.Title.Text;
-							modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
-							modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
+					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
+					var request = WebRequest.Create(url);
+					request.Timeout = 3000;
 
-							var link = item.Links.FirstOrDefault();
-							if (link != null)
+					using (WebResponse response = request.GetResponse())
+					{
+						using (var reader = XmlReader.Create(response.GetResponseStream()))
+						{
+							var feed = SyndicationFeed.Load(reader);
+							var model = new List<FeedItemModel>();
+							foreach (var item in feed.Items)
 							{
-								modelItem.Link = link.Uri.ToString();
+								if (!item.Id.EndsWith("error=1", StringComparison.OrdinalIgnoreCase))
+								{
+									var modelItem = new FeedItemModel();
+									modelItem.Title = item.Title.Text;
+									modelItem.Summary = item.Summary.Text.RemoveHtml().Truncate(150, "...");
+									modelItem.PublishDate = item.PublishDate.LocalDateTime.RelativeFormat();
+
+									var link = item.Links.FirstOrDefault();
+									if (link != null)
+									{
+										modelItem.Link = link.Uri.ToString();
+									}
+
+									model.Add(modelItem);
+								}
 							}
 
-							model.Add(modelItem);
+							return model;
 						}
-
-						return PartialView(model);
 					}
 				}
-			}
-			catch (Exception ex)
+				catch (Exception ex)
+				{
+					return new List<FeedItemModel> {new FeedItemModel { IsError = true, Summary = ex.Message } };
+				}
+			}, 720 /* 12 h */);
+
+			if (result.Any() && result.First().IsError)
 			{
-				return Content("<div class='alert alert-error'>{0}</div>".FormatCurrent(ex.Message));
+				ModelState.AddModelError("", result.First().Summary);
 			}
+
+			return PartialView(result);
 		}
 
         [HttpPost]
         public ActionResult SmartStoreNewsHideAdv()
         {
             _commonSettings.HideAdvertisementsOnAdminArea = !_commonSettings.HideAdvertisementsOnAdminArea;
-            _settingService.SaveSetting(_commonSettings);
+			_services.Settings.SaveSetting(_commonSettings);
             return Content("Setting changed");
         }
 

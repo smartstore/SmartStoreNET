@@ -492,7 +492,7 @@ namespace SmartStore.PayPal.Controllers
 
 			if (order != null)
 			{
-				return RedirectToAction("Details", "Order", new { id = order.Id });
+				return RedirectToAction("Details", "Order", new { id = order.Id, area = "" });
 			}
 
 			return RedirectToAction("Index", "Home", new { area = "" });

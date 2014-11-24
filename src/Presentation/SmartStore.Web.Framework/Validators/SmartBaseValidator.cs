@@ -3,9 +3,9 @@ using FluentValidation;
 
 namespace SmartStore.Web.Framework.Validators
 {
-	public abstract class SmartBaseValidator<T> : AbstractValidator<T> where T : class
+	public abstract class SmartValidatorBase<T> : AbstractValidator<T> where T : class
 	{
-		protected SmartBaseValidator()
+		protected SmartValidatorBase()
 		{
 		}
 

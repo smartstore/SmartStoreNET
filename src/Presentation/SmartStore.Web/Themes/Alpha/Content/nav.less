@@ -10,7 +10,8 @@
     padding: 0;
     padding-bottom: 5px;
     margin: 0;
-    border-bottom: 1px solid @var_ContainerBorder; 
+    border-bottom: 1px solid #ddd; 
+	border-bottom-color: rgba(0,0,0, 0.12);
     background: transparent;
     .border-radius(0);
 	> li { 
@@ -53,11 +54,11 @@
 
 .nav-category .level-1 > li,
 .block-account-navigation .listbox li {
-	border-bottom: 1px solid #ddd;
+	border-bottom: 1px solid mix(@var_ContainerBodyLinkColor, @var_ContainerBodyBackground, 20%);
 	&:last-child { border: none; }
 	a {
 		display: inline-block;
-		padding: .3em 0;
+		padding: 0.3em 0;
 	}
 	.active {
 		font-weight: bold;

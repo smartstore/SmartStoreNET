@@ -31,13 +31,13 @@
 		<Value>Avatar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.MaximumUploadedFileSize">
-		<Value>Die maximale Größe des Avatars beträgt {0} Bytes</Value>
+		<Value>Die maximale Größe des Avatars beträgt {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.RemoveAvatar">
 		<Value>Avatar entfernen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.UploadRules">
-		<Value>Ein Avatar muss im GIF- oder JPEG-Format vorliegen und darf 20 KB nicht überschreiten.</Value>
+		<Value>Ein Avatar muss im GIF-, PNG- oder JPG-Format vorliegen und darf {0} nicht überschreiten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.BackInStockSubscriptions">
 		<Value>Benachrichtigung bei Lieferfähigkeit</Value>
@@ -945,9 +945,6 @@
 	<LocaleResource Name="Admin.Affiliates.Customers">
 		<Value>Kunden</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Affiliates.Customers.Name">
-		<Value>Name</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Affiliates.Deleted">
 		<Value>Der Partner wurde gelöscht</Value>
 	</LocaleResource>
@@ -1014,6 +1011,12 @@
 	<LocaleResource Name="Admin.Catalog.Attributes">
 		<Value>Attribute</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.AttributeControlType">
+		<Value>Typ</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.AttributeControlType.Hint">
+		<Value>Bestimmt den Steuerelement-Typen für die Erfassung der Attribut-Werte</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes">
 		<Value>Checkout Attribute</Value>
 	</LocaleResource>
@@ -1027,7 +1030,7 @@
 		<Value>Zurück zur Attribut-Liste</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.Deleted">
-		<Value>Checkout-Attribut löschen</Value>
+		<Value>Das Attribut wurde erfolgreich gelöscht.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes.EditAttributeDetails">
 		<Value>Checkout-Attribut Details bearbeiten</Value>
@@ -2197,6 +2200,12 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsDownload.Hint">
 		<Value>Legt fest, ob das Produkt ein downloadbares, digitales Produkt ist. Ein Kunde, der ein digitales Produkt kauft, kann den Download in seinem Account-Bereich im Shop durchführen.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.IsEsd">
+		<Value>Ist elektronische Leistung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.IsEsd.Hint">
+		<Value>Legt fest, ob das Produkt elektronisch vertrieben wird und daher gemäß EU Richtlinie 2008/8/EG versteuert werden muss.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsFreeShipping">
 		<Value>Versandkostenfrei</Value>
 	</LocaleResource>
@@ -2643,6 +2652,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Pictures.Hint">
 		<Value>Aktivieren Sie die Bilder, die diese Attribut-Kombination zeigen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Sku">
+		<Value>#</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity">
 		<Value>Lagerbestand</Value>
@@ -3631,6 +3643,9 @@
 	<LocaleResource Name="admin.configuration.deliverytime.added">
 		<Value>Lieferzeit erfolgreich hinzugefügt</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTime.BackToList">
+		<Value>Zurück zur Lieferzeitenliste</Value>
+	</LocaleResource>
 	<LocaleResource Name="admin.configuration.deliverytime.deleted">
 		<Value>Die Lieferzeit wurde erfolgreich hinzugefügt.</Value>
 	</LocaleResource>
@@ -3959,7 +3974,7 @@
 		<Value>Die Standardgewichtseinheit kann nicht gelöscht werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.Description">
-		<Value>Achtung: Wenn die Standardgewichtseinheit geändernt wird, müssen auch die zugehörigen Umrechnungseinheiten (Verhältnis) angepasst werden.</Value>
+		<Value>Achtung: Wenn die Standardgewichtseinheit geändert wird, müssen auch die zugehörigen Umrechnungseinheiten (Verhältnis) angepasst werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.Fields.DisplayOrder">
 		<Value>Reihenfolge</Value>
@@ -6505,6 +6520,9 @@
 	<LocaleResource Name="Admin.Configuration.Themes.Description">
 		<Value>Beschreibung</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.ExitPreviewMode">
+		<Value>Vorschau beenden</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.ExportVars">
 		<Value>Variablen exportieren</Value>
 	</LocaleResource>
@@ -6522,6 +6540,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.ImportVars.XmlFile">
 		<Value>Konfigurationsdatei</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.IsBasedOn">
+		<Value>Basiert auf</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.MissingBaseTheme">
+		<Value>Fehler: Basis-Theme '{0}' nicht gefunden</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Name">
 		<Value>Name</Value>
@@ -6580,8 +6604,20 @@
 	<LocaleResource Name="Admin.Configuration.Themes.Options.Title">
 		<Value>Design &amp;  Test</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Preview">
+		<Value>Vorschau</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.PreviewMode">
+		<Value>Vorschaumodus</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Reload">
+		<Value>Themes aktualisieren</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.SupportsRtl">
 		<Value>SupportsRtl</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Theme">
+		<Value>Theme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Title">
 		<Value>Theme ''{0}'' konfigurieren</Value>
@@ -7463,7 +7499,7 @@
 		<Value>Kommentar für internern Gebrauch. Wird nicht veröffentlicht.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.Fields.Affiliate">
-		<Value>Zugehöriges Unternehmen</Value>
+		<Value>Partner</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.Fields.Affiliate.Hint">
 		<Value>Das dem Benutzer zugeordnete Unternehmen.</Value>
@@ -8131,6 +8167,18 @@
 	<LocaleResource Name="Admin.Help.Topics">
 		<Value>Hilfe-Themen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace">
+		<Value>Marketplace</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.ComingSoon">
+		<Value>Im SmartStore.NET Marketplace werden Module, Themes &amp; Sprachpakete angeboten, die Ihren Onlineshop besser, flexibler und erfolgreicher machen sollen. Sobald wir die Arbeiten am Marketplace abgeschlossen haben, werden Sie hier über die neuesten Erweiterungen informiert.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.News">
+		<Value>Marketplace News</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.Visit">
+		<Value>Zum Marketplace</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Order.CustomerComment.Heading">
 		<Value>Der Kunde hat folgenden Kommentar für diese Bestellung hinterlassen</Value>
 	</LocaleResource>
@@ -8267,7 +8315,7 @@
 		<Value>Auftragsdetails bearbeiten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.Affiliate">
-		<Value>Partner-Unternehmen</Value>
+		<Value>Partner</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.Affiliate.Hint">
 		<Value>Das Partner-Unternehmen, dem dieser Auftrag zugeordnet ist.</Value>
@@ -8795,7 +8843,7 @@
 		<Value>Notiz</Value>
 	</LocaleResource>
 	<LocaleResource Name="admin.orders.pdfinvoice">
-		<Value>Bestellbestätigung als PDF</Value>
+		<Value>Auftrag als PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products">
 		<Value>Produkte</Value>
@@ -10157,7 +10205,7 @@
 		<Value>Sekunden (Intervall)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.Seconds.Positive">
-		<Value>Sekunden dürfen nicht negativ sein.</Value>
+		<Value>Sekunden müssen größer als 0 sein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.StopOnError">
 		<Value>Bei Fehler anhalten</Value>
@@ -10936,6 +10984,9 @@
 	<LocaleResource Name="Common.Amount.Financial">
 		<Value>Menge</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Apply">
+		<Value>Übernehmen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.AreYouSure">
 		<Value>Sind Sie sicher?</Value>
 	</LocaleResource>
@@ -11178,6 +11229,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Question">
 		<Value>Frage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Refresh">
+		<Value>Aktualisieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Reload">
+		<Value>Neu laden</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Remove">
 		<Value>Entfernen</Value>
@@ -12359,7 +12416,7 @@
 		<Value>Fax</Value>
 	</LocaleResource>
 	<LocaleResource Name="order.getpdfinvoice">
-		<Value>Bestellbestätigung als PDF</Value>
+		<Value>Auftrag als PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.GiftCardInfo">
 		<Value>Geschenkgutschein ({0})</Value>
@@ -13060,6 +13117,9 @@
 	<LocaleResource Name="products.callforprice">
 		<Value>Preis auf Anfrage</Value>
 	</LocaleResource>
+	<LocaleResource Name="Products.CallForPrice.GoToForm">
+		<Value>Preis anfragen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Products.Compare">
 		<Value>Produkte vergleichen</Value>
 	</LocaleResource>
@@ -13250,25 +13310,28 @@
 		<Value>ab {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductHasBeenAddedToTheCart">
-		<Value>Das Produkt wurde dem Warenkorb hinzugefügt.</Value>
+		<Value>Das Produkt wurde Ihrem Warenkorb hinzugefügt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductHasBeenAddedToTheCart.Link">
-		<Value>Dieses Produkt wurde zu Ihrem &lt;a href="{0}"&gt;Warenkorb&lt;/a&gt; hinzugefügt.</Value>
+		<Value>Das Produkt wurde Ihrem &lt;a href='{0}'&gt;Warenkorb&lt;/a&gt; hinzugefügt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductHasBeenAddedToTheWishlist">
-		<Value>Das Produkt wurde dem Wunschzettel hinzugefügt.</Value>
+		<Value>Das Produkt wurde Ihrer Wunschliste hinzugefügt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductHasBeenAddedToTheWishlist.Link">
-		<Value>Dieses Produkt wurde zu Ihrem &lt;a href="{0}"&gt;Wunschzettel&lt;/a&gt; hinzugefügt.</Value>
+		<Value>Das Produkt wurde Ihrer &lt;a href='{0}'&gt;Wunschliste&lt;/a&gt; hinzugefügt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductNotAddedToTheCart">
 		<Value>Produkt konnte nicht zum Warenkorb hinzugefügt werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.ProductNotAddedToTheCart.Link">
+		<Value>Produkt konnte Ihrem Warenkorb nicht hinzugefügt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Qty">
 		<Value>Menge</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.RecentlyViewedProducts">
-		<Value>Kürzlich angesehene Produkte</Value>
+		<Value>Zuletzt angesehen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.RelatedProducts">
 		<Value>Ähnliche Produkte</Value>
@@ -13841,16 +13904,19 @@
 		<Value>Nicht erforderlich</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Totals.SubTotal">
-		<Value>Summe</Value>
+		<Value>Zwischensumme</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Totals.SubTotalDiscount">
 		<Value>Rabatt</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Totals.Tax">
-		<Value>Steuer</Value>
+		<Value>MwSt</Value>
 	</LocaleResource>
-	<LocaleResource Name="ShoppingCart.Totals.TaxRateLine">
-		<Value>Steuer {0}%</Value>
+	<LocaleResource Name="ShoppingCart.Totals.TaxRateLineExcl">
+		<Value>zzgl. {0} % MwSt</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Totals.TaxRateLineIncl">
+		<Value>inkl. {0} % MwSt</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.UnitPrice">
 		<Value>Einzelpreis</Value>
@@ -14037,6 +14103,9 @@
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.ContainerRadius">
 		<Value>Container Radius</Value>
+	</LocaleResource>
+	<LocaleResource Name="ThemeVar.Alpha.DisplayNavbar">
+		<Value>Zeige Megamenu</Value>
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.DropdownBackground">
 		<Value>Dropdown Hintergrundfarbe</Value>

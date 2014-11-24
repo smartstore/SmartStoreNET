@@ -31,13 +31,13 @@
 		<Value>Avatar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.MaximumUploadedFileSize">
-		<Value>Maximum avatar size is {0} bytes</Value>
+		<Value>Maximum avatar size is {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.RemoveAvatar">
 		<Value>Remove avatar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.Avatar.UploadRules">
-		<Value>Avatar must be in GIF or JPEG format with the maximum size of 20 KB</Value>
+		<Value>Avatar must be in GIF, PNG or JPG format with the maximum size of {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Account.BackInStockSubscriptions">
 		<Value>Back in stock subscriptions</Value>
@@ -954,9 +954,6 @@
 	<LocaleResource Name="Admin.Affiliates.Customers">
 		<Value>Affiliated customers</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Affiliates.Customers.Name">
-		<Value>Name</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Affiliates.Deleted">
 		<Value>The affiliate has been deleted successfully.</Value>
 	</LocaleResource>
@@ -1025,6 +1022,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes">
 		<Value>Attributes</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.AttributeControlType">
+		<Value>Control type</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.AttributeControlType.Hint">
+		<Value>Choose how to display your attribute values.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.CheckoutAttributes">
 		<Value>Checkout Attributes</Value>
@@ -1495,7 +1498,7 @@
 		<Value>Check to publish this category (visible in store). Uncheck to unpublish (category not available in store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
+		<Value>URL alias</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.SeName.Hint">
 		<Value>Set a search engine friendly page name e.g. 'the-best-category' to make your page URL 'http://www.yourStore.com/the-best-category'. Leave empty to generate it automatically based on the name of the category.</Value>
@@ -1675,7 +1678,7 @@
 		<Value>Check to publish this manufacturer (visible in store). Uncheck to unpublish (manufacturer not available in store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
+		<Value>URL alias</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.SeName.Hint">
 		<Value>Set a search engine friendly page name e.g. 'the-best-manufacturer' to make your page URL 'http://www.yourStore.com/the-best-manufacturer'. Leave empty to generate it automatically based on the name of the manufacturer.</Value>
@@ -2266,6 +2269,12 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsDownload.Hint">
 		<Value>Check if this product variant is a downloadable product. When a customer purchases a download product, they can download the item direct from your store by viewing their completed order.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.IsEsd">
+		<Value>Is Electronic Service</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.IsEsd.Hint">
+		<Value>Specifies whether the product is an electronic service bound to EU VAT regulations for digital goods (2008/8/EG directive)</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsFreeShipping">
 		<Value>Free shipping</Value>
 	</LocaleResource>
@@ -2477,7 +2486,7 @@
 		<Value>The sample download file.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.SeName">
-		<Value>Search engine friendly page name</Value>
+		<Value>URL Alias</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.SeName.Hint">
 		<Value>Set a search engine friendly page name e.g. 'the-best-product' to make your page URL 'http://www.yourStore.com/the-best-product'. Leave empty to generate it automatically based on the name of the product.</Value>
@@ -2721,6 +2730,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Pictures.Hint">
 		<Value>Check the images that shows this attribute combination</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Sku">
+		<Value>#</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.StockQuantity">
 		<Value>Stock quantity</Value>
@@ -3745,6 +3757,9 @@
 	<LocaleResource Name="admin.configuration.deliverytime.added">
 		<Value>Delivery time was successfully added</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.DeliveryTime.BackToList">
+		<Value>Back to delivery times list</Value>
+	</LocaleResource>
 	<LocaleResource Name="admin.configuration.deliverytime.deleted">
 		<Value>Delivery time was successfully deleted</Value>
 	</LocaleResource>
@@ -4097,7 +4112,7 @@
 		<Value>The primary weight can't be deleted.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.Description">
-		<Value>NOTE: if you change your primary weight, then do not forget to update the appropriate ratios of the units</Value>
+		<Value>NOTE: if you change your primary weight, then do not forget to update the appropriate ratios of the units.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Measures.Weights.Fields">
 		<Value>Display order</Value>
@@ -6686,6 +6701,9 @@
 	<LocaleResource Name="Admin.Configuration.Themes.Description">
 		<Value>Description</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.ExitPreviewMode">
+		<Value>Exit preview mode</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.ExportVars">
 		<Value>Export variables</Value>
 	</LocaleResource>
@@ -6703,6 +6721,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.ImportVars.XmlFile">
 		<Value>Configuration file</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.IsBasedOn">
+		<Value>Based on</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.MissingBaseTheme">
+		<Value>Error: Base theme '{0}' not found</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Name">
 		<Value>Name</Value>
@@ -6767,8 +6791,20 @@
 	<LocaleResource Name="Admin.Configuration.Themes.Options.Title">
 		<Value>Design &amp; Test</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Preview">
+		<Value>Preview</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.PreviewMode">
+		<Value>Preview Mode</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Reload">
+		<Value>Reload themes</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.SupportsRtl">
 		<Value>SupportsRtl</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Theme">
+		<Value>Theme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Title">
 		<Value>Configure '{0}' theme</Value>
@@ -8402,6 +8438,18 @@
 	<LocaleResource Name="Admin.Help.Topics">
 		<Value>Help topics</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace">
+		<Value>Marketplace</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.ComingSoon">
+		<Value>In the SmartStore.NET Marketplace we offer modules, themes &amp; language packages, which will make your shop better and more successful. Once we are ready to go, you'll be informed about the latest extensions here. Stay tuned...</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.News">
+		<Value>Marketplace News</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Marketplace.Visit">
+		<Value>Visit Marketplace</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Order.CustomerComment.Heading">
 		<Value>The customer has added the following comment to his order</Value>
 	</LocaleResource>
@@ -9084,7 +9132,7 @@
 		<Value>Note</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.PdfInvoice">
-		<Value>Invoice (PDF)</Value>
+		<Value>Order as PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products">
 		<Value>Products</Value>
@@ -10491,7 +10539,7 @@
 		<Value>Seconds (run period)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.Seconds.Positive">
-		<Value>Seconds should be positive</Value>
+		<Value>Seconds should be positive.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.ScheduleTasks.StopOnError">
 		<Value>Stop on error</Value>
@@ -11312,6 +11360,9 @@
 	<LocaleResource Name="Common.Amount.Financial">
 		<Value>Amount</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Apply">
+		<Value>Apply</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.AreYouSure">
 		<Value>Are you sure?</Value>
 	</LocaleResource>
@@ -11554,6 +11605,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Question">
 		<Value>Question</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Refresh">
+		<Value>Refresh</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Reload">
+		<Value>Reload</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Remove">
 		<Value>Remove</Value>
@@ -12708,7 +12765,7 @@
 		<Value>Fax</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.GetPDFInvoice">
-		<Value>PDF Invoice</Value>
+		<Value>Order as PDF</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.GiftCardInfo">
 		<Value>Gift card ({0})</Value>
@@ -13408,6 +13465,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.CallForPrice">
 		<Value>Call for pricing</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.CallForPrice.GoToForm">
+		<Value>Ask for price</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Compare">
 		<Value>Compare products</Value>
@@ -14190,7 +14250,7 @@
 		<Value>Not required</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Totals.SubTotal">
-		<Value>Sub-Total</Value>
+		<Value>Subtotal</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Totals.SubTotalDiscount">
 		<Value>Discount</Value>
@@ -14198,8 +14258,11 @@
 	<LocaleResource Name="ShoppingCart.Totals.Tax">
 		<Value>Tax</Value>
 	</LocaleResource>
-	<LocaleResource Name="ShoppingCart.Totals.TaxRateLine">
-		<Value>Tax {0}%</Value>
+	<LocaleResource Name="ShoppingCart.Totals.TaxRateLineExcl">
+		<Value>Plus {0} % Tax</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.Totals.TaxRateLineIncl">
+		<Value>Incl. {0} % Tax</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.UnitPrice">
 		<Value>Price</Value>
@@ -14386,6 +14449,9 @@
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.ContainerRadius">
 		<Value>Container radius</Value>
+	</LocaleResource>
+	<LocaleResource Name="ThemeVar.Alpha.DisplayNavbar">
+		<Value>Display Megamenu</Value>
 	</LocaleResource>
 	<LocaleResource Name="ThemeVar.Alpha.DropdownBackground">
 		<Value>Dropdown background color</Value>

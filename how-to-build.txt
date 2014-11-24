@@ -8,6 +8,7 @@ compiled and deployable files to the correct directory: "build/Web"
 SmartStore.NET source code distribution does NOT contain the NuGet packages required to succesfully build the solution.
 Instead these packages are downloaded during the very first compilation. Thus, when your initial build attempt fails, 
 this could indicate that the packages could not be downloaded completely yet. In this case, just build again! 
-If you're still getting errors, try to compile the solution in Visual Studio 2013 before running the .bat file	
+If you're still getting errors, try to compile the solution in Visual Studio 2013 before running the .bat file, but
+before make sure that 'SmartStore.Web' is set as your startup project.
 
-After a successfull build, select all the files in the "build\Web" directory and upload them to your web server.
+After a successful build, select all the files in the "build\Web" directory and upload them to your web server.

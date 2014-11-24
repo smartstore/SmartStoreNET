@@ -76,27 +76,3 @@
 // Utility classes
 @import "~/Content/bootstrap/utilities.less"; // Has to be last to override when necessary
 
-// this is redundant, but doable in order
-// to avoid css class cluttering. 
-
-.clearfix {
-	*zoom: 1;
-	&:before,
-	&:after {
-		display: table;
-		content: "";
-		// Fixes Opera/contenteditable bug:
-		// http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
-		line-height: 0;
-	}
-	&:after {
-		clear: both;
-	}
-}
-.hide-text {
-	font: 0/0 a;
-	color: transparent;
-	text-shadow: none;
-	background-color: transparent;
-	border: 0;
-}

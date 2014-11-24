@@ -213,14 +213,14 @@
   margin-top: -1px;
 }
 .btn-group-vertical .btn:first-child {
-  .border-radius(4px 4px 0 0);
+  .border-radius(@baseBorderRadius @baseBorderRadius 0 0);
 }
 .btn-group-vertical .btn:last-child {
-  .border-radius(0 0 4px 4px);
+  .border-radius(0 0 @baseBorderRadius @baseBorderRadius);
 }
 .btn-group-vertical .btn-large:first-child {
-  .border-radius(6px 6px 0 0);
+  .border-radius(@borderRadiusLarge @borderRadiusLarge 0 0);
 }
 .btn-group-vertical .btn-large:last-child {
-  .border-radius(0 0 6px 6px);
+  .border-radius(0 0 @borderRadiusLarge @borderRadiusLarge);
 }

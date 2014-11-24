@@ -132,10 +132,16 @@ Source: https://github.com/ivaynberg/select2
 }
 
 .select2-container .select2-choice > div b {
-    background: url('images/select2.png') no-repeat 0 1px;
     display: block;
     width: 100%;
     height: 100%;
+	font-family: FontAwesome;
+	font-size: 11px;
+	text-align: center;
+	vertical-align: middle;
+	&:before {
+		content: "\f0d7"; // fa-caret-down
+	}
 }
 
 .select2-search {

@@ -17,29 +17,28 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.UI.Captcha;
 using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Themes;
-using SmartStore.Services.Stores;
-using SmartStore.Admin.Models.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -119,7 +118,6 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion 
 
-		/// <remarks>codehint: sm-add</remarks>
 		private StoreDependingSettingHelper StoreDependingSettings
 		{
 			get
@@ -139,16 +137,27 @@ namespace SmartStore.Admin.Controllers
 			if (allStores.Count < 2)
 				return Content("");
 
-			var model = new StoreScopeConfigurationModel();
-			foreach (var s in allStores)
+			var model = new StoreScopeConfigurationModel()
 			{
-				model.Stores.Add(new StoreModel()
+				StoreId = this.GetActiveStoreScopeConfiguration(_storeService, _workContext)
+			};
+
+			foreach (var store in allStores)
+			{
+				model.AllStores.Add(new SelectListItem()
 				{
-					Id = s.Id,
-					Name = s.Name
+					Text = store.Name,
+					Selected = (store.Id == model.StoreId),
+					Value = Url.Action("ChangeStoreScopeConfiguration", "Setting", new { storeid = store.Id, returnUrl = Request.RawUrl })
 				});
 			}
-			model.StoreId = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+
+			model.AllStores.Insert(0, new SelectListItem()
+			{
+				Text = _localizationService.GetResource("Admin.Common.StoresAll"),
+				Selected = (0 == model.StoreId),
+				Value = Url.Action("ChangeStoreScopeConfiguration", "Setting", new { storeid = 0, returnUrl = Request.RawUrl })
+			});
 
 			return PartialView(model);
 		}
@@ -161,12 +170,15 @@ namespace SmartStore.Admin.Controllers
 				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration, storeid);
 			}
+			
 			//url referrer
 			if (String.IsNullOrEmpty(returnUrl))
 				returnUrl = _webHelper.GetUrlReferrer();
+			
 			//home page
 			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = Url.Action("Index", "Home");
+				returnUrl = Url.Action("Index", "Home", new { area = "Admin" });
+
 			return Redirect(returnUrl);
 		}
 
@@ -316,8 +328,6 @@ namespace SmartStore.Admin.Controllers
 			else
 				model.ShippingOriginAddress = new AddressModel();
 
-			// codehint: sm-delete
-            // model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.ShippingOriginAddress.AvailableCountries.Add(
@@ -384,7 +394,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				_addressService.DeleteAddress(shippingSettings.ShippingOriginAddressId);	// codehint: sm-add
+				_addressService.DeleteAddress(shippingSettings.ShippingOriginAddressId);
 				
 				_settingService.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
 			}
@@ -419,14 +429,13 @@ namespace SmartStore.Admin.Controllers
 
             //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
-            // model.ShippingTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
 			foreach (var tc in taxCategories)
 			{
 				model.ShippingTaxCategories.Add(
 					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.ShippingTaxClassId }
 				);
 			}
-            // model.PaymentMethodAdditionalFeeTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
+
 			foreach (var tc in taxCategories)
 			{
 				model.PaymentMethodAdditionalFeeTaxCategories.Add(
@@ -435,7 +444,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //EU VAT countries
-            // model.EuVatShopCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.EuVatShopCountries.Add(
@@ -456,7 +464,6 @@ namespace SmartStore.Admin.Controllers
 			if (storeScope > 0 && _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope))
 				StoreDependingSettings.AddOverrideKey(taxSettings, "DefaultTaxAddress");
 
-            // model.DefaultTaxAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.DefaultTaxAddress.AvailableCountries.Add(
@@ -503,7 +510,6 @@ namespace SmartStore.Admin.Controllers
 
 			bool defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form);
 
-			//codehint: sm-add
 			taxSettings.AllowCustomersToSelectTaxDisplayType = false;
 			_settingService.UpdateSetting(taxSettings, x => x.AllowCustomersToSelectTaxDisplayType, false, storeScope);
 
@@ -527,7 +533,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else if (storeScope > 0)
 			{
-				_addressService.DeleteAddress(taxSettings.DefaultTaxAddressId);		// codehint: sm-add
+				_addressService.DeleteAddress(taxSettings.DefaultTaxAddressId);
 
 				_settingService.DeleteSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope);
 			}
@@ -1023,7 +1029,6 @@ namespace SmartStore.Admin.Controllers
 			model.FullTextSettings.SearchMode = commonSettings.FullTextMode;
 			model.FullTextSettings.SearchModeValues = commonSettings.FullTextMode.ToSelectList();
 
-			//codehint: sm-add begin
 			//company information
 			var companySettings = _settingService.LoadSetting<CompanyInformationSettings>(storeScope);
 			model.CompanyInformationSettings.CompanyName = companySettings.CompanyName;
@@ -1210,7 +1215,6 @@ namespace SmartStore.Admin.Controllers
 
 			_settingService.SaveSetting(commonSettings);
 
-			//codehint: sm-add begin
 			//company information
 			var companySettings = _settingService.LoadSetting<CompanyInformationSettings>(storeScope);
 			companySettings.CompanyName = model.CompanyInformationSettings.CompanyName;
@@ -1270,8 +1274,6 @@ namespace SmartStore.Admin.Controllers
             socialSettings.YoutubeLink = model.SocialSettings.YoutubeLink;
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _settingService);
-
-			//codehint: sm-add end
 
 			//now clear settings cache
 			_settingService.ClearCache();

@@ -372,6 +372,7 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
+			// TODO: routine should not return a query string in lowercase (unless the caller is telling him to do so).
 			url = url.EmptyNull().ToLower();
 			queryStringModification = queryStringModification.EmptyNull().ToLower();
 

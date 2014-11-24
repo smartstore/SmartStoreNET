@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
@@ -9,7 +10,20 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class PublicStoreAllowNavigationAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+		private static readonly List<Tuple<string, string>> s_permittedRoutes = new List<Tuple<string, string>> 
+		{
+ 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Login"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Logout"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Register"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "PasswordRecovery"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "PasswordRecoveryConfirm"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "AccountActivation"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "CheckUsernameAvailability")
+		};
+
+		public Lazy<IPermissionService> PermissionService { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (filterContext == null || filterContext.HttpContext == null)
                 return;
@@ -18,44 +32,40 @@ namespace SmartStore.Web.Framework.Controllers
             if (request == null)
                 return;
 
-            string actionName = filterContext.ActionDescriptor.ActionName;
-            if (String.IsNullOrEmpty(actionName))
-                return;
-
-            string controllerName = filterContext.Controller.ToString();
-            if (String.IsNullOrEmpty(controllerName))
-                return;
-
             //don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 
+			string actionName = filterContext.ActionDescriptor.ActionName;
+			if (String.IsNullOrEmpty(actionName))
+				return;
+
+			string controllerName = filterContext.Controller.ToString();
+			if (String.IsNullOrEmpty(controllerName))
+				return;
+
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            var permissionService = EngineContext.Current.Resolve<IPermissionService>();
+			var permissionService = PermissionService.Value;
             var publicStoreAllowNavigation = permissionService.Authorize(StandardPermissionProvider.PublicStoreAllowNavigation);
-            if (!publicStoreAllowNavigation &&
-                //ensure it's not the Login page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("Login", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Logout page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("Logout", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Register page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("Register", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Password recovery page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("PasswordRecovery", StringComparison.InvariantCultureIgnoreCase)) &&
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("PasswordRecoveryConfirm", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Account activation page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("AccountActivation", StringComparison.InvariantCultureIgnoreCase)) &&
-                //ensure it's not the Register page
-                !(controllerName.Equals("SmartStore.Web.Controllers.CustomerController", StringComparison.InvariantCultureIgnoreCase) && actionName.Equals("CheckUsernameAvailability", StringComparison.InvariantCultureIgnoreCase)))
+            if (!publicStoreAllowNavigation && !IsPermittedRoute(controllerName, actionName))
             {
-                //var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-                //var loginPageUrl = webHelper.GetStoreLocation() + "login";
-                //var loginPageUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("login");
-                //filterContext.Result = new RedirectResult(loginPageUrl);
                 filterContext.Result = new HttpUnauthorizedResult();
             }
         }
+
+		private static bool IsPermittedRoute(string controllerName, string actionName)
+		{
+			foreach (var route in s_permittedRoutes)
+			{
+				if (controllerName.IsCaseInsensitiveEqual(route.Item1) && actionName.IsCaseInsensitiveEqual(route.Item2))
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
     }
 }

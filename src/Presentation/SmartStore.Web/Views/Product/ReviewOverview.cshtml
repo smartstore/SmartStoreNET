@@ -1,0 +1,43 @@
+﻿@model ProductReviewOverviewModel
+
+@using System.Globalization
+@using SmartStore.Web.Models.Catalog;
+@{
+    int ratingPercent = 0;
+    if (Model.TotalReviews != 0)
+    {
+        ratingPercent = ((Model.RatingSum * 100) / Model.TotalReviews) / 5;
+    }
+}
+@if (Model.AllowCustomerReviews)
+{
+    <div class="product-reviews-overview line clearfix" itemprop="aggregateRating" itemscope itemtype="http://schema.org/AggregateRating">
+        @* STARS *@
+        <div class="product-review-box pull-left">
+            <div class="rating">
+                <div style="width: @(ratingPercent)%"></div>
+            </div>
+            @if (Model.TotalReviews > 0) 
+            {
+                <span>(<a href="@Url.Action("Reviews", new { id = Model.ProductId })">@Model.TotalReviews</a>)</span>
+            }
+        </div>
+
+        @* TEXT *@
+        <div class="product-review-links pull-right">
+            @if (Model.TotalReviews > 0) 
+            {
+                <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.AddNew")</a>
+                @*hidden microdata info*@
+                decimal ratingValue = ratingPercent / (decimal)20;
+                <span itemprop="ratingValue" style="display:none;">@ratingValue.ToString("0.0", new CultureInfo("en-US"))</span>
+                <span itemprop="reviewCount" style="display:none;">@Model.TotalReviews</span>
+            }
+            else 
+            {
+                <a href="@Url.Action("Reviews", new { id = Model.ProductId })">@T("Reviews.Overview.First")</a>
+            }
+        </div>
+    </div>
+
+}

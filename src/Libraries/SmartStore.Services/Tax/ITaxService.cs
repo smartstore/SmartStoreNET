@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Tax
 {
@@ -17,20 +18,20 @@ namespace SmartStore.Services.Tax
         /// Load active tax provider
         /// </summary>
         /// <returns>Active tax provider</returns>
-        ITaxProvider LoadActiveTaxProvider();
+        Provider<ITaxProvider> LoadActiveTaxProvider();
 
         /// <summary>
         /// Load tax provider by system name
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found tax provider</returns>
-        ITaxProvider LoadTaxProviderBySystemName(string systemName);
+        Provider<ITaxProvider> LoadTaxProviderBySystemName(string systemName);
 
         /// <summary>
         /// Load all tax providers
         /// </summary>
         /// <returns>Tax providers</returns>
-        IList<ITaxProvider> LoadAllTaxProviders();
+        IEnumerable<Provider<ITaxProvider>> LoadAllTaxProviders();
         
 
 
@@ -58,8 +59,7 @@ namespace SmartStore.Services.Tax
         /// <param name="taxCategoryId">Tax category identifier</param>
         /// <param name="customer">Customer</param>
         /// <returns>Tax rate</returns>
-        decimal GetTaxRate(Product product, int taxCategoryId, 
-            Customer customer);
+        decimal GetTaxRate(Product product, int taxCategoryId,  Customer customer);
         
 
 
@@ -71,8 +71,7 @@ namespace SmartStore.Services.Tax
         /// <param name="price">Price</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(Product product, decimal price,
-            out decimal taxRate);
+        decimal GetProductPrice(Product product, decimal price, out decimal taxRate);
 
         /// <summary>
         /// Gets price
@@ -82,8 +81,7 @@ namespace SmartStore.Services.Tax
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(Product product, decimal price,
-            Customer customer, out decimal taxRate);
+        decimal GetProductPrice(Product product, decimal price, Customer customer, out decimal taxRate);
 
         /// <summary>
         /// Gets price
@@ -94,8 +92,7 @@ namespace SmartStore.Services.Tax
         /// <param name="customer">Customer</param>
         /// <param name="taxRate">Tax rate</param>
         /// <returns>Price</returns>
-        decimal GetProductPrice(Product product, decimal price,
-            bool includingTax, Customer customer, out decimal taxRate);
+        decimal GetProductPrice(Product product, decimal price, bool includingTax, Customer customer, out decimal taxRate);
 
         /// <summary>
         /// Gets price
@@ -266,8 +263,6 @@ namespace SmartStore.Services.Tax
         /// <returns>VAT number status</returns>
         VatNumberStatus DoVatCheck(string twoLetterIsoCode, string vatNumber, 
             out string name, out string address, out Exception exception);
-
-
 
 
 

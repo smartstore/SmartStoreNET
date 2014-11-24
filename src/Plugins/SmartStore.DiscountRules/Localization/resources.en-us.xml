@@ -1,0 +1,118 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+
+  <LocaleResource Name="ConfigureDiscountNotLoaded">
+    <Value>Discount could not be loaded</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureRequirementFailed">
+    <Value>Failed to load requirement</Value>
+  </LocaleResource>
+  
+  <!-- CustomerRoles -->
+  <LocaleResource Name="Plugins.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="ConfigureSelectCustomerRole">
+        <Value>Select a customer role</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CustomerRole">
+        <Value>Required customer role</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CustomerRole.Hint">
+        <Value>Discount will be applied if customer is in the selected customer role.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+  
+  <!-- BillingCountryIs -->
+  <LocaleResource Name="Plugins.DiscountRules.BillingCountry" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectCountry">
+        <Value>Select country</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country">
+        <Value>Billing country</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country.Hint">
+        <Value>Select required billing country.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- ShippingCountryIs -->
+  <LocaleResource Name="Plugins.DiscountRules.ShippingCountry" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectCountry">
+        <Value>Select country</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country">
+        <Value>Shipping country</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country.Hint">
+        <Value>Select required shipping country.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+  
+  
+  <!-- Store -->
+  <LocaleResource Name="Plugins.DiscountRules.Store" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectStore">
+        <Value>Select store</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Store">
+        <Value>Store</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Store.Hint">
+        <Value>Select the store in which this discount will be valid.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HasOneProduct -->
+  <LocaleResource Name="Plugins.DiscountRules.HasOneProduct" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Products">
+        <Value>Restricted products</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Products.Hint">
+        <Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its details page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HasAllProducts -->
+  <LocaleResource Name="Plugins.DiscountRules.HasAllProducts" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Products">
+        <Value>Restricted products</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Products.Hint">
+        <Value>The comma-separated list of product identifiers (e.g. 77, 123, 156). You can find a product ID on its details page. You can also specify the comma-separated list of product identifiers with quantities ({Product ID}:{Quantity}. for example, 77:1, 123:2, 156:3). And you can also specify the comma-separated list of product identifiers with quantity range ({Product ID}:{Min quantity}-{Max quantity}. for example, 77:1-3, 123:2-5, 156:3-8).</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HadSpentAmount -->
+  <LocaleResource Name="Plugins.DiscountRules.HadSpentAmount" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Amount">
+        <Value>Amount spent</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Amount.Hint">
+        <Value>Discount will be applied if customer has spent/purchased x.xx amount.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal">
+        <Value>Limit to basket subtotal</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
+        <Value>Specifies whether the amount refers to the current basket subtotal or - when unselected - to the sum of all previously incurred orders.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+ 
+</Language>

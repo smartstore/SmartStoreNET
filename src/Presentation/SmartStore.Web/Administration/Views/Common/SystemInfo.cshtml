@@ -5,7 +5,7 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-info-sign"></i>
+        <i class="fa fa-info-circle"></i>
         @T("Admin.System.SystemInfo")
     </div>
 </div>
@@ -28,6 +28,14 @@
         </td>
         <td class="adminData">
             @Html.DisplayFor(model => model.AppVersion)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AppDate)
+        </td>
+        <td class="adminData">
+            @Model.AppDate.ToString("F")
         </td>
     </tr>
     <tr>
@@ -88,10 +96,18 @@
     </tr>
     <tr>
         <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DataProviderFriendlyName)
+        </td>
+        <td class="adminData">
+			@Model.DataProviderFriendlyName.NaIfEmpty()
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.DatabaseSize)
         </td>
         <td class="adminData">
-			@("{0:0.00}".FormatWith(Model.DatabaseSize)) MB
+			@Model.DatabaseSizeString.NaIfEmpty()
         </td>
     </tr>
     <tr>

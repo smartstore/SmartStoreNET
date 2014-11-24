@@ -1,0 +1,28 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.ExternalAuth.Facebook" AppendRootKey="false">
+    <Value>Facebook</Value>
+  </LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<ul>
+<li>Create an application with the facebook login option in the developer area at facebook to get the facebook access data (see below).</li>
+<li>Activate auto registration in the customer settings if you want externally authorized visitors to be registered automatically.</li>
+</ul>]]>
+		</Value>
+	</LocaleResource>
+  <LocaleResource Name="Login">
+    <Value>Sign in with Facebook</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientKeyIdentifier">
+    <Value>Client key identifier (App ID)</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientKeyIdentifier.Hint">
+    <Value>Enter your client key identifier (App ID) here.</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientSecret">
+    <Value>Client secret (App Secret)</Value>
+  </LocaleResource>
+  <LocaleResource Name="ClientSecret.Hint">
+    <Value>Enter your client secret (App Secret) here.</Value>
+  </LocaleResource>  
+</Language>

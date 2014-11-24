@@ -184,7 +184,7 @@ namespace SmartStore.Utilities
 
         public static string ToUnsortedHtmlList(IEnumerable data, string ulClassName, string liClassName)
         {
-            if (data == null && !data.HasItems())
+            if (!data.HasItems())
                 return String.Empty;
 
             StringBuilder ul = new StringBuilder();
@@ -222,22 +222,9 @@ namespace SmartStore.Utilities
             Type t = obj.GetType();
 
             return t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
-                   .ToDictionary(k => k.Name,
+                   .ToDictionary(k => k.Name.Replace("_", "-"),
                                  v => obj.GetPropertyValue(v.Name),
                                  StringComparer.OrdinalIgnoreCase);
-
-            //return TypeDescriptor.GetProperties(obj)
-            //            .Cast<PropertyDescriptor>()
-            //            .ToDictionary(k => k.Name, v => v.GetValue(obj), StringComparer.OrdinalIgnoreCase);
-
-            //var result = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-            //foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
-            //{
-            //    object value = descriptor.GetValue(obj);
-            //    result.Add(descriptor.Name, value);
-            //}
-
-            //return result;
         }
 
         public static NameValueCollection ObjectToNameValueCollection(object obj)

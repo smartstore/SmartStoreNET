@@ -11,6 +11,7 @@ using System.IO;
 using SmartStore.Services;
 using SmartStore.Services.Security;
 using System.Dynamic;
+using SmartStore.Core.Themes;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -20,11 +21,13 @@ namespace SmartStore.Admin.Controllers
 	{
 		private readonly ICommonServices _services;
 		private readonly IPackageManager _packageManager;
+		private readonly Lazy<IThemeRegistry> _themeRegistry;
 
-		public PackagingController(ICommonServices services, IPackageManager packageManager)
+		public PackagingController(ICommonServices services, IPackageManager packageManager, Lazy<IThemeRegistry> themeRegistry)
 		{
 			this._services = services;
 			this._packageManager = packageManager;
+			this._themeRegistry = themeRegistry;
 		}
 
 		public Localizer T { get; set; }
@@ -71,7 +74,30 @@ namespace SmartStore.Admin.Controllers
 
 					var location = CommonHelper.MapPath("~/App_Data");
 					var appPath = CommonHelper.MapPath("~/");
+
+					if (isTheme)
+					{
+						// avoid getting terrorized by IO events
+						_themeRegistry.Value.StopMonitoring();
+					}
+
 					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
+
+					if (isTheme)
+					{
+						// create manifest
+						if (packageInfo != null)
+						{
+							var manifest = ThemeManifest.Create(packageInfo.ExtensionDescriptor.Path);
+							if (manifest != null)
+							{
+								_themeRegistry.Value.AddThemeManifest(manifest);
+							}
+						}
+
+						// SOFT start IO events again
+						_themeRegistry.Value.StartMonitoring(false);
+					}
 				}
 				else
 				{

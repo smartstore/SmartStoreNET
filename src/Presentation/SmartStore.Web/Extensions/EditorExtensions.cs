@@ -4,7 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Extensions
+namespace SmartStore.Web
 {
     public static class EditorExtensions
     {

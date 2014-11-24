@@ -19,21 +19,19 @@ namespace SmartStore.Web.Framework.Mvc.Routes
 
         public void RegisterRoutes(RouteCollection routes)
         {
-            var routeProviderTypes = _typeFinder.FindClassesOfType<IRouteProvider>();
+			var routeProviderTypes = _typeFinder.FindClassesOfType<IRouteProvider>(ignoreInactivePlugins: true);
             var routeProviders = new List<IRouteProvider>();
 
             foreach (var providerType in routeProviderTypes)
             {
-                if (!PluginManager.IsActivePluginAssembly(providerType.Assembly))
-                {
-                    continue;
-                }
-                
                 var provider = Activator.CreateInstance(providerType) as IRouteProvider;
                 routeProviders.Add(provider);
             }
             routeProviders = routeProviders.OrderByDescending(rp => rp.Priority).ToList();
-            routeProviders.Each(rp => rp.RegisterRoutes(routes));
+            routeProviders.Each(rp => 
+			{
+				rp.RegisterRoutes(routes);
+			});
         }
     }
 }

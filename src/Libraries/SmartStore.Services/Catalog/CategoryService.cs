@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 
@@ -92,13 +93,34 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-        #region Methods
+		#region Utilities
 
-        /// <summary>
+		private void DeleteAllCategories(IList<Category> categories, bool delete)
+		{
+			foreach (var category in categories)
+			{				
+				if (delete)
+					category.Deleted = true;
+				else
+					category.ParentCategoryId = 0;
+
+				UpdateCategory(category);
+
+				var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
+				DeleteAllCategories(childCategories, delete);
+			}
+		}
+
+		#endregion
+
+		#region Methods
+
+		/// <summary>
         /// Delete category
         /// </summary>
         /// <param name="category">Category</param>
-        public virtual void DeleteCategory(Category category)
+		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
+		public virtual void DeleteCategory(Category category, bool deleteChilds = false)
         {
             if (category == null)
                 throw new ArgumentNullException("category");
@@ -106,13 +128,8 @@ namespace SmartStore.Services.Catalog
             category.Deleted = true;
             UpdateCategory(category);
 
-			//reset a "Parent category" property of all child subcategories
-            var subcategories = GetAllCategoriesByParentCategoryId(category.Id, true);
-            foreach (var subcategory in subcategories)
-            {
-                subcategory.ParentCategoryId = 0;
-                UpdateCategory(subcategory);
-            }
+			var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
+			DeleteAllCategories(childCategories, deleteChilds);
         }
         
         /// <summary>
@@ -124,9 +141,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
         /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
+		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
         /// <returns>Categories</returns>
-		/// <remarks>codehint: sm-edit</remarks>
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true)
+        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
+			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true)
         {
             var query = _categoryRepository.Table;
             if (!showHidden)
@@ -147,7 +165,7 @@ namespace SmartStore.Services.Catalog
             var unsortedCategories = query.ToList();
 
             // sort categories
-            var sortedCategories = unsortedCategories.SortCategoriesForTree(ignoreCategoriesWithoutExistingParent: true);
+            var sortedCategories = unsortedCategories.SortCategoriesForTree(ignoreCategoriesWithoutExistingParent: ignoreCategoriesWithoutExistingParent);
 
             // paging
             return new PagedList<Category>(sortedCategories, pageIndex, pageSize);
@@ -228,13 +246,6 @@ namespace SmartStore.Services.Catalog
             }
 
 			return query;
-        }
-
-        private void ApplyMisc(ref IQueryable<Category> query)
-        {
-            query = from c in query
-                    where c.Id != 56
-                    select c;
         }
         
         /// <summary>
@@ -402,7 +413,8 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
-                var query = from pc in _productCategoryRepository.Table
+				var table = _productCategoryRepository.Table;
+				var query = from pc in _productCategoryRepository.Expand(table, x => x.Category)
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                             where pc.ProductId == productId &&
                                   !c.Deleted &&
@@ -515,47 +527,48 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productCategory);
         }
 
-		/// <summary>
-		/// Builds a category bread crump for a particular product
-		/// </summary>
-		/// <param name="product">The product</param>
-		/// <returns>Category bread crump for product</returns>
-		/// <remarks>codehint: sm-add</remarks>
-		public virtual string GetCategoryBreadCrumb(Product product)
+		public virtual string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup)
 		{
+			if (product == null)
+				return string.Empty;
+
+			pathLookup = pathLookup ?? ((i) => { return string.Empty; });
+			categoryLookup = categoryLookup ?? ((i) => { return GetCategoryById(i); });
+			addPathToCache = addPathToCache ?? ((i, val) => { });
+
 			var alreadyProcessedCategoryIds = new List<int>();
-			var categories = new List<string>();
-			string result = "";
+			var path = new List<string>();
 
-			if (product != null)
+			var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+
+			if (productCategory != null && productCategory.Category != null)
 			{
-				var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
-
-				if (productCategory != null && productCategory.Category != null && !productCategory.Category.Deleted && productCategory.Category.Published)
+				string cached = pathLookup(productCategory.CategoryId);
+				if (cached.HasValue()) 
 				{
-					categories.Add(productCategory.Category.Name);
-					alreadyProcessedCategoryIds.Add(productCategory.Category.Id);
-
-					var category = GetCategoryById(productCategory.Category.ParentCategoryId);
-
-					while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
-					{
-						categories.Add(category.Name);
-						alreadyProcessedCategoryIds.Add(category.Id);
-
-						category = GetCategoryById(category.ParentCategoryId);
-					}
-					categories.Reverse();
+					return cached;
 				}
+
+				var category = productCategory.Category;
+
+				path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
+				alreadyProcessedCategoryIds.Add(category.Id);
+
+				category = categoryLookup(category.ParentCategoryId);
+				while (category != null && !category.Deleted && category.Published && !alreadyProcessedCategoryIds.Contains(category.Id))
+				{
+					path.Add(languageId.HasValue ? category.GetLocalized(x => x.Name, languageId.Value) : category.Name);
+					alreadyProcessedCategoryIds.Add(category.Id);
+					category = categoryLookup(category.ParentCategoryId);
+				}
+
+				path.Reverse();
+				string result = String.Join(" > ", path);
+				addPathToCache(productCategory.CategoryId, result);
+				return result;
 			}
 
-			for (int i = 0; i < categories.Count; ++i)
-			{
-				result = result + categories[i];
-				if (i != categories.Count - 1)
-					result = result + " > ";
-			}
-			return result;
+			return string.Empty;
 		}
 
         #endregion

@@ -300,21 +300,21 @@
                         @if (Model.IsEditable)
                         {
                             <button type="submit" name="updatecart" value="updatecart" class="btn update-wishlist-button">
-                                <i class="icon-refresh"></i>
+                                <i class="fa fa-refresh"></i>
                                 @T("Wishlist.UpdateCart")
                             </button>
                         }
                         @if (Model.IsEditable && Model.EmailWishlistEnabled)
                         {
-                            <a class="btn email-a-friend-wishlist-button" href="@Url.RouteUrl("EmailWishlist")">
-                                <i class="icon-envelope"></i>
+                            <a class="btn email-a-friend-wishlist-button" href="@Url.Action("EmailWishlist")" rel="nofollow">
+                                <i class="fa fa-envelope"></i>
                                 @T("Wishlist.EmailAFriend")
                             </a>
                         }
                         @if (Model.DisplayAddToCart)
                         {
                             <button type="submit" name="addtocartbutton" value="addtocartbutton" class="btn btn-primary pull-right wishlist-add-to-cart-button">
-                                <i class="icon-shopping-cart"></i>
+                                <i class="fa fa-shopping-cart"></i>
                                 @T("ShoppingCart.AddToCart")
                             </button>
                         }						
@@ -334,7 +334,7 @@
         {
             <div class="share-info well">
                 <h4 class="share-label">
-                    <i class="icon-share"></i>
+					<i class="fa fa-share-square-o"></i>
                     @T("Wishlist.YourWishlistURL")
                 </h4>
                 <a href="@Url.RouteUrl("Wishlist", new { customerGuid = Model.CustomerGuid })" class="share-link">

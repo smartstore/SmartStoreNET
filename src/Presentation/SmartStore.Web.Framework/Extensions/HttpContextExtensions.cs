@@ -1,20 +1,76 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web;
-using System.Web.Routing;
 using System.IO;
-using System.Diagnostics;
+using System.Web;
 using System.Web.Mvc;
+using System.Web.Routing;
+using SmartStore.Services.Orders;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
-	/// <remarks>codehint: sm-add</remarks>
     public static class HttpContextExtensions
 	{
 
-        public static Stream ToFileStream(this HttpRequestBase request, out string fileName, out string contentType, string paramName = "qqfile") {
+		public static bool IsAdminArea(this HttpRequest request)
+		{
+			if (request != null)
+			{
+				return IsAdminArea(new HttpRequestWrapper(request));
+			}
+
+			return false;		
+		}
+
+		public static bool IsAdminArea(this HttpRequestBase request)
+		{
+			try
+			{
+				if (request != null)
+				{
+					var area = request.RequestContext.RouteData.GetAreaName();
+					if (area != null)
+					{
+						return area.IsCaseInsensitiveEqual("admin");
+					}
+				}
+
+				return false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static bool IsPublicArea(this HttpRequest request)
+		{
+			if (request != null)
+			{
+				return IsPublicArea(new HttpRequestWrapper(request));
+			}
+
+			return false;
+		}
+
+		public static bool IsPublicArea(this HttpRequestBase request)
+		{
+			try
+			{
+				if (request != null)
+				{
+					var area = request.RequestContext.RouteData.GetAreaName();
+					return area.IsEmpty();
+				}
+
+				return false;
+			}
+			catch
+			{
+				return false;
+			}
+		}
+
+		public static Stream ToFileStream(this HttpRequestBase request, out string fileName, out string contentType, string paramName = "qqfile") {
 			fileName = contentType = "";
 			Stream stream = null;
 
@@ -60,7 +116,90 @@ namespace SmartStore
             return routeData != null;
         }
 
+		public static CheckoutState GetCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
+			
+			var state = httpContext.Session.SafeGetValue<CheckoutState>(CheckoutState.CheckoutStateSessionKey);
 
+			if (state != null)
+				return state;
+
+			state = new CheckoutState();
+			httpContext.Session.SafeSet(CheckoutState.CheckoutStateSessionKey, state);
+
+			return state;
+		}
+
+		public static void RemoveCheckoutState(this HttpContextBase httpContext)
+		{
+			Guard.ArgumentNotNull(() => httpContext);
+
+			httpContext.Session.SafeRemove(CheckoutState.CheckoutStateSessionKey);
+		}
+
+		internal static HttpCookie GetPreviewModeCookie(this HttpContextBase context, bool createIfMissing)
+		{
+			if (context == null)
+				return null;
+
+			var cookie = context.Request.Cookies.Get("sm.PreviewModeOverrides");
+
+			if (cookie == null && createIfMissing)
+			{
+				cookie = new HttpCookie("sm.PreviewModeOverrides");
+				context.Request.Cookies.Set(cookie);
+			}
+
+			if (cookie != null)
+			{
+				// when cookie gets created or touched, extend its lifetime
+				cookie.Expires = DateTime.UtcNow.AddMinutes(20);
+			}
+
+			return cookie;
+		}
+
+		internal static void SetPreviewModeValue(this HttpContextBase context, string key, string value)
+		{
+			if (context == null)
+				return;
+
+			var cookie = context.GetPreviewModeCookie(value.HasValue());
+			if (cookie != null)
+			{
+				if (value.HasValue())
+				{
+					cookie.Values[key] = value;
+				}
+				else
+				{
+					cookie.Values.Remove(key);
+				}
+			}
+		}
+
+		public static IDisposable PreviewModeCookie(this HttpContextBase context)
+		{
+			var disposable = new ActionDisposable(() => {
+				var cookie = GetPreviewModeCookie(context, false);
+				if (cookie != null)
+				{
+					if (!cookie.HasKeys)
+					{
+						cookie.Expires = DateTime.UtcNow.AddYears(-10);
+					}
+					else
+					{
+						cookie.Expires = DateTime.UtcNow.AddMinutes(20);
+					}
+
+					context.Response.SetCookie(cookie);
+				}
+			});
+
+			return disposable;
+		}
 
 	}
 }

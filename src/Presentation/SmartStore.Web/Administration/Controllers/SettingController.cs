@@ -17,29 +17,28 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Framework.Settings;
+using SmartStore.Web.Framework.UI.Captcha;
 using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Themes;
-using SmartStore.Services.Stores;
-using SmartStore.Admin.Models.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -69,8 +68,10 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IWorkContext _workContext;
 		private readonly IGenericAttributeService _genericAttributeService;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly ILanguageService _languageService;
 
-		private StoreDependingSettingHelper _storeDependingSettings;	// codehint: sm-add
+		private StoreDependingSettingHelper _storeDependingSettings;
 
 		#endregion
 
@@ -86,7 +87,9 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
             IWebHelper webHelper, IFulltextService fulltextService,
 			IMaintenanceService maintenanceService, IStoreService storeService,
-			IWorkContext workContext, IGenericAttributeService genericAttributeService)
+			IWorkContext workContext, IGenericAttributeService genericAttributeService,
+			ILocalizedEntityService localizedEntityService,
+			ILanguageService languageService)
         {
             this._settingService = settingService;
             this._countryService = countryService;
@@ -109,11 +112,12 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._workContext = workContext;
 			this._genericAttributeService = genericAttributeService;
+			this._localizedEntityService = localizedEntityService;
+			this._languageService = languageService;
         }
 
 		#endregion 
 
-		/// <remarks>codehint: sm-add</remarks>
 		private StoreDependingSettingHelper StoreDependingSettings
 		{
 			get
@@ -133,16 +137,27 @@ namespace SmartStore.Admin.Controllers
 			if (allStores.Count < 2)
 				return Content("");
 
-			var model = new StoreScopeConfigurationModel();
-			foreach (var s in allStores)
+			var model = new StoreScopeConfigurationModel()
 			{
-				model.Stores.Add(new StoreModel()
+				StoreId = this.GetActiveStoreScopeConfiguration(_storeService, _workContext)
+			};
+
+			foreach (var store in allStores)
+			{
+				model.AllStores.Add(new SelectListItem()
 				{
-					Id = s.Id,
-					Name = s.Name
+					Text = store.Name,
+					Selected = (store.Id == model.StoreId),
+					Value = Url.Action("ChangeStoreScopeConfiguration", "Setting", new { storeid = store.Id, returnUrl = Request.RawUrl })
 				});
 			}
-			model.StoreId = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+
+			model.AllStores.Insert(0, new SelectListItem()
+			{
+				Text = _localizationService.GetResource("Admin.Common.StoresAll"),
+				Selected = (0 == model.StoreId),
+				Value = Url.Action("ChangeStoreScopeConfiguration", "Setting", new { storeid = 0, returnUrl = Request.RawUrl })
+			});
 
 			return PartialView(model);
 		}
@@ -155,12 +170,15 @@ namespace SmartStore.Admin.Controllers
 				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.AdminAreaStoreScopeConfiguration, storeid);
 			}
+			
 			//url referrer
 			if (String.IsNullOrEmpty(returnUrl))
 				returnUrl = _webHelper.GetUrlReferrer();
+			
 			//home page
 			if (String.IsNullOrEmpty(returnUrl))
-				returnUrl = Url.Action("Index", "Home");
+				returnUrl = Url.Action("Index", "Home", new { area = "Admin" });
+
 			return Redirect(returnUrl);
 		}
 
@@ -310,8 +328,6 @@ namespace SmartStore.Admin.Controllers
 			else
 				model.ShippingOriginAddress = new AddressModel();
 
-			// codehint: sm-delete
-            // model.ShippingOriginAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.ShippingOriginAddress.AvailableCountries.Add(
@@ -378,7 +394,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else
 			{
-				_addressService.DeleteAddress(shippingSettings.ShippingOriginAddressId);	// codehint: sm-add
+				_addressService.DeleteAddress(shippingSettings.ShippingOriginAddressId);
 				
 				_settingService.DeleteSetting(shippingSettings, x => x.ShippingOriginAddressId, storeScope);
 			}
@@ -413,14 +429,13 @@ namespace SmartStore.Admin.Controllers
 
             //tax categories
             var taxCategories = _taxCategoryService.GetAllTaxCategories();
-            // model.ShippingTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
 			foreach (var tc in taxCategories)
 			{
 				model.ShippingTaxCategories.Add(
 					new SelectListItem() { Text = tc.Name, Value = tc.Id.ToString(), Selected = tc.Id == taxSettings.ShippingTaxClassId }
 				);
 			}
-            // model.PaymentMethodAdditionalFeeTaxCategories.Add(new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
+
 			foreach (var tc in taxCategories)
 			{
 				model.PaymentMethodAdditionalFeeTaxCategories.Add(
@@ -429,7 +444,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //EU VAT countries
-            // model.EuVatShopCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.EuVatShopCountries.Add(
@@ -450,7 +464,6 @@ namespace SmartStore.Admin.Controllers
 			if (storeScope > 0 && _settingService.SettingExists(taxSettings, x => x.DefaultTaxAddressId, storeScope))
 				StoreDependingSettings.AddOverrideKey(taxSettings, "DefaultTaxAddress");
 
-            // model.DefaultTaxAddress.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" }); // codehint: sm-delete
 			foreach (var c in _countryService.GetAllCountries(true))
 			{
 				model.DefaultTaxAddress.AvailableCountries.Add(
@@ -497,7 +510,6 @@ namespace SmartStore.Admin.Controllers
 
 			bool defaultTaxAddressOverride = StoreDependingSettings.IsOverrideChecked(taxSettings, "DefaultTaxAddress", form);
 
-			//codehint: sm-add
 			taxSettings.AllowCustomersToSelectTaxDisplayType = false;
 			_settingService.UpdateSetting(taxSettings, x => x.AllowCustomersToSelectTaxDisplayType, false, storeScope);
 
@@ -521,7 +533,7 @@ namespace SmartStore.Admin.Controllers
 			}
 			else if (storeScope > 0)
 			{
-				_addressService.DeleteAddress(taxSettings.DefaultTaxAddressId);		// codehint: sm-add
+				_addressService.DeleteAddress(taxSettings.DefaultTaxAddressId);
 
 				_settingService.DeleteSetting(taxSettings, x => x.DefaultTaxAddressId, storeScope);
 			}
@@ -539,7 +551,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult Catalog(string selectedTab)
+        public ActionResult Catalog()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -558,11 +570,10 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
 			);
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult Catalog(CatalogSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult Catalog(CatalogSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -581,7 +592,7 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("Catalog", new { selectedTab = selectedTab });
+            return RedirectToAction("Catalog");
         }
 
 
@@ -650,7 +661,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult Order(string selectedTab)
+        public ActionResult Order()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -667,33 +678,21 @@ namespace SmartStore.Admin.Controllers
 
             //gift card activation/deactivation
             model.GiftCards_Activated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            //model.GiftCards_Activated_OrderStatuses.Insert(0, new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
             model.GiftCards_Deactivated_OrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
-            //model.GiftCards_Deactivated_OrderStatuses.Insert(0, new SelectListItem() { Text = "---", Value = "0" }); // codehint: sm-delete
 
-            //parse return request actions
-			for (int i = 0; i < orderSettings.ReturnRequestActions.Count; i++)
-            {
-				model.ReturnRequestActionsParsed += orderSettings.ReturnRequestActions[i];
-				if (i != orderSettings.ReturnRequestActions.Count - 1)
-                    model.ReturnRequestActionsParsed += ",";
-            }
-            //parse return request reasons
-			for (int i = 0; i < orderSettings.ReturnRequestReasons.Count; i++)
-            {
-				model.ReturnRequestReasonsParsed += orderSettings.ReturnRequestReasons[i];
-				if (i != orderSettings.ReturnRequestReasons.Count - 1)
-                    model.ReturnRequestReasonsParsed += ",";
-            }
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.ReturnRequestActions = orderSettings.GetLocalized(x => x.ReturnRequestActions, languageId, false, false);
+				locale.ReturnRequestReasons = orderSettings.GetLocalized(x => x.ReturnRequestReasons, languageId, false, false);
+			});
 
             //order ident
             model.OrderIdent = _maintenanceService.GetTableIdent<Order>();
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult Order(OrderSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult Order(OrderSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -707,19 +706,15 @@ namespace SmartStore.Admin.Controllers
 
 				StoreDependingSettings.UpdateSettings(orderSettings, form, storeScope, _settingService);
 
-				//parse return request actions
-				orderSettings.ReturnRequestActions.Clear();
-				foreach (var returnAction in model.ReturnRequestActionsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-					orderSettings.ReturnRequestActions.Add(returnAction);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);		// codehint: sm-edit
-				
-				//parse return request reasons
-				orderSettings.ReturnRequestReasons.Clear();
-				foreach (var returnReason in model.ReturnRequestReasonsParsed.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
-					orderSettings.ReturnRequestReasons.Add(returnReason);
-				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);		// codehint: sm-edit
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestActions, 0, false);				
+				_settingService.SaveSetting(orderSettings, x => x.ReturnRequestReasons, 0, false);
 
-				// codehint: sm-edit
+				foreach (var localized in model.Locales)
+				{
+					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestActions, localized.ReturnRequestActions, localized.LanguageId);
+					_localizedEntityService.SaveLocalizedValue(orderSettings, x => x.ReturnRequestReasons, localized.ReturnRequestReasons, localized.LanguageId);
+				}
+
 				if (model.GiftCards_Activated_OrderStatusId.HasValue)
 					_settingService.SaveSetting(orderSettings, x => x.GiftCards_Activated_OrderStatusId, 0, false);
 				else
@@ -754,11 +749,13 @@ namespace SmartStore.Admin.Controllers
             else
             {
 				//If we got this far, something failed, redisplay form
-                foreach (var modelState in ModelState.Values)
-                    foreach (var error in modelState.Errors)
+				foreach (var modelState in ModelState.Values)
+				{
+					foreach (var error in modelState.Errors)
 						NotifyError(error.ErrorMessage);
+				}
             }
-            return RedirectToAction("Order", new { selectedTab = selectedTab });
+            return RedirectToAction("Order");
         }
 
 
@@ -880,7 +877,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult CustomerUser(string selectedTab)
+        public ActionResult CustomerUser()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -910,11 +907,10 @@ namespace SmartStore.Admin.Controllers
 
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
 
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
         [HttpPost]
-        public ActionResult CustomerUser(CustomerUserSettingsModel model, string selectedTab)
+        public ActionResult CustomerUser(CustomerUserSettingsModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -942,7 +938,7 @@ namespace SmartStore.Admin.Controllers
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("CustomerUser", new { selectedTab = selectedTab });
+            return RedirectToAction("CustomerUser");
         }
 
 
@@ -950,7 +946,7 @@ namespace SmartStore.Admin.Controllers
 
 
 
-        public ActionResult GeneralCommon(string selectedTab)
+        public ActionResult GeneralCommon()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -1033,7 +1029,6 @@ namespace SmartStore.Admin.Controllers
 			model.FullTextSettings.SearchMode = commonSettings.FullTextMode;
 			model.FullTextSettings.SearchModeValues = commonSettings.FullTextMode.ToSelectList();
 
-			//codehint: sm-add begin
 			//company information
 			var companySettings = _settingService.LoadSetting<CompanyInformationSettings>(storeScope);
 			model.CompanyInformationSettings.CompanyName = companySettings.CompanyName;
@@ -1115,9 +1110,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(socialSettings, model.SocialSettings, storeScope, _settingService, false);
 
-			//codehint: sm-add end
-
-            ViewData["SelectedTab"] = selectedTab;
             return View(model);
         }
 
@@ -1129,7 +1121,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [FormValueRequired("save")]
-        public ActionResult GeneralCommon(GeneralCommonSettingsModel model, string selectedTab, FormCollection form)
+        public ActionResult GeneralCommon(GeneralCommonSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
@@ -1223,7 +1215,6 @@ namespace SmartStore.Admin.Controllers
 
 			_settingService.SaveSetting(commonSettings);
 
-			//codehint: sm-add begin
 			//company information
 			var companySettings = _settingService.LoadSetting<CompanyInformationSettings>(storeScope);
 			companySettings.CompanyName = model.CompanyInformationSettings.CompanyName;
@@ -1284,8 +1275,6 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.UpdateSettings(socialSettings, form, storeScope, _settingService);
 
-			//codehint: sm-add end
-
 			//now clear settings cache
 			_settingService.ClearCache();
 
@@ -1293,7 +1282,7 @@ namespace SmartStore.Admin.Controllers
 			_customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
 
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.Updated"));
-            return RedirectToAction("GeneralCommon", new { selectedTab = selectedTab });
+            return RedirectToAction("GeneralCommon");
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("changeencryptionkey")]
@@ -1400,7 +1389,7 @@ namespace SmartStore.Admin.Controllers
             {
                 NotifyError(exc);
             }
-			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-3" });
+			return RedirectToAction("GeneralCommon");
         }
         [HttpPost, ActionName("GeneralCommon")]
         [FormValueRequired("togglefulltext")]
@@ -1440,7 +1429,7 @@ namespace SmartStore.Admin.Controllers
             {
                 NotifyError(exc);
             }
-			return RedirectToAction("GeneralCommon", new { selectedTab = "generalsettings-edit-9" });
+			return RedirectToAction("GeneralCommon");
         }
 
 
@@ -1454,34 +1443,38 @@ namespace SmartStore.Admin.Controllers
             
             return View();
         }
+
         [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult AllSettings(GridCommand command)
+		public ActionResult AllSettings(GridCommand command)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
+
+			var stores = _storeService.GetAllStores();
+			string allStoresString = _localizationService.GetResource("Admin.Common.StoresAll");
             
             var settings = _settingService
                 .GetAllSettings()
 				.Select(x =>
 				{
-					string storeName = "";
-					if (x.StoreId == 0)
-					{
-						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
-					}
-					else
-					{
-						var store = _storeService.GetStoreById(x.StoreId);
-						storeName = store != null ? store.Name : "Unknown";
-					}
 					var settingModel = new SettingModel()
 					{
 						Id = x.Id,
 						Name = x.Name,
 						Value = x.Value,
-						Store = storeName,
 						StoreId = x.StoreId
 					};
+
+					if (x.StoreId == 0)
+					{
+						settingModel.Store = allStoresString;
+					}
+					else
+					{
+						var store = stores.FirstOrDefault(s => s.Id == x.StoreId);
+						settingModel.Store = store != null ? store.Name : "Unknown";
+					}
+
 					return settingModel;
 				})
                 .ForCommand(command)
@@ -1492,11 +1485,13 @@ namespace SmartStore.Admin.Controllers
                 Data = settings.PagedForCommand(command),
                 Total = settings.Count
             };
+
             return new JsonResult
             {
                 Data = model
             };
         }
+
         [GridAction(EnableCustomBinding = true)]
         public ActionResult SettingUpdate(SettingModel model, GridCommand command)
         {

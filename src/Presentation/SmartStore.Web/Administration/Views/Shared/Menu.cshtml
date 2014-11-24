@@ -23,9 +23,9 @@
         if (node.Value.ResKey.HasValue())
         {
             result = T(node.Value.ResKey).ToHtmlString();
-        }
-            
-        if (!result.HasValue())
+		}
+
+		if (!result.HasValue() || result.IsCaseInsensitiveEqual(node.Value.ResKey))
         {
             result = node.Value.Text;
         }
@@ -34,7 +34,7 @@
     }
 }
 
-<ul class="nav nav-smart">
+<ul class="nav">
 @{
     foreach (var node in Model.Children)
     {
@@ -60,12 +60,18 @@
 
         var itemUrl = GetNodeLink(node);
 
-        <li class="divider-vertical"></li>
         <li data-id="@item.Id" @Html.Attr("class", "dropdown", node.HasChildren)>
-            <a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
-                <img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
-                <span class="navbar-label">@itemText</span>
-            </a>
+			<a href="@itemUrl" data-target="#" @Html.Attr("class", "dropdown-toggle", node.HasChildren)>
+				@if (item.Icon.HasValue())
+				{
+					<i class="fa fa-fw fa-@item.Icon"></i>
+				}
+				else
+				{
+					<img class="sm-icon" src="@Url.Content(imageUrl)" alt="" />
+				}
+				<span class="navbar-label">@itemText</span>
+			</a>
             @if (node.HasChildren)
             {
                 @CreateDropdown(node.Children, true)
@@ -74,21 +80,16 @@
         
     }   
 }
-    <li class="divider-vertical"></li>
 
 </ul>
 
 
 @helper CreateDropdown(IEnumerable<TreeNode<SmartStore.Web.Framework.UI.MenuItem>> nodes, bool isRoot)
 {
-    if (isRoot)
-    {
-        @Html.Raw("<div class='dropdown-menu'><div class='dropdown-menu-inner clearfix'>")
-    }
-
     var isFirst = true;
+	var hasIcons = nodes.Any(x => x.Value.Icon.HasValue());
     
-    <ul class='@(isRoot ? "drop-list" : "dropdown-menu")'>
+    <ul class='dropdown-menu'>
     @foreach (var node in nodes)
     {
         var item = node.Value;
@@ -117,7 +118,7 @@
         string liClass = null;
         if (isRoot)
         {
-            liClass = "drop-list-item";
+			liClass = ""; //"drop-list-item";
             if (node.HasChildren)
             {
                 liClass += " dropdown-submenu";
@@ -125,6 +126,15 @@
         }
         <li data-id="@item.Id" class='@liClass'>
             <a href="@GetNodeLink(node)">
+				@if (hasIcons)
+				{
+					var iconClass = "fa fa-fw";
+					if (node.Value.Icon.HasValue())
+					{
+						iconClass += " fa-" + node.Value.Icon;
+					}
+					<i class='@iconClass'></i>
+				}
                 @itemText
             </a>
             @if (node.HasChildren)
@@ -133,20 +143,20 @@
             }
         </li>
         
-            isFirst = false;
+        isFirst = false;
     }
     </ul>
-    
-        if (isRoot)
-        {
-            @Html.Raw("</div></div>")
-        }
 }
 
 <script type="text/javascript">
 
     $(function () {
-        $('.navbar ul.nav-smart > li.dropdown').navbar();
+    	$('.navbar ul.nav > li.dropdown').navbar({
+    		menuAim: {
+    			rowSelector: "li.dropdown-submenu",
+    			submenuSelector: "*",
+    		}
+    	});
     });
 
 </script>

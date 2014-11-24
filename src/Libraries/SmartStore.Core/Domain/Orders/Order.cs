@@ -348,8 +348,11 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public string DirectDebitIban { get; set; }
 
-        /// codehint:sm-add end
-        
+        /// <summary>
+        /// Gets or sets the customer order comment
+        /// </summary>
+        public string CustomerOrderComment { get; set; }
+
         /// <summary>
         /// Gets or sets the authorization transaction identifier
         /// </summary>
@@ -420,6 +423,18 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
 		[DataMember]
 		public DateTime CreatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the date and time when order was updated
+		/// </summary>
+		[DataMember]
+		public DateTime UpdatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the amount of remaing reward points
+		/// </summary>
+		[DataMember]
+		public int? RewardPointsRemaining { get; set; }
 
         #endregion
 

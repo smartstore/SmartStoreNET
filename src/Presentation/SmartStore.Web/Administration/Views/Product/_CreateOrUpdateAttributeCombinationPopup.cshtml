@@ -13,28 +13,32 @@
 }
 
 <div class="well" style="margin-bottom:8px;">
-	@if (ViewBag.IsEdit) {
-	<div>
-		@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
-	</div>
+	@if (ViewBag.IsEdit)
+	{
+		<div>
+			@Html.Raw(Html.TableFormattedVariantAttributes(Model.AttributesXml))
+		</div>
 	}
-	else {
-	<div id="ProductVariantAttributeContainer">
-		@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes)
-	</div>
+	else
+	{
+		<div id="ProductVariantAttributeContainer">
+			@Html.Partial("_ProductAttributes", Model.ProductVariantAttributes)
+		</div>
 	}
 </div>
 
-@if (!ViewBag.IsEdit) {
-<div id="CombinationExistenceNote" style="margin:0; height:50px;">
-	@if (Model.Warnings.Count > 0) {
-	<div class="alert alert-error fade in" style="margin:0;">
-		@foreach (var warning in Model.Warnings) {
-		<p><i class="icon-warning-sign"></i>&nbsp;@warning</p>
+@if (!ViewBag.IsEdit)
+{
+	<div id="CombinationExistenceNote" style="margin:0; height:50px;">
+		@if (Model.Warnings.Count > 0)
+		{
+			<div class="alert alert-warning fade in" style="margin:0;">
+				@foreach (var warning in Model.Warnings) {
+				<p><i class="fa fa-exclamation-triangle"></i>&nbsp;@warning</p>
+				}
+			</div>
 		}
 	</div>
-	}
-</div>
 }
 
 <div>
@@ -197,10 +201,10 @@
 				smallIcon: note,
 				url: '@Url.Action("CombinationExistenceNote", "Product", new { productId = Model.ProductId })',
 				callbackSuccess: function (resp) {
-					var cls = (resp.HasWarning ? 'error' : 'success'),
+					var cls = (resp.HasWarning ? 'warning' : 'info'),
 						ico = (resp.HasWarning ? 'warning-sign' : 'ok-sign');
 
-					note.html('<div class="alert alert-' + cls + '" style="margin:0;"><i class="icon-' + ico + '"></i>&nbsp;' + resp.Message + '</div>');
+					note.html('<div class="alert alert-' + cls + '" style="margin:0;"><i class="fa fa-' + ico + '"></i>&nbsp;' + resp.Message + '</div>');
 				}
 			});
 		});

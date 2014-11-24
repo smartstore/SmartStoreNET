@@ -194,21 +194,74 @@ namespace SmartStore.Services.Customers
                 case CustomerNameFormat.ShowUsernames:
                     result = customer.Username;
                     break;
+				case CustomerNameFormat.ShowFirstName:
+					result = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+					break;
+				case CustomerNameFormat.ShowNameAndCity:
+					{
+						var firstName = customer.GetAttribute<string>(SystemCustomerAttributeNames.FirstName);
+						var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
+						var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
+
+						if (firstName.IsNullOrEmpty())
+						{
+							var address = customer.Addresses.FirstOrDefault();
+							if (address != null)
+							{
+								firstName = address.FirstName;
+								lastName = address.LastName;
+								city = address.City;
+							}
+						}
+
+						result = firstName;
+						if (lastName.HasValue())
+						{
+							result = "{0} {1}.".FormatWith(result, lastName.First());
+						}
+
+						if (city.HasValue())
+						{
+							var from = EngineContext.Current.Resolve<ILocalizationService>().GetResource("Common.ComingFrom");
+							result = "{0} {1} {2}".FormatWith(result, from, city);
+						}
+					}
+					break;
                 default:
                     break;
             }
 
-            if (stripTooLong)
+            if (stripTooLong && result.HasValue())
             {
-                int maxLength = 0; // TODO make this setting configurable
+                int maxLength = EngineContext.Current.Resolve<CustomerSettings>().CustomerNameFormatMaxLength;
                 if (maxLength > 0 && result.Length > maxLength)
                 {
-                    result = result.Substring(0, maxLength);
+					result = result.Truncate(maxLength, "...");
                 }
             }
 
             return result;
         }
+
+		/// <summary>
+		/// Find any email address of customer
+		/// </summary>
+		public static string FindEmail(this Customer customer)
+		{
+			if (customer != null)
+			{
+				if (customer.Email.HasValue())
+					return customer.Email;
+
+				if (customer.BillingAddress != null && customer.BillingAddress.Email.HasValue())
+					return customer.BillingAddress.Email;
+
+				if (customer.ShippingAddress != null && customer.ShippingAddress.Email.HasValue())
+					return customer.ShippingAddress.Email;
+			}
+			return null;
+		}
+
 
 		#region Shopping cart
 

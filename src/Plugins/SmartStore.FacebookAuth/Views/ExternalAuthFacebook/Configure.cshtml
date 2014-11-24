@@ -1,0 +1,47 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.FacebookAuth.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+@using (Html.BeginForm())
+{
+    <table class="adminContent">
+		<tr>
+			<td colspan="2">
+				<div class="alert alert-info">
+					<button class="close" data-dismiss="alert">x</button>
+					@Html.Raw(T("Plugins.ExternalAuth.Facebook.AdminInstruction"))
+				</div>
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ClientKeyIdentifier)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ClientKeyIdentifier)
+                @Html.ValidationMessageFor(model => model.ClientKeyIdentifier)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ClientSecret)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ClientSecret)
+                @Html.ValidationMessageFor(model => model.ClientSecret)
+            </td>
+        </tr>
+        <tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+                <button type="submit" name="save" value="save" class="btn btn-primary">
+                    <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+                </button>
+            </td>
+        </tr>
+    </table>
+    
+}

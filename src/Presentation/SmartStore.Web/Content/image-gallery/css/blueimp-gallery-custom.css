@@ -1,0 +1,84 @@
+﻿
+.blueimp-gallery > .prev, 
+.blueimp-gallery > .next {
+	border: none;
+	border-radius: none;
+	text-shadow: none;
+	font-family: initial;
+	background: transparent;
+	width: 60px;
+	height: 60px;
+	margin-top: -30px;
+	color: #bbb;
+	opacity: 1;
+}
+.blueimp-gallery > .prev:hover,
+.blueimp-gallery > .next:hover {
+	color: #08c;
+}
+
+.blueimp-gallery > .close {
+	text-shadow: none;
+	opacity: 1 !important;
+	color: #aaa;
+	padding: 8px 12px;
+	padding-top: 4px;
+	border-bottom-left-radius: 6px;
+	background-color: #fff;
+	margin: 0;
+	top: 0;
+	right: 0;
+}
+.blueimp-gallery > .close:hover {
+	color: #333;
+}
+
+.blueimp-gallery > .indicator {
+	margin: 0;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	background-color: #fff;
+	opacity: 0.95;
+	padding: 10px 0;
+	-webkit-transition: all 0.4s ease-in-out;
+	        transition: all 0.4s ease-in-out;
+}
+.blueimp-gallery > .indicator.out {
+	bottom: -80px;
+	opacity: 0;
+}
+
+.blueimp-gallery > .indicator > li {
+	position: relative;
+	z-index: 0;
+	margin: 0;
+	margin-left: -1px;
+	opacity: 1;
+	border: 1px solid #ccc;
+	box-shadow: none;
+	padding: 3px;
+	background-origin: content-box;
+	background-size: contain;
+	border-radius: 0;
+	width: 50px;
+	height: 50px;
+}
+.blueimp-gallery > .indicator > li:hover,
+.blueimp-gallery > .indicator > li.active {
+	border-color: #444;
+}
+.blueimp-gallery > .indicator > li:hover {
+	z-index: 1;
+}
+.blueimp-gallery > .indicator > li.active {
+	z-index: 2;
+	outline: 1px solid #444;
+}
+
+@media (max-width: 767px) {
+	.blueimp-gallery > .indicator > li {
+		width: 25px;
+		height: 25px;
+	}
+}

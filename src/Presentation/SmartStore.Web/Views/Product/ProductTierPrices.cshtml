@@ -1,0 +1,109 @@
+﻿@model IList<ProductDetailsModel.TierPriceModel>
+@using SmartStore.Web.Models.Catalog;
+@{
+    var i = 0;
+    var displayTierPrices = false;
+    if (Model.Count > 0 && !(Model.Count == 1 && Model[0].Quantity <= 1))
+    {
+        //When there is just one tier (with  qty 1), there are no actual savings in the list.
+        displayTierPrices = true;
+    }
+}
+@if (displayTierPrices)
+{
+    <div class="tier-prices line omega">
+        <div class="prices-header">
+            @T("Products.TierPrices")
+        </div>
+        <div class="prices-list">
+            <table class="prices-table table table-condensed">
+                <thead>
+                    <tr>
+                    <th class="field-header">
+                        @T("Products.TierPrices.Quantity")
+                    </th>
+                    @foreach (var tierPrice in Model)
+                    {
+                        i++;
+                        if(i < 6) 
+                        {
+                            <td class="item-quantity">    
+                                @(tierPrice.Quantity)+
+                            </td>
+                        }
+                        else if (i == 6) {
+                            <th>
+                                <a id="tier-prices-popover" href="#" onclick="return false;" class="btn btn-mini" data-toggle="popover" data-placement="left" rel="nofollow">
+                                    ...
+                                </a>
+                                <script>
+                                    $(function () {
+                                        $("#tier-prices-popover").popover({
+                                            title: ' @T("Products.TierPrices")',
+                                            trigger: 'hover',
+                                            html: true,
+                                            content: $("#prices-table-popover").html()
+                                        });
+                                    });
+                                </script>
+                            </th>
+                        }
+                    }
+
+
+                </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <th class="field-header">
+                             @T("Products.TierPrices.Price")
+                        </th>
+
+                        @{i = 0;}
+                        @foreach (var tierPrice in Model)
+                        {
+                            i++;
+                            if(i < 6) 
+                            {
+                                <td class="item-price">
+                                    @tierPrice.Price
+                                </td>
+                            }
+                         }
+                        <td>&nbsp;</td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <div id="prices-table-popover" class="hide fade">
+                <table class="prices-table table table-condensed">
+                    <thead>
+                        <tr>
+                            <th class="field-header">
+                                @T("Products.TierPrices.Quantity")
+                            </th>
+
+                            <th class="field-header">
+                                @T("Products.TierPrices.Price")
+                            </th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var tierPrice in Model)
+                        {
+                        <tr>
+                            <td class="item-quantity">
+                                @(tierPrice.Quantity)+
+                            </td>
+                            <td class="item-price">
+                                @tierPrice.Price
+                            </td>
+                        </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+        </div>
+    </div>
+}

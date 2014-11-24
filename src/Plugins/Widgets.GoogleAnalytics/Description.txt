@@ -1,7 +1,0 @@
-﻿FriendlyName: Google Analytics
-SystemName: Widgets.GoogleAnalytics
-Version: 1.6
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Widgets.GoogleAnalytics.dll
-ResourceRootKey: Plugins.Widgets.GoogleAnalytics

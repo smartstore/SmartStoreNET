@@ -10,6 +10,7 @@ namespace SmartStore.Collections
     public class TreeNode<T> : ICloneable<TreeNode<T>>
     {
         private readonly LinkedList<TreeNode<T>> _children = new LinkedList<TreeNode<T>>();
+		private int? _depth = null;
 
         public TreeNode(T value)
         {
@@ -34,13 +35,7 @@ namespace SmartStore.Collections
         {
             get
             {
-                //return _children.AsReadOnly();
-                //return _children.AsEnumerable();
-                return _children.Where(x => true);
-                //foreach (var node in _children)
-                //{
-                //    yield return node;
-                //}
+                return _children;
             }
         }
 
@@ -48,7 +43,6 @@ namespace SmartStore.Collections
         {
             get
             {
-                //return _children.Where(x => x.IsLeaf).AsReadOnly();
                 return _children.Where(x => x.IsLeaf);
             }
         }
@@ -57,7 +51,6 @@ namespace SmartStore.Collections
         {
             get
             {
-                //return _children.Where(x => !x.IsLeaf).AsReadOnly();
                 return _children.Where(x => !x.IsLeaf);
             }
         }
@@ -67,7 +60,6 @@ namespace SmartStore.Collections
         {
             get
             {
-                //return _children.FirstOrDefault();
                 var first = _children.First;
                 if (first != null)
                     return first.Value;
@@ -79,7 +71,6 @@ namespace SmartStore.Collections
         {
             get
             {
-                //return _children.LastOrDefault();
                 var last = _children.Last;
                 if (last != null)
                     return last.Value;
@@ -110,6 +101,26 @@ namespace SmartStore.Collections
                 return Parent == null;
             }
         }
+
+		public int Depth
+		{
+			get
+			{
+				if (!_depth.HasValue)
+				{
+					var node = this;
+					int depth = -1;
+					while (node != null && !node.IsRoot)
+					{
+						depth++;
+						node = node.Parent;
+					}
+					_depth = depth;
+				}
+
+				return _depth.Value;
+			}
+		}
 
         public TreeNode<T> Root
         {
@@ -166,6 +177,7 @@ namespace SmartStore.Collections
                 newNode = node.Clone(true);
             }
             newNode.Parent = this;
+			newNode.TraverseTree(x => x._depth = null);
             if (append)
             {
                 _children.AddLast(newNode);
@@ -263,6 +275,7 @@ namespace SmartStore.Collections
             }
 
             this.Parent = refNode.Parent;
+			this.TraverseTree(x => x._depth = null);
         }
 
         #endregion
@@ -298,7 +311,8 @@ namespace SmartStore.Collections
 
         public bool RemoveNode(TreeNode<T> node)
         {
-            return _children.Remove(node);
+			node.TraverseTree(x => x._depth = null);
+			return _children.Remove(node);
         }
 
 

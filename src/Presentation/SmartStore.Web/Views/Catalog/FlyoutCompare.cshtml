@@ -31,11 +31,12 @@
                     </div>
                     <a class="remove ajax-cart-link" 
                         href="#"
-                        data-href='@Url.RouteUrl("RemoveProductFromCompareList", new { productId = item.Id })' 
+					    rel="nofollow"
+                        data-href='@Url.Action("RemoveProductFromCompare", new { id = item.Id })' 
                         data-type="compare"
                         data-action="remove" 
                         title='@T("Common.Remove")'>
-                        <i class="icon-trash"></i>
+                        <i class="fa fa-trash-o"></i>
                     </a>
                 </li>
             }
@@ -47,7 +48,7 @@
                 @T("Products.Compare.List")
             </a>
             
-            <a class="btn btn-danger btn-small pull-right" href="@Url.RouteUrl("ClearCompareList")">
+            <a class="btn btn-danger btn-small pull-right" href="@Url.Action("ClearCompareList")" rel="nofollow">
                 @T("Products.Compare.Clear")
             </a>   
 

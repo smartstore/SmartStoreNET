@@ -8,14 +8,14 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-star"></i>
-        <i class="icon icon-star"></i>
-        <i class="icon icon-star-half"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star"></i>
+        <i class="fa fa-star-half"></i>
         @T("Admin.Catalog.ProductReviews")
     </div>
     <div class="options">
-    <button type="submit" id="approve-selected" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Catalog.ProductReviews.ApproveSelected")</button>
-    <button type="submit" id="disapprove-selected" class="btn btn-danger"><i class="icon-remove icon-white"></i>&nbsp;@T("Admin.Catalog.ProductReviews.DisapproveSelected")</button>
+    <button type="submit" id="approve-selected" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Catalog.ProductReviews.ApproveSelected")</button>
+    <button type="submit" id="disapprove-selected" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.ProductReviews.DisapproveSelected")</button>
     </div>
 </div>
     <table width="100%">
@@ -39,7 +39,7 @@
             <td class="adminTitle">&nbsp;</td>
             <td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
-                    <i class="icon-search icon-white"></i>
+                    <i class="fa fa-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
@@ -62,18 +62,14 @@
 							.HeaderHtmlAttributes(new { style = "text-align:center" });
 
                         columns.Bound(x => x.ProductName)
-							.Width(200)
 							.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                         columns.Bound(x => x.CustomerId)
-                            .Width(50)
-							.Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-                            .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\">" + T("Admin.Common.View").Text + "</a>");
-                        columns.Bound(x => x.Title)
-                            .Width(150);
+                            .Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
+						columns.Bound(x => x.Title);
                         columns.Bound(x => x.ReviewText)
-                            .Width(350)
+                            .Width(500)
                             .Encoded(false);
                         columns.Bound(x => x.Rating)
                             .Width(50)
@@ -84,8 +80,8 @@
                             .ClientTemplate(@Html.SymbolForBool("IsApproved"))
                             .Centered();
                         columns.Bound(x => x.CreatedOn)
-                            .Width(100)
-                            .Centered();
+                            .Centered()
+							.Width(140);
                         columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()
@@ -178,7 +174,7 @@
             });
 
             //wire up checkboxes. 
-            $('#productreviews-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#productreviews-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

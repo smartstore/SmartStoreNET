@@ -13,20 +13,23 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-bar-chart"></i>
+            <i class="fa fa-bar-chart-o"></i>
             @T("Admin.Orders")
         </div>
         <div class="options">
 			<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					Export
-					<span class="icon-caret-down"></span>
+					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
 					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
-					<li><a href="javascript:void(0)" id="exportxml-selected">@T("Admin.Common.ExportToXml.Selected")</a></li>
 					<li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
-					<li><a href="javascript:void(0)" id="exportexcel-selected">@T("Admin.Common.ExportToExcel.Selected")</a></li>
+					<li><a href="@Url.Action("ExportPdfAll")">@T("Admin.Common.ExportToPdf.All")</a></li>
+
+					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Order")">@T("Admin.Common.ExportToXml.Selected")</a></li>				
+					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Order")">@T("Admin.Common.ExportToExcel.Selected")</a></li>					
+					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdfSelected", "Order")">@T("Admin.Common.ExportToPdf.Selected")</a></li>
 				</ul>
 			</div>
         </div>
@@ -119,7 +122,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToNumber)
                 <button type="submit" name="go-to-order-by-number" value="go-to-order-by-number" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -129,7 +132,7 @@
             </td>
             <td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
-                    <i class="icon-search"></i>
+                    <i class="fa fa-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
@@ -156,7 +159,9 @@
                                 .HtmlAttributes(new { style = "text-align:center" })
                                 .HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                            columns.Bound(x => x.OrderNumber);
+                            columns.Bound(x => x.OrderNumber)
+								.Template(x => Html.ActionLink(x.OrderNumber, "Edit", new { id = x.Id }))
+								.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= OrderNumber #></a>");
                             columns.Bound(x => x.OrderStatus);
                             columns.Bound(x => x.PaymentStatus);
                             columns.Bound(x => x.ShippingStatus);
@@ -208,30 +213,22 @@
                 return false;
             });
 
-
-            //"Export Excel selected" button
-            $('#exportexcel-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportExcelSelected", "Order"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
-
-            //"Export XML selected" button
-            $('#exportxml-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportXmlSelected", "Order"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
-
+			// export selected to pdf, xml, xls...
+        	$('a.export-form-post').click(function (e) {
+        		e.preventDefault();
+        		var form = $('#OrderExportForm');
+        		form.find('[name=selectedIds]').val(selectedIds.join(','));
+        		form.attr('action', $(this).attr('data-url'));
+        		form.submit();
+        		return false;
+        	});
             
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });
 
             //wire up checkboxes. 
-            $('#orders-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#orders-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);
@@ -312,6 +309,9 @@
             var numChkBoxesChecked = $('#orders-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
             $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
         }
-   </script>
-    
+   </script>   
 }
+
+<form id="OrderExportForm" method="POST" action="#">
+	<input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>

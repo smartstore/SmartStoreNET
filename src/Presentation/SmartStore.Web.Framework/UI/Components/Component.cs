@@ -10,7 +10,7 @@ using System.Web.Routing;
 namespace SmartStore.Web.Framework.UI 
 {
     
-    public abstract class Component : IComponent
+    public abstract class Component : IUiComponent
     {
 
         protected Component()

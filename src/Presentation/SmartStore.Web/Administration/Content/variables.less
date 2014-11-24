@@ -12,22 +12,31 @@
 @black:                 #000;
 @grayDarker:            #222;
 @grayDark:              #333;
-@gray:                  #555;
+@gray:                  #444;
 @grayLight:             #999;
 @grayLighter:           #eee;
 @white:                 #fff;
 
 
+// Brand colors
+// -------------------------
+@primaryColor:			#3f51b5; // Indigo 500
+@primaryColorLight:		#c5cae9; // Indigo 100
+@primaryColorDark:		#303f9f; // Indigo 700
+@accentColor:			#ffab40; // Orange A200
+@accentColorLight:		#ffd180; // Orange A100
+@accentColorDark:		#ff9100; // Orange A400
+
 // Accent colors
 // -------------------------
-@blue:                  #049cdb;
-@blueDark:              #0064cd;
-@green:                 #46a546;
-@red:                   #9d261d;
-@yellow:                #ffc40d;
-@orange:                #f89406;
-@pink:                  #c3325f;
-@purple:                #7a43b6;
+@blue:                  #5677fc; // Blue 500
+@blueDark:              #455ede; // Blue 700
+@green:                 #259b24; // Green 500
+@red:                   #e51c23; // Red 500
+@yellow:                #fdd835; // Yellow 600
+@orange:                @accentColor; //#ffa726; //#f89406;
+@pink:                  #e91e63; // Pink 500
+@purple:                #9c27b0; // Purple 500
 
 
 // Scaffolding
@@ -38,7 +47,7 @@
 
 // Links
 // -------------------------
-@linkColor:             #08c; // #21759b; // #0057a3;
+@linkColor:             #0277bb;
 @linkColorHover:        darken(@linkColor, 15%);
 
 
@@ -66,13 +75,14 @@
 @fontSizeSmall:         @baseFontSize * 0.85; // ~12px
 @fontSizeMini:          @baseFontSize * 0.75; // ~11px
 
-@paddingLarge:          11px 19px; // 44px
-@paddingSmall:          2px 10px;  // 26px
-@paddingMini:           1px 6px;   // 24px
+@paddingDefault:		6px 12px; // 34px
+@paddingLarge:          10px 16px; // 42px
+@paddingSmall:          4px 10px;  // 30px
+@paddingMini:           2px 6px;   // 26px
 
-@baseBorderRadius:      3px;
-@borderRadiusLarge:     6px;
-@borderRadiusSmall:     3px;
+@baseBorderRadius:      2px;
+@borderRadiusLarge:     2px;
+@borderRadiusSmall:     0;
 
 
 // Tables
@@ -85,27 +95,27 @@
 
 // Buttons
 // -------------------------
-@btnBackground:                     @white;
-@btnBackgroundHighlight:            darken(@white, 10%);
+@btnBackground:                     #fff;
+@btnBackgroundHighlight:            darken(#fff, 5%);
 @btnBorder:                         #c6c6c6; //#ccc;
 
-@btnPrimaryBackground:              @linkColor;
-@btnPrimaryBackgroundHighlight:     spin(@btnPrimaryBackground, 15%); //darken(@btnPrimaryBackground, 10%);
+@btnWarningBackground:              #7986cb; // Indigi 300
+@btnWarningBackgroundHighlight:     darken(@btnWarningBackground, 10%);
 
-@btnInfoBackground:                 #5bc0de;
-@btnInfoBackgroundHighlight:        #2f96b4;
+@btnInfoBackground:                 #9fa8da; // Indigo 200
+@btnInfoBackgroundHighlight:        darken(@btnInfoBackground, 10%);
 
-@btnSuccessBackground:              #62c462;
-@btnSuccessBackgroundHighlight:     #51a351;
+@btnSuccessBackground:              @green;
+@btnSuccessBackgroundHighlight:     darken(@btnSuccessBackground, 10%);
 
-@btnWarningBackground:              lighten(@orange, 15%);
-@btnWarningBackgroundHighlight:     @orange;
+@btnPrimaryBackground:              @accentColor;
+@btnPrimaryBackgroundHighlight:     darken(@btnPrimaryBackground, 10%);
 
-@btnDangerBackground:               #ee5f5b;
-@btnDangerBackgroundHighlight:      #bd362f;
+@btnDangerBackground:               #e84e40; // Red 400
+@btnDangerBackgroundHighlight:      darken(@btnDangerBackground, 10%);
 
-@btnInverseBackground:              #444;
-@btnInverseBackgroundHighlight:     @grayDarker;
+@btnInverseBackground:              #263238; // Blue Grey 900
+@btnInverseBackgroundHighlight:     #000;
 
 
 // Forms
@@ -124,12 +134,12 @@
 @dropdownDividerTop:            #e5e5e5;
 @dropdownDividerBottom:         @white;
 
-@dropdownLinkColor:             @grayDark;
+@dropdownLinkColor:             @gray;
 
-@dropdownLinkColorHover:        @white;
-@dropdownLinkColorActive:       @white; // @dropdownLinkColor;
-@dropdownLinkBackgroundActive:  #f9980f; //@linkColor;
-@dropdownLinkBackgroundHover:   @dropdownLinkBackgroundActive;
+@dropdownLinkColorHover:        #333; //#fff; //@grayDark;
+@dropdownLinkColorActive:       #333; //#fff;
+@dropdownLinkBackgroundActive:  #f5f5f5; //#444;
+@dropdownLinkBackgroundHover:   #f5f5f5; //#444; //@dropdownLinkBackgroundActive;
 
 
 
@@ -171,7 +181,7 @@
 
 // Wells
 // -------------------------
-@wellBackground:                  #f5f5f5;
+@wellBackground:                  #fafafa;
 
 
 // Navbar
@@ -179,7 +189,7 @@
 @navbarCollapseWidth:             979px;
 @navbarCollapseDesktopWidth:      @navbarCollapseWidth + 1;
 
-@navbarHeight:                    54px;
+@navbarHeight:                    70px;
 @navbarBackground:                #58ace0; //darken(@navbarBackgroundHighlight, 5%);
 @navbarBackgroundHighlight:       darken(@navbarBackground, 16%); //#ffffff;
 @navbarBorder:                    darken(@navbarBackground, 12%);
@@ -194,12 +204,12 @@
 @navbarBrandColor:                #fff; //@navbarLinkColor;
 
 // Inverted navbar
-@navbarInverseBackground:                #222;
-@navbarInverseBackgroundHighlight:       #666;
-@navbarInverseBorder:                    #555;
+@navbarInverseBackground:                @primaryColor; //#3b50ce;
+@navbarInverseBackgroundHighlight:       @primaryColor; //#3b50ce;
+@navbarInverseBorder:                    transparent;
 
-@navbarInverseText:                      #fff; // @grayLight;
-@navbarInverseLinkColor:                 #fff; // @grayLight;
+@navbarInverseText:                      #fff;
+@navbarInverseLinkColor:                 #fff;
 @navbarInverseLinkColorHover:            @white;
 @navbarInverseLinkColorActive:           @navbarInverseLinkColorHover;
 @navbarInverseLinkBackgroundHover:       transparent;
@@ -229,21 +239,21 @@
 
 // Form states and alerts
 // -------------------------
-@warningText:             #c09853; // #404040;
-@warningBackground:       #fcf8e3; // #EEDC94
-@warningBorder:           darken(spin(@warningBackground, -10), 3%);  // darken(spin(@warningBackground, -10), 6%);
+@warningText:             #c09853;
+@warningBackground:       #fff3e0; // Orange 50
+@warningBorder:           darken(spin(@warningBackground, -10), 3%);
 
-@errorText:               #b94a48; // @white; 
-@errorBackground:         #f2dede; // #C43C35; 
-@errorBorder:             darken(spin(@errorBackground, -10), 3%); // darken(spin(@errorBackground, -10), 6%); 
+@errorText:               #b94a48; //
+@errorBackground:         #fde0dc; // Red 50; 
+@errorBorder:             darken(spin(@errorBackground, -10), 3%);
 
 @successText:             #468847; // @white;
-@successBackground:       #dff0d8; // #57a957; 
-@successBorder:           darken(spin(@successBackground, -10), 3%); // darken(spin(@successBackground, -10), 6%);
+@successBackground:       #d0f8ce; // Green 50; 
+@successBorder:           darken(spin(@successBackground, -10), 3%);
 
 @infoText:                #3a87ad; // @white;
-@infoBackground:          #d9edf7; // #339BB9;
-@infoBorder:              darken(spin(@infoBackground, -10), 3%); // darken(spin(@infoBackground, -10), 6%); 
+@infoBackground:          #e8eaf6; // Indigo 50
+@infoBorder:              darken(spin(@infoBackground, -10), 3%);
 
 
 // Tooltips and popovers

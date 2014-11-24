@@ -1,9 +1,9 @@
 SmartStore.NET
 Copyright 1999-2014 SmartStore AG
-http://www.smartstore.com | http://smartstore.codeplex.com
+http://www.smartstore.com | https://github.com/smartstoreag/SmartStoreNET
 
 
-SmartStore.NET is a derivation of the ASP.NET open source e-commerce solution 
+SmartStore.NET is a fork of the ASP.NET open source e-commerce solution 
 nopCommerce (http://www.nopcommerce.com).
 
 SmartStore.NET includes works distributed under the licenses listed below. 
@@ -146,7 +146,7 @@ License:      MIT
 
 JSON.NET
 -----
-Website:      http://http://james.newtonking.com/
+Website:      http://james.newtonking.com/
 Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
 
@@ -155,6 +155,13 @@ LESS CSS for .NET
 -----
 Website:      http://www.dotlesscss.org/
 License:      Apache License v2.0
+
+
+GeoLite Free by MaxMind
+-----
+Website:      http://www.maxmind.com
+Copyright:    Copyright (c) 2014 Maxmind
+License:      Creative Commons Attribution-ShareAlike 3.0 Unported License
 
 
 Microsoft SQL Server Compact 4.0

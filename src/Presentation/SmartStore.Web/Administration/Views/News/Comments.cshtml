@@ -11,7 +11,7 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-comments"></i>
+        <i class="fa fa-comments"></i>
         @T("Admin.ContentManagement.News.Comments")
     </div>
     <div class="options">
@@ -30,26 +30,21 @@
                         columns.Bound(x => x.Id)
                             .Width(50);
                         columns.Bound(x => x.NewsItemTitle)
-                            .Width(200)
+                            .Width(450)
                             .Template(x => Html.ActionLink(x.NewsItemTitle, "Edit", "News", new { id = x.NewsItemId }, new { }))
                             .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/News/Edit/") + "<#= NewsItemId #>\"><#= NewsItemTitle #></a>");
                         columns.Bound(x => x.CustomerId)
-                            .Width(50)
-                            .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-                            .ClientTemplate("<a href=\""+ @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\">" + T("Admin.Common.View").Text + "</a>");
+							.Width(200)
+                            .Template(x => Html.ActionLink(x.CustomerName, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+							.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerName #></a>");
                         columns.Bound(x => x.CommentTitle)
-                            .Width(150)
-                            .Centered();
+                            .Width(200);
                         columns.Bound(x => x.CommentText)
-                            .Width(350)
-                            .Encoded(false)
-                            .Centered();
+                            .Encoded(false);
                         columns.Bound(x => x.IpAddress)
-                            .Width(100)
-                            .Centered();
+                            .Width(100);
                         columns.Bound(x => x.CreatedOn)
-                            .Width(150)
-                            .Centered();
+                            .Width(150);
                         columns.Command(commands =>
                         {
                             commands.Delete().Localize(T);                            

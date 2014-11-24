@@ -7,17 +7,17 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-edit"></i>
+            <i class="fa fa-pencil-square-o"></i>
             @T("Admin.ContentManagement.MessageTemplates.EditMessageTemplateDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.ContentManagement.MessageTemplates.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
             <button type="submit" name="message-template-copy" id="message-template-copy" class="btn" value="@T("Admin.ContentManagement.MessageTemplates.Copy")" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-                <i class="icon-copy"></i>&nbsp;@T("Admin.ContentManagement.MessageTemplates.Copy")
+                <i class="fa fa-files-o"></i>&nbsp;@T("Admin.ContentManagement.MessageTemplates.Copy")
             </button>
 			<button type="submit" name="message-template-delete" id="message-template-delete" class="btn btn-danger">
-				<i class="icon-trash icon-white"></i>&nbsp;@T("Admin.Common.Delete")
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
 			</button>
         </div>
     </div>

@@ -100,26 +100,6 @@ namespace SmartStore.Services.Catalog
         }
 
         /// <summary>
-        /// Gets a preferred discount
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="customer">Customer</param>
-        /// <param name="additionalCharge">Additional charge</param>
-        /// <param name="quantity">Product quantity</param>
-        /// <returns>Preferred discount</returns>
-        protected virtual Discount GetPreferredDiscount(Product product,
-            Customer customer, decimal additionalCharge = decimal.Zero, int quantity = 1)
-        {
-            if (_catalogSettings.IgnoreDiscounts)
-                return null;
-
-			var allowedDiscounts = GetAllowedDiscounts(product, customer);
-            decimal finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity);
-            var preferredDiscount = allowedDiscounts.GetPreferredDiscount(finalPriceWithoutDiscount);
-            return preferredDiscount;
-        }
-
-        /// <summary>
         /// Gets a tier price
         /// </summary>
 		/// <param name="product">Product</param>
@@ -304,7 +284,8 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var itemData in items.Where(x => x.IsValid()))
 				{
-					var itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData);
+					decimal itemPrice = (itemData.PriceOverride ?? GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData));
+
 					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
 
@@ -342,6 +323,19 @@ namespace SmartStore.Services.Catalog
 				lowestPrice = product.LowestAttributeCombinationPrice.Value;
 				displayFromMessage = true;
 			}
+
+			if (!displayFromMessage)
+			{
+				foreach (var attribute in product.ProductVariantAttributes)
+				{
+					if (attribute.ProductVariantAttributeValues.Any(x => x.PriceAdjustment != decimal.Zero))
+					{
+						displayFromMessage = true;
+						break;
+					}
+				}
+			}
+
 			return lowestPrice;
 		}
 
@@ -475,7 +469,8 @@ namespace SmartStore.Services.Catalog
         /// <param name="appliedDiscount">Applied discount</param>
 		/// <param name="bundleItem">A product bundle item</param>
         /// <returns>Discount amount</returns>
-        public virtual decimal GetDiscountAmount(Product product,
+        public virtual decimal GetDiscountAmount(
+			Product product,
             Customer customer,
             decimal additionalCharge,
             int quantity,
@@ -484,6 +479,7 @@ namespace SmartStore.Services.Catalog
         {
             appliedDiscount = null;
             decimal appliedDiscountAmount = decimal.Zero;
+			decimal finalPriceWithoutDiscount = decimal.Zero;
 
 			if (bundleItem.IsValid())
 			{
@@ -495,22 +491,33 @@ namespace SmartStore.Services.Catalog
 						DiscountPercentage = bundleItem.Item.Discount.Value,
 						DiscountAmount = bundleItem.Item.Discount.Value
 					};
+
+					finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
+					appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
 				}
 			}
 			else
 			{
-				//we don't apply discounts to products with price entered by a customer
-				if (product.CustomerEntersPrice)
+				// dont't apply when customer entered price or discounts should be ignored completely
+				if (product.CustomerEntersPrice || _catalogSettings.IgnoreDiscounts)
+				{
 					return appliedDiscountAmount;
+				}
 
-				appliedDiscount = GetPreferredDiscount(product, customer, additionalCharge, quantity);
+				var allowedDiscounts = GetAllowedDiscounts(product, customer);
+				if (allowedDiscounts.Count == 0)
+				{
+					return appliedDiscountAmount;
+				}
+
+				finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
+				appliedDiscount = allowedDiscounts.GetPreferredDiscount(finalPriceWithoutDiscount);
+
+				if (appliedDiscount != null)
+				{
+					appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
+				}
 			}
-
-            if (appliedDiscount != null)
-            {
-                decimal finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
-                appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
-            }
 
             return appliedDiscountAmount;
         }
@@ -627,6 +634,7 @@ namespace SmartStore.Services.Catalog
 				totalDiscountAmount = Math.Round(totalDiscountAmount, 2);
 			return totalDiscountAmount;
         }
+
 
 		/// <summary>
 		/// Gets the price adjustment of a variant attribute value

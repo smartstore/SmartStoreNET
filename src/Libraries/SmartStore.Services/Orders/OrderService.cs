@@ -144,18 +144,43 @@ namespace SmartStore.Services.Orders
             return order;
         }
 
-        /// <summary>
-        /// Deletes an order
-        /// </summary>
-        /// <param name="order">The order</param>
-        public virtual void DeleteOrder(Order order)
-        {
-            if (order == null)
-                throw new ArgumentNullException("order");
+		/// <summary>
+		/// Get order by payment authorization data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="authorizationTransactionId">Authorization transaction Id</param>
+		/// <returns>Order entity</returns>
+		public virtual Order GetOrderByPaymentAuthorization(string paymentMethodSystemName, string authorizationTransactionId)
+		{
+			if (paymentMethodSystemName.IsNullOrEmpty() || authorizationTransactionId.IsNullOrEmpty())
+				return null;
 
-            order.Deleted = true;
-            UpdateOrder(order);
-        }
+			var query =
+				from o in _orderRepository.Table
+				where o.PaymentMethodSystemName == paymentMethodSystemName && o.AuthorizationTransactionId == authorizationTransactionId
+				select o;
+
+			return query.FirstOrDefault();
+		}
+
+		/// <summary>
+		/// Get order by payment capture data
+		/// </summary>
+		/// <param name="paymentMethodSystemName">System name of the payment method</param>
+		/// <param name="captureTransactionId">Capture transaction Id</param>
+		/// <returns>Order entity</returns>
+		public virtual Order GetOrderByPaymentCapture(string paymentMethodSystemName, string captureTransactionId)
+		{
+			if (paymentMethodSystemName.IsNullOrEmpty() || captureTransactionId.IsNullOrEmpty())
+				return null;
+
+			var query =
+				from o in _orderRepository.Table
+				where o.PaymentMethodSystemName == paymentMethodSystemName && o.CaptureTransactionId == captureTransactionId
+				select o;
+
+			return query.FirstOrDefault();
+		}
 
         /// <summary>
         /// Search orders
@@ -291,11 +316,27 @@ namespace SmartStore.Services.Orders
             if (order == null)
                 throw new ArgumentNullException("order");
 
+			order.UpdatedOnUtc = DateTime.UtcNow;
+
             _orderRepository.Update(order);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityUpdated(order);
+			_eventPublisher.PublishOrderUpdated(order);
         }
+
+		/// <summary>
+		/// Deletes an order
+		/// </summary>
+		/// <param name="order">The order</param>
+		public virtual void DeleteOrder(Order order)
+		{
+			if (order == null)
+				throw new ArgumentNullException("order");
+
+			order.Deleted = true;
+			UpdateOrder(order);
+		}
 
         /// <summary>
         /// Deletes an order note
@@ -306,10 +347,15 @@ namespace SmartStore.Services.Orders
             if (orderNote == null)
                 throw new ArgumentNullException("orderNote");
 
+			int orderId = orderNote.OrderId;
+
             _orderNoteRepository.Delete(orderNote);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(orderNote);
+
+			var order = GetOrderById(orderId);
+			_eventPublisher.PublishOrderUpdated(order);
         }
 
         /// <summary>
@@ -335,7 +381,7 @@ namespace SmartStore.Services.Orders
         
         #endregion
         
-        #region Orders product variants
+        #region Order items
 
         /// <summary>
         /// Gets an Order item
@@ -425,10 +471,15 @@ namespace SmartStore.Services.Orders
             if (orderItem == null)
                 throw new ArgumentNullException("orderItem");
 
+			int orderId = orderItem.OrderId;
+
             _orderItemRepository.Delete(orderItem);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(orderItem);
+
+			var order = GetOrderById(orderId);
+			_eventPublisher.PublishOrderUpdated(order);
         }
 
         #endregion
@@ -474,6 +525,7 @@ namespace SmartStore.Services.Orders
 
             //event notification
             _eventPublisher.EntityInserted(recurringPayment);
+			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
         /// <summary>
@@ -489,6 +541,7 @@ namespace SmartStore.Services.Orders
 
             //event notification
             _eventPublisher.EntityUpdated(recurringPayment);
+			_eventPublisher.PublishOrderUpdated(recurringPayment.InitialOrder);
         }
 
         /// <summary>
@@ -543,10 +596,15 @@ namespace SmartStore.Services.Orders
             if (returnRequest == null)
                 throw new ArgumentNullException("returnRequest");
 
+			int orderItemId = returnRequest.OrderItemId;
+
             _returnRequestRepository.Delete(returnRequest);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(returnRequest);
+
+			var orderItem = GetOrderItemById(orderItemId);
+			_eventPublisher.PublishOrderUpdated(orderItem.Order);
         }
 
         /// <summary>
@@ -569,26 +627,35 @@ namespace SmartStore.Services.Orders
         /// <param name="customerId">Customer identifier; null to load all entries</param>
         /// <param name="orderItemId">Order item identifier; null to load all entries</param>
         /// <param name="rs">Return request status; null to load all entries</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
+		/// <param name="id">Return request Id</param>
         /// <returns>Return requests</returns>
-		public virtual IList<ReturnRequest> SearchReturnRequests(int storeId, int customerId,
-            int orderItemId, ReturnRequestStatus? rs)
+		public virtual IPagedList<ReturnRequest> SearchReturnRequests(int storeId, int customerId, int orderItemId, ReturnRequestStatus? rs, int pageIndex, int pageSize, int id = 0)
         {
             var query = _returnRequestRepository.Table;
+
 			if (storeId > 0)
 				query = query.Where(rr => storeId == rr.StoreId);
-            if (customerId > 0)
+    
+			if (customerId > 0)
                 query = query.Where(rr => customerId == rr.CustomerId);
+
+			if (orderItemId > 0)
+				query = query.Where(rr => rr.OrderItemId == orderItemId);
+
+			if (id != 0)
+				query = query.Where(rr => rr.Id == id);
+
             if (rs.HasValue)
             {
                 int returnStatusId = (int)rs.Value;
                 query = query.Where(rr => rr.ReturnRequestStatusId == returnStatusId);
             }
-            if (orderItemId > 0)
-                query = query.Where(rr => rr.OrderItemId == orderItemId);
 
-            query = query.OrderByDescending(rr => rr.CreatedOnUtc).ThenByDescending(rr=>rr.Id);
-            
-            var returnRequests = query.ToList();
+            query = query.OrderByDescending(rr => rr.CreatedOnUtc).ThenByDescending(rr => rr.Id);
+
+			var returnRequests = new PagedList<ReturnRequest>(query, pageIndex, pageSize);
             return returnRequests;
         }
 

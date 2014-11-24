@@ -1,6 +1,5 @@
 ﻿@model CustomerBackInStockSubscriptionsModel
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.Customer;
 @using SmartStore.Web.Framework.UI;
 @{    
@@ -31,14 +30,14 @@
                         $('.subscription-list .rowcheckbox').attr('checked', $(this).is(':checked')).change();
                     });
 
-                    $('.subscription-list .rowcheckbox').live('change', function (e) {
+                    $(document).on('change', '.subscription-list .rowcheckbox', function (e) {
                         var numChkBoxes = $('.subscription-list .rowcheckbox').length;
                         var numChkBoxesChecked = $('.subscription-list .rowcheckbox:checked').length;
                         $('#selectall').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
                     });
                 });
             </script>        
-            using (Html.BeginRouteForm("CustomerBackInStockSubscriptions", FormMethod.Post))
+            using (Html.BeginForm())
             {
             <div class="subscription-list">
                 <table class="table table-striped table-hover">
@@ -69,7 +68,7 @@
                 </table>
                 @if (Model.TotalPages > 1)
                 {
-                    @Html.SmartStore().Pager(Model).Name("paginator").Route("CustomerBackInStockSubscriptionsPaged")
+                    @Html.SmartStore().Pager(Model).Name("paginator").Action("BackInStockSubscriptions", "Customer")
                 }
 
                 <div class="buttons">

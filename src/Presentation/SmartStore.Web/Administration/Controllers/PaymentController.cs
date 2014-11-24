@@ -13,6 +13,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -27,14 +28,20 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IPluginFinder _pluginFinder;
         private readonly ILocalizationService _localizationService;
+		private readonly PluginMediator _pluginMediator;
 
 		#endregion
 
 		#region Constructors
 
-        public PaymentController(IPaymentService paymentService, PaymentSettings paymentSettings,
-            ISettingService settingService, IPermissionService permissionService,
-            IPluginFinder pluginFinder, ILocalizationService localizationService)
+        public PaymentController(
+			IPaymentService paymentService, 
+			PaymentSettings paymentSettings,
+            ISettingService settingService, 
+			IPermissionService permissionService,
+            IPluginFinder pluginFinder, 
+			ILocalizationService localizationService,
+			PluginMediator pluginMediator)
 		{
             this._paymentService = paymentService;
             this._paymentSettings = paymentSettings;
@@ -42,13 +49,14 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
             this._pluginFinder = pluginFinder;
             this._localizationService = localizationService;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
 
         #region Methods
 
-        public ActionResult Methods()
+        public ActionResult Providers()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
                 return AccessDeniedView();
@@ -57,99 +65,40 @@ namespace SmartStore.Admin.Controllers
             var paymentMethods = _paymentService.LoadAllPaymentMethods();
             foreach (var paymentMethod in paymentMethods)
             {
-                var tmp1 = paymentMethod.ToModel();
-                tmp1.IsActive = paymentMethod.IsPaymentMethodActive(_paymentSettings);
-                tmp1.RecurringPaymentType = paymentMethod.RecurringPaymentType.GetLocalizedEnum(_localizationService);
-                paymentMethodsModel.Add(tmp1);
+				var model = _pluginMediator.ToProviderModel<IPaymentMethod, PaymentMethodModel>(paymentMethod);
+				var instance = paymentMethod.Value;
+                model.IsActive = paymentMethod.IsPaymentMethodActive(_paymentSettings);
+				model.SupportCapture = instance.SupportCapture;
+				model.SupportPartiallyRefund = instance.SupportPartiallyRefund;
+				model.SupportRefund = instance.SupportRefund;
+				model.SupportVoid = instance.SupportVoid;
+				model.RecurringPaymentType = instance.RecurringPaymentType.GetLocalizedEnum(_localizationService);
+                paymentMethodsModel.Add(model);
             }
-            var gridModel = new GridModel<PaymentMethodModel>
-            {
-                Data = paymentMethodsModel,
-                Total = paymentMethodsModel.Count()
-            };
-            return View(gridModel);
+
+			return View(paymentMethodsModel);
         }
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult Methods(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
-                return AccessDeniedView();
+		public ActionResult ActivateProvider(string systemName, bool activate)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+				return AccessDeniedView();
 
-            var paymentMethodsModel = new List<PaymentMethodModel>();
-            var paymentMethods = _paymentService.LoadAllPaymentMethods();
-            foreach (var paymentMethod in paymentMethods)
-            {
-                var tmp1 = paymentMethod.ToModel();
-                tmp1.IsActive = paymentMethod.IsPaymentMethodActive(_paymentSettings);
-                paymentMethodsModel.Add(tmp1);
-            }
-            paymentMethodsModel = paymentMethodsModel.ForCommand(command).ToList();
-            var gridModel = new GridModel<PaymentMethodModel>
-            {
-                Data = paymentMethodsModel,
-                Total = paymentMethodsModel.Count()
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
+			var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
+			bool dirty = pm.IsPaymentMethodActive(_paymentSettings) != activate;
+			if (dirty)
+			{
+				if (!activate)
+					_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.Metadata.SystemName);
+				else
+					_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.Metadata.SystemName);
 
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult MethodUpdate(PaymentMethodModel model, GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
-                return AccessDeniedView();
+				_settingService.SaveSetting(_paymentSettings);
+				_pluginMediator.ActivateDependentWidgets(pm.Metadata, activate);
+			}
 
-            var pm = _paymentService.LoadPaymentMethodBySystemName(model.SystemName);
-            if (pm.IsPaymentMethodActive(_paymentSettings))
-            {
-                if (!model.IsActive)
-                {
-                    //mark as disabled
-                    _paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_paymentSettings);
-                }
-            }
-            else
-            {
-                if (model.IsActive)
-                {
-                    //mark as active
-                    _paymentSettings.ActivePaymentMethodSystemNames.Add(pm.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_paymentSettings);
-                }
-            }
-            var pluginDescriptor = pm.PluginDescriptor;
-            pluginDescriptor.FriendlyName = model.FriendlyName;
-            pluginDescriptor.DisplayOrder = model.DisplayOrder;
-            PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
-            //reset plugin cache
-            _pluginFinder.ReloadPlugins();
-            
-            return Methods(command);
-        }
-
-        public ActionResult ConfigureMethod(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
-                return AccessDeniedView();
-
-            var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
-            if (pm == null)
-                //No payment method found with the specified id
-                return RedirectToAction("Methods");
-
-            var model = pm.ToModel();
-            string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            pm.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-            model.ConfigurationActionName = actionName;
-            model.ConfigurationControllerName = controllerName;
-            model.ConfigurationRouteValues = routeValues;
-            return View(model);
-        }
+			return RedirectToAction("Providers");
+		}
 
         #endregion
     }

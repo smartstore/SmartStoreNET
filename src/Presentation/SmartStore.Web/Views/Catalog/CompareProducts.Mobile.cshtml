@@ -35,14 +35,14 @@
     <div class="page-body">
         @if (Model.Products.Count > 0)
         {
-            <a href="@Url.RouteUrl("ClearCompareList")" data-role="button" data-ajax="false">@T("Products.Compare.Clear")</a>
+            <a href="@Url.Action("ClearCompareList")" data-role="button" data-ajax="false">@T("Products.Compare.Clear")</a>
             <ul data-role="listview" data-inset="true" data-filter="false">
                 @foreach (var product in Model.Products)
                 {
                     <li>
                         <div class="item">
                             <div class="remove">
-                                <a href="@Url.RouteUrl("RemoveProductFromCompareList", new { productId = product.Id })" class="remove-button" data-role="button" data-ajax="false">@T("Common.Remove")</a>
+                                <a href="@Url.Action("RemoveProductFromCompare", new { id = product.Id })" class="remove-button" data-role="button" data-ajax="false">@T("Common.Remove")</a>
                             </div>
                             <div class="product-picture">
                                 <img alt="@product.DefaultPictureModel.AlternateText" src="@product.DefaultPictureModel.ImageUrl" title="@product.DefaultPictureModel.Title" />

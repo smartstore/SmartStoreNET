@@ -11,7 +11,7 @@
   <Target Name="CopyAllDependencies" Condition="'$(CopyAllDependencies)'=='true'" DependsOnTargets="DetectAllDependencies">
     <Copy Condition="'%(IndirectDependency.FullPath)'!=''"
           SourceFiles="%(IndirectDependency.FullPath)"
-          DestinationFolder="$(OutputPath)"
+          DestinationFolder="$(ProjectDir)bin\"
           SkipUnchangedFiles="true" >
       <Output TaskParameter="CopiedFiles" ItemName="IndirectDependencyCopied" />
     </Copy>
@@ -38,7 +38,7 @@
     </CreateItem>
  
     <!-- Creating copied indirect dependency list -->
-    <CreateItem Include="@(_IndirectDependency->'$(OutputPath)%(Filename)%(Extension)')">
+    <CreateItem Include="@(_IndirectDependency->'$(ProjectDir)bin\%(Filename)%(Extension)')">
       <Output TaskParameter="Include" ItemName="_ExistingIndirectDependency"/>
     </CreateItem>
  

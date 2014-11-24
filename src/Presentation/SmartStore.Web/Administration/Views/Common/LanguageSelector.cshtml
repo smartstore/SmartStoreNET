@@ -7,10 +7,10 @@
         @Html.Hidden("customerlanguage", Model.CurrentLanguage.Id)
     }
     
-    <div class="btn-group">
-        <button class="btn btn-inverse dropdown-toggle navbar-tool" rel='tooltip' title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
-            <img src='@Url.Content("~/Content/Images/flags/" + @Model.CurrentLanguage.FlagImageFileName)' alt="@Model.CurrentLanguage.Name" width="16" />
-            @*<i class="icon-caret-down"></i>*@
+    <div class="btn-group toppad pull-right">
+        <button class="btn dropdown-toggle navbar-tool" title='@Model.CurrentLanguage.Name' data-toggle="dropdown">
+			<i class="fa fa-language"></i>
+			<span>@Model.CurrentLanguage.UniqueSeoCode.ToUpper()</span>
         </button>
         <ul id="language-selector" class="dropdown-menu">
             @foreach (var language in Model.AvailableLanguages)
@@ -41,32 +41,3 @@
         }
     </script>
 }
-
-
-@*@model LanguageSelectorModel
-@if (Model.AvailableLanguages.Count > 1)
-{
-    using (Ajax.BeginForm("LanguageSelected", "Common", null, new AjaxOptions { OnComplete = "onLanguageChangedRequestCompleted();" }, new { id = "form-languageselector", @class = "navbar-form pull-right" }))
-    {
-        var languages = Model.AvailableLanguages.Select(x => new SelectListItem
-        {
-            Text = x.Name,
-            Value = x.Id.ToString(),
-            Selected = x.Id.Equals(Model.CurrentLanguage.Id)
-        });
-    
-        @Html.DropDownList("customerlanguage", languages)
-    }
-    <script type="text/javascript">
-        $(document).ready(function () {
-            $("#customerlanguage").change(onLanguageChanged);
-        });
-
-        function onLanguageChanged() {
-            $("#form-languageselector").submit();
-        }
-        function onLanguageChangedRequestCompleted() {
-            location.reload();
-        }
-    </script>
-}*@

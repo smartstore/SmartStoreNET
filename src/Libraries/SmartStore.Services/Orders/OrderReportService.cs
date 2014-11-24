@@ -264,25 +264,15 @@ namespace SmartStore.Services.Orders
             return result;
         }
 
-        /// <summary>
-        /// Gets a list of products purchased by other customers who purchased the above
-        /// </summary>
-		/// <param name="storeId">Store identifier</param>
-        /// <param name="productId">Product identifier</param>
-        /// <param name="recordsToReturn">Records to return</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Product collection</returns>
-		public virtual IList<Product> GetProductsAlsoPurchasedById(int storeId, int productId,
-            int recordsToReturn = 5, bool showHidden = false)
+		public virtual int[] GetAlsoPurchasedProductsIds(int storeId, int productId, int recordsToReturn = 5, bool showHidden = false)
         {
             if (productId == 0)
                 throw new ArgumentException("Product ID is not specified");
 
             //this inner query should retrieve all orders that have contained the productID
-            var query1 = (from orderItem in _orderItemRepository.Table
-                          join p in _productRepository.Table on orderItem.ProductId equals p.Id
-                          where p.Id == productId
-                          select orderItem.OrderId).Distinct();
+			var query1 = from orderItem in _orderItemRepository.Table
+						 where orderItem.ProductId == productId
+						 select orderItem.OrderId;
 
             var query2 = from orderItem in _orderItemRepository.Table
                          join p in _productRepository.Table on orderItem.ProductId equals p.Id
@@ -304,15 +294,16 @@ namespace SmartStore.Services.Orders
                          };
             query3 = query3.OrderByDescending(x => x.ProductsPurchased);
 
-            if (recordsToReturn > 0)
-                query3 = query3.Take(recordsToReturn);
+			if (recordsToReturn > 0)
+				query3 = query3.Take(recordsToReturn);
 
-            var report = query3.ToList();
-            var products = new List<Product>();
-            foreach (var reportLine in report)
-                products.Add(_productService.GetProductById(reportLine.ProductId));
+			var report = query3.ToList();
 
-            return products;
+			var ids = new List<int>();
+			foreach (var line in report)
+				ids.Add(line.ProductId);
+
+			return ids.ToArray();
         }
 
         /// <summary>

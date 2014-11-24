@@ -1,0 +1,159 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+
+    Html.AddScriptParts("~/Scripts/public.product-detail.mobile.js");
+    
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+}
+
+@helper BundleProducts()
+{
+	foreach (var item in Model.BundledItems.Where(x => x.BundleItem.Visible))
+	{
+		<div class="bundle-item">
+			<div class="bundle-item-name">
+				@if (item.VisibleIndividually)
+				{
+					<a href="@Url.RouteUrl("Product", new { SeName = item.SeName })" title="@T("Products.Details")">@item.Name</a>
+				}
+				else
+				{
+					@item.Name
+				}
+				@if (item.BundleItem.Quantity > 1)
+				{
+					<text>
+						&#215;&nbsp;@item.BundleItem.Quantity
+					</text>
+				}
+			</div>
+			@if (!String.IsNullOrWhiteSpace(item.StockAvailability))
+			{
+				<div class="bundle-item-stock">
+					@T("Products.Availability"):&nbsp;@item.StockAvailability
+				</div>
+			}
+			@if (!String.IsNullOrWhiteSpace(item.ProductPrice.PriceWithDiscount))
+			{
+				<div class="bundle-item-price">
+					@Html.Raw(item.ProductPrice.PriceWithDiscount)
+				</div>
+			}
+			@if (!String.IsNullOrEmpty(item.AttributeInfo))
+			{
+				<div class="bundle-item-attribute-info">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}
+
+			@if (item.ProductVariantAttributes.ShouldBeRendered())
+			{
+				<div class="bundle-item-footer">
+					@Html.Partial("_Attributes", item.ProductVariantAttributes, new ViewDataDictionary())
+				</div>
+			}
+		</div>
+	}
+}
+
+<div class="page product-details-page update-container">
+    <div class="page-body">
+        @Html.Widget("mobile_productdetails_top")
+        @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
+        @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { enctype = "multipart/form-data", id = "product-details-form" }))
+        {
+            <div class="product-essential">
+                <div class="overview">
+                    <h1 class="product-name">
+                        @Model.Name
+                    </h1>
+                    <div class="short-description">
+                        @Html.Raw(Model.ShortDescription)
+                    </div>
+                    @Html.Widget("mobile_productdetails_before_pictures")
+                    <div id="pd-gallery-container">
+                        @Html.Partial("_PictureGallery", Model.DetailsPictureModel)
+                    </div>
+                    @Html.Widget("mobile_productdetails_after_pictures")
+                    @Html.Action("ProductManufacturers", new { productId = Model.Id })
+                    @Html.Action("ReviewOverview", new { id = Model.Id })
+                    @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                    @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
+                </div>
+                @if (Model.ProductType == ProductType.BundledProduct)
+                {
+                    <div id="ProductBundleItems" class="product-bundle">
+                        @if (Model.RenderBundleTitle())
+                        {
+                            <div class="bundle-title">
+                                <h3>@Model.BundleTitleText</h3>
+                            </div>
+                        }
+                        <div class="bundle-items">
+                            @BundleProducts()
+                        </div>
+                        @if (Model.BundledItems.Where(x => x.BundleItem.Visible).Count() == 0)
+                        {
+                            <div class="no-bundled-products">@T("Products.NoBundledItems")</div>
+                        }
+                    </div>
+                }
+                <div class="full-description">
+                    @Html.Raw(Html.CollapsedText(Model.FullDescription))
+                </div>
+            </div>
+            <div class="product-collateral">
+                <div class="product-variant-list">
+                    <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl())">
+                        @Html.Partial("_DownloadSample", Model)
+                        @Html.Action("ProductTierPrices", new { productId = Model.Id })
+                        @if (Model.ProductType != ProductType.BundledProduct && Model.ProductVariantAttributes.ShouldBeRendered())
+                        {
+                            var dataDictAttributes = new ViewDataDictionary();
+                            dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", Model.Id);
+                            @Html.Partial("_Attributes", Model.ProductVariantAttributes, dataDictAttributes)
+                        }
+                        <!--product SKU, manufacturer part number, stock info-->
+                        @Html.Partial("_SKU_Man_Stock", Model)
+                        <!--Back in stock subscription-->
+                        @Html.Partial("_BackInStockSubscription", Model)
+                        @{
+                        var dataDictGiftCard = new ViewDataDictionary();
+                        dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", Model.Id);
+                        @Html.Partial("_GiftCardInfo", Model.GiftCard, dataDictGiftCard)
+                        }
+                        @{
+                        var dataDictPrice = new ViewDataDictionary();
+                        dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", Model.Id);
+                        @Html.Partial("_Price", Model.ProductPrice, dataDictPrice)
+                        }
+                        @{
+                        var dataDictAddToCart = new ViewDataDictionary();
+                        dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", Model.Id);
+                        @Html.Partial("_AddToCart", Model, dataDictAddToCart)
+                        }
+                    </div>
+                </div>
+                @Html.Action("ProductSpecifications", new { productId = Model.Id })
+                <div class="clear">
+                </div>
+                @Html.Action("ProductTags", new { productId = Model.Id })
+                <div class="clear">
+                </div>
+                @Html.Action("ProductsAlsoPurchased", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
+            </div>
+        }
+        @Html.Widget("mobile_productdetails_bottom")
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        $('#product-details-form').productDetailMobile({});
+    });
+</script>

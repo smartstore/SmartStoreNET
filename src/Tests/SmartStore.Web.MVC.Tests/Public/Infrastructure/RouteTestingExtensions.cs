@@ -8,6 +8,8 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Fakes;
 using SmartStore.Tests;
+using SmartStore.Utilities;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 {
@@ -39,8 +41,16 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             if (!httpMethod.HasValue)
                 httpMethod = HttpVerbs.Get;
 
+			int idx = url.LastIndexOf('?');
+			NameValueCollection queryString = null;
+			if (idx > -1)
+			{
+				queryString = new QueryString(QueryString.ExtractQuerystring(url));
+				url = url.Substring(0, idx);
+			}
+			
             var httpMethodStr = httpMethod.Value.ToString().ToUpper();
-            var context = new FakeHttpContext(url, httpMethodStr, null, form, null, null, null, null);
+			var context = new FakeHttpContext(url, httpMethodStr, null, form, queryString, null, null, null);
             return context;
         }
 
@@ -153,7 +163,24 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         public static RouteData Route(this string url)
         {
             var context = FakeHttpContext(url);
-            return RouteTable.Routes.GetRouteData(context);
+            var routeData = RouteTable.Routes.GetRouteData(context);
+
+			if (routeData != null)
+			{
+				var routeValues = routeData.Values;
+
+				var queryString = new QueryString(context.Request.QueryString.ToString());
+
+				foreach (var nv in queryString.AllKeys)
+				{
+					if (!routeValues.ContainsKey(nv))
+					{
+						routeValues[nv] = queryString[nv];
+					}
+				}
+			}
+
+			return routeData;
         }
 
         /// <summary>
@@ -222,7 +249,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             //check action
             var methodCall = (MethodCallExpression)action.Body;
             string actualAction = routeData.Values.GetValue("action").ToString();
-
+			
             string expectedAction = methodCall.Method.ActionName();
             actualAction.AssertSameStringAs(expectedAction);
 
@@ -231,9 +258,8 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             {
                 ParameterInfo param = methodCall.Method.GetParameters()[i];
                 bool isReferenceType = !param.ParameterType.IsValueType;
-                bool isNullable = isReferenceType ||
-                    (param.ParameterType.UnderlyingSystemType.IsGenericType && param.ParameterType.UnderlyingSystemType.GetGenericTypeDefinition() == typeof(Nullable<>));
-
+                bool isNullable = param.ParameterType.IsNullable();
+				
                 string controllerParameterName = param.Name;
                 bool routeDataContainsValueForParameterName = routeData.Values.ContainsKey(controllerParameterName);
                 object actualValue = routeData.Values.GetValue(controllerParameterName);
@@ -242,8 +268,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 
                 // If the parameter is nullable and the expression is a Convert UnaryExpression, 
                 // we actually want to test against the value of the expression's operand.
-                if (expressionToEvaluate.NodeType == ExpressionType.Convert
-                    && expressionToEvaluate is UnaryExpression)
+                if (expressionToEvaluate.NodeType == ExpressionType.Convert && expressionToEvaluate is UnaryExpression)
                 {
                     expressionToEvaluate = ((UnaryExpression)expressionToEvaluate).Operand;
                 }
@@ -260,18 +285,17 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
                         break;
                 }
 
-                if (isNullable && (string)actualValue == String.Empty && expectedValue == null)
-                {
-                    // The parameter is nullable so an expected value of '' is equivalent to null;
-                    continue;
-                }
+				if (isNullable && actualValue is string && (string)actualValue == String.Empty && expectedValue == null)
+				{
+					// The parameter is nullable so an expected value of '' is equivalent to null;
+					continue;
+				}
 
-                // HACK: this is only sufficient while System.Web.Mvc.UrlParameter has only a single value.
-                if (actualValue == UrlParameter.Optional ||
-                    (actualValue != null && actualValue.ToString().Equals("System.Web.Mvc.UrlParameter")))
-                {
-                    actualValue = null;
-                }
+				// HACK: this is only sufficient while System.Web.Mvc.UrlParameter has only a single value.
+				if (actualValue == UrlParameter.Optional || (actualValue != null && actualValue.ToString().Equals("System.Web.Mvc.UrlParameter")))
+				{
+					actualValue = null;
+				}
 
                 if (expectedValue is DateTime)
                 {
@@ -291,7 +315,11 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
                 {
                     errorMsgFmt += "; no value found in the route context action parameter named '{0}' - does your matching route contain a token called '{0}'?";
                 }
-                actualValue.ShouldEqual(expectedValue, String.Format(errorMsgFmt, controllerParameterName, expectedValue, actualValue));
+
+				if (actualValue == null && !param.IsOptional)
+				{
+					actualValue.ShouldEqual(expectedValue, String.Format(errorMsgFmt, controllerParameterName, expectedValue, actualValue));
+				}
             }
 
             return routeData;
@@ -341,7 +369,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         }
 
         /// <summary>
-        /// Gets a value from the <see cref="RouteValueDictionary" /> by key.  Does a
+        /// Gets a value from the <see cref="RouteValueDictionary" /> by key. Does a
         /// case-insensitive search on the keys.
         /// </summary>
         /// <param name="routeValues"></param>
@@ -349,17 +377,20 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         /// <returns></returns>
         public static object GetValue(this RouteValueDictionary routeValues, string key)
         {
-            foreach (var routeValueKey in routeValues.Keys)
-            {
-                if (string.Equals(routeValueKey, key, StringComparison.InvariantCultureIgnoreCase))
-                {
-                    if (routeValues[routeValueKey] == null)
-                        return null;
-                    return routeValues[routeValueKey].ToString();
-                }
-            }
+			return routeValues[key];
 
-            return null;
+			//foreach (var routeValueKey in routeValues.Keys)
+			//{
+			//	if (string.Equals(routeValueKey, key, StringComparison.InvariantCultureIgnoreCase))
+			//	{
+			//		if (routeValues[routeValueKey] == null)
+			//			return null;
+
+			//		return routeValues[routeValueKey].ToString();
+			//	}
+			//}
+
+			//return null;
         }
         
         #endregion 

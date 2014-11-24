@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 
 namespace SmartStore.Web.Models.Catalog
@@ -13,7 +14,7 @@ namespace SmartStore.Web.Models.Catalog
             Products = new List<ProductOverviewModel>();
             PagingFilteringContext = new CatalogPagingFilteringModel();
             SubCategories = new List<SubCategoryModel>();
-            CategoryBreadcrumb = new List<CategoryModel>();
+            CategoryBreadcrumb = new List<MenuItem>();
         }
 
         public string Name { get; set; }
@@ -28,7 +29,9 @@ namespace SmartStore.Web.Models.Catalog
         public CatalogPagingFilteringModel PagingFilteringContext { get; set; }
 
         public bool DisplayCategoryBreadcrumb { get; set; }
-        public IList<CategoryModel> CategoryBreadcrumb { get; set; }
+        public IList<MenuItem> CategoryBreadcrumb { get; set; }
+
+        public bool DisplayFilter { get; set; }
         
         public IList<SubCategoryModel> SubCategories { get; set; }
 

@@ -26,5 +26,10 @@ namespace SmartStore.Core.Domain.Messages
         /// Gets or sets the date and time when subscription was created
         /// </summary>
         public DateTime CreatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets the store identifier
+		/// </summary>
+		public int StoreId { get; set; }
     }
 }

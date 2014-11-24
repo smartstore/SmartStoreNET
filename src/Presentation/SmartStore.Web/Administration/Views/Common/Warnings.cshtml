@@ -5,7 +5,7 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-exclamation-sign"></i>
+		<i class="fa fa-exclamation-circle"></i>
         @T("Admin.System.Warnings")
     </div>
 </div>
@@ -19,7 +19,7 @@
                     case SystemWarningLevel.Pass:
                         {
                             <span class="pass">
-                                <i class="icon icon-check"></i>
+                                <i class="fa fa-check"></i>
                                 @warning.Text
                             </span>
                         }
@@ -27,7 +27,7 @@
                     case SystemWarningLevel.Warning:
                         {
                             <span class="warning">
-                                <i class="icon icon-question-sign"></i>
+                                <i class="fa fa-question-circle"></i>
                                 @warning.Text
                             </span>
                         }
@@ -35,7 +35,7 @@
                     case SystemWarningLevel.Fail:
                         {
                             <span class="fail">
-                                <i class="icon icon-remove-sign"></i>
+                                <i class="fa fa-times-circle"></i>
                                 @warning.Text
                             </span>
                         }

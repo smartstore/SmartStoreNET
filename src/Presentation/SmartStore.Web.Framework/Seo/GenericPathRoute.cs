@@ -84,16 +84,8 @@ namespace SmartStore.Web.Framework.Seo
                 if (urlRecord == null)
                 {
                     //no URL record found
-
-                    //var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-                    //var response = httpContext.Response;
-                    //response.Status = "302 Found";
-                    //response.RedirectLocation = webHelper.GetStoreLocation(false);
-                    //response.End();
-                    //return null;
-
-                    data.Values["controller"] = "Common";
-                    data.Values["action"] = "PageNotFound";
+					data.Values["controller"] = "Error";
+					data.Values["action"] = "NotFound";
                     return data;
                 }
                 if (!urlRecord.IsActive)
@@ -113,29 +105,21 @@ namespace SmartStore.Web.Framework.Seo
                     else
                     {
                         //no active slug found
-
-                        //var webHelper = EngineContext.Current.Resolve<IWebHelper>();
-                        //var response = httpContext.Response;
-                        //response.Status = "302 Found";
-                        //response.RedirectLocation = webHelper.GetStoreLocation(false);
-                        //response.End();
-                        //return null;
-
-                        data.Values["controller"] = "Common";
-                        data.Values["action"] = "PageNotFound";
+						data.Values["controller"] = "Error";
+						data.Values["action"] = "NotFound";
                         return data;
                     }
                 }
 
                 //process URL
+				data.Values["SeName"] = urlRecord.Slug;
                 switch (urlRecord.EntityName.ToLowerInvariant())
                 {
                     case "product":
                         {
-                            data.Values["controller"] = "Catalog";
-                            data.Values["action"] = "Product";
+                            data.Values["controller"] = "Product";
+                            data.Values["action"] = "ProductDetails";
                             data.Values["productid"] = urlRecord.EntityId;
-                            data.Values["SeName"] = urlRecord.Slug;
                         }
                         break;
                     case "category":
@@ -143,7 +127,6 @@ namespace SmartStore.Web.Framework.Seo
                             data.Values["controller"] = "Catalog";
                             data.Values["action"] = "Category";
                             data.Values["categoryid"] = urlRecord.EntityId;
-                            data.Values["SeName"] = urlRecord.Slug;
                         }
                         break;
                     case "manufacturer":
@@ -151,7 +134,6 @@ namespace SmartStore.Web.Framework.Seo
                             data.Values["controller"] = "Catalog";
                             data.Values["action"] = "Manufacturer";
                             data.Values["manufacturerid"] = urlRecord.EntityId;
-                            data.Values["SeName"] = urlRecord.Slug;
                         }
                         break;
                     case "newsitem":
@@ -159,7 +141,6 @@ namespace SmartStore.Web.Framework.Seo
                             data.Values["controller"] = "News";
                             data.Values["action"] = "NewsItem";
                             data.Values["newsItemId"] = urlRecord.EntityId;
-                            data.Values["SeName"] = urlRecord.Slug;
                         }
                         break;
                     case "blogpost":
@@ -167,7 +148,6 @@ namespace SmartStore.Web.Framework.Seo
                             data.Values["controller"] = "Blog";
                             data.Values["action"] = "BlogPost";
                             data.Values["blogPostId"] = urlRecord.EntityId;
-                            data.Values["SeName"] = urlRecord.Slug;
                         }
                         break;
                     default:

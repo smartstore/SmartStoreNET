@@ -8,6 +8,20 @@
  * Designed and built with all the love in the world @twitter by @mdo and @fat.
  */
 
+/* Fonts (Chrome DirectWrite & FF fix)
+-------------------------------------------------------------- */
+
+@font-face {
+    font-family: "Segoe UI Light";
+    font-weight: 100;
+    src: local("Segoe UI Light"), url("../fonts/segoeui-semilight.eot") format('embedded-opentype'), url("../fonts/segoeui-semilight.woff") format('woff'), url("../fonts/segoeui-semilight.ttf") format('truetype');
+}
+@font-face {
+    font-family: "Segoe UI Semibold";
+    font-weight: 100;
+    src: local("Segoe UI Semibold"), url("../fonts/segoeui-semibold.eot") format('embedded-opentype'), url("../fonts/segoeui-semibold.woff") format('woff'), url("../fonts/segoeui-semibold.ttf") format('truetype');
+}
+
 // CSS Reset
 @import "~/Content/bootstrap/reset.less";
 
@@ -29,7 +43,7 @@
 @import "~/Content/bootstrap/tables.less";
 
 // Components: common
-@import "~/Content/bootstrap/font/font-awesome.less";
+//@import "~/Content/bootstrap/font/font-awesome.less";
 @import "~/Content/bootstrap/dropdowns.less";
 @import "~/Content/bootstrap/wells.less";
 @import "~/Content/bootstrap/component-animations.less";
@@ -60,28 +74,6 @@
 // Utility classes
 @import "~/Content/bootstrap/utilities.less"; // Has to be last to override when necessary
 
-.clearfix {
-	*zoom: 1;
-	&:before,
-	&:after {
-		display: table;
-		content: "";
-		// Fixes Opera/contenteditable bug:
-		// http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
-		line-height: 0;
-	}
-	&:after {
-		clear: both;
-	}
-}
-.hide-text {
-	font: 0/0 a;
-	color: transparent;
-	text-shadow: none;
-	background-color: transparent;
-	border: 0;
-}
-
 
 /* INSTALL STYLES
 --------------------------------------------------------*/
@@ -104,7 +96,6 @@ body {
 	padding: 30px;
     background-color: #fff;
     background-color: rgba(255,255,255, .5);
-    //text-shadow: 0 1px 0 rgba(255,255,255, .25);
     .box-shadow(~'0 0 15px rgba(0,0,0, .15), 0 10px 6px -10px rgba(0,0,0, .4)');
     .border-radius(4px);
 }
@@ -114,6 +105,8 @@ body {
 	color: #fff;
 	color: lighten(@installBaseColor, 40%);
 	text-shadow: 0 1px 0 darken(@installBaseColor, 12%);
+	font-family: @pageTitleFontFamily;
+	font-weight: @pageTitleFontWeight;
 }
 
 .install-content {
@@ -152,6 +145,10 @@ label.control-label {
 .field-validation-error {
 	color: red;
 	text-shadow: none !important;
+}
+
+label.control-label {
+	font-weight: normal;
 }
 
 

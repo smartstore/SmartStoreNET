@@ -9,6 +9,9 @@ namespace SmartStore.Services.Tasks
         /// <summary>
         /// Execute task
         /// </summary>
-        void Execute();
+		/// <param name="ctx">
+		/// The execution context
+		/// </param>
+        void Execute(TaskExecutionContext ctx);
     }
 }

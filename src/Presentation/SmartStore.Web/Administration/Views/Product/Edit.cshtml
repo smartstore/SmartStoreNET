@@ -8,29 +8,29 @@
     <div class="section-header">
         <div class="title">
             @if (!String.IsNullOrEmpty(Model.PictureThumbnailUrl)) {
-                <img src="@Url.Content(Model.PictureThumbnailUrl)" class="img-polaroid" />
+                <img src="@Url.Content(Model.PictureThumbnailUrl)" />
 			}
-            @T("Admin.Catalog.Products.EditProductDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Catalog.Products.BackToList") + ")", "List")
+            @T("Admin.Catalog.Products.EditProductDetails") - <span title="@Model.Name">@Model.Name.Truncate(45, "...")</span> @Html.ActionLink("(" + T("Admin.Catalog.Products.BackToList") + ")", "List")
         </div>
         <div class="options">
-            <button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { SeName = Model.SeName })', 1000, 600, true); return false;" class="btn">
-                <i class="icon-eye-open"></i>
+			<button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { SeName = Model.SeName })', 1000, 600, true); return false;" class="btn">
+                <i class="fa fa-eye"></i>
                 @T("Admin.Common.Preview")
             </button>
-            <button type="submit" value="save" class="btn btn-primary entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
-                <i class="icon-ok"></i>
-                @T("Admin.Common.Save")
-            </button>
-            <button type="submit" value="save-continue" class="btn entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
-                @T("Admin.Common.SaveContinue")
-            </button>
-            <a href="#copyproduct-window" data-toggle="modal" class="btn">
-				<i class="icon-copy"></i>&nbsp;@T("Admin.Catalog.Products.Copy")
+			<button type="submit" value="save" class="btn btn-primary entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
+				<i class="fa fa-check"></i>
+				@T("Admin.Common.Save")
+			</button>
+			<button type="submit" value="save-continue" class="btn entity-commit-trigger" data-commit-type="product" data-commit-action="update" data-commit-id="@Model.Id">
+				@T("Admin.Common.SaveContinue")
+			</button>
+			<a href="#copyproduct-window" data-toggle="modal" class="btn">
+				<i class="fa fa-files-o"></i>&nbsp;@T("Admin.Catalog.Products.Copy")
 			</a>
-            <button type="submit" id="product-delete" class="btn btn-danger">
-                <i class="icon-trash"></i>
-                @T("Admin.Common.Delete")
-            </button>
+			<button type="submit" id="product-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				@T("Admin.Common.Delete")
+			</button>
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)
@@ -38,7 +38,6 @@
 @Html.DeleteConfirmation("product-delete")
 
 @*copy product form*@
-@*codehint: sm-edit*@
 @{Html.SmartStore().Window()
 		.Name("copyproduct-window")
 		.Title(T("Admin.Catalog.Products.Copy").Text)
@@ -78,7 +77,7 @@
     </text>)
     .FooterContent(@<text>
         <button id="copyproduct" type="button" class="btn btn-primary">
-            <i class="icon-copy"></i>
+            <i class="fa fa-files-o"></i>
             @T("Admin.Catalog.Products.Copy")
         </button>
     </text>)

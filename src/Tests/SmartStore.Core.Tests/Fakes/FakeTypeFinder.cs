@@ -27,60 +27,17 @@ namespace SmartStore.Core.Tests.Fakes
             this.Assemblies = assemblies;
         }
 
-        public IList<Assembly> GetAssemblies()
+		public IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             return Assemblies.ToList();
         }
 
-
-
-        public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, bool onlyConcreteClasses = true)
-        {
-            return (from t in Types
-                    where !t.IsInterface && assignTypeFrom.IsAssignableFrom(t) && (onlyConcreteClasses ? (t.IsClass && !t.IsAbstract) : true)
-                    select t).ToList();
-        }
-
-        public IEnumerable<Type> FindClassesOfType<T>(bool onlyConcreteClasses = true)
-        {
-            return FindClassesOfType(typeof(T), onlyConcreteClasses);
-        }
-
         public IEnumerable<Type> FindClassesOfType(Type assignTypeFrom, IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
         {
-            return FindClassesOfType(assignTypeFrom, onlyConcreteClasses);
+			return (from t in Types
+					where !t.IsInterface && assignTypeFrom.IsAssignableFrom(t) && (onlyConcreteClasses ? (t.IsClass && !t.IsAbstract) : true)
+					select t).ToList();
         }
 
-        public IEnumerable<Type> FindClassesOfType<T>(IEnumerable<Assembly> assemblies, bool onlyConcreteClasses = true)
-        {
-            return FindClassesOfType(typeof(T), onlyConcreteClasses);
-        }
-
-
-
-
-
-
-
-
-        public IEnumerable<Type> FindClassesOfType<T, TAssemblyAttribute>(bool onlyConcreteClasses = true) where TAssemblyAttribute : Attribute
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Assembly> FindAssembliesWithAttribute<T>()
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Assembly> FindAssembliesWithAttribute<T>(IEnumerable<Assembly> assemblies)
-        {
-            throw new NotImplementedException();
-        }
-
-        public IEnumerable<Assembly> FindAssembliesWithAttribute<T>(DirectoryInfo assemblyPath)
-        {
-            throw new NotImplementedException();
-        }
     }
 }

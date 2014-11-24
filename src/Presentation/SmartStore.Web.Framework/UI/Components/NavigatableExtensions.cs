@@ -4,6 +4,8 @@ using System.Linq;
 using System.Text;
 using System.Web.Routing;
 using System.Web.Mvc;
+using System.Web;
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -79,90 +81,107 @@ namespace SmartStore.Web.Framework.UI
             navigatable.Url = value;
         }
 
-        public static string GenerateUrl(this INavigatable navigatable, 
-            RequestContext requestContext, 
-            RouteValueDictionary routeValues = null)
-        {
-            var urlHelper = new UrlHelper(requestContext);
-            string str = null;
+		public static string GenerateUrl(this INavigatable navigatable, RequestContext requestContext, RouteValueDictionary routeValues = null)
+		{
+			return navigatable.GenerateUrl(new UrlHelper(requestContext), routeValues);
+		}
 
-            if (routeValues != null)
-            {
-                if (routeValues.Any())
-                {
-                    navigatable.RouteValues.Merge((IDictionary<string, object>)routeValues);
-                }
-            }
-            routeValues = navigatable.RouteValues;
+		public static string GenerateUrl(this INavigatable navigatable, UrlHelper urlHelper, RouteValueDictionary routeValues = null)
+		{
+			string str = null;
 
-            var hasParam = false;
-            var param = navigatable.ModifiedParam;
-            if (param != null && param.HasValue() && param.Value != null)
-            {
-                routeValues[param.Name] = param.Value;
-                hasParam = true;
-            }
+			if (routeValues != null)
+			{
+				if (routeValues.Any())
+				{
+					navigatable.RouteValues.Merge((IDictionary<string, object>)routeValues);
+				}
+			}
+			routeValues = navigatable.RouteValues;
 
-            if (!string.IsNullOrEmpty(navigatable.RouteName))
-            {
-                return urlHelper.RouteUrl(navigatable.RouteName, routeValues);
-            }
+			var hasParam = false;
+			var param = navigatable.ModifiedParam;
+			if (param != null && param.HasValue() && param.Value != null)
+			{
+				routeValues[param.Name] = param.Value;
+				hasParam = true;
+			}
 
-            if (!string.IsNullOrEmpty(navigatable.ControllerName) && !string.IsNullOrEmpty(navigatable.ActionName))
-            {
-                return urlHelper.Action(navigatable.ActionName, navigatable.ControllerName, routeValues, null, null);
-            }
+			if (!string.IsNullOrEmpty(navigatable.RouteName))
+			{
+				return urlHelper.RouteUrl(navigatable.RouteName, routeValues);
+			}
 
-            if (!string.IsNullOrEmpty(navigatable.ActionName))
-            {
-                return urlHelper.Action(navigatable.ActionName, routeValues);
-            }
+			if (!string.IsNullOrEmpty(navigatable.ControllerName) && !string.IsNullOrEmpty(navigatable.ActionName))
+			{
+				return urlHelper.Action(navigatable.ActionName, navigatable.ControllerName, routeValues, null, null);
+			}
 
-            if (!string.IsNullOrEmpty(navigatable.Url))
-            {
-                return (!navigatable.Url.StartsWith("~/", StringComparison.Ordinal) ? navigatable.Url : urlHelper.Content(navigatable.Url));
-            }
+			if (!string.IsNullOrEmpty(navigatable.ActionName))
+			{
+				return urlHelper.Action(navigatable.ActionName, routeValues);
+			}
 
-            //if (routeValues == null)
-            //{
-            //    routeValues = new RouteValueDictionary();
-            //    if (navigatable.RouteValues.Any())
-            //    {
-            //        routeValues.Merge((IDictionary<string, object>)navigatable.RouteValues);
-            //    }
-            //}
+			if (!string.IsNullOrEmpty(navigatable.Url))
+			{
+				return (!navigatable.Url.StartsWith("~/", StringComparison.Ordinal) ? navigatable.Url : urlHelper.Content(navigatable.Url));
+			}
 
-            if (hasParam)
-            {
-                var booleanParamNames = param.BooleanParamNames;
+			//if (routeValues == null)
+			//{
+			//    routeValues = new RouteValueDictionary();
+			//    if (navigatable.RouteValues.Any())
+			//    {
+			//        routeValues.Merge((IDictionary<string, object>)navigatable.RouteValues);
+			//    }
+			//}
 
-                foreach (var key in requestContext.HttpContext.Request.QueryString.AllKeys.Where(key => key != null))
-                {
-                    var value = requestContext.HttpContext.Request.QueryString[key];
-                    if (booleanParamNames.Contains(key, StringComparer.InvariantCultureIgnoreCase))
-                    {
-                        // little hack here due to ugly MVC implementation
-                        // find more info here: http://www.mindstorminteractive.com/blog/topics/jquery-fix-asp-net-mvc-checkbox-truefalse-value/
-                        if (!String.IsNullOrEmpty(value) && value.Equals("true,false", StringComparison.InvariantCultureIgnoreCase))
-                        {
-                            value = "true";
-                        }
-                    }
-                    routeValues[key] = value;
-                }
+			if (hasParam)
+			{
+				var booleanParamNames = param.BooleanParamNames;
 
-                routeValues[param.Name] = param.Value;
+				foreach (var key in urlHelper.RequestContext.HttpContext.Request.QueryString.AllKeys.Where(key => key != null))
+				{
+					var value = urlHelper.RequestContext.HttpContext.Request.QueryString[key];
+					if (booleanParamNames.Contains(key, StringComparer.InvariantCultureIgnoreCase))
+					{
+						// little hack here due to ugly MVC implementation
+						// find more info here: http://www.mindstorminteractive.com/blog/topics/jquery-fix-asp-net-mvc-checkbox-truefalse-value/
+						if (!String.IsNullOrEmpty(value) && value.Equals("true,false", StringComparison.InvariantCultureIgnoreCase))
+						{
+							value = "true";
+						}
+					}
+					routeValues[key] = value;
+				}
 
-                return UrlHelper.GenerateUrl(null, null, null, routeValues, RouteTable.Routes, requestContext, true);
-            }
+				routeValues[param.Name] = param.Value;
 
-            if (routeValues.Any())
-            {
-                str = urlHelper.RouteUrl(routeValues);
-            }
+				var requestContext = urlHelper.RequestContext;
+				if (requestContext.RouteData != null && requestContext.RouteData.Route != null)
+				{
+					var virtualPath = requestContext.RouteData.Route.GetVirtualPath(requestContext, routeValues);
+					if (virtualPath != null)
+					{
+						str = VirtualPathUtility.Combine(requestContext.HttpContext.Request.ApplicationPath, virtualPath.VirtualPath);
+						
+					}
+					else
+					{
+						str = UrlHelper.GenerateUrl(null, null, null, routeValues, RouteTable.Routes, urlHelper.RequestContext, true);
+					}
+				}
 
-            return str;
-        }
+				return str;
+			}
+
+			if (routeValues.Any())
+			{
+				str = urlHelper.RouteUrl(routeValues);
+			}
+
+			return str;
+		}
 
         private static void SetAction(INavigatable navigatable, string actionName, string controllerName, RouteValueDictionary routeValues)
         {

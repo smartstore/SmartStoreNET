@@ -59,18 +59,6 @@
             var input = this.input;
             input.attr('realType', 'password');
             this.isPassword = true;
-            // IE < 9 doesn't allow changing the type of password inputs
-            if ($.browser.msie && input[0].outerHTML) {
-                var fakeHTML = $(input[0].outerHTML.replace(/type=(['"])?password\1/gi, 'type=$1text$1'));
-                this.fakePassword = fakeHTML.val(input.attr('placeholder')).addClass('placeholder').focus(function() {
-                    input.trigger('focus');
-                    $(this).hide();
-                });
-                $(input[0].form).submit(function() {
-                    fakeHTML.remove();
-                    input.show()
-                });
-            }
         }
     };
     
@@ -116,7 +104,7 @@
 
             // On page refresh, IE doesn't re-populate user input
             // until the window.onload event is fired.
-            if ($.browser.msie) {
+            if (navigator.isIE) {
                 $(window).load(function() {
                     if(input.val()) {
                         input.removeClass("placeholder");

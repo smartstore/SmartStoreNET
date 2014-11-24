@@ -9,11 +9,14 @@
 {
 	<div class="section-header">
 		<div class="title">
-			<i class="icon icon-picture"></i>
+			<i class="fa fa-ellipsis-h"></i>
 			@T("Admin.Configuration.ContentSlider")
 		</div>
 		<div class="options">
-			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-check"></i>
+				@T("Admin.Common.Save")
+			</button>
 		</div>
 	</div>
 
@@ -127,14 +130,14 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-				<button type="submit" id="search-slides" value="search-slides" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+				<button type="submit" id="search-slides" value="search-slides" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
 			</td>
 		</tr>
 	</table>
 
 	<div class="pull-right">
 		<a href="@Url.Action("CreateSlide")" class="btn btn-primary btn-above">
-			<i class="icon-plus"></i>
+			<i class="fa fa-plus"></i>
 			@T("Admin.Common.AddNew")
 		</a>
 	</div>
@@ -150,9 +153,9 @@
 							.Template(x => Html.ActionLink(x.Title, "EditSlide", new { index = x.SlideIndex }))
 							.ClientTemplate("<a href=\"ContentSlider/EditSlide?index=<#= SlideIndex #>\"><#= Title #></a>");
 						columns.Bound(x => x.DisplayOrder)
-							.Centered();
-						columns.Bound(x => x.LanguageName)
-							.Centered();
+							.Centered()
+							.Width(120);
+						columns.Bound(x => x.LanguageName);
 						columns.Bound(x => x.LimitedToStores)
 							.Width(100)
 							.Template(x => @Html.SymbolForBool(x.LimitedToStores))
@@ -173,7 +176,7 @@
 	
 	<div class="pull-right">
 		<a href="@Url.Action("CreateSlide")" class="btn btn-primary btn-below">
-			<i class="icon-plus"></i>
+			<i class="fa fa-plus"></i>
 			@T("Admin.Common.AddNew")
 		</a>
 	</div>

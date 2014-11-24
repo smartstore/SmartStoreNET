@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Core.Configuration;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Orders
 {
-    public class OrderSettings : ISettings
+	public class OrderSettings : BaseEntity, ISettings, ILocalizedEntity
     {
 		public OrderSettings()
 		{
@@ -11,8 +12,8 @@ namespace SmartStore.Core.Domain.Orders
 			AnonymousCheckoutAllowed = true;
 			TermsOfServiceEnabled = true;
 			ReturnRequestsEnabled = true;
-			ReturnRequestActions = new List<string>() { "Repair", "Replacement", "Store Credit" };
-			ReturnRequestReasons = new List<string>() { "Received Wrong Product", "Wrong Product Ordered", "There Was A Problem With The Product" };
+			ReturnRequestActions = "Repair,Replacement,Store Credit";
+			ReturnRequestReasons = "Received Wrong Product,Wrong Product Ordered,There Was A Problem With The Product";
 			NumberOfDaysReturnRequestAvailable = 365;
 			MinimumOrderPlacementInterval = 30;
 		}
@@ -42,16 +43,6 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool TermsOfServiceEnabled { get; set; }
 
-        /// <summary>
-        /// Gets or sets a value indicating whether 'One-page checkout' is enabled
-        /// </summary>
-        public bool OnePageCheckoutEnabled { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether order totals should be displayed on 'Payment info' tab of 'One-page checkout' page
-        /// </summary>
-        public bool OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab { get; set; }
-
 		/// <summary>
 		/// Gets or sets a value indicating whether "Order completed" page should be skipped
 		/// </summary>
@@ -65,12 +56,12 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets a list of return request reasons
         /// </summary>
-        public List<string> ReturnRequestReasons { get; set; }
+        public string ReturnRequestReasons { get; set; }
 
         /// <summary>
         /// Gets or sets a list of return request actions
         /// </summary>
-        public List<string> ReturnRequestActions { get; set; }
+        public string ReturnRequestActions { get; set; }
 
         /// <summary>
         /// Gets or sets a number of days that the Return Request Link will be available for customers after order placing.

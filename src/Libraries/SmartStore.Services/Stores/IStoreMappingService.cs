@@ -38,6 +38,14 @@ namespace SmartStore.Services.Stores
 		IList<StoreMapping> GetStoreMappings<T>(T entity) where T : BaseEntity, IStoreMappingSupported;
 
 		/// <summary>
+		/// Save the store napping for an entity
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="entity">The entity</param>
+		/// <param name="selectedStoreIds">Array of selected store ids</param>
+		void SaveStoreMappings<T>(T entity, int[] selectedStoreIds) where T : BaseEntity, IStoreMappingSupported;
+
+		/// <summary>
 		/// Inserts a store mapping record
 		/// </summary>
 		/// <param name="storeMapping">Store mapping</param>

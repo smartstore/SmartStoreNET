@@ -11,13 +11,13 @@
     }
     else {
         <section id="header">
-            @Html.Action("ShopBar", "Common")
-            @Html.Action("Header", "Common")
-            @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId })
+            @Html.Action("ShopBar", "Common", new { area = "" })
+            @Html.Action("Header", "Common", new { area = "" })
+            @Html.Action("MegaMenu", "Catalog", new { currentCategoryId = this.CurrentCategoryId, currentProductId = this.CurrentProductId, area = "" })
         </section>
     }
 
-    @Html.Action("JavaScriptDisabledWarning", "Common")
+    @Html.Action("JavaScriptDisabledWarning", "Common", new { area = "" })
     <div id="content-wrapper">
 
         <!-- Terms of service -->
@@ -37,7 +37,7 @@
     }
     else {
         <div id="footer-wrapper">
-            @Html.Action("Footer", "Common")
+            @Html.Action("Footer", "Common", new { area = "" })
         </div>
     }
 

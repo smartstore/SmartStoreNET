@@ -28,7 +28,7 @@
         }
     </script>
     <div id="ph-password-@Model.Id">
-        @using (Ajax.BeginRouteForm("TopicAuthenticate", new AjaxOptions
+        @using (Ajax.BeginForm("Authenticate", new AjaxOptions
         {
             HttpMethod = "Post",
             OnSuccess = "OnAuthenticateSuccess" + @Model.Id,
@@ -56,7 +56,7 @@
 @if (ViewBag.BodyOnly)
 {
     <div class="topic-html-content-body" id="ph-topic-body-@Model.Id">
-        @Html.Raw(Model.Body)
+        @Html.Raw(Html.CollapsedText(Model.Body))
     </div>
 }
 else {
@@ -68,7 +68,7 @@ else {
             </div>
         }
         <div class="block-body topic-html-content-body">
-            @Html.Raw(Model.Body)
+            @Html.Raw(Html.CollapsedText(Model.Body))
         </div>
     </div>
 }

@@ -10,11 +10,11 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-group"></i>
+            <i class="fa fa-users"></i>
             @T("Admin.Configuration.Settings.CustomerUser")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
     
@@ -186,6 +186,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNameFormatMaxLength)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.DefaultPasswordFormat)
             </td>
             <td class="adminData">
@@ -293,12 +302,13 @@
         }
 
     </script>
+
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		@T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description")
+	</div>
+	
     <table class="adminContent">
-        <tr>
-            <td colspan="2">
-                <em>@T("Admin.Configuration.Settings.CustomerUser.CustomerFormFields.Description")</em>
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.GenderEnabled)
@@ -552,12 +562,13 @@
         }
 
     </script>
+
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		@T("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description")
+	</div>
+	
     <table class="adminContent">
-        <tr>
-            <td colspan="2">
-                <em>@T("Admin.Configuration.Settings.CustomerUser.AddressFormFields.Description")</em>
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddressSettings.CompanyEnabled)

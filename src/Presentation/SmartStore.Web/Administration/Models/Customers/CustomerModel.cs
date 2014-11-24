@@ -10,7 +10,7 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Customers
 {
     [Validator(typeof(CustomerValidator))]
-    public class CustomerModel : EntityModelBase
+    public class CustomerModel : TabbableModel
     {
         public CustomerModel()
         {
@@ -36,6 +36,7 @@ namespace SmartStore.Admin.Models.Customers
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Password")]
         [AllowHtml]
+		[DataType(DataType.Password)]
         public string Password { get; set; }
 
         //form fields & properties
@@ -118,8 +119,8 @@ namespace SmartStore.Admin.Models.Customers
         public bool Active { get; set; }
 
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.Affiliate")]
-        public int? AffiliateId { get; set; }
-
+        public int AffiliateId { get; set; }
+		public string AffiliateFullName { get; set; }
 
 
 

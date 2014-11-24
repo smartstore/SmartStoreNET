@@ -77,7 +77,7 @@ namespace SmartStore.Services.Configuration
 			string key = string.Format(SETTINGS_ALL_KEY);
 			return _cacheManager.Get(key, () =>
 			{
-				var query = from s in _settingRepository.Table
+				var query = from s in _settingRepository.TableUntracked
 							orderby s.Name, s.StoreId
 							select s;
 				var settings = query.ToList();
@@ -234,7 +234,7 @@ namespace SmartStore.Services.Configuration
 				var settingsByKey = settings[key];
 				var setting = settingsByKey.FirstOrDefault(x => x.StoreId == storeId);
 
-				//load shared value?
+				// load shared value?
 				if (setting == null && storeId > 0 && loadSharedValueIfNotFound)
 					setting = settingsByKey.FirstOrDefault(x => x.StoreId == 0);
 
@@ -551,7 +551,6 @@ namespace SmartStore.Services.Configuration
 			DeleteSetting(key, storeId);
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void DeleteSetting(string key, int storeId = 0)
 		{
 			if (key.HasValue())

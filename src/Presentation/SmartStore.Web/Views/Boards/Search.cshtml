@@ -1,7 +1,6 @@
 ﻿@model SearchModel
 @using SmartStore.Core.Domain.Forums;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
@@ -37,7 +36,7 @@
         </div>
 
         <div class="search-input">
-            @using (Html.BeginRouteForm("Search", FormMethod.Get))
+            @using (Html.BeginRouteForm("BoardSearch", FormMethod.Get))
             {        
                 <div class="input-append">
                     @Html.TextBox("searchterms", null, new { @class = "forum-search-text" })
@@ -110,8 +109,8 @@
 
             var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
                             .Name("paginator")
-                            .Alignment(PagerAlignment.Right)
-                            .Route("Search", new ForumSearchRouteValues { adv = adv, searchterms = searchterms, forumId = forumId, within = within, limitDays = limitDays });
+							.Alignment(PagerAlignment.Right)
+							.Route("BoardSearch", new ForumSearchRouteValues { adv = adv, searchterms = searchterms, forumId = forumId, within = within, limitDays = limitDays });
         }
         @pager
 
@@ -147,26 +146,26 @@
                                     @{
                                         var topicType = "post";
                                         var topicText = String.Empty;
-                                        var topicIcon = "icon-comment-alt";
+                                        var topicIcon = "fa fa-comment-o";
                                         switch (topic.ForumTopicType)
                                         {
                                             case ForumTopicType.Normal:
                                                 topicType = "post";
-                                                topicIcon = "icon-comment-alt";
+                                                topicIcon = "fa fa-comment-o";
                                                 break;
                                             case ForumTopicType.Sticky:
                                                 topicType = "poststicky";
-                                                topicIcon = "icon-pushpin";
+												topicIcon = "fa fa-thumb-tack";
                                                 topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
                                                 break;
                                             case ForumTopicType.Announcement:
                                                 topicType = "post-annoucement";
-                                                topicIcon = "icon-bullhorn";
+                                                topicIcon = "fa fa-bullhorn";
                                                 topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
                                                 break;
                                             default:
                                                 topicType = "post";
-                                                topicIcon = "icon-comment-alt";
+                                                topicIcon = "fa fa-comment-o";
                                                 break;
                                         }
                                         <div class="@topicType">
@@ -190,7 +189,7 @@
                                                 .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
                                                 .Alignment(PagerAlignment.Left)
                                                 .Size(PagerSize.Mini)
-                                                .Route("TopicSlugPaged", new { id = topic.Id, slug = topic.SeName }))
+                                                .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                                     }
                                     <div class="topic-starter">
                                         @if (@topic.CustomerId > 0)

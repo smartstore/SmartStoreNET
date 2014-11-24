@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -71,7 +72,8 @@ namespace SmartStore.Services.Tests.Shipping
                 _localizationService,
                 _shippingSettings, pluginFinder, _eventPublisher,
                 _shoppingCartSettings,
-				_settingService);
+				_settingService, 
+				this.ProviderManager);
         }
 
         [Test]
@@ -79,14 +81,14 @@ namespace SmartStore.Services.Tests.Shipping
         {
             var srcm = _shippingService.LoadAllShippingRateComputationMethods();
             srcm.ShouldNotBeNull();
-            (srcm.Count > 0).ShouldBeTrue();
+            (srcm.Count() > 0).ShouldBeTrue();
         }
 
         [Test]
         public void Can_load_shippingRateComputationMethod_by_systemKeyword()
         {
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName("FixedRateTestShippingRateComputationMethod");
-            srcm.ShouldNotBeNull();
+            srcm.Value.ShouldNotBeNull();
         }
 
         [Test]
@@ -94,7 +96,7 @@ namespace SmartStore.Services.Tests.Shipping
         {
             var srcm = _shippingService.LoadActiveShippingRateComputationMethods();
             srcm.ShouldNotBeNull();
-            (srcm.Count > 0).ShouldBeTrue();
+            (srcm.Count() > 0).ShouldBeTrue();
         }
 
         [Test]

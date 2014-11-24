@@ -10,17 +10,6 @@
     Layout = null;
 }
 
-@functions {
-    protected override string ThemeName
-    {
-        get
-        {
-            return "Alpha";
-        }
-    }
-}
-
-
 @(Html.SmartStore().TabStrip().Name("theme-alpha-edit").HtmlAttributes(new { @class="theme-edit" }).Items(x =>
 {
     var tabCommon = x.Add().Text(T("Common.General").Text).Content(@TabCommon()).Selected(true);
@@ -52,27 +41,13 @@
 @helper TabButtons()
 {
     <table class="adminContent">
-        @ThemeVarEditor("BtnBackground", "Default")
-        @ThemeVarEditor("BtnBackgroundHighlight")
-        @ThemeVarEditor("BtnColor")
-        @ThemeVarEditor("BtnPrimaryBackground", "Primary")
-        @ThemeVarEditor("BtnPrimaryBackgroundHighlight")
-        @ThemeVarEditor("BtnPrimaryColor")
-        @ThemeVarEditor("BtnInfoBackground", "Info")
-        @ThemeVarEditor("BtnInfoBackgroundHighlight")
-        @ThemeVarEditor("BtnInfoColor")
-        @ThemeVarEditor("BtnSuccessBackground", "Success")
-        @ThemeVarEditor("BtnSuccessBackgroundHighlight")
-        @ThemeVarEditor("BtnSuccessColor")
-        @ThemeVarEditor("BtnWarningBackground", "Warning")
-        @ThemeVarEditor("BtnWarningBackgroundHighlight")
-        @ThemeVarEditor("BtnWarningColor")
-        @ThemeVarEditor("BtnDangerBackground", "Danger")
-        @ThemeVarEditor("BtnDangerBackgroundHighlight")
-        @ThemeVarEditor("BtnDangerColor")
-        @ThemeVarEditor("BtnInverseBackground", "Inverse")
-        @ThemeVarEditor("BtnInverseBackgroundHighlight")
-        @ThemeVarEditor("BtnInverseColor")
+        @ThemeVarEditor("BtnBackground")
+        @ThemeVarEditor("BtnPrimaryBackground")
+        @ThemeVarEditor("BtnInfoBackground")
+        @ThemeVarEditor("BtnSuccessBackground")
+        @ThemeVarEditor("BtnWarningBackground")
+        @ThemeVarEditor("BtnDangerBackground")
+        @ThemeVarEditor("BtnInverseBackground")
     </table>
 }
 
@@ -110,7 +85,8 @@
         @ThemeVarEditor("ShopBarIconColor")
         @ThemeVarEditor("ShopBarLabel")
 
-        @ThemeVarEditor("InverseNavbar", "Navbar")
+        @ThemeVarEditor("DisplayNavbar", "Navbar")
+        @ThemeVarEditor("InverseNavbar")
         @ThemeVarEditor("NavbarHeight")
         @ThemeVarEditor("NavbarBackgroundHighlight")
         @ThemeVarEditor("NavbarText")
@@ -185,15 +161,15 @@
         @ThemeVarEditor("TableBackgroundAccent")
         @ThemeVarEditor("TableBackgroundHover")
         @ThemeVarEditor("TableBorder")
-        @ThemeVarEditor("ContainerBackground", "Container")
-        @ThemeVarEditor("ContainerBorder")
-        @ThemeVarEditor("ContainerRadius")
-        @ThemeVarEditor("ContainerBodyLinkColor")
-        @ThemeVarEditor("ContainerHeaderBackground")
-        @ThemeVarEditor("ContainerHeaderFontColor")
-        @ThemeVarEditor("ContainerHeaderHeight")
-        @ThemeVarEditor("ContainerBodyBackground")
+
+		@ThemeVarEditor("ContainerRadius", "Container")
+		@ThemeVarEditor("ContainerHeaderBackground")
+		@ThemeVarEditor("ContainerHeaderFontColor")
+		@ThemeVarEditor("ContainerHeaderHeight")
+		@ThemeVarEditor("ContainerBodyBackground")
         @ThemeVarEditor("ContainerBodyFontColor")
+		@ThemeVarEditor("ContainerBodyLinkColor")
+		@ThemeVarEditor("ContainerBorder")
 
     </table>
 }
@@ -201,6 +177,8 @@
 @helper TabMisc()
 {
     <table class="adminContent">
+        @ThemeVarEditor("ProductListsPriceColor")
+        @ThemeVarEditor("ProductDetailPriceColor")
         @ThemeVarEditor("WellBackground")
         @ThemeVarEditor("ItemBoxBoxShadowColor")
         @ThemeVarEditor("SimpleBoxHeaderColor")
@@ -236,16 +214,9 @@
     if (groupName != null) 
     {
         <tr>
-            @if(groupName != "")
-            {
-                <td colspan="2" class="group-name">
-                    <h4>@groupName</h4>
-                    <hr/>
-                </td>
-            }
-            else {
-                <td colspan="2"><hr /></td>
-            }
+            <td colspan="2" class="admin-config-group">
+                <div class="title">@groupName</div>
+            </td>
         </tr>
     }
     <tr>

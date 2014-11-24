@@ -51,30 +51,38 @@ namespace SmartStore.Services.Catalog
         /// <param name="showCurrency">A value indicating whether to show a currency</param>
         /// <param name="targetCurrency">Target currency</param>
         /// <returns>Currency string without exchange rate</returns>
-        protected string GetCurrencyString(decimal amount,
-            bool showCurrency, Currency targetCurrency)
+        protected string GetCurrencyString(decimal amount, bool showCurrency, Currency targetCurrency)
         {
             string result = string.Empty;
-            if (!String.IsNullOrEmpty(targetCurrency.CustomFormatting))
+
+			var fmt = NumberFormatInfo.CurrentInfo;
+			try
+			{
+				fmt = CultureInfo.CreateSpecificCulture(targetCurrency.DisplayLocale).NumberFormat;
+
+				if (!showCurrency)
+					fmt.CurrencySymbol = "";
+			}
+			catch { }
+
+
+            if (targetCurrency.CustomFormatting.HasValue())
             {
-                result = amount.ToString(targetCurrency.CustomFormatting);
+                result = amount.ToString(targetCurrency.CustomFormatting, fmt);
             }
             else
             {
-                if (!String.IsNullOrEmpty(targetCurrency.DisplayLocale))
+                if (targetCurrency.DisplayLocale.HasValue())
                 {
-                    result = amount.ToString("C", new CultureInfo(targetCurrency.DisplayLocale));
+                    result = amount.ToString("C", fmt);
                 }
                 else
                 {
-                    result = String.Format("{0} ({1})", amount.ToString("N"), targetCurrency.CurrencyCode);
+                    result = String.Format("{0} {1}", amount.ToString("N"), showCurrency ? targetCurrency.CurrencyCode : "").TrimEnd();
                     return result;
                 }
             }
 
-            // codehint: sm-edit (commented, refactor later)
-            /*if (showCurrency && _currencyService.GetAllCurrencies().Count > 1)
-                result = String.Format("{0} ({1})", result, targetCurrency.CurrencyCode);*/
             return result;
         }
 
@@ -89,10 +97,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Price</returns>
         public string FormatPrice(decimal price)
         {
-            // codehint: sm-edit
-            bool showCurrency = false; //true;
-            var targetCurrency = _workContext.WorkingCurrency;
-            return FormatPrice(price, showCurrency, targetCurrency);
+            return FormatPrice(price, true, _workContext.WorkingCurrency);
         }
 
         /// <summary>

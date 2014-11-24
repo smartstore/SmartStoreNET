@@ -3,6 +3,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Tasks
 {
@@ -31,24 +32,36 @@ namespace SmartStore.Services.Tasks
                 .OrderBy(x => x.Seconds)
                 .ToList();
 
-			// codehint: sm-add
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppInitScheduledTasksEvent {
 				ScheduledTasks = scheduleTasks
 			});
 
-            //group by threads with the same seconds
+            // group by threads with the same seconds
             foreach (var scheduleTaskGrouped in scheduleTasks.GroupBy(x => x.Seconds))
             {
-                //create a thread
+                // create a thread
                 var taskThread = new TaskThread();
                 taskThread.Seconds = scheduleTaskGrouped.Key;
-                this._taskThreads.Add(taskThread);
+
                 foreach (var scheduleTask in scheduleTaskGrouped)
                 {
-                    var task = new Task(scheduleTask);
-                    taskThread.AddTask(task);
+					var taskType = System.Type.GetType(scheduleTask.Type);
+					if (taskType != null)
+					{
+						var isActiveModule = PluginManager.IsActivePluginAssembly(taskType.Assembly);
+						if (isActiveModule)
+						{
+							var task = new Job(scheduleTask);
+							taskThread.AddJob(task);
+						}
+					}
                 }
+
+				if (taskThread.HasJobs)
+				{
+					this._taskThreads.Add(taskThread);
+				}
             }
 
 

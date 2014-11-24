@@ -170,6 +170,7 @@ namespace SmartStore.Services.Catalog
 				IsShipEnabled = product.IsShipEnabled,
 				IsFreeShipping = product.IsFreeShipping,
 				AdditionalShippingCharge = product.AdditionalShippingCharge,
+				IsEsd = product.IsEsd,
 				IsTaxExempt = product.IsTaxExempt,
 				TaxCategoryId = product.TaxCategoryId,
 				ManageInventoryMethod = product.ManageInventoryMethod,
@@ -504,6 +505,7 @@ namespace SmartStore.Services.Catalog
 				var searchContext = new ProductSearchContext()
 				{
 					ParentGroupedProductId = product.Id,
+					PageSize = int.MaxValue,
 					ShowHidden = true
 				};
 

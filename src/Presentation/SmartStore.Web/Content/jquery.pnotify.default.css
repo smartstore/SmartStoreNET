@@ -9,21 +9,20 @@ Description:
 */
 /* -- Notice */
 .ui-pnotify {
-top: 25px;
-right: 25px;
-position: absolute;
-height: auto;
-/* Ensures notices are above everything */
-z-index: 9999;
+	top: 25px;
+	right: 25px;
+	position: absolute;
+	height: auto;
+	/* Ensures notices are above everything */
+	z-index: 9999;
 }
 /* Hides position: fixed from IE6 */
 html > body .ui-pnotify {
-position: fixed;
+	position: fixed;
 }
 .ui-pnotify .ui-pnotify-shadow {
--webkit-box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
--moz-box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
-box-shadow: 0px 2px 10px rgba(50, 50, 50, 0.5);
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0, 0.35);
+	box-shadow: 1px 1px 2px rgba(0,0,0, 0.35);
 }
 .ui-pnotify-container {
 background-position: 0 0;
@@ -32,78 +31,84 @@ height: 100%;
 margin: 0;
 }
 .ui-pnotify-sharp {
--webkit-border-radius: 0;
--moz-border-radius: 0;
-border-radius: 0;
+	border-radius: 0;
 }
 .ui-pnotify-closer, .ui-pnotify-sticker {
-float: right;
-margin-left: .2em;
+	float: right;
+	margin-left: .2em;
 }
 .ui-pnotify-title {
-display: block;
-margin-bottom: .4em;
+	display: block;
+	margin-bottom: .4em;
 }
 .ui-pnotify-text {
-display: block;
+	display: block;
 }
 .ui-pnotify-icon, .ui-pnotify-icon span {
-display: block;
-float: left;
-margin-right: .2em;
+	display: block;
+	float: left;
+	margin-right: .2em;
 }
 /* -- History Pulldown */
 .ui-pnotify-history-container {
-position: absolute;
-top: 0;
-right: 18px;
-width: 70px;
-border-top: none;
-padding: 0;
--webkit-border-top-left-radius: 0;
--moz-border-top-left-radius: 0;
-border-top-left-radius: 0;
--webkit-border-top-right-radius: 0;
--moz-border-top-right-radius: 0;
-border-top-right-radius: 0;
-/* Ensures history container is above notices. */
-z-index: 10000;
+	position: absolute;
+	top: 0;
+	right: 18px;
+	width: 70px;
+	border-top: none;
+	padding: 0;
+	-webkit-border-top-left-radius: 0;
+	-moz-border-top-left-radius: 0;
+	border-top-left-radius: 0;
+	-webkit-border-top-right-radius: 0;
+	-moz-border-top-right-radius: 0;
+	border-top-right-radius: 0;
+	/* Ensures history container is above notices. */
+	z-index: 10000;
 }
 .ui-pnotify-history-container .ui-pnotify-history-header {
-padding: 2px;
+	padding: 2px;
 }
 .ui-pnotify-history-container button {
-cursor: pointer;
-display: block;
-width: 100%;
+	cursor: pointer;
+	display: block;
+	width: 100%;
 }
 .ui-pnotify-history-container .ui-pnotify-history-pulldown {
-display: block;
-margin: 0 auto;
+	display: block;
+	margin: 0 auto;
 }
 /* Alternate stack initial positioning. */
 .ui-pnotify.stack-topleft, .ui-pnotify.stack-bottomleft {
-left: 25px;
-right: auto;
+	left: 25px;
+	right: auto;
 }
 .ui-pnotify.stack-bottomright, .ui-pnotify.stack-bottomleft {
-bottom: 25px;
-top: auto;
+	bottom: 25px;
+	top: auto;
 }
 
 /* codehint: sm-add */
+
 .ui-pnotify-container {
-    padding: 8px 8px 8px 28px;
+    padding: 10px 6px 10px 10px !important;
+	margin-bottom: 0 !important;
+	position: relative;
+	overflow: hidden;
 }
 
 .ui-pnotify-icon {
     position: absolute;
-    left: 8px;
-    top: 8px;
+    left: -10px;
+	top: -12px;
+	opacity: .12;
+	filter: alpha(opacity=12);
 }
 
 .ui-pnotify-icon span {
-    font-size: 18px;
+    font-size: 80px;
+	float: none;
+	display: inline-block;
 }
 
 .ui-pnotify-title {
@@ -113,18 +118,18 @@ top: auto;
 .ui-pnotify-closer, 
 .ui-pnotify-sticker {
     width: 16px;
-    opacity: .5;
-    filter: alpha(50);
-    text-shadow: 0 1px 0 rgba(255,255,255, 1);
+    opacity: .35;
+    filter: alpha(35);
+	margin: 0;
+	padding-left: 2px;
 }
 
 .ui-pnotify-closer:hover, 
 .ui-pnotify-sticker:hover {
-    opacity: 1;
-    filter: alpha(100);
+    opacity: .75;
+    filter: alpha(75);
 }
 
-/* codehint: sm-add */
 .ui-pnotify.stack-bottomright {
 	/* These are just CSS default values to reset the pnotify CSS. */
 	right: auto;

@@ -31,7 +31,6 @@ namespace SmartStore.Core.Plugins
 		/// <returns>Plugin descriptors</returns>
 		IEnumerable<PluginDescriptor> GetPluginDescriptors<T>(bool installedOnly = true) where T : class, IPlugin;
 
-        // codehint: sm-add
         PluginDescriptor GetPluginDescriptorByAssembly(Assembly assembly, bool installedOnly = true);
 
 		/// <summary>
@@ -50,10 +49,5 @@ namespace SmartStore.Core.Plugins
 		/// <param name="installedOnly">A value indicating whether to load only installed plugins</param>
 		/// <returns>>Plugin descriptor</returns>
         PluginDescriptor GetPluginDescriptorBySystemName<T>(string systemName, bool installedOnly = true) where T : class, IPlugin;
-
-        /// <summary>
-        /// Reload plugins
-        /// </summary>
-        void ReloadPlugins();
     }
 }

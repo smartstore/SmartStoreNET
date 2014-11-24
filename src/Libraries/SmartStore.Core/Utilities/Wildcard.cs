@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Threading;
 
 namespace SmartStore.Utilities
 {
@@ -13,19 +14,25 @@ namespace SmartStore.Utilities
     public class Wildcard : Regex
     {
         #region Fields
+
         /// <summary>
         /// This flag determines whether the parser is forward
         /// direction or not.
         /// </summary>
         private static bool m_isForward;
+
+		private readonly string _pattern;
+
         #endregion
 
-        #region Constructors
+        #region Ctor
+
         /// <summary>
         /// Initializes a new instance of the <see cref="Wildcard"/> class.
         /// </summary>
         /// <param name="pattern">The wildcard pattern.</param>
-        public Wildcard(string pattern) : base(WildcardToRegex(pattern))
+        public Wildcard(string pattern) 
+			: this(pattern, RegexOptions.None)
         {
         }
 
@@ -34,10 +41,27 @@ namespace SmartStore.Utilities
         /// </summary>
         /// <param name="pattern">The wildcard pattern.</param>
         /// <param name="options">The regular expression options.</param>
-        public Wildcard(string pattern, RegexOptions options) : base(WildcardToRegex(pattern), options)
+        public Wildcard(string pattern, RegexOptions options) 
+			: this(WildcardToRegex(pattern), options, Timeout.InfiniteTimeSpan)
         {
+			
         }
+
+		internal Wildcard(string parsedPattern, RegexOptions options, TimeSpan matchTimeout)
+			: base(parsedPattern, options, matchTimeout)
+		{
+			_pattern = parsedPattern;
+		}
+
         #endregion
+
+		public string Pattern 
+		{
+			get
+			{
+				return _pattern;
+			}
+		}
 
         #region Private Implementation
         /// <summary>
@@ -84,32 +108,45 @@ namespace SmartStore.Utilities
                 throw new InvalidOperationException("The minimum value could not be greater than the maximum value.");
             }
 
-            string pattern = string.Empty;
-            int currentValue = min;
-            int tempMax = 0;
-            int radix = 1;
+			string pattern = string.Empty;
 
-            while (m_isForward ||
-                   radix != 0)
-            {
-                tempMax = GetNextMaximum(currentValue, max, radix);
-                if (tempMax >= currentValue)
-                {
-                    pattern += ParseRange(currentValue, tempMax, radix);
-                    if (!(!m_isForward && radix == 1))
-                    {
-                        pattern += "|";
-                    }
-                }
-                radix += (m_isForward ? 1 : -1);
-                currentValue = tempMax + 1;
-            }
+			if (min > -1 && max - min < 10)
+			{
+				// special treatment: the below function has issues with too small ranges
+				for (var i = min; i <= max; i++)
+				{
+					pattern += i.ToString() + (i < max ? "|" : "");
+				}
+			}
+			else
+			{
+
+				int currentValue = min;
+				int tempMax = 0;
+				int radix = 1;
+
+				while (m_isForward || radix != 0)
+				{
+					tempMax = GetNextMaximum(currentValue, max, radix);
+
+					if (tempMax >= currentValue)
+					{
+						pattern += ParseRange(currentValue, tempMax, radix);
+						if (!(!m_isForward && radix == 1))
+						{
+							pattern += "|";
+						}
+					}
+					radix += (m_isForward ? 1 : -1);
+					currentValue = tempMax + 1;
+				}
+			}
 
             //add a negative look behind and a negative look ahead in order
             //to avoid that 122-321 is found in 2308.
             return @"((?<!\d)(" + pattern + @")(?!\d))";
         }
-
+		
         /// <summary>
         /// Gets the next maximum value in condition to the current value.
         /// </summary>
@@ -121,7 +158,7 @@ namespace SmartStore.Utilities
         /// </returns>
         private static int GetNextMaximum(int currentValue, int maximum, int radix)
         {
-            //backward
+			//backward
             if (!m_isForward)
             {
                 if (radix != 1)
@@ -139,7 +176,7 @@ namespace SmartStore.Utilities
                 radix--;
                 tempMax = ((maximum / (int)Math.Pow(10, radix))) * (int)Math.Pow(10, radix) - 1;
             }
-
+			
             return tempMax;
         }
 
@@ -176,12 +213,12 @@ namespace SmartStore.Utilities
         {
             if (count == 0)
             {
-                return string.Empty;
+				return string.Empty;
             }
 
             if (beginDigit == endDigit)
             {
-                return beginDigit.ToString();
+				return beginDigit.ToString();
             }
 
             string pattern = string.Format("[{0}-{1}]", beginDigit, endDigit);

@@ -1,7 +1,0 @@
-﻿FriendlyName: Prepayment
-SystemName: Payments.Prepayment
-Version: 1.4
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Payments.Prepayment.dll
-ResourceRootKey: Plugins.Payment.Prepayment

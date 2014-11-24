@@ -9,7 +9,11 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class CustomerLastActivityAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<ICustomerService> CustomerService { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -25,13 +29,13 @@ namespace SmartStore.Web.Framework.Controllers
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
+            var workContext = WorkContext.Value;
             var customer = workContext.CurrentCustomer;
             
             //update last activity date
             if (customer.LastActivityDateUtc.AddMinutes(1.0) < DateTime.UtcNow)
             {
-                var customerService = EngineContext.Current.Resolve<ICustomerService>();
+                var customerService = CustomerService.Value;
                 customer.LastActivityDateUtc = DateTime.UtcNow;
                 customerService.UpdateCustomer(customer);
             }

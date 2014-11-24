@@ -1,0 +1,45 @@
+﻿@model SmartStore.OfflinePayment.Models.ManualPaymentInfoModel
+
+@{
+	Layout = "";
+}
+
+@Html.Hidden("OfflinePaymentMethodType", "Manual")
+
+<div class="form-horizontal">
+	<div class="control-group">
+		@Html.LabelFor(model => model.CreditCardTypes, new { @class = "control-label required" })
+		<div class="controls">
+			@Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes, new { @class = "dropdownlists", style = "min-width: 180px;" })
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardholderName, new { @class = "control-label required" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.CardholderName, new { autocomplete = "off" })
+			@Html.ValidationMessageFor(model => model.CardholderName)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardNumber, new { @class = "control-label required" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.CardNumber, new { autocomplete = "off", maxlength = 22 })
+			@Html.ValidationMessageFor(model => model.CardNumber)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.ExpireMonth, new { @class = "control-label required" })
+		<div class="controls">
+			@Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths, new { @class = "dropdownlists", style = "min-width: 83px;" })
+			/
+			@Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears, new { @class = "dropdownlists", style = "min-width: 83px;" })
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardCode, new { @class = "control-label required" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.CardCode, new { style = "width: 60px;", autocomplete = "off", maxlength = 4 })
+			@Html.ValidationMessageFor(model => model.CardCode)
+		</div>
+	</div>
+</div>

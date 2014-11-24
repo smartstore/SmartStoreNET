@@ -64,6 +64,16 @@
 	margin-bottom: 0;
 }
 
+.fa {
+	// prevent Chrome ugliness on fonts
+	//-webkit-text-stroke: 0.25px;
+	-webkit-font-smoothing: subpixel-antialiased;
+}
+
+.btn-small .fa {
+	vertical-align: text-bottom;
+}
+
 // THUMB ZOOMER
 // ------------
 
@@ -99,30 +109,6 @@ nav li {
 // ALERT STYLES
 // ------------
 
-// Base alert styles
-
-.alert {
-	border-color: darken(@warningBorder, 4%) darken(@warningBorder, 4%) darken(@warningBorder, 8%);
-	#gradient > .vertical(lighten(@warningBackground, 5%), @warningBackground); // default is warning status
-	.box-shadow(inset 0 1px 0 rgba(255,255,255, .3)); // a smooth inset shadow, always looks good
-}
-
-.alert-success {
-	border-color: darken(@successBorder, 4%) darken(@successBorder, 4%) darken(@successBorder, 8%);
-	#gradient > .vertical(lighten(@successBackground, 5%), @successBackground);
-}
-
-.alert-info {
-	border-color: darken(@infoBorder, 4%) darken(@infoBorder, 4%) darken(@infoBorder, 8%);
-	#gradient > .vertical(lighten(@infoBackground, 5%), @infoBackground);
-}
-
-.alert-error,
-.alert-danger {
-	border-color: darken(@errorBorder, 4%) darken(@errorBorder, 4%) darken(@errorBorder, 8%);
-	#gradient > .vertical(lighten(@errorBackground, 5%), @errorBackground);
-}
-
 .alert > *:first-child {
 	margin-top: 0;
 }
@@ -136,8 +122,27 @@ nav li {
 }
 
 
+// FORM STATES
+// ------------
+
+span.field-validation-error {
+	color: @errorText;
+}
+
+
 // WELL TWEAKS
 // ------------
+.well {
+	background-color: #fafafa;
+	border: 1px solid #e5e5e5;
+	border-radius: 3px;
+	.box-shadow(inset 0 0 10px rgba(0,0,0, 0.05));
+}
+
+.well-small {
+	border-radius: 3px;
+}
+
 .well > *:first-child {
 	margin-top: 0;
 }
@@ -161,21 +166,12 @@ nav li {
 }
 
 
-// ICONS
-// --------------
-
-// not required anymore with FontAwesome 3.0
-[class^="icon-"], 
-[class*=" icon-"] {
-	font-size: 14px; // looks better with 'FontAwesome'
-	/*.btn-large & { 
-		font-size: 18px; // but enlarge it in large buttons
-	}*/
-}
-
-
 // BUTTON STYLES
 // -------------
+
+.btn {
+	text-shadow: none;
+}
 
 // fix for tooltip <> btn-group bug in V2.2.1
 // see: https://github.com/twitter/bootstrap/issues/5783
@@ -241,38 +237,10 @@ input[type="file"] {
 
 // FORMS (PROMPTS)
 // ---------------
-// (MC): add neat shadow and hover effect to prompts
-textarea,
-input[type="text"],
-input[type="password"],
-input[type="datetime"],
-input[type="datetime-local"],
-input[type="date"],
-input[type="month"],
-input[type="time"],
-input[type="week"],
-input[type="number"],
-input[type="email"],
-input[type="url"],
-input[type="search"],
-input[type="tel"],
-input[type="color"],
-.uneditable-input {
-	.box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 1px 0 rgba(255,255,255, .3)");
 
-	// Hover state
-	&:hover {
-		@inputHoverBorderColor: darken(@inputBorder, 8%);
-		border: 1px solid @inputHoverBorderColor;
-	}
-
-	// Focus state
-	&:focus {
-		color: #000;
-		outline: 0;
-		outline: thin dotted \9; /* IE6-9 */
-	}	
-
+.input-append .add-on .fa, 
+.input-prepend .add-on .fa {
+	font-size: 16px;
 }
 
 // FORMS (CHECKBOX / RADIO)
@@ -281,6 +249,11 @@ input[type="radio"],
 input[type="checkbox"] {
 	margin-top: 4px;
 	margin-top: 1px \9;
+}
+
+th label {
+	font-weight: inherit;
+	font-size: inherit;
 }
 
 
@@ -294,18 +267,16 @@ input[type="checkbox"] {
 
 // add icon support to nav tabs and pills
 .nav > li > a > img,
-.nav > li > a > [class^="icon-"] {
+.nav > li > a > .fa {
 	vertical-align: baseline;
 	margin-right: 4px;
-    color: @grayLight;
 }
 
-.nav > li > a:hover > [class^="icon-"], 
-.nav > li.active > a > [class^="icon-"] {
-    color: @textColor;
+.nav > li > a > .chevron {
+	margin-left: 3px;
 }
 
-.tabs-left .nav > li > a > [class^="icon-"] {
+.tabs-left .nav > li > a > .fa {
     min-width: 16px;
 }
 
@@ -315,9 +286,8 @@ input[type="checkbox"] {
 }
 .nav-pills > .active > a,
 .nav-pills > .active > a:hover {
-	text-shadow: 0 1px 0 mix(@linkColor, #000, 80%);
-	#gradient > .vertical(darken(@linkColor, 8%), @linkColor);
-	.box-shadow(~'0px 1px 6px rgba(0,0,0, 0.3) inset, 0px 1px 0px #fff');
+	border-radius: 2px;
+	.box-shadow(~'inset 0 3px 5px rgba(0,0,0,.125)');
 }
 
 .tab-content {
@@ -393,6 +363,15 @@ input[type="checkbox"] {
 	vertical-align: middle;
 }
 
+
+// COLOR PICKER
+// ------------------------------
+.sm-colorbox {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+
 // JQUERY UI STUFF
 // -------------------------
 
@@ -404,7 +383,7 @@ input[type="checkbox"] {
 
 }
 
-.ui-menu {
+/*.ui-menu {
 	padding: 5px 0;
 	margin: 2px 0 0; // override default ul
 	background-color: @dropdownBackground;
@@ -448,7 +427,7 @@ input[type="checkbox"] {
 		color: @dropdownLinkColorHover !important;
 		background: @dropdownLinkBackgroundHover !important;
 	}
-}
+}*/
 
 // MVC UI adaptation
 // -------------------------
@@ -460,6 +439,38 @@ input[type="checkbox"] {
 	ul {
 		margin-bottom: 0;
 	}
+}
+
+
+/* Sortable lists
+-------------------------------------------------------------- */
+
+.sortable-grip {
+	position: absolute;
+	left: 0;
+	bottom: 0;
+	height: 100%;
+	width: 5px;
+	cursor: move;
+	visibility: hidden;
+	.opacity(0);
+	.transition(opacity 0.1s ease-in-out);
+	background: transparent url('../../images/grippy.png') 0 0 repeat;
+}
+
+.sortable-item:hover .sortable-grip {
+	visibility: visible;
+	.opacity(100);
+}
+
+.sortable-dragging {
+	/*border: 1px dashed #CCC;
+	background: none;*/
+}
+
+.sortable-placeholder {
+	border: 1px dotted #ccc;
+	background: #f5f5f5;
 }
 
 

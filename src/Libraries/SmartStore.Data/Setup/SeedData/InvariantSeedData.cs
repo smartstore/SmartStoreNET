@@ -271,7 +271,7 @@ namespace SmartStore.Data.Setup
 				CreateCurrency("en-AU", published: true, rate: 0.94M, order: 10),
 				CreateCurrency("en-CA", published: true, rate: 0.98M, order: 15),
 				CreateCurrency("de-DE", rate: 0.79M, order: 20/*, formatting: string.Format("0.00 {0}", "\u20ac")*/),
-				CreateCurrency("de-CH", rate: 0.93M, order: 25),
+				CreateCurrency("de-CH", rate: 0.93M, order: 25, formatting: "CHF #,##0.00"),
 				CreateCurrency("zh-CN", rate: 6.48M, order: 30),
 				CreateCurrency("zh-HK", rate: 7.75M, order: 35),
 				CreateCurrency("ja-JP", rate: 80.07M, order: 40),
@@ -298,7 +298,9 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 1,
 				Published = true,
 			};
+
 			#region US Regions
+
 			cUsa.StateProvinces.Add(new StateProvince()
 			{
 				Name = "AA (Armed Forces Americas)",
@@ -733,6 +735,9 @@ namespace SmartStore.Data.Setup
 				Published = true,
 				DisplayOrder = 1,
 			});
+
+            #endregion
+
 			var cCanada = new Country
 			{
 				Name = "Canada",
@@ -745,7 +750,10 @@ namespace SmartStore.Data.Setup
 				DisplayOrder = 2,
 				Published = true,
 			};
-			cCanada.StateProvinces.Add(new StateProvince()
+
+            #region CA Regions
+
+            cCanada.StateProvinces.Add(new StateProvince()
 			{
 				Name = "Alberta",
 				Abbreviation = "AB",
@@ -877,7 +885,7 @@ namespace SmartStore.Data.Setup
 					DisplayOrder = -1,
 					Published = true
 				},
-				cUsa,
+			    cUsa,
 				cCanada,
 
 				//other countries
@@ -3722,20 +3730,21 @@ namespace SmartStore.Data.Setup
 				SystemName = SystemCustomerRoleNames.Guests,
 			};
 			var entities = new List<CustomerRole>
-								{
-									crAdministrators,
-									crForumModerators,
-									crRegistered,
-									crGuests
-								};
+			{
+				crAdministrators,
+				crForumModerators,
+				crRegistered,
+				crGuests
+			};
 			this.Alter(entities);
 			return entities;
 		}
 
 		public Address AdminAddress()
 		{
-			string addressThreeLetterIsoCode = "USA";
-			var cCountry = this.Countries().Where(x => x.ThreeLetterIsoCode == addressThreeLetterIsoCode);
+            var cCountry = _ctx.Set<Country>()
+                .Where(x => x.ThreeLetterIsoCode == "USA")
+                .FirstOrDefault();
 
 			var entity = new Address()
 			{
@@ -3748,10 +3757,8 @@ namespace SmartStore.Data.Setup
 				Address1 = "1234 Main Road",
 				Address2 = "",
 				City = "New York",
-				StateProvince = cCountry.FirstOrDefault().StateProvinces.FirstOrDefault(),
-
-				//StateProvince = _stateProvinceRepository.Table.Where(sp => sp.Name == "New York").FirstOrDefault(),
-				Country = cCountry.FirstOrDefault(),
+				StateProvince = cCountry.StateProvinces.FirstOrDefault(),
+				Country = cCountry,
 				ZipPostalCode = "12212",
 				CreatedOnUtc = DateTime.UtcNow,
 			};
@@ -5658,6 +5665,16 @@ namespace SmartStore.Data.Setup
 				{
 					Name = "Game",
 					Alias = "Game"
+				},
+				new ProductAttribute
+				{
+					Name = "Color",
+					Alias = "iPhone color"
+				},
+				new ProductAttribute
+				{
+					Name = "Memory capacity",
+					Alias = "Memory capacity"
 				}
 			};
 
@@ -5668,6 +5685,95 @@ namespace SmartStore.Data.Setup
 		public IList<ProductVariantAttribute> ProductVariantAttributes()
 		{
 			var entities = new List<ProductVariantAttribute>();
+
+			#region iPhone
+
+			var productIphone = _ctx.Set<Product>().First(x => x.Sku == "Apple-1001");
+			var attributeMemoryCapacity = _ctx.Set<ProductAttribute>().First(x => x.Alias == "Memory capacity");
+			var attributeIphoneIphoneColor = _ctx.Set<ProductAttribute>().First(x => x.Alias == "iPhone color");
+
+			var attributeIphoneMemoryCapacity = new ProductVariantAttribute()
+			{
+				Product = productIphone,
+				ProductAttribute = attributeMemoryCapacity,
+				IsRequired = true,
+				DisplayOrder = 1,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "16 GB",
+				Alias = "16gb",
+				IsPreSelected = true,
+				DisplayOrder = 1,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "64 GB",
+				Alias = "64gb",
+				DisplayOrder = 2,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple,
+				PriceAdjustment = 100.0M
+			});
+
+			attributeIphoneMemoryCapacity.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "128 GB",
+				Alias = "128gb",
+				DisplayOrder = 3,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple,
+				PriceAdjustment = 200.0M
+			});
+
+			entities.Add(attributeIphoneMemoryCapacity);
+
+
+			var attributeIphoneColor = new ProductVariantAttribute()
+			{
+				Product = productIphone,
+				ProductAttribute = attributeIphoneIphoneColor,
+				IsRequired = true,
+				DisplayOrder = 2,
+				AttributeControlType = AttributeControlType.DropdownList
+			};
+
+			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Silver",
+				Alias = "silver",
+				IsPreSelected = true,
+				DisplayOrder = 1,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Gold",
+				Alias = "gold",
+				DisplayOrder = 2,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			attributeIphoneColor.ProductVariantAttributeValues.Add(new ProductVariantAttributeValue()
+			{
+				Name = "Space gray",
+				Alias = "spacegray",
+				DisplayOrder = 3,
+				Quantity = 1,
+				ValueType = ProductVariantAttributeValueType.Simple
+			});
+
+			entities.Add(attributeIphoneColor);
+
+			#endregion iPhone
 
 			#region attributeDualshock3ControllerColor
 
@@ -5932,7 +6038,7 @@ namespace SmartStore.Data.Setup
 				Name = "iPhone"
 			};
 
-			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Apple iPhone 5 32 GB").FirstOrDefault().ProductTags.Add(productTagIphone);
+			_ctx.Set<Product>().Where(pt => pt.MetaTitle == "Apple iPhone 6").FirstOrDefault().ProductTags.Add(productTagIphone);
 
 			#endregion tag iPhone
 
@@ -5993,6 +6099,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooks = new Category
 			{
 				Name = "Books",
+                Alias = "Books",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6008,6 +6115,7 @@ namespace SmartStore.Data.Setup
 			var categoryComputers = new Category
 			{
 				Name = "Computers",
+                Alias = "Computers",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6039,6 +6147,7 @@ namespace SmartStore.Data.Setup
 			var categoryCellPhones = new Category
 			{
 				Name = "Cell phones",
+                Alias = "Cell phones",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6056,6 +6165,7 @@ namespace SmartStore.Data.Setup
 			var categoryDigitalDownloads = new Category
 			{
 				Name = "Instant music",
+                Alias = "Instant music",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6071,6 +6181,7 @@ namespace SmartStore.Data.Setup
 			var categoryGiftCards = new Category
 			{
 				Name = "Gift Cards",
+                Alias = "Gift Cards",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6086,6 +6197,7 @@ namespace SmartStore.Data.Setup
 			var categoryWatches = new Category
 			{
 				Name = "Watches",
+                Alias = "Watches",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6124,6 +6236,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooksSpiegel = new Category
 			{
 				Name = "SPIEGEL-Bestseller",
+                Alias = "SPIEGEL-Bestseller",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6140,6 +6253,7 @@ namespace SmartStore.Data.Setup
 			var categoryBooksCookAndEnjoy = new Category
 			{
 				Name = "Cook and enjoy",
+                Alias = "Cook and enjoy",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6156,6 +6270,7 @@ namespace SmartStore.Data.Setup
 			var categoryDesktops = new Category
 			{
 				Name = "Desktops",
+                Alias = "Desktops",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6173,6 +6288,7 @@ namespace SmartStore.Data.Setup
 			var categoryNotebooks = new Category
 			{
 				Name = "Notebooks",
+                Alias = "Notebooks",
 				CategoryTemplateId = categoryTemplateInGridAndLines.Id,
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
@@ -6219,22 +6335,6 @@ namespace SmartStore.Data.Setup
 				UpdatedOnUtc = DateTime.UtcNow,
 				MetaTitle = "Games"
 			};
-
-			//var categorySoftware = new Category
-			//{
-			//    Name = "Software",
-			//    CategoryTemplateId = categoryTemplateInGridAndLines.Id,
-			//    PageSize = 12,
-			//    AllowCustomersToSelectPageSize = true,
-			//    PageSizeOptions = "12,18,36,72,150",
-			//    ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle =="Computers" ).FirstOrDefault().Id,
-			//    PictureId = pictureService.InsertPicture(File.ReadAllBytes(sampleImagesPath + "category_software.jpg"), "image/pjpeg", pictureService.GetPictureSeName("Software"), true, false).Id,
-			//    Published = true,
-			//    DisplayOrder = 2,
-			//    CreatedOnUtc = DateTime.UtcNow,
-			//    UpdatedOnUtc = DateTime.UtcNow,
-			//    MetaTitle = "Software"
-			//};
 
 			#endregion category definitions
 
@@ -6616,6 +6716,8 @@ namespace SmartStore.Data.Setup
 
 			#region category Gift Cards
 
+            var categoryGiftCards = this._ctx.Set<Category>().First(c => c.Alias == "Gift Cards");
+
 			#region product5GiftCard
 
 			var product5GiftCard = new Product()
@@ -6623,6 +6725,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "$5 Virtual Gift Card",
+				IsEsd = true,
 				ShortDescription = "$5 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1000",
@@ -6643,6 +6746,7 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product5GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
 
 			//var productTag = _productTagRepository.Table.Where(pt => pt.Name == "gift").FirstOrDefault();
 			//productTag.ProductCount++;
@@ -6664,6 +6768,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "$25 Virtual Gift Card",
+				IsEsd = true,
 				ShortDescription = "$25 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1001",
@@ -6684,6 +6789,8 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product25GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_25giftcart.jpeg"), "image/jpeg", GetSeName(product25GiftCard.Name)),
@@ -6699,6 +6806,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "$50 Virtual Gift Card",
+				IsEsd = true,
 				ShortDescription = "$50 Gift Card. Gift Cards must be redeemed through our site Web site toward the purchase of eligible products.",
 				FullDescription = "<p>Gift Cards must be redeemed through our site Web site toward the purchase of eligible products. Purchases are deducted from the GiftCard balance. Any unused balance will be placed in the recipient's GiftCard account when redeemed. If an order exceeds the amount of the GiftCard, the balance must be paid with a credit card or other available payment method.</p>",
                 Sku = "P-1002",
@@ -6719,6 +6827,8 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false
 			};
 
+            product50GiftCard.ProductCategories.Add(new ProductCategory() { Category = categoryGiftCards, DisplayOrder = 1 });
+
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_50giftcart.jpeg"), "image/jpeg", GetSeName(product50GiftCard.Name)),
@@ -6730,6 +6840,10 @@ namespace SmartStore.Data.Setup
 			#endregion category Gift Cards
 
 			#region category books
+
+            var categorySpiegelBestseller = this._ctx.Set<Category>().First(c => c.Alias == "SPIEGEL-Bestseller");
+            var categoryCookAndEnjoy = this._ctx.Set<Category>().First(c => c.Alias == "Cook and enjoy");
+            var categoryBooks = this._ctx.Set<Category>().First(c => c.Alias == "Books");
 
 			#region productBooksUberMan
 
@@ -6757,6 +6871,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true
 			};
 
+            productBooksUberMan.ProductCategories.Add(new ProductCategory() { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+
 			//pictures
 			productBooksUberMan.ProductPictures.Add(new ProductPicture()
 			{
@@ -6770,7 +6886,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Edition -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
 			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
@@ -6778,7 +6893,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Category -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 14).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 7).Single()
 			});
 			productBooksUberMan.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
@@ -6786,7 +6900,6 @@ namespace SmartStore.Data.Setup
 				AllowFiltering = true,
 				ShowOnProductPage = true,
 				DisplayOrder = 3,
-				// Language -> German
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 12).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
 			#endregion productBooksUberMan
@@ -6818,6 +6931,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksGefangeneDesHimmels.ProductCategories.Add(new ProductCategory() { Category = categorySpiegelBestseller, DisplayOrder = 1 });
+
 			//pictures
 			productBooksGefangeneDesHimmels.ProductPictures.Add(new ProductPicture()
 			{
@@ -6834,6 +6949,7 @@ namespace SmartStore.Data.Setup
 				// Edition -> bound
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 13).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
+
 			productBooksGefangeneDesHimmels.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
@@ -6880,6 +6996,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksBestGrillingRecipes.ProductCategories.Add(new ProductCategory() { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
+            
 			//pictures
 			productBooksBestGrillingRecipes.ProductPictures.Add(new ProductPicture()
 			{
@@ -6941,6 +7059,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
 			};
+
+            productBooksCookingForTwo.ProductCategories.Add(new ProductCategory() { Category = categoryCookAndEnjoy, DisplayOrder = 1 });
 
 			//pictures
 			productBooksCookingForTwo.ProductPictures.Add(new ProductPicture()
@@ -7004,6 +7124,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
 
+            productBooksAutosDerSuperlative.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+            
 			//pictures
 			productBooksAutosDerSuperlative.ProductPictures.Add(new ProductPicture()
 			{
@@ -7067,6 +7189,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksBildatlasMotorraeder.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksBildatlasMotorraeder.ProductPictures.Add(new ProductPicture()
 			{
@@ -7128,6 +7252,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productBooksAutoBuch.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
 
 			//pictures
 			productBooksAutoBuch.ProductPictures.Add(new ProductPicture()
@@ -7191,6 +7317,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productBooksFastCars.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksFastCars.ProductPictures.Add(new ProductPicture()
 			{
@@ -7253,6 +7381,8 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 1).Single()
 			};
 
+            productBooksMotorradAbenteuer.ProductCategories.Add(new ProductCategory() { Category = categoryBooks, DisplayOrder = 1 });
+
 			//pictures
 			productBooksMotorradAbenteuer.ProductPictures.Add(new ProductPicture()
 			{
@@ -7292,6 +7422,10 @@ namespace SmartStore.Data.Setup
 
 			#region computer
 
+            var categoryComputer = this._ctx.Set<Category>().First(c => c.Alias == "Computers");
+            var categoryNotebooks = this._ctx.Set<Category>().First(c => c.Alias == "Notebooks");
+            var categoryDesktops = this._ctx.Set<Category>().First(c => c.Alias == "Desktops");
+
 			#region productComputerDellInspiron23
 
 			var productComputerDellInspiron23 = new Product()
@@ -7318,6 +7452,9 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerDellInspiron23.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7423,6 +7560,9 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
+
+            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerDellOptiplex3010.ProductCategories.Add(new ProductCategory() { Category = categoryDesktops, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7536,6 +7676,9 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 0).Single()
 			};
 
+            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryComputer, DisplayOrder = 1 });
+            productComputerAcerAspireOne.ProductCategories.Add(new ProductCategory() { Category = categoryNotebooks, DisplayOrder = 1 });
+
 			#region manufacturer
 
 			//manufacturer
@@ -7591,22 +7734,24 @@ namespace SmartStore.Data.Setup
 
 			#region Smartphones
 
-			#region productSmartPhonesAppleIphone5
+            var categoryCellPhones = this._ctx.Set<Category>().First(c => c.Alias == "Cell phones");
 
-			var productSmartPhonesAppleIphone5 = new Product()
+			#region productSmartPhonesAppleIphone
+
+			var productSmartPhonesAppleIphone = new Product()
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Name = "Apple iPhone 5 32 GB",
+				Name = "Apple iPhone 6",
 				ShortDescription = "The biggest thing to happen to iPhone since iPhone.",
-				FullDescription = "<p> The iPhone 5 at a glance. New design. </p> <p> With 7.6 mm and 112 g3 the iPhone 5 has a remarkably thin and light design. It is made of anodized aluminum. The beveled edges are precision cut with a diamond. <br> Brilliant 4 \"Retina Display.<br> Now you can see everything more vivid and detailed. And although the screen is bigger, it has the same width as the iPhone 4S and is therefore just as easily operated with one hand. Powerful A6 chip. Compared with the A5 chip, he has up to twice the CPU and graphics performance. And despite its speed, the iPhone 5 has a fantastic battery life. Ultra-fast mobile data. The iPhone 5 supports the latest wireless technologies and can be even more so with the world verbinden.4Und networks and Wi-Fi is faster. </p> <p> Delivery 6 Apple iPhone 5 with iOS EarPods with Remote and Mic to USB Cable Lightning USB Power Adapter (Power Supply) Choose the iPhone that suits you. 16 GB, 32 GB or 64 GB capacity? The iPhone is available in three capacities: 16, 32 and 64 GB. \"GB\" stands for gigabytes. The more gigabytes your iPhone, the more space you have. For content such as apps, games, photos, HD videos, music, movies and more In a large music or photo library, or if you frequently invite HD movies to an iPhone recommends using a larger capacity. If your music or photo library is small or you do or buy rare films, ranging from an iPhone with a smaller memory size for you. With time comes along Some of content on your iPhone. Therefore, you should consider your growing storage needs of the iPhone purchase. The unlocked iPhone The unlocked iPhone is not dependent on any cellular network, which means that you can decide for any supported GSM network worldwide. Buy an iPhone without a contract at the Apple Online Store, then look for a tariff for the iPhone, which covers only the SIM card. Or contact your current provider if you want to keep your current rate. </p> <p> PrePaid<br> If you want a contract, you can choose one of the \"prepaid\" starter packs of available network operators in the Apple Online Store. With \"prepaid\" you get your iPhone and ready. Compatible with a SIM card A credit check is not required. You pay online just for what you use, and can switch the network provider at any time. \"Prepaid\" is a good option if you want to use when traveling abroad prefer a local supplier. Which SIM card do I need? It does not matter if you are a new contract, further Lead your existing contract or \"prepaid\" choose - you will need a compatible SIM card. For the iPhone 5, it takes a nano-SIM card for the iPhone 4S and the iPhone 4 is a micro-SIM card. For more details you get with your wireless carrier. Cellular networks and Wi-Fi </p> <p> A1428 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Band 4 and 17) <br> Model A1429 * CDMA: CDMA EV-DO Rev. A and Rev. B (800, 1900, 2100 MHz), UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900 , 1800, 1900 MHz), LTE band (1, 3, 5, 13, 25) <br> * A1429 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Volume 1, 3, 5) <br> 802.11a/b/g/n Wi-Fi (802.11n 2.4 GHz and 5 GHz) <br> Bluetooth 4.0 <br> Display Retina Display 4 \"widescreen Multi-Touch display (10.16 cm diagonal) 1136 x 640 pixels at 326 ppi Typical contrast ratio: 500 cd/m2 simultaneously resistant oleophobic coating on the front support for display of multiple languages ​​and characters: 800:1 Maximum brightness typical Camera, photos and videos 8-megapixel iSight camera Panorama Video recording, HD (1080p) up to 30 frames per second with audio FaceTime HD camera with 1.2-megapixel still images and HD video (720p) for up to 30 frames per second Autofocus Tap to focus video photos and facial recognition in video and photos LED flash Improved video stabilization for geotagging photos and videos Audio Support for AirPlay Mirroring to Apple TV with 720p AirPlay video streaming to Apple TV (3rd generation) up to 1080p and Apple TV (2nd generation) up to 720p Video formats supported: H.264 video up to 1080p, 30 frames per second, High Profile level 4.1 with AAC-LC audio up to 160 kbit / s, 48kHz, stereo audio in m4v, mp4 and mov... , MPEG-4 video, up to 2.5 Mbit / s, 640 x 480 pixels, 30 frames per second, Simple Profile with AAC-LC audio up to 160 Kbps m4v / s, 48 ​​kHz, stereo audio in. , mp4 and mov file formats Motion JPEG (M-JPEG)... up to 35 Mbit / s, 1280 x 720 pixels, 30 frames per second, audio in ulaw, PCM stereo audio in avi format </p>",
-                Sku = "P-1015",
+				FullDescription = "<p>Available in silver, gold, and space gray, iPhone 6 Plus features an A8 chip, Touch ID, faster LTE wireless, a new 8MP iSight camera with Focus Pixels, and iOS 8.</p><p>Weight and Dimensions: Height: 6.22 inches (158.1 mm), Width: 3.06 inches (77.8 mm), Depth: 0.28 inch (7.1 mm), Weight: 6.07 ounces (172 grams).</p><p><ul><li>A8 chip with 64-bit architecture. M8 motion coprocessor.</li><li>New 8-megapixel iSight camera with 1.5µ pixels. Autofocus with Focus Pixels.</li><li>1080p HD video recording (30 fps or 60 fps).</li><li>Retina HD display. 4.7-inch (diagonal) LED-backlit widescreen Multi Touch display with IPS technology.</li><li>1334-by-750-pixel resolution at 326 ppi. 1400:1 contrast ratio (typical). 500 cd/m2 max brightness (typical).</li><li>Fingerprint identity sensor built into the Home button.</li><li>802.11a/b/g/n/ac Wi-Fi. Bluetooth 4.0 wireless technology. NFC.</li><li>RAM	1GB, Internal storage 16GB.</li><li>Colors: Silver, Gold, Space Gray.</li></ul></p>",
+                Sku = "Apple-1001",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
 				Published = true,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow,
-				MetaTitle = "Apple iPhone 5 32 GB",
+				MetaTitle = "Apple iPhone 6",
 				ShowOnHomePage = true,
 				Price = 579.00M,
 				ManageInventoryMethod = ManageInventoryMethod.DontManageStock,
@@ -7619,32 +7764,34 @@ namespace SmartStore.Data.Setup
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
 
+            productSmartPhonesAppleIphone.ProductCategories.Add(new ProductCategory() { Category = categoryCellPhones, DisplayOrder = 1 });
+
 			#region pictures
 
 			//pictures
-			productSmartPhonesAppleIphone5.ProductPictures.Add(new ProductPicture()
+			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000789-apple-iphone-5-32-gb.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone5.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000789-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
 				DisplayOrder = 1,
 			});
-			productSmartPhonesAppleIphone5.ProductPictures.Add(new ProductPicture()
+			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000785-apple-iphone-5-32-gb.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone5.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000785-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
 				DisplayOrder = 2,
 			});
-			productSmartPhonesAppleIphone5.ProductPictures.Add(new ProductPicture()
+			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000786-apple-iphone-5-32-gb.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone5.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000786-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
 				DisplayOrder = 3,
 			});
-			productSmartPhonesAppleIphone5.ProductPictures.Add(new ProductPicture()
+			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000787-apple-iphone-5-32-gb.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone5.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000787-apple-iphone.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone.Name)),
 				DisplayOrder = 4,
 			});
-			productSmartPhonesAppleIphone5.ProductPictures.Add(new ProductPicture()
+			productSmartPhonesAppleIphone.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000788-apple-iphone-5-32-gb.jpg"), "image/jpeg", GetSeName(productSmartPhonesAppleIphone5.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000788-apple-iphone.png"), "image/png", GetSeName(productSmartPhonesAppleIphone.Name)),
 				DisplayOrder = 5,
 			});
 
@@ -7655,7 +7802,7 @@ namespace SmartStore.Data.Setup
 			#region manufacturer
 
 			//manufacturer
-			productSmartPhonesAppleIphone5.ProductManufacturers.Add(new ProductManufacturer()
+			productSmartPhonesAppleIphone.ProductManufacturers.Add(new ProductManufacturer()
 			{
 				Manufacturer = _ctx.Set<Manufacturer>().Where(c => c.Name == "Apple").Single(),
 				DisplayOrder = 1,
@@ -7665,7 +7812,7 @@ namespace SmartStore.Data.Setup
 
 			#region SpecificationAttributes
 			//attributes
-			productSmartPhonesAppleIphone5.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
@@ -7673,7 +7820,7 @@ namespace SmartStore.Data.Setup
 				// housing > alu
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 8).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 4).Single()
 			});
-			productSmartPhonesAppleIphone5.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
@@ -7681,7 +7828,7 @@ namespace SmartStore.Data.Setup
 				// manufacturer > apple
 				SpecificationAttributeOption = _ctx.Set<SpecificationAttribute>().Where(sa => sa.DisplayOrder == 20).Single().SpecificationAttributeOptions.Where(sao => sao.DisplayOrder == 1).Single()
 			});
-			productSmartPhonesAppleIphone5.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
+			productSmartPhonesAppleIphone.ProductSpecificationAttributes.Add(new ProductSpecificationAttribute()
 			{
 				AllowFiltering = true,
 				ShowOnProductPage = true,
@@ -7691,11 +7838,13 @@ namespace SmartStore.Data.Setup
 			});
 			#endregion SpecificationAttributes
 
-			#endregion productSmartPhonesAppleIphone5
+			#endregion productSmartPhonesAppleIphone
 
 			#endregion Smartphones
 
 			#region Instant Download Music
+
+            var categoryMusic = this._ctx.Set<Category>().First(c => c.Alias == "Instant music");
 
 			#region Antonio Vivaldi: then spring
 
@@ -7704,6 +7853,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "Antonio Vivaldi: spring",
+				IsEsd = true,
 				ShortDescription = "MP3, 320 kbit/s",
 				FullDescription = "<p>Antonio Vivaldi: Spring</p> <p>Antonio Lucio Vivaldi (March 4, 1678 in Venice, &dagger; 28 July 1741 in Vienna) was a Venetian composer and violinist in the Baroque.</p> <p>The Four Seasons (Le quattro stagioni Italian) is perhaps the most famous works of Antonio Vivaldi. It's four violin concertos with extra-musical programs, each portraying a concert season. This is the individual concerts one - probably written by Vivaldi himself - Sonnet preceded by consecutive letters in front of the lines and in the appropriate places in the score arrange the verbal description of the music.</p> <p>Vivaldi had previously always been experimenting with non-musical programs, which often reflected in his tracks, the exact interpretation of the individual points score is unusual for him. His experience as a virtuoso violinist allowed him access to particularly effective playing techniques, as an opera composer, he had developed a strong sense of effects, both of which benefitted from him.</p> <p>As the title suggests, especially to imitate natural phenomena - gentle winds, severe storms and thunderstorms are elements that are common to all four concerts. There are also various birds and even a dog, further human activities such as hunting, a barn dance, ice skating, including stumbling and falling to the heavy sleep of a drunkard.</p> <p>The work dates from 1725 and is available in two print editions, which appeared more or less simultaneously published in Amsterdam and Paris.</p>",
                 Sku = "P-1016",
@@ -7733,6 +7883,8 @@ namespace SmartStore.Data.Setup
 				}
 			};
 
+            productInstantDownloadVivaldi.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
+            
 			#region pictures
 
 			//pictures
@@ -7774,6 +7926,7 @@ namespace SmartStore.Data.Setup
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
 				Name = "Ludwig van Beethoven: For Elise",
+				IsEsd = true,
 				ShortDescription = "Ludwig van Beethoven's most popular compositions",
 				FullDescription = "<p> The score was not published until 1867, 40 years after the composer's death in 1827. The discoverer of the piece, Ludwig Nohl, affirmed that the original autographed manuscript, now lost, was dated 27 April 1810.[4] The version of \"Für Elise\" we hear today is an earlier version that was transcribed by Ludwig Nohl. There is a later version, with drastic changes to the accompaniment which was transcribed from a later manuscript by Barry Cooper. The most notable difference is in the first theme, the left-hand arpeggios are delayed by a 16th note beat. There are a few extra bars in the transitional section into the B section; and finally, the rising A minor arpeggio figure is moved later into the piece. The tempo marking Poco Moto is believed to have been on the manuscript that Ludwig Nohl transcribed (now lost). The later version includes the marking Molto Grazioso. It is believed that Beethoven intended to add the piece to a cycle of bagatelles.[citation needed] </p> <p> Therese Malfatti, widely believed to be the dedicatee of \"Für Elise\" The pianist and musicologist Luca Chiantore (es) argued in his thesis and his 2010 book Beethoven al piano that Beethoven might not have been the person who gave the piece the form that we know today. Chiantore suggested that the original signed manuscript, upon which Ludwig Nohl claimed to base his transcription, may never have existed.[5] On the other hand, the musicologist Barry Cooper stated, in a 1984 essay in The Musical Times, that one of two surviving sketches closely resembles the published version.[6] </p>",
                 Sku = "P-1017",
@@ -7803,6 +7956,8 @@ namespace SmartStore.Data.Setup
 					IsNew = true
 				}
 			};
+
+            productInstantDownloadBeethoven.ProductCategories.Add(new ProductCategory() { Category = categoryMusic, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -7837,9 +7992,12 @@ namespace SmartStore.Data.Setup
 			#endregion SpecificationAttributes
 
 			#endregion Beethoven für Elise
+
 			#endregion Instant Download Music
 
 			#region watches
+
+            var categoryWatches = this._ctx.Set<Category>().First(c => c.Alias == "Watches");
 
 			#region productWatchesCertinaDSPodiumBigSize
 
@@ -7847,9 +8005,9 @@ namespace SmartStore.Data.Setup
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
-				Name = "Certina DS Podium Big Size ",
+				Name = "Certina DS Podium Big Size",
 				ShortDescription = "C001.617.26.037.00",
-				FullDescription = "<p> The iPhone 5 at a glance. New design. </p> <p> With 7.6 mm and 112 g3 the iPhone 5 has a remarkably thin and light design. It is made of anodized aluminum. The beveled edges are precision cut with a diamond. <br> Brilliant 4 \"Retina Display.<br> Now you can see everything more vivid and detailed. And although the screen is bigger, it has the same width as the iPhone 4S and is therefore just as easily operated with one hand. Powerful A6 chip. Compared with the A5 chip, he has up to twice the CPU and graphics performance. And despite its speed, the iPhone 5 has a fantastic battery life. Ultra-fast mobile data. The iPhone 5 supports the latest wireless technologies and can be even more so with the world verbinden.4Und networks and Wi-Fi is faster. </p> <p> Delivery 6 Apple iPhone 5 with iOS EarPods with Remote and Mic to USB Cable Lightning USB Power Adapter (Power Supply) Choose the iPhone that suits you. 16 GB, 32 GB or 64 GB capacity? The iPhone is available in three capacities: 16, 32 and 64 GB. \"GB\" stands for gigabytes. The more gigabytes your iPhone, the more space you have. For content such as apps, games, photos, HD videos, music, movies and more In a large music or photo library, or if you frequently invite HD movies to an iPhone recommends using a larger capacity. If your music or photo library is small or you do or buy rare films, ranging from an iPhone with a smaller memory size for you. With time comes along Some of content on your iPhone. Therefore, you should consider your growing storage needs of the iPhone purchase. The unlocked iPhone The unlocked iPhone is not dependent on any cellular network, which means that you can decide for any supported GSM network worldwide. Buy an iPhone without a contract at the Apple Online Store, then look for a tariff for the iPhone, which covers only the SIM card. Or contact your current provider if you want to keep your current rate. </p> <p> PrePaid<br> If you want a contract, you can choose one of the \"prepaid\" starter packs of available network operators in the Apple Online Store. With \"prepaid\" you get your iPhone and ready. Compatible with a SIM card A credit check is not required. You pay online just for what you use, and can switch the network provider at any time. \"Prepaid\" is a good option if you want to use when traveling abroad prefer a local supplier. Which SIM card do I need? It does not matter if you are a new contract, further Lead your existing contract or \"prepaid\" choose - you will need a compatible SIM card. For the iPhone 5, it takes a nano-SIM card for the iPhone 4S and the iPhone 4 is a micro-SIM card. For more details you get with your wireless carrier. Cellular networks and Wi-Fi </p> <p> A1428 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Band 4 and 17) <br> Model A1429 * CDMA: CDMA EV-DO Rev. A and Rev. B (800, 1900, 2100 MHz), UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900 , 1800, 1900 MHz), LTE band (1, 3, 5, 13, 25) <br> * A1429 GSM model: UMTS / HSPA + / DC-HSDPA (850, 900, 1900, 2100 MHz) GSM / EDGE (850, 900, 1800, 1900 MHz), LTE (Volume 1, 3, 5) <br> 802.11a/b/g/n Wi-Fi (802.11n 2.4 GHz and 5 GHz) <br> Bluetooth 4.0 <br> Display Retina Display 4 \"widescreen Multi-Touch display (10.16 cm diagonal) 1136 x 640 pixels at 326 ppi Typical contrast ratio: 500 cd/m2 simultaneously resistant oleophobic coating on the front support for display of multiple languages ​​and characters: 800:1 Maximum brightness typical Camera, photos and videos 8-megapixel iSight camera Panorama Video recording, HD (1080p) up to 30 frames per second with audio FaceTime HD camera with 1.2-megapixel still images and HD video (720p) for up to 30 frames per second Autofocus Tap to focus video photos and facial recognition in video and photos LED flash Improved video stabilization for geotagging photos and videos Audio Support for AirPlay Mirroring to Apple TV with 720p AirPlay video streaming to Apple TV (3rd generation) up to 1080p and Apple TV (2nd generation) up to 720p Video formats supported: H.264 video up to 1080p, 30 frames per second, High Profile level 4.1 with AAC-LC audio up to 160 kbit / s, 48kHz, stereo audio in m4v, mp4 and mov... , MPEG-4 video, up to 2.5 Mbit / s, 640 x 480 pixels, 30 frames per second, Simple Profile with AAC-LC audio up to 160 Kbps m4v / s, 48 ​​kHz, stereo audio in. , mp4 and mov file formats Motion JPEG (M-JPEG)... up to 35 Mbit / s, 1280 x 720 pixels, 30 frames per second, audio in ulaw, PCM stereo audio in avi format </p>",
+				FullDescription = "<p>Since 1888, Certina has maintained an enviable reputation for its excellent watches and reliable movements. From the time of its integration into the SMH (today's Swatch Group) in the early 1980s, every Certina has been equipped with a high-quality ETA movement.</p><p>In a quartz watch movement, high-frequency oscillations are generated in a tiny synthetic crystal, then divided down electronically to provide the extreme accuracy of the Certina internal clock. A battery supplies the necessary energy.</p><p>The quartz movement is sometimes equipped with an end-of-life (EOL) indicator. When the seconds hand begins moving in four-second increments, the battery should be replaced within two weeks.</p><p>An automatic watch movement is driven by a rotor. Arm and wrist movements spin the rotor, which in turn winds the main spring. Energy is continuously produced, eliminating the need for a battery. The rate precision therefore depends on a rigorous manufacturing process and the original calibration, as well as the lifestyle of the user.</p><p>Most automatic movements are driven by an offset rotor. To earn the title of chronometer, a watch must be equipped with a movement that has obtained an official rate certificate from the COSC (Contrôle Officiel Suisse des Chronomètres). To obtain this, precision tests in different positions and at different temperatures must be carried out. These tests take place over a 15-day period. Thermocompensated means that the effective temperature inside the watch is measured and taken into account when improving precision. This allows fluctuations in the rate precision of a normal quartz watch due to temperature variations to be reduced by several seconds a week. The precision is 20 times more accurate than on a normal quartz watch, i.e. +/- 10 seconds per year (0.07 seconds/day).</p>",
                 Sku = "P-1018",
 				ProductTemplateId = productTemplateSimple.Id,
 				AllowCustomerReviews = true,
@@ -7868,6 +8026,8 @@ namespace SmartStore.Data.Setup
 				IsShipEnabled = true,
 				DeliveryTime = _ctx.Set<DeliveryTime>().Where(sa => sa.DisplayOrder == 2).Single()
 			};
+
+            productWatchesCertinaDSPodiumBigSize.ProductCategories.Add(new ProductCategory() { Category = categoryWatches, DisplayOrder = 1 });
 
 			#region pictures
 
@@ -8420,12 +8580,11 @@ namespace SmartStore.Data.Setup
 
 			#endregion gaming
 
-
 			var entities = new List<Product>
 			{
 				product5GiftCard, product25GiftCard, product50GiftCard, productBooksUberMan, productBooksGefangeneDesHimmels,
 				productBooksBestGrillingRecipes, productBooksCookingForTwo, productBooksAutosDerSuperlative,  productBooksBildatlasMotorraeder, productBooksAutoBuch, productBooksFastCars,
-				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone5, 
+				productBooksMotorradAbenteuer,  productComputerDellInspiron23, productComputerDellOptiplex3010,productSmartPhonesAppleIphone, 
 				productInstantDownloadVivaldi, productComputerAcerAspireOne, productInstantDownloadBeethoven, productWatchesCertinaDSPodiumBigSize,
 				productPs3, productDualshock3Controller, productAssassinsCreed3, productBundlePs3AssassinCreed,
 				productPs4, productDualshock4Controller, productPs4Camera, productBundlePs4,

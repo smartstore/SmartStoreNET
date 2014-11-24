@@ -3,7 +3,7 @@
 
 <div id="logobar" class="container">
 
-    <a href="@Url.RouteUrl("HomePage")" class="brand">
+    <a href="@Url.RouteUrl("HomePage")" class="brand@(Model.LogoUploaded ? "" : " textual")">
             
         @if (Model.LogoUploaded) 
         {

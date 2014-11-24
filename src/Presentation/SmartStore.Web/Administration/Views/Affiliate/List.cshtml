@@ -12,7 +12,7 @@
         @T("Admin.Affiliates")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
 <table class="adminContent">
@@ -22,6 +22,8 @@
                     .Name("affiliates-grid")
                     .Columns(columns =>
                     {
+						columns.Bound(x => x.Address.Email)
+							.Width(200);
                         columns.Bound(x => x.Address.FirstName)
                             .Width(200);
                         columns.Bound(x => x.Address.LastName)

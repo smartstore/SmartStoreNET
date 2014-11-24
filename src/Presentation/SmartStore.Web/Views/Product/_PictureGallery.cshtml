@@ -1,0 +1,47 @@
+﻿@model ProductDetailsPictureModel
+@using SmartStore.Web.Models.Catalog;
+@{
+	Html.AddCssFileParts("~/css/image-gallery");
+	Html.AddScriptParts("~/bundles/image-gallery");
+	
+    var zoomEnabled = Model.DefaultPictureZoomEnabled;
+}
+
+<div id="pd-gallery" class="picture pd-gallery">
+    <div class="sg-image-wrapper">
+        <img alt="@Model.DefaultPictureModel.AlternateText"
+            title="@Model.DefaultPictureModel.Title"  
+            src="@Model.DefaultPictureModel.ImageUrl"
+            itemprop="image" />   
+        
+    </div>
+
+    <div class="sg-nav">
+	    <div class="sg-thumbs">
+		    <ul class="sg-thumb-list">
+                @if (Model.PictureModels.Count > 1)
+                {
+                    for (int i = 0; i < Model.PictureModels.Count; i++)
+                    {
+                        var picture = Model.PictureModels[i];
+                        
+                        <li data-picture-id="@picture.PictureId">
+							<a href="@picture.FullSizeImageUrl" data-medium-image="@picture.ImageUrl" title="@Model.Name" data-gallery="default">
+								<img src="@picture.ThumbImageUrl" alt="@picture.AlternateText" title="@picture.Title" />
+							</a>
+                        </li>
+                    }
+
+                } 
+                else 
+                {     
+                    <li data-picture-id="@Model.DefaultPictureModel.PictureId">
+						<a href="@Model.DefaultPictureModel.FullSizeImageUrl" data-medium-image="@Model.DefaultPictureModel.ImageUrl" data-gallery="default">
+							<img src="@Model.DefaultPictureModel.ThumbImageUrl" alt="@Model.DefaultPictureModel.AlternateText" title="@Model.DefaultPictureModel.Title" />
+						</a>
+                    </li>
+                }
+            </ul>
+	    </div>
+	</div>
+</div>

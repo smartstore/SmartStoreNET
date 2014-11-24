@@ -38,7 +38,8 @@ namespace SmartStore.Web.Controllers
 
 		#region Constructors
 
-        public ReturnRequestController(IOrderService orderService,
+        public ReturnRequestController(
+			IOrderService orderService,
 			IWorkContext workContext, IStoreContext storeContext,
             ICurrencyService currencyService, IPriceFormatter priceFormatter,
             IOrderProcessingService orderProcessingService,
@@ -77,27 +78,20 @@ namespace SmartStore.Web.Controllers
 
             model.OrderId = order.Id;
 
+			string returnRequestReasons = _orderSettings.GetLocalized(x => x.ReturnRequestReasons, order.CustomerLanguageId, true, false);
+			string returnRequestActions = _orderSettings.GetLocalized(x => x.ReturnRequestActions, order.CustomerLanguageId, true, false);
+
             //return reasons
-            if (_orderSettings.ReturnRequestReasons != null)
-                foreach (var rrr in _orderSettings.ReturnRequestReasons)
-                {
-                    model.AvailableReturnReasons.Add(new SelectListItem()
-                        {
-                            Text = rrr,
-                            Value = rrr
-                        });
-                }
+            foreach (var rrr in returnRequestReasons.SplitSafe(","))
+            {
+                model.AvailableReturnReasons.Add(new SelectListItem() { Text = rrr, Value = rrr });
+            }
 
             //return actions
-            if (_orderSettings.ReturnRequestActions != null)
-                foreach (var rra in _orderSettings.ReturnRequestActions)
-                {
-                    model.AvailableReturnActions.Add(new SelectListItem()
-                    {
-                        Text = rra,
-                        Value = rra
-                    });
-                }
+            foreach (var rra in returnRequestActions.SplitSafe(","))
+            {
+                model.AvailableReturnActions.Add(new SelectListItem() { Text = rra, Value = rra });
+            }
 
             //products
             var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
@@ -112,6 +106,7 @@ namespace SmartStore.Web.Controllers
                     AttributeInfo = orderItem.AttributeDescription,
                     Quantity = orderItem.Quantity
                 };
+                model.Items.Add(orderItemModel);
 
                 //unit price
                 switch (order.CustomerTaxDisplayType)
@@ -141,7 +136,7 @@ namespace SmartStore.Web.Controllers
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
         public ActionResult ReturnRequest(int orderId)
         {
-            var order = _orderService.GetOrderById(orderId);
+			var order = _orderService.GetOrderById(orderId);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -153,7 +148,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        [HttpPost, ActionName("ReturnRequest")]
+        [HttpPost, ActionName("ReturnRequest")] 
         [ValidateInput(false)]
         public ActionResult ReturnRequestSubmit(int orderId, SubmitReturnRequestModel model, FormCollection form)
         {

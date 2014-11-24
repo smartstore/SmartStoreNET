@@ -38,7 +38,7 @@
         @if (Model.Tags.Count > 0)
         {
             <div class="blogpost-tags well well-small">
-                <i class="icon-tags" title='@T("Blog.Tags")'></i>
+                <i class="fa fa-tags" title='@T("Blog.Tags")'></i>
                 @for (int i = 0, length = Model.Tags.Count; i < length; i++)
                 {
                     var tag = Model.Tags[i];
@@ -88,7 +88,7 @@
 
                         <div class="buttons">
                             <button type="submit" name="add-comment" value="add-comment" class="btn btn-primary blog-post-add-comment-button">
-								<i class="icon icon-ok"></i>
+								<i class="fa fa-check"></i>
                                 @T("Blog.Comments.SubmitButton")
                             </button>
                         </div>

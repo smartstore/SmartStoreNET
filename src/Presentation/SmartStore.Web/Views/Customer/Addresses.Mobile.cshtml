@@ -12,7 +12,7 @@
     </div>
     <div class="page-body">
         <div class="add-button">
-            <a href="@Url.RouteUrl("CustomerAddressAdd")" data-role="button">@T("Common.AddNew")</a>
+            <a href="@Url.Action("AddressAdd")" data-role="button">@T("Common.AddNew")</a>
         </div>
         <div class="address-list">
             @if (Model.Addresses.Count > 0)
@@ -94,8 +94,8 @@
                                     }
                                 </div>
                                 <div class="buttons">
-                                    <a href="@Url.RouteUrl("CustomerAddressEdit", new { addressId = address.Id })" data-role="button">@T("Common.Edit")</a>
-                                    <a href="@Url.RouteUrl("CustomerAddressDelete", new { addressId = address.Id })" data-role="button">@T("Common.Delete")</a>
+                                    <a href="@Url.Action("AddressEdit", new { id = address.Id })" data-role="button">@T("Common.Edit")</a>
+                                    <a href="@Url.Action("AddressDelete", new { id = address.Id })" data-role="button">@T("Common.Delete")</a>
                                 </div>
                             </div>
                         </li>

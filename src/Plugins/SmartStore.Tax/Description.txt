@@ -1,0 +1,9 @@
+﻿FriendlyName: Default Tax Providers
+Description: Contains default tax providers like FixedRate, ByRegion etc.
+Group: Tax
+SystemName: SmartStore.Tax
+Version: 1.0
+MinAppVersion: 2.1.0
+DisplayOrder: 0
+FileName: SmartStore.Tax.dll
+ResourceRootKey: Plugins.SmartStore.Tax

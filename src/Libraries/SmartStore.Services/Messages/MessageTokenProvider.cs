@@ -32,6 +32,8 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Plugins;
+using System.Linq.Expressions;
 
 namespace SmartStore.Services.Messages
 {
@@ -756,7 +758,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.ShippingCountry", order.ShippingAddress != null && order.ShippingAddress.Country != null ? order.ShippingAddress.Country.GetLocalized(x => x.Name) : ""));
 
             var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-			var paymentMethodName = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : order.PaymentMethodSystemName;
+			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
 
@@ -784,6 +786,23 @@ namespace SmartStore.Services.Messages
             //event notification
             _eventPublisher.EntityTokensAdded(order, tokens);
         }
+
+		private string GetLocalizedValue(ProviderMetadata metadata, string propertyName, Expression<Func<ProviderMetadata, string>> fallback)
+		{
+			// TODO: (mc) this actually belongs to PluginMediator, but we simply cannot add a dependency to framework from here. Refactor later!
+			
+			Guard.ArgumentNotNull(() => metadata);
+
+			string systemName = metadata.SystemName;
+			var languageId = _workContext.WorkingLanguage.Id;
+			var resourceName = metadata.ResourceKeyPattern.FormatInvariant(metadata.SystemName, propertyName);
+			string result = _localizationService.GetResource(resourceName, languageId, false, "", true);
+
+			if (result.IsEmpty())
+				result = fallback.Compile()(metadata);
+
+			return result;
+		}
 
         public virtual void AddShipmentTokens(IList<Token> tokens, Shipment shipment, int languageId)
         {
@@ -856,13 +875,13 @@ namespace SmartStore.Services.Messages
 
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-			string passwordRecoveryUrl = string.Format("{0}passwordrecovery/confirm?token={1}&email={2}", _webHelper.GetStoreLocation(false), 
+			string passwordRecoveryUrl = string.Format("{0}customer/passwordrecovery/confirm?token={1}&email={2}", _webHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), HttpUtility.UrlEncode(customer.Email));
 
-			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(false), 
+			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken), HttpUtility.UrlEncode(customer.Email));
 
-            var wishlistUrl = string.Format("{0}wishlist/{1}", _webHelper.GetStoreLocation(false), customer.CustomerGuid);
+            var wishlistUrl = string.Format("{0}wishlist/{1}", _webHelper.GetStoreLocation(), customer.CustomerGuid);
             tokens.Add(new Token("Customer.PasswordRecoveryURL", passwordRecoveryUrl, true));
             tokens.Add(new Token("Customer.AccountActivationURL", accountActivationUrl, true));
             tokens.Add(new Token("Wishlist.URLForCustomer", wishlistUrl, true));

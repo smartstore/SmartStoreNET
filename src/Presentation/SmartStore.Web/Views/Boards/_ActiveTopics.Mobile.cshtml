@@ -3,7 +3,6 @@
 @using SmartStore.Services.Forums;
 @using SmartStore.Services.Seo;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @if (!Model.ViewAllLinkEnabled)
@@ -16,7 +15,7 @@
         @if (Model.ViewAllLinkEnabled)
         {        
             <div class="view-all">
-                [@Html.RouteLink(@T("Forum.ActiveDiscussions.ViewAll").Text, "ActiveDiscussions")]
+                [@Html.ActionLink(@T("Forum.ActiveDiscussions.ViewAll").Text, "ActiveDiscussions")]
             </div>
         }
     </div>

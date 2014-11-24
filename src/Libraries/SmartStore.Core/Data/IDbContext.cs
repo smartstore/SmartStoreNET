@@ -40,12 +40,22 @@ namespace SmartStore.Core.Data
         // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 
-        // codehint: sm-add (increasing performance on bulk inserts)
+        // increasing performance on bulk operations
         bool ProxyCreationEnabled { get; set; }
         bool AutoDetectChangesEnabled { get; set; }
         bool ValidateOnSaveEnabled { get; set; }
 		bool HooksEnabled { get; set; }
         bool HasChanges { get; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether entities returned from queries
+		/// or created from stored procedures
+		/// should automatically be attached to the <c>DbContext</c>.
+		/// </summary>
+		/// <remarks>
+		/// Set this to <c>true</c> only during long running processes (like export)
+		/// </remarks>
+		bool ForceNoTracking { get; set; }
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity
@@ -73,6 +83,33 @@ namespace SmartStore.Core.Data
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to detach</param>
         void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+
+		/// <summary>
+		/// Detaches an entity from the current object context
+		/// </summary>
+		/// <param name="entity">The entity instance to detach</param>
 		void Detach(object entity);
+
+		/// <summary>
+		/// Detaches all entities from the current object context
+		/// </summary>
+		/// <returns>The count of detached entities</returns>
+		int DetachAll();
+
+		/// <summary>
+		/// Change the state of an entity object
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <param name="newState">The new state</param>
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState);
+
+		/// <summary>
+		/// Changes the object state to unchanged
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <returns>true on success, false on failure</returns>
+		bool SetToUnchanged<TEntity>(TEntity entity);
     }
 }

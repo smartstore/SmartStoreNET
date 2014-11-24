@@ -375,8 +375,8 @@ namespace SmartStore.Services.Orders
                     decimal minimumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MinimumCustomerEnteredPrice, _workContext.WorkingCurrency);
                     decimal maximumCustomerEnteredPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.MaximumCustomerEnteredPrice, _workContext.WorkingCurrency);
                     warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.CustomerEnteredPrice.RangeError"),
-                        _priceFormatter.FormatPrice(minimumCustomerEnteredPrice, false, false),
-                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, false, false)));
+                        _priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
+                        _priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false)));
                 }
             }
 
@@ -532,7 +532,7 @@ namespace SmartStore.Services.Orders
                         }
                     }
 
-					if (!found && bundleItem != null && bundleItem.FilterAttributes && !bundleItem.AttributeFilters.Exists(x => x.AttributeId == pva2.ProductAttributeId))
+					if (!found && bundleItem != null && bundleItem.FilterAttributes && !bundleItem.AttributeFilters.Any(x => x.AttributeId == pva2.ProductAttributeId))
 					{
 						found = true;	// attribute is filtered out on bundle item level... it cannot be selected by customer
 					}
@@ -1054,7 +1054,20 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-		public virtual void AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
+		/// <summary>
+		/// Adds a product to the shopping cart and also adds bundle items if the product is a bundle.
+		/// </summary>
+		/// <param name="warnings">List with warnings</param>
+		/// <param name="product">Product</param>
+		/// <param name="form">Collection with selected attribute data</param>
+		/// <param name="cartType">Shopping cart type</param>
+		/// <param name="customerEnteredPrice">The price enter by a customer</param>
+		/// <param name="quantity">Quantity</param>
+		/// <param name="addRequiredProducts">Automatically add required products if enabled</param>
+		/// <param name="parentCartItemId">Parent cart item if it is a bundle item</param>
+		/// <param name="bundleItem">Bundle item object if it is a bundle item</param>
+		/// <returns>Identifier of inserted (parent) shopping cart item</returns>
+		public virtual int AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
 			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null)
 		{
 			int newCartItemId;
@@ -1069,7 +1082,7 @@ namespace SmartStore.Services.Orders
 			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
 			{
 				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
-				return;
+				return 0;
 			}
 
 			if (product.IsGiftCard)
@@ -1092,6 +1105,7 @@ namespace SmartStore.Services.Orders
 				if (warnings.Count > 0)
 					DeleteShoppingCartItem(newCartItemId);
 			}
+			return newCartItemId;
 		}
 
         /// <summary>
@@ -1159,14 +1173,23 @@ namespace SmartStore.Services.Orders
                 throw new ArgumentNullException("toCustomer");
 
             if (fromCustomer.Id == toCustomer.Id)
-                return; //the same customer
+                return;
 
+			int storeId = 0;
 			var cartItems = fromCustomer.ShoppingCartItems.ToList().Organize().ToList();
+
+			if (cartItems.Count <= 0)
+				return;
 
 			foreach (var cartItem in cartItems)
 			{
+				if (storeId == 0)
+					storeId = cartItem.Item.StoreId;
+
 				Copy(cartItem, toCustomer, cartItem.Item.ShoppingCartType, cartItem.Item.StoreId, false);
 			}
+
+			_eventPublisher.PublishMigrateShoppingCart(fromCustomer, toCustomer, storeId);
 
 			foreach (var cartItem in cartItems)
 			{
@@ -1174,6 +1197,15 @@ namespace SmartStore.Services.Orders
 			}
         }
 
+		/// <summary>
+		/// Copies a shopping cart item.
+		/// </summary>
+		/// <param name="sci">Shopping cart item</param>
+		/// <param name="customer">The customer</param>
+		/// <param name="cartType">Shopping cart type</param>
+		/// <param name="storeId">Store Id</param>
+		/// <param name="addRequiredProductsIfEnabled">Add required products if enabled</param>
+		/// <returns>List with add-to-cart warnings.</returns>
 		public virtual IList<string> Copy(OrganizedShoppingCartItem sci, Customer customer, ShoppingCartType cartType, int storeId, bool addRequiredProductsIfEnabled)
 		{
 			if (customer == null)

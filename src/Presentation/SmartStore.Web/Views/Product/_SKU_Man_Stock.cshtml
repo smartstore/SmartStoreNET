@@ -1,0 +1,33 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Web.Models.Catalog;
+
+<div class="attributes">
+    @if (!String.IsNullOrWhiteSpace(Model.Sku) && Model.ShowSku)
+    {
+        <div class="attr-sku">
+            <span class="caption">@T("Products.Sku"): </span>
+            <span class="value" itemprop="sku">@Model.Sku</span>
+        </div>
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.ManufacturerPartNumber) && Model.ShowManufacturerPartNumber)
+    {
+        <div class="attr-mpn">
+            <span class="caption">@T("Products.ManufacturerPartNumber"):</span>
+            <span class="value">@Model.ManufacturerPartNumber</span>
+        </div>
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.Gtin) && Model.ShowGtin)
+    {
+        <div class="attr-gtin">
+            <span class="caption">@T("Products.GTIN"):</span>
+            <span class="value">@Model.Gtin</span>
+        </div>
+    }
+    @if (!String.IsNullOrWhiteSpace(Model.StockAvailability))
+    {
+        <div class="attr-stock @(String.IsNullOrWhiteSpace(Model.StockAvailability) ? "hide fade" : "")">
+            <span class="caption">@T("Products.Availability"):</span>
+            <span class="value">@Model.StockAvailability</span>
+        </div>
+    }
+</div>

@@ -5,10 +5,10 @@
 (function( $, undefined ) {
 
 var iconClasses = {
-	left: "icon-chevron-left", 
-	right: "icon-chevron-right",
-	up: "icon-chevron-up",
-	down: "icon-chevron-down"
+	left: "fa fa-chevron-left", 
+	right: "fa fa-chevron-right",
+	up: "fa fa-chevron-up",
+	down: "fa fa-chevron-down"
 };
 
 $.ScrollButton = function(el, buttons, target, options) {

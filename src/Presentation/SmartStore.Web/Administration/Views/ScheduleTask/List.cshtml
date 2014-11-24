@@ -1,13 +1,15 @@
-﻿@model Telerik.Web.Mvc.GridModel<ScheduleTaskModel>
+﻿@model dynamic
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
 @{
     //page title
     ViewBag.Title = T("Admin.System.ScheduleTasks").Text;
+
+	var runJobUrl = Url.Content("~/Admin/ScheduleTask/RunJob/");
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-time"></i>
+		<i class="fa fa-clock-o"></i>
         @T("Admin.System.ScheduleTasks")
     </div>
 </div>
@@ -20,7 +22,7 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid(Model.Data)
+            @(Html.Telerik().Grid<ScheduleTaskModel>()
                     .Name("schedule-tasks-grid")
                     .DataKeys(x =>
                     {
@@ -28,21 +30,29 @@
                     })
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Name);
+                        columns.Bound(x => x.Name).ClientTemplate("<strong><#= Name #></strong>");
                         columns.Bound(x => x.Seconds);
                         columns.Bound(x => x.Enabled)
-                            .Template(item => @Html.SymbolForBool(item.Enabled))
                             .ClientTemplate(@Html.SymbolForBool("Enabled"))
                             .Centered()
                             .Width(100);
                         columns.Bound(x => x.StopOnError)
-                            .Template(item => @Html.SymbolForBool(item.StopOnError))
                             .ClientTemplate(@Html.SymbolForBool("StopOnError"))
                             .Centered()
                             .Width(100);
-                        columns.Bound(x => x.LastStartUtc).ReadOnly();
-                        columns.Bound(x => x.LastEndUtc).ReadOnly();
-                        columns.Bound(x => x.LastSuccessUtc).ReadOnly();
+						//columns.Bound(x => x.LastStartUtc).ReadOnly();
+						//columns.Bound(x => x.LastEndUtc).ReadOnly();
+						//columns.Bound(x => x.LastSuccessUtc).ReadOnly();
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'><#= LastStartUtc #></span></div><# } #>" +
+											"<# if (!LastEndUtc && !IsRunning) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'>" + @T("Common.Never") + "</span></div><# } #>" +
+											"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='muted'><#= Duration #></span></div><# } #>" +
+											"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
+											"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='muted'><#= LastSuccessUtc #></span></div><# } #>" +
+											"<# if (!IsRunning) {#><a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a><# } #>" +
+											"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='fa fa-refresh fa-spin'></i> " + @T("Admin.System.ScheduleTasks.RunNow.IsRunning") + "</div><# } #>")
+							.Title("Ausführung")
+							.ReadOnly();
                         columns.Command(commands =>
                         {
                             commands.Edit().Text(T("Admin.Common.Edit").Text);
@@ -69,3 +79,4 @@
         </td>
     </tr>
 </table>
+

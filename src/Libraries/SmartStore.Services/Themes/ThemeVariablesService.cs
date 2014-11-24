@@ -116,7 +116,7 @@ namespace SmartStore.Services.Themes
 			var savedThemeVars = _rsVariables.Table.Where(v => v.StoreId == storeId && v.Theme.Equals(themeName, StringComparison.OrdinalIgnoreCase)).ToList();
             bool touched = false;
 
-            foreach (var v in variables.Where(x => x.Value != null))
+            foreach (var v in variables)
             {
                 ThemeVariableInfo info;
                 if (!infos.TryGetValue(v.Key, out info))
@@ -126,14 +126,14 @@ namespace SmartStore.Services.Themes
                     continue;
                 }
 
-                var value = v.Value.ToString();
+                var value = v.Value == null ? string.Empty : v.Value.ToString();
 
                 var savedThemeVar = savedThemeVars.FirstOrDefault(x => x.Name == v.Key);
                 if (savedThemeVar != null)
                 {
-                    if (String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
+                    if (value.IsEmpty() || String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
                     {
-                        // it's the default value, so delete
+                        // it's either null or the default value, so delete
                         _rsVariables.Delete(savedThemeVar);
                         _eventPublisher.EntityDeleted(savedThemeVar);
                         touched = true;
@@ -153,7 +153,7 @@ namespace SmartStore.Services.Themes
                 }
                 else
                 {
-                    if (!String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
+                    if (value.HasValue() && !String.Equals(info.DefaultValue, value, StringComparison.CurrentCultureIgnoreCase))
                     {
                         // insert entity (only when not default value)
                         unsavedVars.Add(v.Key);

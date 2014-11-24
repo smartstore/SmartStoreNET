@@ -1,6 +1,5 @@
 ﻿@model PrivateMessageListModel 
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.PrivateMessages;
 @using SmartStore.Web.Framework.UI;
 <div class="private-messages-box">
@@ -12,7 +11,7 @@
                 <li>
                     <div class="item">
                         <div>
-                            @T("PrivateMessages.Inbox.SubjectColumn"): @Html.RouteLink(pm.Subject, "ViewPM", new { privateMessageId = pm.Id }, new { @class = "pm-read" })
+                            @T("PrivateMessages.Inbox.SubjectColumn"): @Html.ActionLink(pm.Subject, "View", new { id = pm.Id }, new { @class = "pm-read" })
                         </div>
                         <div>
                             @T("PrivateMessages.Inbox.ToColumn"): 
@@ -34,7 +33,7 @@
         </ul>
         if (Model.TotalPages > 1)
         {
-            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessagesPaged", ViewData["PagerRouteValues"])
+            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])
         }
     }
 </div>

@@ -74,18 +74,17 @@
                                         @item.CyclesRemaining
                                     </td>
                                     <td>
-                                        @*codehint: sm-edit *@
-                                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = item.InitialOrderId })">
-											<i class="icon icon-list-alt"></i>
-                                            @string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
-                                        </a>
+										<a class="btn" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })">
+											<i class="fa fa-list-alt"></i>
+											@string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
+										</a>
                                     </td>
                                     <td>
                                         @if (item.CanCancel)
                                         {
                                             @*codehint: sm-edit *@
                                             <button type="submit" name="cancelRecurringPayment@(item.Id)" class="btn btn-danger">
-												<i class="icon icon-trash"></i>
+												<i class="fa fa-trash-o"></i>
                                                 @T("Account.CustomerOrders.RecurringOrders.Cancel")
                                             </button>
                                         }
@@ -129,15 +128,15 @@
                         @if (order.IsReturnRequestAllowed)
                         {
                             <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { orderId = order.Id })">
-								<i class="icon icon-reply"></i>
+								<i class="fa fa-reply"></i>
                                 @T("Account.CustomerOrders.ReturnItems")
                             </a>
                             <text>&nbsp;&nbsp;&nbsp;</text>
                         }
-                        <a class="btn" href="@Url.RouteUrl("OrderDetails", new { orderId = order.Id })">
-							<i class="icon icon-list-alt"></i>
-                            @T("Account.CustomerOrders.OrderDetails")
-                        </a>
+						<a class="btn" href="@Url.Action("Details", "Order", new { id = order.Id })">
+							<i class="fa fa-list-alt"></i>
+							@T("Account.CustomerOrders.OrderDetails")
+						</a>
                     </div>
                 </fieldset>
                 }

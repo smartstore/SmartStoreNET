@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Catalog
 {
-    public class CategoryValidator : AbstractValidator<CategoryModel>
+	public partial class CategoryValidator : AbstractValidator<CategoryModel>
     {
         public CategoryValidator(ILocalizationService localizationService)
         {

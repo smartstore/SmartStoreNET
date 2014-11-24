@@ -1,0 +1,78 @@
+/*!
+ * Uses Bootstrap v2.2.1
+ *
+ * Copyright 2012 Twitter, Inc
+ * Licensed under the Apache License v2.0
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Designed and built with all the love in the world @twitter by @mdo and @fat.
+ */
+
+// CSS Reset
+@import "~/Content/bootstrap/reset.less"; 
+
+// Core variables and mixins
+@import "variables.less";
+@import "variables.custom.less";
+@import "~/Content/bootstrap/mixins.less";
+@import "~/Content/bootstrap/custom/mixins.less";
+
+// Grid system and page structure
+@import "~/Content/bootstrap/scaffolding.less";
+@import "~/Content/bootstrap/grid.less";
+@import "~/Content/bootstrap/responsive-1200px-min.less";
+//@import "~/Content/bootstrap/responsive-768px-979px.less";
+@import "~/Content/bootstrap/responsive-767px-max.less";
+@import "~/Content/bootstrap/layouts.less";
+
+// Base CSS
+@import "~/Content/bootstrap/type.less";
+@import "~/Content/bootstrap/code.less";
+@import "~/Content/bootstrap/forms.less";
+@import "~/Content/bootstrap/tables.less";
+
+// Components: common
+//@import "~/Content/bootstrap/font/font-awesome.less";
+@import "~/Content/bootstrap/dropdowns.less";
+@import "~/Content/bootstrap/wells.less";
+@import "~/Content/bootstrap/component-animations.less";
+@import "~/Content/bootstrap/close.less";
+
+// Components: Buttons & Alerts
+@import "~/Content/bootstrap/buttons.less";
+@import "~/Content/bootstrap/button-groups.less";
+@import "~/Content/bootstrap/alerts.less"; // Note: alerts share common CSS with buttons and thus have styles in buttons.less
+
+// Components: Nav
+@import "~/Content/bootstrap/navs.less";
+@import "~/Content/bootstrap/navbar.less";
+@import "~/Content/bootstrap/breadcrumbs.less";
+@import "~/Content/bootstrap/pagination.less";
+@import "~/Content/bootstrap/pager.less";
+
+// Components: Popovers
+@import "~/Content/bootstrap/modals.less";
+@import "~/Content/bootstrap/tooltip.less";
+@import "~/Content/bootstrap/popovers.less";
+
+// Components: Misc
+@import "~/Content/bootstrap/thumbnails.less";
+@import "~/Content/bootstrap/media.less";
+@import "~/Content/bootstrap/labels-badges.less";
+@import "~/Content/bootstrap/progress-bars.less";
+@import "~/Content/bootstrap/carousel.less";
+
+// (MC) extra 3rd party or own components
+@import "~/Content/bootstrap/custom/throbber.less";
+@import "~/Content/bootstrap/custom/select2.less";
+@import "~/Content/bootstrap/custom/datetimepicker.less";
+@import "~/Content/bootstrap/custom/navbar.less";
+@import "~/Content/bootstrap/custom/scrollbutton.less";
+@import "~/Content/bootstrap/custom/star-rating.less";
+
+// (MC) extra tweaks and corrections
+@import "~/Content/bootstrap/custom/custom.less";
+
+// Utility classes
+@import "~/Content/bootstrap/utilities.less"; // Has to be last to override when necessary
+

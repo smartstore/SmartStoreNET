@@ -16,7 +16,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Seo;
 using ImageResizer;
 using ImageResizer.Configuration;
-using StackExchange.Profiling;
 using System.Threading;
 using System.Text;
 using SmartStore.Utilities;
@@ -578,9 +577,8 @@ namespace SmartStore.Services.Media
             if (productId == 0)
                 return new List<Picture>();
 
-
             var query = from p in _pictureRepository.Table
-                        join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
+						join pp in _productPictureRepository.Table on p.Id equals pp.PictureId
                         orderby pp.DisplayOrder
                         where pp.ProductId == productId
                         select p;

@@ -360,6 +360,21 @@ namespace SmartStore
             return false;
         }
 
+		/// <summary>
+		/// Ensure that a string starts with a string.
+		/// </summary>
+		/// <param name="value">The target string</param>
+		/// <param name="startsWith">The string the target string should start with</param>
+		/// <returns>The resulting string</returns>
+		[DebuggerStepThrough]
+		public static string EnsureStartsWith(this string value, string startsWith)
+		{
+			Guard.ArgumentNotNull(value, "value");
+			Guard.ArgumentNotNull(startsWith, "startsWith");
+
+			return value.StartsWith(startsWith) ? value : (startsWith + value);
+		}
+
         /// <summary>
         /// Ensures the target string ends with the specified string.
         /// </summary>
@@ -499,6 +514,7 @@ namespace SmartStore
 				return new string[0];
 			return value.Split(new string[] { separator }, StringSplitOptions.RemoveEmptyEntries);
 		}
+
 		/// <summary>Splits a string into two strings</summary>
 		/// <remarks>codehint: sm-add</remarks>
 		/// <returns>true: success, false: failure</returns>
@@ -697,14 +713,13 @@ namespace SmartStore
             return value;
         }
 
-		// codehint: sm-add (begin)
-
 		/// <summary>Debug.WriteLine</summary>
 		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
-		public static void Dump(this string value) 
+		public static void Dump(this string value, bool appendMarks = false) 
         {
 			Debug.WriteLine(value);
+			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
 		}
 		
 		/// <summary>Smart way to create a HTML attribute with a leading space.</summary>
@@ -897,15 +912,16 @@ namespace SmartStore
             }
         }
 
-		public static string Sha(this string value) 
+		public static string Sha(this string value, Encoding encoding) 
         {
-			if (value.HasValue()) 
+			if (value.HasValue())
             {
-				using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider()) 
+				using (var sha1 = new SHA1CryptoServiceProvider()) 
                 {
-					byte[] data = Encoding.ASCII.GetBytes(value);
+					byte[] data = encoding.GetBytes(value);
 
 					return sha1.ComputeHash(data).ToHexString();
+					//return BitConverter.ToString(sha1.ComputeHash(data)).Replace("-", "");
 				}
 			}
 			return "";
@@ -966,9 +982,11 @@ namespace SmartStore
 			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v));
 		}
 
-		[DebuggerStepThrough]
+		//[DebuggerStepThrough]
 		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
 		{
+			if (s == null)
+				return defaultValue;
 			var arr = s.ToIntArray();
 			if (arr == null || arr.Count() <= 0)
 				return defaultValue;
@@ -984,7 +1002,19 @@ namespace SmartStore
 			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);
 		}
 
-		// codehint: sm-add (end)
+		[DebuggerStepThrough]
+		public static string ReplaceCsvChars(this string s)
+		{
+			if (s.HasValue())
+			{
+				s = s.Replace(';', ',');
+				s = s.Replace('\r', ' ');
+				s = s.Replace('\n', ' ');
+				return s.Replace("'", "");
+			}
+			return "";
+		}
+
 		#endregion
 
         #region Helper

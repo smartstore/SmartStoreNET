@@ -16,7 +16,7 @@ using Telerik.Web.Mvc.UI;
 namespace SmartStore.Admin.Models.Catalog
 {
     [Validator(typeof(CategoryValidator))]
-    public class CategoryModel : EntityModelBase, ILocalizedModel<CategoryLocalizedModel>
+    public class CategoryModel : TabbableModel, ILocalizedModel<CategoryLocalizedModel>
     {
         public CategoryModel()
         {

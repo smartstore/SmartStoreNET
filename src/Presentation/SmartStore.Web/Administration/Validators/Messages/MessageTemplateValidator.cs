@@ -4,7 +4,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Messages
 {
-    public class MessageTemplateValidator : AbstractValidator<MessageTemplateModel>
+	public partial class MessageTemplateValidator : AbstractValidator<MessageTemplateModel>
     {
         public MessageTemplateValidator(ILocalizationService localizationService)
         {

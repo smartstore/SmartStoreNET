@@ -152,41 +152,64 @@ namespace SmartStore.Services.Seo
         /// <param name="returnDefaultValue">A value indicating whether to return default value (if language specified one is not found)</param>
         /// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
         /// <returns>Search engine name</returns>
-        public static string GetSeName<T>(this T entity, int languageId, bool returnDefaultValue = true,
-            bool ensureTwoPublishedLanguages = true)
+        public static string GetSeName<T>(this T entity, int languageId, bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true)
             where T : BaseEntity, ISlugSupported
         {
-            if (entity == null)
-                throw new ArgumentNullException("entity");
-
-            string result = string.Empty;
-            string entityName = typeof(T).Name;
-
-            var urlRecordService = EngineContext.Current.Resolve<IUrlRecordService>();
-            if (languageId > 0)
-            {
-                //ensure that we have at least two published languages
-                bool loadLocalizedValue = true;
-                if (ensureTwoPublishedLanguages)
-                {
-                    var lService = EngineContext.Current.Resolve<ILanguageService>();
-                    var totalPublishedLanguages = lService.GetLanguagesCount(false);
-                    loadLocalizedValue = totalPublishedLanguages >= 2;
-                }
-                //localized value
-                if (loadLocalizedValue)
-                {
-                    result = urlRecordService.GetActiveSlug(entity.Id, entityName, languageId);
-                }
-            }
-            //set default value if required
-            if (String.IsNullOrEmpty(result) && returnDefaultValue)
-            {
-                result = urlRecordService.GetActiveSlug(entity.Id, entityName, 0);  
-            }
-
-            return result;
+			return GetSeName(
+				entity,
+				languageId, 
+				EngineContext.Current.Resolve<IUrlRecordService>(), 
+				EngineContext.Current.Resolve<ILanguageService>(), 
+				returnDefaultValue, 
+				ensureTwoPublishedLanguages);
         }
+
+		/// <summary>
+		///  Get search engine name
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <param name="returnDefaultValue">A value indicating whether to return default value (if language specified one is not found)</param>
+		/// <param name="ensureTwoPublishedLanguages">A value indicating whether to ensure that we have at least two published languages; otherwise, load only default value</param>
+		/// <returns>Search engine name</returns>
+		public static string GetSeName<T>(this T entity, 
+			int languageId, 
+			IUrlRecordService urlRecordService, 
+			ILanguageService languageService, 
+			bool returnDefaultValue = true, 
+			bool ensureTwoPublishedLanguages = true)
+			where T : BaseEntity, ISlugSupported
+		{
+			if (entity == null)
+				throw new ArgumentNullException("entity");
+
+			string result = string.Empty;
+			string entityName = typeof(T).Name;
+
+			if (languageId > 0)
+			{
+				//ensure that we have at least two published languages
+				bool loadLocalizedValue = true;
+				if (ensureTwoPublishedLanguages)
+				{
+					var totalPublishedLanguages = languageService.GetLanguagesCount(false);
+					loadLocalizedValue = totalPublishedLanguages >= 2;
+				}
+				//localized value
+				if (loadLocalizedValue)
+				{
+					result = urlRecordService.GetActiveSlug(entity.Id, entityName, languageId);
+				}
+			}
+			//set default value if required
+			if (String.IsNullOrEmpty(result) && returnDefaultValue)
+			{
+				result = urlRecordService.GetActiveSlug(entity.Id, entityName, 0);
+			}
+
+			return result;
+		}
 
         /// <summary>
         /// Validate search engine name
@@ -208,7 +231,14 @@ namespace SmartStore.Services.Seo
 				languageId);
         }
 
-		public static string ValidateSeName<T>(this T entity, string seName, string name, bool ensureNotEmpty, IUrlRecordService urlRecordService, SeoSettings seoSettings, int? languageId = null)
+		public static string ValidateSeName<T>(this T entity, 
+			string seName, 
+			string name, 
+			bool ensureNotEmpty, 
+			IUrlRecordService urlRecordService, 
+			SeoSettings seoSettings, 
+			int? languageId = null,
+			Func<string, UrlRecord> extraSlugLookup = null)
 			where T : BaseEntity, ISlugSupported
 		{
 			Guard.ArgumentNotNull(() => urlRecordService);
@@ -222,7 +252,7 @@ namespace SmartStore.Services.Seo
 				seName = name;
 
 			//validation
-			seName = GetSeName(seName);
+			seName = GetSeName(seName, seoSettings);
 
 			//max length
 			seName = seName.Truncate(400);
@@ -245,10 +275,13 @@ namespace SmartStore.Services.Seo
 			string entityName = typeof(T).Name;
 			int i = 2;
 			var tempSeName = seName;
+
+			extraSlugLookup = extraSlugLookup ?? ((s) => null);
+
 			while (true)
 			{
 				//check whether such slug already exists (and that is not the current product)
-				var urlRecord = urlRecordService.GetBySlug(tempSeName);
+				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
 				if (!reserved1 && urlRecord != null && languageId.HasValue)	// codehint: sm-add
@@ -269,15 +302,29 @@ namespace SmartStore.Services.Seo
 
 
         /// <summary>
-        /// Get SE name
+        /// Get SEO friendly name
         /// </summary>
         /// <param name="name">Name</param>
         /// <returns>Result</returns>
         public static string GetSeName(string name)
         {
             var seoSettings = EngineContext.Current.Resolve<SeoSettings>();
-			return SeoHelper.GetSeName(name, seoSettings.ConvertNonWesternChars, seoSettings.AllowUnicodeCharsInUrls);
+			return GetSeName(name, seoSettings);
         }
+
+		/// <summary>
+		/// Get SEO friendly name
+		/// </summary>
+		/// <param name="name">Name</param>
+		/// <param name="seoSettings">SEO settings</param>
+		/// <returns>Result</returns>
+		public static string GetSeName(string name, SeoSettings seoSettings)
+		{
+			return SeoHelper.GetSeName(
+				name,
+				seoSettings == null ? false : seoSettings.ConvertNonWesternChars,
+				seoSettings == null ? false : seoSettings.AllowUnicodeCharsInUrls);
+		}
 
         #endregion
     }

@@ -2,6 +2,7 @@
 
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.Admin.Models.Themes;
+@using SmartStore.Core.Themes;
 
 @{
 	//page title
@@ -11,16 +12,20 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-picture"></i>
+            <i class="fa fa-picture-o"></i>
             @T("Admin.Configuration.Themes")
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok"></i>
+                <i class="fa fa-check"></i>
                 @T("Admin.Common.Save")
             </button>
+			<a href='@Url.Action("ReloadThemes", new { storeId = Model.StoreId })' class="btn">
+				<i class="fa fa-refresh"></i>
+				@T("Admin.Configuration.Themes.Reload")
+			</a>
 			<a id="uploadpackage" href="#uploadpackage-window" data-toggle="modal" class="btn" role="button">
-				<i class="icon-upload-alt"></i>
+				<i class="fa fa-upload"></i>
 				@T("Admin.Packaging.UploadTheme")
 			</a>
         </div>
@@ -59,7 +64,10 @@
 	}
     
     <script>
-        $(function () {
+		$(function () {
+
+			$('#theme-list').find(".equalized-column").equalizeColumns({ /*deep: true,*/ responsive: true });
+
             $("#themes-tab").on("click", ".set-as-defaulttheme", function (e) {
                 var el = $(this);
                 var name = el.data("name");
@@ -86,41 +94,85 @@
 
 @helper ThemeList(IList<ThemeManifestModel> themes, string caption, bool mobile)
 {
-    <fieldset class="">
-        <legend>@caption</legend>
+	<fieldset class="">
+		<legend style="border: none">@caption</legend>
 
-        <div id="theme-list">
-            @foreach (var theme in themes)
+		<ul id="theme-list" class="unstyled clearfix">
+			@foreach (var theme in themes)
 			{
-                <div class="clearfix theme-line @(theme.IsActive ? " active" : "")">
-                    <div class="preview-image pull-left">
-                        <img src="@Url.Content(theme.PreviewImageUrl)" class="img-polaroid" />
-                    </div>
-                    <div class="pull-left">
-                        <div class="theme-name">@T("Admin.Configuration.Themes.Name"): @(theme.Title ?? theme.Name)</div>
-                        <div>@T("Admin.Configuration.Themes.Description"): @theme.Description</div>
-                        <div>@T("Admin.Configuration.Themes.Author"): @theme.Author</div>
-                        <div>@T("Admin.Configuration.Themes.Version"): @theme.Version</div>
-                        <div>@T("Admin.Configuration.Themes.SupportsRtl"): @theme.SupportsRtl</div>
+				var isActive = theme.IsActive;
+				var isBroken = theme.State != ThemeManifestState.Active;
+				
+				<li class="theme-item equalized-column@(isActive ? " active" : "")@(isBroken ? " broken" : "")" data-equalized-deep="true" @Html.Attr("title", theme.Description.EmptyNull(), theme.Description.HasValue())>
+					<div class="theme-thumbnail-wrapper">
+						<div class="theme-thumbnail" style="background-image: url('@Url.Content(theme.PreviewImageUrl)')"></div>
+					</div>
 
-                        <div class="buttons">
-                            <a href="#" class="btn set-as-defaulttheme @(!theme.IsActive ? "btn-primary" : "")" data-mobile="@theme.IsMobileTheme" data-name="@theme.Name" @Html.Attr("disabled", "disabled", theme.IsActive)>
-                                @T("Admin.Common.Activate")
-                            </a>
-                            @if (theme.IsConfigurable)
+					<div class="theme-data">
+						<h4 data-equalized-part="title">
+							@(theme.Title ?? theme.Name)
+							@if (theme.BaseTheme.HasValue())
 							{
-                                <a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn">
-                                    <i class="icon-cog"></i>
-                                    @T("Admin.Common.Configure")
-                                </a>
+								<small title='@T("Admin.Configuration.Themes.IsBasedOn"): @theme.BaseTheme'>
+									<i class="fa fa-@(isBroken ? "chain-broken" : "chain") fa-flip-horizontal"></i>
+									@theme.BaseTheme
+								</small>
 							}
-                        </div>
-                    </div>
-                </div>
-			}
-        </div>
+						</h4>
+						<div data-equalized-part="data" class="theme-info">
+							@if (theme.Author.HasValue())
+							{
+								<span>@T("Admin.Configuration.Themes.Author"): </span><span class="muted">@theme.Author, </span>
+							}
+							<span>@T("Admin.Configuration.Themes.Version"): </span><span class="muted">@theme.Version</span>
+						</div>
+						<div class="theme-buttons clearfix">
+							@if (!theme.IsActive)
+							{
+								<a href="#" class="btn btn-primary set-as-defaulttheme@(isBroken ? " invisible" : "")" data-mobile="@theme.IsMobileTheme" data-name="@theme.Name">
+									@T("Admin.Common.Activate")
+								</a>
+							}
+							else
+							{
+								<a href="#" class="btn disabled">
+									<i class="fa fa-check"></i>
+									@T("Common.Active")
+								</a>
+							}
+							
+							@if (!isBroken)
+							{	
+								<div class="btn-group pull-right">
+									if (!theme.IsMobileTheme)
+									{
+										<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
+											<i class="fa fa-fw fa-eye"></i>
+										</a>
+									}
+									if (theme.IsConfigurable)
+									{
+										<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Common.Configure")">
+											<i class="fa fa-fw fa-paint-brush"></i>
+										</a>
+									}
+								</div>									
+							}
 
-    </fieldset>
+						</div>
+					</div>
+
+					@if (isBroken)
+					{
+						<div class="theme-broken-badge" title='@T("Admin.Configuration.Themes.MissingBaseTheme", theme.BaseTheme).Text'>
+							<i class="fa fa-exclamation"></i>
+						</div>
+					}
+				</li>
+			}
+		</ul>
+
+	</fieldset>
 }
 
 @helper ThemeSettingsTab()

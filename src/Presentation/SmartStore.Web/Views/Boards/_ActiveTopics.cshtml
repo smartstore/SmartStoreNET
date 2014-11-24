@@ -3,7 +3,6 @@
 @using SmartStore.Services.Forums;
 @using SmartStore.Services.Seo;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
 @using SmartStore.Web.Framework.UI;
@@ -20,8 +19,8 @@
 
             @if (Model.ActiveDiscussionsFeedEnabled == true)
             {
-                <a href="@Url.RouteUrl("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" rel="tooltip">
-                    <i class="icon-rss muted"></i>
+                <a href="@Url.Action("ActiveDiscussionsRSS")" class="link-rss" title="@T("Forum.ActiveDiscussionsRSSLinkTitle")" rel="tooltip">
+                    <i class="fa fa-rss muted"></i>
                     @T("Forum.RSS")
                 </a>
             }
@@ -32,8 +31,8 @@
         <div class="pull-right" style="padding-top:15px">
             @if (Model.ViewAllLinkEnabled)
             {        
-                <button class="btn btn-link" onclick="setLocation('@Url.RouteUrl("ActiveDiscussions")')">
-                    <i class="icon icon-th-list"></i>&nbsp;
+                <button class="btn" onclick="setLocation('@Url.Action("ActiveDiscussions")')">
+                    <i class="fa fa-th-list"></i>&nbsp;
                     @T("Forum.ActiveDiscussions.ViewAll")
                 </button>
             }
@@ -65,7 +64,7 @@
             {
                 <tr class="topic">
                     <td class="image">
-                        <i class="icon icon-comments-alt"></i>
+                        <i class="fa fa-comments-o"></i>
                     </td>
                     <td class="topic-name">
                         @Html.RouteLink(topic.Subject, "TopicSlug", new { id = topic.Id, slug = topic.SeName }, new { @class = "topic-title" })
@@ -94,7 +93,7 @@
                                         .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
                                         .Alignment(PagerAlignment.Left)
                                         .Size(PagerSize.Mini)
-                                        .Route("TopicSlugPaged", new { id = topic.Id, slug = topic.SeName }))
+                                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
                     </td>

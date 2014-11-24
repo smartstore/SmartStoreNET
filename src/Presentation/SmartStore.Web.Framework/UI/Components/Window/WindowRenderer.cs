@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.UI
 
             if (win.Width.GetValueOrDefault() > 0)
             {
-                win.HtmlAttributes["style"] = "width:{0}px;".FormatInvariant(win.Width.Value);
+                win.HtmlAttributes["style"] = "width:{0}px; margin-left:-{1}px".FormatInvariant(win.Width.Value, Math.Ceiling((double)(win.Width.Value / 2)));
             }
 
             if (!win.Visible)

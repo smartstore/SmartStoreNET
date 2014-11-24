@@ -5,11 +5,11 @@
 }
 <div class="section-header">
     <div class="title">
-		<i class="icon icon-shopping-cart"></i>
+		<i class="fa fa-shopping-cart"></i>
         @T("Admin.Common.Stores")
     </div>
     <div class="options">
-		<a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus icon-white"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+		<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
 <table class="adminContent">
@@ -24,6 +24,8 @@
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 						columns.Bound(x => x.Url)
 							.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
+						columns.Bound(x => x.ContentDeliveryNetwork)
+							.ClientTemplate("<a href=\"<#= ContentDeliveryNetwork #>\" target=\"_blank\"><#= ContentDeliveryNetwork #></a>");
 						columns.Bound(x => x.Hosts);
 						columns.Bound(x => x.SslEnabled)
 							.Template(item => @Html.SymbolForBool(item.SslEnabled))

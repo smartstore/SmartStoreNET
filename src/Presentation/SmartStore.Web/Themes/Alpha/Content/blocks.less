@@ -1,0 +1,108 @@
+//
+// Block & Container Styles
+// --------------------------------------------------
+
+@baseBlockRadius: @var_ContainerRadius;
+@baseBlockHeaderGradient: @var_ContainerHeaderBackground;
+
+.block {
+	margin: 12px 0 24px 0;
+}
+
+.block.topic-html-content {
+	margin-top: 12px;
+	margin-bottom: 12px;
+}
+
+.block .block-title,
+.section-title,
+fieldset > legend {
+	padding-bottom: 8px;
+	font-family: @pageTitleFontFamily;
+	font-weight: @pageTitleFontWeight;
+	font-size: 20px;
+	line-height: 28px;
+	border-bottom: 1px solid @var_SimpleBoxHeaderColor;
+
+	& > * {
+		// probably h1-h6
+		font-family: inherit;
+		font-weight: inherit;
+		color: inherit;
+		margin: 0;
+		padding: 0;
+	}
+}
+
+.block .block-body {
+	padding: 16px 0;
+}
+
+
+.block.block-bordered {
+	background: @var_ContainerBodyBackground;
+	border: 1px solid @var_ContainerBorder;
+	.border-radius(@baseBlockRadius);
+	margin: 0 0 10px 0;
+	
+	#content-left & {
+		border-left: none;
+		.border-radius(0 @baseBlockRadius @baseBlockRadius 0);
+}
+
+	#content-right & {
+		border-right: none;
+		.border-radius(@baseBlockRadius 0 0 @baseBlockRadius);
+	}
+}
+
+.block.block-bordered .block-title {
+	border-bottom: 1px solid @var_ContainerBorder;
+	margin: 0;
+	padding: 8px 10px;
+	font-family: inherit;
+	color: @var_ContainerHeaderFontColor;
+	font-weight: bold;
+	line-height: @var_ContainerHeaderHeight !important;
+	.smaller();
+	text-transform: uppercase;
+	.border-radius(@baseBlockRadius @baseBlockRadius 0 0);
+	
+	#gradient > .vertical( lighten(@baseBlockHeaderGradient, 7%), @baseBlockHeaderGradient);
+
+	#content-left & { 
+		.border-radius(0 @baseBlockRadius 0 0) 
+	}
+	#content-right & { 
+		.border-radius(@baseBlockRadius 0 0 0) 
+	}
+}
+
+.block.block-bordered .block-body {
+	padding: 10px;
+	color: @var_ContainerBodyFontColor;
+
+	#content-left & { 
+		.border-radius(0 0 (@baseBlockRadius - 1) 0) 
+	}
+	#content-right & { 
+		.border-radius(0 0 0 (@baseBlockRadius - 1) ) 
+	}
+}
+
+.block.block-bordered .listbox { padding: 10px }
+.block.block-bordered a { 
+	text-decoration: none; 
+	color: @var_ContainerBodyLinkColor;
+	.transition(color .1s linear);
+	&:hover { color: #333 }
+}
+.block.block-bordered ul { margin: 0 }
+.block.block-bordered ul ul { margin-left: 1.2em }
+.block.block-bordered li { 
+	list-style: none;
+	&.active > a, 
+	&.selected > a { font-weight: bold; color: inherit } 
+}
+.block.block-bordered li.separator { display: block; height:1px; line-height:1px; background:#f93; font-size:1px; margin: 5px 0; }
+.block.block-bordered .view-all { font-weight: bold; margin-top: 0.4em }

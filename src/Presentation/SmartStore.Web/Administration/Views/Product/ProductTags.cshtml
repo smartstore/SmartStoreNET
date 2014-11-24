@@ -10,7 +10,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-tags"></i>
+            <i class="fa fa-tags"></i>
             @T("Admin.Catalog.ProductTags")
         </div>
     </div>
@@ -26,7 +26,9 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Name);
-                        columns.Bound(x => x.ProductCount).Width(150);
+                        columns.Bound(x => x.ProductCount)
+							.Centered()
+							.Width(150);
                         columns.Bound(x => x.Id)
                             .Centered()
                             .Width(100)
@@ -39,13 +41,13 @@
                             commands.Delete().Localize(T);
                         }).Width(90)
                         .Title(T("Admin.Common.Delete").Text);
-
                     })
                     .Filterable()
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding =>
                     {
-                        dataBinding.Ajax().Select("ProductTags", "Product")
+                        dataBinding.Ajax()
+							.Select("ProductTags", "Product")
                             .Delete("ProductTagDelete", "Product");
                     })
                     .EnableCustomBinding(true))

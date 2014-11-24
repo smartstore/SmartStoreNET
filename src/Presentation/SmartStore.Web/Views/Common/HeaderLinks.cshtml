@@ -6,31 +6,24 @@
         @if (Model.IsCustomerImpersonated)
         {
             <li><span class="impersonate">(@(string.Format(T("Account.ImpersonatedAs").Text, Model.CustomerEmailUsername)))
-                - <a href="@Url.RouteUrl("Logout")" class="finish-impersonation" title="@T("Account.ImpersonatedAs.Finish.Hint")">@T("Account.ImpersonatedAs.Finish")</a>
+                - <a href="@Url.RouteUrl("Logout")" class="finish-impersonation" title="@T("Account.ImpersonatedAs.Finish.Hint")" rel="nofollow">@T("Account.ImpersonatedAs.Finish")</a>
                 ) </span></li>
         }
         @if (Model.DisplayAdminLink)
         {
-            <li><a href="@Url.Content("~/admin")" class="ico-admin">@T("Account.Administration")</a>
+            <li><a href="@Url.Content("~/admin")" class="ico-admin" rel="nofollow">@T("Account.Administration")</a>
             </li>
         }
         @if (Model.IsAuthenticated)
         {
-            <li><a href="@Url.RouteUrl("CustomerInfo")" class="account">@Model.CustomerEmailUsername</a></li>
-            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout">@T("Account.Logout")</a></li>
+            <li><a href="@Url.Action("Info", "Customer")" class="account">@Model.CustomerEmailUsername</a></li>
+            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout" rel="nofollow">@T("Account.Logout")</a></li>
             
             if (Model.AllowPrivateMessages)
             {
-            <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">@T("PrivateMessages.Inbox")</a>
-                @Model.UnreadPrivateMessages</li>
-                if (!string.IsNullOrEmpty(Model.AlertMessage))
-                {
-            <script type="text/javascript">
-                $(document).ready(function () {
-                    displayNotification('@(Model.AlertMessage)', 'success');
-                });
-            </script>
-                }
+				<li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox">@T("PrivateMessages.Inbox")</a>
+					@Model.UnreadPrivateMessages
+				</li>
             }
         }
         else
@@ -51,19 +44,29 @@
         }
         @Html.Widget("header_links_after")
     </ul>
+
+	@if (Model.AllowPrivateMessages && !string.IsNullOrEmpty(Model.AlertMessage))
+	{
+		<script>
+			$(document).ready(function () {
+				displayNotification('@(Model.AlertMessage)', 'success');
+			});
+		</script>
+	}
+
     @if (Model.ShoppingCartEnabled)
     {
-        <script type="text/javascript">
-            $('#topcartlink').live('mouseenter', function () {
+        <script>
+			$(document).on('mouseenter', '#topcartlink', function () {
                 $('#flyout-cart').addClass('active');
             });
-            $('#topcartlink').live('mouseleave', function () {
+			$(document).on('mouseleave', '#topcartlink', function () {
                 $('#flyout-cart').removeClass('active');
             });
-            $('#flyout-cart').live('mouseenter', function () {
+			$(document).on('mouseenter', '#flyout-cart', function () {
                 $('#flyout-cart').addClass('active');
             });
-            $('#flyout-cart').live('mouseleave', function () {
+			$(document).on('mouseleave', '#flyout-cart', function () {
                 $('#flyout-cart').removeClass('active');
             });
         </script>

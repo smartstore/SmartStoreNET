@@ -57,13 +57,13 @@ namespace SmartStore.Admin.Controllers
                 {
                     Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.IncludingTax"),
                     Value = "0",
-                    Selected = (TaxDisplayType)model.TaxDisplayType == TaxDisplayType.IncludingTax
+                    Selected = (TaxDisplayType)model.TaxDisplayType.Value == TaxDisplayType.IncludingTax
                 });
                 list.Insert(1, new SelectListItem()
                 {
                     Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.ExcludingTax"),
                     Value = "10",
-                    Selected = (TaxDisplayType)model.TaxDisplayType == TaxDisplayType.ExcludingTax
+                    Selected = (TaxDisplayType)model.TaxDisplayType.Value == TaxDisplayType.ExcludingTax
                 });
             }
             else
@@ -160,28 +160,8 @@ namespace SmartStore.Admin.Controllers
                 //No customer role found with the specified id
                 return RedirectToAction("List");
 
-            //codehint: sm-edit
             var model = customerRole.ToModel();
             model.TaxDisplayTypes = GetTaxDisplayTypesList(model);
-
-            //if (model.TaxDisplayType.HasValue)
-            //{
-            //    model.TaxDisplayTypes.Insert(0, new SelectListItem() {
-            //        Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.IncludingTax"), 
-            //        Value = "0", 
-            //        Selected = (TaxDisplayType)model.TaxDisplayType == TaxDisplayType.IncludingTax 
-            //    });
-            //    model.TaxDisplayTypes.Insert(1, new SelectListItem() {
-            //        Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.ExcludingTax"), 
-            //        Value = "10", 
-            //        Selected = (TaxDisplayType)model.TaxDisplayType == TaxDisplayType.ExcludingTax 
-            //    });
-            //}
-            //else
-            //{
-            //    model.TaxDisplayTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.IncludingTax"), Value = "0" });
-            //    model.TaxDisplayTypes.Insert(1, new SelectListItem() { Text = _localizationService.GetResource("Enums.Smartstore.Core.Domain.Tax.TaxDisplayType.ExcludingTax"), Value = "10" });
-            //}
 
             return View(model);
 		}

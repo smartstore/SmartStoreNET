@@ -1,11 +1,18 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using System.Web.Mvc.Html;
 using System.Web.WebPages;
 using SmartStore.Admin.Models.Catalog;
+using SmartStore.Admin.Models.Plugins;
+using SmartStore.Core;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Extensions
 {
 	public static class HtmlHelperExtensions
 	{
+		
 		public static string VariantAttributeValueName<T>(this HtmlHelper<T> helper)
 		{
 			string result =
@@ -19,6 +26,7 @@ namespace SmartStore.Admin.Extensions
 
 			return result;
 		}
+
 		public static HelperResult VariantAttributeValueName<T>(this HtmlHelper<T> helper, ProductModel.ProductVariantAttributeValueModel model)
 		{
 			string colorSquares = "";
@@ -32,6 +40,17 @@ namespace SmartStore.Admin.Extensions
 				model.TypeNameClass, model.TypeName, colorSquares, helper.Encode(model.Name), model.QuantityInfo);
 
 			return new HelperResult(writer => writer.Write(result));
+		}
+
+		public static MvcHtmlString ProviderList<TModel>(this HtmlHelper<IEnumerable<TModel>> html, 
+			IEnumerable<TModel> model,
+			params Func<TModel, object>[] extraColumns) where TModel : ProviderModel
+		{
+			var list = new ProviderModelList<TModel>();
+			list.SetData(model);
+			list.SetColumns(extraColumns);
+
+			return html.Partial("_Providers", list);
 		}
 	}
 }

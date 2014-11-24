@@ -6,14 +6,13 @@
     string addtocartlink = "";
     if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
     {
-        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+        addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
     }
     else
-    {
-        addtocartlink = Url.RouteUrl("AddProductToCart-Catalog", new { productId = Model.Id });
+	{
+		addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id });
     }
 
-    //codehint: sm-add begin
     string leftContentWidth = (Model.ThumbDimension + 20).ToString() + "px";
     
     int ratingPercent = 0;
@@ -29,8 +28,6 @@
     }
 
     bool showQuicklinks = !Model.ProductPrice.DisableWishListButton || Model.CompareEnabled;  
-    
-    //codehint: sm-add end
 }
 
 <div class="pull-left" style="width:@leftContentWidth">
@@ -213,23 +210,25 @@
                     @if (!Model.ProductPrice.DisableWishListButton)
                     {
                         <a class="ajax-cart-link" 
-                            data-href='@Url.RouteUrl("AddProductToCart-Details", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
                             href="#"
+						    rel="nofollow"
                             data-form-selector="#product-details-form"
                             data-type="wishlist"
                             data-action="add">
-                            <i class="icon-gift"></i>
+                            <i class="fa fa-gift"></i>
                             @T("Categories.Wishlist")
                         </a>
                     }
                     @if (Model.CompareEnabled)
                     {
                         <a class="ajax-cart-link"
-                            data-href="@Url.RouteUrl("AddProductToCompare", new { productId = Model.Id })"
+                            data-href="@Url.Action("AddProductToCompare", new { id = Model.Id })"
                             href="#"
+						    rel="nofollow"
                             data-type="compare"
                             data-action="add">
-                            <i class="icon-retweet"></i>
+                            <i class="fa fa-retweet"></i>
                             @T("Categories.Compare")
                         </a>
                     }
@@ -238,19 +237,29 @@
 
            <div class="buttons pull-right">     
                 <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn" title="@T("Products.Details")" rel="tooltip">
-                    <i class="icon-info-sign"></i>
+                    <i class="fa fa-info-circle"></i>
                 </a>
                  
                 @if (!Model.ProductPrice.DisableBuyButton && !Model.HideBuyButtonInLists)
                 {
-                    <a data-href='@addtocartlink'
-                        href="#"
-                        class="btn btn-warning ajax-cart-link"
-                        data-type="cart"
-                        data-action="add">
-                        @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
-                        <i class="icon-shopping-cart"></i>      
-                    </a>
+                    if (!Model.ProductPrice.CallForPrice) { 
+                        <a data-href='@addtocartlink'
+                            href="#"
+					        rel="nofollow"
+                            class="btn btn-warning ajax-cart-link"
+                            data-type="cart"
+                            data-action="add">
+                            @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
+                            <i class="fa fa-shopping-cart"></i>      
+                        </a>
+                    }
+                    else
+                    {
+                        <a class="btn btn-primary add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+                            <i class="fa fa-envelope"></i>
+                            @T("Products.CallForPrice.GoToForm")
+                        </a>
+                    }
                 }
             </div>
         </div>

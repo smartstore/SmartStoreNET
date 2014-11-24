@@ -1,9 +1,0 @@
-﻿@model ProductAskQuestionModel
-@using SmartStore.Web.Models.Catalog;
-
-<div class="ask-a-question">
-    <a href="@Url.RouteUrl("ProductAskQuestion", new { productId = Model.ProductId })">
-        <i class="icon-question-sign"></i>
-        @T("Products.AskQuestion")
-    </a>
-</div>

@@ -204,23 +204,25 @@ namespace SmartStore.Web.Controllers
         public ActionResult List(BlogPagingFilteringModel command)
         {
             if (!_blogSettings.Enabled)
-                return RedirectToRoute("HomePage");
+                return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
         }
+
         public ActionResult BlogByTag(BlogPagingFilteringModel command)
         {
             if (!_blogSettings.Enabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
         }
+
         public ActionResult BlogByMonth(BlogPagingFilteringModel command)
         {
             if (!_blogSettings.Enabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = PrepareBlogPostListModel(command);
             return View("List", model);
@@ -253,17 +255,17 @@ namespace SmartStore.Web.Controllers
         public ActionResult BlogPost(int blogPostId)
         {
             if (!_blogSettings.Enabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null ||
                 (blogPost.StartDateUtc.HasValue && blogPost.StartDateUtc.Value >= DateTime.UtcNow) ||
                 (blogPost.EndDateUtc.HasValue && blogPost.EndDateUtc.Value <= DateTime.UtcNow))
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
 			//Store mapping
 			if (!_storeMappingService.Authorize(blogPost))
-				return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var model = new BlogPostModel();
             PrepareBlogPostModel(model, blogPost, true);
@@ -277,11 +279,11 @@ namespace SmartStore.Web.Controllers
         public ActionResult BlogCommentAdd(int blogPostId, BlogPostModel model, bool captchaValid)
         {
             if (!_blogSettings.Enabled)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             var blogPost = _blogService.GetBlogPostById(blogPostId);
             if (blogPost == null || !blogPost.AllowComments)
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
 
             if (_workContext.CurrentCustomer.IsGuest() && !_blogSettings.AllowNotRegisteredUsersToLeaveComments)
             {

@@ -1,6 +1,63 @@
 ﻿@model ProductModel
 @using Telerik.Web.Mvc.UI;
 
+<script>
+
+	var fieldBasePriceMeasureUnit;
+	var fieldBasePriceAmount;
+	var fieldBasePriceBaseAmount;
+
+	$(function () {
+		$("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
+
+		fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
+		fieldBasePriceAmount = $("#@Html.FieldIdFor(model => model.BasePriceAmount)");
+		fieldBasePriceBaseAmount = $("#@Html.FieldIdFor(model => model.BasePriceBaseAmount)");
+
+		fieldBasePriceMeasureUnit.on("change", getCurrentBasePrice);
+
+		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
+		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
+
+		getCurrentBasePrice();
+		toggleBasePrice();
+
+		function getCurrentBasePrice() {
+			if (parseFloat(fieldBasePriceAmount.val()) > 0 && parseInt(fieldBasePriceBaseAmount.val()) > 0) {
+				$.ajax({
+					cache:false,
+					type: "POST",
+					url: "@(Url.Action("GetBasePrice", "Product"))",
+					data: {
+						"productId" : @Model.Id,
+						"basePriceMeasureUnit": fieldBasePriceMeasureUnit.val(),
+						"basePriceAmount": fieldBasePriceAmount.val(),
+						"basePriceBaseAmount": fieldBasePriceBaseAmount.val()
+					},
+				success: function (data) {
+					$("#BasePriceAmountInfo").html(data.BasePrice);
+				},
+				error: function (xhr, ajaxOptions, thrownError){
+					alert(thrownError);
+				}
+			});
+		}
+		return false;
+	}
+
+	function toggleBasePrice() {
+		if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
+			$('#pnlBasePriceBaseAmount').show();
+			$('#pnlBasePriceAmount').show();
+		}
+		else {
+			$('#pnlBasePriceBaseAmount').hide();
+			$('#pnlBasePriceAmount').hide();
+		}
+	}
+	})
+</script>
+
 <div id="group-prices">
     <table class="adminContent">
         <tr>
@@ -8,7 +65,7 @@
                 @Html.SmartLabelFor(model => model.Price)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.Price) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.Price) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.Price)
             </td>
         </tr>
@@ -17,7 +74,7 @@
                 @Html.SmartLabelFor(model => model.OldPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.OldPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.OldPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.OldPrice)
             </td>
         </tr>
@@ -26,7 +83,7 @@
                 @Html.SmartLabelFor(model => model.ProductCost)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ProductCost) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.ProductCost) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.ProductCost)
             </td>
         </tr>
@@ -35,7 +92,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.SpecialPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.SpecialPrice)
             </td>
         </tr>
@@ -44,7 +101,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPriceStartDateTimeUtc)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc)
+                @Html.EditorFor(model => model.SpecialPriceStartDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceStartDateTimeUtc)
             </td>
         </tr>
@@ -53,7 +110,7 @@
                 @Html.SmartLabelFor(model => model.SpecialPriceEndDateTimeUtc)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc)
+                @Html.EditorFor(model => model.SpecialPriceEndDateTimeUtc, new { pickTime = true })
                 @Html.ValidationMessageFor(model => model.SpecialPriceEndDateTimeUtc)
             </td>
         </tr>
@@ -107,7 +164,7 @@
                 @Html.SmartLabelFor(model => model.MinimumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.MinimumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.MinimumCustomerEnteredPrice)
             </td>
         </tr>
@@ -116,7 +173,7 @@
                 @Html.SmartLabelFor(model => model.MaximumCustomerEnteredPrice)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) [@Model.PrimaryStoreCurrencyCode]
+                @Html.EditorFor(model => model.MaximumCustomerEnteredPrice) <span class="muted">@Model.PrimaryStoreCurrencyCode</span>
                 @Html.ValidationMessageFor(model => model.MaximumCustomerEnteredPrice)
             </td>
         </tr>
@@ -150,7 +207,7 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.BasePriceAmount, new { small = true })
-                <span id="BasePriceAmountInfo">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
+                <span id="BasePriceAmountInfo" class="muted">@*@T("Admin.Catalog.Products.Fields.BasePriceInfo")*@</span>
             </td>
         </tr>
     </table>
@@ -160,7 +217,14 @@
 
         @if (Model.Id > 0)
         {
-            @(Html.Telerik().Grid<ProductModel.TierPriceModel>()
+            <script>
+				function onTierPriceEdit(e) {
+                    $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
+                    $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
+                }
+            </script>
+			
+			@(Html.Telerik().Grid<ProductModel.TierPriceModel>()
             .Name("tierprices-grid")
             .DataKeys(keys =>
             {
@@ -176,14 +240,14 @@
             })
             .Columns(columns =>
             {
-                columns.Bound(x => x.Store)
-                        .Centered();
-                columns.Bound(x => x.CustomerRole)
-                    .Centered();
                 columns.Bound(x => x.Quantity)
-                    .Centered();
-                columns.Bound(x => x.Price1)
-                    .Format("{0:G29}");
+                    .Centered()
+					.Width(120);
+				columns.Bound(x => x.Price1)
+					.Format("{0:0.00}")
+					.RightAlign();
+				columns.Bound(x => x.Store);
+				columns.Bound(x => x.CustomerRole);
                 columns.Command(commands =>
                 {
                     commands.Edit().Localize(T);
@@ -197,7 +261,6 @@
 
             <script type="text/javascript">
                 function onTierPriceEdit(e) {
-                    // codehint: sm-edit
                     $(e.form).find('#Store').select2('val', e.dataItem['StoreId']);
                     $(e.form).find('#CustomerRole').select2('val', e.dataItem['CustomerRoleId']);
                 }

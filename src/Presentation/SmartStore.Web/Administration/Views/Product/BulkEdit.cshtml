@@ -10,11 +10,15 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-sitemap"></i>
+            <i class="fa fa-cubes"></i>
             @T("Admin.Catalog.BulkEdit")
         </div>
         <div class="options">
         </div>
+    </div>
+    
+    <div class="alert alert-info">
+        @T("Admin.Catalog.BulkEdit.Info")
     </div>
     
     <table width="100%">
@@ -55,7 +59,7 @@
 				&nbsp;
 			</td>
             <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -85,14 +89,22 @@
                             .ReadOnly()
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-                        columns.Bound(p => p.Sku);
-                        columns.Bound(p => p.Price);
-                        columns.Bound(p => p.OldPrice);
+                        columns.Bound(p => p.Sku).Width(150);
+                        columns.Bound(p => p.Price)
+							.Format("{0:0.00}")
+							.RightAlign()
+							.Width(120);
+                        columns.Bound(p => p.OldPrice)
+							.Format("{0:0.00}")
+							.RightAlign()
+							.Width(120);
                         columns.Bound(p => p.ManageInventoryMethod)
                             .ReadOnly();
-                        columns.Bound(p => p.StockQuantity);
+                        columns.Bound(p => p.StockQuantity)
+							.Centered()
+							.Width(80);
                         columns.Bound(p => p.Published)
-                            .Width(100)
+                            .Width(80)
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
                             .Centered();

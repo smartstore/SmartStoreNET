@@ -2,12 +2,32 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Routing;
+using SmartStore.Core;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Themes;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Themes
 {
     internal static class ThemeHelper
     {
+		private static readonly Regex s_inheritableThemeFilePattern;
+		private static readonly Regex s_themeVarsPattern;
+
+		public static readonly string ThemesBasePath;
+
+		static ThemeHelper()
+		{
+			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
+
+			var pattern = @"^{0}(.*)/(.*)(\.png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
+			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+			s_themeVarsPattern = new Regex(@"^~/\.db/themevars.less$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
+		}
 
         internal static bool PathListContainsThemeVars(IEnumerable<string> pathes)
         {
@@ -21,8 +41,55 @@ namespace SmartStore.Web.Framework.Themes
             if (string.IsNullOrEmpty(virtualPath))
                 return false;
 
-            return virtualPath.ToLower().EndsWith("/.db/themevars.less");
+			if (virtualPath[0] != '~')
+			{
+				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
+			}
+
+			return s_themeVarsPattern.IsMatch(virtualPath);
         }
+
+		internal static bool PathIsInheritableThemeFile(string virtualPath)
+		{
+			if (string.IsNullOrEmpty(virtualPath))
+				return false;
+
+			if (virtualPath[0] != '~')
+			{
+				virtualPath = VirtualPathUtility.ToAppRelative(virtualPath);
+			}
+
+			return s_inheritableThemeFilePattern.IsMatch(virtualPath);
+		}
+
+		internal static bool IsAdminArea()
+		{
+			if (HttpContext.Current != null)
+			{
+				return HttpContext.Current.Request.IsAdminArea();
+			}
+
+			return false;
+		}
+
+		internal static bool IsStyleSheet(string path, out bool isLess)
+		{
+			bool isCss = false;
+			isLess = path.EndsWith(".less", StringComparison.OrdinalIgnoreCase);
+			if (!isLess)
+				isCss = path.EndsWith(".css", StringComparison.OrdinalIgnoreCase);
+			return isLess || isCss;
+		}
+
+		internal static ThemeManifest ResolveCurrentTheme()
+		{
+			return EngineContext.Current.Resolve<IThemeContext>().CurrentTheme;
+		}
+
+		internal static int ResolveCurrentStoreId()
+		{
+			return EngineContext.Current.Resolve<IStoreContext>().CurrentStore.Id;
+		}
 
     }
 }

@@ -1,0 +1,62 @@
+﻿@using SmartStore.Web.Models.Checkout;
+
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+@{
+	Layout = "~/Views/Shared/_Root.cshtml";
+	
+    Html.AddTitleParts(T("PageTitle.Checkout").Text);
+}
+
+<div class="page checkout-page">
+    <div class="page-title">
+        <h1>@T("Checkout.SelectPaymentMethod")</h1>
+    </div>
+
+    <div class="page-body checkout-data">
+		@Html.Widget("checkout_payment_method_top")
+
+		@using (Html.BeginForm("PaymentMethod", "AmazonPayCheckout", new { area = Model.SystemName }, FormMethod.Post))
+		{
+			if (Model.DisplayRewardPoints)
+			{
+				<div class="use-reward-points">
+					@Html.EditorFor(model => model.UseRewardPoints)
+					<label for="@Html.FieldIdFor(model => model.UseRewardPoints)">@string.Format(T("Checkout.UseRewardPoints").Text, Model.RewardPointsBalance, Model.RewardPointsAmount)</label>
+				</div>			
+			}
+
+			<div class="amazon-pay-widget clearfix">
+				<div id="@Model.GetWidgetId"></div>
+			</div>
+			
+			<div class="block clearfix buttons">
+				<input id="AmazonPayNextCheckoutStep" type="submit" name="nextstep" value="@T("Checkout.NextButton")" />
+			</div>
+
+			@Html.Widget("checkout_payment_method_bottom")
+		}
+	</div>
+</div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		try {
+			new OffAmazonPayments.Widgets.Wallet({
+				sellerId: '@Model.SellerId',
+				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				design: {
+					designMode: 'smartphoneCollapsible'
+				},
+				onPaymentSelect: function (orderReference) {
+				},
+				onError: function (e) {
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+				}
+			}).bind('@Model.GetWidgetId');
+		}
+		catch (e) {
+			alert(e.description);
+		}
+	});
+</script>

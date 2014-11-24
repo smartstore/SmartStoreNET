@@ -1,0 +1,124 @@
+//
+// Header Styles
+// --------------------------------------------------
+
+#header {
+    position: relative;
+    padding: 46px 0 0 0;
+}
+
+#logobar {
+    position: relative;
+    padding: 10px 0;
+    min-height: 50px;
+}
+
+#logobar .brand {
+    float: left;
+    display: block;
+    position: relative;
+
+	&.textual {
+		position: absolute;
+		top: 50%;
+		font-size: 26px;
+		line-height: 26px;
+		margin-top: -13px;
+		text-decoration: none;
+		font-family: @headingsFontFamily;
+		font-weight: @headingsFontWeight;
+	}
+}
+
+.ie8 #logobar img {
+	max-width: auto;
+}
+
+#nav-home li {
+    float: left;
+}
+
+#nav-home li a {
+    display: block;
+}
+
+
+/* Regional Selectors
+================================================ */
+
+.regional-selectors {
+	position: absolute; 
+	right: 0; 
+	bottom: 0;
+}
+
+.regional-selector li {
+	float: left;
+}
+
+.regional-selector .regional-label {
+    display: block;
+	border: 1px solid @var_ChooserBorderColor;
+	background: @var_ChooserBackgroundColor;
+	color: @var_ChooserFontColor;
+	padding: 3px;
+	font-size: 12px;
+	line-height: 12px;
+	height: 12px;
+	min-width: 12px;
+	margin: 0 2px;
+	text-align: center;
+	vertical-align: middle;
+	text-decoration: none;
+	font-family: Arial, Helvetica, sans-serif;
+}
+
+.regional-selector .selected .regional-label {
+	font-weight: bold;
+}
+
+.regional-selector .selected .regional-label,
+.regional-selector .regional-label:hover {
+	background: @var_ChooserActiveStateColor;
+}
+
+
+/* Currency Selector
+================================================ */
+
+#currency-selector {
+	float: left;
+	margin-left: 12px;
+}
+
+
+/* Language Selector
+================================================ */
+
+#language-selector {
+	float: left;
+}
+
+#language-selector .regional-label {
+	font-size: 11px;
+}
+
+#language-selector .flag {
+	float: left;
+	margin-right: 4px;
+	margin-bottom: 2px;
+	line-height: 13px;
+	border-top: 2px solid transparent;
+	.opacity(50);
+	.transition(opacity .1s linear);
+}
+
+#language-selector li:hover .flag,
+#language-selector .selected .flag {
+	.opacity(100);
+}
+
+#language-selector .selected .flag {
+	border-top-color: @warningText;
+}
+

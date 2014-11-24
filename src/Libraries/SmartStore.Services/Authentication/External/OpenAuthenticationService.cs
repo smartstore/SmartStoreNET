@@ -17,31 +17,47 @@ namespace SmartStore.Services.Authentication.External
         private readonly IPluginFinder _pluginFinder;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly IRepository<ExternalAuthenticationRecord> _externalAuthenticationRecordRepository;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
+		private readonly IProviderManager _providerManager;
 
-        public OpenAuthenticationService(IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
+        public OpenAuthenticationService(
+			IRepository<ExternalAuthenticationRecord> externalAuthenticationRecordRepository,
             IPluginFinder pluginFinder,
             ExternalAuthenticationSettings externalAuthenticationSettings,
             ICustomerService customerService,
-			ISettingService settingService)
+			ISettingService settingService,
+			IProviderManager providerManager)
         {
             this._externalAuthenticationRecordRepository = externalAuthenticationRecordRepository;
             this._pluginFinder = pluginFinder;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._customerService = customerService;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
+			this._providerManager = providerManager;
         }
+
+		/// <summary>
+		/// Load all external authentication methods
+		/// </summary>
+		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+		/// <returns>External authentication methods</returns>
+		public virtual IEnumerable<Provider<IExternalAuthenticationMethod>> LoadAllExternalAuthenticationMethods(int storeId = 0)
+		{
+			return _providerManager.GetAllProviders<IExternalAuthenticationMethod>(storeId);
+		}
 
         /// <summary>
         /// Load active external authentication methods
         /// </summary>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment methods</returns>
-		public virtual IList<IExternalAuthenticationMethod> LoadActiveExternalAuthenticationMethods(int storeId = 0)
+		public virtual IEnumerable<Provider<IExternalAuthenticationMethod>> LoadActiveExternalAuthenticationMethods(int storeId = 0)
         {
-			return LoadAllExternalAuthenticationMethods(storeId)
-                   .Where(provider => _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Contains(provider.PluginDescriptor.SystemName, StringComparer.InvariantCultureIgnoreCase))
-                   .ToList();
+			var allMethods = LoadAllExternalAuthenticationMethods(storeId);
+			var activeMethods = allMethods
+				   .Where(p => _externalAuthenticationSettings.ActiveAuthenticationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+
+			return activeMethods;
         }
 
         /// <summary>
@@ -49,26 +65,9 @@ namespace SmartStore.Services.Authentication.External
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found external authentication method</returns>
-        public virtual IExternalAuthenticationMethod LoadExternalAuthenticationMethodBySystemName(string systemName)
+		public virtual Provider<IExternalAuthenticationMethod> LoadExternalAuthenticationMethodBySystemName(string systemName, int storeId = 0)
         {
-            var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IExternalAuthenticationMethod>(systemName);
-            if (descriptor != null)
-                return descriptor.Instance<IExternalAuthenticationMethod>();
-
-            return null;
-        }
-
-        /// <summary>
-        /// Load all external authentication methods
-        /// </summary>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
-        /// <returns>External authentication methods</returns>
-		public virtual IList<IExternalAuthenticationMethod> LoadAllExternalAuthenticationMethods(int storeId = 0)
-        {
-            return _pluginFinder
-				.GetPlugins<IExternalAuthenticationMethod>()
-				.Where(x => storeId == 0 || _settingService.GetSettingByKey<string>(x.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, true))
-				.ToList();
+			return _providerManager.GetProvider<IExternalAuthenticationMethod>(systemName, storeId);
         }
 
 

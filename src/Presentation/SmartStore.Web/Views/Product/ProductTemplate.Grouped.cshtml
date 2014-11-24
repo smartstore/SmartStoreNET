@@ -1,0 +1,177 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Core;
+@using SmartStore.Core.Domain.Common;
+@using SmartStore.Core.Domain.Seo;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web.Framework.UI;
+@{
+    Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
+
+    //title, meta
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+    Html.AddMetaDescriptionParts(Model.MetaDescription);
+    Html.AddMetaKeywordParts(Model.MetaKeywords);
+
+    Html.AddScriptParts("~/Scripts/public.product-detail.js");
+    
+    var canonicalUrlsEnabled = EngineContext.Current.Resolve<SeoSettings>().CanonicalUrlsEnabled;
+    if (canonicalUrlsEnabled)
+    {
+        var productUrl = Url.RouteUrl("Product", new { SeName = Model.SeName }, this.Request.Url.Scheme);
+        Html.AddCanonicalUrlParts(productUrl);
+    }
+}
+
+<div class="page product-details-page">
+
+    <!--product breadcrumb-->
+    @Html.Action("ProductBreadcrumb", "Catalog", new { productId = Model.Id })
+
+    <div class="page-body">
+        @Html.Widget("productdetails_top")
+        @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { id = "product-details-form" }))
+        {
+            <article itemscope itemtype="http://schema.org/Product">
+                <div class="row-fluid top-content">
+                <div class="product-image span12">
+                    
+                    @Html.Widget("productdetails_before_pictures")
+                    <!--product pictures-->
+					<div id="pd-gallery-container">
+						@Html.Partial("_PictureGallery", Model.DetailsPictureModel)
+					</div>
+                    @Html.Widget("productdetails_after_pictures")
+                    
+                </div>
+                <div class="product-data span12">
+                    
+                    @if (Model.DisplayAdminLink) {
+						<a class="btn btn-default btn-mini btn-edit-product" href="@Url.Action("Edit", "Product", new { id = Model.Id, area = "admin" })" target="admin-product" rel="nofollow">
+							<i class="fa fa-pencil-square-o"></i>
+							@T("Common.Catalog.EditProduct")
+						</a>
+                    }
+
+                    <div class="page-title alpha">
+                        <h1 class="product-name" itemprop="name">
+                            @Model.Name
+                        </h1>
+                    </div>
+
+                    <div id="details-cnt">
+
+                        @Html.Widget("productdetails_overview_top")
+
+                        <div class="short-description line alpha">
+                            @Html.Raw(Model.ShortDescription)
+                        </div>
+
+                        @Html.Action("ReviewOverview", new { id = Model.Id })
+
+                        @if (Model.Manufacturers != null && Model.Manufacturers.Count > 0)
+                        {
+                            <div class="manufacturer-pics">
+
+                            @foreach (var manufacturer in Model.Manufacturers)
+                            {
+                                <div class="manufacturer-item">
+                                    <div class="picture">
+                                        <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+                                            <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" />
+                                        </a>
+                                    </div>
+                                </div>
+                            }
+
+                            </div>
+                        }
+
+                        <div class="quick-links line">
+                            @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                            @Html.Action("AskQuestionButton", new { id = Model.Id })
+                            @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
+                        </div>
+
+                        @Html.Action("ShareButton")
+
+                        @Html.Widget("productdetails_overview_bottom")
+                    </div>
+                </div>
+            </div>
+                        
+			<div class="product-collateral clearfix">
+                <!-- associated products -->
+                <div class="product-variant-list">
+                    @foreach (var product in Model.AssociatedProducts)
+                    {
+                        var dataDictProduct = new ViewDataDictionary();
+                        dataDictProduct.TemplateInfo.HtmlFieldPrefix = string.Format("product_{0}", product.Id);
+                        @Html.Partial("_ProductTemplate.Grouped.AssociatedProduct", product, dataDictProduct)
+                    }
+                    @if (Model.AssociatedProducts.Count == 0)
+                    {
+                        <div class="no-associated-products alert alert-warning" style="margin-top: 10px">
+                            @T("Products.NoAssociatedProducts")
+                        </div>
+                    }
+                </div>
+            </div>
+
+			<div class="clear"></div>
+            
+                <div class="bottom-content">
+                <!-- tabs -->
+                @Html.SmartStore().TabStrip().Name("product-detail-tabs").SmartTabSelection(false).Items(x =>
+                {
+                    var specificationAttributes = Html.Action("ProductSpecifications", new { productId = Model.Id }).ToString();
+                    var reviews = Html.Action("ProductDetailReviews", new { productId = Model.Id }).ToString();
+
+                    if (!String.IsNullOrWhiteSpace(Model.FullDescription))
+                    {
+						x.Add().Text(@T("Products.Details"))
+								.Content(Html.Raw("<div itemprop='description'>" + Html.CollapsedText(Model.FullDescription) + "</div>").ToString())
+                                .Selected(true);
+                    }
+
+                    if (!String.IsNullOrWhiteSpace(specificationAttributes))
+                    {
+                        x.Add().Text(@T("Products.Specs"))
+                                .Content(specificationAttributes)
+                                .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
+                    }
+
+                    x.Add().Text(@T("Reviews.ExistingReviews"))
+                            .Content(reviews)
+                            .Badge(Model.ReviewCount.ToString(), BadgeStyle.Info, Model.ReviewCount > 0)
+                            .Selected(String.IsNullOrWhiteSpace(Model.FullDescription) && String.IsNullOrWhiteSpace(specificationAttributes));
+                })
+
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
+            
+                <!-- product tags -->
+                <div class="product-tags">
+                    @Html.Action("ProductTags", new { productId = Model.Id })
+                </div>
+            
+            </div>
+            </article>
+        }
+        @Html.Widget("productdetails_bottom")
+    </div>
+</div>
+
+<script type="text/javascript">
+    $(function () {
+        var settings = {
+            galleryHeight: 300,
+            galleryStartIndex: @(Model.DetailsPictureModel.GalleryStartIndex),
+            showImageDescription: false,
+            enableZoom: toBool('@(Model.DetailsPictureModel.DefaultPictureZoomEnabled)'),
+            zoomType: '@Model.DetailsPictureModel.PictureZoomType' // window, inner, lens
+        };
+
+        $('#product-details-form').productDetail(settings);
+    });
+</script>

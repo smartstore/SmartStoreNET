@@ -7,182 +7,59 @@
 @using SmartStore;
 
 @{
-    var currentCustomer = this.WorkContext.CurrentCustomer;
+	Layout = "_AdminRoot";
+	
+	var currentCustomer = this.WorkContext.CurrentCustomer;
     var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;
     var currentVersion = SmartStoreVersion.CurrentVersion;
     var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
     
     // resources
-    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();
-    
-    // page title
-    string adminPageTitle = "";
-    if (!string.IsNullOrWhiteSpace(ViewBag.Title))
-    {
-        adminPageTitle = ViewBag.Title + " / ";
-    }
-    adminPageTitle += T("Admin.PageTitle").Text;
+    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();	
+} 
 
-    // admin styles
-    //Html.AddCssFileParts(false, "~/Administration/Content/theme.less");
-    
-    // add css assets
-    var jqueryCssRootPath = "~/Content/jquery-ui/base/";
-    var telerikCssRootPath = "~/Content/2012.2.607/";
-    Html.AppendCssFileParts(
-        "~/Administration/Content/theme.less",
-        jqueryCssRootPath + "jquery.ui.core.css",
-        jqueryCssRootPath + "jquery.ui.resizable.css",
-        jqueryCssRootPath + "jquery.ui.selectable.css",
-        jqueryCssRootPath + "jquery.ui.autocomplete.css",
-        jqueryCssRootPath + "jquery.ui.theme.css",
-        telerikCssRootPath + "telerik.common.css",
-        telerikCssRootPath + "telerik.rtl.css",
-        "~/Content/jquery.pnotify.default.css",
-        "~/Content/jquery.pnotify.default.icons.css");
+<div id="page">
+	@if (ViewData["warning.panel.message"] != null)
+	{
+		<div class="warning-panel-message fade in">
+            <button type="button" class="close" data-dismiss="alert">×</button>
+            @Html.Raw(ViewData["warning.panel.message"])
+		</div>
+	}
+	
+	@if (IsSectionDefined("header"))
+	{
+		@RenderSection("header")
+	}
+	else
+	{
+		<header>
+			@if (IsSectionDefined("navbar"))
+			{
+				@RenderSection("navbar")
+			}
+			else
+			{
+				@Html.Widget("admin_navbar_before")
+				@Html.Partial("Navbar")
+				@Html.Widget("admin_navbar_after")
+			}
 
-    // add js assets (Head)
-    Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/modernizr-{version}.js",
-        "~/Scripts/jquery-{version}.js",
-        "~/Scripts/globalize/globalize.js");
-        
-    Html.AddScriptParts(ResourceLocation.Head, true,
-        "~/Scripts/globalize/cultures/globalize.culture.{0}.js".FormatInvariant(currentUICulture.ToString()),
-        "~/Scripts/smartstore.globalize.adapter.js");
-
-    // add js assets (Foot)
-    var bootstrapJsRoot = "~/Content/bootstrap/js/";
-    Html.AppendScriptParts(ResourceLocation.Foot,
-        // jQuery UI Core
-        "~/Scripts/jquery-ui/jquery.ui.core.js",
-        "~/Scripts/jquery-ui/jquery.ui.widget.js",
-        "~/Scripts/jquery-ui/jquery.effects.core.js",
-        "~/Scripts/jquery-ui/jquery.effects.transfer.js",
-        "~/Scripts/jquery-ui/jquery.effects.shake.js",
-        "~/Scripts/jquery-ui/jquery.ui.position.js",
-        // jQuery UI
-        "~/Scripts/jquery-ui/jquery.ui.autocomplete.js",
-        // jQuery Validation
-        "~/Scripts/jquery.unobtrusive-ajax.js",
-        "~/Scripts/jquery.validate.js",
-        "~/Scripts/jquery.validate.unobtrusive.js",
-        // SmartStore system
-        "~/Scripts/smartstore.system.js",
-        "~/Scripts/underscore.js",
-        "~/Scripts/underscore.string.js",
-        "~/Scripts/underscore.mixins.js",
-        "~/Scripts/smartstore.jquery.utils.js",
-        "~/Scripts/jquery.ba-outside-events.js",
-        "~/Scripts/jquery.preload.js",
-        "~/Scripts/jquery.transit.js",
-        "~/Scripts/jquery.menu-aim.js",
-        "~/Scripts/smartstore.doAjax.js",
-        "~/Scripts/jquery.addeasing.js",
-        "~/Scripts/smartstore.eventbroker.js",
-        "~/Scripts/smartstore.hacks.js",
-		"~/Scripts/smartstore.common.js",
-        // Bootstrap
-        bootstrapJsRoot + "bootstrap-transition.js",
-        bootstrapJsRoot + "bootstrap-alert.js",
-        bootstrapJsRoot + "bootstrap-button.js",
-        bootstrapJsRoot + "bootstrap-collapse.js",
-        bootstrapJsRoot + "bootstrap-dropdown.js",
-        bootstrapJsRoot + "bootstrap-modal.js",
-        bootstrapJsRoot + "bootstrap-tooltip.js",
-        bootstrapJsRoot + "bootstrap-popover.js",
-        bootstrapJsRoot + "bootstrap-tab.js",
-        // Bootstrap custom
-        bootstrapJsRoot + "custom/bootstrap-datepicker.js",
-        // Shared UI
-        "~/Scripts/smartstore.placeholder.js",
-        "~/Scripts/select2.js",
-        "~/Scripts/smartstore.selectwrapper.js",
-        "~/Scripts/smartstore.throbber.js",
-        "~/Scripts/smartstore.navbar.js",
-        "~/Scripts/smartstore.thumbzoomer.js",
-        "~/Scripts/smartstore.column-equalizer.js",
-        "~/Scripts/smartstore.shrinkmenu.js",
-        "~/Scripts/smartstore.scrollbutton.js",
-        "~/Scripts/smartstore.tabselector.js",
-        "~/Scripts/jquery.pnotify.js",
-        "~/Scripts/jquery.scrollTo.js",
-        "~/Scripts/jquery.serialScroll.js",
-        // Admin
-        "~/Administration/Scripts/admin.common.js",
-        "~/Administration/Scripts/admin.globalinit.js");
-}
-<!DOCTYPE html>
-<html class="no-js not-ready loading">
-<head>
-    <title>@adminPageTitle</title>
-    <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
-    <meta http-equiv="X-UA-Compatible" content="IE=edge; chrome=1" />
-
-    <script>
-        window.Res = {
-            "Common.Notification": "@T("Common.Notification").ToString().EncodeJsString()",
-        }
-    </script>
-    
-    @Html.Partial("ConditionalComments")
-    @Html.MetaAcceptLanguage()
-
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
-    @Html.SmartScripts(this.Url, ResourceLocation.Head)
-
-    <link rel="shortcut icon" href="~/Administration/favicon.ico" />
-
-</head>
-<body class="@Html.BodyCssClass()"@(Html.BodyId())>   
-
-    <div id="page">
-		@if (ViewData["warning.panel.message"] != null)
-		{
-			<div class="warning-panel-message fade in">
-                <button type="button" class="close" data-dismiss="alert">×</button>
-                @Html.Raw(ViewData["warning.panel.message"])
+			<div id="breadcrumb">
+				<!-- SiteMapPath here-->
+				@Html.Widget("admin_breadcrumb").ToString().Trim()
 			</div>
-		}
+		</header>		
+	}
 
-        @if (IsSectionDefined("navbar"))
-        {
-            @RenderSection("navbar")
-        }
-        else
-        {
-            @Html.Widget("admin_navbar_before")
-            @Html.Partial("Navbar")
-            @Html.Widget("admin_navbar_after")
-        }
-
-        <div id="breadcrumb">
-            <!-- SiteMapPath here-->
-            @Html.Widget("admin_breadcrumb").ToString().Trim()
+    @Html.Widget("admin_content_before")
+    <div id="content">
+        @Html.Partial("_Notifications")
+        <div class="cph">
+            @RenderBody()
         </div>
-
-        @Html.Widget("admin_content_before")
-        <div id="content">
-            @Html.Partial("_Notifications")
-            <div class="cph">
-                @RenderBody()
-            </div>
-        </div>
-        @Html.Widget("admin_content_after")
-
     </div>
+    @Html.Widget("admin_content_after")
 
-
-    <!--These need to be at the end of the page to ensure that all the controls requiring scripts have been rendered-->
-    @(Html.Telerik().ScriptRegistrar()
-            .jQuery(false)
-            .jQueryValidation(false)
-            .Globalization(true)
-            )
-
-    @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
-    @Html.SmartScripts(this.Url, ResourceLocation.Foot)
-
-</body>
-</html>
+</div>
 

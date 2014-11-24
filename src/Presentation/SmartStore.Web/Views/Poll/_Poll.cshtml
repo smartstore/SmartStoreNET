@@ -40,7 +40,7 @@
             </div>
             <button id="vote-poll-@(Model.Id)" 
                 data-id="@(Model.Id)" 
-                data-target="@(Url.RouteUrl("PollVote"))" 
+                data-target="@(Url.Action("Vote"))" 
                 data-message="@T("Polls.SelectAnswer")" 
                 class="btn btn-warning btn-block btn-votenow">
                 @T("Polls.Vote")

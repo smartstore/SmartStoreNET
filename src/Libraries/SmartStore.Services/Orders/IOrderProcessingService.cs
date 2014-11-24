@@ -22,7 +22,7 @@ namespace SmartStore.Services.Orders
         /// </summary>
         /// <param name="processPaymentRequest">Process payment request</param>
         /// <returns>Place order result</returns>
-        PlaceOrderResult PlaceOrder(ProcessPaymentRequest processPaymentRequest);
+        PlaceOrderResult PlaceOrder(ProcessPaymentRequest processPaymentRequest, Dictionary<string, string> extraData);
 
         /// <summary>
         /// Deletes an order
@@ -85,6 +85,11 @@ namespace SmartStore.Services.Orders
         /// <param name="notifyCustomer">True to notify customer</param>
         void CancelOrder(Order order, bool notifyCustomer);
 
+		/// <summary>
+		/// Auto update order details
+		/// </summary>
+		/// <param name="context">Context parameters</param>
+		void AutoUpdateOrderDetails(AutoUpdateOrderItemContext context);
 
 
         /// <summary>
@@ -100,6 +105,19 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         void MarkAsAuthorized(Order order);
 
+
+		/// <summary>
+		/// Gets a value indicating whether the order can be marked as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		/// <returns>A value indicating whether the order can be marked as completed</returns>
+		bool CanCompleteOrder(Order order);
+
+		/// <summary>
+		/// Marks the order as completed
+		/// </summary>
+		/// <param name="order">Order</param>
+		void CompleteOrder(Order order);
 
 
         /// <summary>
@@ -233,7 +251,6 @@ namespace SmartStore.Services.Orders
         /// <param name="order">Order</param>
         /// <returns>Result</returns>
         bool IsReturnRequestAllowed(Order order);
-
 
 
         /// <summary>

@@ -1,0 +1,88 @@
+﻿@model ProviderModel
+
+@{
+    Layout = "~/Administration/Views/Shared/_AdminPopupLayout.cshtml";
+}
+
+@{    
+    ViewBag.Title = T("Common.Edit") + ": " + Model.FriendlyName.Truncate(30, "...");
+}
+
+@if (ViewBag.RefreshPage == true)
+{
+	<script type="text/javascript">
+		try { window.opener.document.getElementById('@(ViewBag.btnId)').click(); }
+		catch (e) { }
+        window.close();
+	</script>
+	
+	return;
+}
+
+@using (Html.BeginForm())
+{
+    <div class="section-header">
+        <div class="title">
+			<img src="@Url.Content(Model.IconUrl)" class="img-responsive" style="max-height: 32px; margin-right: 3px" alt="@Model.FriendlyName" />
+			@ViewBag.Title
+        </div>
+        <div class="options">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+				<i class="fa fa-save"></i>
+				@T("Admin.Common.Save")
+			</button>
+        </div>
+    </div>
+	
+    @Html.ValidationSummary(false)
+	@Html.HiddenFor(model => model.SystemName)
+	
+	@(Html.LocalizedEditor<ProviderModel, ProviderLocalizedModel>("provider-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].FriendlyName)
+				@Html.ValidationMessageFor(model => model.Locales[item].FriendlyName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => Model.Locales[item].Description)
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.FriendlyName)
+				@Html.ValidationMessageFor(model => model.FriendlyName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.Description)
+				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
+	</table>
+	))
+}

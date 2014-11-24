@@ -4,12 +4,23 @@
 <div class="total-info">
     <table class="cart-total table">
         <tbody>
-            <tr>
+            @if (Model.DisplayWeight)
+		    {
+            <tr class="lined">
                 <td class="cart-total-left">
-                    <span class="nobr">@T("ShoppingCart.Totals.SubTotal"):</span>
+                    <span class="nobr">@T("ShoppingCart.Totals.Weight"):</span>
                 </td>
                 <td class="cart-total-right">
-                    <span class="product-price">@Model.SubTotal</span>
+                    <span class="product-weight">@(Model.Weight.ToString("N2")) kg</span>
+                </td>
+            </tr>
+            }
+            <tr class="lined">
+                <td class="cart-total-left">
+                    <span class="nobr"><strong>@T("ShoppingCart.Totals.SubTotal"):</strong></span>
+                </td>
+                <td class="cart-total-right">
+                    <span class="product-price order-total">@Model.SubTotal</span>
                 </td>
             </tr>
             @if (!String.IsNullOrEmpty(Model.SubTotalDiscount))
@@ -25,7 +36,7 @@
                                         title="@T("Common.Remove")" 
                                         name="removesubtotaldiscount"
                                         value="removesubtotaldiscount">
-                                    <i class="icon-remove" style="font-size: 10px"></i>
+                                    <i class="fa fa-times" style="font-size: 10px"></i>
                                 </button>                          
                             }
                             </span>
@@ -35,7 +46,7 @@
                     </td>
                 </tr>
             }
-            <tr>
+            <tr class="lined">
                 <td class="cart-total-left">
                     <span class="nobr">@T("ShoppingCart.Totals.Shipping")</span>
                         @if (Model.RequiresShipping && !String.IsNullOrEmpty(Model.SelectedShippingMethod))
@@ -83,7 +94,7 @@
                 <tr>
                     <td class="cart-total-left">
                         <span class="nobr">
-                            @string.Format(T("ShoppingCart.Totals.TaxRateLine").Text, taxRate.Rate):
+							@taxRate.Label:
                         </span>
                     </td>
                     <td class="cart-total-right">
@@ -118,7 +129,7 @@
                                         title="@T("Common.Remove")" 
                                         name="removeordertotaldiscount"
                                         value="removeordertotaldiscount">
-                                    <i class="icon-remove" style="font-size: 10px"></i>
+                                    <i class="fa fa-times" style="font-size: 10px"></i>
                                 </button> 
                             }
                             </span>
@@ -143,7 +154,7 @@
                                         title="@T("Common.Remove")" 
                                         name="removegiftcard"
                                         value="removegiftcard">
-                                    <i class="icon-remove" style="font-size: 10px"></i>
+                                    <i class="fa fa-times" style="font-size: 10px"></i>
                                 </button> 
                             }
                         </span>
@@ -156,7 +167,7 @@
                 <tr>
                     <td class="cart-total-left-below">
                         <span class="nobr">
-                            @string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining):
+                            @string.Format(T("ShoppingCart.Totals.GiftCardInfo.Remaining").Text, gc.Remaining)
                         </span>
                     </td>
                     <td></td>
@@ -176,9 +187,9 @@
                     </td>
                 </tr>
             }
-            <tr class="omega">
+            <tr class="omega lined">
                 <td class="cart-total-left">
-                    <span  class="nobr">@T("ShoppingCart.Totals.OrderTotal"):</span>
+                    <span  class="nobr"><strong>@T("ShoppingCart.Totals.OrderTotal"):</strong></span>
                 </td>
                 <td class="cart-total-right">
                     <span>

@@ -4,43 +4,43 @@
     @Html.Widget("mobile_account_navigation_before")
     @if (!Model.HideInfo)
     {
-        <li><a href="@Url.RouteUrl("CustomerInfo")">@T("Account.CustomerInfo")</a></li>
+        <li><a href="@Url.Action("Info", "Customer")">@T("Account.CustomerInfo")</a></li>
     }
     @if (!Model.HideAddresses)
     {
-        <li><a href="@Url.RouteUrl("CustomerAddresses")">@T("Account.CustomerAddresses")</a></li>
+        <li><a href="@Url.Action("Addresses", "Customer")">@T("Account.CustomerAddresses")</a></li>
     }
     @if (!Model.HideOrders)
     {
-        <li><a href="@Url.RouteUrl("CustomerOrders")">@T("Account.CustomerOrders")</a></li>
+        <li><a href="@Url.Action("Orders", "Customer")">@T("Account.CustomerOrders")</a></li>
     }
     @if (!Model.HideReturnRequests)
     {
-        <li><a href="@Url.RouteUrl("CustomerReturnRequests")">@T("Account.CustomerReturnRequests")</a></li>
+        <li><a href="@Url.Action("ReturnRequests", "Customer")">@T("Account.CustomerReturnRequests")</a></li>
     }
     @if (!Model.HideDownloadableProducts)
     {
-        <li><a href="@Url.RouteUrl("CustomerDownloadableProducts")">@T("Account.DownloadableProducts")</a></li>
+        <li><a href="@Url.Action("DownloadableProducts", "Customer")">@T("Account.DownloadableProducts")</a></li>
     }
     @if (!Model.HideBackInStockSubscriptions)
     {
-        <li><a href="@Url.RouteUrl("CustomerBackInStockSubscriptions")">@T("Account.BackInStockSubscriptions")</a></li>
+        <li><a href="@Url.Action("BackInStockSubscriptions")">@T("Account.BackInStockSubscriptions")</a></li>
     }
     @if (!Model.HideRewardPoints)
     {
-        <li><a href="@Url.RouteUrl("CustomerRewardPoints")">@T("Account.RewardPoints")</a></li>
+        <li><a href="@Url.Action("RewardPoints")">@T("Account.RewardPoints")</a></li>
     }
     @if (!Model.HideChangePassword)
     {
-        <li><a href="@Url.RouteUrl("CustomerChangePassword")">@T("Account.ChangePassword")</a></li>
+        <li><a href="@Url.Action("ChangePassword")">@T("Account.ChangePassword")</a></li>
     }
     @if (!Model.HideAvatar)
     {
-        <li><a href="@Url.RouteUrl("CustomerAvatar")">@T("Account.Avatar")</a></li>
+        <li><a href="@Url.Action("Avatar")">@T("Account.Avatar")</a></li>
     }
     @if (!Model.HideForumSubscriptions)
     {
-        <li><a href="@Url.RouteUrl("CustomerForumSubscriptions")">@T("Account.ForumSubscriptions")</a></li>
+        <li><a href="@Url.Action("ForumSubscriptions")">@T("Account.ForumSubscriptions")</a></li>
     }
     @Html.Widget("mobile_account_navigation_after")
 </ul>

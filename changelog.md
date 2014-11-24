@@ -1,5 +1,122 @@
 ﻿#Release Notes#
 
+##SmartStore.NET 2.1#
+
+###New Features###
+* (Developer) *Overhauled plugin architecture*:
+	- Plugins are regular MVC areas now
+	- No embedded views anymore. Views get copied to the deployment folder
+	- No cumbersome return View("Very.Long.View.Identifier") anymore
+	- Views in plugin source folders can be edited during debug. The changes are reflected without plugin recompilation.
+* (Developer) *Theme inheritance*: create derived child themes with minimum effort by overriding only small parts (static files and even variables).
+* *Preview Mode*: virtually test themes and stores more easily
+* New payment plugin *Pay with Amazon*
+* Support for *hierarchical SEO slugs*, e.g.: samsung/galaxy/s5/16gb/white
+* (Developer) Model binding for plugin tab views: models from plugin tabs get automatically materialized and bound to TabbableModel.CustomProperties[MyKey]. Extended the SmartModelBinder for this.
+* (Developer) New event _ModelBoundEvent_. Consume this in plugins to persist plugin specific models.
+* (Admin) Added _GMC_ tab to product edit view. This is more a coding example for the above stuff rather than a new feature.
+* (Developer) Implemented _AdminThemedAttribute_: instructs the view engine to additionally search in the admin area for views. Very useful in larger plugin projects.
+* (Developer) Enhanced _IMenuProvider_: menu items can now be injected to the public catalog menu
+* (Developer) Implemented _IWidgetProvider_. Allows request scoped registration of action routes to be injectable into widget zones. Perfect for custom action filters.
+* (Developer) Simple widgets: the model of the parent action view context now gets passed to a widget.
+* (Developer) New IoC method ContainerManager.InjectProperties()
+* Implemented support for EU VAT regulation for digital goods (2008/8/EG directive)
+* Implemented Media Manager for HTML editor (including file upload)
+* Added _CDN_ setting to store configuration. Allows static files to be served through a content delivery network, e.g. cloudfront. (contributed by 'normalc')
+* #393 Web API: Implement OData actions for simpler working with product attributes
+* #431 Web API: Add support for localized properties
+* ShippingByWeight: new settings to configure a small quantity surcharge
+* #216 Better return request support
+* #90 Directly set order status to completed
+* #413 Orders: Add a PDF export\download of selected orders
+* #69 Award reward points for product reviews
+* #164 Add multistore support for polls
+* #170 Multistore support for Newsletters
+* #266 Update Pending Order in Admin Panel
+* #331 Show CommentBox in checkout (optional) 
+* Option to turn off the filter for products in categories
+* Export/Import was enabeled to work with localized values for name, short description and long description 
+
+###Improvements###
+* New backend design and cleaner frontend theme
+* Replaced TinyMCE HTML editor with CKeditor
+* Simplified checkout process by combining payment method and info pages
+* (Perf) Lower memory consumption
+* (Perf) (Developer) Client Dependency updates
+	- jQuery 1.8.3 > 2.1.1 (although the backend is still using v1.8.3 because of the Telerik components)
+	- FontAwesome 3 > 4.1
+	- Modernizr 2.5 > 2.7.2
+	- jQuery UI to 1.11
+	- SearchBox uses Typeahead now instead of jQuery UI AutoComplete
+	- Got rid of obsolete jQuery UI files (will remove this later completely)
+* (UI) AJAXified product edit tab: all tabs other than the first one load on demand per AJAX
+* (Developer)  Plugins can provide custom tabs more easily (now with on demand AJAX loading)
+* Task Scheduler:
+	- Can run tasks manually now (async)
+	- Better UI
+	- Shows last error
+	- (Developer) Breaking change: New parameter _TaskExecutionContext_ for _ITask.Execute()_
+* UI: TabStrips remember their last selected tab across page requests in an unobtrusive way (removed old selection code)
+* Price formatting: the DisplayLocale's FormatProvider was not applied when _CustomFormatting_ was specified for Currency
+* Admin: Specification attributes are now sorted by DisplayOrder, THEN BY Name
+* Admin: Replaced DatePicker with DateTimePicker control
+* (Perf) significantly increased excel import performance... again ;-)
+* (Perf) significantly increased excel export performance and optimized memory usage
+* (Perf) SEO sitemap is being cached now, resulting in fast reponse times with larger catalogs
+* (UI) optimized and reorganized product edit view a bit
+* (Developer) MVC filter attributes are now Autofac injectable
+* (Developer) Implemented _RunSync_ extension methods for _Func<Task>_ and _Func<Task<T>>_. A reliable way to execute async operations synchronously.
+* (Developer) Refactored model creation for category navigation: it now incorporates _TreeNode<MenuItem>_, which enables plugin developers to alter the main menu with the event hook _NavigationModelBuilt_.
+* (Developer) Added _user.less_ to Alpha theme for user defined css overrides and tweaks
+* (Developer) Moved _PublicControllerBase_ to SmartStore.Web.Framework
+* (Developer) Moved 'AdminControllerBase' to SmartStore.Web.Framework
+* (Developer) Optimized Bundle handling
+	- Html.Add[Script|CssFile]Parts() now can handle already bundled resources correctly (no attempt is made to bundle them, the bundle's virtual url is returned instead)
+	- Made extra bundles for frequently used resources (like sequence js, fileupload, image gallery etc.). This way they always come compressed.
+* #384 Web API: Inserting sluged recources like products require an URL record
+* #382 Promotion feed plugins: Asynchronous feed creation, more options and improvements
+* #433 GMC feed: Option to filter config records that have not been edited
+* #362 Display 'from {0}' for products with variant attributes
+* #239 Categories: Ask merchant if he want a cascading or a non cascading deletion
+* HTML text collapser: Make it usable for all long texts
+* #375 Implement SKU search for 'related products picker'
+* #391 Admin: allow searching/filtering for specification attributes
+* Removed _OpenID_ plugin from core
+* Specification attribute values that are assigned to a product can be edited 
+
+###Bugfixes###
+* Twitter Auth: fixed _SecurityTransparent_ error
+* Facebook Auth: fixed _SecurityTransparent_ error
+* OpenID Auth: fixed _SecurityTransparent_ error
+* #376 Product filtering: Category price range filter not working anymore
+* Return requests: Products to return won't be listed
+* #372 Biz-Importer sometimes shows inactive tier prices
+* PayPal Standard: Sending more localized values. Adjustment of net prices to avoid wrong PayPal total amount calculation.
+* Globalization fix in plugin data grids: inline editing for decimal values did not take current culture into account
+* #391 Show delivery time if out-of-stock orders are allowed by attribute combination
+* CustomerRole > TaxDisplayType _Including VAT_ could not be saved
+* Product.DisableBuyButton was never updated when the stock quantity has been increased (e.g. as a result of order canceling)
+* Shipping.ByTotal: Fixed matching of rates by choosing the more specific over the common rate
+* A grouped product only shows up to 12 associated products
+* #405 Billiger feed: Wrong base price exported
+* #437 Mobile devices: Cannot add a product to the cart when it is grouped
+* PayPal Standard: Costs for checkout attributes were double charged
+* Paging of return request grid did not work
+* #428 Multiline checkout attributes aren't rendered correctly
+* #434 Shipping.ByTotal: Make grid pageable
+* #419 email account password hidden
+* #424 Localize return reasons & return actions
+* #479 Product filter: Wrong count of manufacturers if products of sub-categories are included
+* #492 Ipayment credit card: Order notes are only created when the order exists
+* #493 Postfinance plugin does not work if shopname includes a "umlaut"
+* #237 Mobile theme: inactive attribute combinations should not be added to cart
+* #178 Mobile theme doesn't display base price
+* Ipayment: Capturing did not work because the security was not transmitted
+* #405 "Reset Password" Link in Emails is wrong with SSL secured sites 
+* #471 Checkout: Redirecting to external payment page could take a while. Clicking "Buy" button again might cancel the redirecting.
+* Pricing not considered attribute combination prices for bundles with per item pricing
+
+
 ##SmartStore.NET 2.0.2#
 
 ###Bugfixes###

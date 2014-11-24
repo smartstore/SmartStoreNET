@@ -8,7 +8,7 @@
 @using System.Linq;
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-cogs"></i>
+        <i class="fa fa-cogs"></i>
         @T("Admin.Configuration.Settings.AllSettings")
     </div>
 </div>
@@ -28,14 +28,14 @@
                     })
                     .Columns(columns =>
                     {
-						columns.Bound(x => x.Name);
-                        columns.Bound(x => x.Value);
-						columns.Bound(x => x.Store).EditorTemplateName("Store");
+						columns.Bound(x => x.Name).Width("25%");
+						columns.Bound(x => x.Value).Width("55%").EditorTemplateName("MultilineText");
+						columns.Bound(x => x.Store).EditorTemplateName("Store").Width("15%");
                         columns.Command(commands =>
                         {
                             commands.Edit().Localize(T);
                             commands.Delete().Localize(T);
-                        }).Width(220);
+                        });
 
                     })
                     .ToolBar(x => x.Insert())

@@ -5,9 +5,17 @@
 @{
     // add js assets
     Html.AppendScriptParts(ResourceLocation.Head,
-        "~/Scripts/jquery-{version}.js",
+        "~/Scripts/jquery-2.1.1.js",
+		"~/Scripts/jquery-migrate-1.2.1.js",
+        "~/Scripts/underscore.js",
+        "~/Scripts/underscore.string.js",
+        "~/Scripts/underscore.mixins.js",
+        "~/Scripts/smartstore.doAjax.js",
         "~/Scripts/jquery.validate.js",
-        "~/Scripts/jquery.validate.unobtrusive.js"); 
+        "~/Scripts/jquery.validate.unobtrusive.js");
+		
+	Html.AppendScriptParts(ResourceLocation.Foot,
+		"~/Scripts/smartstore.jquery.utils.js");
 }
 
 <!DOCTYPE html>
@@ -39,5 +47,12 @@
     @RenderBody()
     @Html.SmartCssFiles(this.Url, ResourceLocation.Foot)
     @Html.SmartScripts(this.Url, ResourceLocation.Foot)
+
+	<script type="text/javascript">
+	    $(function () {
+		    // html text collapser
+		    $('.more-less').moreLess();
+        });
+    </script>
 </body>
 </html>

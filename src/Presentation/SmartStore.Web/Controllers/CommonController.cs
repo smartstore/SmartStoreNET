@@ -6,7 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.UI;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Blogs;
@@ -19,36 +18,28 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
-using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Extensions;
-using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.Themes;
-using SmartStore.Web.Framework.UI.Captcha;
-using SmartStore.Web.Infrastructure.Cache;
-using SmartStore.Web.Models.Catalog;
-using SmartStore.Web.Models.Common;
-using SmartStore.Web.Models.Topics;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
-using SmartStore.Services.Configuration;
+using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Infrastructure.Cache;
+using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Controllers
 {
@@ -56,17 +47,11 @@ namespace SmartStore.Web.Controllers
     {
         #region Fields
 
-        private readonly ICategoryService _categoryService;
-        private readonly IProductService _productService;
-        private readonly IManufacturerService _manufacturerService;
         private readonly ITopicService _topicService;
         private readonly ILanguageService _languageService;
         private readonly ICurrencyService _currencyService;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly IQueuedEmailService _queuedEmailService;
-        private readonly IEmailAccountService _emailAccountService;
-        private readonly ISitemapGenerator _sitemapGenerator;
         private readonly IThemeContext _themeContext;
         private readonly IThemeRegistry _themeRegistry;
         private readonly IForumService _forumservice;
@@ -75,7 +60,6 @@ namespace SmartStore.Web.Controllers
         private readonly IPermissionService _permissionService;
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
         private readonly ICacheManager _cacheManager;
-        private readonly ICustomerActivityService _customerActivityService;
 
 		private readonly static string[] s_hints = new string[] { "Onlineshop", "Shopsystem", "Onlineshop Software", "Shopsoftware", "Webshop", "Ecommerce", "Ecommerce Solution", "Shopping Cart", "Internetshop", "Online Commerce", "Free Shopsoftware" };
 
@@ -87,7 +71,6 @@ namespace SmartStore.Web.Controllers
         private readonly BlogSettings _blogSettings;
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly CaptchaSettings _captchaSettings;
 
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IPriceFormatter _priceFormatter;
@@ -97,36 +80,38 @@ namespace SmartStore.Web.Controllers
 
         #region Constructors
 
-        public CommonController(ICategoryService categoryService, IProductService productService,
-            IManufacturerService manufacturerService, ITopicService topicService,
+        public CommonController(
+			ITopicService topicService,
             ILanguageService languageService,
             ICurrencyService currencyService,
-            IWorkContext workContext, IStoreContext storeContext,
-            IQueuedEmailService queuedEmailService, IEmailAccountService emailAccountService,
-            ISitemapGenerator sitemapGenerator, IThemeContext themeContext,
-            IThemeRegistry themeRegistry, IForumService forumService,
-            IGenericAttributeService genericAttributeService, IWebHelper webHelper,
-            IPermissionService permissionService, IMobileDeviceHelper mobileDeviceHelper,
+            IWorkContext workContext, 
+			IStoreContext storeContext,
+			IThemeContext themeContext,
+            IThemeRegistry themeRegistry, 
+			IForumService forumService,
+            IGenericAttributeService genericAttributeService, 
+			IWebHelper webHelper,
+            IPermissionService permissionService, 
+			IMobileDeviceHelper mobileDeviceHelper,
             ICacheManager cacheManager,
-            ICustomerActivityService customerActivityService, CustomerSettings customerSettings, 
-            TaxSettings taxSettings, CatalogSettings catalogSettings,
+			CustomerSettings customerSettings, 
+            TaxSettings taxSettings, 
+			CatalogSettings catalogSettings,
             EmailAccountSettings emailAccountSettings,
-            CommonSettings commonSettings, BlogSettings blogSettings, ForumSettings forumSettings,
-            LocalizationSettings localizationSettings, CaptchaSettings captchaSettings,
-            IOrderTotalCalculationService orderTotalCalculationService, IPriceFormatter priceFormatter,
-            ThemeSettings themeSettings, ISettingService settingService)
+            CommonSettings commonSettings, 
+			BlogSettings blogSettings, 
+			ForumSettings forumSettings,
+            LocalizationSettings localizationSettings, 
+            IOrderTotalCalculationService orderTotalCalculationService, 
+			IPriceFormatter priceFormatter,
+            ThemeSettings themeSettings, 
+			ISettingService settingService)
         {
-            this._categoryService = categoryService;
-            this._productService = productService;
-            this._manufacturerService = manufacturerService;
             this._topicService = topicService;
             this._languageService = languageService;
             this._currencyService = currencyService;
             this._workContext = workContext;
 			this._storeContext = storeContext;
-            this._queuedEmailService = queuedEmailService;
-            this._emailAccountService = emailAccountService;
-            this._sitemapGenerator = sitemapGenerator;
             this._themeContext = themeContext;
             this._themeRegistry = themeRegistry;
             this._forumservice = forumService;
@@ -135,7 +120,6 @@ namespace SmartStore.Web.Controllers
             this._permissionService = permissionService;
             this._mobileDeviceHelper = mobileDeviceHelper;
             this._cacheManager = cacheManager;
-            this._customerActivityService = customerActivityService;
 
             this._customerSettings = customerSettings;
             this._taxSettings = taxSettings;
@@ -144,7 +128,6 @@ namespace SmartStore.Web.Controllers
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
             this._localizationSettings = localizationSettings;
-            this._captchaSettings = captchaSettings;
 
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
@@ -157,15 +140,6 @@ namespace SmartStore.Web.Controllers
         #endregion
 
         #region Utilities
-
-        // page not found
-        public ActionResult PageNotFound()
-        {
-            this.Response.StatusCode = 404;
-            this.Response.TrySkipIisCustomErrors = true;
-            
-            return View();
-        }
 
         [NonAction]
         protected LanguageSelectorModel PrepareLanguageSelectorModel()
@@ -338,6 +312,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult LanguageSelector()
         {
             var model = PrepareLanguageSelectorModel();
+
+			if (model.AvailableLanguages.Count < 2)
+				return Content("");
+
             return PartialView(model);
         }
 
@@ -412,6 +390,10 @@ namespace SmartStore.Web.Controllers
         public ActionResult CurrencySelector()
         {
             var model = PrepareCurrencySelectorModel();
+
+			if (model.AvailableCurrencies.Count < 2)
+				return Content("");
+
             return PartialView(model);
         }
         public ActionResult CurrencySelected(int customerCurrency, string returnUrl = "")
@@ -701,155 +683,6 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        //contact us page
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
-        public ActionResult ContactUs()
-        {
-            var model = new ContactUsModel()
-            {
-                Email = _workContext.CurrentCustomer.Email,
-                FullName = _workContext.CurrentCustomer.GetFullName(),
-                DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnContactUsPage
-            };
-            return View(model);
-        }
-        [HttpPost, ActionName("ContactUs")]
-        [CaptchaValidator]
-        public ActionResult ContactUsSend(ContactUsModel model, bool captchaValid)
-        {
-            //validate CAPTCHA
-            if (_captchaSettings.Enabled && _captchaSettings.ShowOnContactUsPage && !captchaValid)
-            {
-                ModelState.AddModelError("", T("Common.WrongCaptcha"));
-            }
-
-            if (ModelState.IsValid)
-            {
-                string email = model.Email.Trim();
-                string fullName = model.FullName;
-				string subject = T("ContactUs.EmailSubject", _storeContext.CurrentStore.Name);
-
-                var emailAccount = _emailAccountService.GetEmailAccountById(EngineContext.Current.Resolve<EmailAccountSettings>().DefaultEmailAccountId);
-                if (emailAccount == null)
-                    emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
-
-                string from = null;
-                string fromName = null;
-                string body = Core.Html.HtmlUtils.FormatText(model.Enquiry, false, true, false, false, false, false);
-                //required for some SMTP servers
-                if (_commonSettings.UseSystemEmailForContactUsForm)
-                {
-                    from = emailAccount.Email;
-                    fromName = emailAccount.DisplayName;
-                    body = string.Format("<strong>From</strong>: {0} - {1}<br /><br />{2}", 
-                        Server.HtmlEncode(fullName), 
-                        Server.HtmlEncode(email), body);
-                }
-                else
-                {
-                    from = email;
-                    fromName = fullName;
-                }
-                _queuedEmailService.InsertQueuedEmail(new QueuedEmail()
-                {
-                    From = from,
-                    FromName = fromName,
-                    To = emailAccount.Email,
-                    ToName = emailAccount.DisplayName,
-                    Priority = 5,
-                    Subject = subject,
-                    Body = body,
-                    CreatedOnUtc = DateTime.UtcNow,
-                    EmailAccountId = emailAccount.Id,
-					ReplyTo = email,
-					ReplyToName = fullName
-                });
-
-                model.SuccessfullySent = true;
-                model.Result = T("ContactUs.YourEnquiryHasBeenSent");
-
-                //activity log
-                _customerActivityService.InsertActivity("PublicStore.ContactUs", T("ActivityLog.PublicStore.ContactUs"));
-
-                return View(model);
-            }
-
-            model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnContactUsPage;
-            return View(model);
-        }
-
-        //sitemap page
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
-        public ActionResult Sitemap()
-        {
-            if (!_commonSettings.SitemapEnabled)
-                return RedirectToRoute("HomePage");
-
-            var model = new SitemapModel();
-            if (_commonSettings.SitemapIncludeCategories)
-            {
-                var categories = _categoryService.GetAllCategories();
-                model.Categories = categories.Select(x => x.ToModel()).ToList();
-            }
-            if (_commonSettings.SitemapIncludeManufacturers)
-            {
-                var manufacturers = _manufacturerService.GetAllManufacturers();
-                model.Manufacturers = manufacturers.Select(x => x.ToModel()).ToList();
-            }
-            if (_commonSettings.SitemapIncludeProducts)
-            {
-                //limit product to 200 until paging is supported on this page
-                IList<int> filterableSpecificationAttributeOptionIds = null;
-
-                var productSearchContext = new ProductSearchContext();
-
-                productSearchContext.OrderBy = ProductSortingEnum.Position;
-                productSearchContext.PageSize = 200;
-                productSearchContext.FilterableSpecificationAttributeOptionIds = filterableSpecificationAttributeOptionIds;
-				productSearchContext.StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode;
-				productSearchContext.VisibleIndividuallyOnly = true;
-
-                var products = _productService.SearchProducts(productSearchContext);
-
-                model.Products = products.Select(product => new ProductOverviewModel()
-                {
-                    Id = product.Id,
-                    Name = product.GetLocalized(x => x.Name).EmptyNull(),
-                    ShortDescription = product.GetLocalized(x => x.ShortDescription),
-                    FullDescription = product.GetLocalized(x => x.FullDescription),
-                    SeName = product.GetSeName(),
-                }).ToList();
-            }
-            if (_commonSettings.SitemapIncludeTopics)
-            {
-				var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id)
-					 .ToList()
-					 .FindAll(t => t.IncludeInSitemap);
-                model.Topics = topics.Select(topic => new TopicModel()
-                {
-                    Id = topic.Id,
-                    SystemName = topic.SystemName,
-                    IncludeInSitemap = topic.IncludeInSitemap,
-                    IsPasswordProtected = topic.IsPasswordProtected,
-                    Title = topic.GetLocalized(x => x.Title),
-                })
-                .ToList();
-            }
-            return View(model);
-        }
-
-        //SEO sitemap page
-        [RequireHttpsByConfigAttribute(SslRequirement.No)]
-        public ActionResult SitemapSeo()
-        {
-            if (!_commonSettings.SitemapEnabled)
-                return RedirectToRoute("HomePage");
-
-            string siteMap = _sitemapGenerator.Generate();
-            return Content(siteMap, "text/xml");
-        }
-
-        //store theme
         [ChildActionOnly]
         public ActionResult StoreThemeSelector()
         {
@@ -877,6 +710,7 @@ namespace SmartStore.Web.Controllers
                 .ToList();
             return PartialView(model);
         }
+
         public ActionResult StoreThemeSelected(string themeName)
         {
             _themeContext.WorkingDesktopTheme = themeName;
@@ -977,12 +811,10 @@ namespace SmartStore.Web.Controllers
                 "/Content/files/exportimport/",
                 "/country/getstatesbycountryid",
                 "/install",
-                "/setproductreviewhelpfulness",
+                "/product/setreviewhelpfulness",
             };
             var localizableDisallowPaths = new List<string>()
             {
-				"/addproducttocart/catalog/",
-				"/addproducttocart/details/",
                 "/boards/forumwatch",
                 "/boards/postedit",
                 "/boards/postdelete",
@@ -994,14 +826,7 @@ namespace SmartStore.Web.Controllers
                 "/boards/topicwatch",
                 "/cart",
                 "/checkout",
-                "/checkout/billingaddress",
-                "/checkout/completed",
-                "/checkout/confirm",
-                "/checkout/shippingaddress",
-                "/checkout/shippingmethod",
-                "/checkout/paymentinfo",
-                "/checkout/paymentmethod",
-                "/clearcomparelist",
+                "/product/clearcomparelist",
                 "/compareproducts",
                 "/customer/avatar",
                 "/customer/activation",
@@ -1011,28 +836,24 @@ namespace SmartStore.Web.Controllers
                 "/customer/checkusernameavailability",
                 "/customer/downloadableproducts",
                 "/customer/forumsubscriptions",
+				"/customer/deleteforumsubscriptions",
                 "/customer/info",
                 "/customer/orders",
                 "/customer/returnrequests",
                 "/customer/rewardpoints",
-                "/deletepm",
-                "/emailwishlist",
-                "/inboxupdate",
+                "/privatemessages",
                 "/newsletter/subscriptionactivation",
                 "/onepagecheckout",
-                "/orderdetails",
-                "/passwordrecovery/confirm",
+                "/order",
+                "/passwordrecovery",
                 "/poll/vote",
                 "/privatemessages",
                 "/returnrequest",
-                "/sendpm",
-                "/sentupdate",
-                "/subscribenewsletter",
+                "/newsletter/subscribe",
                 "/topic/authenticate",
-                "/viewpm",
                 "/wishlist",
-                "/productaskquestion",
-                "/productemailafriend"
+                "/product/askquestion",
+                "/product/emailafriend"
             };
 
 
@@ -1070,7 +891,7 @@ namespace SmartStore.Web.Controllers
         public ActionResult GenericUrl()
         {
             //seems that no entity was found
-            return RedirectToRoute("HomePage");
+            return HttpNotFound();
         }
 
         /// <summary>
@@ -1112,12 +933,6 @@ namespace SmartStore.Web.Controllers
             };
 
             return PartialView(model);
-        }
-
-        //store is closed
-        public ActionResult StoreClosed()
-        {
-            return View();
         }
 
         #endregion

@@ -4,22 +4,48 @@ using System.Collections.Generic;
 using System.Xml;
 using SmartStore.Collections;
 using System.IO;
+using SmartStore.Utilities;
+using System.Web;
 
 namespace SmartStore.Core.Themes
 {
-    public class ThemeManifest : ComparableObject<ThemeManifest>
-    {
 
-        #region Ctor
+	public class ThemeManifest : ComparableObject<ThemeManifest>
+    {
 
         internal ThemeManifest()
         {
         }
 
-		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes")
+		#region Methods
+
+		public static ThemeManifest Create(string themePath, string virtualBasePath = "~/Themes/")
 		{
 			Guard.ArgumentNotEmpty(() => themePath);
-			Guard.ArgumentNotEmpty(() => virtualBasePath);
+
+			var folderData = CreateThemeFolderData(themePath, virtualBasePath);
+			if (folderData != null)
+			{
+				return Create(folderData);
+			}
+
+			return null;
+		}
+
+		internal static ThemeManifest Create(ThemeFolderData folderData)
+		{
+			Guard.ArgumentNotNull(() => folderData);
+
+			var materializer = new ThemeManifestMaterializer(folderData);
+			var manifest = materializer.Materialize();
+
+			return manifest;
+		}
+
+		internal static ThemeFolderData CreateThemeFolderData(string themePath, string virtualBasePath = "~/Themes/")
+		{
+			if (themePath.IsEmpty())
+				return null;
 
 			virtualBasePath = virtualBasePath.EnsureEndsWith("/");
 			var themeDirectory = new DirectoryInfo(themePath);
@@ -29,97 +55,271 @@ namespace SmartStore.Core.Themes
 			{
 				var doc = new XmlDocument();
 				doc.Load(themeConfigFile.FullName);
-				return ThemeManifest.Create(
-					themeDirectory.Name,
-					virtualBasePath,
-					themeDirectory.FullName,
-					doc);
+
+				Guard.Against<SmartException>(doc.DocumentElement == null, "The theme configuration document must have a root element.");
+
+				var root = doc.DocumentElement;
+
+				var baseTheme = root.GetAttribute("baseTheme").TrimSafe().NullEmpty();
+				if (baseTheme != null && baseTheme.IsCaseInsensitiveEqual(themeDirectory.Name))
+				{
+					// Don't let theme point to itself!
+					baseTheme = null;
+				}
+
+				return new ThemeFolderData
+				{
+					FolderName = themeDirectory.Name,
+					FullPath = themeDirectory.FullName,
+					Configuration = doc,
+					VirtualBasePath = virtualBasePath,
+					BaseTheme = baseTheme
+				};
 			}
 
 			return null;
 		}
 
-        public static ThemeManifest Create(string themeName, string virtualPath, string path, XmlDocument doc)
-        {
-            var materializer = new ThemeManifestMaterializer(themeName, virtualPath, path, doc);
-            return materializer.Materialize();
-        }
+		#endregion
 
-        #endregion
+		#region Properties
 
-        #region Properties
-
-        public XmlElement ConfigurationNode { get; protected internal set; }
+		public XmlElement ConfigurationNode 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
         /// <summary>
         /// Gets the virtual theme base path (e.g.: ~/Themes)
         /// </summary>
-        public string Location { get; protected internal set; }
+        public string Location 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
         /// <summary>
         /// Gets the physical path of the theme
         /// </summary>
-        public string Path { get; protected internal set; }
+        public string Path 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public string PreviewImageUrl { get; protected internal set; }
+        public string PreviewImageUrl 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public string PreviewText { get; protected internal set; }
+        public string PreviewText 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public bool SupportRtl { get; protected internal set; }
+        public bool SupportRtl 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public bool MobileTheme { get; protected internal set; }
+        public bool MobileTheme 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
 		[ObjectSignature]
-        public string ThemeName { get; protected internal set; }
+        public string ThemeName 
+		{ 
+			get;
+			protected internal set; 
+		}
 
-        public string ThemeTitle { get; protected internal set; }
+		public string BaseThemeName
+		{
+			get;
+			internal set;
+		}
 
-        public string Author { get; protected internal set; }
+		public ThemeManifest BaseTheme
+		{
+			get;
+			internal set;
+		}
 
-        public string Version { get; protected internal set; }
+        public string ThemeTitle 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public IDictionary<string, ThemeVariableInfo> Variables { get; internal set; }
+        public string Author 
+		{ 
+			get; 
+			protected internal set; 
+		}
 
-        public Multimap<string, string> Selects { get; internal set; }
+        public string Version 
+		{ 
+			get; 
+			protected internal set; 
+		}
+
+		private IDictionary<string, ThemeVariableInfo> _variables;
+		public IDictionary<string, ThemeVariableInfo> Variables
+		{
+			get
+			{
+				if (this.BaseTheme == null)
+				{
+					return _variables;
+				}
+
+				var baseVars = this.BaseTheme.Variables;
+				var merged = new Dictionary<string, ThemeVariableInfo>(baseVars, StringComparer.OrdinalIgnoreCase);
+				foreach (var localVar in _variables)
+				{
+					if (merged.ContainsKey(localVar.Key))
+					{
+						// Overridden var in child: update existing.
+						var baseVar = merged[localVar.Key];
+						merged[localVar.Key] = new ThemeVariableInfo 
+						{
+							Name = baseVar.Name,
+							Type = baseVar.Type,
+							SelectRef = baseVar.SelectRef,
+							DefaultValue = localVar.Value.DefaultValue,
+							Manifest = localVar.Value.Manifest
+						};
+					}
+					else
+					{
+						// New var in child: add to list.
+						merged.Add(localVar.Key, localVar.Value);
+					}
+				}
+
+				return merged;
+			}
+			internal set
+			{
+				_variables = value;
+			}
+		}
+
+		private Multimap<string, string> _selects; 
+        public Multimap<string, string> Selects 
+		{
+			get
+			{
+				if (this.BaseTheme == null)
+				{
+					return _selects;
+				}
+
+				var baseSelects = this.BaseTheme.Selects;
+				var merged = new Multimap<string, string>();
+				baseSelects.Each(x => merged.AddRange(x.Key, x.Value));
+				foreach (var localSelect in _selects)
+				{
+					if (!merged.ContainsKey(localSelect.Key))
+					{
+						// New Select in child: add to list.
+						merged.AddRange(localSelect.Key, localSelect.Value);
+					}
+					else
+					{
+						// Do nothing: we don't support overriding Selects
+					}
+				}
+
+				return merged;
+			}
+			internal set
+			{
+				_selects = value;
+			}
+		}
+
+		private ThemeManifestState _state;
+		public ThemeManifestState State
+		{
+			get
+			{
+				if (_state == ThemeManifestState.Active)
+				{
+					// active state does not mean, that it actually IS active: check state of base themes!
+					var baseTheme = this.BaseTheme;
+					while (baseTheme != null)
+					{
+						if (baseTheme.State != ThemeManifestState.Active)
+						{
+							return baseTheme.State;
+						}
+						baseTheme = baseTheme.BaseTheme;
+					}
+				}
+
+				return _state;
+			}
+			protected internal set
+			{
+				_state = value;
+			}
+		}
 
         internal string FullPath
         {
             get { return System.IO.Path.Combine(this.Path, "theme.config"); }
+		}
+
+		public override string ToString()
+		{
+			return "{0} (Parent: {1}, State: {2})".FormatInvariant(ThemeName, BaseThemeName ?? "-", State.ToString());
+		}
+
+		#endregion
+
+		#region Dispose
+
+		public void Dispose()
+		{
+			Dispose(true);
+			GC.SuppressFinalize(this);
+		}
+
+		protected void Dispose(bool disposing)
+		{
+			if (disposing)
+			{
+				BaseTheme = null;
+				if (_variables != null) 
+				{
+					foreach (var pair in _variables)
+					{
+						pair.Value.Dispose();
+					}
+					_variables.Clear();
+				}
+			}
+		}
+
+		~ThemeManifest()
+        {
+            Dispose(false);
         }
 
-        #endregion
+		#endregion
+	}
 
-        #region Helper
+	public enum ThemeManifestState
+	{
+		MissingBaseTheme = -1,
+		Active = 0,
+	}
 
-        ////private void MaterializeVariables() 
-        ////{
-        ////    // TODO: (MC) Nur Temp
-        ////    var vars = this.Variables;
-
-        ////    vars.Add("BodyBackground", new ThemeVariableInfo { Name = "BodyBackground", DefaultValue = "#fff", Type = ThemeVariableType.Color });
-        ////    vars.Add("TextColor", new ThemeVariableInfo { Name = "TextColor", DefaultValue = "#555", Type = ThemeVariableType.Color });
-        ////    vars.Add("LinkColor", new ThemeVariableInfo { Name = "LinkColor", DefaultValue = "#08c", Type = ThemeVariableType.Color });
-
-        ////    vars.Add("SansFontFamily", new ThemeVariableInfo { Name = "SansFontFamily", DefaultValue = "'Segoe UI', Tahoma, 'Helvetica Neue', Helvetica, Arial, 'sans-serif'", Type = ThemeVariableType.String });
-        ////    vars.Add("SerifFontFamily", new ThemeVariableInfo { Name = "SerifFontFamily", DefaultValue = "Georgia, 'Times New Roman', Times, serif", Type = ThemeVariableType.String });
-        ////    vars.Add("MonoFontFamily", new ThemeVariableInfo { Name = "MonoFontFamily", DefaultValue = "Menlo, Monaco, Consolas, 'Courier New', monospace", Type = ThemeVariableType.String });
-        ////    vars.Add("BaseFontSize", new ThemeVariableInfo { Name = "BaseFontSize", DefaultValue = "14px", Type = ThemeVariableType.String });
-        ////    vars.Add("BaseLineHeight", new ThemeVariableInfo { Name = "BaseLineHeight", DefaultValue = "20px", Type = ThemeVariableType.String });
-
-        ////    vars.Add("HeadingsFontFamily", new ThemeVariableInfo { Name = "HeadingsFontFamily", DefaultValue = "'Segoe UI Semibold', 'Segoe UI', Tahoma, 'Helvetica Neue', Helvetica, Arial, 'sans-serif'", Type = ThemeVariableType.String });
-        ////    vars.Add("HeadingsFontWeight", new ThemeVariableInfo { Name = "HeadingsFontWeight", DefaultValue = "600", Type = ThemeVariableType.String }); // Select?
-        ////    vars.Add("HeadingsColor", new ThemeVariableInfo { Name = "HeadingsColor", DefaultValue = "inherit", Type = ThemeVariableType.Color }); // String?
-
-        ////    vars.Add("TableBackground", new ThemeVariableInfo { Name = "TableBackground", DefaultValue = "transparent", Type = ThemeVariableType.Color });
-        ////    vars.Add("TableBackgroundAccent", new ThemeVariableInfo { Name = "TableBackgroundAccent", DefaultValue = "#f9f9f9", Type = ThemeVariableType.Color });
-        ////    vars.Add("TableBackgroundHover", new ThemeVariableInfo { Name = "TableBackgroundHover", DefaultValue = "#f5f5f5", Type = ThemeVariableType.Color });
-        ////    vars.Add("TableBorder", new ThemeVariableInfo { Name = "TableBorder", DefaultValue = "#ddd", Type = ThemeVariableType.Color });
-
-        ////    vars.Add("BtnBackground", new ThemeVariableInfo { Name = "BtnBackground", DefaultValue = "#fff", Type = ThemeVariableType.Color });
-
-        ////}
-
-        #endregion
-
-    }
 }

@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Data;
 using SmartStore.Core.Events;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
 {
@@ -16,12 +17,17 @@ namespace SmartStore.Services.Messages
         private readonly IEventPublisher _eventPublisher;
         private readonly IDbContext _context;
         private readonly IRepository<NewsLetterSubscription> _subscriptionRepository;
+		private readonly IStoreService _storeService;
 
-        public NewsLetterSubscriptionService(IDbContext context, IRepository<NewsLetterSubscription> subscriptionRepository, IEventPublisher eventPublisher)
+        public NewsLetterSubscriptionService(IDbContext context,
+			IRepository<NewsLetterSubscription> subscriptionRepository,
+			IEventPublisher eventPublisher,
+			IStoreService storeService)
         {
             _context = context;
             _subscriptionRepository = subscriptionRepository;
             _eventPublisher = eventPublisher;
+			_storeService = storeService;
         }
 
         public ImportResult ImportSubscribers(Stream stream)
@@ -55,6 +61,8 @@ namespace SmartStore.Services.Messages
 
                         var email = "";
                         bool isActive = true;
+						int storeId = 0;
+
                         // parse
                         if (tmp.Length == 1)
                         {
@@ -67,10 +75,16 @@ namespace SmartStore.Services.Messages
                             email = tmp[0].Trim();
                             isActive = Boolean.Parse(tmp[1].Trim());
                         }
-                        else
-                        {
-                            throw new SmartException("Wrong file format (expected comma separated entries 'Email' and optionally 'IsActive')");
-                        }
+						else if (tmp.Length == 3)
+						{
+							email = tmp[0].Trim();
+							isActive = Boolean.Parse(tmp[1].Trim());
+							storeId = int.Parse(tmp[2].Trim());
+						}
+						else
+						{
+							throw new SmartException("Wrong file format (expected comma separated entries 'Email' and optionally 'IsActive')");
+						}
 
                         result.TotalRecords++;
 
@@ -86,9 +100,14 @@ namespace SmartStore.Services.Messages
                             continue;
                         }
 
+						if (storeId == 0)
+						{
+							storeId = _storeService.GetAllStores().First().Id;
+						}
+
                         // import
                         var subscription = (from nls in _subscriptionRepository.Table
-                                            where nls.Email == email
+                                            where nls.Email == email && nls.StoreId == storeId
                                             orderby nls.Id
                                             select nls).FirstOrDefault();
 
@@ -106,7 +125,8 @@ namespace SmartStore.Services.Messages
                                 Active = isActive,
                                 CreatedOnUtc = DateTime.UtcNow,
                                 Email = email,
-                                NewsLetterSubscriptionGuid = Guid.NewGuid()
+                                NewsLetterSubscriptionGuid = Guid.NewGuid(),
+								StoreId = storeId
                             };
 
                             toAdd.Add(subscription);
@@ -156,6 +176,11 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("newsLetterSubscription");
             }
 
+			if (newsLetterSubscription.StoreId == 0)
+			{
+				throw new SmartException("News letter subscription must be assigned to a valid store.");
+			}
+
             //Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
@@ -184,11 +209,16 @@ namespace SmartStore.Services.Messages
                 throw new ArgumentNullException("newsLetterSubscription");
             }
 
+			if (newsLetterSubscription.StoreId == 0)
+			{
+				throw new SmartException("News letter subscription must be assigned to a valid store.");
+			}
+
             //Handle e-mail
             newsLetterSubscription.Email = EnsureSubscriberEmailOrThrow(newsLetterSubscription.Email);
 
             //Get original subscription record
-            NewsLetterSubscription originalSubscription = _context.LoadOriginalCopy(newsLetterSubscription);
+            var originalSubscription = _context.LoadOriginalCopy(newsLetterSubscription);
 
             //Persist
             _subscriptionRepository.Update(newsLetterSubscription);
@@ -270,40 +300,55 @@ namespace SmartStore.Services.Messages
         /// Gets a newsletter subscription by email
         /// </summary>
         /// <param name="email">The newsletter subscription email</param>
+		/// <param name="storeId">The store identifier</param>
         /// <returns>NewsLetter subscription</returns>
-        public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email)
+        public virtual NewsLetterSubscription GetNewsLetterSubscriptionByEmail(string email, int storeId = 0)
         {
 			if (!email.IsEmail())
 				return null;
 
             email = email.Trim();
 
-            var newsLetterSubscriptions = from nls in _subscriptionRepository.Table
-                                          where nls.Email == email
-                                          orderby nls.Id
-                                          select nls;
+			var query = _subscriptionRepository.Table
+				.Where(x => x.Email == email);
 
-            return newsLetterSubscriptions.FirstOrDefault();
+			if (storeId > 0)
+				query = query.Where(x => x.StoreId == storeId);
+
+			var subscription = query.OrderBy(x => x.Id).FirstOrDefault();
+
+			return subscription;
         }
 
         /// <summary>
         /// Gets the newsletter subscription list
         /// </summary>
         /// <param name="email">Email to search or string. Empty to load all records.</param>
-        /// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="showHidden">A value indicating whether the not active subscriptions should be loaded</param>
+		/// <param name="storeId">The store identifier</param>
         /// <returns>NewsLetterSubscription entity list</returns>
-        public virtual IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email,
-            int pageIndex, int pageSize, bool showHidden = false)
+        public virtual IPagedList<NewsLetterSubscription> GetAllNewsLetterSubscriptions(string email, int pageIndex, int pageSize, bool showHidden = false, int storeId = 0)
         {
             var query = _subscriptionRepository.Table;
-            if (!String.IsNullOrEmpty(email)) query = query.Where(nls => nls.Email.Contains(email));
-            if (!showHidden)
+
+			if (!String.IsNullOrEmpty(email))
+			{
+				query = query.Where(nls => nls.Email.Contains(email));
+			}
+            
+			if (!showHidden)
             {
                 query = query.Where(nls => nls.Active);
             }
-            query = query.OrderBy(nls => nls.Email);
+
+			if (storeId > 0)
+			{
+				query = query.Where(x => x.StoreId == storeId);
+			}
+
+            query = query.OrderBy(nls => nls.Email).ThenBy(x => x.StoreId);
 
             var newsletterSubscriptions = new PagedList<NewsLetterSubscription>(query, pageIndex, pageSize);
             return newsletterSubscriptions;

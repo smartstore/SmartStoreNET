@@ -60,15 +60,24 @@ namespace SmartStore.Services.Tasks
         /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskByType(string type)
         {
-            if (String.IsNullOrWhiteSpace(type))
-                return null;
+			try
+			{
+				if (type.HasValue())
+				{
+					var query = _taskRepository.Table
+						.Where(t => t.Type == type)
+						.OrderByDescending(t => t.Id);
 
-            var query = _taskRepository.Table;
-            query = query.Where(st => st.Type == type);
-            query = query.OrderByDescending(t => t.Id);
-
-            var task = query.FirstOrDefault();
-            return task;
+					var task = query.FirstOrDefault();
+					return task;
+				}
+			}
+			catch (Exception exc)
+			{
+				// do not throw an exception if the underlying provider failed on Open.
+				exc.Dump();
+			}
+			return null;
         }
 
         /// <summary>
@@ -83,7 +92,7 @@ namespace SmartStore.Services.Tasks
             {
                 query = query.Where(t => t.Enabled);
             }
-            query = query.OrderByDescending(t => t.Seconds);
+            query = query.OrderBy(t => t.Seconds);
 
             var tasks = query.ToList();
             return tasks;
@@ -112,6 +121,34 @@ namespace SmartStore.Services.Tasks
 
             _taskRepository.Update(task);
         }
+
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="type">Task type</param>
+		public virtual void EnsureTaskIsNotRunning(string type)
+		{
+			var task = GetTaskByType(type);
+			if (task != null && task.IsRunning)
+			{
+				task.LastEndUtc = task.LastStartUtc;
+				UpdateTask(task);
+			}
+		}
+
+		/// <summary>
+		/// Ensures that a task is not marked as running
+		/// </summary>
+		/// <param name="taskId">Task identifier</param>
+		public virtual void EnsureTaskIsNotRunning(int taskId)
+		{
+			var task = GetTaskById(taskId);
+			if (task != null && task.IsRunning)
+			{
+				task.LastEndUtc = task.LastStartUtc;
+				UpdateTask(task);
+			}
+		}
 
         #endregion
     }

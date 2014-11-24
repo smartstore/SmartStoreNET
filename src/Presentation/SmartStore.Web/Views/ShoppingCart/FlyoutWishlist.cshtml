@@ -42,18 +42,19 @@
                         {
                             <br />    
                             <span class="attributes muted" title="@item.AttributeInfo">
-                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength))
+                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength, "..."))
                             </span>
                         }
                     </div>
                     <div class="action pull-left">
                          <a class="btn btn-mini ajax-cart-link" title='@T("ShoppingCart.AddToCart")' 
                              href="#"
+							 rel="nofollow"
                              data-href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
                              data-name="@item.ProductName"
                              data-type="cart"
                              data-action="addfromwishlist">
-                            <i class="icon-shopping-cart"></i>
+                            <i class="fa fa-shopping-cart"></i>
                         </a>
                     </div>
                     <div class="price pull-right">
@@ -61,12 +62,13 @@
                     </div>
                     <a class="remove ajax-cart-link" 
                         href="#"
+					    rel="nofollow"
                         data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id, wishlistItem = true })' 
                         data-name="@item.ProductName"
                         data-type="wishlist"
                         data-action="remove" 
                         title='@T("Common.Remove")'>
-                        <i class="icon-trash"></i>
+                        <i class="fa fa-trash-o"></i>
                     </a>
                 </li>
             }

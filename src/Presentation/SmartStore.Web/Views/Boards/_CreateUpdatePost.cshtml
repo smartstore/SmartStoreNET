@@ -3,7 +3,6 @@
 @using SmartStore.Services.Forums;
 @using SmartStore.Services.Seo;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.Boards;
 @using (Html.BeginForm())
 {
@@ -74,7 +73,7 @@
                 <tr>
                     <td colspan="2" class="options">
                         <button type="submit" class="btn btn-primary">
-                            <i class="icon icon-reply"></i>
+                            <i class="fa fa-reply"></i>
                             @T("Forum.Submit")
                         </button>
                         <button class="btn" onclick="setLocation('@Url.RouteUrl("TopicSlug", new { id = Model.ForumTopicId, slug = Model.ForumTopicSeName })'); return false;">@T("Forum.Cancel")</button>

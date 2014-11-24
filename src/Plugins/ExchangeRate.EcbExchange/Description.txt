@@ -1,7 +1,0 @@
-﻿FriendlyName: ECB exchange rate provider
-SystemName: CurrencyExchange.ECB
-Version: 1.2
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.ExchangeRate.EcbExchange.dll
-ResourceRootKey: Plugins.ExchangeRate.EcbExchange

@@ -1,0 +1,145 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.DiscountRules" AppendRootKey="false">
+    <Value>Standard Rabattregeln</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.DiscountRules" AppendRootKey="false">
+    <Value>Stellt Standard Rabattregeln zur Verfügung - u.A. "Land ist", "Kundengruppe ist", "Hat Betrag x ausgegeben" etc.</Value>
+  </LocaleResource>
+
+  <LocaleResource Name="ConfigureDiscountNotLoaded">
+    <Value>Rabatt konnte nicht geladen werden</Value>
+  </LocaleResource>
+  <LocaleResource Name="ConfigureRequirementFailed">
+    <Value>Anforderung konnte nicht geladen werden</Value>
+  </LocaleResource>
+  
+  <!-- CustomerRoles -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Value>Der Kunde muss einer Kundengruppe zugeordnet sein</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRequirement.MustBeAssignedToCustomerRole" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="ConfigureSelectCustomerRole">
+        <Value>Wählen Sie eine Kundengruppe</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CustomerRole">
+        <Value>Benötigte Kundengruppe</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CustomerRole.Hint">
+        <Value>Der Rabatt wird angewendet, wenn der Kunde zur gewählten Kundengruppe gehört.</Value>
+      </LocaleResource>     
+    </Children>
+  </LocaleResource>
+
+  <!-- BillingCountryIs -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.BillingCountryIs" AppendRootKey="false">
+    <Value>Land der Rechnungsadresse ist</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.BillingCountry" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectCountry">
+        <Value>Wählen Sie ein Land</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country">
+        <Value>Land der Rechnungsadresse</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country.Hint">
+        <Value>Wählen Sie das Land, dass in der Rechnungsadresse vorausgesetzt wird.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+  
+  <!-- ShippingCountryIs -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.ShippingCountryIs" AppendRootKey="false">
+    <Value>Land der Lieferadresse ist</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.ShippingCountry" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectCountry">
+        <Value>Wählen Sie ein Land</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country">
+        <Value>Land der Lieferadresse</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Country.Hint">
+        <Value>Wählen Sie das Land, dass in der Lieferadresse vorausgesetzt wird.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+  <!-- Store -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.Store" AppendRootKey="false">
+    <Value>Auf bestimmten Shop begrenzt</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.Store" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.SelectStore">
+        <Value>Shop auswählen</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Store">
+        <Value>Shop</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Store.Hint">
+        <Value>Wählen Sie den Shop für diesen Rabatt.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HasOneProduct -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasOneProduct" AppendRootKey="false">
+    <Value>Kunde hat einen der folgenden Produkte in seinem Warenkorb</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.HasOneProduct" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Products">
+        <Value>Produkte</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Products.Hint">
+        <Value>Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produkts findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produkt-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produkt-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HasAllProducts -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HasAllProducts" AppendRootKey="false">
+    <Value>Kunde hat folgende Produkte in seinem Warenkorb</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.HasAllProducts" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Products">
+        <Value>Produkte</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Products.Hint">
+        <Value>Kommagetrennte Liste von Produkt-IDs (z.B. 77, 123, 156). Die ID eines Produkts findet sich in seiner Detailansicht. Man kann die Liste außerdem um Mengenangaben ({Produkt-ID}:{Menge} z.B.: 77:1, 123:2, 156:3) oder um einen Mengenbereich ergänzen ({Produkt-ID}:{Minimale Menge}-{Maximale Menge} z.B.: 77:1-3, 123:2-5, 156:3-8).</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+  <!-- HadSpentAmount -->
+  <LocaleResource Name="Plugins.FriendlyName.DiscountRequirement.HadSpentAmount" AppendRootKey="false">
+    <Value>Kunde hat Betrag x ausgegeben</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.DiscountRules.HadSpentAmount" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Amount">
+        <Value>Betrag</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Amount.Hint">
+        <Value>Der Rabatt wird angewendet, wenn der Kunde den angegebenen Betrag ausgegeben hat.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal">
+        <Value>Bezogen auf Warenkorb-Zwischensumme</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
+        <Value>Legt fest, ob sich der angegebene Betrag auf die Zwischensumme im aktuellen Warenkorb oder - wenn inaktiv - auf die Summe aller zuvor vom Kunden getätigten Bestellungen bezieht.</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+</Language>

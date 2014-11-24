@@ -1,15 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
+﻿using System.Collections.Generic;
 using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Services.Catalog;
-using SmartStore.Services.Filter;
 
 namespace SmartStore.Services.Filter
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public class FilterSql
 	{
 		public List<FilterCriteria> Criteria { get; set; }
@@ -22,7 +15,7 @@ namespace SmartStore.Services.Filter
 				return "{0}, {1}".FormatWith(WhereClause.ToString(), string.Join(", ", Values.ToArray()));
 			return "";
 		}
-	}	// class
+	}
 
 
 	public class FilterProductContext
@@ -36,6 +29,5 @@ namespace SmartStore.Services.Filter
 		public string ViewMode { get; set; }
 
 		public List<FilterCriteria> Criteria { get; set; }
-	}	// class
-
+	}
 }

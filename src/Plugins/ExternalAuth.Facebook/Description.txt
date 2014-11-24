@@ -1,7 +1,0 @@
-﻿FriendlyName: Facebook
-SystemName: ExternalAuth.Facebook
-Version: 1.5
-MinAppVersion: 2.0.0
-DisplayOrder: 5
-FileName: SmartStore.Plugin.ExternalAuth.Facebook.dll
-ResourceRootKey: Plugins.ExternalAuth.Facebook

@@ -6,6 +6,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
 {
@@ -40,7 +42,7 @@ namespace SmartStore.Services.Shipping
             this._shipmentRepository = shipmentRepository;
             this._siRepository = siRepository;
             this._orderRepository = orderRepository;
-            _eventPublisher = eventPublisher;
+            this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -56,10 +58,18 @@ namespace SmartStore.Services.Shipping
             if (shipment == null)
                 throw new ArgumentNullException("shipment");
 
+			int orderId = shipment.OrderId;
+
             _shipmentRepository.Delete(shipment);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(shipment);
+
+			if (orderId != 0)
+			{
+				var order = _orderRepository.GetById(orderId);
+				_eventPublisher.PublishOrderUpdated(order);
+			}
         }
         
         /// <summary>
@@ -140,6 +150,7 @@ namespace SmartStore.Services.Shipping
 
             //event notification
             _eventPublisher.EntityInserted(shipment);
+			_eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
         /// <summary>
@@ -155,6 +166,7 @@ namespace SmartStore.Services.Shipping
 
             //event notification
             _eventPublisher.EntityUpdated(shipment);
+			_eventPublisher.PublishOrderUpdated(shipment.Order);
         }
 
 
@@ -168,10 +180,18 @@ namespace SmartStore.Services.Shipping
             if (shipmentItem == null)
 				throw new ArgumentNullException("shipmentItem");
 
+			int orderId = shipmentItem.Shipment.OrderId;
+
             _siRepository.Delete(shipmentItem);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(shipmentItem);
+
+			if (orderId != 0)
+			{
+				var order = _orderRepository.GetById(orderId);
+				_eventPublisher.PublishOrderUpdated(order);
+			}
         }
 
         /// <summary>
@@ -199,8 +219,9 @@ namespace SmartStore.Services.Shipping
 
             _siRepository.Insert(shipmentItem);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityInserted(shipmentItem);
+			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
         }
 
         /// <summary>
@@ -214,8 +235,9 @@ namespace SmartStore.Services.Shipping
 
             _siRepository.Update(shipmentItem);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityUpdated(shipmentItem);
+			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
         }
         
 		#endregion

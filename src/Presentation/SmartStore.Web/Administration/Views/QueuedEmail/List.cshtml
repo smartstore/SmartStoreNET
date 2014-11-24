@@ -9,12 +9,12 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-envelope-alt"></i>
+            <i class="fa fa-envelope-o"></i>
             @T("Admin.System.QueuedEmails")
         </div>
         <div class="options">
             <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected"
-                class="btn btn-danger"><i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.QueuedEmails.DeleteSelected")</button>
+                class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.QueuedEmails.DeleteSelected")</button>
         </div>
     </div>
     <table width="100%">
@@ -73,7 +73,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToNumber)
                 <button type="submit" name="go-to-email-by-number" value="go-to-email-by-number" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -82,7 +82,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -104,12 +104,17 @@
                             .HeaderHtmlAttributes(new { style = "text-align:center" });
 
                             columns.Bound(x => x.Id).Width(50);
-                            columns.Bound(x => x.Subject).Width(300);
-                            columns.Bound(x => x.Priority).Width(50);
-                            columns.Bound(x => x.From).Width(100);
-                            columns.Bound(x => x.FromName).Width(100);
-                            columns.Bound(x => x.CreatedOn).Width(100);
-                            columns.Bound(x => x.SentOn).Width(150);
+                            columns.Bound(x => x.Subject).Width(500);
+                            columns.Bound(x => x.Priority)
+								.Centered()
+								.Width(50);
+                            columns.Bound(x => x.From);
+                            columns.Bound(x => x.FromName);
+							columns.Bound(x => x.SentTries)
+								.Centered()
+								.Width(50);
+                            columns.Bound(x => x.SentOn);
+							columns.Bound(x => x.CreatedOn);
                             columns.Bound(x => x.Id)
                                 .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
                                 .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
@@ -177,7 +182,7 @@
             });
 
             //wire up checkboxes. 
-            $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

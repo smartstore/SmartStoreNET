@@ -8,8 +8,10 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
 using System.Web.Hosting;
+using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
@@ -26,6 +28,8 @@ namespace SmartStore.Core
 		
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
+
+		private Store _currentStore;
 
         /// <summary>
         /// Ctor
@@ -203,20 +207,27 @@ namespace SmartStore.Core
             {
 				//let's resolve IWorkContext  here.
 				//Do not inject it via contructor because it'll cause circular references
-				IStoreContext storeContext;
-				if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
-				{
-					var currentStore = storeContext.CurrentStore;
-					if (currentStore == null)
-						throw new Exception("Current store cannot be loaded");
 
-					var securityMode = currentStore.GetSecurityMode(useSsl);
+				if (_currentStore == null)
+				{
+					IStoreContext storeContext;
+					if (EngineContext.Current.ContainerManager.TryResolve<IStoreContext>(null, out storeContext)) // Unit test safe!
+					{
+						_currentStore = storeContext.CurrentStore;
+						if (_currentStore == null)
+							throw new Exception("Current store cannot be loaded");
+					}
+				}
+
+				if (_currentStore != null)
+				{
+					var securityMode = _currentStore.GetSecurityMode(useSsl);
 
 					if (httpHost.IsEmpty())
 					{
 						//HTTP_HOST variable is not available.
 						//It's possible only when HttpContext is not available (for example, running in a schedule task)
-						result = currentStore.Url.EnsureEndsWith("/");
+						result = _currentStore.Url.EnsureEndsWith("/");
 
 						appPathPossiblyAppended = true;
 					}
@@ -228,7 +239,7 @@ namespace SmartStore.Core
 							// Secure URL for shared ssl specified. 
 							// So a store owner doesn't want it to be resolved automatically.
 							// In this case let's use the specified secure URL
-							result = currentStore.SecureUrl.EmptyNull();
+							result = _currentStore.SecureUrl.EmptyNull();
 
 							if (!result.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
 							{
@@ -252,7 +263,7 @@ namespace SmartStore.Core
 							// So a store owner doesn't want it to be resolved automatically.
 							// In this case let's use the specified non-secure URL
 
-							result = currentStore.Url;
+							result = _currentStore.Url;
 							appPathPossiblyAppended = true;
 						}
 					}
@@ -361,92 +372,30 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
-            if (url == null)
-                url = string.Empty;
-            url = url.ToLowerInvariant();
+			// TODO: routine should not return a query string in lowercase (unless the caller is telling him to do so).
+			url = url.EmptyNull().ToLower();
+			queryStringModification = queryStringModification.EmptyNull().ToLower();
 
-            if (queryStringModification == null)
-                queryStringModification = string.Empty;
-            queryStringModification = queryStringModification.ToLowerInvariant();
+			string curAnchor = null;
 
-            if (anchor == null)
-                anchor = string.Empty;
-            anchor = anchor.ToLowerInvariant();
+			var hsIndex = url.LastIndexOf('#');
+			if (hsIndex >= 0)
+			{
+				curAnchor = url.Substring(hsIndex);
+				url = url.Substring(0, hsIndex);
+			}
+			
+			var parts = url.Split(new[] { '?' });
+			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
+			var modify = new QueryString(queryStringModification);
 
+			foreach (var nv in modify.AllKeys)
+			{
+				current.Add(nv, modify[nv], true);
+			}
 
-            string str = string.Empty;
-            string str2 = string.Empty;
-            if (url.Contains("#"))
-            {
-                str2 = url.Substring(url.IndexOf("#") + 1);
-                url = url.Substring(0, url.IndexOf("#"));
-            }
-            if (url.Contains("?"))
-            {
-                str = url.Substring(url.IndexOf("?") + 1);
-                url = url.Substring(0, url.IndexOf("?"));
-            }
-            if (!string.IsNullOrEmpty(queryStringModification))
-            {
-                if (!string.IsNullOrEmpty(str))
-                {
-                    var dictionary = new Dictionary<string, string>();
-                    foreach (string str3 in str.Split(new char[] { '&' }))
-                    {
-                        if (!string.IsNullOrEmpty(str3))
-                        {
-                            string[] strArray = str3.Split(new char[] { '=' });
-                            if (strArray.Length == 2)
-                            {
-                                dictionary[strArray[0]] = strArray[1];
-                            }
-                            else
-                            {
-                                dictionary[str3] = null;
-                            }
-                        }
-                    }
-                    foreach (string str4 in queryStringModification.Split(new char[] { '&' }))
-                    {
-                        if (!string.IsNullOrEmpty(str4))
-                        {
-                            string[] strArray2 = str4.Split(new char[] { '=' });
-                            if (strArray2.Length == 2)
-                            {
-                                dictionary[strArray2[0]] = strArray2[1];
-                            }
-                            else
-                            {
-                                dictionary[str4] = null;
-                            }
-                        }
-                    }
-                    var builder = new StringBuilder();
-                    foreach (string str5 in dictionary.Keys)
-                    {
-                        if (builder.Length > 0)
-                        {
-                            builder.Append("&");
-                        }
-                        builder.Append(str5);
-                        if (dictionary[str5] != null)
-                        {
-                            builder.Append("=");
-                            builder.Append(dictionary[str5]);
-                        }
-                    }
-                    str = builder.ToString();
-                }
-                else
-                {
-                    str = queryStringModification;
-                }
-            }
-            if (!string.IsNullOrEmpty(anchor))
-            {
-                str2 = anchor;
-            }
-            return (url + (string.IsNullOrEmpty(str) ? "" : ("?" + str)) + (string.IsNullOrEmpty(str2) ? "" : ("#" + str2))).ToLowerInvariant();
+			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor.ToLower()) : "#" + anchor.ToLower());
+			return result;
         }
 
         /// <summary>
@@ -457,61 +406,16 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string RemoveQueryString(string url, string queryString)
         {
-            if (url == null)
-                url = string.Empty;
-            url = url.ToLowerInvariant();
+			var parts = url.EmptyNull().ToLower().Split(new[] { '?' });
+			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
 
-            if (queryString == null)
-                queryString = string.Empty;
-            queryString = queryString.ToLowerInvariant();
+			if (current.Count > 0 && queryString.HasValue())
+			{
+				current.Remove(queryString);
+			}
 
-
-            string str = string.Empty;
-            if (url.Contains("?"))
-            {
-                str = url.Substring(url.IndexOf("?") + 1);
-                url = url.Substring(0, url.IndexOf("?"));
-            }
-            if (!string.IsNullOrEmpty(queryString))
-            {
-                if (!string.IsNullOrEmpty(str))
-                {
-                    var dictionary = new Dictionary<string, string>();
-                    foreach (string str3 in str.Split(new char[] { '&' }))
-                    {
-                        if (!string.IsNullOrEmpty(str3))
-                        {
-                            string[] strArray = str3.Split(new char[] { '=' });
-                            if (strArray.Length == 2)
-                            {
-                                dictionary[strArray[0]] = strArray[1];
-                            }
-                            else
-                            {
-                                dictionary[str3] = null;
-                            }
-                        }
-                    }
-                    dictionary.Remove(queryString);
-
-                    var builder = new StringBuilder();
-                    foreach (string str5 in dictionary.Keys)
-                    {
-                        if (builder.Length > 0)
-                        {
-                            builder.Append("&");
-                        }
-                        builder.Append(str5);
-                        if (dictionary[str5] != null)
-                        {
-                            builder.Append("=");
-                            builder.Append(dictionary[str5]);
-                        }
-                    }
-                    str = builder.ToString();
-                }
-            }
-            return (url + (string.IsNullOrEmpty(str) ? "" : ("?" + str)));
+			var result = "{0}{1}".FormatCurrent(parts[0], current.ToString());
+			return result;
         }
         
         /// <summary>

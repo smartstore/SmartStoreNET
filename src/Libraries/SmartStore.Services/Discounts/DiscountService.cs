@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
@@ -34,24 +35,13 @@ namespace SmartStore.Services.Discounts
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
-		private readonly ISettingService _settingService;	// codehint: sm-add
+		private readonly ISettingService _settingService;
+		private readonly IProviderManager _providerManager;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="discountRepository">Discount repository</param>
-        /// <param name="discountRequirementRepository">Discount requirement repository</param>
-        /// <param name="discountUsageHistoryRepository">Discount usage history repository</param>
-		/// <param name="storeContext">Store context</param>
-		/// <param name="genericAttributeService">Generic attribute service</param>
-        /// <param name="pluginFinder">Plugin finder</param>
-        /// <param name="eventPublisher">Event published</param>
-		/// <param name="settingService">Setting service</param>
         public DiscountService(ICacheManager cacheManager,
             IRepository<Discount> discountRepository,
             IRepository<DiscountRequirement> discountRequirementRepository,
@@ -60,7 +50,8 @@ namespace SmartStore.Services.Discounts
 			IGenericAttributeService genericAttributeService,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-			ISettingService settingService)
+			ISettingService settingService,
+			IProviderManager providerManager)
         {
             this._cacheManager = cacheManager;
             this._discountRepository = discountRepository;
@@ -70,7 +61,8 @@ namespace SmartStore.Services.Discounts
 			this._genericAttributeService = genericAttributeService;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
-			this._settingService = settingService;	// codehint: sm-add
+			this._settingService = settingService;
+			this._providerManager = providerManager;
         }
 
         #endregion
@@ -256,23 +248,18 @@ namespace SmartStore.Services.Discounts
         /// </summary>
         /// <param name="systemName">System name</param>
         /// <returns>Found discount requirement rule</returns>
-        public virtual IDiscountRequirementRule LoadDiscountRequirementRuleBySystemName(string systemName)
+		public virtual Provider<IDiscountRequirementRule> LoadDiscountRequirementRuleBySystemName(string systemName, int storeId = 0)
         {
-            var descriptor = _pluginFinder.GetPluginDescriptorBySystemName<IDiscountRequirementRule>(systemName);
-            if (descriptor != null)
-                return descriptor.Instance<IDiscountRequirementRule>();
-
-            return null;
+			return _providerManager.GetProvider<IDiscountRequirementRule>(systemName, storeId);
         }
 
         /// <summary>
         /// Load all discount requirement rules
         /// </summary>
         /// <returns>Discount requirement rules</returns>
-        public virtual IList<IDiscountRequirementRule> LoadAllDiscountRequirementRules()
+		public virtual IEnumerable<Provider<IDiscountRequirementRule>> LoadAllDiscountRequirementRules(int storeId = 0)
         {
-            var rules = _pluginFinder.GetPlugins<IDiscountRequirementRule>();
-            return rules.ToList();
+			return _providerManager.GetAllProviders<IDiscountRequirementRule>(storeId);
         }
 
         /// <summary>
@@ -331,6 +318,8 @@ namespace SmartStore.Services.Discounts
 
             //check date range
             DateTime now = DateTime.UtcNow;
+			int storeId = _storeContext.CurrentStore.Id;
+
             if (discount.StartDateUtc.HasValue)
             {
                 DateTime startDate = DateTime.SpecifyKind(discount.StartDateUtc.Value, DateTimeKind.Utc);
@@ -347,16 +336,13 @@ namespace SmartStore.Services.Discounts
             if (!CheckDiscountLimitations(discount, customer))
                 return false;
 
-            //discount requirements
+            // discount requirements
             var requirements = discount.DiscountRequirements;
             foreach (var req in requirements)
             {
-                var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName);
+				var requirementRule = LoadDiscountRequirementRuleBySystemName(req.DiscountRequirementRuleSystemName, storeId);
                 if (requirementRule == null)
                     continue;
-				if (!(_storeContext.CurrentStore.Id == 0 || 
-					_settingService.GetSettingByKey<string>(requirementRule.PluginDescriptor.GetSettingKey("LimitedToStores")).ToIntArrayContains(_storeContext.CurrentStore.Id, true)))
-					continue;
 
                 var request = new CheckDiscountRequirementRequest()
                 {
@@ -364,9 +350,19 @@ namespace SmartStore.Services.Discounts
                     Customer = customer,
 					Store = _storeContext.CurrentStore
                 };
-                if (!requirementRule.CheckRequirement(request))
+                if (!requirementRule.Value.CheckRequirement(request))
                     return false;
             }
+
+			// better not to apply discounts if there are gift cards in the cart cause the customer could "earn" money through that.
+			if (discount.DiscountType == DiscountType.AssignedToOrderTotal || discount.DiscountType == DiscountType.AssignedToOrderSubTotal)
+			{
+				var cart = customer.GetCartItems(ShoppingCartType.ShoppingCart, storeId);
+
+				if (cart.Any(x => x.Item.Product.IsGiftCard))
+					return false;
+			}
+
             return true;
         }
 

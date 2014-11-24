@@ -1,5 +1,5 @@
 ﻿using System.Collections.Generic;
-using SmartStore.Admin.Models.Stores;
+using System.Web.Mvc;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
@@ -8,10 +8,10 @@ namespace SmartStore.Admin.Models.Settings
 	{
 		public StoreScopeConfigurationModel()
 		{
-			Stores = new List<StoreModel>();
+			AllStores = new List<SelectListItem>();
 		}
 
 		public int StoreId { get; set; }
-		public IList<StoreModel> Stores { get; set; }
+		public IList<SelectListItem> AllStores { get; set; }
 	}
 }

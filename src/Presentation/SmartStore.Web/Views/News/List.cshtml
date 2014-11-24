@@ -1,6 +1,5 @@
 ﻿@model NewsItemListModel
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.News;
 @using SmartStore.Web.Framework.UI;
 @{
@@ -11,8 +10,8 @@
 }
 <div class="page news-list-page">
     <div class="page-title">
-        <a href="@Url.RouteUrl("NewsRSS", new { languageId = Model.WorkingLanguageId })" class="link-rss"title="@T("News.RSS.Hint")">
-            <i class="icon-rss muted"></i>
+        <a href="@Url.Action("rss", new { languageId = Model.WorkingLanguageId })" class="link-rss"title="@T("News.RSS.Hint")">
+            <i class="fa fa-rss muted"></i>
             @T("News.RSS")
         </a>
         <h1>@T("News")</h1>

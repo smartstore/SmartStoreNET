@@ -6,11 +6,14 @@
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-file-alt"></i>
+        <i class="fa fa-file-o"></i>
         @T("Admin.ContentManagement.Topics")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="icon-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+			<i class="fa fa-plus"></i>
+			@T("Admin.Common.AddNew")
+		</a>
     </div>
 </div>
 <table width="100%">
@@ -28,7 +31,7 @@
 		</td>
 		<td class="adminData">
 			<button type="button" id="search-topics" class="btn">
-				<i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")
+				<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
 			</button>
         </td>
     </tr>
@@ -63,7 +66,8 @@
                             .ClientTemplate(@Html.SymbolForBool("RenderAsWidget"))
                             .Centered();
                         columns.Bound(x => x.WidgetZone);
-                        columns.Bound(x => x.Priority);
+                        columns.Bound(x => x.Priority)
+							.Centered();
                         columns.Bound(x => x.Id)
                             .Width(50)
                             .Centered()

@@ -65,7 +65,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(customerId);
             if (!_customerSettings.AllowViewingProfiles || (customer == null || customer.IsGuest()))
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             bool pagingPosts = false;
@@ -99,7 +99,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(customerProfileId);
             if (customer == null)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             //avatar
@@ -204,7 +204,7 @@ namespace SmartStore.Web.Controllers
             var customer = _customerService.GetCustomerById(customerProfileId);
             if (customer == null)
             {
-                return RedirectToRoute("HomePage");
+				return HttpNotFound();
             }
 
             if (page > 0)

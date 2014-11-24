@@ -54,7 +54,7 @@
                 <td width="100%">
                     <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning" style="margin-top:3px;"
                             onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="icon-plus"></i>
+                        <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.RelatedProducts.AddNew")
                     </button>
 
@@ -128,7 +128,7 @@
                 <td width="100%">
                     <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning" style="margin-top:3px;"
                             onclick="javascript:OpenWindow('@(Url.Action("CrossSellProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshCrossSellProducts", formId = "product-form" }))', 1000, 700, true); return false;">
-                        <i class="icon-plus"></i>
+                        <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.CrossSells.AddNew")
                     </button>
 

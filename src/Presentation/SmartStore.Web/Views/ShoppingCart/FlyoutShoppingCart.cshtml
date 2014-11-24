@@ -46,7 +46,7 @@
                         {
                             <br />
                             <span class="attributes muted" title="@item.AttributeInfo">
-                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength))
+                                @Html.Raw(item.AttributeInfo.Truncate(attrMaxLength, "..."))
                             </span>
                         }
                     </div>
@@ -55,12 +55,13 @@
                     </div>
                     <a class="remove ajax-cart-link"
                         href="#"
+					    rel="nofollow"
                         data-href='@Url.Action("DeleteCartItem", "ShoppingCart", new { cartItemId = item.Id })'
                         data-name="@item.ProductName"
                         data-type="cart"
                         data-action="remove"
                         title='@T("Common.Remove")'>
-                        <i class="icon-trash"></i>
+                        <i class="fa fa-trash-o"></i>
                     </a>
 
                     @if (item.BundleItems.Count > 0)
@@ -76,7 +77,7 @@
                                 
                                 if (bundlelength != (j + 1)) 
                                 { 
-                                    <i class="icon-plus"></i>
+                                    <i class="fa fa-plus"></i>
                                 }
                                 
                             }        
@@ -110,7 +111,7 @@
             {
                 <a class="btn btn-primary btn-small pull-left" href="@Url.RouteUrl("ShoppingCart")">
                     @T("ShoppingCart.Mini.ViewCart")
-                    <i class="icon-shopping-cart" style="display: none"></i>
+                    <i class="fa fa-shopping-cart" style="display: none"></i>
                 </a>    
             }
             @if (Model.DisplayCheckoutButton)
@@ -118,7 +119,7 @@
                 var checkoutUrl = "";
                 if (Model.AnonymousCheckoutAllowed && Model.CurrentCustomerIsGuest)
                 {
-                    checkoutUrl = Url.RouteUrl("LoginCheckoutAsGuest", new { returnUrl = Url.RouteUrl("ShoppingCart") });
+					checkoutUrl = Url.Action("Login", "Customer", new { checkoutAsGuest = true, returnUrl = Url.RouteUrl("ShoppingCart") });
                 }
                 else
                 {
@@ -126,11 +127,12 @@
                 }
                 <a class="btn btn-warning btn-small pull-right" href="@checkoutUrl">
                     @T("Checkout.Button")&nbsp;
-                    <i class="icon-caret-right"></i>
+                    <i class="fa fa-caret-right"></i>
                 </a>
             }
         </div>
     }
+	@Html.Widget("mini_shopping_cart_bottom")
 </div>
 
 <script>

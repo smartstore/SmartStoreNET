@@ -1,0 +1,9 @@
+﻿FriendlyName: Google Merchant Center (GMC)
+SystemName: SmartStore.GoogleMerchantCenter
+Group: Marketing
+Version: 2.3
+MinAppVersion: 2.1.0
+Author: SmartStore AG
+DisplayOrder: 1
+FileName: SmartStore.GoogleMerchantCenter.dll
+ResourceRootKey: Plugins.Feed.Froogle

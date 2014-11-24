@@ -30,7 +30,7 @@
                         <div class="address-item">
                             
                             <div class="select-button">
-                                <button class="btn btn-mini select-billing-address-button"  onclick="setLocation('@Url.RouteUrl("CheckoutSelectBillingAddress", new { addressId = item.Id })    ')">
+                                <button class="btn btn-block select-billing-address-button"  onclick="setLocation('@Url.Action("SelectBillingAddress", new { addressId = item.Id })    ')">
                                     @T("Checkout.BillToThisAddress")
                                 </button>
                             </div>
@@ -123,7 +123,7 @@
             </div>
             <div class="block-body">
                 <div class="enter-address">
-                    @using (Html.BeginRouteForm("CheckoutBillingAddress", FormMethod.Post))
+                    @using (Html.BeginForm())
                     {
                         <div class="enter-address-body">
                             @{
@@ -137,14 +137,14 @@
                 
                         <div class="buttons clearfix">
                             <a class="btn pull-left" href="@Url.RouteUrl("ShoppingCart")">
-                                <i class="icon-caret-left"></i>&nbsp;
+                                <i class="fa fa-caret-left"></i>&nbsp;
                                 @T("Common.Back")
                             </a>    
                             <input type="submit" id="nextstep" name="nextstep" style="display:none" />
 
                             <button class="btn btn-warning pull-right new-address-next-step-button" onclick="$('#nextstep').trigger('click');return false;">
                                 @T("Checkout.NextButton")
-                                &nbsp;<i class="icon-caret-right"></i>
+                                &nbsp;<i class="fa fa-caret-right"></i>
                             </button>
                         </div>
                     }

@@ -80,13 +80,18 @@ input[type="color"],
 .uneditable-input {
   display: inline-block;
   height: @baseLineHeight;
-  padding: 4px 6px;
+  padding: 6px 6px;
   margin-bottom: @baseLineHeight / 2;
   font-size: @baseFontSize;
   line-height: @baseLineHeight;
   color: @gray;
   .border-radius(@inputBorderRadius);
   vertical-align: middle;
+}
+
+select {
+	padding-top: 0;
+	padding-bottom: 0;
 }
 
 // Reset appearance properties for textual inputs and textarea
@@ -120,14 +125,13 @@ input[type="color"],
   background-color: @inputBackground;
   border: 1px solid @inputBorder;
   .box-shadow(inset 0 1px 1px rgba(0,0,0,.075));
-  .transition(~"border linear .2s, box-shadow linear .2s");
 
   // Focus state
   &:focus {
-    border-color: rgba(82,168,236,.8);
+	color: #000;
+    border-color: @blue; // rgba(82,168,236,.8);
     outline: 0;
     outline: thin dotted \9; /* IE6-9 */
-    .box-shadow(~"inset 0 1px 1px rgba(0,0,0,.075), 0 0 8px rgba(82,168,236,.6)");
   }
 }
 
@@ -293,6 +297,13 @@ textarea[class*="span"],
   display: inline-block;
 }
 
+.input-block-level {
+	display: block;
+	width: 100%;
+	min-height: 34px;        // Make inputs at least the height of their button counterpart
+	.box-sizing(border-box); // Makes inputs behave like true block-level elements
+}
+
 
 
 // GRID SIZING FOR INPUTS
@@ -453,7 +464,7 @@ select:focus:required:invalid {
     width: auto;
     height: @baseLineHeight;
     min-width: 16px;
-    padding: 4px 5px;
+    padding: 6px 5px;
     font-size: @baseFontSize;
     font-weight: normal;
     line-height: @baseLineHeight;

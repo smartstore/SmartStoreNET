@@ -1,0 +1,90 @@
+﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
+	<LocaleResource Name="Plugins.FriendlyName.SmartStore.ShippingByWeight" AppendRootKey="false">
+		<Value>Shipping by weight</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Country">
+		<Value>Country</Value>
+	</LocaleResource>
+  <LocaleResource Name="Fields.Country.Hint">
+    <Value>If an asterisk is selected, then this shipping rate will apply to all customers, regardless of the country.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod">
+    <Value>Shipping method</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingMethod.Hint">
+    <Value>The shipping method.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From">
+    <Value>Order weight from</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.From.Hint">
+    <Value>Order weight from.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To">
+    <Value>Order weight to</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.To.Hint">
+    <Value>Order weight to.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage">
+    <Value>Use percentage</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.UsePercentage.Hint">
+    <Value>Check to use 'charge percentage' value.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage">
+    <Value>Charge percentage (of subtotal)</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargePercentage.Hint">
+    <Value>Charge percentage (of subtotal).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount">
+    <Value>Charge amount</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.ShippingChargeAmount.Hint">
+    <Value>Charge amount.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated">
+    <Value>Limit shipping methods to configured ones</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.LimitMethodsToCreated.Hint">
+    <Value>If you check this option, then your customers will be limited to shipping options configured here. Otherwise, they'll be able to choose any existing shipping options even they've not configured here (zero shipping fee in this case).</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CalculatePerWeightUnit">
+    <Value>Calculate per weight unit</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.CalculatePerWeightUnit.Hint">
+    <Value>If you check this option, then rates are multiplied per weight unit (lb, kg, etc). This option is used for the fixed rates (without percents).</Value>
+  </LocaleResource>
+	<LocaleResource Name="Fields.Store">
+		<Value>Store</Value>
+	</LocaleResource>
+	<LocaleResource Name="Fields.Store.Hint">
+		<Value>If an asterisk is selected, then this shipping rate will apply to all stores.</Value>
+	</LocaleResource>
+
+  <LocaleResource Name="Fields.SmallQuantitySurcharge">
+    <Value>Surcharge for small quantities</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantitySurcharge.Hint">
+    <Value>Determines the value of the small quantity surcharge.</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold">
+    <Value>Threshold for small quantities</Value>
+  </LocaleResource>
+  <LocaleResource Name="Fields.SmallQuantityThreshold.Hint">
+    <Value>Subtotal up to which a "small quantity surcharge" should be added. The surcharge will be ignored if no shipping fee is applied. Use "0" if no fee will be charged.</Value>
+  </LocaleResource>
+  <LocaleResource Name="SmallQuantitySurchargeNotReachedt">
+    <Value>
+      <![CDATA[<br>You're charged with a surcharge of <b class=\"text-success\">{0}</b> because the total of your order hasn't reached <b class=\"text-warning\">{1}</b>.]]>
+    </Value>
+  </LocaleResource>
+
+    <LocaleResource Name="AddNewRecordTitle">
+    <Value>Add new record</Value>
+  </LocaleResource>
+  <LocaleResource Name="SettingsTitle">
+    <Value>Settings</Value>
+  </LocaleResource>
+</Language>

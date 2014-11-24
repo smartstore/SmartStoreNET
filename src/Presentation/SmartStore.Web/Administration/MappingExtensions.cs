@@ -461,9 +461,9 @@ namespace SmartStore.Admin
 
         #region Tax providers
 
-        public static TaxProviderModel ToModel(this ITaxProvider entity)
+        public static TaxProviderModel ToModel(this Provider<ITaxProvider> entity)
         {
-            return Mapper.Map<ITaxProvider, TaxProviderModel>(entity);
+			return Mapper.Map<Provider<ITaxProvider>, TaxProviderModel>(entity);
         }
 
         #endregion
@@ -513,33 +513,6 @@ namespace SmartStore.Admin
             return Mapper.Map(model, destination);
         }
 
-        #endregion
-        
-        #region Payment methods
-
-        public static PaymentMethodModel ToModel(this IPaymentMethod entity)
-        {
-            return Mapper.Map<IPaymentMethod, PaymentMethodModel>(entity);
-        }
-
-        #endregion
-
-        #region External authentication methods
-
-        public static AuthenticationMethodModel ToModel(this IExternalAuthenticationMethod entity)
-        {
-            return Mapper.Map<IExternalAuthenticationMethod, AuthenticationMethodModel>(entity);
-        }
-
-        #endregion
-
-        #region Widgets
-
-        public static WidgetModel ToModel(this IWidgetPlugin entity)
-        {
-            return Mapper.Map<IWidgetPlugin, WidgetModel>(entity);
-        }
-        
         #endregion
 
         #region Address

@@ -25,86 +25,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             get { return _container; }
         }
 
-        public void AddComponent<TService>(string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponent<TService, TService>(key, lifeStyle);
-        }
-
-        public void AddComponent(Type service, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponent(service, service, key, lifeStyle);
-        }
-
-        public void AddComponent<TService, TImplementation>(string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponent(typeof(TService), typeof(TImplementation), key, lifeStyle);
-        }
-
-        public void AddComponent(Type service, Type implementation, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            UpdateContainer(x =>
-            {
-                var serviceTypes = new List<Type> { service };
-
-                if (service.IsGenericType)
-                {
-                    var temp = x.RegisterGeneric(implementation).As(
-                        serviceTypes.ToArray()).PerLifeStyle(lifeStyle);
-                    if (!string.IsNullOrEmpty(key))
-                    {
-                        temp.Keyed(key, service);
-                    }
-                }
-                else
-                {
-                    var temp = x.RegisterType(implementation).As(
-                        serviceTypes.ToArray()).PerLifeStyle(lifeStyle);
-                    if (!string.IsNullOrEmpty(key))
-                    {
-                        temp.Keyed(key, service);
-                    }
-                }
-            });
-        }
-
-        public void AddComponentInstance<TService>(TService instance, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponentInstance(typeof(TService), instance, key, lifeStyle);
-        }
-
-        public void AddComponentInstance(Type service, object instance, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            UpdateContainer(x =>
-            {
-                var registration = x.RegisterInstance(instance).Keyed(key, service).As(service).PerLifeStyle(lifeStyle);
-            });
-        }
-
-        public void AddComponentInstance(object instance, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponentInstance(instance.GetType(), instance, key, lifeStyle);
-        }
-
-        public void AddComponentWithParameters<TService, TImplementation>(IDictionary<string, string> properties, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            AddComponentWithParameters(typeof(TService), typeof(TImplementation), properties);
-        }
-
-        public void AddComponentWithParameters(Type service, Type implementation, IDictionary<string, string> properties, string key = "", ComponentLifeStyle lifeStyle = ComponentLifeStyle.Singleton)
-        {
-            UpdateContainer(x =>
-            {
-                var serviceTypes = new List<Type> { service };
-
-                var temp = x.RegisterType(implementation).As(serviceTypes.ToArray()).
-                    WithParameters(properties.Select(y => new NamedParameter(y.Key, y.Value)));
-                if (!string.IsNullOrEmpty(key))
-                {
-                    temp.Keyed(key, service);
-                }
-            });
-        }
-
 		public T Resolve<T>(string key = "", ILifetimeScope scope = null) where T : class
         {
             if (string.IsNullOrEmpty(key))
@@ -189,13 +109,15 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return (scope ?? Scope()).ResolveOptional(serviceType);
         }
 
+		public T InjectProperties<T>(T instance, ILifetimeScope scope = null)
+		{
+			return (scope ?? Scope()).InjectProperties(instance);
+		}
 
-        public void UpdateContainer(Action<ContainerBuilder> action)
-        {
-            var builder = new ContainerBuilder();
-            action.Invoke(builder);
-            builder.Update(_container);
-        }
+		public T InjectUnsetProperties<T>(T instance, ILifetimeScope scope = null)
+		{
+			return (scope ?? Scope()).InjectUnsetProperties(instance);
+		}
 
         public ILifetimeScope Scope()
         {
@@ -219,29 +141,19 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
     public static class ContainerManagerExtensions
     {
-        public static IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> PerLifeStyle<TLimit, TActivatorData, TRegistrationStyle>(this IRegistrationBuilder<TLimit, TActivatorData, TRegistrationStyle> builder, ComponentLifeStyle lifeStyle)
-        {
-            switch (lifeStyle)
-            {
-                case ComponentLifeStyle.LifetimeScope:
-                    return HttpContext.Current != null ? builder.InstancePerHttpRequest() : builder.InstancePerLifetimeScope();
-                case ComponentLifeStyle.Transient:
-                    return builder.InstancePerDependency();
-                case ComponentLifeStyle.Singleton:
-                    return builder.SingleInstance();
-                default:
-                    return builder.SingleInstance();
-            }
-        }
-
 		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithStaticCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
 		{
 			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("static"));
 		}
 
-		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithRequestCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
+		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithAspNetCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
 		{
-			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("request"));
+			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("aspnet"));
+		}
+
+		public static IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> WithNullCache<TLimit, TReflectionActivatorData, TStyle>(this IRegistrationBuilder<TLimit, TReflectionActivatorData, TStyle> registration) where TReflectionActivatorData : ReflectionActivatorData
+		{
+			return registration.WithParameter(Autofac.Core.ResolvedParameter.ForNamed<ICacheManager>("null"));
 		}
 
     }

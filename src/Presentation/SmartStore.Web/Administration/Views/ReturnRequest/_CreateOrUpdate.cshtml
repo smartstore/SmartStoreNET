@@ -1,8 +1,18 @@
 ﻿@model ReturnRequestModel
 @using SmartStore.Core.Domain.Orders;
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
+
+@if (Model.ReturnRequestInfo.HasValue())
+{
+	<div class="alert alert-info fade in">
+		<button class="close" data-dismiss="alert">&#215;</button>
+		@Html.Raw(Model.ReturnRequestInfo)
+	</div>
+}
+
 <table class="adminContent">
     <tr>
         <td class="adminTitle">
@@ -14,26 +24,26 @@
     </tr>
     <tr>
         <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.ProductName)
-        </td>
-        <td class="adminData">
-            @Html.ActionLink(Model.ProductName, "Edit", "Product", new { id = Model.ProductId }, new { })
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.Quantity)
-        </td>
-        <td class="adminData">
-            @Model.Quantity
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
             @Html.SmartLabelFor(model => model.OrderId)
         </td>
         <td class="adminData">
-            @Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = Model.OrderId }, new { })
+			<a href="@Url.Action("Edit", "Order", new { id = Model.OrderId })">@Model.OrderNumber</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.StoreName)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.StoreName)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ProductName)
+        </td>
+        <td class="adminData">
+			<a href="@Url.Action("Edit", "Product", new { id = Model.ProductId })">@Model.ProductName (@Model.ProductSku.NaIfEmpty())</a>
         </td>
     </tr>
     <tr>
@@ -41,7 +51,16 @@
             @Html.SmartLabelFor(model => model.CustomerId)
         </td>
         <td class="adminData">
-            @Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Customer", new { id = Model.CustomerId }, new { })
+			<a href="@Url.Action("Edit", "Customer", new { id = Model.CustomerId })">@Model.CustomerFullName (@Model.CustomerId)</a>
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Quantity)
+        </td>
+        <td class="adminData">
+            @Html.EditorFor(model => model.Quantity)
+            @Html.ValidationMessageFor(model => model.Quantity)
         </td>
     </tr>
     <tr>
@@ -58,7 +77,7 @@
             @Html.SmartLabelFor(model => model.ReasonForReturn)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.ReasonForReturn)
+			@Html.DropDownListFor(model => model.ReasonForReturn, Model.AvailableReasonForReturn, new { style = "min-width: 514px;" })
             @Html.ValidationMessageFor(model => model.ReasonForReturn)
         </td>
     </tr>
@@ -67,7 +86,7 @@
             @Html.SmartLabelFor(model => model.RequestedAction)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.RequestedAction)
+			@Html.DropDownListFor(model => model.RequestedAction, Model.AvailableRequestedAction, new { style = "min-width: 514px;" })
             @Html.ValidationMessageFor(model => model.RequestedAction)
         </td>
     </tr>
@@ -76,7 +95,7 @@
             @Html.SmartLabelFor(model => model.CustomerComments)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.CustomerComments, new { style = "Width: 500px; Height: 150px;" })
+            @Html.TextAreaFor(model => model.CustomerComments, new { style = "min-width: 500px; min-height: 100px;" })
             @Html.ValidationMessageFor(model => model.CustomerComments)
         </td>
     </tr>
@@ -85,7 +104,7 @@
             @Html.SmartLabelFor(model => model.StaffNotes)
         </td>
         <td class="adminData">
-            @Html.TextAreaFor(model => model.StaffNotes, new { style = "Width: 500px; Height: 150px;" })
+            @Html.TextAreaFor(model => model.StaffNotes, new { style = "min-width: 500px; min-height: 100px;" })
             @Html.ValidationMessageFor(model => model.StaffNotes)
         </td>
     </tr>

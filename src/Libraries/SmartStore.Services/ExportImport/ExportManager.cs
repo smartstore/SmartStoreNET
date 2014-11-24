@@ -5,19 +5,19 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -33,6 +33,7 @@ namespace SmartStore.Services.ExportImport
         private readonly IProductService _productService;
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
+        private readonly ILanguageService _languageService;
 
         #endregion
 
@@ -42,13 +43,15 @@ namespace SmartStore.Services.ExportImport
             IManufacturerService manufacturerService,
             IProductService productService,
             IPictureService pictureService,
-            INewsLetterSubscriptionService newsLetterSubscriptionService)
+            INewsLetterSubscriptionService newsLetterSubscriptionService,
+            ILanguageService languageService)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
             this._productService = productService;
             this._pictureService = pictureService;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
+            this._languageService = languageService;
         }
 
         #endregion
@@ -261,6 +264,7 @@ namespace SmartStore.Services.ExportImport
 				xmlWriter.WriteElementString("IsShipEnabled", null, product.IsShipEnabled.ToString());
 				xmlWriter.WriteElementString("IsFreeShipping", null, product.IsFreeShipping.ToString());
 				xmlWriter.WriteElementString("AdditionalShippingCharge", null, product.AdditionalShippingCharge.ToString());
+				xmlWriter.WriteElementString("IsEsd", null, product.IsEsd.ToString());
 				xmlWriter.WriteElementString("IsTaxExempt", null, product.IsTaxExempt.ToString());
 				xmlWriter.WriteElementString("TaxCategoryId", null, product.TaxCategoryId.ToString());
 				xmlWriter.WriteElementString("ManageInventoryMethodId", null, product.ManageInventoryMethodId.ToString());
@@ -315,7 +319,9 @@ namespace SmartStore.Services.ExportImport
 				var discounts = product.AppliedDiscounts;
 				foreach (var discount in discounts)
 				{
+					xmlWriter.WriteStartElement("ProductDiscount");
 					xmlWriter.WriteElementString("DiscountId", null, discount.Id.ToString());
+					xmlWriter.WriteEndElement();
 				}
 				xmlWriter.WriteEndElement();
 
@@ -324,11 +330,13 @@ namespace SmartStore.Services.ExportImport
 				var tierPrices = product.TierPrices;
 				foreach (var tierPrice in tierPrices)
 				{
+					xmlWriter.WriteStartElement("TierPrice");
 					xmlWriter.WriteElementString("TierPriceId", null, tierPrice.Id.ToString());
 					xmlWriter.WriteElementString("StoreId", null, tierPrice.StoreId.ToString());
 					xmlWriter.WriteElementString("CustomerRoleId", null, tierPrice.CustomerRoleId.HasValue ? tierPrice.CustomerRoleId.ToString() : "0");
 					xmlWriter.WriteElementString("Quantity", null, tierPrice.Quantity.ToString());
 					xmlWriter.WriteElementString("Price", null, tierPrice.Price.ToString());
+					xmlWriter.WriteEndElement();
 				}
 				xmlWriter.WriteEndElement();
 
@@ -348,6 +356,7 @@ namespace SmartStore.Services.ExportImport
 					var productVariantAttributeValues = productVariantAttribute.ProductVariantAttributeValues;
 					foreach (var productVariantAttributeValue in productVariantAttributeValues)
 					{
+						xmlWriter.WriteStartElement("ProductVariantAttributeValue");
 						xmlWriter.WriteElementString("ProductVariantAttributeValueId", null, productVariantAttributeValue.Id.ToString());
 						xmlWriter.WriteElementString("Name", null, productVariantAttributeValue.Name);
 						xmlWriter.WriteElementString("PriceAdjustment", null, productVariantAttributeValue.PriceAdjustment.ToString());
@@ -357,6 +366,7 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("ValueTypeId", null, productVariantAttributeValue.ValueTypeId.ToString());
 						xmlWriter.WriteElementString("LinkedProductId", null, productVariantAttributeValue.LinkedProductId.ToString());
 						xmlWriter.WriteElementString("Quantity", null, productVariantAttributeValue.Quantity.ToString());
+						xmlWriter.WriteEndElement();
 					}
 					xmlWriter.WriteEndElement();
 
@@ -518,6 +528,10 @@ namespace SmartStore.Services.ExportImport
 
                 // get handle to the existing worksheet
                 var worksheet = xlPackage.Workbook.Worksheets.Add("Products");
+
+				// get handle to the cells range of the worksheet
+				var cells = worksheet.Cells;
+
                 //Create Headers and format them 
                 var properties = new string[]
                 {
@@ -559,6 +573,7 @@ namespace SmartStore.Services.ExportImport
                     "IsShipEnabled",
                     "IsFreeShipping",
                     "AdditionalShippingCharge",
+					"IsEsd",
                     "IsTaxExempt",
                     "TaxCategoryId",
                     "ManageInventoryMethodId",
@@ -596,7 +611,7 @@ namespace SmartStore.Services.ExportImport
                     "Picture1",
                     "Picture2",
                     "Picture3",
-					"DeliveryTimeId",	// codehint: sm-add (following)
+					"DeliveryTimeId",
 					"BasePriceEnabled",
 					"BasePriceMeasureUnit",
 					"BasePriceAmount",
@@ -607,12 +622,30 @@ namespace SmartStore.Services.ExportImport
 					"BundlePerItemShoppingCart",
 					"BundleItemSkus"
                 };
-                for (int i = 0; i < properties.Length; i++)
+
+                //BEGIN: add headers for languages 
+                var languages = _languageService.GetAllLanguages(true);
+                var headlines = new string[properties.Length + languages.Count * 3];
+                var languageFields = new string[languages.Count * 3];
+                var j = 0;
+
+                foreach (var lang in languages)
                 {
-                    worksheet.Cells[1, i + 1].Value = properties[i];
-                    worksheet.Cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
-                    worksheet.Cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
-                    worksheet.Cells[1, i + 1].Style.Font.Bold = true;
+                    languageFields.SetValue("Name[" + lang.UniqueSeoCode + "]", j++);
+                    languageFields.SetValue("ShortDescription[" + lang.UniqueSeoCode + "]", j++);
+                    languageFields.SetValue("FullDescription[" + lang.UniqueSeoCode + "]", j++);
+                }
+
+                properties.CopyTo(headlines, 0);
+                languageFields.CopyTo(headlines, properties.Length);
+                //END: add headers for languages 
+
+                for (int i = 0; i < headlines.Length; i++)
+                {
+                    cells[1, i + 1].Value = headlines[i];
+                    cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
+                    cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
+                    cells[1, i + 1].Style.Font.Bold = true;
                 }
 
 
@@ -621,215 +654,218 @@ namespace SmartStore.Services.ExportImport
                 {
                     int col = 1;
 
-					worksheet.Cells[row, col].Value = p.ProductTypeId;
+					cells[row, col].Value = p.ProductTypeId;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.ParentGroupedProductId;
+					cells[row, col].Value = p.ParentGroupedProductId;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.VisibleIndividually;
+					cells[row, col].Value = p.VisibleIndividually;
 					col++;
 
-                    worksheet.Cells[row, col].Value = p.Name;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.ShortDescription;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.FullDescription;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.ProductTemplateId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.ShowOnHomePage;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.MetaKeywords;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.MetaDescription;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.MetaTitle;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.GetSeName(0);
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.AllowCustomerReviews;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.Published;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.Sku;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.ManufacturerPartNumber;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.Gtin;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsGiftCard;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.GiftCardTypeId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.RequireOtherProducts;
-                    col++;
-
-					worksheet.Cells[row, col].Value = p.RequiredProductIds;
+					cells[row, col].Value = p.Name;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.AutomaticallyAddRequiredProducts;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsDownload;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DownloadId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.UnlimitedDownloads;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.MaxNumberOfDownloads;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DownloadActivationTypeId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.HasSampleDownload;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.SampleDownloadId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.HasUserAgreement;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.UserAgreementText;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsRecurring;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.RecurringCycleLength;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.RecurringCyclePeriodId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.RecurringTotalCycles;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsShipEnabled;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsFreeShipping;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.AdditionalShippingCharge;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.IsTaxExempt;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.TaxCategoryId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.ManageInventoryMethodId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.StockQuantity;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DisplayStockAvailability;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DisplayStockQuantity;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.MinStockQuantity;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.LowStockActivityId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.NotifyAdminForQuantityBelow;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.BackorderModeId;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.AllowBackInStockSubscriptions;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.OrderMinimumQuantity;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.OrderMaximumQuantity;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.AllowedQuantities;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DisableBuyButton;
-                    col++;
-
-                    worksheet.Cells[row, col].Value = p.DisableWishlistButton;
-                    col++;
-
-					worksheet.Cells[row, col].Value = p.AvailableForPreOrder;
+					cells[row, col].Value = p.ShortDescription;
 					col++;
 
-                    worksheet.Cells[row, col].Value = p.CallForPrice;
-                    col++;
+					cells[row, col].Value = p.FullDescription;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.Price;
-                    col++;
+					cells[row, col].Value = p.ProductTemplateId;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.OldPrice;
-                    col++;
+					cells[row, col].Value = p.ShowOnHomePage;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.ProductCost;
-                    col++;
+					cells[row, col].Value = p.MetaKeywords;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPrice;
-                    col++;
+					cells[row, col].Value = p.MetaDescription;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPriceStartDateTimeUtc;
-                    col++;
+					cells[row, col].Value = p.MetaTitle;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.SpecialPriceEndDateTimeUtc;
-                    col++;
+					cells[row, col].Value = p.GetSeName(0);
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.CustomerEntersPrice;
-                    col++;
+					cells[row, col].Value = p.AllowCustomerReviews;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.MinimumCustomerEnteredPrice;
-                    col++;
+					cells[row, col].Value = p.Published;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.MaximumCustomerEnteredPrice;
-                    col++;
+					cells[row, col].Value = p.Sku;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.Weight;
-                    col++;
+					cells[row, col].Value = p.ManufacturerPartNumber;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.Length;
-                    col++;
+					cells[row, col].Value = p.Gtin;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.Width;
-                    col++;
+					cells[row, col].Value = p.IsGiftCard;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.Height;
-                    col++;
+					cells[row, col].Value = p.GiftCardTypeId;
+					col++;
 
-                    worksheet.Cells[row, col].Value = p.CreatedOnUtc.ToOADate();
-                    col++;
+					cells[row, col].Value = p.RequireOtherProducts;
+					col++;
+
+					cells[row, col].Value = p.RequiredProductIds;
+					col++;
+
+					cells[row, col].Value = p.AutomaticallyAddRequiredProducts;
+					col++;
+
+					cells[row, col].Value = p.IsDownload;
+					col++;
+
+					cells[row, col].Value = p.DownloadId;
+					col++;
+
+					cells[row, col].Value = p.UnlimitedDownloads;
+					col++;
+
+					cells[row, col].Value = p.MaxNumberOfDownloads;
+					col++;
+
+					cells[row, col].Value = p.DownloadActivationTypeId;
+					col++;
+
+					cells[row, col].Value = p.HasSampleDownload;
+					col++;
+
+					cells[row, col].Value = p.SampleDownloadId;
+					col++;
+
+					cells[row, col].Value = p.HasUserAgreement;
+					col++;
+
+					cells[row, col].Value = p.UserAgreementText;
+					col++;
+
+					cells[row, col].Value = p.IsRecurring;
+					col++;
+
+					cells[row, col].Value = p.RecurringCycleLength;
+					col++;
+
+					cells[row, col].Value = p.RecurringCyclePeriodId;
+					col++;
+
+					cells[row, col].Value = p.RecurringTotalCycles;
+					col++;
+
+					cells[row, col].Value = p.IsShipEnabled;
+					col++;
+
+					cells[row, col].Value = p.IsFreeShipping;
+					col++;
+
+					cells[row, col].Value = p.AdditionalShippingCharge;
+					col++;
+
+					cells[row, col].Value = p.IsEsd;
+					col++;
+
+					cells[row, col].Value = p.IsTaxExempt;
+					col++;
+
+					cells[row, col].Value = p.TaxCategoryId;
+					col++;
+
+					cells[row, col].Value = p.ManageInventoryMethodId;
+					col++;
+
+					cells[row, col].Value = p.StockQuantity;
+					col++;
+
+					cells[row, col].Value = p.DisplayStockAvailability;
+					col++;
+
+					cells[row, col].Value = p.DisplayStockQuantity;
+					col++;
+
+					cells[row, col].Value = p.MinStockQuantity;
+					col++;
+
+					cells[row, col].Value = p.LowStockActivityId;
+					col++;
+
+					cells[row, col].Value = p.NotifyAdminForQuantityBelow;
+					col++;
+
+					cells[row, col].Value = p.BackorderModeId;
+					col++;
+
+					cells[row, col].Value = p.AllowBackInStockSubscriptions;
+					col++;
+
+					cells[row, col].Value = p.OrderMinimumQuantity;
+					col++;
+
+					cells[row, col].Value = p.OrderMaximumQuantity;
+					col++;
+
+					cells[row, col].Value = p.AllowedQuantities;
+					col++;
+
+					cells[row, col].Value = p.DisableBuyButton;
+					col++;
+
+					cells[row, col].Value = p.DisableWishlistButton;
+					col++;
+
+					cells[row, col].Value = p.AvailableForPreOrder;
+					col++;
+
+					cells[row, col].Value = p.CallForPrice;
+					col++;
+
+					cells[row, col].Value = p.Price;
+					col++;
+
+					cells[row, col].Value = p.OldPrice;
+					col++;
+
+					cells[row, col].Value = p.ProductCost;
+					col++;
+
+					cells[row, col].Value = p.SpecialPrice;
+					col++;
+
+					cells[row, col].Value = p.SpecialPriceStartDateTimeUtc;
+					col++;
+
+					cells[row, col].Value = p.SpecialPriceEndDateTimeUtc;
+					col++;
+
+					cells[row, col].Value = p.CustomerEntersPrice;
+					col++;
+
+					cells[row, col].Value = p.MinimumCustomerEnteredPrice;
+					col++;
+
+					cells[row, col].Value = p.MaximumCustomerEnteredPrice;
+					col++;
+
+					cells[row, col].Value = p.Weight;
+					col++;
+
+					cells[row, col].Value = p.Length;
+					col++;
+
+					cells[row, col].Value = p.Width;
+					col++;
+
+					cells[row, col].Value = p.Height;
+					col++;
+
+					cells[row, col].Value = p.CreatedOnUtc.ToOADate();
+					col++;
 
                     //category identifiers
                     string categoryIds = null;
@@ -838,8 +874,8 @@ namespace SmartStore.Services.ExportImport
                         categoryIds += pc.CategoryId;
                         categoryIds += ";";
                     }
-                    worksheet.Cells[row, col].Value = categoryIds;
-                    col++;
+					cells[row, col].Value = categoryIds;
+					col++;
 
                     //manufacturer identifiers
                     string manufacturerIds = null;
@@ -848,58 +884,45 @@ namespace SmartStore.Services.ExportImport
                         manufacturerIds += pm.ManufacturerId;
                         manufacturerIds += ";";
                     }
-                    worksheet.Cells[row, col].Value = manufacturerIds;
-                    col++;
-
-                    //pictures (up to 3 pictures)
-                    string picture1 = null;
-                    string picture2 = null;
-                    string picture3 = null;
-                    var pictures = _pictureService.GetPicturesByProductId(p.Id, 3);
-                    for (int i = 0; i < pictures.Count; i++)
-                    {
-                        string pictureLocalPath = _pictureService.GetThumbLocalPath(pictures[i]);
-                        switch (i)
-                        {
-                            case 0:
-                                picture1 = pictureLocalPath;
-                                break;
-                            case 1:
-                                picture2 = pictureLocalPath;
-                                break;
-                            case 2:
-                                picture3 = pictureLocalPath;
-                                break;
-                        }
-                    }
-                    worksheet.Cells[row, col].Value = picture1;
-                    col++;
-                    worksheet.Cells[row, col].Value = picture2;
-                    col++;
-                    worksheet.Cells[row, col].Value = picture3;
-                    col++;
-
-					worksheet.Cells[row, col].Value = p.DeliveryTimeId;
-					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceEnabled;
-					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceMeasureUnit;
-					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceAmount;
-					col++;
-					worksheet.Cells[row, col].Value = p.BasePriceBaseAmount;
+					cells[row, col].Value = manufacturerIds;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundleTitleText;
+					//pictures (up to 3 pictures)
+					var pics = new string[] { null, null, null };
+					var pictures = _pictureService.GetPicturesByProductId(p.Id, 3);
+					for (int i = 0; i < pictures.Count; i++)
+					{
+						pics[i] = _pictureService.GetThumbLocalPath(pictures[i]);
+						pictures[i].PictureBinary = null;
+					}
+					cells[row, col].Value = pics[0];
+					col++;
+					cells[row, col].Value = pics[1];
+					col++;
+					cells[row, col].Value = pics[2];
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemShipping;
+					cells[row, col].Value = p.DeliveryTimeId;
+					col++;
+					cells[row, col].Value = p.BasePriceEnabled;
+					col++;
+					cells[row, col].Value = p.BasePriceMeasureUnit;
+					col++;
+					cells[row, col].Value = p.BasePriceAmount;
+					col++;
+					cells[row, col].Value = p.BasePriceBaseAmount;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemPricing;
+					cells[row, col].Value = p.BundleTitleText;
 					col++;
 
-					worksheet.Cells[row, col].Value = p.BundlePerItemShoppingCart;
+					cells[row, col].Value = p.BundlePerItemShipping;
+					col++;
+
+					cells[row, col].Value = p.BundlePerItemPricing;
+					col++;
+
+					cells[row, col].Value = p.BundlePerItemShoppingCart;
 					col++;
 
 					string bundleItemSkus = "";
@@ -909,8 +932,22 @@ namespace SmartStore.Services.ExportImport
 						bundleItemSkus = string.Join(",", _productService.GetBundleItems(p.Id, true).Select(x => x.Item.Product.Sku));
 					}
 
-					worksheet.Cells[row, col].Value = bundleItemSkus;
+					cells[row, col].Value = bundleItemSkus;
 					col++;
+
+                    //BEGIN: export localized values
+                    foreach (var lang in languages)
+                    {
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.Name, lang.Id, false, false);
+                        col++;
+
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.ShortDescription, lang.Id, false, false);
+                        col++;
+
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.FullDescription, lang.Id, false, false);
+                        col++;
+                    }
+                    //END: export localized values
 
                     row++;
                 }
@@ -934,6 +971,11 @@ namespace SmartStore.Services.ExportImport
                 // save the new spreadsheet
                 xlPackage.Save();
             }
+
+			// EPPLus has serious memory leak problems.
+			// We enforce the garbage collector to release unused memory,
+ 			// it's not perfect, but better than nothing.
+			GC.Collect();
         }
 
         /// <summary>
@@ -1014,6 +1056,8 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("VatNumber", null, order.VatNumber);
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
+				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
+				xmlWriter.WriteElementString("RewardPointsRemaining", null, order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
 
                 //products
                 var orderItems = order.OrderItems;
@@ -1127,6 +1171,8 @@ namespace SmartStore.Services.ExportImport
                         "ShippingRateComputationMethodSystemName",
                         "VatNumber",
                         "CreatedOnUtc",
+						"UpdatedOnUtc",
+						"RewardPointsRemaining",
                         //billing address
                         "BillingFirstName",
                         "BillingLastName",
@@ -1252,6 +1298,12 @@ namespace SmartStore.Services.ExportImport
 
                     worksheet.Cells[row, col].Value = order.CreatedOnUtc.ToOADate();
                     col++;
+
+					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
+					col++;
+
+					worksheet.Cells[row, col].Value = (order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
+					col++;
 
 
                     //billing address

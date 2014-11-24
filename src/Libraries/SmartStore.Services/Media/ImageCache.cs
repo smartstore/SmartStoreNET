@@ -2,9 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Web;
 using ImageResizer;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Media
 {
@@ -16,11 +18,15 @@ namespace SmartStore.Services.Media
         private readonly MediaSettings _mediaSettings;
         private readonly IWebHelper _webHelper;
         private readonly DirectoryInfo _cacheRootDir;
+		private readonly IStoreContext _storeContext;
+		private readonly HttpContextBase _httpContext;
 
-        public ImageCache(MediaSettings mediaSettings, IWebHelper webHelper)
+        public ImageCache(MediaSettings mediaSettings, IWebHelper webHelper, IStoreContext storeContext, HttpContextBase httpContext)
         {
             this._mediaSettings = mediaSettings;
             this._webHelper = webHelper;
+			this._storeContext = storeContext;
+			this._httpContext = httpContext;
 
             _cacheRootDir = new DirectoryInfo(_webHelper.MapPath("~/Media/Thumbs"));
         }
@@ -71,8 +77,14 @@ namespace SmartStore.Services.Media
         {
             if (imagePath.IsEmpty())
                 return null;
-            
-            storeLocation = !String.IsNullOrEmpty(storeLocation) ? storeLocation : _webHelper.GetStoreLocation();
+
+			var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
+			if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+			{
+				storeLocation = cdnUrl;
+			}
+
+			storeLocation = storeLocation.NullEmpty() ?? _webHelper.GetStoreLocation();
             storeLocation = storeLocation.TrimEnd('/', '\\');
             var url = storeLocation + "/Media/Thumbs/";
 
@@ -99,7 +111,10 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var file in _cacheRootDir.GetFiles())
                     {
-                        file.Delete();
+						if (!file.Name.IsCaseInsensitiveEqual("placeholder"))
+						{
+							file.Delete();
+						}
                     }
                     foreach (var dir in _cacheRootDir.GetDirectories())
                     {

@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -14,6 +16,7 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Tests.Tax
 {
@@ -27,6 +30,7 @@ namespace SmartStore.Services.Tests.Tax
         IEventPublisher _eventPublisher;
         ITaxService _taxService;
 		ISettingService _settingService;
+		IGeoCountryLookup _geoCountryLookup;
 
         [SetUp]
         public new void SetUp()
@@ -48,8 +52,9 @@ namespace SmartStore.Services.Tests.Tax
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
 			_settingService = MockRepository.GenerateMock<ISettingService>();
+			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _cartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
         }
 
         [Test]
@@ -57,7 +62,7 @@ namespace SmartStore.Services.Tests.Tax
         {
             var providers = _taxService.LoadAllTaxProviders();
             providers.ShouldNotBeNull();
-            (providers.Count > 0).ShouldBeTrue();
+            (providers.Any()).ShouldBeTrue();
         }
 
         [Test]

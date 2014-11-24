@@ -1,0 +1,26 @@
+@functions{   
+    private string Value
+    {
+        get
+        {
+            string value = null;
+            if (ViewData.Model != null)
+            {
+                value = Convert.ToString(ViewData.Model);
+            }
+            return value;
+        }
+    }
+}
+
+@{
+    var color = "transparent";
+    if (!string.IsNullOrEmpty(Value)) 
+    {
+        color = Value;
+    }
+}
+
+@Html.ColorBox("", color)
+
+

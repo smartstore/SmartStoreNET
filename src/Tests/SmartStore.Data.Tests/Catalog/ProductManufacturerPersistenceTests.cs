@@ -30,7 +30,7 @@ namespace SmartStore.Data.Tests.Catalog
                                                                           MetaKeywords = "Meta keywords",
                                                                           MetaDescription = "Meta description",
                                                                           MetaTitle = "Meta title",
-                                                                          PictureId = 3,
+                                                                          //PictureId = 3,
                                                                           PageSize = 4,
                                                                           PriceRanges = "1-3;",
                                                                           Published = true,

@@ -9,7 +9,12 @@ namespace SmartStore.Web.Framework.Controllers
 {
     public class StoreIpAddressAttribute : ActionFilterAttribute
     {
-        public override void OnActionExecuting(ActionExecutingContext filterContext)
+
+		public Lazy<IWebHelper> WebHelper { get; set; }
+		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<ICustomerService> CustomerService { get; set; }
+		
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             if (!DataSettings.DatabaseIsInstalled())
                 return;
@@ -25,17 +30,17 @@ namespace SmartStore.Web.Framework.Controllers
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+            var webHelper = this.WebHelper.Value;
 
             //update IP address
             string currentIpAddress = webHelper.GetCurrentIpAddress();
             if (!String.IsNullOrEmpty(currentIpAddress))
             {
-                var workContext = EngineContext.Current.Resolve<IWorkContext>();
+                var workContext = WorkContext.Value;
                 var customer = workContext.CurrentCustomer;
                 if (!currentIpAddress.Equals(customer.LastIpAddress, StringComparison.InvariantCultureIgnoreCase))
                 {
-                    var customerService = EngineContext.Current.Resolve<ICustomerService>();
+                    var customerService = CustomerService.Value;
                     customer.LastIpAddress = currentIpAddress;
                     customerService.UpdateCustomer(customer);
                 }

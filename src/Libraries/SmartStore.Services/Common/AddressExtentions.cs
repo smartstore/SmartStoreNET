@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SmartStore.Core;
+using System.Text;
 using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Services.Common
@@ -44,5 +44,22 @@ namespace SmartStore.Services.Common
                 ((a.CountryId.IsNullOrDefault() && countryId.IsNullOrDefault()) || a.CountryId == countryId));
         }
 
+		/// <returns>Returns the full name of the address.</returns>
+		public static string GetFullName(this Address address)
+		{
+			if (address != null)
+			{
+				var sb = new StringBuilder(address.FirstName);
+
+				sb.Grow(address.LastName, " ");		
+
+				if (address.Company.HasValue())
+				{
+					sb.Grow("({0})".FormatWith(address.Company), " ");
+				}
+				return sb.ToString();
+			}
+			return null;
+		}
     }
 }

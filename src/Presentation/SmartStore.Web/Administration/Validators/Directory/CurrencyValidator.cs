@@ -6,7 +6,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Directory
 {
-    public class CurrencyValidator : AbstractValidator<CurrencyModel>
+	public partial class CurrencyValidator : AbstractValidator<CurrencyModel>
     {
         public CurrencyValidator(ILocalizationService localizationService)
         {

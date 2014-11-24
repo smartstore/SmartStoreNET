@@ -16,7 +16,7 @@
                 columns.Bound(x => x.PictureUrl)
                     .Width(400)
                     .Centered()
-                    .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' width='150' /><a/>")
+                    .ClientTemplate("<a href='<#= PictureUrl #>' target='_blank'><img alt='<#= PictureId #>' src='<#= PictureUrl #>' class='img-polaroid' style='max-height: 100px' /><a/>")
                     .ReadOnly();
                 columns.Bound(x => x.DisplayOrder).Width(100);
                 columns.Command(commands =>
@@ -42,7 +42,8 @@
         <h3 class="bordered">@T("Admin.Catalog.Products.Pictures.AddNew")</h3>
     </p>
     <script type="text/javascript">
-        $(document).ready(function () {
+		$(document).ready(function () {
+
             $('#addProductPicture').click(function () {
                 var pictureId = $("#@Html.FieldIdFor(model => model.AddPictureModel.PictureId)").val();
                 var displayOrder = $("#@Html.FieldIdFor(model => model.AddPictureModel.DisplayOrder)").val();
@@ -92,8 +93,8 @@
         </tr>
         <tr>
             <td colspan="2" align="left">
-                <button type="button" name="addProductPicture" id="addProductPicture" class="btn">
-                    <i class="icon-plus"></i>
+                <button type="button" name="addProductPicture" id="addProductPicture" class="btn btn-warning">
+                    <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.Pictures.AddButton")
                 </button>
             </td>

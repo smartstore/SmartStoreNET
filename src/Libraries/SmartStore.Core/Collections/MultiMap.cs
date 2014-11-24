@@ -16,10 +16,10 @@ namespace SmartStore.Collections
     /// </summary>
     /// <typeparam name="TKey">The type of key.</typeparam>
     /// <typeparam name="TValue">The type of value.</typeparam>
-    public class Multimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, IList<TValue>>>
+    public class Multimap<TKey, TValue> : IEnumerable<KeyValuePair<TKey, ICollection<TValue>>>
     {
-        private readonly IDictionary<TKey, IList<TValue>> _items;
-        private readonly Func<IList<TValue>> _listCreator;
+		private readonly IDictionary<TKey, ICollection<TValue>> _items;
+		private readonly Func<ICollection<TValue>> _listCreator;
         private readonly bool _isReadonly = false;
 
         public Multimap()
@@ -31,29 +31,29 @@ namespace SmartStore.Collections
         {
             if (threadSafe)
             {
-                _items = new ConcurrentDictionary<TKey, IList<TValue>>();
-                _listCreator = () => new ThreadSafeList<TValue>();
+				_items = new ConcurrentDictionary<TKey, ICollection<TValue>>();
+                _listCreator = () => new SynchronizedCollection<TValue>();
             }
             else
             {
-                _items = new Dictionary<TKey, IList<TValue>>();
+				_items = new Dictionary<TKey, ICollection<TValue>>();
                 _listCreator = () => new List<TValue>();
             }
         }
 
-        public Multimap(Func<IList<TValue>> listCreator)
-            : this(new Dictionary<TKey, IList<TValue>>(), listCreator)
+		public Multimap(Func<ICollection<TValue>> listCreator)
+			: this(new Dictionary<TKey, ICollection<TValue>>(), listCreator)
         {
         }
 
 
-        internal Multimap(IDictionary<TKey, IList<TValue>> dictionary, Func<IList<TValue>> listCreator)
+		internal Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, Func<ICollection<TValue>> listCreator)
         {
             _items = dictionary;
             _listCreator = listCreator;
         }
 
-        protected Multimap(IDictionary<TKey, IList<TValue>> dictionary, bool isReadonly)
+		protected Multimap(IDictionary<TKey, ICollection<TValue>> dictionary, bool isReadonly)
         {
             Guard.ArgumentNotNull(() => dictionary);
 
@@ -96,7 +96,7 @@ namespace SmartStore.Collections
         /// Gets the collection of values stored under the specified key.
         /// </summary>
         /// <param name="key">The key.</param>
-        public virtual IList<TValue> this[TKey key]
+		public virtual ICollection<TValue> this[TKey key]
         {
             get
             {
@@ -123,7 +123,7 @@ namespace SmartStore.Collections
         /// <summary>
         /// Gets the collection of collections of values.
         /// </summary>
-        public virtual ICollection<IList<TValue>> Values
+		public virtual ICollection<ICollection<TValue>> Values
         {
             get { return _items.Values; }
         }
@@ -239,9 +239,9 @@ namespace SmartStore.Collections
         /// Returns an enumerator that iterates through the multimap.
         /// </summary>
         /// <returns>An <see cref="IEnumerator"/> object that can be used to iterate through the multimap.</returns>
-        public virtual IEnumerator<KeyValuePair<TKey, IList<TValue>>> GetEnumerator()
+		public virtual IEnumerator<KeyValuePair<TKey, ICollection<TValue>>> GetEnumerator()
         {
-            foreach (KeyValuePair<TKey, IList<TValue>> pair in _items)
+			foreach (KeyValuePair<TKey, ICollection<TValue>> pair in _items)
                 yield return pair;
         }
 
@@ -271,64 +271,6 @@ namespace SmartStore.Collections
 
             return map;
         }
-
-        #endregion
-
-        #region Nested ThreadSafeMultimap
-
-        //private class ThreadSafeMultimap<TKey, TValue> : Multimap<TKey, TValue>
-        //{
-        //    private readonly ReaderWriterLockSlim _rwLock;
-
-        //    public ThreadSafeMultimap(ReaderWriterLockSlim rwLock)
-        //    {
-        //        _rwLock = rwLock;
-        //    }
-
-        //    public override void Add(TKey key, TValue value)
-        //    {
-        //        using (_rwLock.GetUpgradeableReadLock())
-        //        {
-        //            base.Add(key, value);
-        //        }
-        //    }
-
-        //    public override void AddRange(TKey key, IEnumerable<TValue> values)
-        //    {
-        //        using (_rwLock.GetUpgradeableReadLock())
-        //        {
-        //            base.AddRange(key, values);
-        //        }
-        //    }
-
-        //    public override bool ContainsValue(TKey key, TValue value)
-        //    {        
-        //        using (_rwLock.GetUpgradeableReadLock())
-        //        {
-        //            return base.ContainsValue(key, value);
-        //        }
-        //    }
-
-        //    public override bool Remove(TKey key, TValue value)
-        //    {              
-        //        using (_rwLock.GetUpgradeableReadLock())
-        //        {
-        //            return base.Remove(key, value);
-        //        }
-        //    }
-
-        //    public override IList<TValue> this[TKey key]
-        //    {
-        //        get
-        //        {
-        //            using (_rwLock.GetUpgradeableReadLock())
-        //            { 
-        //                return base[key];
-        //            }
-        //        }
-        //    }
-
-        //}
 
         #endregion
     }

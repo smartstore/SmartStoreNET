@@ -1,0 +1,29 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.DiscountRules.Models.BillingCountryModel
+@using SmartStore.Web.Framework;
+ 
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.CountryId)
+        </td>
+        <td class="adminData">
+			<div class="discount-rule-wrapper"
+				 data-discount-id='@Model.DiscountId'
+				 data-requirement-id='@Model.RequirementId'
+				 data-action-url='@Url.Action("BillingCountry")'
+				 data-fail-msg='@T("Admin.Promotions.Discounts.Requirements.FailedToSave").Text.EncodeJsString()'
+				 data-success-msg='@T("Admin.Promotions.Discounts.Requirements.Saved").Text.EncodeJsString()'>
+				<div>
+					@Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, new { data_routeparam = "countryId" })
+					<button type="button" class="btn btn-save-discount-rule">
+						<i class="fa fa-check"></i>
+						@T("Admin.Common.Save")
+					</button>
+				</div>
+			</div>
+		</td>
+    </tr>
+</table>

@@ -54,7 +54,7 @@ namespace SmartStore.Services.Catalog
             if (ManageInventoryMethod.ManageStockByAttributes == (ManageInventoryMethod)product.ManageInventoryMethodId)
             {
                 product.MergedDataValues.Add("StockQuantity", combination.StockQuantity);
-                product.MergedDataValues.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : product.BackorderModeId);
+				product.MergedDataValues.Add("BackorderModeId", combination.AllowOutOfStockOrders ? (int)BackorderMode.AllowQtyBelow0 : (int)BackorderMode.NoBackorders);
             }
 
 			if (combination.Sku.HasValue())
@@ -199,10 +199,8 @@ namespace SmartStore.Services.Catalog
 				}
 				else
 				{
-					if (product.BackorderMode == BackorderMode.NoBackorders)
+					if (product.BackorderMode == BackorderMode.NoBackorders || product.BackorderMode == BackorderMode.AllowQtyBelow0)
 						stockMessage = localizationService.GetResource("Products.Availability.OutOfStock");
-					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0)
-						stockMessage = localizationService.GetResource("Products.Availability.InStock");
 					else if (product.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
 						stockMessage = localizationService.GetResource("Products.Availability.Backordering");
 				}
@@ -222,45 +220,15 @@ namespace SmartStore.Services.Catalog
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            bool displayDeliveryTime = true;
-
-            if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock)
-            {
-                switch (product.BackorderMode)
-                {
-                    case BackorderMode.NoBackorders:
-                        {
-                            if (product.StockQuantity > 0)
-                            {
-                                displayDeliveryTime = true;
-                            }
-                            else
-                            {
-                                displayDeliveryTime = false;
-                            }
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-                        {
-                            displayDeliveryTime = true;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-            }
-
-            return displayDeliveryTime;
+			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+			{
+				return (product.StockQuantity > 0);
+			}
+            return true;
         }
 
 
-        public static bool ProductTagExists(this Product product,
-            int productTagId)
+        public static bool ProductTagExists(this Product product, int productTagId)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -322,20 +290,21 @@ namespace SmartStore.Services.Catalog
 		}
 
         /// <summary>
-        /// gets the base price
+        /// Gets the base price
         /// </summary>
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
         /// <param name="priceFormatter">Price formatter</param>
 		/// <param name="priceAdjustment">Price adjustment</param>
+		/// <param name="languageIndependent">Whether the result string should be language independent</param>
         /// <returns>The base price</returns>
         public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
-			decimal priceAdjustment = decimal.Zero)
+			decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            if (localizationService == null)
+			if (localizationService == null && !languageIndependent)
                 throw new ArgumentNullException("localizationService");
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
@@ -343,8 +312,13 @@ namespace SmartStore.Services.Catalog
 				decimal price = decimal.Add(product.Price, priceAdjustment);
 				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
-				string basePrice = priceFormatter.FormatPrice(basePriceValue, false, false);
+				string basePrice = priceFormatter.FormatPrice(basePriceValue, true, false);
 				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
+
+				if (languageIndependent)
+				{
+					return "{0} / {1}".FormatWith(basePrice, unit);
+				}
 
 				return localizationService.GetResource("Products.BasePriceInfo").FormatWith(basePrice, unit);
             }
@@ -435,5 +409,6 @@ namespace SmartStore.Services.Catalog
 			if (item != null && item.ProductId != 0 && item.BundleItemId != 0)
 				bundleData.Add(item);
 		}
+
     }
 }

@@ -26,6 +26,9 @@ namespace SmartStore.Core.Data
 		{
 			get
 			{
+				if (TotalRecords == 0)
+					return 0;
+
 				return ((double)TotalProcessed / (double)TotalRecords) * 100;
 			}
 		}

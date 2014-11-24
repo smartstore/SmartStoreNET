@@ -13,11 +13,11 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-cogs"></i>
+            <i class="fa fa-cogs"></i>
             @T("Admin.Configuration.Settings.GeneralCommon")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
         
@@ -27,30 +27,16 @@
 
         $("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
         $("#@Html.FieldIdFor(model => model.SecuritySettings.CaptchaEnabled)").click(toggleReCaptcha);
-        $("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").click(toggleSocialLinks);
         $("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
 
-        toggleSocialLinks();
         toggleStoreClosed();
         toggleReCaptcha();
         toggleSeoLanguageUrls();
-    });
 
-    function toggleSocialLinks() {
-        if ($('#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)').is(':checked')) {
-            $('#facebookLink').show();
-            $('#googlePlusLink').show();
-            $('#twitterLink').show();
-            $('#pinterestLink').show();
-        }
-        else {
-            $('#facebookLink').hide();
-            $('#googlePlusLink').hide();
-            $('#twitterLink').hide();
-            $('#pinterestLink').hide();
-        }
-    }
-    
+    	$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
+    		$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
+        }).trigger('change');
+    });    
 
     function toggleStoreClosed() {
         if ($('#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)').is(':checked')) {
@@ -106,7 +92,7 @@
     
     @(Html.SmartStore().TabStrip().Name("generalsettings-edit").Items(x =>
     {
-        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings());
+        x.Add().Text(T("Common.General").Text).Content(@TabStoreInformationSettings()).Selected(true);
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SEOSettings").Text).Content(@TabSEOSettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
@@ -767,7 +753,7 @@
 
 @helper TabSocialSettings()
 {
-    <table class="adminContent">
+    <table id="SocialLinkTable" class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.ShowSocialLinksInFooter)
@@ -777,7 +763,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.ShowSocialLinksInFooter)
             </td>
         </tr>
-        <tr id="facebookLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.FacebookLink)
             </td>
@@ -786,7 +772,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.FacebookLink)
             </td>
         </tr>
-        <tr id="googlePlusLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.GooglePlusLink)
             </td>
@@ -795,7 +781,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.GooglePlusLink)
             </td>
         </tr>
-        <tr id="twitterLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.TwitterLink)
             </td>
@@ -804,7 +790,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.TwitterLink)
             </td>
         </tr>
-        <tr id="pinterestLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.PinterestLink)
             </td>
@@ -813,7 +799,7 @@
                 @Html.ValidationMessageFor(model => model.SocialSettings.PinterestLink)
             </td>
         </tr>
-        <tr id="youtubeLink">
+        <tr class="social-link">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SocialSettings.YoutubeLink)
             </td>
@@ -863,14 +849,14 @@
                     @if (Model.FullTextSettings.Enabled)
                     {
                         <button type="submit" name="togglefulltext" value="togglefulltext" class="btn btn-success">
-                            <i class="icon-power-off"></i>&nbsp;&nbsp;
+                            <i class="fa fa-power-off"></i>&nbsp;&nbsp;
                             @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Disable").Text
                         </button>
                     }
                     else
                     {
                         <button type="submit" name="togglefulltext" value="togglefulltext" class="btn btn-primary">
-                            <i class="icon-power-off"></i>&nbsp;&nbsp;
+                            <i class="fa fa-power-off"></i>&nbsp;&nbsp;
                             @T("Admin.Configuration.Settings.GeneralCommon.FullTextSettings.Enable").Text
                         </button>
                     }

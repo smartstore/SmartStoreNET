@@ -32,7 +32,7 @@ namespace SmartStore.Services.Messages
         /// <summary>
         /// Executes a task
         /// </summary>
-        public void Execute()
+		public void Execute(TaskExecutionContext ctx)
         {
             var maxTries = 3;
             var queuedEmails = _queuedEmailService.SearchEmails(null, null, null, null, true, maxTries, false, 0, 10000);

@@ -52,6 +52,30 @@ namespace SmartStore.Web.Framework.UI
             return this;
         }
 
+		public TabStripBuilder OnAjaxBegin(string value)
+		{
+			base.Component.OnAjaxBegin = value;
+			return this;
+		}
+
+		public TabStripBuilder OnAjaxSuccess(string value)
+		{
+			base.Component.OnAjaxSuccess = value;
+			return this;
+		}
+
+		public TabStripBuilder OnAjaxFailure(string value)
+		{
+			base.Component.OnAjaxFailure = value;
+			return this;
+		}
+
+		public TabStripBuilder OnAjaxComplete(string value)
+		{
+			base.Component.OnAjaxComplete = value;
+			return this;
+		}
+
     }
 
 }

@@ -130,14 +130,14 @@
             </div>
 
             <div class="print-buttons pull-right" style="margin-top: 12px">
-                <a href="@Url.RouteUrl("PrintOrderDetails", new { orderId = Model.Id })" target="_blank" class="btn print-order-button">
-                    <i class="icon icon-print"></i>
+                <a href="@Url.Action("print", new { id = Model.Id })" target="_blank" class="btn print-order-button" rel="nofollow">
+                    <i class="fa fa-print"></i>
                     @T("Order.Print")
                 </a>
                 @if (Model.DisplayPdfInvoice)
                 {
-                    <a href="@Url.RouteUrl("GetOrderPdfInvoice", new { orderId = Model.Id })" class="btn pdf-order-button">
-						<i class="icon icon-download-alt"></i>
+                    <a href="@Url.Action("pdf", new { id = Model.Id })" class="btn pdf-order-button" rel="nofollow">
+						<i class="fa fa-arrow-circle-o-down"></i>
                         @T("Order.GetPDFInvoice")
                     </a>
                 }
@@ -147,7 +147,7 @@
 
     <div class="page-body">
         @Html.Widget("orderdetails_page_top")
-        <dl class="x-order-overview dl-horizontal">
+        <dl class="dl-horizontal">
             <dt>@T("Order.Order#"):</dt>
             <dd>@Model.OrderNumber</dd>
 
@@ -260,7 +260,7 @@
                                 {
                                 @*Completing payment support (for redirection payment methods)*@
                                 <div class="repost">
-                                    @using (Html.BeginRouteForm("OrderDetails", FormMethod.Post))
+                                    @using (Html.BeginForm())
                                     {
                                         <input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button" />
                                         <p class="hint muted">
@@ -368,8 +368,7 @@
                 </tbody>
             </table>
         </div>
-        <div class="clear">
-        </div>
+
         @Html.Widget("orderdetails_page_beforeproducts")
         @if (Model.Items.Count > 0)
         {
@@ -431,20 +430,23 @@
                 @if (!Model.PrintMode)
                 {
                     <div class="actions clearfix">
-                        @if (Model.IsReOrderAllowed)
-                        {
-                            <a class="btn btn-primary re-order-button pull-right" href="@Url.RouteUrl("ReOrder", new { orderId = Model.Id })">
-								<i class="icon icon-shopping-cart"></i>
-                                @T("Order.Reorder")
-                            </a>
-                        }
-                        @if (Model.IsReturnRequestAllowed)
-                        {
-                            <a class="btn return-items-button pull-right" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })">
-								<i class="icon icon-reply"></i>
-                                @T("Order.ReturnItems")
-                            </a>
-                        }
+						<div class="pull-right">
+							@if (Model.IsReturnRequestAllowed)
+							{
+								<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })">
+									<i class="fa fa-reply"></i>
+									@T("Order.ReturnItems")
+								</a>
+							}
+
+							@if (Model.IsReOrderAllowed)
+							{
+								<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })">
+									<i class="fa fa-shopping-cart"></i>
+									@T("Order.Reorder")
+								</a>
+							}
+						</div>
                     </div>
                 }
             </div>
@@ -597,6 +599,8 @@
             </div>
         </div>
 
+		@Html.Widget("orderdetails_page_aftertotal")
+
         @if (!Model.PrintMode)
         {
             if (Model.Shipments.Count > 0)
@@ -657,7 +661,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <a href="@Url.RouteUrl("ShipmentDetails", new { shipmentId = item.Id })" title="@T("Order.Shipments.ViewDetails")">@T("Order.Shipments.ViewDetails")</a>
+                                    <a href="@Url.Action("ShipmentDetails", new { shipmentId = item.Id })" title="@T("Order.Shipments.ViewDetails")">@T("Order.Shipments.ViewDetails")</a>
                                 </td>
                             </tr>
                         }
@@ -705,5 +709,5 @@
             }
         }
         @Html.Widget("orderdetails_page_bottom")
-    </dl>
+	</div>
 </div>

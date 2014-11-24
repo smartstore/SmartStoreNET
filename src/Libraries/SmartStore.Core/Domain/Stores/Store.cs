@@ -57,6 +57,11 @@ namespace SmartStore.Core.Domain.Stores
 		public string HtmlBodyId { get; set; }
 
 		/// <summary>
+		/// Gets or sets the CDN host name, if static media content should be served through a CDN.
+	    /// </summary>
+	    public string ContentDeliveryNetwork { get; set; }
+
+		/// <summary>
 		/// Gets the security mode for the store
 		/// </summary>
 		public HttpSecurityMode GetSecurityMode(bool? useSsl = null)

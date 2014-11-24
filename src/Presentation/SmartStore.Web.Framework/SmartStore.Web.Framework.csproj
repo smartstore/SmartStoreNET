@@ -12,10 +12,14 @@
     <AssemblyName>SmartStore.Web.Framework</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -62,17 +66,24 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac">
+      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Integration.Mvc, Version=3.2.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.Mvc5.3.2.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="Autofac.Integration.WebApi, Version=3.0.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Autofac.WebApi.3.1.0\lib\net40\Autofac.Integration.WebApi.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.dll</HintPath>
+    </Reference>
+    <Reference Include="AutoMapper.Net4, Version=3.2.1.0, Culture=neutral, PublicKeyToken=be96cd2c38ef1005, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\AutoMapper.3.2.1\lib\net40\AutoMapper.Net4.dll</HintPath>
     </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -120,12 +131,13 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="Recaptcha">
       <HintPath>..\..\packages\recaptcha.1.0.5.0\lib\.NetFramework 4.0\Recaptcha.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
@@ -148,7 +160,7 @@
     </Reference>
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Http, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -166,9 +178,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Microsoft.AspNet.WebApi.WebHost.5.1.2\lib\net45\System.Web.Http.WebHost.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -176,19 +188,19 @@
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -196,7 +208,8 @@
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
     <Reference Include="Telerik.Web.Mvc, Version=2012.2.607.340, Culture=neutral, PublicKeyToken=121fae78165ba3d4, processorArchitecture=MSIL">
-      <HintPath>..\..\packages\TelerikMvcExtensions.2012.2.607\lib\net40\Telerik.Web.Mvc.dll</HintPath>
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\lib\Telerik\Telerik.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="WebGrease, Version=1.6.5135.21930, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -211,7 +224,11 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="AppPath.cs" />
+    <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Controllers\AdminThemedAttribute.cs" />
+    <Compile Include="Controllers\HandleExceptionFilter.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
+    <Compile Include="Controllers\PublicControllerBase.cs" />
     <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />
     <Compile Include="Controllers\PluginControllerBase.cs" />
     <Compile Include="Controllers\CheckAffiliateAttribute.cs" />
@@ -223,12 +240,21 @@
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\TabStripCreated.cs" />
-    <Compile Include="Events\ThemeTouched.cs" />
     <Compile Include="Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
-    <Compile Include="HandleInstallFilter.cs" />
-    <Compile Include="HtmlAttribute.cs" />
-    <Compile Include="HtmlAttributeExtensions.cs" />
+    <Compile Include="Controllers\HandleInstallFilter.cs" />
+    <Compile Include="Extensions\RouteExtensions.cs" />
+    <Compile Include="Mvc\ModelBoundEvent.cs" />
+    <Compile Include="Mvc\ProviderModel.cs" />
+    <Compile Include="Plugins\PluginMediator.cs" />
+    <Compile Include="Plugins\ProviderManager.cs" />
+    <Compile Include="Themes\ThemeFileResolver.cs" />
+    <Compile Include="Themes\InheritedVirtualThemeFile.cs" />
+    <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
+    <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
+    <Compile Include="UI\HtmlAttribute.cs" />
+    <Compile Include="UI\HtmlAttributeExtensions.cs" />
     <Compile Include="Controllers\LanguageSeoCodeAttribute.cs" />
     <Compile Include="Localization\IText.cs" />
     <Compile Include="Localization\LocalizedUrlHelper.cs" />
@@ -238,8 +264,10 @@
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />
     <Compile Include="Mvc\CommaSeparatedModelBinder.cs" />
     <Compile Include="Mvc\UniversalResult.cs" />
-    <Compile Include="Plugins\PluginHelperFeed.cs" />
-    <Compile Include="Plugins\PluginHelperBase.cs" />
+    <Compile Include="Plugins\PluginDebugViewVirtualPathProvider.cs" />
+    <Compile Include="Plugins\FeedPluginCore.cs" />
+    <Compile Include="Plugins\FeedPluginHelper.cs" />
+    <Compile Include="Plugins\PluginHelper.cs" />
     <Compile Include="Controllers\PublicStoreAllowNavigationAttribute.cs" />
     <Compile Include="Mvc\Routes\GuidConstraint.cs" />
     <Compile Include="Seo\GenericPathRoute.cs" />
@@ -250,15 +278,19 @@
     <Compile Include="Themes\SmartStyleBundle.cs" />
     <Compile Include="Themes\ThemeHelper.cs" />
     <Compile Include="Themes\ThemeVarsVirtualFile.cs" />
-    <Compile Include="Themes\ThemeVarsVirtualPathProvider.cs" />
+    <Compile Include="Themes\ThemingVirtualPathProvider.cs" />
     <Compile Include="Themes\ThemeHtmlExtensions.cs" />
     <Compile Include="FrameworkCacheConsumer.cs" />
     <Compile Include="Themes\ThemeVarsRepository.cs" />
     <Compile Include="UI\Components\ComponentRendererUtils.cs" />
+    <Compile Include="UI\Components\Menu\MenuExtensions.cs" />
+    <Compile Include="UI\Components\Menu\NavigationModel.cs" />
+    <Compile Include="UI\Components\Menu\NodePathState.cs" />
     <Compile Include="UI\Components\Pager\MobilePagerRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowRenderer.cs" />
     <Compile Include="UI\Components\Window\WindowBuilder.cs" />
     <Compile Include="UI\Components\Window\Window.cs" />
+    <Compile Include="UI\IWidgetProvider.cs" />
     <Compile Include="UI\IWidgetSelector.cs" />
     <Compile Include="UI\BundleBuilder.cs" />
     <Compile Include="UI\ScaffoldExtensions.cs" />
@@ -266,15 +298,8 @@
     <Compile Include="Security\FilePermissionHelper.cs" />
     <Compile Include="Controllers\StoreClosedAttribute.cs" />
     <Compile Include="Controllers\StoreLastVisitedPageAttribute.cs" />
-    <Compile Include="RemotePost.cs" />
     <Compile Include="Controllers\PaymentControllerBase.cs" />
     <Compile Include="Controllers\FormValueRequiredAttribute.cs" />
-    <Compile Include="EmbeddedViews\EmbeddedResourceVirtualFile.cs" />
-    <Compile Include="EmbeddedViews\EmbeddedViewMetadata.cs" />
-    <Compile Include="EmbeddedViews\EmbeddedViewResolver.cs" />
-    <Compile Include="EmbeddedViews\EmbeddedViewTable.cs" />
-    <Compile Include="EmbeddedViews\EmbeddedViewVirtualPathProvider.cs" />
-    <Compile Include="EmbeddedViews\IEmbeddedViewResolver.cs" />
     <Compile Include="Localization\LocalizedRoute.cs" />
     <Compile Include="Localization\LocalizedRouteExtensions.cs" />
     <Compile Include="Mvc\ModelBase.cs" />
@@ -282,8 +307,8 @@
     <Compile Include="Controllers\FormValueExistsAttribute.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Mvc\XmlDownloadResult.cs" />
-    <Compile Include="Extensions.cs" />
-    <Compile Include="HtmlExtensions.cs" />
+    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Mvc\ImageResult.cs" />
     <Compile Include="Mvc\IModelAttribute.cs" />
     <Compile Include="Localization\ILocalizedModel.cs" />
@@ -295,19 +320,18 @@
     <Compile Include="Mvc\Routes\RoutePublisher.cs" />
     <Compile Include="Mvc\SmartMetadataProvider.cs" />
     <Compile Include="Mvc\SmartModelBinder.cs" />
-    <Compile Include="SmartResourceDisplayName.cs" />
-    <Compile Include="SmartValidatorFactory.cs" />
+    <Compile Include="Localization\SmartResourceDisplayName.cs" />
+    <Compile Include="Validators\SmartBaseValidator.cs" />
+    <Compile Include="Validators\SmartValidatorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="RssActionResult.cs" />
+    <Compile Include="Controllers\RssActionResult.cs" />
     <Compile Include="Security\SslRequirement.cs" />
     <Compile Include="Security\RequireHttpsByConfigAttribute.cs" />
-    <Compile Include="StatefulStorage.cs" />
-    <Compile Include="TelerikLocalizationService.cs" />
-    <Compile Include="TelerikLocalizationServiceFactory.cs" />
+    <Compile Include="Localization\TelerikLocalizationService.cs" />
+    <Compile Include="Localization\TelerikLocalizationServiceFactory.cs" />
     <Compile Include="Themes\IThemeContext.cs" />
     <Compile Include="Themes\ThemeableVirtualPathProviderViewEngine.cs" />
     <Compile Include="Themes\ThemeableRazorViewEngine.cs" />
-    <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeContext.cs" />
     <Compile Include="UI\Components\BadgeStyle.cs" />
     <Compile Include="UI\Components\Button\Button.cs" />
@@ -324,7 +348,7 @@
     <Compile Include="UI\PageAssetsBuilder.cs" />
     <Compile Include="UI\DataListExtensions.cs" />
     <Compile Include="UI\Components\HtmlHelperExtensions.cs" />
-    <Compile Include="UI\Components\IComponent.cs" />
+    <Compile Include="UI\Components\IUiComponent.cs" />
     <Compile Include="UI\Components\IContentContainer.cs" />
     <Compile Include="UI\Components\IHtmlAttributesContainer.cs" />
     <Compile Include="UI\Components\INavigatable.cs" />
@@ -347,8 +371,9 @@
     <Compile Include="UI\Components\TabStrip\TabBuilder.cs" />
     <Compile Include="UI\Components\TabStrip\TabFactory.cs" />
     <Compile Include="UI\Components\TabStrip\TabStripRenderer.cs" />
+    <Compile Include="UI\WidgetProvider.cs" />
     <Compile Include="UI\WidgetRouteInfo.cs" />
-    <Compile Include="UrlHelperExtensions.cs" />
+    <Compile Include="Extensions\UrlHelperExtensions.cs" />
     <Compile Include="Validators\ValidatorExtensions .cs" />
     <Compile Include="Validators\CreditCardPropertyValidator.cs" />
     <Compile Include="ViewEngines\Razor\WebViewPage.cs" />
@@ -367,13 +392,14 @@
     <Compile Include="WebApi\WebApiExtension.cs" />
     <Compile Include="WebApi\WebApiSettings.cs" />
     <Compile Include="WebApi\WebApiStartupTask.cs" />
+    <Compile Include="WebServices\DelegatedMessageInspector.cs" />
     <Compile Include="WebStoreContext.cs" />
     <Compile Include="WebWorkContext.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
       <Project>{6bda8332-939f-45b7-a25e-7a797260ae59}</Project>
@@ -390,6 +416,7 @@
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
+  <Import Project="..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.
   <Target Name="BeforeBuild">

@@ -19,7 +19,7 @@ namespace SmartStore.Core.Plugins
         public PluginDescriptor()
         {
             this.Version = new Version("1.0");
-            this.MinAppVersion = SmartStoreVersion.FullVersion;
+            this.MinAppVersion = SmartStoreVersion.Version;
         }
 
         public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
@@ -46,7 +46,6 @@ namespace SmartStore.Core.Plugins
             }
         }
 
-        // codehint: sm-add
         /// <summary>
         /// Gets the file name of the brand image (without path)
         /// or an empty string if no image is specified
@@ -62,7 +61,7 @@ namespace SmartStore.Core.Plugins
                     var dir = this.PhysicalPath;
                     foreach (var file in filesToCheck)
                     {
-                        if (File.Exists(Path.Combine(dir, file)))
+                        if (File.Exists(Path.Combine(dir, "Content", file)))
                         {
                             _brandImageFileName = file;
                             break;
@@ -162,26 +161,40 @@ namespace SmartStore.Core.Plugins
 		public bool Installed { get; set; }
 
 		/// <summary>
+		/// Gets or sets the value indicating whether the plugin is configurable
+		/// </summary>
+		/// <remarks>
+		/// A plugin is configurable when it implements the <see cref="IConfigurable"/> interface
+		/// </remarks>
+		[DataMember]
+		public bool IsConfigurable { get; set; }
+
+		/// <summary>
 		/// Gets or sets the root key of string resources.
 		/// </summary>
 		/// <remarks>Tries to get it from first entry of resource XML file if not specified. In that case the first resource name should not contain a dot if it's not part of the root key.
 		/// Otherwise you get the wrong root key.</remarks>
-		public string ResourceRootKey {
+		public string ResourceRootKey 
+		{
 			get {
-				if (_resourceRootKey == null) {
+				if (_resourceRootKey == null) 
+				{
 					_resourceRootKey = "";
-
-					try {
+					try 
+					{
 						// try to get root-key from first entry of XML file
 						string localizationDir = Path.Combine(OriginalAssemblyFile.Directory.FullName, "Localization");
 
-						if (System.IO.Directory.Exists(localizationDir)) {
+						if (System.IO.Directory.Exists(localizationDir)) 
+						{
 							string filePath = System.IO.Directory.EnumerateFiles(localizationDir, "*.xml").FirstOrDefault();
-							if (filePath.HasValue()) {
+							if (filePath.HasValue()) 
+							{
 								XmlDocument doc = new XmlDocument();
 								doc.Load(filePath);
 								var node = doc.SelectSingleNode(@"//Language/LocaleResource");
-								if (node != null) {
+								if (node != null) 
+								{
 									string key = node.Attributes["Name"].InnerText;
 									if (key.HasValue() && key.Contains('.'))
 										_resourceRootKey = key.Substring(0, key.LastIndexOf('.'));
@@ -189,7 +202,8 @@ namespace SmartStore.Core.Plugins
 							}
 						}
 					}
-					catch (Exception exc) {
+					catch (Exception exc) 
+					{
 						exc.Dump();
 					}
 				}
@@ -221,13 +235,13 @@ namespace SmartStore.Core.Plugins
 
         public int CompareTo(PluginDescriptor other)
         {
-            if (DisplayOrder != other.DisplayOrder)
-                return DisplayOrder.CompareTo(other.DisplayOrder);
-            else
-                return FriendlyName.CompareTo(other.FriendlyName);
+			if (DisplayOrder != other.DisplayOrder)
+				return DisplayOrder.CompareTo(other.DisplayOrder);
+			else if (FriendlyName != null)
+				return FriendlyName.CompareTo(other.FriendlyName);
+			return 0;
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public string GetSettingKey(string name)
 		{
 			return "PluginSetting.{0}.{1}".FormatWith(SystemName, name);

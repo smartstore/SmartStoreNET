@@ -1,26 +1,27 @@
 ﻿@model ShippingMethodRestrictionModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Shipping.Restrictions").Text;   
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-globe"></i>
+            <i class="fa fa-globe"></i>
             @T("Admin.Configuration.Shipping.Restrictions")
         </div>
         <div class="options">
-            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="icon-ok icon-white"></i>&nbsp;@T("Admin.Common.Save")</button>
+            <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
         </div>
     </div>
-    
+
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		@T("Admin.Configuration.Shipping.Restrictions.Description")
+	</div>
+
     <table class="adminContent">
         <tr>
             <td>
-                @T("Admin.Configuration.Shipping.Restrictions.Description")
-                <br />
-                <br />
                 @if (Model.AvailableCountries.Count == 0)
                 {
                     <text>No countries defined</text>
@@ -30,9 +31,7 @@
                     <text>No shipping methods available</text>
                 }
                 else
-                {
-                    
-                    
+                {                   
                     <script type="text/javascript">
                         $(document).ready(function () {            
                             @foreach (var sm in Model.AvailableShippingMethods)
@@ -46,11 +45,11 @@
                             }
                         });
                     </script>
-                    
+
                     <div>
                         <table class="table table-hover">
                             <thead>
-                                <tr class="">
+                                <tr>
                                     <th scope="col">
                                         <b>@T("Admin.Configuration.Shipping.Restrictions.Country")</b>
                                     </th>
@@ -67,7 +66,6 @@
                                 </tr>
                             </thead>
                             <tbody>
-
                                 @foreach (var c in Model.AvailableCountries)
                                 {
                                     <tr>
@@ -90,5 +88,4 @@
             </td>
         </tr>
     </table>
-
 }

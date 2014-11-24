@@ -1,7 +1,7 @@
 ﻿@model ForumBreadcrumbModel
 @using SmartStore.Web.Models.Boards;
 <ul class="breadcrumb" id="breadcrumb">
-    <li><a href="@Url.RouteUrl("HomePage")" title="@T("Forum.Breadcrumb.HomeTitle")"><i class="icon-home"></i></a>
+    <li><a href="@Url.RouteUrl("HomePage")" title="@T("Forum.Breadcrumb.HomeTitle")"><i class="fa fa-home"></i></a>
         <span class="divider">@Html.Raw(@Model.Separator)</span></li>
     <li>@Html.RouteLink(@T("Forum.Forums").Text, "Boards", null, new { title = @T("Forum.Breadcrumb.ForumHomeTitle") })
     </li>

@@ -736,6 +736,7 @@ namespace SmartStore.Services.Catalog
                         where (p.Name.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
                               (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
+							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
                               (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
 							//localized values
                               (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
@@ -747,34 +748,36 @@ namespace SmartStore.Services.Catalog
 
             if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
             {
-				// ACL
-                query = from p in query
-                        join acl in _aclRepository.Table on p.Id equals acl.EntityId into p_acl
-                        from acl in p_acl.DefaultIfEmpty()
-                        where !p.SubjectToAcl || (acl.EntityName == "Product" && allowedCustomerRolesIds.Contains(acl.CustomerRoleId))
-                        select p;
+				query = 
+					from p in query
+					join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
+					from acl in pacl.DefaultIfEmpty()
+					where !p.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+					select p;
             }
 
 			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
-				//Store mapping
-				query = from p in query
-						join sm in _storeMappingRepository.Table on p.Id equals sm.EntityId into p_sm
-						from sm in p_sm.DefaultIfEmpty()
-						where !p.LimitedToStores || (sm.EntityName == "Product" && ctx.StoreId == sm.StoreId)
-						select p;
+				query = 
+					from p in query
+					join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
+					from sm in psm.DefaultIfEmpty()
+					where !p.LimitedToStores || ctx.StoreId == sm.StoreId
+					select p;
 			}
 
             // search by specs
             if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
             {
-                query = from p in query
-                        where !ctx.FilteredSpecs
-                                   .Except(
-                                       p.ProductSpecificationAttributes.Where(psa => psa.AllowFiltering).Select(
-                                           psa => psa.SpecificationAttributeOptionId))
-                                   .Any()
-                        select p;
+                query = 
+					from p in query
+					where !ctx.FilteredSpecs.Except
+					(
+						p.ProductSpecificationAttributes
+							.Where(psa => psa.AllowFiltering)
+							.Select(psa => psa.SpecificationAttributeOptionId)
+					).Any()
+					select p;
             }
 
             // category filtering
@@ -784,7 +787,7 @@ namespace SmartStore.Services.Catalog
                 if (ctx.MatchAllcategories)
                 {
                     query = from p in query
-                                where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+                            where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
                             from pc in p.ProductCategories
                             where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
                             select p;
@@ -823,15 +826,6 @@ namespace SmartStore.Services.Catalog
                         from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
                         select p;
             }
-
-            //// only distinct products (group by ID)
-            //// if we use standard Distinct() method, then all fields will be compared (low performance)
-            //// it'll not work in SQL Server Compact when searching products by a keyword)
-            //query = from p in query
-            //        group p by p.Id
-            //            into pGroup
-            //            orderby pGroup.Key
-            //            select pGroup.FirstOrDefault();
 
             return query;
         }
@@ -953,22 +947,26 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="sci">Shopping cart item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(OrganizedShoppingCartItem sci, bool decrease)
 		{
 			if (sci == null)
 				throw new ArgumentNullException("cartItem");
 
 			if (sci.Item.Product.ProductType == ProductType.BundledProduct && sci.Item.Product.BundlePerItemShoppingCart)
 			{
-				if (sci.ChildItems == null)
-					return;
-
-				foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
-					AdjustInventory(child, decrease);
+				if (sci.ChildItems != null)
+				{
+					foreach (var child in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id))
+					{
+						AdjustInventory(child.Item.Product, decrease, sci.Item.Quantity * child.Item.Quantity, child.Item.AttributesXml);
+					}
+				}
+				return new AdjustInventoryResult();
 			}
 			else
 			{
-				AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
+				return AdjustInventory(sci.Item.Product, decrease, sci.Item.Quantity, sci.Item.AttributesXml);
 			}
 		}
 
@@ -977,7 +975,9 @@ namespace SmartStore.Services.Catalog
 		/// </summary>
 		/// <param name="orderItem">Order item</param>
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
-		public virtual void AdjustInventory(OrderItem orderItem, bool decrease)
+		/// <param name="quantity">Quantity</param>
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(OrderItem orderItem, bool decrease, int quantity)
 		{
 			if (orderItem == null)
 				throw new ArgumentNullException("orderItem");
@@ -995,14 +995,15 @@ namespace SmartStore.Services.Catalog
 						{
 							var product = products.FirstOrDefault(x => x.Id == item.ProductId);
 							if (product != null)
-								AdjustInventory(product, decrease, item.Quantity, item.AttributesXml);
+								AdjustInventory(product, decrease, quantity * item.Quantity, item.AttributesXml);
 						}
 					}
 				}
+				return new AdjustInventoryResult();
 			}
 			else
 			{
-				AdjustInventory(orderItem.Product, decrease, orderItem.Quantity, orderItem.AttributesXml);
+				return AdjustInventory(orderItem.Product, decrease, quantity, orderItem.AttributesXml);
 			}
 		}
 
@@ -1013,57 +1014,54 @@ namespace SmartStore.Services.Catalog
 		/// <param name="decrease">A value indicating whether to increase or descrease product stock quantity</param>
         /// <param name="quantity">Quantity</param>
         /// <param name="attributesXml">Attributes in XML format</param>
-		public virtual void AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
+		/// <returns>Adjust inventory result</returns>
+		public virtual AdjustInventoryResult AdjustInventory(Product product, bool decrease, int quantity, string attributesXml)
         {
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			var prevStockQuantity = product.StockQuantity;
+			var result = new AdjustInventoryResult();
 
 			switch (product.ManageInventoryMethod)
             {
                 case ManageInventoryMethod.DontManageStock:
                     {
                         //do nothing
-                        return;
                     }
+					break;
                 case ManageInventoryMethod.ManageStock:
                     {
-                        int newStockQuantity = 0;
+						result.StockQuantityOld = product.StockQuantity;
                         if (decrease)
-							newStockQuantity = product.StockQuantity - quantity;
+							result.StockQuantityNew = product.StockQuantity - quantity;
 						else
-							newStockQuantity = product.StockQuantity + quantity;
+							result.StockQuantityNew = product.StockQuantity + quantity;
 
 						bool newPublished = product.Published;
 						bool newDisableBuyButton = product.DisableBuyButton;
 						bool newDisableWishlistButton = product.DisableWishlistButton;
 
                         //check if minimum quantity is reached
-                        if (decrease)
+                        switch (product.LowStockActivity)
                         {
-                            switch (product.LowStockActivity)
-                            {
-                                case LowStockActivity.DisableBuyButton:
-                                    newDisableBuyButton = product.MinStockQuantity >= newStockQuantity;
-                                    newDisableWishlistButton = product.MinStockQuantity >= newStockQuantity;
-                                    break;
-                                case LowStockActivity.Unpublish:
-                                    newPublished = product.MinStockQuantity <= newStockQuantity;
-                                    break;
-                                default:
-                                    break;
-                            }
+                            case LowStockActivity.DisableBuyButton:
+								newDisableBuyButton = product.MinStockQuantity >= result.StockQuantityNew;
+								newDisableWishlistButton = product.MinStockQuantity >= result.StockQuantityNew;
+                                break;
+                            case LowStockActivity.Unpublish:
+								newPublished = product.MinStockQuantity <= result.StockQuantityNew;
+                                break;
                         }
 
-						product.StockQuantity = newStockQuantity;
+						product.StockQuantity = result.StockQuantityNew;
 						product.DisableBuyButton = newDisableBuyButton;
 						product.DisableWishlistButton = newDisableWishlistButton;
 						product.Published = newPublished;
+
 						UpdateProduct(product);
 
                         //send email notification
-                        if (decrease && product.NotifyAdminForQuantityBelow > newStockQuantity)
+						if (decrease && product.NotifyAdminForQuantityBelow > result.StockQuantityNew)
                             _workflowMessageService.SendQuantityBelowStoreOwnerNotification(product, _localizationSettings.DefaultAdminLanguageId);                        
                     }
                     break;
@@ -1072,13 +1070,13 @@ namespace SmartStore.Services.Catalog
                         var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
                         if (combination != null)
                         {
-                            int newStockQuantity = 0;
+							result.StockQuantityOld = combination.StockQuantity;
                             if (decrease)
-                                newStockQuantity = combination.StockQuantity - quantity;
+								result.StockQuantityNew = combination.StockQuantity - quantity;
                             else
-                                newStockQuantity = combination.StockQuantity + quantity;
+								result.StockQuantityNew = combination.StockQuantity + quantity;
 
-                            combination.StockQuantity = newStockQuantity;
+							combination.StockQuantity = result.StockQuantityNew;
                             _productAttributeService.UpdateProductVariantAttributeCombination(combination);
                         }
                     }
@@ -1099,17 +1097,7 @@ namespace SmartStore.Services.Catalog
 					AdjustInventory(linkedProduct, decrease, quantity * x.Quantity, "");
 			});
 
-            //TODO send back in stock notifications?
-            //if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
-            //    product.BackorderMode == BackorderMode.NoBackorders &&
-            //    product.AllowBackInStockSubscriptions &&
-            //    product.StockQuantity > 0 &&
-            //    prevStockQuantity <= 0 &&
-            //    product.Published &&
-            //    !product.Deleted)
-            //{
-            //    //_backInStockSubscriptionService.SendNotificationsToSubscribers(product);
-            //}
+			return result;
         }
         
         /// <summary>

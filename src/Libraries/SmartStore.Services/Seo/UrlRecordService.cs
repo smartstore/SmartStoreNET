@@ -1,5 +1,6 @@
 using System;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -28,13 +29,7 @@ namespace SmartStore.Services.Seo
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="urlRecordRepository">URL record repository</param>
-        public UrlRecordService(ICacheManager cacheManager,
-            IRepository<UrlRecord> urlRecordRepository)
+        public UrlRecordService(ICacheManager cacheManager, IRepository<UrlRecord> urlRecordRepository)
         {
             this._cacheManager = cacheManager;
             this._urlRecordRepository = urlRecordRepository;
@@ -158,10 +153,7 @@ namespace SmartStore.Services.Seo
                             orderby ur.Id descending 
                             select ur.Slug;
                 var slug = query.FirstOrDefault();
-                //little hack here. nulls aren't cacheable so set it to ""
-                if (slug == null)
-                    slug = "";
-                return slug;
+                return slug ?? "";
             });
         }
 
@@ -172,13 +164,14 @@ namespace SmartStore.Services.Seo
         /// <param name="entity">Entity</param>
         /// <param name="slug">Slug</param>
         /// <param name="languageId">Language ID</param>
-        public virtual void SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
+        public virtual UrlRecord SaveSlug<T>(T entity, string slug, int languageId) where T : BaseEntity, ISlugSupported
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
             int entityId = entity.Id;
             string entityName = typeof(T).Name;
+			UrlRecord result = null;
 
             var query = from ur in _urlRecordRepository.Table
                         where ur.EntityId == entityId &&
@@ -187,13 +180,12 @@ namespace SmartStore.Services.Seo
                         orderby ur.Id descending 
                         select ur;
             var allUrlRecords = query.ToList();
-            var activeUrlRecord = allUrlRecords.FirstOrDefault(x => x.IsActive);
 
+            var activeUrlRecord = allUrlRecords.FirstOrDefault(x => x.IsActive);
             if (activeUrlRecord == null && !string.IsNullOrWhiteSpace(slug))
             {
                 //find in non-active records with the specified slug
-                var nonActiveRecordWithSpecifiedSlug = allUrlRecords
-                    .FirstOrDefault(x => x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
+                var nonActiveRecordWithSpecifiedSlug = allUrlRecords.FirstOrDefault(x => x.Slug.Equals(slug, StringComparison.InvariantCultureIgnoreCase) && !x.IsActive);
                 if (nonActiveRecordWithSpecifiedSlug != null)
                 {
                     //mark non-active record as active
@@ -212,6 +204,7 @@ namespace SmartStore.Services.Seo
                         IsActive = true,
                     };
                     InsertUrlRecord(urlRecord);
+					result = urlRecord;
                 }
             }
 
@@ -274,6 +267,7 @@ namespace SmartStore.Services.Seo
 								IsActive = true,
 							};
 							InsertUrlRecord(urlRecord);
+							result = urlRecord;
 
 							//disable the previous active URL record
 							activeUrlRecord.IsActive = false;
@@ -283,7 +277,26 @@ namespace SmartStore.Services.Seo
 
                 }
             }
+
+			return result;
         }
+
+		/// <summary>
+		/// Save slug
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="nameProperty">Name of a property</param>
+		/// <returns>Url record</returns>
+		public virtual UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported
+		{
+			string name = nameProperty.Compile().Invoke(entity);
+
+			string existingSeName = entity.GetSeName<T>(0, true, false);
+			existingSeName = entity.ValidateSeName(existingSeName, name, true);
+
+			return SaveSlug(entity, existingSeName, 0);
+		}
 
         #endregion
     }

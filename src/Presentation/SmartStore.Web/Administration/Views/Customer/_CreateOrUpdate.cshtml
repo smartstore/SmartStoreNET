@@ -5,7 +5,7 @@
 @Html.HiddenFor(model => model.Id)
 @Html.SmartStore().TabStrip().Name("customer-edit").Items(x =>
 {
-    var tabInfo = x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo());
+    var tabInfo = x.Add().Text(T("Admin.Customers.Customers.Info").Text).Content(TabInfo()).Selected(true);
     var tabCustomerRoles = x.Add().Text(T("Admin.Customers.Customers.CustomerRoles").Text).Content(TabCustomerRoles());
 
     TabBuilder tabOrders = null;
@@ -31,38 +31,6 @@
     TabBuilder tabImpersonate = null;
     if (Model.Id > 0)
         tabImpersonate = x.Add().Text(T("Admin.Customers.Customers.Impersonate").Text).Content(TabImpersonate());
-
-    var selectedTab = (string)ViewData["selectedTab"];
-    switch (selectedTab)
-    {
-        case "info":
-            tabInfo.Selected(true);
-            break;
-        case "customerroles":
-            tabCustomerRoles.Selected(true);
-            break;
-        case "orders":
-            tabOrders.Selected(true);
-            break;
-        case "rewardpoints":
-            tabRewardPoints.Selected(true);
-            break;
-        case "addresses":
-            tabAddresses.Selected(true);
-            break;
-        case "shoppingcart":
-            tabShoppingCart.Selected(true);
-            break;
-        case "wishlist":
-            tabWishlist.Selected(true);
-            break;
-        case "impersonate":
-            tabImpersonate.Selected(true);
-            break;
-        default:
-            tabInfo.Selected(true);
-            break;
-    }
     
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "customer-edit", this.Html, this.Model));
@@ -86,7 +54,7 @@
                                 $.each(data, function(id, option) {
                                     ddlStates.append($('<option></option>').val(option.id).html(option.name));
                                 });
-                                ddlStates.trigger("change"); // codehint: sm-add
+                                ddlStates.trigger("change");
                             },
                             error:function (xhr, ajaxOptions, thrownError){
                                 alert('Failed to retrieve states.')
@@ -143,7 +111,7 @@
                 @if (Model.Id > 0)
                 {
                     <button type="submit" name="changepassword" value="changepassword" class="btn">
-                        <i class="icon-pencil"></i>&nbsp;Change password
+                        <i class="fa fa-gear"></i>&nbsp;@T("Account.ChangePassword")
 					</button>
                 }
             </td>
@@ -331,7 +299,7 @@
                 @Html.SmartLabelFor(model => model.AdminComment)
             </td>
             <td class="adminData">
-                @Html.TextAreaFor(model => model.AdminComment, new { style = "Width: 250px; Height: 200px;" })
+                @Html.TextAreaFor(model => model.AdminComment)
                 @Html.ValidationMessageFor(model => model.AdminComment)
             </td>
         </tr>
@@ -356,15 +324,14 @@
                 </td>
             </tr>
         }
-        @if (Model.AffiliateId.HasValue && Model.AffiliateId.Value > 0)
+        @if (Model.AffiliateId != 0)
         {
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AffiliateId)
                 </td>
                 <td class="adminData">
-                    <a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId.Value })">@Model.AffiliateId.Value
-                        - @T("Admin.Common.View")</a>
+                    <a href="@Url.Action("Edit", "Affiliate", new { id = Model.AffiliateId })">@Model.AffiliateFullName</a>
                 </td>
             </tr>
         }
@@ -473,7 +440,8 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Id);
-						columns.Bound(x => x.OrderTotal);
+						columns.Bound(x => x.OrderTotal)
+							.RightAlign();
 						columns.Bound(x => x.OrderStatus);
 						columns.Bound(x => x.PaymentStatus);
 						columns.Bound(x => x.ShippingStatus);
@@ -543,7 +511,7 @@
             </td>
             <td class="adminData">
                 <button type="button" name="addRewardPoints" id="addRewardPoints" class="btn">
-                    <i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.RewardPoints.AddButton")
+                    <i class="fa fa-plus"></i>&nbsp;@T("Admin.Customers.Customers.RewardPoints.AddButton")
 				</button>
             </td>
         </tr>
@@ -608,8 +576,8 @@
     <div class="clear">
     </div>
 
-	<button type="button" class="btn btn-primary btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
-		<i class="icon-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
+	<button type="button" class="btn btn-below" onclick="location.href='@Url.Action("AddressCreate", new { customerId = Model.Id })'">
+		<i class="fa fa-plus"></i>&nbsp;@T("Admin.Customers.Customers.Addresses.AddButton")
 	</button>
 }
 @helper TabCurrentShoppingCart()
@@ -625,8 +593,8 @@
 									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                                 columns.Bound(sci => sci.Quantity).Centered().Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(120);
-                                columns.Bound(sci => sci.Total).Width(120);
+                                columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+                                columns.Bound(sci => sci.Total).RightAlign().Width(120);
 								columns.Bound(sci => sci.Store).Width(300);
                                 columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
@@ -654,8 +622,8 @@
 									.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 									.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
                                 columns.Bound(sci => sci.Quantity).Centered().Width(100);
-                                columns.Bound(sci => sci.UnitPrice).Width(120);
-                                columns.Bound(sci => sci.Total).Width(120);
+                                columns.Bound(sci => sci.UnitPrice).RightAlign().Width(120);
+                                columns.Bound(sci => sci.Total).RightAlign().Width(120);
 								columns.Bound(sci => sci.Store).Width(300);
                                 columns.Bound(sci => sci.UpdatedOn).Width(200);
                             })
@@ -670,20 +638,17 @@
         </tr>
     </table>
 }
-@helper TabImpersonate()
-    {
-    <table class="adminContent">
-        <tr>
-            <td>
-				@T("Admin.Customers.Customers.Impersonate.Description1")
-				<br />
-				@T("Admin.Customers.Customers.Impersonate.Description2")
-				<br /><br />
 
-				<button type="submit" name="impersonate" value="impersonate" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
-				</button>
-            </td>
-        </tr>
-    </table>
+@helper TabImpersonate()
+{
+	<div class="alert alert-info">
+		<button class="close" data-dismiss="alert">×</button>
+		<p>@T("Admin.Customers.Customers.Impersonate.Description1")</p>
+		<p>@T("Admin.Customers.Customers.Impersonate.Description2")</p>
+	</div>
+	<p>
+		<button type="submit" name="impersonate" value="impersonate" class="btn">
+			<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Customers.Customers.Impersonate.Button")
+		</button>
+	</p>
 }

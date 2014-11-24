@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 
@@ -41,8 +42,16 @@ namespace SmartStore.Services.Common
         /// <param name="keyGroup">Key group</param>
         /// <returns>Get attributes</returns>
 		IList<GenericAttribute> GetAttributesForEntity(int entityId, string keyGroup);
-        
-        /// <summary>
+
+		/// <summary>
+		/// Get queryable attributes
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <param name="keyGroup">The key group</param>
+		/// <returns>Queryable attributes</returns>
+		IQueryable<GenericAttribute> GetAttributes(string key, string keyGroup);
+
+		/// <summary>
         /// Save attribute value
         /// </summary>
         /// <typeparam name="TPropType">Property type</typeparam>

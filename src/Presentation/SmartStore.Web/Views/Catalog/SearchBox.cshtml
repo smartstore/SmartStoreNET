@@ -4,10 +4,14 @@
     @using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { onsubmit = "return check_small_search_form()", @class = "form-search pull-right" }))
     {
         <div class="input-append" style="position: relative">    
-            <input type="text" id="quicksearch" class="x-search-query" placeholder="@T("Search.SearchBox.Tooltip")" 
-                @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q"/>
-            <button type="submit" class="btn btn-warning" title="@T("Search")"><i class="icon-search"></i></button>
-       
+			<input type="text" 
+				   id="quicksearch" 
+				   placeholder="@T("Search.SearchBox.Tooltip")"
+				   @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
+            <button type="submit" class="btn btn-warning" title="@T("Search")">
+				<i class="fa fa-search"></i>
+			</button>
+			<span id="quicksearch-progress" class="ajax-loader-small hide"></span>
         </div>
         <script type="text/javascript">
 
@@ -23,35 +27,46 @@
 
                 return true;
             }
-            @if (Model.AutoCompleteEnabled)
+			@if (Model.AutoCompleteEnabled)
             {
                 <text>
-                $(function () {
-                    $('#quicksearch').autocomplete({
-                        delay: 500,
-                        minLength: @(Model.SearchTermMinimumLength.ToString()),
-                        source: '@(Url.RouteUrl("ProductSearchAutoComplete"))',
-			            select: function( event, ui ) {
-			                $("#quicksearch").val(ui.item.label);
-                            setLocation(ui.item.producturl);
-				            return false;
-			            },
-                        open: function( event, ui ) { 
-                            $(this).autocomplete('widget').css({'z-index': '2001', marginTop: "-2px",  width: $("#quicksearch").outerWidth() - 6});
-                            return false;
-                        }
-                    })
-                    .data("autocomplete")._renderItem = function( ul, item ) {
-                        var t = item.label;
-                        //html encode
-                        t = htmlEncode(t);
-                        return $("<li></li>")
-                            .data("item.autocomplete", item)
-                            .append("<a>@(Model.ShowProductImagesInSearchAutoComplete ? Html.Raw("<img src='\" + item.productpictureurl + \"'>") : null)" + t + "</a>")
-                            .appendTo(ul);
-                    };
+				$(function () {
+					var searchResult;
 
-                });
+					$('#quicksearch').typeahead({
+						items: 16,
+						minLength: @(Model.SearchTermMinimumLength.ToString()),
+						source: function (query, process) {
+							$('#quicksearch-progress').removeClass('hide');
+							return $.ajax({
+								dataType: "json",
+								url: '@Url.RouteUrl("ProductSearchAutoComplete")',
+								data: { term: query },
+								type: 'GET',
+								success: function (json) {
+									searchResult = json;
+									var items = $.map(json, function(val, i) {
+										return val.label;
+									});
+									process(items);
+								},
+								error: function() {
+									searchResult = null;
+								},
+								complete: function() {
+									$('#quicksearch-progress').addClass('hide');
+								}
+							});
+						},
+						updater: function(label) {
+							if (!searchResult)
+								return;
+
+							var item = _.find(searchResult, function(x) { return x.label == label }); 
+							setLocation(item.producturl);
+						}
+					})
+				});
                 </text>
             }
         </script>

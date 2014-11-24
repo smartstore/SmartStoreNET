@@ -23,27 +23,27 @@
 
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-cog"></i>
+            <i class="fa fa-paint-brush"></i>
             @ViewBag.Title @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List", new { storeId = Model.StoreId })
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary">
-                <i class="icon-ok"></i>&nbsp;
+                <i class="fa fa-check"></i>&nbsp;
                 @T("Admin.Common.Save")
             </button>
             <button type="submit" name="save" value="save-continue" class="btn">
                 @T("Admin.Common.SaveContinue")
             </button>
             <a href="#importvariables-window" data-toggle="modal" class="btn">
-                <i class="icon-upload"></i>
+                <i class="fa fa-arrow-circle-o-up"></i>
                 @T("Common.Import")
             </a>
             <a href="#exportvariables-window" data-toggle="modal" class="btn">
-                <i class="icon-download-alt"></i>
+                <i class="fa fa-arrow-circle-o-down"></i>
                 @T("Common.Export")
             </a>
             <a href='@Url.Action("Reset", new { theme = Model.ThemeName, storeId = Model.StoreId })' id="reset-vars" class="btn btn-danger">
-                <i class="icon-trash"></i>
+                <i class="fa fa-trash-o"></i>
                 @T("Admin.Common.Reset")
             </a>
         </div>
@@ -56,13 +56,13 @@
 			<pre>
 				@parsingError
 			</pre>
-			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId, selectedTab = ViewData["SelectedTab"] })'>
+			<a class="btn" href='@Url.Action("Configure", new { theme = Model.ThemeName, storeId = Model.StoreId })'>
 				@T("Admin.Configuration.Themes.Validation.RestorePrevValues")
 			</a>	
 		</div>
 	}
 	
-    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null, selectedTab = ViewData["SelectedTab"] })
+    @Html.Action("ConfigureTheme", "Theme", new { theme = Model.ThemeName, storeId = Model.StoreId, area = (string)null })
 }
 
 @*import variables window*@

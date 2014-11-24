@@ -1,8 +1,8 @@
 ﻿@model PrivateMessageListModel 
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models.PrivateMessages;
 @using SmartStore.Web.Framework.UI;
+
 <div class="private-messages-box">
     <script type="text/javascript">
         $(document).ready(function () {
@@ -11,7 +11,7 @@
                 $('#pm-inbox-table .rowcheckbox').attr('checked', $(this).is(':checked')).change();
             });
 
-            $('#pm-inbox-table .rowcheckbox').live('change', function (e) {
+            $(document).on('change', '#pm-inbox-table .rowcheckbox', function (e) {
                 var numChkBoxes = $('#pm-inbox-table .rowcheckbox').length;
                 var numChkBoxesChecked = $('#pm-inbox-table .rowcheckbox:checked').length;
                 $('#select-all-inbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
@@ -20,7 +20,7 @@
     </script>
     @if (Model.Messages.Count > 0)
     {
-        using (Html.BeginRouteForm("PrivateMessagesInbox", FormMethod.Post))
+        using (Html.BeginForm("InboxUpdate", (string)null))
         {
         <table class="table" cellspacing="0" cellpadding="4" id="pm-inbox-table">
             <col width="5%" />
@@ -63,7 +63,7 @@
                             }
                         </td>
                         <td class="a-left">
-                            @Html.RouteLink(item.Subject, "ViewPM", new { privateMessageId = item.Id }, new { @class = (item.IsRead) ? "pm-read" : "pm-unread" })
+                            @Html.ActionLink(item.Subject, "View", new { id = item.Id }, new { @class = (item.IsRead) ? "pm-read" : "pm-unread" })
                         </td>
                         <td class="a-left">
                             @item.CreatedOn
@@ -74,11 +74,11 @@
         </table>
         if (Model.TotalPages > 1)
         {
-            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessagesPaged", ViewData["PagerRouteValues"])
+            @Html.SmartStore().Pager(Model).Name("paginator").Route("PrivateMessages", ViewData["PagerRouteValues"])
         }
         <div class="buttons">
             <button class="btn btn-danger" name="delete-inbox" value="delete-inbox" type="submit" >
-                <i class="icon icon-trash"></i>&nbsp;&nbsp;
+                <i class="fa fa-trash-o"></i>&nbsp;&nbsp;
                 @T("PrivateMessages.Inbox.DeleteSelected")
             </button>
 

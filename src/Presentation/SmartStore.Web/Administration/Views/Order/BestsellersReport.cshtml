@@ -8,7 +8,7 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-money"></i>
+            <i class="fa fa-thumbs-up"></i>
             @T("Admin.SalesReport.Bestsellers")
         </div>
         <div class="options">
@@ -52,7 +52,7 @@
                 &nbsp;
             </td>
             <td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.SalesReport.Bestsellers.RunReport")</button>
+                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.SalesReport.Bestsellers.RunReport")</button>
             </td>
         </tr>
     </table>
@@ -69,8 +69,12 @@
                             columns.Bound(x => x.ProductName)
 								.Template(x => @Html.LabeledProductName(x.ProductId, x.ProductName, x.ProductTypeName, x.ProductTypeLabelHint))
 								.ClientTemplate(@Html.LabeledProductName("ProductId", "ProductName"));
-                            columns.Bound(x => x.TotalQuantity).Centered().Width(100);
-                            columns.Bound(x => x.TotalAmount).Width(200);
+                            columns.Bound(x => x.TotalQuantity)
+								.Centered()
+								.Width(100);
+                            columns.Bound(x => x.TotalAmount)
+								.RightAlign()
+								.Width(200);
                         })
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("BestsellersReportList", "Order"))
                         .EnableCustomBinding(true))

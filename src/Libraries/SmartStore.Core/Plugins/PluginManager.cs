@@ -37,7 +37,7 @@ namespace SmartStore.Core.Plugins
 
         private static readonly ReaderWriterLockSlim Locker = new ReaderWriterLockSlim();
         private static DirectoryInfo _shadowCopyFolder;
-        private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
+        //private static readonly string _installedPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
         private static readonly string _pluginsPath = "~/Plugins";
         private static readonly string _shadowCopyPath = "~/Plugins/bin";
         private static bool _clearShadowDirectoryOnStartup;
@@ -85,12 +85,17 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void Initialize()
         {
-			var updater = new AppUpdater();
-			if (updater.TryUpdate())
+			using (var updater = new AppUpdater())
 			{
-				// [...]
+				// update from NuGet package, if it exists and is valid
+				if (updater.TryUpdateFromPackage())
+				{
+					// [...]
+				}
+
+				// execute migrations
+				updater.ExecuteMigrations();
 			}
-			updater.Dispose();
 			
 			// adding a process-specific environment path (either bin/x86 or bin/amd64)
 			// ensures that unmanaged native dependencies can be resolved successfully.
@@ -106,14 +111,9 @@ namespace SmartStore.Core.Plugins
 				_shadowCopyFolder = new DirectoryInfo(CommonHelper.MapPath(_shadowCopyPath));
 
                 var incompatiblePlugins = new List<string>();
-
-                _clearShadowDirectoryOnStartup = !String.IsNullOrEmpty(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]) &&
-                   Convert.ToBoolean(ConfigurationManager.AppSettings["ClearPluginsShadowDirectoryOnStartup"]);
-
+				_clearShadowDirectoryOnStartup = CommonHelper.GetAppSetting<bool>("sm:ClearPluginsShadowDirectoryOnStartup", true);
                 try
-                {
-					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
-					
+                {	
                     Debug.WriteLine("Creating shadow copy folder and querying for dlls");
                     //ensure folders are created
                     Directory.CreateDirectory(pluginFolderPath);
@@ -143,17 +143,22 @@ namespace SmartStore.Core.Plugins
 									  where !x.IsMatch("bin") && !x.IsMatch("_Backup")
 									  select Path.Combine(pluginFolderPath, x);
 
+					var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
+					
 					// now activate all plugins
 					foreach (var pluginPath in pluginPaths)
 					{
-						var result = LoadPluginFromFolder(pluginPath);
-						if (result.IsIncompatible)
+						var result = LoadPluginFromFolder(pluginPath, installedPluginSystemNames);
+						if (result != null)
 						{
-							incompatiblePlugins.Add(result.Descriptor.SystemName);
-						}
-						else if (result.Success)
-						{
-							_referencedPlugins[result.Descriptor.SystemName] = result.Descriptor;
+							if (result.IsIncompatible)
+							{
+								incompatiblePlugins.Add(result.Descriptor.SystemName);
+							}
+							else if (result.Success)
+							{
+								_referencedPlugins[result.Descriptor.SystemName] = result.Descriptor;
+							}
 						}
 					}
 
@@ -177,15 +182,7 @@ namespace SmartStore.Core.Plugins
             }
         }
 
-		public static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath)
-		{
-			using (Locker.GetWriteLock())
-			{
-				return LoadPluginFromFolder(pluginFolderPath, null);
-			}
-		}
-
-		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, IList<string> installedPluginSystemNames)
+		private static LoadPluginResult LoadPluginFromFolder(string pluginFolderPath, ICollection<string> installedPluginSystemNames)
 		{
 			Guard.ArgumentNotEmpty(() => pluginFolderPath);
 
@@ -234,11 +231,11 @@ namespace SmartStore.Core.Plugins
 
 			if (installedPluginSystemNames == null)
 			{
-				installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
+				installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
 			}
 
 			// set 'Installed' property
-			descriptor.Installed = installedPluginSystemNames.Any(x => x.Equals(descriptor.SystemName, StringComparison.InvariantCultureIgnoreCase));
+			descriptor.Installed = installedPluginSystemNames.Contains(descriptor.SystemName);
 
 			try
 			{
@@ -282,6 +279,7 @@ namespace SmartStore.Core.Plugins
 					if (typeof(IPlugin).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract)
 					{
 						descriptor.PluginType = t;
+						descriptor.IsConfigurable = typeof(IConfigurable).IsAssignableFrom(t);
 						pluginFound = true;
 					}
 					else if (descriptor.Installed && typeof(IPreApplicationStart).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract && t.HasDefaultConstructor())
@@ -329,12 +327,12 @@ namespace SmartStore.Core.Plugins
 				throw new ArgumentNullException("systemName");
 
 			var installedPluginSystemNames = GetInstalledPluginNames();
-			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Any(x => x.IsCaseInsensitiveEqual(systemName));
+			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Contains(systemName);
 			if (!alreadyMarkedAsInstalled)
 			{
 				installedPluginSystemNames.Add(systemName);
 			}
-			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, _installedPluginsFilePath);
+			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames);
         }
 
         /// <summary>
@@ -346,12 +344,12 @@ namespace SmartStore.Core.Plugins
 			Guard.ArgumentNotEmpty(() => systemName);
 
 			var installedPluginSystemNames = GetInstalledPluginNames();
-			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Any(x => x.IsCaseInsensitiveEqual(systemName));
+			bool alreadyMarkedAsInstalled = installedPluginSystemNames.Contains(systemName);
 			if (alreadyMarkedAsInstalled)
 			{
 				installedPluginSystemNames.Remove(systemName);
 			}
-			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames, _installedPluginsFilePath);
+			PluginFileParser.SaveInstalledPluginsFile(installedPluginSystemNames);
         }
 
         /// <summary>
@@ -359,14 +357,14 @@ namespace SmartStore.Core.Plugins
         /// </summary>
         public static void MarkAllPluginsAsUninstalled()
         {
-            var filePath = _installedPluginsFilePath;
+            var filePath = PluginFileParser.InstalledPluginsFilePath;
             if (File.Exists(filePath))
                 File.Delete(filePath);
         }
 
-		private static IList<string> GetInstalledPluginNames()
+		private static ICollection<string> GetInstalledPluginNames()
 		{
-			var filePath = _installedPluginsFilePath;
+			var filePath = PluginFileParser.InstalledPluginsFilePath;
 			if (!File.Exists(filePath))
 			{
 				using (File.Create(filePath))
@@ -375,7 +373,7 @@ namespace SmartStore.Core.Plugins
 				}
 			}
 
-			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile(_installedPluginsFilePath);
+			var installedPluginSystemNames = PluginFileParser.ParseInstalledPluginsFile();
 			return installedPluginSystemNames;
 		}
 
@@ -412,12 +410,12 @@ namespace SmartStore.Core.Plugins
 		{
 			Guard.ArgumentNotNull(() => minAppVersion);
 			
-			if (SmartStoreVersion.FullVersion == minAppVersion)
+			if (SmartStoreVersion.Version == minAppVersion)
 			{
 				return true;
 			}
 
-			if (SmartStoreVersion.FullVersion < minAppVersion)
+			if (SmartStoreVersion.Version < minAppVersion)
 			{
 				return false;
 			}

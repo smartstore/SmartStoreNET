@@ -12,6 +12,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Tests;
@@ -29,6 +30,7 @@ namespace SmartStore.Services.Tests.ExportImport
         IPictureService _pictureService;
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IExportManager _exportManager;
+        ILanguageService _languageService;
 
         [SetUp]
         public new void SetUp()
@@ -38,9 +40,10 @@ namespace SmartStore.Services.Tests.ExportImport
             _productService = MockRepository.GenerateMock<IProductService>();
             _pictureService = MockRepository.GenerateMock<IPictureService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
+            _languageService = MockRepository.GenerateMock<ILanguageService>();
 
             _exportManager = new ExportManager(_categoryService,
-                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService);
+                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService, _languageService);
         }
 
         //[Test]

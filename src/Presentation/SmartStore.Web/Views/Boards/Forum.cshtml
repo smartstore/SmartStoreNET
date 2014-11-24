@@ -4,7 +4,6 @@
 @using SmartStore.Services.Forums;
 @using SmartStore.Services.Seo;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
@@ -13,21 +12,19 @@
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
     Html.AddTitleParts(Model.Name);
+    Html.AddMetaDescriptionParts(Model.Name);
 }
 <script type="text/javascript">
     function handleForumWatch(context) {
-        // codehint: sm-edit
         var btn = $('#watch-forum');
         btn.text(context.Text);
         setButtonWatchState(btn, context.Subscribed);
     }
-    // codehint: sm-add
     function setButtonWatchState(btn, subscribed) {
         subscribed = (subscribed !== undefined) ? subscribed : toBool(btn.data("subscribed"));
         btn.find("i").remove(); // remove icon
-        btn.prepend('<i class="icon-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
+        btn.prepend('<i class="fa fa-bookmark" />&nbsp;').toggleClass("btn-warning", subscribed);
     }
-    // codehint: sm-add
     $(function () {
         setButtonWatchState($('#watch-forum'));
     });
@@ -40,8 +37,8 @@
             
             @if (Model.ForumFeedsEnabled)
             {
-                <a href="@Url.RouteUrl("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
-                    <i class="icon icon-rss muted"></i>
+                <a href="@Url.Action("ForumRSS", new { id = @Model.Id })" class="link-rss" title="@T("Forum.ForumRSSLinkTitle")" rel="tooltip">
+                    <i class="fa fa-rss muted"></i>
                     @T("Forum.RSS")
                 </a>
             }
@@ -58,13 +55,13 @@
     <div>
     
         <div class="actions pull-left">
-            <a href='@Url.RouteUrl("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic">
-                <i class="icon-plus"></i>
+            <a href='@Url.Action("TopicCreate", new { id = Model.Id })' class="btn btn-primary newtopic" rel="nofollow">
+                <i class="fa fa-plus"></i>
                 @T("Forum.NewTopic")
             </a>
             @if (Model.IsCustomerAllowedToSubscribe)
             {
-                @Ajax.RouteLink(Model.WatchForumText,
+                @Ajax.ActionLink(Model.WatchForumText,
                             "ForumWatch",
                             new { id = @Model.Id },
                             new AjaxOptions { HttpMethod = "Post", OnSuccess = "handleForumWatch" },
@@ -73,8 +70,8 @@
 
             @*@if (Model.ForumFeedsEnabled)
             {
-                <button class="btn btn-warning" onclick="setLocation('@Url.RouteUrl("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
-                    <i class="icon-rss"></i>
+                <button class="btn btn-warning" onclick="setLocation('@Url.Action("ForumRSS", new { id = @Model.Id })')" title="@T("Forum.ForumRSSLinkTitle")">
+                    <i class="fa fa-rss"></i>
                     @T("Forum.RSS")
                 </button>
             }*@
@@ -85,7 +82,7 @@
             var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
                                         .Name("paginator")
                                         .ShowSummary(false)
-                                        .Route("ForumSlugPaged", new RouteValues { id = Model.Id, slug = Model.SeName })
+                                        .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
                                         .Alignment(PagerAlignment.Right);
         }
         @pager
@@ -120,26 +117,26 @@
                         @{
                             var topicType = "post";
                             var topicText = String.Empty;
-                            var topicIcon = "icon-comment-alt";
+                            var topicIcon = "fa fa-comment-o";
                             switch (topic.ForumTopicType)
                             {
                                 case ForumTopicType.Normal:
                                     topicType = "post";
-                                    topicIcon = "icon-comment-alt";
+                                    topicIcon = "fa fa-comment-o";
                                     break;
                                 case ForumTopicType.Sticky:
                                     topicType = "poststicky";
-                                    topicIcon = "icon-pushpin";
+									topicIcon = "fa fa-thumb-tack";
                                     topicText = string.Format("<label class='label label-important'>{0}</label>", @T("Forum.Sticky").ToString());
                                     break;
                                 case ForumTopicType.Announcement:
                                     topicType = "post-annoucement";
-                                    topicIcon = "icon-bullhorn";
+                                    topicIcon = "fa fa-bullhorn";
                                     topicText = string.Format("<label class='label label-success'>{0}</label>", @T("Forum.Announcement").ToString());
                                     break;
                                 default:
                                     topicType = "post";
-                                    topicIcon = "icon-comment-alt";
+                                    topicIcon = "fa fa-comment-o";
                                     break;
                             }
                             <div class="@topicType">
@@ -178,7 +175,7 @@
                                         .ItemTitleFormatString(T("Forum.Topics.GotoPostPager"))
                                         .Alignment(PagerAlignment.Left)
                                         .Size(PagerSize.Mini)
-                                        .Route("TopicSlugPaged", new { id = topic.Id, slug = topic.SeName }))
+                                        .Route("TopicSlug", new { id = topic.Id, slug = topic.SeName }))
                             }
                         </div>
 

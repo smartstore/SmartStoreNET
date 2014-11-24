@@ -5,7 +5,7 @@
     <ul>
         @if (Model.IsAuthenticated)
         {
-            <li><a href="@Url.RouteUrl("CustomerMyAccount")" class="account" data-role="button">@Model.CustomerEmailUsername</a></li>
+            <li><a href="@Url.RouteUrl("MyAccount")" class="account" data-role="button">@Model.CustomerEmailUsername</a></li>
             <li><a href="@Url.RouteUrl("Logout")" class="ico-logout" data-role="button">@T("Account.Logout")</a></li>
         }
         else
@@ -15,6 +15,8 @@
         }
     </ul>
 </div>
+@if (Model.ShoppingCartEnabled == true || Model.WishlistEnabled == true)
+{
 <div data-role="navbar">
     <ul>
         @if (Model.ShoppingCartEnabled)
@@ -29,4 +31,5 @@
         }
     </ul>
 </div>
+}
 @Html.Widget("mobile_header_links_after")

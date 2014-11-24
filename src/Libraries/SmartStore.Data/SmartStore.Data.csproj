@@ -12,10 +12,14 @@
     <AssemblyName>SmartStore.Data</AssemblyName>
     <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
-    <SccProjectName>SAK</SccProjectName>
-    <SccLocalPath>SAK</SccLocalPath>
-    <SccAuxPath>SAK</SccAuxPath>
-    <SccProvider>SAK</SccProvider>
+    <SccProjectName>
+    </SccProjectName>
+    <SccLocalPath>
+    </SccLocalPath>
+    <SccAuxPath>
+    </SccAuxPath>
+    <SccProvider>
+    </SccProvider>
     <TargetFrameworkProfile />
     <SolutionDir Condition="$(SolutionDir) == '' Or $(SolutionDir) == '*Undefined*'">..\..\</SolutionDir>
     <RestorePackages>true</RestorePackages>
@@ -58,9 +62,8 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.3.3.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac">
+      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -88,7 +91,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -151,6 +154,54 @@
     <Compile Include="Migrations\201404292222025_FixMaxLength.cs" />
     <Compile Include="Migrations\201404292222025_FixMaxLength.Designer.cs">
       <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.cs" />
+    <Compile Include="Migrations\201405080948530_ProductBulkEditInfo.Designer.cs">
+      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405071457441_FixRes1.cs" />
+    <Compile Include="Migrations\201405071457441_FixRes1.Designer.cs">
+      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201405282243489_TaskUpdate.cs" />
+    <Compile Include="Migrations\201405282243489_TaskUpdate.Designer.cs">
+      <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.cs" />
+    <Compile Include="Migrations\201406122329031_ContentDeliveryNetwork.Designer.cs">
+      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201406262150229_Providers.cs" />
+    <Compile Include="Migrations\201406262150229_Providers.Designer.cs">
+      <DependentUpon>201406262150229_Providers.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.cs" />
+    <Compile Include="Migrations\201407191010096_BetterReturnRequest.Designer.cs">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408071158147_MultistorePoll.cs" />
+    <Compile Include="Migrations\201408071158147_MultistorePoll.Designer.cs">
+      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.cs" />
+    <Compile Include="Migrations\201408291450443_CheckoutCommmentBox.Designer.cs">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.cs" />
+    <Compile Include="Migrations\201409150936394_CustomerNameFormat.Designer.cs">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201410091620122_NewRes.cs" />
+    <Compile Include="Migrations\201410091620122_NewRes.Designer.cs">
+      <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411182201537_EuEsd.cs" />
+    <Compile Include="Migrations\201411182201537_EuEsd.Designer.cs">
+      <DependentUpon>201411182201537_EuEsd.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201411182202431_V21Final.cs" />
+    <Compile Include="Migrations\201411182202431_V21Final.Designer.cs">
+      <DependentUpon>201411182202431_V21Final.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -281,6 +332,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
@@ -321,6 +373,42 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201404292222025_FixMaxLength.resx">
       <DependentUpon>201404292222025_FixMaxLength.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405080948530_ProductBulkEditInfo.resx">
+      <DependentUpon>201405080948530_ProductBulkEditInfo.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405071457441_FixRes1.resx">
+      <DependentUpon>201405071457441_FixRes1.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201405282243489_TaskUpdate.resx">
+      <DependentUpon>201405282243489_TaskUpdate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406122329031_ContentDeliveryNetwork.resx">
+      <DependentUpon>201406122329031_ContentDeliveryNetwork.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201406262150229_Providers.resx">
+      <DependentUpon>201406262150229_Providers.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201407191010096_BetterReturnRequest.resx">
+      <DependentUpon>201407191010096_BetterReturnRequest.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408071158147_MultistorePoll.resx">
+      <DependentUpon>201408071158147_MultistorePoll.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201408291450443_CheckoutCommmentBox.resx">
+      <DependentUpon>201408291450443_CheckoutCommmentBox.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201409150936394_CustomerNameFormat.resx">
+      <DependentUpon>201409150936394_CustomerNameFormat.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201410091620122_NewRes.resx">
+      <DependentUpon>201410091620122_NewRes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411182201537_EuEsd.resx">
+      <DependentUpon>201411182201537_EuEsd.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201411182202431_V21Final.resx">
+      <DependentUpon>201411182202431_V21Final.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -141,6 +141,11 @@ namespace SmartStore.Web.Framework.UI
             private set;
         }
 
+		public bool HasRoute()
+		{
+			return _actionName != null || _routeName != null || _url != null;
+		}
+
         public override string ToString()
         {
             if (this.Text.HasValue())
@@ -159,6 +164,8 @@ namespace SmartStore.Web.Framework.UI
         {
             this.ContentHtmlAttributes = new RouteValueDictionary();
         }
+
+		public bool Ajax { get; set; }
 
         public IDictionary<string, object> ContentHtmlAttributes { get; private set; }
 

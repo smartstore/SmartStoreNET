@@ -26,16 +26,9 @@ namespace SmartStore.Web.Framework.Themes
             Guard.ArgumentNotEmpty(() => themeName);
             Guard.ArgumentIsPositive(storeId, "storeId");
 
-            // we need the Asp.Net here cache in order to define cacheKey dependencies
-			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
-
-            string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
-            return cacheManager.Get(cacheKey, () =>
-            {
-                var variables = GetLessCssVariables(themeName, storeId);
-                var lessCss = TransformToLess(variables);
-                return lessCss;
-            });
+            var variables = GetLessCssVariables(themeName, storeId);
+            var lessCss = TransformToLess(variables);
+            return lessCss;
         }
 
         private IDictionary<string, string> GetLessCssVariables(string themeName, int storeId)
@@ -64,15 +57,22 @@ namespace SmartStore.Web.Framework.Themes
 
         internal virtual ExpandoObject GetRawVariables(string themeName, int storeId)
         {
-            var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
-            var result = themeVarService.GetThemeVariables(themeName, storeId);
+			// we need the Asp.Net here cache in order to define cacheKey dependencies
+			var cacheManager = EngineContext.Current.ContainerManager.Resolve<ICacheManager>("aspnet");
 
-            if (result == null)
-            {
-                return new ExpandoObject();
-            }
+			string cacheKey = FrameworkCacheConsumer.BuildThemeVarsCacheKey(themeName, storeId);
+			return cacheManager.Get(cacheKey, () =>
+			{
+				var themeVarService = EngineContext.Current.Resolve<IThemeVariablesService>();
+				var result = themeVarService.GetThemeVariables(themeName, storeId);
 
-            return result;
+				if (result == null)
+				{
+					return new ExpandoObject();
+				}
+
+				return result;
+			});
         }
 
         private string TransformToLess(IDictionary<string, string> parameters)

@@ -50,7 +50,8 @@ namespace SmartStore.Web.Framework
         private Language _cachedLanguage;
         private Customer _cachedCustomer;
         private Currency _cachedCurrency;
-        private Customer _originalCustomerIfImpersonated; 
+        private Customer _originalCustomerIfImpersonated;
+		private bool? _isAdmin;
 
         public WebWorkContext(Func<string, ICacheManager> cacheManager,
             HttpContextBase httpContext,
@@ -106,7 +107,13 @@ namespace SmartStore.Web.Framework
                     cookie.Expires = DateTime.Now.AddHours(cookieExpires);
                 }
 
-                _httpContext.Response.Cookies.Remove(CustomerCookieName);
+				try
+				{
+					if (_httpContext.Response.Cookies[CustomerCookieName] != null)
+						_httpContext.Response.Cookies.Remove(CustomerCookieName);
+				}
+				catch (Exception) { }
+
                 _httpContext.Response.Cookies.Add(cookie);
             }
         }
@@ -124,7 +131,7 @@ namespace SmartStore.Web.Framework
                     return _cachedCustomer;
 
                 Customer customer = null;
-                if (_httpContext == null || _httpContext is FakeHttpContext)
+                if (_httpContext == null || _httpContext.IsFakeContext())
                 {
                     //check whether request is made by a background task
                     //in this case return built-in customer record for background task
@@ -270,7 +277,7 @@ namespace SmartStore.Web.Framework
                     if (_httpContext != null && _httpContext.Request != null && _httpContext.Request.UserLanguages != null)
                     {
                         var userLangs = _httpContext.Request.UserLanguages.Select(x => x.Split(new[] { ';' }, 2, StringSplitOptions.RemoveEmptyEntries)[0]);
-                        if (userLangs.HasItems())
+                        if (userLangs.Any())
                         {
                             foreach (var culture in userLangs)
                             {
@@ -456,7 +463,7 @@ namespace SmartStore.Web.Framework
             {
                 return _cachedTaxDisplayType.Value;
             }
-
+			
             int? taxDisplayType = null;
 
             if (_taxSettings.AllowCustomersToSelectTaxDisplayType && customer != null)
@@ -498,10 +505,23 @@ namespace SmartStore.Web.Framework
             return _cachedTaxDisplayType.Value;
         }
 
-		/// <summary>
-		/// Get or set value indicating whether we're in admin area
-		/// </summary>
-		public bool IsAdmin { get; set; }
+
+		public bool IsAdmin 
+		{
+			get
+			{
+				if (!_isAdmin.HasValue)
+				{
+					_isAdmin = _httpContext.Request.IsAdminArea();
+				}
+
+				return _isAdmin.Value;
+			}
+			set
+			{
+				_isAdmin = value;
+			}
+		}
 
         public bool IsPublishedLanguage(string seoCode, int storeId = 0)
         {

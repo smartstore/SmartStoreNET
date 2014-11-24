@@ -10,12 +10,14 @@
 
 .sg-image-wrapper {
 	width: 100%;
-    height: 250px; /* just to avoid page load flickering. This is overwritten per inline css anyway */
+    min-height: 300px; /* just to avoid page load flickering. This is overwritten per inline css anyway */
 	margin-bottom: 5px;
 	position: relative;
 	overflow: hidden;
 	outline: 1px solid transparent;
     text-align: center;
+	/*background-color: #fff;
+	border: 1px solid #d5d5d5;*/
 }
 
 .sg-image-wrapper > img {
@@ -27,20 +29,27 @@
 	z-index: 10;
 	top: 48%;
 	left: 48%;
-	border: 1px solid #CCC;
+	border: 1px solid #ccc;
 }
-
 
 .sg-image {
 	position: absolute;
 	overflow: hidden;
 	top: 0;
 	left: 0;
+	height: 300px;
+	max-width: 100%;
 	/*z-index: 9;*/
+}
+
+.sg-image a {
+	display: inline-block;
 }
 
 .sg-image a img {
 	border: 0;
+	max-height: 100%;
+	max-width: 100%;
 }
       
 .sg-image-description {
@@ -68,26 +77,28 @@
 	width: 100%;
 	position: relative;
 	overflow: hidden;
+	opacity: 0; /* avoids flickering */
 }
 
 .sg-thumbs {
 	position: relative;
 	overflow-x: hidden;
-	margin: 0;
+	margin: 0 auto;
 }        
             
 .sg-thumb-list {
 	position: relative;
     float: left;
-    width: 9000px;
+    width: 5000px;
+	height: 60px;
     list-style: none;
     margin: 0;
     padding: 0;
 }
 
-.sg-nav.has-buttons .sg-thumb-list {
-    padding-left: 19px;
-    padding-right: 19px;
+.sg-nav.has-buttons .sg-thumbs {
+    margin-left: 19px;
+    margin-right: 19px;
 }
 
 .sg-thumb-list li {
@@ -97,41 +108,50 @@
 	border: 0;
 	outline: 0;
     float: left;
-    padding: 0 2px;
+    padding: 0;
+	margin-left: -1px;
+}
+.sg-thumb-list li:first-child {
+	margin-left: 0;
 }
 
 .sg-thumb-list li a {
+	position: relative;
+	z-index: 0;
 	display: block;
-    border: 1px solid #d5d5d5;
+    border: 1px solid #ddd;
+	background-color: #fff;
 	outline: none;
-    text-align: center;
-    opacity: .7;
-    filter: Alpha(70);
+    
     overflow: hidden;
     -webkit-transition: all 0.1s ease-in;
-       -moz-transition: all 0.1s ease-in;
-        -ms-transition: all 0.1s ease-in;
          -o-transition: all 0.1s ease-in;
             transition: all 0.1s ease-in;
-
-    /* TODO: dynamic */
-    min-width: 52px;
-    min-height: 52px;
+	
+	box-sizing: border-box;
+    width: 60px;
+    height: 60px;
+	line-height: 52px;
+	text-align: center;
     vertical-align: middle;
 }
 
 .sg-thumb-list li a:hover,
 .sg-thumb-list li a.sg-active {
-    opacity: 1;
-    filter: Alpha(100);
     border-color: #999;
+	z-index: 1;
+}
+
+.sg-thumb-list li a > img {
+	margin: 3px;
+	max-width: 52px;
+	max-height: 52px;
 }
 
 .sg-scroll-back,
 .sg-scroll-forward {
 	position: absolute;
     -webkit-box-shadow: 0 0 4px rgba(0,0,0, .15);
-       -moz-box-shadow: 0 0 4px rgba(0,0,0, .15);
             box-shadow: 0 0 4px rgba(0,0,0, .15);
 	z-index: 30;
 	height: 100%;
@@ -175,7 +195,6 @@
 .zoomWindow,
 .zoomLens {
    -webkit-box-shadow: 0 0 10px rgba(0,0,0, 0.4);
-      -moz-box-shadow: 0 0 10px rgba(0,0,0, 0.4);
            box-shadow: 0 0 10px rgba(0,0,0, 0.4);
     display: none;
 }

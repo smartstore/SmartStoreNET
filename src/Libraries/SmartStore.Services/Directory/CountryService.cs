@@ -136,6 +136,23 @@ namespace SmartStore.Services.Directory
             return _countryRepository.GetById(countryId);
         }
 
+		/// <summary>
+		/// Gets a country by two or three letter ISO code
+		/// </summary>
+		/// <param name="letterIsoCode">Country two or three letter ISO code</param>
+		/// <returns>Country</returns>
+		public virtual Country GetCountryByTwoOrThreeLetterIsoCode(string letterIsoCode)
+		{
+			if (letterIsoCode.HasValue())
+			{
+				if (letterIsoCode.Length == 2)
+					return GetCountryByTwoLetterIsoCode(letterIsoCode);
+				else if (letterIsoCode.Length == 3)
+					return GetCountryByThreeLetterIsoCode(letterIsoCode);
+			}
+			return null;
+		}
+
         /// <summary>
         /// Gets a country by two letter ISO code
         /// </summary>

@@ -8,6 +8,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Polls;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -24,6 +25,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
 
 		#endregion
 
@@ -31,7 +34,9 @@ namespace SmartStore.Admin.Controllers
 
         public PollController(IPollService pollService, ILanguageService languageService,
             IDateTimeHelper dateTimeHelper, ILocalizationService localizationService,
-            IPermissionService permissionService, AdminAreaSettings adminAreaSettings)
+            IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
+			IStoreService storeService,
+			IStoreMappingService storeMappingService)
         {
             this._pollService = pollService;
             this._languageService = languageService;
@@ -39,11 +44,31 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._permissionService = permissionService;
             this._adminAreaSettings = adminAreaSettings;
+			this._storeService = storeService;
+			this._storeMappingService = storeMappingService;
 		}
 
 		#endregion 
-        
-        #region Polls
+
+		#region Utilities
+
+		private void PreparePollModel(PollModel model, Poll poll, bool excludeProperties)
+		{
+			model.AvailableStores = _storeService.GetAllStores().Select(s => s.ToModel()).ToList();
+
+			if (!excludeProperties)
+			{
+				if (poll != null)
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(poll);
+				else
+					model.SelectedStoreIds = new int[0];
+			}
+
+		}
+
+		#endregion Utilities
+
+		#region Polls
 
         public ActionResult Index()
         {
@@ -106,10 +131,13 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
             var model = new PollModel();
-            //default values
             model.Published = true;
             model.ShowOnHomePage = true;
+
+			PreparePollModel(model, null, false);
+
             return View(model);
         }
 
@@ -124,7 +152,10 @@ namespace SmartStore.Admin.Controllers
                 var poll = model.ToEntity();
                 poll.StartDateUtc = model.StartDate;
                 poll.EndDateUtc = model.EndDate;
+
                 _pollService.InsertPoll(poll);
+
+				_storeMappingService.SaveStoreMappings<Poll>(poll, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
@@ -132,6 +163,9 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+			
+			PreparePollModel(model, null, true);
+
             return View(model);
         }
 
@@ -142,13 +176,15 @@ namespace SmartStore.Admin.Controllers
 
             var poll = _pollService.GetPollById(id);
             if (poll == null)
-                //No poll found with the specified id
                 return RedirectToAction("List");
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = poll.ToModel();
             model.StartDate = poll.StartDateUtc;
             model.EndDate = poll.EndDateUtc;
+
+			PreparePollModel(model, poll, false);
+
             return View(model);
         }
 
@@ -160,7 +196,6 @@ namespace SmartStore.Admin.Controllers
 
             var poll = _pollService.GetPollById(model.Id);
             if (poll == null)
-                //No poll found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -168,7 +203,10 @@ namespace SmartStore.Admin.Controllers
                 poll = model.ToEntity(poll);
                 poll.StartDateUtc = model.StartDate;
                 poll.EndDateUtc = model.EndDate;
+
                 _pollService.UpdatePoll(poll);
+
+				_storeMappingService.SaveStoreMappings<Poll>(poll, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Polls.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = poll.Id }) : RedirectToAction("List");
@@ -176,6 +214,9 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
+			PreparePollModel(model, poll, true);
+
             return View(model);
         }
 
@@ -187,7 +228,6 @@ namespace SmartStore.Admin.Controllers
 
             var poll = _pollService.GetPollById(id);
             if (poll == null)
-                //No poll found with the specified id
                 return RedirectToAction("List");
             
             _pollService.DeletePoll(poll);

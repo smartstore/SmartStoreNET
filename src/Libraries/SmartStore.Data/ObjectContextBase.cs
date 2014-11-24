@@ -30,7 +30,6 @@ namespace SmartStore.Data
     {
 		private static bool? s_isSqlServer2012OrHigher = null;
 
-
         #region Ctor
 
 		/// <summary>
@@ -139,12 +138,6 @@ namespace SmartStore.Data
 
         #region IDbContext members
 
-		protected override void Dispose(bool disposing)
-		{
-			this.EventPublisher = null;
-			base.Dispose(disposing);
-		}
-
         public virtual string CreateDatabaseScript()
         {
             return ((IObjectContextAdapter)this).ObjectContext.CreateDatabaseScript();
@@ -194,11 +187,14 @@ namespace SmartStore.Data
 			}
 
 			var result = this.Database.SqlQuery<TEntity>(commandText, parameters).ToList();
-			using (var scope = new DbContextScope(this, autoDetectChanges: false))
+			if (!ForceNoTracking)
 			{
-				for (int i = 0; i < result.Count; i++)
+				using (var scope = new DbContextScope(this, autoDetectChanges: false))
 				{
-					result[i] = AttachEntityToContext(result[i]);
+					for (int i = 0; i < result.Count; i++)
+					{
+						result[i] = AttachEntityToContext(result[i]);
+					}
 				}
 			}
 			return result;
@@ -226,9 +222,12 @@ namespace SmartStore.Data
 				// database call
 				var reader = cmd.ExecuteReader();
 				var result = ((IObjectContextAdapter)(this)).ObjectContext.Translate<TEntity>(reader).ToList();
-				for (int i = 0; i < result.Count; i++)
+				if (!ForceNoTracking)
 				{
-					result[i] = AttachEntityToContext(result[i]);
+					for (int i = 0; i < result.Count; i++)
+					{
+						result[i] = AttachEntityToContext(result[i]);
+					}
 				}
 				// close up the reader, we're done saving results
 				reader.Close();
@@ -386,7 +385,7 @@ namespace SmartStore.Data
         // codehint: sm-add (required for UoW implementation)
         public string Alias { get; internal set; }
 
-        // codehint: sm-add (performance on bulk inserts)
+        // performance on bulk inserts
         public bool AutoDetectChangesEnabled
         {
             get
@@ -399,7 +398,7 @@ namespace SmartStore.Data
             }
         }
 
-        // codehint: sm-add (performance on bulk inserts)
+        // performance on bulk inserts
         public bool ValidateOnSaveEnabled
         {
             get
@@ -412,7 +411,6 @@ namespace SmartStore.Data
             }
         }
 
-        // codehint: sm-add
         public bool ProxyCreationEnabled
         {
             get
@@ -424,6 +422,8 @@ namespace SmartStore.Data
                 this.Configuration.ProxyCreationEnabled = value;
             }
         }
+
+		public bool ForceNoTracking { get; set; }
 
         #endregion
 
@@ -508,6 +508,34 @@ namespace SmartStore.Data
 		public void Detach(object entity)
 		{
 			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+		}
+
+		public int DetachAll() 
+		{
+			var attachedEntities = this.ChangeTracker.Entries()
+				.Where(x => x.State != System.Data.Entity.EntityState.Detached)
+				.ToList();
+			attachedEntities.Each(x => this.Entry(x.Entity).State = System.Data.Entity.EntityState.Detached);
+			return attachedEntities.Count;
+		}
+
+		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState)
+		{
+			((IObjectContextAdapter)this).ObjectContext.ObjectStateManager.ChangeObjectState(entity, newState);
+		}
+
+		public bool SetToUnchanged<TEntity>(TEntity entity)
+		{
+			try
+			{
+				ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
+				return true;
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
+				return false;
+			}
 		}
 
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)

@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Reflection;
 using System.Web;
 using System.Web.Hosting;
-using SmartStore.Core.Configuration;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Infrastructure
 {
@@ -22,9 +22,9 @@ namespace SmartStore.Core.Infrastructure
 
         #region Ctor
 
-        public WebAppTypeFinder(SmartStoreConfig config)
+        public WebAppTypeFinder()
         {
-            this._ensureBinFolderAssembliesLoaded = config.DynamicDiscovery;
+			this._ensureBinFolderAssembliesLoaded = CommonHelper.GetAppSetting<bool>("sm:EnableDynamicDiscovery", true);
         }
 
         #endregion
@@ -64,7 +64,7 @@ namespace SmartStore.Core.Infrastructure
         }
 
 
-        public override IList<Assembly> GetAssemblies()
+		public override IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             if (this.EnsureBinFolderAssembliesLoaded && !_binFolderAssembliesLoaded)
             {
@@ -74,7 +74,7 @@ namespace SmartStore.Core.Infrastructure
                 LoadMatchingAssemblies(binPath);
             }
 
-            return base.GetAssemblies();
+			return base.GetAssemblies(ignoreInactivePlugins);
         }
         #endregion
     }

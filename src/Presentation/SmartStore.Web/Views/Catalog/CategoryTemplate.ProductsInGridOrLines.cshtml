@@ -18,7 +18,6 @@
 @using SmartStore.Core.Infrastructure;
 @using SmartStore.Web;
 @using SmartStore.Web.Models.Catalog;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Framework.UI;
 
 @functions{
@@ -35,19 +34,19 @@
     @if (Model.DisplayCategoryBreadcrumb) {
         <ul id="breadcrumb" class="breadcrumb">
             <li>
-                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="icon-home" style="text-decoration: none"></i></a> 
+                <a href="@Url.RouteUrl("HomePage")" title="@T("Categories.Breadcrumb.Top")"><i class="fa fa-home" style="text-decoration: none"></i></a> 
                 <span class="divider">/</span>
             </li>
 
             @for (int i = 0; i < Model.CategoryBreadcrumb.Count; i++) {
-				var cat = Model.CategoryBreadcrumb[i];
-				var isLastCategory = cat.Id == Model.Id;
+				var menuItem = Model.CategoryBreadcrumb[i];
+				var isLastCategory = menuItem.EntityId == Model.Id;
                 <li>
                     @if (isLastCategory) {
-                        @cat.Name
+                        @menuItem.Text
 					}
 					else {
-                        <a href="@Url.RouteUrl("Category", new { SeName = cat.SeName })" title="@cat.Name">@cat.Name</a>
+                        <a href="@menuItem.GenerateUrl(this.Url)" title="@menuItem.Text">@menuItem.Text</a>
                         <span class="divider">/</span>
 					}
                 </li>
@@ -64,7 +63,7 @@
         @*description*@
         @if (!String.IsNullOrWhiteSpace(Model.Description)) {
             <div class="category-description">
-                @Html.Raw(Model.Description)
+                @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
 		}
         @Html.Widget("categorydetails_before_subcategories")
@@ -76,13 +75,11 @@
 				@<article class="item-box equalized-column" data-equalized-column-name="subcat">
                     <div class="category-item sub-category-item">
                         <h2 class="category-title">
-                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                @item.Name</a>
+                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
                         </h2>
                         <div class="picture">
                             <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl"
-                                    title="@item.PictureModel.Title" /></a>
+                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" /></a>
                         </div>
                     </div>
                 </article>
@@ -104,8 +101,8 @@
                         </article>
 					}
                 </div>
-                <a class="sb invisible pl-scroll-prev sb-dir-left disabled" href="#"><</a>
-			    <a class="sb invisible pl-scroll-next sb-dir-right" href="#">></a>
+                <a class="sb invisible pl-scroll-prev sb-dir-left disabled" href="#" rel="nofollow"><</a>
+			    <a class="sb invisible pl-scroll-next sb-dir-right" href="#" rel="nofollow">></a>
             </div>
             <script type="text/javascript">
                 $(function () {
@@ -118,30 +115,6 @@
         @if (ShowListOptions()) {
             @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
 		}
-
-        @*filtering*@
-@*        @Html.Widget("categorydetails_before_filters")
-        @if (Model.PagingFilteringContext.PriceRangeFilter.Enabled ||
-        Model.PagingFilteringContext.SpecificationFilter.Enabled)
-        {
-            <div class="product-filters">
-                <div class="filter-title">
-                    <span>@T("Filtering.FilterResults")</span>
-                </div>
-                @if (Model.PagingFilteringContext.PriceRangeFilter.Enabled)
-                {
-                    <div class="filter-item">
-                        @Html.Partial("_FilterPriceBox", Model.PagingFilteringContext.PriceRangeFilter, new ViewDataDictionary())
-                    </div>
-                }
-                @if (Model.PagingFilteringContext.SpecificationFilter.Enabled)
-                {
-                    <div class="filter-item" style="max-height: 200px; overflow: hidden; position: relative /* MC: TEMP */">
-                        @Html.Partial("_FilterSpecsBox", Model.PagingFilteringContext.SpecificationFilter, new ViewDataDictionary())
-                    </div>
-                }
-            </div>
-        }*@
 
         @Html.Widget("categorydetails_before_product_list")
         @*product list*@
@@ -179,10 +152,11 @@
 @section right_top {
     @Html.Widget("categorydetails_before_filters")
 
-    @*filtering... codehint: sm-add*@
-	@if (Model.Products.Count > 0) {
+    @*filtering*@
+	@if (Model.Products.Count > 0 && Model.DisplayFilter)
+    {
 		<div id="product-filter" class="block block-bordered product-filter-block">
-			<form class="filter-product-form" method="GET" action="@Url.RouteUrl("ProductFilters")" data-multiselecturl="@Url.RouteUrl("ProductsMultiSelect")">
+			<form class="filter-product-form" method="GET" action="@Url.Action("Products", "Filter")" data-multiselecturl="@Url.Action("ProductsMultiSelect", "Filter")">
 				<input type="hidden" name="categoryID" value="@Model.Id" />
 				<input type="hidden" name="path" value="@Request.Url.AbsolutePath" />
 				<input type="hidden" name="pagesize" value="@Model.PagingFilteringContext.PageSize" />
@@ -203,7 +177,7 @@
 				</div>
                 <div class="modal-body"></div>
                 <div class="modal-footer">
-					<a href="javascript:void(0)" class="remove-checkmarks">@T("Products.Filter.RemoveCheckmarks")</a>
+					<a href="javascript:void(0)" class="remove-checkmarks" rel="nofollow">@T("Products.Filter.RemoveCheckmarks")</a>
 					<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
 					<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
                 </div>
@@ -215,5 +189,4 @@
 			});
 		</script>
 	}
-
 }

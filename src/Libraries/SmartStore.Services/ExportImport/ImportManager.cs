@@ -9,10 +9,13 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Data;
 using SmartStore.Services.Catalog;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Utilities;
 using System.Text;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -26,11 +29,16 @@ namespace SmartStore.Services.ExportImport
         private readonly IManufacturerService _manufacturerService;
         private readonly IPictureService _pictureService;
         private readonly IUrlRecordService _urlRecordService;
+		private readonly SeoSettings _seoSettings;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IRepository<Product> _rsProduct;
 		private readonly IRepository<ProductCategory> _rsProductCategory;
 		private readonly IRepository<ProductManufacturer> _rsProductManufacturer;
+        private readonly IRepository<Picture> _rsPicture;
 		private readonly IRepository<ProductPicture> _rsProductPicture;
+		private readonly IRepository<UrlRecord> _rsUrlRecord;
+        private readonly ILanguageService _languageService;
+        private readonly ILocalizedEntityService _localizedEntityService;
 
         public ImportManager(
 			IProductService productService, 
@@ -38,22 +46,32 @@ namespace SmartStore.Services.ExportImport
             IManufacturerService manufacturerService, 
 			IPictureService pictureService,
             IUrlRecordService urlRecordService,
+			SeoSettings seoSettings,
 			IEventPublisher eventPublisher,
 			IRepository<Product> rsProduct,
 			IRepository<ProductCategory> rsProductCategory,
 			IRepository<ProductManufacturer> rsProductManufacturer,
-			IRepository<ProductPicture> rsProductPicture)
+            IRepository<Picture> rsPicture,
+			IRepository<ProductPicture> rsProductPicture,
+            IRepository<UrlRecord> rsUrlRecord,
+            ILanguageService languageService,
+            ILocalizedEntityService localizedEntityService)
         {
             this._productService = productService;
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
             this._pictureService = pictureService;
             this._urlRecordService = urlRecordService;
+			this._seoSettings = seoSettings;
 			this._eventPublisher = eventPublisher;
 			this._rsProduct = rsProduct;
 			this._rsProductCategory = rsProductCategory;
 			this._rsProductManufacturer = rsProductManufacturer;
 			this._rsProductPicture = rsProductPicture;
+			this._rsUrlRecord = rsUrlRecord;
+            this._rsPicture = rsPicture;
+            this._languageService = languageService;
+            this._localizedEntityService = localizedEntityService;
         }
 
 		public virtual string CreateTextReport(ImportResult result)
@@ -125,6 +143,9 @@ namespace SmartStore.Services.ExportImport
 
 				var result = new ImportResult();
 				int saved = 0;
+				
+				if (progress != null)
+					progress.Report(new ImportProgressInfo { ElapsedTime = TimeSpan.Zero });
 
 				using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 				{
@@ -135,6 +156,9 @@ namespace SmartStore.Services.ExportImport
 						while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
 						{
 							var batch = segmenter.CurrentBatch;
+
+							// Perf: detach all entities
+							_rsProduct.Context.DetachAll();
 
 							// Update progress for calling thread
 							if (progress != null)
@@ -179,12 +203,24 @@ namespace SmartStore.Services.ExportImport
 							if (batch.Any(x => x.IsNew || (x.ContainsKey("SeName") || x.NameChanged)))
 							{
 								_rsProduct.Context.AutoDetectChangesEnabled = true;
-								ProcessSlugs(batch, result);
+								await ProcessSlugs(batch, result);
 								_rsProduct.Context.AutoDetectChangesEnabled = false;
 							}
 
+                            // ===========================================================================
+                            // 3.) Import Localizations
+                            // ===========================================================================
+                            try
+                            {
+                                await ProcessLocalizations(batch, result);
+                            }
+                            catch (Exception ex)
+                            {
+                                result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
+                            }
+
 							// ===========================================================================
-							// 3.) Import product category mappings
+							// 4.) Import product category mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("CategoryIds")))
 							{
@@ -199,7 +235,7 @@ namespace SmartStore.Services.ExportImport
 							}
 
 							// ===========================================================================
-							// 4.) Import product manufacturer mappings
+							// 5.) Import product manufacturer mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("ManufacturerIds")))
 							{
@@ -214,7 +250,7 @@ namespace SmartStore.Services.ExportImport
 							}
 
 							// ===========================================================================
-							// 5.) Import product picture mappings
+							// 6.) Import product picture mappings
 							// ===========================================================================
 							if (batch.Any(x => x.ContainsKey("Picture1") || x.ContainsKey("Picture2") || x.ContainsKey("Picture3")))
 							{
@@ -255,6 +291,9 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
+				if (row.Count == 0)
+					continue;
+
 				Product product = null;
 
 				object key;
@@ -336,6 +375,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.IsShipEnabled, true);
 				row.SetProperty(result, product, (x) => x.IsFreeShipping);
 				row.SetProperty(result, product, (x) => x.AdditionalShippingCharge);
+				row.SetProperty(result, product, (x) => x.IsEsd);
 				row.SetProperty(result, product, (x) => x.IsTaxExempt);
 				row.SetProperty(result, product, (x) => x.TaxCategoryId, 1);
 				row.SetProperty(result, product, (x) => x.ManageInventoryMethodId);
@@ -407,8 +447,21 @@ namespace SmartStore.Services.ExportImport
 			return t;
 		}
 
-		private void ProcessSlugs(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private async Task<int> ProcessSlugs(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
+			_rsUrlRecord.AutoCommitEnabled = false;
+
+			var slugMap = new Dictionary<string, UrlRecord>(100);
+			Func<string, UrlRecord> slugLookup = ((s) => {
+				if (slugMap.ContainsKey(s))
+				{
+					return slugMap[s];
+				}
+				return (UrlRecord)null;
+			});
+
+			var entityName = typeof(Product).Name;
+
 			foreach (var row in batch)
 			{
 				if (row.IsNew || row.NameChanged || row.ContainsKey("SeName"))
@@ -416,7 +469,33 @@ namespace SmartStore.Services.ExportImport
 					try
 					{
 						string seName = row.GetValue<string>("SeName");
-						_urlRecordService.SaveSlug(row.Entity, row.Entity.ValidateSeName(seName, row.Entity.Name, true), 0);
+						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
+
+						UrlRecord urlRecord = null;
+
+						if (row.IsNew)
+						{
+							// dont't bother validating SeName for new entities.
+							urlRecord = new UrlRecord()
+							{
+								EntityId = row.Entity.Id,
+								EntityName = entityName,
+								Slug = seName,
+								LanguageId = 0,
+								IsActive = true,
+							};
+							_rsUrlRecord.Insert(urlRecord);
+						}
+						else
+						{
+							urlRecord = _urlRecordService.SaveSlug(row.Entity, seName, 0);
+						}
+
+						if (urlRecord != null)
+						{
+							// a new record was inserted to the store: keep track of it for this batch.
+							slugMap[seName] = urlRecord;
+						}
 					}
 					catch (Exception ex)
 					{
@@ -424,7 +503,67 @@ namespace SmartStore.Services.ExportImport
 					}
 				}
 			}
+
+			// commit whole batch at once
+			var t = await _rsUrlRecord.Context.SaveChangesAsync();
+
+			return t;
 		}
+
+        private async Task<int> ProcessLocalizations(ICollection<ImportRow<Product>> batch, ImportResult result)
+        {
+            //_rsProductManufacturer.AutoCommitEnabled = false;
+
+            //string lastInserted = null;
+
+            var languages = _languageService.GetAllLanguages(true);
+
+            foreach (var row in batch)
+            {
+
+                Product product = null;
+
+                //get product
+                try
+                {
+                    product = _productService.GetProductById(row.Entity.Id); 
+                }
+                catch (Exception ex)
+                {
+                    result.AddWarning(ex.Message, row.GetRowInfo(), "ProcessLocalizations Product");
+                }
+
+                foreach (var lang in languages)
+                {
+                    string localizedName = row.GetValue<string>("Name[" + lang.UniqueSeoCode + "]");
+                    string localizedShortDescription = row.GetValue<string>("ShortDescription[" + lang.UniqueSeoCode + "]");
+                    string localizedFullDescription = row.GetValue<string>("FullDescription[" + lang.UniqueSeoCode + "]");
+
+                    if (localizedName.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.Name, localizedName, lang.Id);
+                    }
+                    if (localizedShortDescription.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.ShortDescription, localizedShortDescription, lang.Id);
+                    }
+                    if (localizedFullDescription.HasValue())
+                    {
+                        _localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localizedFullDescription, lang.Id);
+                    }
+                }
+            }
+
+            // commit whole batch at once
+            var t = await _rsProductManufacturer.Context.SaveChangesAsync();
+
+            // Perf: notify only about LAST insertion and update
+            //if (lastInserted != null)
+            //    _eventPublisher.EntityInserted(lastInserted);
+
+            return t;
+        }
+
 
 		private async Task<int> ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
@@ -555,8 +694,8 @@ namespace SmartStore.Services.ExportImport
 						if (picture.IsEmpty() || !File.Exists(picture))
 							continue;
 
-						var currentPictures = _rsProductPicture.TableUntracked.Where(x => x.ProductId == row.Entity.Id);
-						var pictureBinary = FindEqualPicture(picture, currentPictures);
+                        var currentPictures = _rsProductPicture.Expand(_rsProductPicture.TableUntracked, x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
+                        var pictureBinary = FindEqualPicture(picture, currentPictures);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
@@ -621,15 +760,15 @@ namespace SmartStore.Services.ExportImport
         /// <param name="path">The picture to find a duplicate for</param>
         /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
         /// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-        private byte[] FindEqualPicture(string path, IEnumerable<ProductPicture> productPictures)
+        private byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures)
         {
             try
             {
                 var myBuffer = File.ReadAllBytes(path);
 
-                foreach (var pictureMap in productPictures.Where(x => x.Id > 0))
+                foreach (var picture in productPictures)
                 {
-                    var otherBuffer = _pictureService.LoadPictureBinary(pictureMap.Picture);
+                    var otherBuffer = _pictureService.LoadPictureBinary(picture);
                     using (var myStream = new MemoryStream(myBuffer))
                     {
                         using (var otherStream = new MemoryStream(otherBuffer))

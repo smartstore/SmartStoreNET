@@ -3,17 +3,19 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Settings;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Settings
 {
     [Validator(typeof(OrderSettingsValidator))]
-	public class OrderSettingsModel : ModelBase
+	public class OrderSettingsModel : ModelBase, ILocalizedModel<OrderSettingsLocalizedModel>
     {
         public OrderSettingsModel()
         {
             GiftCards_Activated_OrderStatuses = new List<SelectListItem>();
             GiftCards_Deactivated_OrderStatuses = new List<SelectListItem>();
+			Locales = new List<OrderSettingsLocalizedModel>();
         }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.IsReOrderAllowed")]
@@ -31,9 +33,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.TermsOfServiceEnabled")]
         public bool TermsOfServiceEnabled { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OnePageCheckoutEnabled")]
-        public bool OnePageCheckoutEnabled { get; set; }
-
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisableOrderCompletedPage")]
 		public bool DisableOrderCompletedPage { get; set; }
 
@@ -41,10 +40,10 @@ namespace SmartStore.Admin.Models.Settings
         public bool ReturnRequestsEnabled { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestReasons")]
-        public string ReturnRequestReasonsParsed { get; set; }
+        public string ReturnRequestReasons { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestActions")]
-        public string ReturnRequestActionsParsed { get; set; }
+        public string ReturnRequestActions { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable")]
         public int NumberOfDaysReturnRequestAvailable { get; set; }
@@ -62,5 +61,19 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OrderIdent")]
         public int? OrderIdent { get; set; }
+
+		public IList<OrderSettingsLocalizedModel> Locales { get; set; }
     }
+
+
+	public class OrderSettingsLocalizedModel : ILocalizedModelLocal
+	{
+		public int LanguageId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestReasons")]
+		public string ReturnRequestReasons { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.ReturnRequestActions")]
+		public string ReturnRequestActions { get; set; }
+	}
 }

@@ -1,0 +1,115 @@
+﻿@model ProductDetailsModel
+@using SmartStore.Core;
+@using SmartStore.Core.Domain.Common;
+@using SmartStore.Core.Infrastructure;
+@using SmartStore.Web;
+@using SmartStore.Web.Models.Catalog;
+@using SmartStore.Web;
+@{
+    Layout = "~/Views/Shared/_Root.cshtml";
+
+    //title
+    Html.AddTitleParts(!String.IsNullOrEmpty(Model.MetaTitle) ? Model.MetaTitle : Model.Name);
+}
+<div class="page product-details-page">
+    <div class="page-body">
+        @Html.Widget("mobile_productdetails_top")
+        @*we add enctype = "multipart/form-data" because "File upload" attribute control type requries it*@
+        @using (Html.BeginRouteForm("Product", new { SeName = Model.SeName }, FormMethod.Post, new { enctype = "multipart/form-data" }))
+        {
+            <div class="product-essential">
+                <div class="overview">
+                    <h1 class="product-name">
+                        @Model.Name
+                    </h1>
+                    <div class="short-description">
+                        @Html.Raw(Model.ShortDescription)
+                    </div>
+                    @Html.Widget("mobile_productdetails_before_pictures")
+					<div id="pd-gallery-container">
+						@Html.Partial("_PictureGallery", Model.DetailsPictureModel)
+					</div>
+                    @Html.Widget("mobile_productdetails_after_pictures")
+                    @Html.Action("ProductManufacturers", new { productId = Model.Id })
+                    @Html.Action("ReviewOverview", new { id = Model.Id })
+                    @Html.Action("EmailAFriendButton", new { id = Model.Id })
+                    @Html.Action("CompareProductsButton", "Catalog", new { productId = Model.Id })
+                </div>
+                <div class="full-description">
+                    @Html.Raw(Html.CollapsedText(Model.FullDescription))
+                </div>
+            </div>
+            <div class="product-collateral">
+                <div class="product-variant-list">
+                    @foreach (var product in Model.AssociatedProducts)
+                    {                       
+                        <div class="product-variant-line update-container" data-url="@Html.Raw(Model.UpdateProductDetailsUrl("associateditem"))">
+                            @if (!String.IsNullOrWhiteSpace(product.DetailsPictureModel.DefaultPictureModel.ImageUrl))
+                            {
+                                <div class="variant-picture">
+                                    <img alt="@product.DetailsPictureModel.AlternateText" src="@product.DetailsPictureModel.DefaultPictureModel.ImageUrl" 
+                                         title="@product.DetailsPictureModel.DefaultPictureModel.Title" />
+                                </div>
+                            }
+                            @if (!String.IsNullOrWhiteSpace(product.Name))
+                            {
+                                <div class="variant-name">
+									@if (product.VisibleIndividually)
+									{
+										<a href="@Url.RouteUrl("Product", new { SeName = product.SeName })" title="@T("Products.Details")">@product.Name</a>
+									}
+									else
+									{
+										@product.Name
+									}
+                                </div>
+                            }
+                            @if (!String.IsNullOrWhiteSpace(product.ShortDescription))
+                            {
+                                <div class="variant-description">
+                                    @Html.Raw(product.ShortDescription)
+                                </div>
+                            }
+                            @Html.Partial("_DownloadSample", product)
+                            @Html.Action("ProductTierPrices", new { productId = product.Id })
+                            @{
+                                var dataDictAttributes = new ViewDataDictionary();
+                                dataDictAttributes.TemplateInfo.HtmlFieldPrefix = string.Format("attributes_{0}", product.Id);
+                                @Html.Partial("_Attributes", product.ProductVariantAttributes, dataDictAttributes)                  
+                            }
+                            <!--product SKU, manufacturer part number, stock info-->
+                            @Html.Partial("_SKU_Man_Stock", product)
+                            <!--Back in stock subscription-->
+                            @Html.Partial("_BackInStockSubscription", product)
+                            @{
+                                var dataDictGiftCard = new ViewDataDictionary();
+                                dataDictGiftCard.TemplateInfo.HtmlFieldPrefix = string.Format("giftcard_{0}_0", product.Id);
+                                @Html.Partial("_GiftCardInfo", product.GiftCard, dataDictGiftCard)
+                            }
+                            @{
+                                var dataDictPrice = new ViewDataDictionary();
+                                dataDictPrice.TemplateInfo.HtmlFieldPrefix = string.Format("price_{0}", product.Id);
+                                @Html.Partial("_Price", product.ProductPrice, dataDictPrice)
+                            }
+                            @{
+                                var dataDictAddToCart = new ViewDataDictionary();
+                                dataDictAddToCart.TemplateInfo.HtmlFieldPrefix = string.Format("addtocart_{0}", product.Id);
+                                @Html.Partial("_AddToCart", product, dataDictAddToCart)
+                            }
+                        </div>
+                    }
+                    @if (Model.AssociatedProducts.Count == 0)
+                    {
+                        <div class="no-associated-products">
+                            @T("Products.NoAssociatedProducts")
+                        </div>
+                    }
+                </div>
+                @Html.Action("ProductSpecifications", new { productId = Model.Id })
+                @Html.Action("ProductTags", new { productId = Model.Id })
+                @Html.Action("RelatedProducts", new { productId = Model.Id })
+            </div>
+        }
+        @Html.Widget("mobile_productdetails_bottom")
+    </div>
+</div>

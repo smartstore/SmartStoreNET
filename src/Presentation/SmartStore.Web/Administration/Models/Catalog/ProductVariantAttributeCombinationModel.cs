@@ -24,7 +24,7 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.AllowOutOfStockOrders")]
         public bool AllowOutOfStockOrders { get; set; }
 
-        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.Sku")]
+        [SmartResourceDisplayName("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Sku")]
 		public string Sku { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.Gtin")]

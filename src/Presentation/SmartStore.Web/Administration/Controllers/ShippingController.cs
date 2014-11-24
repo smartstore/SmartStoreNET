@@ -14,6 +14,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -32,6 +33,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
         private readonly IPluginFinder _pluginFinder;
+		private readonly PluginMediator _pluginMediator;
 
 		#endregion
 
@@ -40,8 +42,9 @@ namespace SmartStore.Admin.Controllers
         public ShippingController(IShippingService shippingService, ShippingSettings shippingSettings,
             ISettingService settingService, ICountryService countryService,
             ILocalizationService localizationService, IPermissionService permissionService,
-             ILocalizedEntityService localizedEntityService, ILanguageService languageService,
-            IPluginFinder pluginFinder)
+            ILocalizedEntityService localizedEntityService, ILanguageService languageService,
+            IPluginFinder pluginFinder,
+			PluginMediator pluginMediator)
 		{
             this._shippingService = shippingService;
             this._shippingSettings = shippingSettings;
@@ -52,6 +55,7 @@ namespace SmartStore.Admin.Controllers
             this._localizedEntityService = localizedEntityService;
             this._languageService = languageService;
             this._pluginFinder = pluginFinder;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
@@ -88,99 +92,34 @@ namespace SmartStore.Admin.Controllers
             var shippingProviders = _shippingService.LoadAllShippingRateComputationMethods();
             foreach (var shippingProvider in shippingProviders)
             {
-                var tmp1 = shippingProvider.ToModel();
-                tmp1.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
-                shippingProvidersModel.Add(tmp1);
-            }
-            var gridModel = new GridModel<ShippingRateComputationMethodModel>
-            {
-                Data = shippingProvidersModel,
-                Total = shippingProvidersModel.Count()
-            };
-            return View(gridModel);
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult Providers(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
-            var shippingProvidersModel = new List<ShippingRateComputationMethodModel>();
-            var shippingProviders = _shippingService.LoadAllShippingRateComputationMethods();
-            foreach (var shippingProvider in shippingProviders)
-            {
-                var tmp1 = shippingProvider.ToModel();
-                tmp1.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
-                shippingProvidersModel.Add(tmp1);
-            }
-            shippingProvidersModel = shippingProvidersModel.ForCommand(command).ToList();
-            var gridModel = new GridModel<ShippingRateComputationMethodModel>
-            {
-                Data = shippingProvidersModel,
-                Total = shippingProvidersModel.Count()
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult ProviderUpdate(ShippingRateComputationMethodModel model, GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
-            var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(model.SystemName);
-            if (srcm.IsShippingRateComputationMethodActive(_shippingSettings))
-            {
-                if (!model.IsActive)
-                {
-                    //mark as disabled
-                    _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_shippingSettings);
-                }
-            }
-            else
-            {
-                if (model.IsActive)
-                {
-                    //mark as active
-                    _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.PluginDescriptor.SystemName);
-                    _settingService.SaveSetting(_shippingSettings);
-                }
+				var model = _pluginMediator.ToProviderModel<IShippingRateComputationMethod, ShippingRateComputationMethodModel>(shippingProvider);
+				model.IsActive = shippingProvider.IsShippingRateComputationMethodActive(_shippingSettings);
+                shippingProvidersModel.Add(model);
             }
 
-            var pluginDescriptor = srcm.PluginDescriptor;
-            //display order
-            pluginDescriptor.DisplayOrder = model.DisplayOrder;
-            PluginFileParser.SavePluginDescriptionFile(pluginDescriptor);
-            //reset plugin cache
-            _pluginFinder.ReloadPlugins();
-
-            return Providers(command);
+			return View(shippingProvidersModel);
         }
 
-        public ActionResult ConfigureProvider(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
+		public ActionResult ActivateProvider(string systemName, bool activate)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageShippingSettings))
+				return AccessDeniedView();
 
-            var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
-            if (srcm == null)
-                //No shipping rate computation method found with the specified id
-                return RedirectToAction("Providers");
+			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
+			bool dirty = srcm.IsShippingRateComputationMethodActive(_shippingSettings) != activate;
+			if (dirty)
+			{
+				if (!activate)
+					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.Metadata.SystemName);
+				else
+					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
 
-            var model = srcm.ToModel();
-            string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            srcm.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-            model.ConfigurationActionName = actionName;
-            model.ConfigurationControllerName = controllerName;
-            model.ConfigurationRouteValues = routeValues;
-            return View(model);
-        }
+				_settingService.SaveSetting(_shippingSettings);
+				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
+			}
+
+			return RedirectToAction("Providers");
+		}
 
         #endregion
         

@@ -10,7 +10,7 @@
 {
     @Html.Partial("MyAccountNavigation", Model.NavigationModel, new ViewDataDictionary())
 }
-@using (Html.BeginRouteForm("CustomerAvatar", FormMethod.Post, new { enctype = "multipart/form-data" }))
+@using (Html.BeginForm("Avatar", "Customer", FormMethod.Post, new { enctype = "multipart/form-data" }))
 {
     <div class="page account-page avatar-page">
         <h4 class="muted">@T("Account.MyAccount")</h4>
@@ -22,6 +22,11 @@
             @if (!ViewData.ModelState.IsValid) {
                 @Html.ValidationSummary(true)
             }
+			
+			@if (!Model.AvatarUrl.HasValue())
+			{
+				<div class="alert alert-info">@T("Account.Avatar.UploadRules", Model.MaxFileSize)</div>
+			}
 
             <div class="section-body clearfix">
                 @if (!String.IsNullOrEmpty(Model.AvatarUrl))
@@ -32,24 +37,12 @@
                 }
 
                 <input name="uploadedFile" id="uploadedFile" type="file" class="pull-left"/>
-
-                @*<a class="btn" onclick="$('#uploadedFile').click();">@T("Common.Browse")</a>*@
-                
-                @*<script type="text/javascript">
-                    $(function() {
-                        $('#uploadedFile').change(function () {
-                            $('#uploadFileDisplay').val($(this).val());
-                            $('.img-polaroid').attr("src", $(this).val());
-                        });
-                    });
-                </script>*@
-
             </div>
 
 
-            <div class="well xwell-small" style="margin-top: 20px">
+            <div class="well" style="margin-top: 20px">
                 <button type="submit" name="upload-avatar" value="upload-avatar" class="btn btn-primary upload-avatar-button">
-                    <i class="icon-upload-alt"></i>
+                    <i class="fa fa-upload"></i>
                     @T("Common.Upload")
                 </button>
                 @if (!String.IsNullOrEmpty(Model.AvatarUrl))
@@ -57,7 +50,6 @@
                     <button type="submit" name="remove-avatar" value="remove-avatar" class="btn btn-danger upload-avatar-button">
                         @T("Account.Avatar.RemoveAvatar")
                     </button>
-                    <p style="margin-top: 12px">@T("Account.Avatar.UploadRules")</p>
                 }
             </div>
 

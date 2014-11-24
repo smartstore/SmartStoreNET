@@ -22,6 +22,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.UI;
+using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -51,6 +52,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
+		private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
@@ -67,7 +69,8 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService,
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
-            CatalogSettings catalogSettings)
+            CatalogSettings catalogSettings,
+			IEventPublisher eventPublisher)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -90,6 +93,7 @@ namespace SmartStore.Admin.Controllers
 			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
+			this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -307,8 +311,9 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias);
+            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false);
             var mappedCategories = categories.ToDictionary(x => x.Id);
+
             var gridModel = new GridModel<CategoryModel>
             {
                 Data = categories.Select(x =>
@@ -363,16 +368,22 @@ namespace SmartStore.Admin.Controllers
         public ActionResult TreeLoadChildren(TreeViewItem node)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
+			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
-            var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x => {
+            var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x =>
+			{
+				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
+				string text = (childCount > 0 ? "{0} ({1})".FormatWith(x.Name, childCount) : x.Name);
+
                 var item = new TreeViewItem
                 {
-                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(x.Name, x.Alias) : x.Name,
+                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(text, x.Alias) : text,
                     Encoded = x.Alias.IsEmpty(),
                     Value = x.Id.ToString(),
-                    LoadOnDemand = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count > 0,
+                    LoadOnDemand = (childCount > 0),
                     Enabled = true,
-                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png")
+                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
+					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
                 };
                 return item;
             });
@@ -471,7 +482,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Create(CategoryModel model, bool continueEditing)
+		[ValidateInput(false)]
+        public ActionResult Create(CategoryModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -503,6 +515,8 @@ namespace SmartStore.Admin.Controllers
                 SaveCategoryAcl(category, model);
 				//Stores
 				SaveStoreMappings(category, model);
+
+				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewCategory", _localizationService.GetResource("ActivityLog.AddNewCategory"), category.Name);
@@ -580,7 +594,8 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-        public ActionResult Edit(CategoryModel model, bool continueEditing)
+		[ValidateInput(false)]
+        public ActionResult Edit(CategoryModel model, bool continueEditing, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
@@ -635,6 +650,8 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				SaveStoreMappings(category, model);
 
+				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
+
                 //activity log
                 _customerActivityService.InsertActivity("EditCategory", _localizationService.GetResource("ActivityLog.EditCategory"), category.Name);
 
@@ -668,19 +685,17 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost]
-        public ActionResult Delete(int id)
+		public ActionResult Delete(int id, string deleteType)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
-                //No category found with the specified id
                 return RedirectToAction("List");
 
-            _categoryService.DeleteCategory(category);
+			_categoryService.DeleteCategory(category, deleteType.IsCaseInsensitiveEqual("deletechilds"));
 
-            //activity log
             _customerActivityService.InsertActivity("DeleteCategory", _localizationService.GetResource("ActivityLog.DeleteCategory"), category.Name);
 
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Categories.Deleted"));

@@ -4,11 +4,14 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Tax;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -23,20 +26,29 @@ namespace SmartStore.Admin.Controllers
         private readonly TaxSettings _taxSettings;
         private readonly ISettingService _settingService;
         private readonly IPermissionService _permissionService;
+		private readonly ILocalizationService _localizationService;
+		private readonly PluginMediator _pluginMediator;
 
 	    #endregion
 
 		#region Constructors
 
-        public TaxController(ITaxService taxService,
-            ITaxCategoryService taxCategoryService, TaxSettings taxSettings,
-            ISettingService settingService, IPermissionService permissionService)
+        public TaxController(
+			ITaxService taxService,
+            ITaxCategoryService taxCategoryService, 
+			TaxSettings taxSettings,
+            ISettingService settingService, 
+			IPermissionService permissionService,
+			ILocalizationService localizationService,
+			PluginMediator pluginMediator)
 		{
             this._taxService = taxService;
             this._taxCategoryService = taxCategoryService;
             this._taxSettings = taxSettings;
             this._settingService = settingService;
             this._permissionService = permissionService;
+			this._localizationService = localizationService;
+			this._pluginMediator = pluginMediator;
 		}
 
 		#endregion 
@@ -48,7 +60,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
                 return AccessDeniedView();
 
-            //mark as active tax provider (if selected)
+            // mark as active tax provider (if selected)
             if (!String.IsNullOrEmpty(systemName))
             {
                 var taxProvider = _taxService.LoadTaxProviderBySystemName(systemName);
@@ -56,62 +68,28 @@ namespace SmartStore.Admin.Controllers
                 {
                     _taxSettings.ActiveTaxProviderSystemName = systemName;
                     _settingService.SaveSetting(_taxSettings);
+					_pluginMediator.ActivateDependentWidgets(taxProvider.Metadata, true);
                 }
             }
+			
+            var taxProviderModels = _taxService.LoadAllTaxProviders()
+				.Select(x => 
+				{
+					var model = _pluginMediator.ToProviderModel<ITaxProvider, TaxProviderModel>(x);
+					if (x.Metadata.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase))
+					{
+						model.IsPrimaryTaxProvider = true;
+					}
+					else
+					{
+						_pluginMediator.ActivateDependentWidgets(x.Metadata, false);
+					}
 
-            var taxProvidersModel = _taxService.LoadAllTaxProviders()
-                .Select(x => x.ToModel()).ToList();
-            foreach (var tpm in taxProvidersModel)
-                tpm.IsPrimaryTaxProvider = tpm.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
-            var gridModel = new GridModel<TaxProviderModel>
-            {
-                Data = taxProvidersModel,
-                Total = taxProvidersModel.Count()
-            };
-            return View(gridModel);
-        }
+					return model; 
+				})
+				.ToList();
 
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult Providers(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
-
-            var taxProvidersModel = _taxService.LoadAllTaxProviders()
-                .Select(x => x.ToModel())
-                .ForCommand(command)
-                .ToList();
-            foreach (var tpm in taxProvidersModel)
-                tpm.IsPrimaryTaxProvider = tpm.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
-            var gridModel = new GridModel<TaxProviderModel>
-            {
-                Data = taxProvidersModel,
-                Total = taxProvidersModel.Count()
-            };
-            return new JsonResult
-            {
-                Data = gridModel
-            };
-        }
-
-        public ActionResult ConfigureProvider(string systemName)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageTaxSettings))
-                return AccessDeniedView();
-
-            var taxProvider = _taxService.LoadTaxProviderBySystemName(systemName);
-            if (taxProvider == null)
-                //No tax provider found with the specified id
-                return RedirectToAction("Providers");
-
-            var model = taxProvider.ToModel();
-            string actionName, controllerName;
-            RouteValueDictionary routeValues;
-            taxProvider.GetConfigurationRoute(out actionName, out controllerName, out routeValues);
-            model.ConfigurationActionName = actionName;
-            model.ConfigurationControllerName = controllerName;
-            model.ConfigurationRouteValues = routeValues;
-            return View(model);
+			return View(taxProviderModels);
         }
 
         #endregion

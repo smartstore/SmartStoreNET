@@ -161,11 +161,10 @@
                     </div>
                     if (Model.CanRePostProcessPayment)
                     {
-@*Completing payment support (for redirection payment methods)*
-                            @*set "data-ajax" attribute to "false"*@
+					@*Completing payment support (for redirection payment methods)*
+                    @*set "data-ajax" attribute to "false"*@
                     <div class="repost">
-                        @using (Html.BeginRouteForm("OrderDetails", FormMethod.Post,
-                                new Dictionary<string, Object> { { "data-ajax", "false" } }))
+                        @using (Html.BeginForm(null, null, FormMethod.Post, new RouteValueDictionary { { "data-ajax", "false" } }))
                         {
                             <input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" />
                             <p class="hint">
@@ -322,10 +321,10 @@
                 @Html.Raw(Model.CheckoutAttributeInfo)
             </div>
                 }
-@*Reorder support*@
+				@*Reorder support*@
                 if (Model.IsReOrderAllowed)
                 {
-            <a href="@Url.RouteUrl("ReOrder", new { orderId = Model.Id })" data-role="button">@T("Order.Reorder")</a>
+            <a href="@Url.Action("ReOrder", new { id = Model.Id })" data-role="button">@T("Order.Reorder")</a>
                 }
                 if (Model.IsReturnRequestAllowed)
                 {
@@ -477,6 +476,9 @@
                 </tbody>
             </table>
         </div>
+
+		@Html.Widget("mobile_orderdetails_page_aftertotal")
+
         @if (Model.Shipments.Count > 0)
         {
             <div class="section-title">
@@ -510,7 +512,7 @@
                                 }
                             </div>
                             <div>
-                                <a href="@Url.RouteUrl("ShipmentDetails", new { shipmentId = item.Id })">@T("Order.Shipments.ViewDetails")</a>
+                                <a href="@Url.Action("ShipmentDetails", new { shipmentId = item.Id })">@T("Order.Shipments.ViewDetails")</a>
                             </div>
                         </div>
                     </li>

@@ -75,6 +75,13 @@
 				</div>
 			}
 		</td>
+
+        @if (Model.DisplayWeight)
+		{
+        <td class="weight nobr">
+            <span class="product-weight">@((item.Weight * item.Quantity).ToString("N2")) kg</span>
+        </td>
+        }
 		<td class="unit-price nobr">
 			<span class="product-unit-price">@item.UnitPrice</span>
 		</td>
@@ -100,7 +107,7 @@
 				<span>@item.Quantity</span>
 			}
 		</td>
-		<td class="nobr text-success omega">
+		<td class="nobr omega">
 			<span class="product-subtotal">@item.SubTotal</span>
 			@if (!String.IsNullOrEmpty(item.Discount))
 			{
@@ -119,7 +126,7 @@
         
         <tr class="product-bundle-row">
             <td colspan="2">&nbsp;</td>
-            <td colspan="4" class="bundle-headline">
+            <td colspan="5" class="bundle-headline">
                 @T("Basket.Bundle.BundleIncludes")
             </td>
         </tr>
@@ -223,6 +230,18 @@
 <div class="order-summary-content">
 	@Html.Widget("order_summary_content_before")
 	@Html.Partial("_OrderReviewData", Model.OrderReviewData)
+   
+    @if (Model.DisplayCommentBox && !Model.IsEditable)
+    {
+        @Html.Partial("_CommentBox", Model)
+    }
+
+    @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
+    {
+    <div class="selected-checkout-attributes well well-small" style="text-align: left">
+        @Html.Raw(Model.CheckoutAttributeInfo)
+    </div>
+    }
 
 	@if (Model.Items.Count > 0)
 	{
@@ -260,6 +279,13 @@
 					<th>
 						@T("ShoppingCart.Product(s)")
 					</th>
+
+                    @if (Model.DisplayWeight)
+					{
+                    <th>
+                        @T("ShoppingCart.Weight")
+                    </th>
+                    }
 					<th class="unit-price">
 						@T("ShoppingCart.UnitPrice")
 					</th>
@@ -291,43 +317,38 @@
 			}
 		</table>
 
-		if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
-		{
-			<div class="selected-checkout-attributes well well-small" style="text-align: right">
-				@Html.Raw(Model.CheckoutAttributeInfo)
-			</div>
-		}
-
 		if (Model.IsEditable)
 		{
 			<div class="common-buttons clearfix">
 				<button type="submit" name="continueshopping" value="continueshopping" class="btn pull-left continue-shopping-button">
-					<i class="icon-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
+					<i class="fa fa-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
 				</button>
 				<button type="submit" name="updatecart" value="updatecart" class="btn pull-right update-cart-button">
-					<i class="icon-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
+					<i class="fa fa-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
 				</button>
 				<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
 			</div>
 		}
         
 		<div class="cart-footer row-fluid">
-			<!-- Discount Code, Gift Cards, Estimate shipping -->
-			<div class="span8">
-				@if (Model.IsEditable)
-				{
-					@Html.Partial("_DiscountBox", Model.DiscountBox)
-					@Html.Partial("_GiftCardBox", Model.GiftCardBox)
-					@Html.Widget("order_summary_content_deals")
-				}
-			</div>
 
-			<!-- Checkout attributes -->
-			<div class="span8">
+			<div class="span16 order-totals-left">
+				@Html.Widget("order_summary_content_totals_left")
+
 				@if (Model.IsEditable)
 				{
-					@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
-					@Html.Partial("EstimateShipping", Model.EstimateShipping)
+					<!-- Discount Code, Gift Cards, Estimate shipping -->
+					<div class="column">
+						@Html.Partial("_DiscountBox", Model.DiscountBox)
+						@Html.Partial("_GiftCardBox", Model.GiftCardBox)
+						@Html.Widget("order_summary_content_deals")
+					</div>
+
+					<!-- Checkout attributes -->
+					<div class="column">
+						@Html.Partial("_CheckoutAttributes", Model.CheckoutAttributes, new ViewDataDictionary())
+						@Html.Partial("EstimateShipping", Model.EstimateShipping)
+					</div>
 				}
 			</div>
 
@@ -342,9 +363,10 @@
 
 				@Html.Action("OrderTotals", "ShoppingCart", new { isEditable = Model.IsEditable })
 
+				@Html.Widget("order_summary_content_totals_bottom")
+
 				@if (Model.IsEditable)
 				{
-                    
 					<div class="checkout-buttons">
 						@if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
 						{
@@ -354,14 +376,17 @@
 									name="checkout"
 									onclick="$('#startcheckout').trigger('click'); return false;">
 								@T("Checkout.Button")&nbsp;
-								<i class="icon-arrow-right" style="font-size: 18px"></i>
+								<i class="fa fa-arrow-right" style="font-size: 18px"></i>
 							</button>
 						}
 					</div>
                     
 					<div class="addon-buttons">
-						@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express)*@
-						@Html.Partial("_ButtonPaymentMethod", Model)
+						@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+						@foreach(var item in Model.ButtonPaymentMethods.Items)
+						{
+							@Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
+						}
 					</div>
 				}
 			</div>
@@ -372,7 +397,7 @@
 
 		if (Model.IsEditable)
 		{
-			@Html.Action("CrossSellProducts", "Catalog")
+			@Html.Action("CrossSellProducts", "Product")
 		}
 	}
 	else

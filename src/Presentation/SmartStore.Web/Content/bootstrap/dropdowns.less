@@ -52,13 +52,19 @@
   background-color: @dropdownBackground;
   border: 1px solid #ccc; // Fallback for IE7-8
   border: 1px solid @dropdownBorder;
+  border-color: rgba(0,0,0, 0.15);
   *border-right-width: 2px;
   *border-bottom-width: 2px;
-  .border-radius(6px);
-  .box-shadow(0 5px 10px rgba(0,0,0,.2));
+  .border-radius(@baseBorderRadius);
+  
+  .box-shadow(0 2px 6px rgba(0,0,0,.15));
   -webkit-background-clip: padding-box;
      -moz-background-clip: padding;
           background-clip: padding-box;
+  
+  .dropdown-menu {
+    .box-shadow(0 5px 10px rgba(0,0,0,.2));
+  }
 
   // Aligns the dropdown menu to right
   &.pull-right {
@@ -168,9 +174,7 @@
   left: 100%;
   margin-top: -6px;
   margin-left: -1px;
-  -webkit-border-radius: 0 6px 6px 6px;
-     -moz-border-radius: 0 6px 6px 6px;
-          border-radius: 0 6px 6px 6px;
+  border-radius: 0 6px 6px 6px;
 }
 .dropdown-submenu:hover > .dropdown-menu {
   display: block;
@@ -182,9 +186,7 @@
   bottom: 0;
   margin-top: 0;
   margin-bottom: -2px;
-  -webkit-border-radius: 5px 5px 5px 0;
-     -moz-border-radius: 5px 5px 5px 0;
-          border-radius: 5px 5px 5px 0;
+  border-radius: 5px 5px 5px 0;
 }
 
 // Caret to indicate there is a submenu
@@ -215,9 +217,7 @@
   > .dropdown-menu {
     left: -100%;
     margin-left: 10px;
-    -webkit-border-radius: 6px 0 6px 6px;
-       -moz-border-radius: 6px 0 6px 6px;
-            border-radius: 6px 0 6px 6px;
+    border-radius: 6px 0 6px 6px;
   }
 }
 

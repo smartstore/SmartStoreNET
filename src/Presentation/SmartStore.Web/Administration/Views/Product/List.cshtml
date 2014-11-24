@@ -7,47 +7,53 @@
 *@
 
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     var trueTemplate = "#if (Published) {# <img src='" + Url.Content("~/Administration/Themes/SmartStore/Content/images/checkmark.png") + "' /> #} #";
     
-    //page title
     ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
 }
 @using (Html.BeginForm())
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-sitemap"></i>
+            <i class="fa fa-cube"></i>
             @T("Admin.Catalog.Products.Manage")
         </div>
         <div class="options btn-toolbar">
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="icon-plus"></i>
+                <i class="fa fa-plus"></i>
                 @T("Admin.Common.AddNew")
             </a>
-            @if (Model.DisplayPdfDownloadCatalog)
-            {
-                <a id="PdfDownloadCatalog" href="@Url.Action("DownloadCatalogAsPdf")" class="btn">
-					<i class="icon-download-alt"></i>&nbsp;@T("Admin.Catalog.Products.List.DownloadPDF")
-				</a>
-            }
+
             <div class="btn-group" style="vertical-align: middle">
-              <a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-                Export
-                <span class="icon-caret-down"></span>
-              </a>
-              <ul class="dropdown-menu">
-                <li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
-                <li><a id="exportxml-selected" href="javascript:void(0)">@T("Admin.Common.ExportToXml.Selected")</a></li>
-                <li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
-                <li><a id="exportexcel-selected" href="javascript:void(0)">@T("Admin.Common.ExportToExcel.Selected")</a></li>
-              </ul>
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					Export
+					<span class="fa fa-caret-down"></span>
+				</a>
+				<ul class="dropdown-menu">
+					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
+					<li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
+
+					@if (Model.DisplayPdfExport)
+					{
+						<li><a href="@Url.Action("ExportPdfAll")">@T("Admin.Common.ExportToPdf.All")</a></li>
+					}
+
+					<li><a id="exportxml-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Product")">@T("Admin.Common.ExportToXml.Selected")</a></li>
+					<li><a id="exportexcel-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Product")">@T("Admin.Common.ExportToExcel.Selected")</a></li>
+
+					@if (Model.DisplayPdfExport)
+					{
+						<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdfSelected", "Product")">@T("Admin.Common.ExportToPdf.Selected")</a></li>
+					}
+				</ul>
             </div>
+
             <a id="importexcel" href="#importexcel-window" class="btn" role="button">
-				<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
+				<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
 			</a>
+
             <button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="icon-trash"></i>
+				<i class="fa fa-trash-o"></i>
 				@T("Admin.Common.Delete.Selected")
 			</button>
         </div>
@@ -101,7 +107,7 @@
             <td class="adminData">
                 @Html.EditorFor(model => Model.GoDirectlyToSku)
                 <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
-					<i class="icon-play-circle"></i>&nbsp;@T("Admin.Common.Go")
+					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
             </td>
         </tr>
@@ -110,7 +116,7 @@
 				&nbsp;
 			</td>
             <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn"><i class="icon-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -148,6 +154,7 @@
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
                         columns.Bound(x => x.Sku);
                         columns.Bound(x => x.Price)
+							.Format("{0:0.00}")
 							.RightAlign();
                         columns.Bound(x => x.StockQuantity)
 							.Centered();
@@ -163,7 +170,7 @@
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                             .Title(T("Admin.Common.Edit").Text);
                     })
-                    .Pageable(settings => settings.Total(Model.Products.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.Total(Model.Products.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
                     .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
                     .EnableCustomBinding(true))
@@ -204,21 +211,15 @@
                 }
             });
 
-            //"Export Excel selected" button
-            $('#exportexcel-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportExcelSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
-
-            //"Export XML selected" button
-            $('#exportxml-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportXmlSelected", "Product"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
+        	// export selected to pdf, xml, xls...
+        	$('a.export-form-post').click(function (e) {
+        		e.preventDefault();
+        		var form = $('#ProductExportForm');
+        		form.find('[name=selectedIds]').val(selectedIds.join(','));
+        		form.attr('action', $(this).attr('data-url'));
+        		form.submit();
+        		return false;
+        	});
 
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
@@ -233,7 +234,7 @@
             });
 
             //wire up checkboxes. 
-            $('#products-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+        	$(document).on('change', '#products-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);
@@ -252,13 +253,6 @@
                     }
                 }
                 productsGrid_updateMasterCheckbox();
-            });
-
-            $('#PdfDownloadCatalog').click(function (e) {
-            	if (!confirm(_.str.unescapeHTML('@T("Admin.Common.AskToProceed").Text'))) {
-            		e.preventDefault();
-            		return false;
-            	}
             });
         });
 
@@ -330,12 +324,17 @@
             </text>)
         .FooterContent(@<text>
             <button id="importexcelsubmit" type="submit" data-action="import" class="btn btn-primary">@T("Admin.Common.ImportFromExcel")</button>
-            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Cancel")</a>
+            <a href="#" class="btn btn-link" data-dismiss="modal">@T("Common.Close")</a>
         </text>)
         .Modal(true)
         .Visible(false)
         .Render();
 }
+
+<form id="ProductExportForm" method="POST" action="#">
+	<input type="hidden" id="selectedIds" name="selectedIds" value="" />
+</form>
+
 <script type="text/javascript">
     $(document).ready(function () {
 		
@@ -415,11 +414,10 @@
     	function updateProgress(data) {
     		var el = $('#importexcel-progress');
     		var percent = Math.round(data.ProcessedPercent) + '%';
-
     		el.find('.iep-bar').css('width', percent).text(percent);
     		el.find('.iep-processed').text(data.TotalProcessed);
     		el.find('.iep-records').text(data.TotalRecords);
-    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.Seconds));
+    		el.find('.iep-elapsed').text(_.formatTime(data.ElapsedTime.TotalSeconds));
     		el.find('.iep-new').text(data.NewRecords);
     		el.find('.iep-modified').text(data.ModifiedRecords);
     		el.find('.iep-warnings').text(data.TotalWarnings);
@@ -446,5 +444,3 @@
 
     });
 </script>
-
-

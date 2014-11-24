@@ -4,7 +4,6 @@
 @using SmartStore.Services.Forums;
 @using SmartStore.Services.Seo;
 @using SmartStore.Web;
-@using SmartStore.Web.Extensions;
 @using SmartStore.Web.Models;
 @using SmartStore.Web.Models.Boards;
 @using SmartStore.Web.Models.Common;
@@ -25,7 +24,7 @@
                 @Model.Description</div>
         </div>
         <div class="actions">
-            <a href="@Url.RouteUrl("TopicCreate", new { id = @Model.Id })" class="newtopic" data-role="button">@T("Forum.NewTopic")</a>
+            <a href="@Url.Action("TopicCreate", new { id = @Model.Id })" class="newtopic" data-role="button">@T("Forum.NewTopic")</a>
         </div>
     </div>
     <div class="clear">
@@ -35,7 +34,7 @@
         var pager = Html.SmartStore().Pager(Model.TopicPageIndex, Model.TopicPageSize, Model.TopicTotalRecords)
                                     .Name("paginator")
                                     .ShowSummary(false)
-                                    .Route("ForumSlugPaged", new RouteValues { id = Model.Id, slug = Model.SeName })
+                                    .Route("ForumSlug", new RouteValues { id = Model.Id, slug = Model.SeName })
                                     .Alignment(PagerAlignment.Right);
     }
     @pager
@@ -97,7 +96,7 @@
                             $.ajax({
                                 cache: false,
                                 type: 'POST',
-                                url: '@Url.RouteUrl("ForumWatch", new { id = @Model.Id })',
+                                url: '@Url.Action("ForumWatch", new { id = @Model.Id })',
                                 dataType: 'json',
                                 success: function (data) {
                                     $('#watch-forum').val(data.Text);

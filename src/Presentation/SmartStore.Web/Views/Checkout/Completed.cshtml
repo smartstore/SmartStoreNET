@@ -27,16 +27,16 @@
                 </p>
                 <p>
                     @T("Checkout.OrderNumber"): 
-                    <a href="@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId})">@Model.OrderNumber</a>
+                    <a href="@Url.Action("Details", "Order", new { id = Model.OrderId })">@Model.OrderNumber</a>
                 </p>
             </div>
             <p class="select-button">
-                <a href="@Url.RouteUrl("OrderDetails", new { orderID = Model.OrderId})" class="btn btn-warning">
-                    <i class="icon-list-alt"></i>
-                    @T("Checkout.PlacedOrderDetails")
-                </a>
+				<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" class="btn btn-warning">
+					<i class="fa fa-list-alt"></i>
+					@T("Checkout.PlacedOrderDetails")
+				</a>
                 <a href="@Url.RouteUrl("HomePage")" class="btn order-completed-continue-button">
-                    <i class="icon-home"></i>
+                    <i class="fa fa-home"></i>
                     @T("Checkout.Continue")
                 </a>
             </p>

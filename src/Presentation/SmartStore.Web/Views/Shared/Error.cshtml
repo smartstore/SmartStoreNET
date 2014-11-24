@@ -1,14 +1,113 @@
-﻿@{
-    Layout = null;
+﻿@model HandleErrorInfo
+
+@using SmartStore.Utilities;
+
+@{
+	Layout = null;
+	
+	var showCustomErrors = CommonHelper.GetAppSetting<bool>("sm:ShowCustomErrors", false);
+	string title = "";
+	string text = "";
+	try
+	{
+		title = T("ErrorPage.Title");
+		text = T("ErrorPage.Body");
+	}
+	catch
+	{
+	}
 }
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Error</title>
+	<title>Error</title>
+	<style type="text/css">
+		body {
+			font-family: 'Segoe UI', Arial, helvetica, sans-serif;
+			font-size: 16px;
+			line-height: 22px;
+			color: #555;
+		}
+
+		h1, h2, h3, h4, h5, h6 {
+			font-family: 'Segoe UI Semibold', 'Segoe UI', Arial, helvetica, sans-serif;
+			font-weight: 600;
+		}
+
+		h1 {
+			font-size: 30px;
+			line-height: 48px;
+		}
+
+		.page {
+			width: 840px;
+			margin: 0 auto;
+			text-align: center;
+		}
+
+		.error {
+			margin-top: 12px;
+			padding: 15px;
+			color: #a94442;
+			background-color: #f2dede;
+			border: 1px solid #ebccd1;
+		}
+	</style>
 </head>
 <body>
-    <h2>@T("ErrorPage.Title")</h2>
-    <p>@T("ErrorPage.Body")</p>
+	<div class="page">
+		@if (title.HasValue())
+		{
+			<h1>@title</h1>
+		}
+		else
+		{
+			<h1>We're sorry, an internal error has occurred.</h1>
+		}
+
+		@if (text.HasValue())
+		{
+			<p>@text</p>
+		}
+		else
+		{
+			<p>
+				Our supporting staff has been notified of this error and will address the issue shortly.
+				We  apologize for the inconvenience.
+				<br />
+				<br />
+				Please try clicking your browsers 'back' button or try reloading the home page.
+				If you continue to receive this message, please try again in a little while.
+				<br />
+				<br />
+				Thank you for your patience.
+			</p>
+		}
+
+		@if (showCustomErrors && Model != null)
+		{
+			<p class="error">
+				<strong>Controller:</strong> @Model.ControllerName, <strong>Action:</strong> @Model.ActionName
+				@{	
+					var ex = Model.Exception;
+					if (ex != null)
+					{
+						do
+						{
+							<br/>
+							<br/>
+							<span>@ex.Message</span>
+							ex = ex.InnerException;
+						} while (ex != null);					
+					}
+				} 
+			</p>
+		}
+
+	</div>
 </body>
 </html>
+
+
+		

@@ -9,15 +9,15 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-fire"></i>
+            <i class="fa fa-fire"></i>
             @T("Admin.System.Log")
         </div>
         <div class="options">
             <button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn">
-                <i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")
+                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.DeleteSelected")
             </button>
             <button type="submit" name="clearall" value="clearall" class="btn btn-danger">
-                <i class="icon-trash icon-white"></i>&nbsp;@T("Admin.System.Log.ClearLog")
+                <i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.Log.ClearLog")
             </button>
         </div>
     </div>
@@ -68,7 +68,7 @@
             </td>
             <td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
-                    <i class="icon-search"></i>
+                    <i class="fa fa-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
@@ -94,10 +94,10 @@
                                 .Width(50);
                             columns.Bound(x => x.ShortMessage)
                                 .ClientTemplate("<span class='label label-<#= LogLevelHint #>' style='margin-right: 4px'><#= LogLevel #></span><a href=\"View/<#= Id #>\"><#= ShortMessage #></a>");
-                            columns.Bound(x => x.CreatedOn)
-                                .Width(150);
-                            columns.Bound(x => x.UpdatedOn)
-                                .Width(150);
+							columns.Bound(x => x.CreatedOn)
+								.Width(150);
+							columns.Bound(x => x.UpdatedOn)
+								.Width(150);
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
@@ -167,7 +167,7 @@
             });
 
             //wire up checkboxes. 
-            $('#log-grid input[type=checkbox][id!=mastercheckbox]').live('change', function (e) {
+            $(document).on('change', '#log-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
                 var $check = $(this);
                 if ($check.is(":checked") == true) {
                     var checked = jQuery.inArray($check.val(), selectedIds);

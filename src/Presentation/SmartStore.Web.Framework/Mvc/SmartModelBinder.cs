@@ -7,45 +7,21 @@ using System.Web.Mvc;
 using System.ComponentModel;
 using SmartStore.Utilities;
 
-// codehint: sm-edit (massively: added proper dictionary binding)
-
 namespace SmartStore.Web.Framework.Mvc
 {
     public class SmartModelBinder : DefaultModelBinder
     {
-        private readonly IModelBinder _nextBinder;
-        private readonly static string s_DictTypeName = typeof(IDictionary<,>).FullName;
-
-        public SmartModelBinder() : this(null)
-        {
-        }
-
-        public SmartModelBinder(IModelBinder nextBinder)
-        {
-            _nextBinder = nextBinder;
-        }
 
         public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
-            Type modelType = bindingContext.ModelType;
+			var modelType = bindingContext.ModelType;
 
-            Type idictType = modelType.GetInterface(s_DictTypeName);
-
-            if (idictType != null)
-            {
-                var dictInstance = this.BindDictionary(controllerContext, bindingContext, idictType);
-                if (dictInstance != null)
-                {
-                    return dictInstance;
-                }
-            }
-
-            if (_nextBinder != null)
-            {
-                return _nextBinder.BindModel(controllerContext, bindingContext);
-            }
-
-            var model = base.BindModel(controllerContext, bindingContext);
+			if (bindingContext.ModelType == typeof(CustomPropertiesDictionary))
+			{
+				return BindCustomPropertiesDictioary(controllerContext, bindingContext);
+			}
+			
+			var model = base.BindModel(controllerContext, bindingContext);
 
             if (model is ModelBase)
             {
@@ -55,68 +31,111 @@ namespace SmartStore.Web.Framework.Mvc
             return model;
         }
 
-        private object BindDictionary(ControllerContext controllerContext, ModelBindingContext bindingContext, Type idictType)
-        {
-            Type modelType = bindingContext.ModelType;
-            object result = null;
+		private CustomPropertiesDictionary BindCustomPropertiesDictioary(ControllerContext controllerContext, ModelBindingContext bindingContext)
+		{
+			var model = bindingContext.Model as CustomPropertiesDictionary;
 
-            Type[] ga = idictType.GetGenericArguments();
-            IModelBinder valueBinder = Binders.GetBinder(ga[1]);
+			if (model == null)
+			{
+				model = new CustomPropertiesDictionary();
+			}
 
-            foreach (string key in GetValueProviderKeys(controllerContext))
-            {
-                bool isMatch = key.StartsWith(bindingContext.ModelName + "[", StringComparison.InvariantCultureIgnoreCase);
-                if (isMatch)
-                {
-                    int endbracket = key.IndexOf("]", bindingContext.ModelName.Length + 1);
-                    if (endbracket == -1)
-                        continue;
+			var keys = GetValueProviderKeys(controllerContext, bindingContext.ModelName + "[");
+			if (keys.Count == 0)
+			{
+				return model;
+			}
 
-                    object dictKey;
-                    try
-                    {
-                        dictKey = ConvertType(key.Substring(bindingContext.ModelName.Length + 1, endbracket - bindingContext.ModelName.Length - 1), ga[0]);
-                    }
-                    catch (NotSupportedException)
-                    {
-                        continue;
-                    }
+			foreach (var key in keys)
+			{
+				var keyName = GetKeyName(key);
+				if (keyName == null || model.ContainsKey(keyName))
+					continue;
 
-                    ModelBindingContext innerBindingContext = new ModelBindingContext()
-                    {
-                        ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(() => null, ga[1]),
-                        ModelName = key.Substring(0, endbracket + 1),
-                        ModelState = bindingContext.ModelState,
-                        PropertyFilter = bindingContext.PropertyFilter,
-                        ValueProvider = bindingContext.ValueProvider
-                    };
-                    object newPropertyValue = valueBinder.BindModel(controllerContext, innerBindingContext);
+				var valueBinder = Binders.DefaultBinder;
 
-                    if (result == null)
-                        result = CreateModel(controllerContext, bindingContext, modelType);
+				var subPropertyName = GetSubPropertyName(key);
+				if (subPropertyName.IsCaseInsensitiveEqual("__Type__"))
+					continue;
 
-                    if (!(bool)idictType.GetMethod("ContainsKey").Invoke(result, new object[] { dictKey }))
-                        idictType.GetProperty("Item").SetValue(result, ((string[])newPropertyValue)[0], new object[] { dictKey });
-                }
-            }
+				if (subPropertyName == null)
+				{
+					var simpleBindingContext = new ModelBindingContext
+					{
+						ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, GetValueType(keys, key, bindingContext.ValueProvider)),
+						ModelName = key,
+						ModelState = bindingContext.ModelState,
+						PropertyFilter = bindingContext.PropertyFilter,
+						ValueProvider = bindingContext.ValueProvider
+					};
+					var value = valueBinder.BindModel(controllerContext, simpleBindingContext);
+					model[keyName] = value;
+				}
+				else
+				{
+					// Is Complex type
+					var modelName = key.Substring(0, key.Length - subPropertyName.Length - 1);
+					var valueType = GetValueType(keys, modelName, bindingContext.ValueProvider);
+					valueBinder = Binders.GetBinder(valueType);
+					var complexBindingContext = new ModelBindingContext
+					{
+						ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, valueType),
+						ModelName = key.Substring(0, key.Length - subPropertyName.Length - 1),
+						ModelState = bindingContext.ModelState,
+						PropertyFilter = bindingContext.PropertyFilter,
+						ValueProvider = bindingContext.ValueProvider
+					};
+					var value = valueBinder.BindModel(controllerContext, complexBindingContext);
+					model[keyName] = value;
+				}
+			}
+			
+			return model;
+		}
 
-            return result;
-        }
+		private HashSet<string> GetValueProviderKeys(ControllerContext context, string prefix)
+		{
+			var keys = context.HttpContext.Request.Form.Keys.Cast<string>()
+				.Concat(((IDictionary<string, object>)context.RouteData.Values).Keys.Cast<string>())
+				.Concat(context.HttpContext.Request.QueryString.Keys.Cast<string>())
+				.Concat(context.HttpContext.Request.Files.Keys.Cast<string>())
+				.Where(x => x.StartsWith(prefix, StringComparison.InvariantCultureIgnoreCase));
 
-        private object ConvertType(string stringValue, Type type)
-        {
-			return CommonHelper.GetTypeConverter(type).ConvertFrom(stringValue);
-        }
+			return new HashSet<string>(keys, StringComparer.InvariantCultureIgnoreCase);
+		}
 
-        private IEnumerable<string> GetValueProviderKeys(ControllerContext context)
-        {
-            List<string> keys = new List<string>();
-            keys.AddRange(context.HttpContext.Request.Form.Keys.Cast<string>());
-            keys.AddRange(((IDictionary<string, object>)context.RouteData.Values).Keys.Cast<string>());
-            keys.AddRange(context.HttpContext.Request.QueryString.Keys.Cast<string>());
-            keys.AddRange(context.HttpContext.Request.Files.Keys.Cast<string>());
-            return keys;
-        }
+		private string GetKeyName(string key)
+		{
+			int startBracket = key.IndexOf("[");
+			int endBracket = key.IndexOf("]", startBracket);
+
+			if (endBracket == -1)
+				return null;
+			
+			return key.Substring(startBracket + 1, endBracket - startBracket - 1);
+		}
+
+		private string GetSubPropertyName(string key)
+		{
+			var parts = key.Split('.');
+			if (parts.Length > 1)
+			{
+				return parts[1];
+			}
+
+			return null;
+		}
+
+		private Type GetValueType(HashSet<string> keys, string prefix, IValueProvider valueProvider)
+		{
+			var typeKey = prefix + ".__Type__";
+			if (keys.Contains(typeKey))
+			{
+				var type = Type.GetType(valueProvider.GetValue(typeKey).AttemptedValue, true);
+				return type;
+			}
+			return typeof(object);
+		}
 
 
     }

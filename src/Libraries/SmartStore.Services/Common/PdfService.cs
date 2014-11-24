@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using iTextSharp.text;
 using iTextSharp.text.pdf;
-using iTextSharp.text.pdf.draw;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -24,7 +23,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using System.Globalization;
 using SmartStore.Services.Stores;
-using System.Text;
+using System.Web;
 
 namespace SmartStore.Services.Common
 {
@@ -48,6 +47,7 @@ namespace SmartStore.Services.Common
         private readonly IWebHelper _webHelper;
 		private readonly IStoreService _storeService;
 		private readonly IStoreContext _storeContext;
+		private readonly IWorkContext _workContext;
 
         private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -57,7 +57,6 @@ namespace SmartStore.Services.Common
         private readonly StoreInformationSettings _storeInformationSettings;
         private readonly AddressSettings _addressSettings;
 
-        //codehint: sm-add
         private readonly CompanyInformationSettings _companyInformationSettings;
         private readonly BankConnectionSettings _bankConnectionSettings;
         private readonly ContactDataSettings _contactDataSettings;
@@ -72,7 +71,9 @@ namespace SmartStore.Services.Common
             ICurrencyService currencyService, IMeasureService measureService,
             IPictureService pictureService, IProductService productService,
 			IProductAttributeParser productAttributeParser, IStoreService storeService,
-			IStoreContext storeContext, IWebHelper webHelper,
+			IStoreContext storeContext, 
+			IWorkContext workContext,
+			IWebHelper webHelper,
             CatalogSettings catalogSettings, CurrencySettings currencySettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, TaxSettings taxSettings,
             StoreInformationSettings storeInformationSettings, AddressSettings addressSettings,
@@ -91,6 +92,7 @@ namespace SmartStore.Services.Common
             this._productAttributeParser = productAttributeParser;
 			this._storeService = storeService;
 			this._storeContext = storeContext;
+			this._workContext = workContext;
             this._webHelper = webHelper;
             this._currencySettings = currencySettings;
             this._catalogSettings = catalogSettings;
@@ -99,8 +101,6 @@ namespace SmartStore.Services.Common
             this._taxSettings = taxSettings;
             this._storeInformationSettings = storeInformationSettings;
             this._addressSettings = addressSettings;
-
-            //codehint: sm-add
             this._companyInformationSettings = companyInformationSettings;
             this._bankConnectionSettings = bankConnectionSettings;
             this._contactDataSettings = contactDataSettings;
@@ -717,6 +717,7 @@ namespace SmartStore.Services.Common
                         .Where(on => on.DisplayToCustomer)
                         .OrderByDescending(on => on.CreatedOnUtc)
                         .ToList();
+
                     if (orderNotes.Count > 0)
                     {
                         doc.Add(new Paragraph(_localizationService.GetResource("PDFInvoice.OrderNotes", lang.Id), titleFont));
@@ -746,8 +747,11 @@ namespace SmartStore.Services.Common
                             cell.HorizontalAlignment = Element.ALIGN_LEFT;
                             notesTable.AddCell(cell);
 
+							string orderNoteText = HtmlUtils.ConvertHtmlToPlainText(orderNote.FormatOrderNoteText(), true, true);
+							orderNoteText = HtmlUtils.StripTags(HttpUtility.HtmlDecode(orderNoteText));
+
                             cell = new PdfPCell();
-                            cell.AddElement(new Paragraph(HtmlUtils.ConvertHtmlToPlainText(orderNote.FormatOrderNoteText(), true, true), font));
+                            cell.AddElement(new Paragraph(orderNoteText, font));
                             cell.HorizontalAlignment = Element.ALIGN_LEFT;
                             notesTable.AddCell(cell);
                         }
@@ -765,6 +769,22 @@ namespace SmartStore.Services.Common
             }
             doc.Close();
         }
+
+		/// <summary>
+		/// Print an order to PDF
+		/// </summary>
+		/// <param name="orders">Orders</param>
+		public virtual byte[] PrintOrdersToPdf(IList<Order> orders)
+		{
+			byte[] bytes = null;
+			using (var stream = new MemoryStream())
+			{
+				PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
+				bytes = stream.ToArray();
+			}
+			return bytes;
+		}
+
 
         /// <summary>
         /// Print packaging slips to PDF
@@ -897,6 +917,22 @@ namespace SmartStore.Services.Common
             doc.Close();
         }
 
+		/// <summary>
+		/// Print packaging slips to PDF
+		/// </summary>
+		/// <param name="shipments">Shipments</param>
+		public virtual byte[] PrintPackagingSlipsToPdf(IList<Shipment> shipments)
+		{
+			byte[] bytes = null;
+			using (var stream = new MemoryStream())
+			{
+				PrintPackagingSlipsToPdf(stream, shipments, _workContext.WorkingLanguage);
+				bytes = stream.ToArray();
+			}
+			return bytes;
+		}
+
+
         /// <summary>
         /// Print product collection to PDF
         /// </summary>
@@ -1008,6 +1044,7 @@ namespace SmartStore.Services.Common
 					var searchContext = new ProductSearchContext()
 					{
 						ParentGroupedProductId = product.Id,
+						PageSize = int.MaxValue,
 						ShowHidden = true
 					};
 
@@ -1083,6 +1120,21 @@ namespace SmartStore.Services.Common
 
             doc.Close();
         }
+
+		/// <summary>
+		/// Print product collection to PDF
+		/// </summary>
+		/// <param name="products">Products</param>
+		public virtual byte[] PrintProductsToPdf(IList<Product> products)
+		{
+			byte[] bytes = null;
+			using (var stream = new MemoryStream())
+			{
+				PrintProductsToPdf(stream, products, _workContext.WorkingLanguage);
+				bytes = stream.ToArray();
+			}
+			return bytes;
+		}
 
         #endregion
 

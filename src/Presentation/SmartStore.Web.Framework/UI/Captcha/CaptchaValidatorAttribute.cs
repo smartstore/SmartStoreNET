@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.UI.Captcha
@@ -8,6 +9,8 @@ namespace SmartStore.Web.Framework.UI.Captcha
         private const string CHALLENGE_FIELD_KEY = "recaptcha_challenge_field";
         private const string RESPONSE_FIELD_KEY = "recaptcha_response_field";
 
+		public Lazy<CaptchaSettings> CaptchaSettings { get; set; }
+
         public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
             bool valid = false;
@@ -15,7 +18,7 @@ namespace SmartStore.Web.Framework.UI.Captcha
             var captchaResponseValue = filterContext.HttpContext.Request.Form[RESPONSE_FIELD_KEY];
             if (!string.IsNullOrEmpty(captchaChallengeValue) && !string.IsNullOrEmpty(captchaResponseValue))
             {
-                var captchaSettings = EngineContext.Current.Resolve<CaptchaSettings>();
+				var captchaSettings = CaptchaSettings.Value;
                 if (captchaSettings.Enabled)
                 {
                     //validate captcha

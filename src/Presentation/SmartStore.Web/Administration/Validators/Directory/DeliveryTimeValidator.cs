@@ -6,7 +6,7 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.Directory
 {
-    public class DeliveryTimeValidator : AbstractValidator<DeliveryTimeModel>
+	public partial class DeliveryTimeValidator : AbstractValidator<DeliveryTimeModel>
     {
         public DeliveryTimeValidator(ILocalizationService localizationService)
         {

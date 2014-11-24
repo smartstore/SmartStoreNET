@@ -101,7 +101,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-                CreatedOnUtc = new DateTime(2010, 01, 01)
+				CreatedOnUtc = new DateTime(2010, 01, 01),
+				UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

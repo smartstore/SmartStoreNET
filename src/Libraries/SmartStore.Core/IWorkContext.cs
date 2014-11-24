@@ -56,13 +56,13 @@ namespace SmartStore.Core
         TaxDisplayType GetTaxDisplayTypeFor(Customer customer, int storeId);
 
         /// <summary>
-        /// Get or set value indicating whether we're in admin area
+        /// Gets or sets a value indicating whether we're in admin area
         /// </summary>
-        bool IsAdmin { get; set; }
+		bool IsAdmin { get; set; }
 
         ///// <summary>
-        ///// Get or set a value indicating whether we're in the public shop
+        ///// Gets a value indicating whether we're in the public shop
         ///// </summary>
-        //bool IsPublic { get; set; }
+        //bool IsPublic { get; }
     }
 }

@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
@@ -31,5 +33,12 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.Promotions.Campaigns.Fields.TestEmail")]
         [AllowHtml]
         public string TestEmail { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		public bool LimitedToStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
     }
 }

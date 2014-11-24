@@ -9,7 +9,7 @@
                 <div class="block block-bordered">
                     <div class="block-title">
                         <span>@T("Order.BillingAddress")</span>
-                        <a class="change-checkout-data pull-right" href='@Url.RouteUrl("CheckoutBillingAddress")'>@T("Common.Change")</a>
+                        <a class="change-checkout-data pull-right" href='@Url.Action("BillingAddress", "Checkout")'>@T("Common.Change")</a>
                     </div>
                     <div class="block-body">
                         <div class="name">
@@ -86,7 +86,7 @@
                     <div class="block block-bordered">
                         <div class="block-title">
                             <span>@T("Order.ShippingAddress")</span>
-                            <a class="change-checkout-data pull-right" href='@Url.RouteUrl("CheckoutShippingAddress")'>@T("Common.Change")</a>
+                            <a class="change-checkout-data pull-right" href='@Url.Action("ShippingAddress", "Checkout")'>@T("Common.Change")</a>
                         </div>
                         <div class="block-body">
                             <div class="name">
@@ -167,10 +167,17 @@
                 <div class="block block-bordered">
                     <div class="block-title">
                         <span>@T("Order.PaymentMethod")</span>
-                        <a class="change-checkout-data pull-right" href='@Url.RouteUrl("CheckoutPaymentMethod")'>@T("Common.Change")</a>
+						@if (!Model.IsPaymentSelectionSkipped)
+						{
+							<a class="change-checkout-data pull-right" href='@Url.Action("PaymentMethod", "Checkout")'>@T("Common.Change")</a>
+						}
                     </div>
                     <div class="block-body">
                         @Model.PaymentMethod
+						@if (Model.PaymentSummary.HasValue())
+						{
+							<span class="muted">@Model.PaymentSummary</span>
+						}
                     </div>
                 </div>
             </div>
@@ -182,7 +189,7 @@
                 <div class="block block-bordered">
                     <div class="block-title">
                         <span>@T("Order.ShippingMethod")</span>
-                        <a class="change-checkout-data pull-right" href='@Url.RouteUrl("CheckoutShippingMethod")'>@T("Common.Change")</a>
+						<a class="change-checkout-data pull-right" href='@Url.Action("ShippingMethod", "Checkout")'>@T("Common.Change")</a>
                     </div>
                     <div class="block-body">
                         @Model.ShippingMethod

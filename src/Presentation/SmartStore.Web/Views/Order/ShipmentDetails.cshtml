@@ -47,7 +47,7 @@
                 <div class="tracking-number">@T("Order.Shipments.TrackingNumber"):
                     @if (!string.IsNullOrEmpty(Model.TrackingNumberUrl))
                     {
-                        <a href="@Model.TrackingNumberUrl" target="_blank" class="tracking-url">@Model.TrackingNumber</a>
+                        <a href="@Model.TrackingNumberUrl" target="_blank" class="tracking-url" rel="nofollow">@Model.TrackingNumber</a>
                     }
                     else
                     {
@@ -55,6 +55,8 @@
                     }
                 </div>
             }
+			
+			<p></p>
             <div class="shipping-address">
                 <div class="section-title">
                     @T("Order.Shipments.ShippingAddress")
@@ -95,8 +97,8 @@
                 }
             </div>
         </div>
-        <div class="clear">
-        </div>
+        <div class="clear"></div>
+
         @if (Model.Items.Count > 0)
         {
             <div class="products">

@@ -5,6 +5,7 @@ using System.Text.RegularExpressions;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Services.Security;
+using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Admin.Controllers
 {

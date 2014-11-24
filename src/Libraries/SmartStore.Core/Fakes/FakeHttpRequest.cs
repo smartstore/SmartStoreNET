@@ -16,9 +16,17 @@ namespace SmartStore.Core.Fakes
         private readonly Uri _urlReferrer;
         private readonly string _httpMethod;
 
-        public FakeHttpRequest(string relativeUrl, string method,
-            NameValueCollection formParams, NameValueCollection queryStringParams,
-            HttpCookieCollection cookies, NameValueCollection serverVariables)
+		public FakeHttpRequest(string relativeUrl, Uri url, Uri urlReferrer)
+			: this(relativeUrl, HttpVerbs.Get.ToString("g"), url, urlReferrer, null, null, null, null)
+		{
+		}
+
+        public FakeHttpRequest(string relativeUrl, 
+			string method,
+            NameValueCollection formParams,
+			NameValueCollection queryStringParams,
+            HttpCookieCollection cookies, 
+			NameValueCollection serverVariables)
         {
             _httpMethod = method;
             _relativeUrl = relativeUrl;
@@ -37,19 +45,20 @@ namespace SmartStore.Core.Fakes
                 _serverVariables = new NameValueCollection();
         }
 
-        public FakeHttpRequest(string relativeUrl, string method, Uri url, Uri urlReferrer,
-            NameValueCollection formParams, NameValueCollection queryStringParams,
-            HttpCookieCollection cookies, NameValueCollection serverVariables)
-            : this(relativeUrl, method, formParams, queryStringParams, cookies, serverVariables)
-        {
-            _url = url;
-            _urlReferrer = urlReferrer;
-        }
 
-        public FakeHttpRequest(string relativeUrl, Uri url, Uri urlReferrer)
-            : this(relativeUrl, HttpVerbs.Get.ToString("g"), url, urlReferrer, null, null, null, null)
-        {
-        }
+		public FakeHttpRequest(string relativeUrl,
+			string method,
+			Uri url,
+			Uri urlReferrer,
+			NameValueCollection formParams,
+			NameValueCollection queryStringParams,
+			HttpCookieCollection cookies,
+			NameValueCollection serverVariables)
+			: this(relativeUrl, method, formParams, queryStringParams, cookies, serverVariables)
+		{
+			_url = url;
+			_urlReferrer = urlReferrer;
+		}
 
         public override NameValueCollection ServerVariables
         {
@@ -83,7 +92,7 @@ namespace SmartStore.Core.Fakes
         {
             get
             {
-                return _url;
+                return _url ?? new Uri("http://tempuri.org");
             }
         }
 
@@ -91,7 +100,7 @@ namespace SmartStore.Core.Fakes
         {
             get
             {
-                return _urlReferrer;
+				return _urlReferrer ?? new Uri("http://tempuri.org");
             }
         }
 
@@ -127,8 +136,9 @@ namespace SmartStore.Core.Fakes
 
         public override string RawUrl
         {
-            get { return null; }
+            get { return this.ApplicationPath; }
         }
+
         public override bool IsSecureConnection
         {
             get { return false; }
@@ -142,9 +152,10 @@ namespace SmartStore.Core.Fakes
             }
         }
 
-		// codehint: sm-add
-		public override string[] UserLanguages {
-			get {
+		public override string[] UserLanguages 
+		{
+			get 
+			{
 				return new string[] { };
 			}
 		}

@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -13,7 +14,8 @@ namespace SmartStore.Services.Catalog
         /// Delete category
         /// </summary>
         /// <param name="category">Category</param>
-        void DeleteCategory(Category category);
+		/// <param name="deleteChilds">Whether to delete child categories or to set them to no parent.</param>
+		void DeleteCategory(Category category, bool deleteChilds = false);
 
         /// <summary>
         /// Gets all categories
@@ -24,8 +26,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <param name="alias">Alias to be filtered</param>
         /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
+		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
         /// <returns>Categories</returns>
-        IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null, bool applyNavigationFilters = true);
+        IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
+			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true);
 
         /// <summary>
         /// Gets all categories filtered by parent category identifier
@@ -111,11 +115,27 @@ namespace SmartStore.Services.Catalog
         void UpdateProductCategory(ProductCategory productCategory);
 
 		/// <summary>
-		/// Builds a category bread crump for a particular product
+		/// Builds a category breadcrumb (path) for a particular product
 		/// </summary>
 		/// <param name="product">The product</param>
-		/// <returns>Category bread crump for product</returns>
-		/// <remarks>codehint: sm-add</remarks>
-		string GetCategoryBreadCrumb(Product product);
+		/// <param name="languageId">The id of language</param>
+		/// <param name="pathLookup">A delegate for fast (cached) path lookup</param>
+		/// <param name="addPathToCache">A callback that saves the resolved path to a cache (when <c>pathLookup</c> returned null)</param>
+		/// <param name="categoryLookup">A delegate for fast (cached) category lookup</param>
+		/// <returns>Category breadcrumb for product</returns>
+		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup);
     }
+
+	public static class ICategoryServiceExtensions
+	{
+		/// <summary>
+		/// Builds a category breadcrumb for a particular product
+		/// </summary>
+		/// <param name="product">The product</param>
+		/// <returns>Category breadcrumb for product</returns>
+		public static string GetCategoryBreadCrumb(this ICategoryService categoryService, Product product)
+		{
+			return categoryService.GetCategoryPath(product, null, null, null, null);
+		}
+	}
 }

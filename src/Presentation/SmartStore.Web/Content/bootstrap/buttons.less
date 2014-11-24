@@ -10,7 +10,7 @@
 .btn {
   display: inline-block;
   .ie7-inline-block();
-  padding: 4px 12px;
+  padding: 6px 12px;
   margin-bottom: 0; // For input.btn
   font-size: @baseFontSize;
   line-height: @baseLineHeight;
@@ -18,25 +18,16 @@
   text-align: center;
   vertical-align: middle;
   cursor: pointer;
-  .buttonBackground(@btnBackground, @btnBackgroundHighlight, @grayDark, 0 1px 1px rgba(255,255,255,.75));
   border: 1px solid @btnBorder;
+  .buttonBackground(@btnBackground, @btnBackgroundHighlight, @grayDark, 0 1px 1px rgba(255,255,255,.75));
+  .transition(all 0.1s ease-out);
   *border: 0; // Remove the border to prevent IE7's black border on input:focus
-  border-bottom-color: darken(@btnBorder, 10%);
   .border-radius(@baseBorderRadius);
   .ie7-restore-left-whitespace(); // Give IE7 some love
-  .box-shadow(~"inset 0 1px 0 rgba(255,255,255,.2), 0 1px 2px rgba(0,0,0,.05)");
 
   // Hover state
   &:hover {
-    color: @grayDark;
     text-decoration: none;
-    background-color: darken(@white, 10%);
-    *background-color: darken(@white, 15%); /* Buttons in IE7 don't get borders, so darken on hover */
-    background-position: 0 -15px;
-
-    // transition is only when going to hover, otherwise the background
-    // behind the gradient (there for IE<=9 fallback) gets mismatched
-    .transition(background-position .1s linear);
   }
 
   // Focus state for keyboard and accessibility
@@ -47,21 +38,21 @@
   // Active state
   &.active,
   &:active {
-    background-color: darken(@white, 10%);
-    background-color: darken(@white, 15%) e("\9");
     background-image: none;
     outline: 0;
-    .box-shadow(~"inset 0 2px 4px rgba(0,0,0,.15), 0 1px 2px rgba(0,0,0,.05)");
+    .box-shadow(~"inset 0 3px 5px rgba(0,0,0,.16)");
   }
 
   // Disabled state
   &.disabled,
   &[disabled] {
     cursor: default;
-    background-color: darken(@white, 10%);
+    //background-color: @btnBackground;
+	.opacity(50);
     background-image: none;
-    .opacity(65);
     .box-shadow(none);
+	cursor: not-allowed;
+	pointer-events: none;
   }
 
 }
@@ -73,18 +64,17 @@
 
 // Large
 .btn-large {
-  padding: @paddingLarge;
+  padding: 10px 16px;
   font-size: @fontSizeLarge;
   .border-radius(@borderRadiusLarge);
 }
-.btn-large [class^="icon-"],
-.btn-large [class*=" icon-"] {
+.btn-large .fa {
   margin-top: 2px;
 }
 
 // Small
 .btn-small {
-  padding: @paddingSmall;
+  padding: 4px 10px;
   font-size: @fontSizeSmall;
   .border-radius(@borderRadiusSmall);
 }
@@ -95,7 +85,7 @@
 
 // Mini
 .btn-mini {
-  padding: @paddingMini;
+  padding: 2px 8px;
   font-size: @fontSizeMini;
   .border-radius(@borderRadiusSmall);
 }
@@ -138,7 +128,7 @@ input[type="button"] {
 .btn-success.active,
 .btn-info.active,
 .btn-inverse.active {
-  color: rgba(255,255,255,.75);
+  //color: rgba(255,255,255, 1);
 }
 
 // Set the backgrounds
@@ -218,15 +208,27 @@ input[type="submit"].btn {
 .btn-link {
   border-color: transparent;
   cursor: pointer;
+  text-transform: none !important;
   color: @linkColor;
   .border-radius(0);
 }
 .btn-link:hover {
   color: @linkColorHover;
-  text-decoration: underline;
-  background-color: transparent;
+  border-color: transparent;
+  text-decoration: none;
+  background-color: #fafafa;
+  background-color: rgba(0,0,0, 0.02);
 }
 .btn-link[disabled]:hover {
   color: @grayDark;
+  border-color: transparent;
   text-decoration: none;
+}
+.btn-link:active {
+  background-color: #f7f7f7;
+  background-color: rgba(0,0,0, 0.04);
+}
+
+.btn-link .fa {
+	color: #6d6d6d;
 }

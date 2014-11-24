@@ -12,24 +12,21 @@ namespace SmartStore.Core.Themes
     {
         private readonly ThemeManifest _manifest;
 
-        public ThemeManifestMaterializer(string themeName, string virtualPath, string path, XmlDocument doc)
+        public ThemeManifestMaterializer(ThemeFolderData folderData)
         {
-            Guard.ArgumentNotEmpty(() => themeName);
-            Guard.ArgumentNotEmpty(() => path);
-            Guard.ArgumentNotNull(() => doc);
-            Guard.Against<SmartException>(doc.DocumentElement == null, "The provided theme configuration document must have a root element.");
+			Guard.ArgumentNotNull(() => folderData);
 
             _manifest = new ThemeManifest();
 
-            _manifest.ThemeName = themeName;
-            _manifest.Location = virtualPath;
-            _manifest.Path = path;
-            _manifest.ConfigurationNode = doc.DocumentElement;
+			_manifest.ThemeName = folderData.FolderName;
+			_manifest.BaseThemeName = folderData.BaseTheme;
+            _manifest.Location = folderData.VirtualBasePath;
+            _manifest.Path = folderData.FullPath;
+            _manifest.ConfigurationNode = folderData.Configuration.DocumentElement;
         }
         
         public ThemeManifest Materialize()
         {
-
             var root = _manifest.ConfigurationNode;
 
 			_manifest.ThemeTitle = root.GetAttribute("title") ?? _manifest.ThemeName;
@@ -84,7 +81,7 @@ namespace SmartStore.Core.Themes
 
         private IDictionary<string, ThemeVariableInfo> MaterializeVariables()
         {
-            var vars = new Dictionary<string, ThemeVariableInfo>();
+            var vars = new Dictionary<string, ThemeVariableInfo>(StringComparer.OrdinalIgnoreCase);
             var root = _manifest.ConfigurationNode;
             var xndVars = root.SelectNodes(@"Vars/Var").Cast<XmlElement>();
 

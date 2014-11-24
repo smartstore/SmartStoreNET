@@ -5,8 +5,10 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Events;
 using SmartStore.Data;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Common
 {
@@ -26,6 +28,7 @@ namespace SmartStore.Services.Common
         private readonly IRepository<GenericAttribute> _genericAttributeRepository;
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
+		private readonly IRepository<Order> _orderRepository;
 
         #endregion
 
@@ -37,13 +40,16 @@ namespace SmartStore.Services.Common
         /// <param name="cacheManager">Cache manager</param>
         /// <param name="genericAttributeRepository">Generic attribute repository</param>
         /// <param name="eventPublisher">Event published</param>
+		/// <param name="orderRepository">Order repository</param>
         public GenericAttributeService(ICacheManager cacheManager,
             IRepository<GenericAttribute> genericAttributeRepository,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			IRepository<Order> orderRepository)
         {
             this._cacheManager = cacheManager;
             this._genericAttributeRepository = genericAttributeRepository;
             this._eventPublisher = eventPublisher;
+			this._orderRepository = orderRepository;
         }
 
         #endregion
@@ -59,13 +65,22 @@ namespace SmartStore.Services.Common
             if (attribute == null)
                 throw new ArgumentNullException("attribute");
 
+			int entityId = attribute.EntityId;
+			string keyGroup = attribute.KeyGroup;
+
             _genericAttributeRepository.Delete(attribute);
 
             //cache
             _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityDeleted(attribute);
+
+			if (keyGroup.IsCaseInsensitiveEqual("Order") && entityId != 0)
+			{
+				var order = _orderRepository.GetById(entityId);
+				_eventPublisher.PublishOrderUpdated(order);
+			}
         }
 
         /// <summary>
@@ -96,8 +111,14 @@ namespace SmartStore.Services.Common
             //cache
             _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityInserted(attribute);
+
+			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
+			{
+				var order = _orderRepository.GetById(attribute.EntityId);
+				_eventPublisher.PublishOrderUpdated(order);
+			}
         }
 
         /// <summary>
@@ -114,8 +135,14 @@ namespace SmartStore.Services.Common
             //cache
             _cacheManager.RemoveByPattern(GENERICATTRIBUTE_PATTERN_KEY);
 
-            //event notification
+            //event notifications
             _eventPublisher.EntityUpdated(attribute);
+
+			if (attribute.KeyGroup.IsCaseInsensitiveEqual("Order") && attribute.EntityId != 0)
+			{
+				var order = _orderRepository.GetById(attribute.EntityId);
+				_eventPublisher.PublishOrderUpdated(order);
+			}
         }
 
         /// <summary>
@@ -137,6 +164,22 @@ namespace SmartStore.Services.Common
                 return attributes;
             });
         }
+
+		/// <summary>
+		/// Get queryable attributes
+		/// </summary>
+		/// <param name="key">The key</param>
+		/// <param name="keyGroup">The key group</param>
+		/// <returns>Queryable attributes</returns>
+		public virtual IQueryable<GenericAttribute> GetAttributes(string key, string keyGroup)
+		{
+			var query =
+				from ga in _genericAttributeRepository.Table
+				where ga.Key == key && ga.KeyGroup == keyGroup
+				select ga;
+
+			return query;
+		}
 
         /// <summary>
         /// Save attribute value

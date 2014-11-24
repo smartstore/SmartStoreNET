@@ -14,11 +14,11 @@ namespace SmartStore.Web.Framework.UI
     {
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)
         {
-            return "<i class='icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
+            return "<i class='fa fa-fw icon-active-<#= {0} #>'></i>".FormatInvariant(boolFieldName);
         }
         public static HelperResult SymbolForBool<T>(this HtmlHelper<T> helper, bool value)
         {
-            return new HelperResult(writer => writer.Write("<i class='icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
+            return new HelperResult(writer => writer.Write("<i class='fa fa-fw icon-active-{0}'></i>".FormatInvariant(value.ToString().ToLower())));
         }
 
 		public static string LabeledProductName<T>(this HtmlHelper<T> helper, string id, string name, string typeName = "ProductTypeName", string typeLabelHint = "ProductTypeLabelHint")
@@ -50,8 +50,7 @@ namespace SmartStore.Web.Framework.UI
 			if (id != 0)
 			{
 				string url = UrlHelper.GenerateContentUrl("~/Admin/Product/Edit/", helper.ViewContext.RequestContext.HttpContext);
-
-				namePart = "<a href=\"{0}{1}\">{2}</a>".FormatInvariant(url, id, helper.Encode(name));
+				namePart = "<a href=\"{0}{1}\" title='{2}'>{2}</a>".FormatInvariant(url, id, helper.Encode(name));
 			}
 			else
 			{

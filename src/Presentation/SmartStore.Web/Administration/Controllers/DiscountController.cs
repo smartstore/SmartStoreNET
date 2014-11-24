@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Discounts;
+using SmartStore.Core.Plugins;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -14,6 +15,9 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
+using SmartStore.Core.ComponentModel;
+using System.Collections.Generic;
+using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -32,6 +36,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IProductService _productService;
         private readonly CurrencySettings _currencySettings;
         private readonly IPermissionService _permissionService;
+		private readonly PluginMediator _pluginMediator;
 
         #endregion
 
@@ -42,7 +47,8 @@ namespace SmartStore.Admin.Controllers
             ICategoryService categoryService, IProductService productService,
             IWebHelper webHelper, IDateTimeHelper dateTimeHelper,
             ICustomerActivityService customerActivityService, CurrencySettings currencySettings,
-            IPermissionService permissionService)
+            IPermissionService permissionService,
+			PluginMediator pluginMediator)
         {
             this._discountService = discountService;
             this._localizationService = localizationService;
@@ -54,6 +60,7 @@ namespace SmartStore.Admin.Controllers
             this._customerActivityService = customerActivityService;
             this._currencySettings = currencySettings;
             this._permissionService = permissionService;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -84,10 +91,10 @@ namespace SmartStore.Admin.Controllers
             var discountRules = _discountService.LoadAllDiscountRequirementRules();
             foreach (var discountRule in discountRules)
             {
-                model.AvailableDiscountRequirementRules.Add(new SelectListItem()
+				model.AvailableDiscountRequirementRules.Add(new SelectListItem()
                 {
-					Text = discountRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
-                    Value = discountRule.PluginDescriptor.SystemName
+					Text = _pluginMediator.GetLocalizedFriendlyName(discountRule.Metadata),
+                    Value = discountRule.Metadata.SystemName
                 });
             }
             
@@ -129,8 +136,8 @@ namespace SmartStore.Admin.Controllers
                         model.DiscountRequirementMetaInfos.Add(new DiscountModel.DiscountRequirementMetaInfo()
                         {
                             DiscountRequirementId = dr.Id,
-							RuleName = drr.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName"),
-                            ConfigurationUrl = GetRequirementUrlInternal(drr, discount, dr.Id)
+							RuleName = _pluginMediator.GetLocalizedFriendlyName(drr.Metadata),
+                            ConfigurationUrl = GetRequirementUrlInternal(drr.Value, discount, dr.Id)
                         });
                     }
                 }
@@ -337,7 +344,7 @@ namespace SmartStore.Admin.Controllers
             if (discount == null)
                 throw new ArgumentException("Discount could not be loaded");
 
-            string url = GetRequirementUrlInternal(discountRequirementRule, discount, discountRequirementId);
+            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
             return Json(new { url = url }, JsonRequestBehavior.AllowGet);
         }
 
@@ -358,8 +365,8 @@ namespace SmartStore.Admin.Controllers
             if (discountRequirementRule == null)
                 throw new ArgumentException("Discount requirement rule could not be loaded");
 
-            string url = GetRequirementUrlInternal(discountRequirementRule, discount, discountRequirementId);
-			string ruleName = discountRequirementRule.PluginDescriptor.GetLocalizedValue(_localizationService, "FriendlyName");
+            string url = GetRequirementUrlInternal(discountRequirementRule.Value, discount, discountRequirementId);
+			string ruleName = _pluginMediator.GetLocalizedFriendlyName(discountRequirementRule.Metadata);
 
             return Json(new { url = url, ruleName = ruleName }, JsonRequestBehavior.AllowGet);
         }

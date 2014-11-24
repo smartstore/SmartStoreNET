@@ -10,12 +10,12 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-fire"></i>
+            <i class="fa fa-fire"></i>
             @T("Admin.Configuration.ActivityLog.ActivityLog")
         </div>
         <div class="options">
             <a href="@Url.Action("ClearAll")" class="btn btn-primary">
-				<i class="icon-repeat"></i>&nbsp;@T("Admin.Common.Clear")
+				<i class="fa fa-repeat"></i>&nbsp;@T("Admin.Common.Clear")
 			</a>
         </div>
     </div>
@@ -60,7 +60,7 @@
 			</td>
 			<td class="adminData">
                 <button type="submit" id="btnSearch" class="btn">
-                    <i class="icon-search"></i>
+                    <i class="fa fa-search"></i>
                     @T("Admin.Common.Search")
                 </button>
             </td>
@@ -79,15 +79,13 @@
                         .ClientEvents(events => events.OnDataBinding("onDataBinding"))
                         .Columns(columns =>
                         {
-                            columns.Bound(x => x.ActivityLogTypeName)
-                                .Centered();
+                            columns.Bound(x => x.ActivityLogTypeName);
                             columns.Bound(x => x.CustomerId)
                                 .Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
                                 .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-                            columns.Bound(x => x.Comment)
-                                .Centered();                        
+                            columns.Bound(x => x.Comment);                        
                             columns.Bound(x => x.CreatedOn)
-                                .Centered();
+								.Width(180);
                             columns.Command(commands =>
                             {
                                 commands.Delete().Localize(T);

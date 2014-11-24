@@ -74,7 +74,7 @@ namespace SmartStore.Services.Tests.Catalog
 
             var pluginFinder = new PluginFinder();
 			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingService,
-                _currencySettings, pluginFinder, null);
+                _currencySettings, pluginFinder, null, this.ProviderManager);
             
             _taxSettings = new TaxSettings();
 
@@ -130,8 +130,8 @@ namespace SmartStore.Services.Tests.Catalog
                 Name = "English",
                 LanguageCulture = "en-US"
             };
-            _priceFormatter.FormatPrice(1234.5M, false, usd_currency, language, false, false).ShouldEqual("$1,234.50");
-            _priceFormatter.FormatPrice(1234.5M, false, rub_currency, language, false, false).ShouldEqual("1 234,50р.");
+            _priceFormatter.FormatPrice(1234.5M, true, usd_currency, language, false, false).ShouldEqual("$1,234.50");
+            _priceFormatter.FormatPrice(1234.5M, true, rub_currency, language, false, false).ShouldEqual("1 234,50р.");
         }
 
         [Test]
@@ -150,8 +150,8 @@ namespace SmartStore.Services.Tests.Catalog
                 Name = "English",
                 LanguageCulture = "en-US"
             };
-            _priceFormatter.FormatPrice(1234.5M, false, currency, language, true, true).ShouldEqual("$1,234.50 incl tax");
-            _priceFormatter.FormatPrice(1234.5M, false, currency, language, false, true).ShouldEqual("$1,234.50 excl tax");
+            _priceFormatter.FormatPrice(1234.5M, true, currency, language, true, true).ShouldEqual("$1,234.50 incl tax");
+            _priceFormatter.FormatPrice(1234.5M, true, currency, language, false, true).ShouldEqual("$1,234.50 excl tax");
 
         }
 

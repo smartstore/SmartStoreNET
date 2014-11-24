@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -19,8 +20,8 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
-using SmartStore.Web.Extensions;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
 
@@ -52,8 +53,9 @@ namespace SmartStore.Web.Controllers
         private readonly PdfSettings _pdfSettings;
         private readonly ShippingSettings _shippingSettings;
         private readonly AddressSettings _addressSettings;
+        private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
+		private readonly PluginMediator _pluginMediator;
 
-        private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter; //codehint: sm-add
         #endregion
 
 		#region Constructors
@@ -70,7 +72,8 @@ namespace SmartStore.Web.Controllers
             ShippingSettings shippingSettings, AddressSettings addressSettings,
             ICheckoutAttributeFormatter checkoutAttributeFormatter,
 			IProductService productService,
-			IProductAttributeFormatter productAttributeFormatter)
+			IProductAttributeFormatter productAttributeFormatter,
+			PluginMediator pluginMediator)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -94,8 +97,8 @@ namespace SmartStore.Web.Controllers
             this._pdfSettings = pdfSettings;
             this._shippingSettings = shippingSettings;
             this._addressSettings = addressSettings;
-
-            this._checkoutAttributeFormatter = checkoutAttributeFormatter;  //codehint: sm-add
+            this._checkoutAttributeFormatter = checkoutAttributeFormatter;
+			this._pluginMediator = pluginMediator;
         }
 
         #endregion
@@ -152,11 +155,11 @@ namespace SmartStore.Web.Controllers
 
             //payment method
             var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-			model.PaymentMethod = paymentMethod != null ? paymentMethod.GetLocalizedValue(_localizationService, "FriendlyName", _workContext.WorkingLanguage.Id) : order.PaymentMethodSystemName;
+			model.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : order.PaymentMethodSystemName;
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
-            if (paymentMethod != null && paymentMethod.PluginDescriptor.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
             {
                 model.DisplayPurchaseOrderNumber = true;
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;
@@ -322,11 +325,9 @@ namespace SmartStore.Web.Controllers
             //tracking number and shipment information
             model.TrackingNumber = shipment.TrackingNumber;
             var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(order.ShippingRateComputationMethodSystemName);
-            if (srcm != null &&
-                srcm.PluginDescriptor.Installed &&
-                srcm.IsShippingRateComputationMethodActive(_shippingSettings))
+            if (srcm != null && srcm.IsShippingRateComputationMethodActive(_shippingSettings))
             {
-                var shipmentTracker = srcm.ShipmentTracker;
+                var shipmentTracker = srcm.Value.ShipmentTracker;
                 if (shipmentTracker != null)
                 {
                     model.TrackingNumberUrl = shipmentTracker.GetUrl(shipment.TrackingNumber);
@@ -455,9 +456,12 @@ namespace SmartStore.Web.Controllers
         #region Order details
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult Details(int orderId)
+        public ActionResult Details(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+			if (id < 1)
+				return HttpNotFound();
+			
+			var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -466,10 +470,11 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+		[ActionName("print")]
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult PrintOrderDetails(int orderId)
+        public ActionResult PrintOrderDetails(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -479,26 +484,25 @@ namespace SmartStore.Web.Controllers
             return View("Details", model);
         }
 
-        public ActionResult GetPdfInvoice(int orderId)
+		[ActionName("pdf")]
+        public ActionResult GetPdfInvoice(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
             var orders = new List<Order>();
             orders.Add(order);
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _pdfService.PrintOrdersToPdf(stream, orders, _workContext.WorkingLanguage);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "application/pdf", string.Format("order_{0}.pdf", order.Id));
+
+			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
         }
 
-        public ActionResult ReOrder(int orderId)
+        public ActionResult ReOrder(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+			if (id < 1)
+				return HttpNotFound();
+			
+			var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -508,14 +512,14 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("Details")]
         [FormValueRequired("repost-payment")]
-        public ActionResult RePostPayment(int orderId)
+        public ActionResult RePostPayment(int id)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
             if (!_paymentService.CanRePostProcessPayment(order))
-                return RedirectToRoute("OrderDetails", new { orderId = orderId });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
 
             var postProcessPaymentRequest = new PostProcessPaymentRequest()
             {
@@ -532,7 +536,7 @@ namespace SmartStore.Web.Controllers
             {
                 //if no redirection has been done (to a third-party payment page)
                 //theoretically it's not possible
-                return RedirectToRoute("OrderDetails", new { orderId = orderId });
+				return RedirectToAction("Details", "Order", new { id = order.Id });
             }
         }
 

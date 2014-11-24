@@ -3914,8 +3914,8 @@ Editableform based on Twitter Bootstrap
     });    
     
     //buttons
-    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="icon-ok icon-white"></i></button>'+
-                                '<button type="button" class="btn editable-cancel"><i class="icon-remove"></i></button>';         
+    $.fn.editableform.buttons = '<button type="submit" class="btn btn-primary editable-submit"><i class="fa fa-check"></i></button>'+
+                                '<button type="button" class="btn editable-cancel"><i class="fa fa-times"></i></button>';         
     
     //error classes
     $.fn.editableform.errorGroupClass = 'error';
@@ -4280,7 +4280,7 @@ Automatically shown in inline mode.
         /**
         @property tpl 
         **/         
-        tpl:'<div class="input-append date"><input type="text"/><span class="add-on"><i class="icon-th"></i></span></div>',
+        tpl:'<div class="input-append date"><input type="text"/><span class="add-on"><i class="fa fa-th"></i></span></div>',
         /**
         @property inputclass 
         @default 'input-small'
@@ -4370,7 +4370,7 @@ Automatically shown in inline mode.
 		if (this.isRTL){
 			this.picker.addClass('datepicker-rtl');
 			this.picker.find('.prev i, .next i')
-						.toggleClass('icon-arrow-left icon-arrow-right');
+						.toggleClass('fa-arrow-left fa-arrow-right');
 		}
 		$(document).on('mousedown', function (e) {
 			// Clicked outside the datepicker, hide it
@@ -5225,9 +5225,9 @@ Automatically shown in inline mode.
 		},
 		headTemplate: '<thead>'+
 							'<tr>'+
-								'<th class="prev"><i class="icon-arrow-left"/></th>'+
+								'<th class="prev"><i class="fa fa-arrow-left"/></th>'+
 								'<th colspan="5" class="switch"></th>'+
-								'<th class="next"><i class="icon-arrow-right"/></th>'+
+								'<th class="next"><i class="fa fa-arrow-right"/></th>' +
 							'</tr>'+
 						'</thead>',
 		contTemplate: '<tbody><tr><td colspan="7"></td></tr></tbody>',

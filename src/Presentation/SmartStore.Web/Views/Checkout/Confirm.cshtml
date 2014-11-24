@@ -20,13 +20,15 @@
         <h1>@T("Checkout.ConfirmYourOrder")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginRouteForm("CheckoutConfirm", FormMethod.Post, new { id = "confirm-order-form" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
         {
             @Html.Widget("checkout_confirm_top")
             <div class="page-intro">
                 @Html.Raw(@T("Checkout.ConfirmHint"))
             </div>
-            
+
+            <input id="customercommenthidden" type="hidden" name="customercommenthidden" />
+
             if (Model.TermsOfServiceEnabled)
             {
             <div class="terms-of-service alert alert-info">
@@ -38,8 +40,6 @@
                         $("#disclaimer-trigger").click(function () {
                             $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
-
-
                     });
                 </script>
                 <label class="checkbox">
@@ -69,14 +69,16 @@
             <div class="confirm-order">
                 @if (Model.Warnings.Count > 0)
                 {
-                    <div class="alert alert-error">
-                        <ul>
-                            @for (int i = 0; i < Model.Warnings.Count; i++)
-                            {
-                                <li>@Model.Warnings[i]</li>
-                            }
-                        </ul>
-                    </div>
+					<p>
+						<div class="alert alert-error">
+							<ul>
+								@for (int i = 0; i < Model.Warnings.Count; i++)
+								{
+									<li>@Model.Warnings[i]</li>
+								}
+							</ul>
+						</div>
+					</p>
                 }
             </div>  
         }
@@ -105,38 +107,47 @@
                 {
                     <script type="text/javascript">
                         $(function () {
-                            $('.confirm-order-next-step-button').click(function () {
+                            var checkoutButton = $(".confirm-order-next-step-button");
+                            checkoutButton.click(function () {
+
+                                $("#customercommenthidden").val($("#CustomerComment").val());
+
                                 //terms of services
                                 var termOfServiceOk = true;
                                 @if (Model.TermsOfServiceEnabled)
                                 {
                                         <text>
-                                if (!$('#termsofservice').is(':checked')) {
-                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
-                                    termOfServiceOk = false;
-                                    $.scrollTo($('#termsofservice'), 800, { offset: -70 });
-                                }
-                                else {
-                                    termOfServiceOk = true;
-                                }
+                                    if (!$('#termsofservice').is(':checked')) {
+                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                        termOfServiceOk = false;
+                                        $.scrollTo($('#termsofservice'), 800, { offset: -70 });
+                                    }
+                                    else {
+                                        termOfServiceOk = true;
+                                    }
                                         </text>
                                 }
                                 if (termOfServiceOk) {
-                                    //$('#startcheckout').trigger("click");
+
+                                    checkoutButton.attr("disabled", "disabled");
+                                    checkoutButton.find(".fa-caret-right")
+                                        .removeClass("fa-caret-right")
+                                        .addClass("fa-spinner fa-spin");
+
                                     $('#confirm-order-form').submit();
                                 }
                             });
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.RouteUrl(Model.BypassPaymentMethodInfo ? "CheckoutPaymentMethod" : "CheckoutPaymentInfo")">
-                        <i class="icon-caret-left"></i>&nbsp;
+                    <a class="btn pull-left" href="@Url.Action("PaymentMethod")">
+                        <i class="fa fa-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>
                     
                     <button class="btn btn-danger btn-large pull-right confirm-order-next-step-button" onclick="return false;" >
                         @T("Checkout.ConfirmButton")
-                        &nbsp;<i class="icon-caret-right"></i> 
+                        &nbsp;<i class="fa fa-fw fa-caret-right"></i> 
                     </button>
                 }
             </div>

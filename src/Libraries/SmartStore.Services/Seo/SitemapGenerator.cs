@@ -1,17 +1,19 @@
 using System;
 using System.Linq;
+using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Topics;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.Seo
 {
     /// <summary>
     /// Represents a sitemap generator
     /// </summary>
-    public partial class SitemapGenerator : BaseSitemapGenerator, ISitemapGenerator
+    public partial class SitemapGenerator : BaseSitemapGenerator
     {
 		private readonly IStoreContext _storeContext;
         private readonly ICategoryService _categoryService;
@@ -21,9 +23,14 @@ namespace SmartStore.Services.Seo
         private readonly CommonSettings _commonSettings;
         private readonly IWebHelper _webHelper;
 
-		public SitemapGenerator(IStoreContext storeContext, ICategoryService categoryService,
-            IProductService productService, IManufacturerService manufacturerService,
-            ITopicService topicService, CommonSettings commonSettings, IWebHelper webHelper)
+		public SitemapGenerator(
+			IStoreContext storeContext, 
+			ICategoryService categoryService,
+            IProductService productService, 
+			IManufacturerService manufacturerService,
+            ITopicService topicService, 
+			CommonSettings commonSettings, 
+			IWebHelper webHelper)
         {
 			this._storeContext = storeContext;
             this._categoryService = categoryService;
@@ -34,67 +41,55 @@ namespace SmartStore.Services.Seo
             this._webHelper = webHelper;
         }
 
-        /// <summary>
-        /// Method that is overridden, that handles creation of child urls.
-        /// Use the method WriteUrlLocation() within this method.
-        /// </summary>
-        protected override void GenerateUrlNodes()
+		protected override void GenerateUrlNodes(UrlHelper urlHelper)
         {
             if (_commonSettings.SitemapIncludeCategories)
             {
-                WriteCategories(0);
+				WriteCategories(urlHelper, 0);
             }
 
             if (_commonSettings.SitemapIncludeManufacturers)
             {
-                WriteManufacturers();
+                WriteManufacturers(urlHelper);
             }
 
             if (_commonSettings.SitemapIncludeProducts)
             {
-                WriteProducts();
+                WriteProducts(urlHelper);
             }
 
             if (_commonSettings.SitemapIncludeTopics)
             {
-                WriteTopics();
+                WriteTopics(urlHelper);
             }
         }
 
-        private void WriteCategories(int parentCategoryId)
+        private void WriteCategories(UrlHelper urlHelper, int parentCategoryId)
         {
-            string location = _webHelper.GetStoreLocation(false);
-
             var categories = _categoryService.GetAllCategories(showHidden: false);
             foreach (var category in categories)
             {
-                //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", location, category.GetSeName());
+				var url = urlHelper.RouteUrl("Category", new { SeName = category.GetSeName() }, "http");
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = category.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
             }
         }
 
-        private void WriteManufacturers()
+		private void WriteManufacturers(UrlHelper urlHelper)
         {
-            string location = _webHelper.GetStoreLocation(false);
-            
             var manufacturers = _manufacturerService.GetAllManufacturers(false);
             foreach (var manufacturer in manufacturers)
             {
-                //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", location, manufacturer.GetSeName());
+				var url = urlHelper.RouteUrl("Manufacturer", new { SeName = manufacturer.GetSeName() }, "http");
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = manufacturer.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
             }
         }
 
-        private void WriteProducts()
+		private void WriteProducts(UrlHelper urlHelper)
         {
-            string location = _webHelper.GetStoreLocation(false);
-            
             var ctx = new ProductSearchContext()
 			{
 				OrderBy = ProductSortingEnum.CreatedOn,
@@ -106,23 +101,19 @@ namespace SmartStore.Services.Seo
 			var products = _productService.SearchProducts(ctx);
             foreach (var product in products)
             {
-                //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}{1}", location, product.GetSeName());
+				var url = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = product.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
             }
         }
 
-        private void WriteTopics()
+		private void WriteTopics(UrlHelper urlHelper)
         {
-            string location = _webHelper.GetStoreLocation(false);
-            
             var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
             foreach (var topic in topics)
             {
-                //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-                var url = string.Format("{0}t/{1}", location, topic.SystemName.ToLowerInvariant());
+				var url = urlHelper.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = DateTime.UtcNow;
                 WriteUrlLocation(url, updateFrequency, updateTime);

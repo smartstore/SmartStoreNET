@@ -112,7 +112,10 @@ namespace SmartStore.Web.Framework.Localization
                 string cultureCode;
                 if (helper.IsLocalizedUrl(out cultureCode))
                 {
-                    data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath);
+					if (!requestContext.RouteData.Values.ContainsKey("StripInvalidSeoCode"))
+					{
+						data.VirtualPath = String.Concat(cultureCode, "/", data.VirtualPath);
+					}
                 }
             }
             return data;

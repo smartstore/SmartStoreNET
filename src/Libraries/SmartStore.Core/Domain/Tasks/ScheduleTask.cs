@@ -35,5 +35,20 @@ namespace SmartStore.Core.Domain.Tasks
         public DateTime? LastEndUtc { get; set; }
 
         public DateTime? LastSuccessUtc { get; set; }
+
+		public string LastError { get; set; }
+
+		/// <summary>
+		/// Gets the value indicating whether a task is running
+		/// </summary>
+		public bool IsRunning
+		{
+			get
+			{
+				var result = (LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault());
+
+				return result;
+			}
+		}
     }
 }

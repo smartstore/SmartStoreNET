@@ -153,7 +153,7 @@ namespace SmartStore.Data.Tests.Discounts
                 MetaDescription = "Meta description",
                 MetaTitle = "Meta title",
                 ParentCategoryId = 2,
-                PictureId = 3,
+                //PictureId = 3,
                 PageSize = 4,
                 PriceRanges = "1-3;",
                 ShowOnHomePage = false,

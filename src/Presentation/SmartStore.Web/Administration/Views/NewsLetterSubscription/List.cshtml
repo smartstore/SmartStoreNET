@@ -1,26 +1,25 @@
 ﻿@model NewsLetterSubscriptionListModel
 @using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
+  
     ViewBag.Title = T("Admin.Promotions.newsLetterSubscriptions").Text;
 }
 <div class="section-header">
     <div class="title">
-        <i class="icon icon-envelope-alt"></i>
+        <i class="fa fa-envelope-o"></i>
         @T("Admin.Promotions.newsLetterSubscriptions")
     </div>
     <div class="options">
         <a href="@Url.Action("ExportCsv")" class="btn">
-			<i class="icon-download-alt"></i>&nbsp;@T("Admin.Common.ExportToCsv")
+			<i class="fa fa-arrow-circle-o-down"></i>&nbsp;@T("Admin.Common.ExportToCsv")
 		</a>
         <a href="#importcsv-window" data-toggle="modal" class="btn">
-			<i class="icon-upload"></i>&nbsp;@T("Admin.Common.ImportFromCsv")
+			<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromCsv")
 		</a>
     </div>
 </div>
-<table width="100%">
+
+<table class="adminContent">
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.SearchEmail)
@@ -30,17 +29,26 @@
         </td>
     </tr>
     <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.StoreId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownList("StoreId", Model.AvailableStores)
+        </td>
+    </tr>
+    <tr>
 		<td class="adminTitle">
 			&nbsp;
 		</td>
 		<td class="adminData">
             <button type="submit" id="search-newsLetterSubscriptions" value="search-newsLetterSubscriptions"
-                class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+                class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
         </td>
     </tr>
 </table>
-<p>
-</p>
+
+<p></p>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -53,11 +61,14 @@
                         .Columns(columns =>
                         {
                             columns.Bound(x => x.Email)
-                                .Width(300);
+                                .Width(500);
                             columns.Bound(x => x.Active)
                                 .Template(item => @Html.SymbolForBool(item.Active))
                                 .ClientTemplate(@Html.SymbolForBool("Active"))
+								.Centered()
                                 .Width(100);
+							columns.Bound(x => x.StoreName)
+								.ReadOnly();
                             columns.Bound(x => x.CreatedOn)
                                 .ReadOnly()
                                 .Width(150);
@@ -68,7 +79,7 @@
                             }).Width(180);
 
                         })
-                        .Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                        .Pageable(settings => settings.Total(Model.NewsLetterSubscriptions.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax()
                             .Select("SubscriptionList", "NewsLetterSubscription")
                             .Update("SubscriptionUpdate", "NewsLetterSubscription")
@@ -79,6 +90,7 @@
         </td>
     </tr>
 </table>
+
 <script type="text/javascript">
     $(document).ready(function () {
         $('#search-newsLetterSubscriptions').click(function () {
@@ -91,7 +103,8 @@
 
     function onDataBinding(e) {
         var searchModel = {
-            SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val()
+        	SearchEmail: $('#@Html.FieldIdFor(model => model.SearchEmail)').val(),
+        	StoreId: $('#@Html.FieldIdFor(model => model.StoreId)').val(),
         };
         e.data = searchModel;
     }
@@ -101,6 +114,7 @@
         e.preventDefault();
     }
 </script>
+
 @*import emails form*@
 @{Html.SmartStore().Window()
         .Name("importcsv-window")
@@ -121,6 +135,7 @@
         .Visible(false)
         .Render();
 }
+
 <script type="text/javascript">
     $(document).ready(function () {
         $("#importcsv").click(function (e) {

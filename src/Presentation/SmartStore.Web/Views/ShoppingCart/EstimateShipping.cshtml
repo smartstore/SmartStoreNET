@@ -19,7 +19,7 @@
                 $.ajax({
                     cache: false,
                     type: "GET",
-                    url: "@(Url.RouteUrl("GetStatesByCountryId"))",
+                    url: "@(Url.Action("GetStatesByCountryId", "Country"))",
                     data: { "countryId": selectedItem, "addEmptyStateIfRequired": "false" },
                     success: function (data) {
                         ddlStates.html('');
@@ -45,7 +45,7 @@
 
             <div class="hint muted">@T("ShoppingCart.EstimateShipping.Tooltip")</div>
 
-            <div class="shipping-options form-vertical">
+            <div class="shipping-options form-vertical" style="border: 0;">
                 <div class="control-group">
                     <label class="control-label" for="@Html.IdFor(x => x.CountryId)">
                         @Html.LabelFor(model => model.CountryId)
@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <div class="shipping-options">
+            <div class="shipping-options" style="border: 0;">
                 @if (Model.ShippingOptions.Any())
                 {
                     <div>

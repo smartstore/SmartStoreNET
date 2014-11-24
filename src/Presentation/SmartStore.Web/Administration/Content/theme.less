@@ -34,7 +34,7 @@
 @import "~/Content/bootstrap/tables.less";
 
 // Components: common
-@import "~/Content/bootstrap/font/font-awesome.less"; // @import "sprites.less";
+//@import "~/Content/bootstrap/font/font-awesome.less";
 @import "~/Content/bootstrap/dropdowns.less";
 @import "~/Content/bootstrap/wells.less";
 @import "~/Content/bootstrap/component-animations.less";
@@ -61,10 +61,15 @@
 @import "~/Content/bootstrap/labels-badges.less";
 @import "~/Content/bootstrap/progress-bars.less";
 
+// Responsive
+@import "~/Content/bootstrap/responsive-1200px-min.less";
+@import "~/Content/bootstrap/responsive-768px-979px.less";
+
+
 // (MC) extra 3rd party or own components
 @import "~/Content/bootstrap/custom/throbber.less";
 @import "~/Content/bootstrap/custom/select2.less";
-@import "~/Content/bootstrap/custom/datepicker.less";
+@import "~/Content/bootstrap/custom/datetimepicker.less";
 @import "~/Content/bootstrap/custom/navbar.less";
 @import "~/Content/bootstrap/custom/colorpicker.less";
 
@@ -77,38 +82,6 @@
 // Utility classes
 @import "~/Content/bootstrap/utilities.less"; // Has to be last to override when necessary
 
-// codehint: sm-add (start)
-// this is redundant, but doable in order
-// to avoid css class cluttering. 
-
-.clearfix {
-	*zoom: 1;
-	&:before,
-	&:after {
-		display: table;
-		content: "";
-		// Fixes Opera/contenteditable bug:
-		// http://nicolasgallagher.com/micro-clearfix-hack/#comment-36952
-		line-height: 0;
-	}
-	&:after {
-		clear: both;
-	}
-}
-.hide-text {
-	font: 0/0 a;
-	color: transparent;
-	text-shadow: none;
-	background-color: transparent;
-	border: 0;
-}
-.input-block-level {
-	display: block;
-	width: 100%;
-	min-height: 28px;        // Make inputs at least the height of their button counterpart
-	.box-sizing(border-box); // Makes inputs behave like true block-level elements
-}
-// codehint: sm-add (end)
 
 // Main
 @import 'admin.less';

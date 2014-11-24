@@ -10,12 +10,12 @@
 {
     <div class="section-header">
         <div class="title">
-            <i class="icon icon-gift"></i>
+            <i class="fa fa-gift"></i>
             @T("Admin.GiftCards")
         </div>
         <div class="options">
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="icon-plus"></i>
+                <i class="fa fa-plus"></i>
                 @T("Admin.Common.AddNew")
             </a>
         </div>
@@ -42,7 +42,7 @@
 				&nbsp;
 			</td>
 			<td class="adminData">
-                <button type="submit" id="btnSearch" class="btn"><i class="icon-search icon-white"></i>&nbsp;@T("Admin.Common.Search")</button>
+                <button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
             </td>
         </tr>
     </table>
@@ -52,15 +52,15 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<GiftCardModel>()
-                        .Name("giftcards-grid")
-                .ClientEvents(events => events.OnDataBinding("onDataBinding"))
+						.Name("giftcards-grid")
+						.ClientEvents(events => events.OnDataBinding("onDataBinding"))
                         .Columns(columns =>
                         {
-                            columns.Bound(x => x.AmountStr);
-                            columns.Bound(x => x.RemainingAmountStr);
                             columns.Bound(x => x.GiftCardCouponCode)
-                            .Template(x => Html.ActionLink(x.GiftCardCouponCode, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= GiftCardCouponCode #></a>");
+								.Template(x => Html.ActionLink(x.GiftCardCouponCode, "Edit", new { id = x.Id }))
+								.ClientTemplate("<a href='Edit/<#= Id #>'><#= GiftCardCouponCode #></a>");
+							columns.Bound(x => x.AmountStr);
+							columns.Bound(x => x.RemainingAmountStr);
                             columns.Bound(x => x.IsGiftCardActivated)
                                 .Template(item => @Html.SymbolForBool(item.IsGiftCardActivated))
                                 .ClientTemplate(@Html.SymbolForBool("IsGiftCardActivated"))

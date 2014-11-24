@@ -2,52 +2,15 @@
 
 @using Telerik.Web.Mvc.UI;
 
+@{
+    Layout = "";
+}
+
 @if (Model.Id > 0)
 {
     /*hide "add spec" table if no attributes are defined*/
     if (Model.AddSpecificationAttributeModel.AvailableAttributes.Count > 0)
     {
-        <div>
-            @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
-                .Name("specificationattributes-grid")
-                .DataKeys(x =>
-                {
-                    x.Add(y => y.Id).RouteKey("psaId");
-                })
-                .Columns(columns =>
-                {
-                    columns.Bound(x => x.SpecificationAttributeName).Width(200).ReadOnly();
-                    columns.Bound(x => x.SpecificationAttributeOptionName).Width(200).ReadOnly();
-                    columns.Bound(x => x.AllowFiltering)
-                        .Width(100)
-                        .Template(item => @Html.SymbolForBool(item.AllowFiltering))
-                        .ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
-                        .Centered();
-                    columns.Bound(x => x.ShowOnProductPage)
-                        .Width(100)
-                        .Template(item => @Html.SymbolForBool(item.ShowOnProductPage))
-                        .ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"))
-                        .Centered();
-                    columns.Bound(x => x.DisplayOrder).Width(100);
-                    columns.Command(commands =>
-                    {
-                        commands.Edit().Localize(T);
-                        commands.Delete().Localize(T);
-                    }).Width(180);
-
-                })
-                .Editable(x =>
-                {
-                    x.Mode(GridEditMode.InLine);
-                })
-                .DataBinding(dataBinding =>
-                {
-                    dataBinding.Ajax().Select("ProductSpecAttrList", "Product", new { productId = Model.Id })
-                        .Update("ProductSpecAttrUpdate", "Product")
-                        .Delete("ProductSpecAttrDelete", "Product");
-                })
-                .EnableCustomBinding(true))
-        </div>
         <div style="margin-top:10px;">
             <h3 class="bordered">@T("Admin.Catalog.Products.SpecificationAttributes.AddNew")</h3>
         </div>
@@ -102,7 +65,7 @@
                 });
             });
         </script>
-        <table class="adminContent">
+        <table class="adminContent" style="margin-bottom:10px">
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.AddSpecificationAttributeModel.SpecificationAttributeId)
@@ -152,12 +115,126 @@
                 <td></td>
                 <td align="left" style="padding-top:10px">
                     <button type="button" name="addProductSpec" id="addProductSpec" class="btn btn-warning">
-                        <i class="icon-plus"></i>
+                        <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.SpecificationAttributes.AddButton")
                     </button>
                 </td>
             </tr>
         </table>
+        
+		<p>&nbsp;</p>
+	
+        <div>
+            <script type="text/javascript">
+                $(function() {
+                    $.fn.editable.defaults.mode = 'inline';
+                });
+
+                function OnCommand(e) {
+                    var link = $(e.row).find(".spec-attr-opt");
+                    if(e.name == "edit") {
+                        initXEditable(link);
+                    }
+                }
+
+                function OnGridEdit(e) {
+                    link = $(e.currentTarget).find(".t-grid-edit-row .spec-attr-opt");
+                    initXEditable(link);
+                }
+
+                function OnGridRowDataBound(e) {
+                    var link = $(e.row).find(".spec-attr-opt");
+                    initXEditable(link);
+                }
+
+                function initXEditable(link){
+
+                    link.editable({
+                        type: 'select2',
+                        url: '@Url.Action("SetAttributeValue", "SpecificationAttribute")',
+                        unsavedclass: null,
+                        placement: "center",
+                        autotext: 'auto',
+                        select2: {
+                            minimumResultsForSearch: 8,
+                            data: link.data("options") || [],
+                            initSelection: function (el, fn) {
+                                var id = $(el).val();
+                                if (id !== "") {
+                                    fn({ id: link.data("value"), text: link.text() });
+                                }
+                            }
+                        },
+                        success: function(response, newValue)
+                        {
+                            // we have to overwrite grid data so the correct values are displayed when a value was saved with xeditable
+                            // else the data that initialy populated the client template would be displayed
+                            var grid = $('#specificationattributes-grid').data('tGrid');
+
+                            // get the index of the tr holding the updated value because the data is stored in an array
+                            var index = link.closest("tr").index();
+                            var data = grid.data[index];
+
+                            // overwrite data of option id and name
+                            data.SpecificationAttributeOptionId = newValue;
+                            data.SpecificationAttributeOptionName = response.name;
+
+                        }
+                    });
+
+                }
+            </script>
+
+            @(Html.Telerik().Grid<ProductSpecificationAttributeModel>()
+                .Name("specificationattributes-grid")
+                .DataKeys(x =>
+                {
+                    x.Add(y => y.Id).RouteKey("psaId");
+                })
+                .Columns(columns =>
+                {
+                    columns.Bound(x => x.SpecificationAttributeName).Width(200).ReadOnly();
+                    columns.Bound(x => x.SpecificationAttributeOptionName)
+                        .ClientTemplate("<a href='#' data-options='<#= SpecificationAttributeOptionsJsonString #>' data-pk='<#= SpecificationAttributeOptionAttributeId #>' data-value='<#= SpecificationAttributeOptionId #>' id='<#= Id #>' class='editable editable-click spec-attr-opt'><#= SpecificationAttributeOptionName #></a>")
+                        .ReadOnly()
+                        .Width(300);
+                    columns.Bound(x => x.AllowFiltering)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.AllowFiltering))
+                        .ClientTemplate(@Html.SymbolForBool("AllowFiltering"))
+                        .Centered();
+                    columns.Bound(x => x.ShowOnProductPage)
+                        .Width(100)
+                        .Template(item => @Html.SymbolForBool(item.ShowOnProductPage))
+                        .ClientTemplate(@Html.SymbolForBool("ShowOnProductPage"))
+                        .Centered();
+                    columns.Bound(x => x.DisplayOrder)
+						.Centered()
+						.Width(100);
+                    columns.Command(commands =>
+                    {
+                        commands.Edit().Localize(T);
+                        commands.Delete().Localize(T);
+                    }).Width(180);
+
+                })
+                .ClientEvents(e =>
+                {
+                    e.OnEdit("OnGridEdit");
+                    e.OnRowDataBound("OnGridRowDataBound");
+                })
+                .Editable(x =>
+                {
+                    x.Mode(GridEditMode.InLine);
+                })
+                .DataBinding(dataBinding =>
+                {
+                    dataBinding.Ajax().Select("ProductSpecAttrList", "Product", new { productId = Model.Id })
+                        .Update("ProductSpecAttrUpdate", "Product")
+                        .Delete("ProductSpecAttrDelete", "Product");
+                })
+                .EnableCustomBinding(true))
+        </div>
     }
     else
     {

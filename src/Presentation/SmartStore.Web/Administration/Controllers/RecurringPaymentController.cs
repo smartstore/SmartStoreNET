@@ -251,8 +251,6 @@ namespace SmartStore.Admin.Controllers
                 //No recurring payment found with the specified id
                 return RedirectToAction("List");
 
-            ViewData["selectedTab"] = "history";
-
             try
             {
                 _orderProcessingService.ProcessNextRecurringPayment(payment);
@@ -283,8 +281,6 @@ namespace SmartStore.Admin.Controllers
             if (payment == null)
                 //No recurring payment found with the specified id
                 return RedirectToAction("List");
-
-            ViewData["selectedTab"] = "history";
 
             try
             {

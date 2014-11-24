@@ -150,7 +150,7 @@
 		<Value>Immediately debit</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Auth">
-		<Value>Authorize immediately, debit when goods are shipped</Value>
+		<Value>Authorize immediately, debit later</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
 		<Value>Please use "Immediately debit" method only in the case you are shipping goods on the same day they are ordered and you have been white-listed for this service. Do not activate this option without contacting Amazon Payments first.</Value>

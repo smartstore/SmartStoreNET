@@ -104,7 +104,7 @@
 		    <Value>Immediately debit</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="ModeAuth">
-		    <Value>Authorize and debit when goods are shipped</Value>
+		    <Value>Authorize immediately, debit later</Value>
 	    </LocaleResource>
 
       <LocaleResource Name="Fields.DisplayCheckoutButton">
@@ -227,7 +227,7 @@
         <Value>Immediately debit</Value>
       </LocaleResource>
       <LocaleResource Name="ModeAuth">
-        <Value>Authorize and debit when goods are shipped</Value>
+        <Value>Authorize immediately, debit later</Value>
       </LocaleResource>
     </Children>
   </LocaleResource>

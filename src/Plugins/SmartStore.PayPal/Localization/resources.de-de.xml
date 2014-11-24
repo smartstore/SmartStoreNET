@@ -108,7 +108,7 @@
 		    <Value>Sofort abbuchen</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="ModeAuth">
-		    <Value>Autorisieren und abbuchen, wenn Ware verschickt wird</Value>
+		    <Value>Autorisierung sofort, Abbuchung später</Value>
 	    </LocaleResource>
 
       <LocaleResource Name="SelectionText">
@@ -190,7 +190,7 @@
 		    <Value>Sofort abbuchen</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="ModeAuth">
-		    <Value>Autorisieren und abbuchen, wenn Ware verschickt wird</Value>
+		    <Value>Autorisierung sofort, Abbuchung später</Value>
 	    </LocaleResource>
     </Children>
   </LocaleResource>

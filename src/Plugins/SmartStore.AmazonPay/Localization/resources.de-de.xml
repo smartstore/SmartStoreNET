@@ -150,7 +150,7 @@
 		<Value>Sofort abbuchen</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Auth">
-		<Value>Autorisierung sofort, Abbuchung bei Versand</Value>
+		<Value>Autorisierung sofort, Abbuchung später</Value>
 	</LocaleResource>
 	<LocaleResource Name="TransactionType.Warning">
 		<Value>Bitte benutzen Sie "Sofort abbuchen" nur, wenn Sie Ware am selben Tag der Bestellung verschicken und Sie für diesen Dienst zugelassen sind. Aktivieren Sie diese Option bitte erst nach Rücksprache mit Amazon Payments.</Value>

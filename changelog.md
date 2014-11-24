@@ -1,8 +1,8 @@
-﻿#Release Notes#
+﻿# Release Notes
 
-##SmartStore.NET 2.1#
+## SmartStore.NET 2.1
 
-###New Features###
+### New Features
 * (Developer) *Overhauled plugin architecture*:
 	- Plugins are regular MVC areas now
 	- No embedded views anymore. Views get copied to the deployment folder
@@ -35,9 +35,9 @@
 * #266 Update Pending Order in Admin Panel
 * #331 Show CommentBox in checkout (optional) 
 * Option to turn off the filter for products in categories
-* Export/Import was enabeled to work with localized values for name, short description and long description 
+* Export/Import was enabled to work with localized values for name, short description and long description 
 
-###Improvements###
+### Improvements
 * New backend design and cleaner frontend theme
 * Replaced TinyMCE HTML editor with CKeditor
 * Simplified checkout process by combining payment method and info pages
@@ -84,7 +84,7 @@
 * Removed _OpenID_ plugin from core
 * Specification attribute values that are assigned to a product can be edited 
 
-###Bugfixes###
+### Bugfixes
 * Twitter Auth: fixed _SecurityTransparent_ error
 * Facebook Auth: fixed _SecurityTransparent_ error
 * OpenID Auth: fixed _SecurityTransparent_ error
@@ -117,9 +117,9 @@
 * Pricing not considered attribute combination prices for bundles with per item pricing
 
 
-##SmartStore.NET 2.0.2#
+## SmartStore.NET 2.0.2
 
-###Bugfixes###
+### Bugfixes
 * IMPORTANT FIX: Memory leak leads to _OutOfMemoryException_ in application after a while
 * Installation fix: some varchar(MAX) columns get created as varchar(4000). Added a migration to fix the column specs.
 * Installation fix: Setup fails with exception _Value cannot be null. Parameter name: stream_
@@ -134,18 +134,18 @@
 * Fixed "Controller does not implement IController" (concerning plugin controllers)
 * #361 Wrong delivery time in order confirmation
 
-###Improvements###
+### Improvements
 * #250 Implemented validation to theme configuration editing
 
 
-##SmartStore.NET 2.0.1##
+## SmartStore.NET 2.0.1
 
-###New Features###
+### New Features
 * #292 Allow specific price for attribute combinations
 * Added image upload support to Summernote editor
 * (Developer) Added WebApi client test tools to the solution (C# and JavaScript)
 
-###Improvements###
+### Improvements
 * Content slider slides can be filtered by store
 * TinyMCE now shows advanced tab for images
 * Updated BundleTransformer to the latest version 1.8.25
@@ -153,14 +153,14 @@
 * Updated some 3rd party libraries to their latest versions
 * #320 Unavailable attribute combinations: better UI indication
 
-###Bugfixes###
+### Bugfixes
 * UI notifications get displayed repeatedly
 * (Developer) Fixed Razor intellisense for plugin projects (NOTE: switch to 'PluginDev' configuration while editing plugin views, switch back when finished)
 
 
-##SmartStore.NET 2.0.0#
+## SmartStore.NET 2.0.0
 
-###Highlights###
+### Highlights
 * RESTFul **WebApi**
 * Highly optimized and **simplified product management**
 * Product **Bundles**
@@ -170,7 +170,7 @@
 * Lightning **fast asynchronous Excel import** with progress indicators and detailed reports
 * (Developer) Code-based Entity Framework database **migrations**
 
-###New Features###
+### New Features
 * [RESTFul WebApi](https://smartstore.codeplex.com/wikipage?title=Web%20API)
 * Product Bundles: create configurable product kits by combining products
 * Package upload for plugins and themes
@@ -191,7 +191,7 @@
 * (Developer) New interface _IWidget_ for simplified widget development and multi-widgets per plugin
 * (Developer) Outsourced notifications from MVC controller and implemented _INotifier_ for more centralized approach
 
-###Improvements###
+### Improvements
 * Highly optimized and simplified product management
 * Considerably faster app startup and page processing
 * Lightning fast asynchronous Excel import with progress indicators and detailed reports
@@ -226,7 +226,7 @@
 * * Updated all dependant libraries to their latest versions
 * (Developer) Implemented _PaymentMethodBase_ abstract class to simplify payment plugin development
 
-###Bugfixes###
+### Bugfixes
 * #150 GTB & disclaimer aren't readable when they become to long
 * #151 NewsletterSubscriptionDeactivationUrl-Token doesn't get repleaced
 * #153 Admin->Contentslider throws an error when asigned languages aren't available anymore
@@ -249,9 +249,9 @@
 
 
 
-##SmartStore.NET 1.2.1.0#
+## SmartStore.NET 1.2.1.0
 
-###New Features###
+### New Features
 * Added option *Limit to current basket subtotal* to _HadSpentAmount_ discount rule
 * Items in product lists can be labelled as _NEW_ for a configurable period of time
 * Product templates can optionally display a _discount sign_ when discounts were applied
@@ -260,7 +260,7 @@
 * Added a field for the HTML body id to store entity
 * (Developer) New property 'ExtraData' for DiscountRequirement entity
 
-###Bugfixes###
+### Bugfixes
 * #110: PictureService.GetThumbLocalPath doesn't add picture to cache if it doesn't exist (this broke PDFService among others)
 * #114: Runtime error occurs after new customer registration in the storefront
 * #115: XML exports could fail because of invalid characters
@@ -271,7 +271,7 @@
 * #134: Fix mobile checkout
 * #111: Send wishlist via e-mail doesn't work
 
-###Improvements###
+### Improvements
 * #97: Product numbers of attribute combinations could not be searched
 * #120: Excel product import: The same product pictures were imported repeatedly which led to duplicate pictures.
 * Updated _FontAwesome_ to version 3.2.1
@@ -280,16 +280,16 @@
 * Better display and handling when choosing a flag for languages
 
 
-##SmartStore.NET 1.2.0.0#
+## SmartStore.NET 1.2.0.0
 
-###Highlights###
+### Highlights
  - Multi-store support
  - "Trusted Shops" plugins
  - Highly improved _SmartStore.biz Importer_ plugin
  - Add custom HTML content to pages
  - Performance optimization
 
-###New Features###
+### ew Features
  - **Multi-store-support:** now multiple stores can be managed within a single application instance (e.g. for building different catalogs, brands, landing pages etc.)
  - Added 3 new **Trusted Shops** plugins: Seal, Buyer Protection, Store Reviews
  - Added **Display as HTML Widget** to CMS Topics (store owner now can add arbitrary HTML content to any page region without modifying view files)
@@ -306,7 +306,7 @@
  - (Developer) **Localizable views:** the view engine now is able to resolve localized (physical) view files (by appending the language seo code to a view file name in the same folder, e.g. 'en' or 'de'). The engine first tries to detect a view file with the matching language suffix, then falls back to the default one.
  - (Developer) Added new interface __IPreApplicationStart__ allowing plugins to register HttpModules very early in the app bootstrap stage
 
-###Improvements###
+### Improvements
  - Minor improvements for _SOFORT Überweisung_ plugin
  - ContentSlider: updated 'sequence js' to most recent version and optimized html & css code
  - Content slider: the background slide behaviour is configurable now (NoSlide, Slide, SlideOpposite)
@@ -324,7 +324,7 @@
  - (Developer) Added 'bodyOnly' parameter to TopicBlock ChildAction
  - (Developer) HtmlHelper __SmartLabelFor__ now renders the model property name by default (instead of the _SmartResourceDisplayName_ resource key)
 
-###Bugfixes###
+### Bugfixes
  - bunch of fixes and improvements for the _SmartStore.biz Importer_ plugin
  - The feed for "Leguide.com" plugin did not work in Germany
  - Fixed minor issues in _shipping-by-weight_ plugin
@@ -339,9 +339,9 @@
 
 
 
-##SmartStore.NET 1.0.1.0##
+## SmartStore.NET 1.0.1.0
 
-###Bug###
+### Bug
 
     * [SMNET-1] - Die Anzahl der eingetragenen Mengen bei Varianten wird nicht richtig im Warenkorb übernommen.
     * [SMNET-5] - Fehler beim Hochladen von Bildern im IE
@@ -369,7 +369,7 @@
     * [SMNET-199] - CategoryNavigationModel: Children von inaktiven Warengruppen müssen in Navigationsleisten ignoriert werden
     * [SMNET-202] - SmartTabSelection mit verschachtelten Tabs fehlerhaft nach Reload einer Seite
 
-###Improvement###
+### Improvement
     
     * [SMNET-13] - Attributwerte: der Text "Aufpreis" muss um "Minderpreis" erweitert werden.
     * [SMNET-15] - Umgestaltung der Darstellung der Staffelpreise (Popover ab dem fünften Element)
@@ -394,7 +394,7 @@
     * [SMNET-180] - Leichten Border und Verlauf in Lieferzeit-Indikator eingebaut
     * [SMNET-188] - Lokalisierung: IsDirty-Flag und Option "Nur neue anfügen"
 
-###New Feature###
+### New Feature
 
     * [SMNET-14] - Brutto/Netto Preisanzeige über Kundengruppen steuerbar
 

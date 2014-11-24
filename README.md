@@ -6,11 +6,11 @@
 
 SmartStore.NET is a free, open source, full-featured e-commerce solution for companies of any size. It is web standards compliant and incorporates the newest Microsoft web technology stack.
 
-**SmartStore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, datasheets, ESD, discounts, coupons and many more.
+**SmartStore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and many more.
 
 A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling among others makes SmartStore.NET a powerful all-in-one solution fulfilling all your needs... totally FREE!
 
-**SmartStore.NET delivers a beautiful and configurable shop frontend out-of-the-box** built with a design approach on the highest level, including components like Twitter Bootstrap, Less Css and others. The innovative ShopBar, a powerful layered navigation, reviews & ratings, an optimized (one-page) checkout process... they all provide a perfect shopping experience to your buyers.
+**SmartStore.NET delivers a beautiful and configurable shop frontend out-of-the-box** built with a design approach on the highest level, including components like Twitter Bootstrap, Less CSS and others. The innovative ShopBar, a powerful layered navigation, reviews & ratings, an optimized checkout process... they all provide a perfect shopping experience to your buyers.
 
 The state-of-the-art architecture of SmartStore.NET - with ASP.NET 4.5 + MVC 5, Entity Framework 6 and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
@@ -24,6 +24,7 @@ The state-of-the-art architecture of SmartStore.NET - with ASP.NET 4.5 + MVC 5, 
 
 * State of the art architecture thanks to ASP.NET 4.5, ASP.NET MVC 5, Entity Framework 6 and Domain Driven Design
 * Easy to extend and extremely flexible thanks to modular design
+* (NEW) A powerful theming engine lets you create themes & skins with minimum effort thanks to theme inheritance
 * Consistent and sophisticated use of modern components such as jQuery, Twitter Bootstrap, LESS & more in the frontend and backend.
 * Easy shop management thanks to modern and clean UI
 * Out of the box shop design on the highest level
@@ -34,8 +35,8 @@ The state-of-the-art architecture of SmartStore.NET - with ASP.NET 4.5 + MVC 5, 
 
 * Multi-Store support
 * Unlimited number of products and categories
-* (NEW) Product Bundles
-* (NEW) RESTful WebApi
+* Product Bundles
+* RESTful WebApi
 * Multi-language support
 * 100% Mobile optimized
 * Perfectly optimized for search engines
@@ -52,16 +53,19 @@ The state-of-the-art architecture of SmartStore.NET - with ASP.NET 4.5 + MVC 5, 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2 has been released on April 04. 2014. The highlights are:
+SmartStore.NET V2.1 has been released on November 24. 2014. The highlights are:
 
-* RESTful **WebApi**
-* Highly optimized and **simplified product management**
-* Product **Bundles**
-* Considerably **faster app startup** and page processing
-* New variant attribute type: **Linked Product**
-* **Package upload** for plugins and themes
-* Lightning **fast asynchronous Excel import** with progress indicators and detailed reports
-* For developers: Code-based Entity Framework **database migrations**
+* Drastically **simplified plugin development, debugging & deployment**
+* **Theme inheritance**: create derived child themes with minimum effort by overriding only small parts (static files and even variables)
+* New backend design and cleaner frontend theme
+* More comfortable catalog management & product editing
+* New payment plugins **Pay with Amazon** & **Accarda-Kar**
+* **Preview Mode**: virtually test themes and shops more easily
+* **Simplified checkout** process
+* **New Image Gallery** component in public product details page
+* Support for **hierarchical SEO slugs**, e.g.: samsung/galaxy/s5/16gb/white
+* Support for new EU VAT regulation for digital goods (2008/8/EG directive)
+
 
 ##Try it online
 

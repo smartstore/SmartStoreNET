@@ -506,7 +506,7 @@ namespace SmartStore
 
             return sb.ToString();
         }
-		/// <remarks>codehint: sm-add</remarks>
+
         [DebuggerStepThrough]
 		public static string[] SplitSafe(this string value, string separator) 
         {
@@ -979,10 +979,10 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static int[] ToIntArray(this string s)
 		{
-			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v));
+			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v.Trim()));
 		}
 
-		//[DebuggerStepThrough]
+		[DebuggerStepThrough]
 		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
 		{
 			if (s == null)

@@ -542,8 +542,6 @@
     <Content Include="Content\editors\ckeditor\plugins\fontawesome\dialogs\fontawesome.js" />
     <Content Include="Content\editors\ckeditor\plugins\fontawesome\font-awesome\css\font-awesome.min.css" />
     <Content Include="Content\editors\ckeditor\plugins\fontawesome\font-awesome\fonts\fontawesome-webfont.svg" />
-    <Content Include="Content\editors\ckeditor\plugins\fontawesome\installation.txt" />
-    <Content Include="Content\editors\ckeditor\plugins\fontawesome\logs.txt" />
     <Content Include="Content\editors\ckeditor\plugins\icons.png" />
     <Content Include="Content\editors\ckeditor\plugins\icons_hidpi.png" />
     <Content Include="Content\editors\ckeditor\plugins\image\dialogs\image.js" />
@@ -593,8 +591,6 @@
     <Content Include="Content\editors\ckeditor\skins\moono\editor_ie7.css" />
     <Content Include="Content\editors\ckeditor\skins\moono\editor_ie8.css" />
     <Content Include="Content\editors\ckeditor\skins\moono\editor_iequirks.css" />
-    <Content Include="Content\editors\ckeditor\skins\moono\icons.png" />
-    <Content Include="Content\editors\ckeditor\skins\moono\icons_hidpi.png" />
     <Content Include="Content\editors\ckeditor\skins\moono\images\arrow.png" />
     <Content Include="Content\editors\ckeditor\skins\moono\images\close.png" />
     <Content Include="Content\editors\ckeditor\skins\moono\images\hidpi\close.png" />
@@ -938,7 +934,6 @@
     <Content Include="Content\editors\ckeditor\plugins\scayt\README.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\LICENSE.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\README.md" />
-    <Content Include="Content\editors\ckeditor\skins\moono\readme.md" />
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />

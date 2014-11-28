@@ -1,7 +1,7 @@
-## SmartStore.NET
+## Overview
 
 <p align="center">
-  <img src="assets/SmartStoreNET.png" alt="SmartStore.NET admin dashboard" />
+  <img src="assets/SmartStoreNET.png" alt="SmartStore.NET Demoshop" />
 </p>
 
 SmartStore.NET is a free, open source, full-featured e-commerce solution for companies of any size. It is web standards compliant and incorporates the newest Microsoft web technology stack.

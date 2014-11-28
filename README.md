@@ -1,4 +1,4 @@
-# [SmartStore.NET](http://www.smartstore.com/net/en)
+## SmartStore.NET
 
 <p align="center">
   <img src="assets/SmartStoreNET.png" alt="SmartStore.NET admin dashboard" />

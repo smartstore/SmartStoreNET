@@ -43,7 +43,7 @@
 				info_icon: "fa fa-info-circle",
 				success: "alert-success",
 				success_icon: "fa fa-check-circle",
-				error: "alert-error",
+				error: "alert-error alert-danger",
 				error_icon: "fa fa-exclamation-triangle",
 				closer: "fa fa-times",
 				pin_up: "fa fa-pause",

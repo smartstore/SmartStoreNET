@@ -61,7 +61,7 @@ namespace SmartStore.Web.Controllers
         private readonly IMobileDeviceHelper _mobileDeviceHelper;
         private readonly ICacheManager _cacheManager;
 
-		private readonly static string[] s_hints = new string[] { "Onlineshop", "Shopsystem", "Onlineshop Software", "Shopsoftware", "Webshop", "Ecommerce", "Ecommerce Solution", "Shopping Cart", "Internetshop", "Online Commerce", "Free Shopsoftware" };
+		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
         private readonly CustomerSettings _customerSettings;
         private readonly TaxSettings _taxSettings;

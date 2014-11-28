@@ -875,7 +875,7 @@ namespace SmartStore.Services.Messages
 
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-			string passwordRecoveryUrl = string.Format("{0}customer/passwordrecovery/confirm?token={1}&email={2}", _webHelper.GetStoreLocation(), 
+			string passwordRecoveryUrl = string.Format("{0}customer/passwordrecoveryconfirm?token={1}&email={2}", _webHelper.GetStoreLocation(), 
 				customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken), HttpUtility.UrlEncode(customer.Email));
 
 			string accountActivationUrl = string.Format("{0}customer/activation?token={1}&email={2}", _webHelper.GetStoreLocation(), 

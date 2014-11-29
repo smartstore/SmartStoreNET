@@ -235,6 +235,7 @@ input[type="file"] {
     line-height: 30px;
 }
 
+
 // FORMS (PROMPTS)
 // ---------------
 
@@ -242,6 +243,34 @@ input[type="file"] {
 .input-prepend .add-on .fa {
 	font-size: 16px;
 }
+
+
+// FORMS (BLOCK LEVEL INPUT-APPEND/PREPEND)
+// ----------------------------------------
+
+.input-append.input-block-level,
+.input-prepend.input-block-level {
+	display: table;
+
+	.add-on, .btn {
+		display: table-cell;
+	}
+
+	> input {
+		.box-sizing(border-box);
+		display: table-cell; /* table-cell is not working well in Chrome for small widths */
+		min-height: inherit;
+		width: 100%;
+	}
+}
+
+.input-append.input-block-level > input {
+  border-right: 0;
+}
+.input-prepend.input-block-level > input {
+  border-left: 0;
+}
+
 
 // FORMS (CHECKBOX / RADIO)
 // ------------------------
@@ -270,6 +299,11 @@ th label {
 .nav > li > a > .fa {
 	vertical-align: baseline;
 	margin-right: 4px;
+	color: lighten(@textColor, 18%);
+}
+.nav > li > a:hover > .fa,
+.nav > li.active > a > .fa {
+	color: @textColor
 }
 
 .nav > li > a > .chevron {

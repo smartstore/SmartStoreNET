@@ -38,9 +38,9 @@
 
 #footer h4 {
 	color: @var_FooterHeading;
-	font-family: 'Segoe UI Light', 'Segoe UI', Helvetica, Arial, sans-serif; 
-	font-weight: 100; 
-	border-bottom: 1px solid @var_FooterHeading; 
+	font-family: @var_PageTitleFontFamily; //'Segoe UI Light', 'Segoe UI', Helvetica, Arial, sans-serif; 
+	font-weight: @var_PageTitleFontWeight; 
+	border-bottom: 1px solid mix(@var_FooterHeading, @var_FooterBackground); 
 	padding-bottom: 8px;
 }
 .footer-disclaimer {
@@ -62,6 +62,13 @@
 
 #footer .theme-selector form {
 	margin: 0;
+}
+
+#newsletter-email {
+	width: 70%;
+}
+#newsletter-subscribe-button {
+	width: 30%;
 }
 
 

@@ -96,19 +96,21 @@
 
                     <div id="newsletter-subscribe-block">
 
-                        @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="input-block-level", placeholder = T("Newsletter.Email") })
-                        @Html.ValidationMessageFor(x => x.NewsletterEmail)
+						<div class="input-append input-block-level">
+							@Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email", placeholder = T("Newsletter.Email") })
+							<button id="newsletter-subscribe-button" class="btn btn-success">@T("Newsletter.Button")</button>
+						</div>
 
-                        <button id="newsletter-subscribe-button" class="btn btn-success pull-right">@T("Newsletter.Button")</button>
+                        <label class="radio inline">
+							<input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
+							@T("Newsletter.Subscribe")
+                        </label>
+                        <label class="radio inline">
+							<input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
+							@T("Newsletter.Unsubscribe")
+                        </label>
 
-                        <label class="radio">
-                          <input type="radio" id="newsletter-subscribe" value="newsletter-subscribe" name="optionsRadios" checked="checked"> 
-                            @T("Newsletter.Subscribe")
-                        </label>
-                        <label class="radio">
-                          <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
-                            @T("Newsletter.Unsubscribe")
-                        </label>
+						@Html.ValidationMessageFor(x => x.NewsletterEmail)
                     
                     </div>
                     <div id="newsletter-result-block" class="alert alert-success hide"></div>

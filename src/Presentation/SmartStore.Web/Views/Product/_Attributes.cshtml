@@ -171,7 +171,7 @@
                                 elFile = el.find('.uploaded-file');
 
                             $('#@clientId').fileupload({
-                                url: '@(Url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = @attribute.ProductId, productAttributeId = @attribute.ProductAttributeId }))',
+                                url: '@Html.Raw(Url.Action("UploadFileProductAttribute", "ShoppingCart", new { productId = attribute.ProductId, productAttributeId = attribute.ProductAttributeId }))',
                                 dataType: 'json',
                                 acceptFileTypes: new RegExp('@(allowedFileExtensions)', 'i'),
                                 done: function (e, data) {

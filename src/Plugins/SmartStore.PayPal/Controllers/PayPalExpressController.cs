@@ -31,6 +31,7 @@ using SmartStore.Web.Framework.Plugins;
 using Autofac;
 using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Services;
+using SmartStore.Core.Domain.Logging;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -481,14 +482,22 @@ namespace SmartStore.PayPal.Controllers
 					{
 						error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
 					}
-					//TODO: log error
-					return RedirectToRoute("HomePage");
+
+                    _logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _workContext.CurrentCustomer);
+                    
+                    NotifyError(error.ToString(), false);
+                
+					return RedirectToAction("Cart");
 				}
 			}
-			catch
+			catch (Exception ex)
 			{
-				//TODO: log exception
-				return RedirectToRoute("HomePage");
+                _logger.InsertLog(LogLevel.Error, ex.Message, ex.StackTrace, _workContext.CurrentCustomer);
+
+                NotifyError(ex.Message, false);
+
+                return RedirectToAction("Cart");
+
 			}
 		}
 
@@ -524,9 +533,21 @@ namespace SmartStore.PayPal.Controllers
 
 					return RedirectToAction("BillingAddress", "Checkout", new { area = "" });
 				}
-			}
+            }
+            else
+            {
+                var error = new StringBuilder("We apologize, but an error has occured.<br />");
+                foreach (var errormsg in resp.Errors)
+                {
+                    error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
+                }
 
-			return RedirectToRoute("HomePage");
+                _logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _workContext.CurrentCustomer);
+
+                NotifyError(error.ToString(), false);
+
+                return RedirectToAction("Cart");
+            }
 		}
 
 		[NonAction]

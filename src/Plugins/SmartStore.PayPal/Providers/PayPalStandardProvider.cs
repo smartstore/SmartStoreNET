@@ -297,18 +297,6 @@ namespace SmartStore.PayPal
 			_httpContext.Response.Redirect(builder.ToString());
 		}
 
-        /// <summary>
-        /// Gets additional handling fee
-        /// </summary>
-        /// <param name="cart">Shoping cart</param>
-        /// <returns>Additional handling fee</returns>
-        public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
-        {
-            var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
-                _paypalStandardSettings.AdditionalFee, _paypalStandardSettings.AdditionalFeePercentage);
-            return result;
-        }
-
 		/// <summary>
 		/// Gets a value indicating whether customers can complete a payment after order is placed but not completed (for redirection payment methods)
 		/// </summary>

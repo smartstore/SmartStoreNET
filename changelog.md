@@ -1,6 +1,12 @@
 # Release Notes
+## SmartStore.NET 2.1.1
 
-## SmartStore.NET 2.1
+### Bugfixes
+* PayPal Express: corrected basket transmission by eliminating tax transmission
+* Fixed password recovery redirection
+
+
+## SmartStore.NET 2.1.0
 
 ### New Features
 * (Developer) *Overhauled plugin architecture*:

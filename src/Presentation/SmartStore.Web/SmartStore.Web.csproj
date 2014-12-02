@@ -1894,7 +1894,6 @@
     <Content Include="Content\samples\product_wow.jpeg" />
     <Content Include="Content\bootstrap\custom\select2.less" />
     <Content Include="Content\bootstrap\custom\images\select2.png" />
-    <Content Include="FileNotFound.htm" />
     <Content Include="Global.asax" />
     <Content Include="license.txt" />
     <Content Include="Content\bootstrap\images\glyphicons-halflings-white.png" />

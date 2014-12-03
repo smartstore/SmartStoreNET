@@ -38,6 +38,7 @@ using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
 
@@ -75,6 +76,7 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IPriceFormatter _priceFormatter;
 		private readonly ISettingService _settingService;
+		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 
         #endregion
 
@@ -105,7 +107,8 @@ namespace SmartStore.Web.Controllers
             IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
-			ISettingService settingService)
+			ISettingService settingService,
+			IPageAssetsBuilder pageAssetsBuilder)
         {
             this._topicService = topicService;
             this._languageService = languageService;
@@ -134,6 +137,8 @@ namespace SmartStore.Web.Controllers
 
             this._themeSettings = themeSettings;
 			this._settingService = settingService;
+			this._pageAssetsBuilder = pageAssetsBuilder;
+
 			T = NullLocalizer.Instance;
         }
 
@@ -148,11 +153,10 @@ namespace SmartStore.Web.Controllers
             {
                 var result = _languageService
 					.GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
-                    .Select(x => new LanguageModel()
+                    .Select(x => new LanguageModel
                     {
                         Id = x.Id,
                         Name = x.Name,
-                        // codehint: sm-add
                         NativeName = GetLanguageNativeName(x.LanguageCulture) ?? x.Name,
                         ISOCode = x.LanguageCulture,
                         SeoCode = x.UniqueSeoCode,
@@ -189,7 +193,7 @@ namespace SmartStore.Web.Controllers
                     }
                 }
 
-                model.ReturnUrls[lang.SeoCode] = HttpUtility.UrlEncode(helper.GetAbsolutePath());
+                model.ReturnUrls[lang.SeoCode] = helper.GetAbsolutePath();
             }
 
             return model;
@@ -307,7 +311,6 @@ namespace SmartStore.Web.Controllers
 
 		#region Methods
 
-		//language
         [ChildActionOnly]
         public ActionResult LanguageSelector()
         {
@@ -315,6 +318,17 @@ namespace SmartStore.Web.Controllers
 
 			if (model.AvailableLanguages.Count < 2)
 				return Content("");
+
+			// register all available languages as <link hreflang="..." ... />
+			if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+			{
+				var host = _webHelper.GetStoreLocation();
+				foreach (var lang in model.AvailableLanguages)
+				{
+					var root = _webHelper.GetStoreLocation();
+					_pageAssetsBuilder.AddLinkPart("alternate", host + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
+				}
+			}
 
             return PartialView(model);
         }

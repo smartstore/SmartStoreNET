@@ -15,8 +15,11 @@
         <ul data-role="listview" data-inset="true" data-filter="false">
             @foreach (var lang in Model.AvailableLanguages)
             {
-                <li @(lang.Id == Model.CurrentLanguageId ? " data-icon=false" : null)><a href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + HttpUtility.UrlEncode(HttpContext.Current.Request.RawUrl), null)" data-ajax="false">
-                    @lang.Name</a></li>
+                <li @(lang.Id == Model.CurrentLanguageId ? " data-icon=false" : null)>
+					<a href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)" data-ajax="false">
+						@lang.Name
+					</a>
+				</li>
             }
         </ul>
     </div>

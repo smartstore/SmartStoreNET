@@ -1,6 +1,10 @@
 # Release Notes
 ## SmartStore.NET 2.1.1
 
+### New Features
+* SEO: added support for `<link hreflang="..." ... />` in multi-language stores. The tags are automatically rendered along with the language switcher.
+* (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
+
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection

@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -13,6 +14,7 @@ namespace SmartStore.Web.Framework.UI
         void AddBodyCssClass(string className);
         void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
         void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
+		void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes);
 
         string GenerateTitle(bool addDefaultTitle);
         string GenerateMetaDescription();
@@ -21,6 +23,7 @@ namespace SmartStore.Web.Framework.UI
         string GenerateBodyCssClasses();
         string GenerateScripts(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
         string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
+		string GenerateLinkRels();
     }
 
     public static class PageAssetsBuilderExtensions
@@ -106,5 +109,27 @@ namespace SmartStore.Web.Framework.UI
         {
             builder.AddCssFileParts(location, parts, excludeFromBundling, true);
         }
+
+		public static void AddLinkPart(this IPageAssetsBuilder builder, string rel, string href, object htmlAttributes)
+		{
+			var attrs = HtmlHelper.AnonymousObjectToHtmlAttributes(htmlAttributes);
+			builder.AddLinkPart(rel, href, attrs);
+		}
+
+		public static void AddLinkPart(this IPageAssetsBuilder builder, string rel, string href, string type = null, string media = null, string sizes = null, string hreflang = null)
+		{
+			var attrs = new RouteValueDictionary();
+
+			if (type.HasValue())
+				attrs["type"] = type;
+			if (media.HasValue())
+				attrs["media"] = media;
+			if (sizes.HasValue())
+				attrs["sizes"] = sizes;
+			if (hreflang.HasValue())
+				attrs["hreflang"] = hreflang;
+
+			builder.AddLinkPart(rel, href, attrs);
+		}
     }
 }

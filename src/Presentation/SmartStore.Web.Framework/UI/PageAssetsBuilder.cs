@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Utilities;
 using System.Web.Hosting;
+using System.Web.Routing;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -28,6 +29,7 @@ namespace SmartStore.Web.Framework.UI
         private readonly List<string> _bodyCssClasses;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
+		private readonly List<RouteValueDictionary> _linkParts;
 		private readonly IStoreContext _storeContext;
         private readonly IBundleBuilder _bundleBuilder;
 
@@ -40,7 +42,7 @@ namespace SmartStore.Web.Framework.UI
 			IStoreContext storeContext,
             IBundleBuilder bundleBuilder)
         {
-            this._httpContext = httpContext; // codehint: sm-add
+            this._httpContext = httpContext;
             this._seoSettings = seoSettings;
             this._themeSettings = themeSettings;
             this._titleParts = new List<string>();
@@ -49,8 +51,9 @@ namespace SmartStore.Web.Framework.UI
             this._scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             this._cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             this._canonicalUrlParts = new List<string>();
-            this._bodyCssClasses = new List<string>(); // codehint: sm-add (MC)
-			this._storeContext = storeContext;	// codehint: sm-add
+            this._bodyCssClasses = new List<string>();
+			this._linkParts = new List<RouteValueDictionary>();
+			this._storeContext = storeContext;
             this._bundleBuilder = bundleBuilder;
         }
 
@@ -65,14 +68,14 @@ namespace SmartStore.Web.Framework.UI
             return isValid;
         }
 
-        // codehint: sm-add (MC) > helper func; changes all following public funcs to remove code redundancy
+        // helper func: changes all following public funcs to remove code redundancy
         private void AddPartsCore<T>(List<T> list, IEnumerable<T> partsToAdd, bool prepend = false)
         {
             if (partsToAdd != null && partsToAdd.Any())
             {
                 if (prepend)
                 {
-                    // codehint: sm-edit (MC) > insertion of multiple parts at the beginning
+                    // insertion of multiple parts at the beginning
                     // should keep order (and not vice-versa as it was originally)
                     list.InsertRange(0, partsToAdd.Where(IsValidPart));
                 }
@@ -98,7 +101,6 @@ namespace SmartStore.Web.Framework.UI
 
             return String.Join(" ", _bodyCssClasses);
         }
-        // codehint: sm-add (end)
 
         public void AddTitleParts(IEnumerable<string> parts, bool append = false)
         {
@@ -354,11 +356,42 @@ namespace SmartStore.Web.Framework.UI
             }
         }
 
+		public void AddLinkPart(string rel, string href, RouteValueDictionary htmlAttributes)
+		{
+			Guard.ArgumentNotEmpty(() => rel);
+			Guard.ArgumentNotEmpty(() => href);
+
+			if (htmlAttributes == null)
+			{
+				htmlAttributes = new RouteValueDictionary();
+			}
+
+			htmlAttributes["rel"] = rel;
+			htmlAttributes["href"] = href;
+
+			_linkParts.Add(htmlAttributes);
+		}
+
+		public string GenerateLinkRels()
+		{
+			var sb = new StringBuilder();
+			
+			foreach (var part in _linkParts)
+			{
+				var tag = new TagBuilder("link");
+				tag.MergeAttributes(part, true);
+
+				sb.AppendLine(tag.ToString(TagRenderMode.SelfClosing));
+			}
+
+			return sb.ToString();
+		}
+
         public class WebAssetDescriptor
         {
             public bool ExcludeFromBundling { get; set; }
             public string Part { get; set; }
         }
 
-    }
+	}
 }

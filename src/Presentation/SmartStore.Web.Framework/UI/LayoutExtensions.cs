@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
@@ -185,8 +186,31 @@ namespace SmartStore.Web.Framework.UI
         }
         #endregion
 
-        #region Body
-        public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
+		#region LinkParts
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, string type = null, string media = null, string sizes = null, string hreflang = null)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, type, media, sizes, hreflang);
+		}
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, object htmlAttributes)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
+		}
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, RouteValueDictionary htmlAttributes)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
+		}
+		public static MvcHtmlString LinkRels(this HtmlHelper html)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			return MvcHtmlString.Create(pageAssetsBuilder.GenerateLinkRels());
+		}
+		#endregion
+
+		#region Body
+		public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddBodyCssClass(cssClassName);

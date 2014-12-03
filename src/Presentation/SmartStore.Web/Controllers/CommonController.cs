@@ -325,7 +325,6 @@ namespace SmartStore.Web.Controllers
 				var host = _webHelper.GetStoreLocation();
 				foreach (var lang in model.AvailableLanguages)
 				{
-					var root = _webHelper.GetStoreLocation();
 					_pageAssetsBuilder.AddLinkPart("alternate", host + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
 				}
 			}

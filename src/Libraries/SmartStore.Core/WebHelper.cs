@@ -28,6 +28,10 @@ namespace SmartStore.Core
 		
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
+		private string _storeHost;
+		private string _storeHostSsl;
+		private bool? _appPathPossiblyAppended;
+		private bool? _appPathPossiblyAppendedSsl;
 
 		private Store _currentStore;
 
@@ -185,7 +189,14 @@ namespace SmartStore.Core
         /// <returns>Store host location</returns>
         private string GetStoreHost(bool useSsl, out bool appPathPossiblyAppended)
         {
-            appPathPossiblyAppended = false;
+			string cached = useSsl ? _storeHostSsl : _storeHost;
+			if (cached != null)
+			{
+				appPathPossiblyAppended = useSsl ? _appPathPossiblyAppendedSsl.Value : _appPathPossiblyAppended.Value;
+				return cached;
+			}
+
+			appPathPossiblyAppended = false;
             var result = "";
             var httpHost = ServerVariables("HTTP_HOST");
 
@@ -270,7 +281,20 @@ namespace SmartStore.Core
 				}
             }
 
-            return result.EnsureEndsWith("/").ToLowerInvariant();
+			// cache results for request
+			result = result.EnsureEndsWith("/").ToLowerInvariant();
+			if (useSsl)
+			{
+				_storeHostSsl = result;
+				_appPathPossiblyAppendedSsl = appPathPossiblyAppended;
+			}
+			else
+			{
+				_storeHost = result;
+				_appPathPossiblyAppended = appPathPossiblyAppended;
+			}
+
+            return result;
         }
         
         /// <summary>

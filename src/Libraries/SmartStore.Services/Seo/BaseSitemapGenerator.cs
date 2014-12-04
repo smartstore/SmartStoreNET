@@ -28,7 +28,7 @@ namespace SmartStore.Services.Seo
             _writer.WriteStartElement("url");
             string loc = XmlHelper.XmlEncode(url);
             _writer.WriteElementString("loc", loc);
-            _writer.WriteElementString("changefreq", updateFrequency.ToString().ToLowerInvariant());
+            //_writer.WriteElementString("changefreq", updateFrequency.ToString().ToLowerInvariant());
             _writer.WriteElementString("lastmod", lastUpdated.ToString(DateFormat));
             _writer.WriteEndElement();
         }

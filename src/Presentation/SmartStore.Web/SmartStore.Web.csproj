@@ -216,35 +216,25 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.de-DE.designer.cs">
+    <Compile Include="App_GlobalResources\EditorLocalization.de.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.de-DE.resx</DependentUpon>
+      <DependentUpon>EditorLocalization.de.resx</DependentUpon>
     </Compile>
     <Compile Include="App_GlobalResources\EditorLocalization.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>EditorLocalization.resx</DependentUpon>
     </Compile>
-    <Compile Include="App_GlobalResources\EditorLocalization.en-US.designer.cs">
+    <Compile Include="App_GlobalResources\GridLocalization.de.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
-      <DependentUpon>EditorLocalization.en-US.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.de-DE.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.de-DE.resx</DependentUpon>
+      <DependentUpon>GridLocalization.de.resx</DependentUpon>
     </Compile>
     <Compile Include="App_GlobalResources\GridLocalization.designer.cs">
       <AutoGen>True</AutoGen>
       <DesignTime>True</DesignTime>
       <DependentUpon>GridLocalization.resx</DependentUpon>
-    </Compile>
-    <Compile Include="App_GlobalResources\GridLocalization.en-US.designer.cs">
-      <AutoGen>True</AutoGen>
-      <DesignTime>True</DesignTime>
-      <DependentUpon>GridLocalization.en-US.resx</DependentUpon>
     </Compile>
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
@@ -2418,25 +2408,17 @@
     <Content Include="Content\bootstrap\wells.less" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="App_GlobalResources\EditorLocalization.de-DE.resx">
+    <Content Include="App_GlobalResources\EditorLocalization.de.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.de-DE.designer.cs</LastGenOutput>
-    </Content>
-    <Content Include="App_GlobalResources\EditorLocalization.en-US.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>EditorLocalization.en-US.designer.cs</LastGenOutput>
+      <LastGenOutput>EditorLocalization.de.designer.cs</LastGenOutput>
     </Content>
     <Content Include="App_GlobalResources\EditorLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>EditorLocalization.designer.cs</LastGenOutput>
     </Content>
-    <Content Include="App_GlobalResources\GridLocalization.de-DE.resx">
+    <Content Include="App_GlobalResources\GridLocalization.de.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.de-DE.designer.cs</LastGenOutput>
-    </Content>
-    <Content Include="App_GlobalResources\GridLocalization.en-US.resx">
-      <Generator>GlobalResourceProxyGenerator</Generator>
-      <LastGenOutput>GridLocalization.en-US.designer.cs</LastGenOutput>
+      <LastGenOutput>GridLocalization.de.designer.cs</LastGenOutput>
     </Content>
     <Content Include="App_GlobalResources\GridLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>

@@ -4,6 +4,7 @@ using System.Text;
 using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Seo
 {
@@ -48,18 +49,21 @@ namespace SmartStore.Services.Seo
 
         public void Generate(UrlHelper urlHelper, Stream stream)
         {
-            _writer = new XmlTextWriter(stream, Encoding.UTF8);
-            _writer.Formatting = Formatting.Indented;
-            _writer.WriteStartDocument();
-            _writer.WriteStartElement("urlset");
-            _writer.WriteAttributeString("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
-            _writer.WriteAttributeString("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
-            _writer.WriteAttributeString("xsi:schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd");
+			using (var scope = new DbContextScope(autoDetectChanges: false, forceNoTracking: true))
+			{
+				_writer = new XmlTextWriter(stream, Encoding.UTF8);
+				_writer.Formatting = Formatting.Indented;
+				_writer.WriteStartDocument();
+				_writer.WriteStartElement("urlset");
+				_writer.WriteAttributeString("xmlns", "http://www.sitemaps.org/schemas/sitemap/0.9");
+				_writer.WriteAttributeString("xmlns:xsi", "http://www.w3.org/2001/XMLSchema-instance");
+				_writer.WriteAttributeString("xsi:schemaLocation", "http://www.sitemaps.org/schemas/sitemap/0.9 http://www.sitemaps.org/schemas/sitemap/0.9/sitemap.xsd");
 
-			GenerateUrlNodes(urlHelper);
+				GenerateUrlNodes(urlHelper);
 
-            _writer.WriteEndElement();
-            _writer.Close();
+				_writer.WriteEndElement();
+				_writer.Close();
+			}
         }
 
         #endregion

@@ -207,7 +207,7 @@ namespace SmartStore.Web.Controllers
 			var sitemap = _services.Cache.Get(cacheKey, () =>
 			{
 				return _sitemapGenerator.Value.Generate(this.Url);
-			});
+			}, 120);
 
 			return Content(sitemap, "text/xml");
 		}

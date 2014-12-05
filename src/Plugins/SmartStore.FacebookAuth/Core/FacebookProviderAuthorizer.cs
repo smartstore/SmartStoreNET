@@ -122,7 +122,7 @@ namespace SmartStore.FacebookAuth.Core
 
 		private Uri GenerateLocalCallbackUri()
 		{
-			string url = string.Format("{0}plugins/externalauthFacebook/logincallback/", _webHelper.GetStoreLocation());
+			string url = string.Format("{0}Plugins/SmartStore.FacebookAuth/logincallback/", _webHelper.GetStoreLocation());
 			return new Uri(url);
 		}
 

@@ -11,6 +11,7 @@ namespace SmartStore.Web.Framework.UI
         void AddMetaDescriptionParts(IEnumerable<string> parts, bool append = false);
         void AddMetaKeywordParts(IEnumerable<string> parts, bool append = false);
         void AddCanonicalUrlParts(IEnumerable<string> parts, bool append = false);
+		void AddCustomHeadParts(IEnumerable<string> parts, bool append = false);
         void AddBodyCssClass(string className);
         void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
         void AddCssFileParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false);
@@ -20,6 +21,7 @@ namespace SmartStore.Web.Framework.UI
         string GenerateMetaDescription();
         string GenerateMetaKeywords();
         string GenerateCanonicalUrls();
+		string GenerateCustomHead();
         string GenerateBodyCssClasses();
         string GenerateScripts(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
         string GenerateCssFiles(UrlHelper urlHelper, ResourceLocation location, bool? enableBundling = null);
@@ -67,6 +69,16 @@ namespace SmartStore.Web.Framework.UI
         {
             builder.AddCanonicalUrlParts(parts, true);
         }
+
+		public static void AddCustomHeadParts(this IPageAssetsBuilder builder, params string[] parts)
+		{
+			builder.AddCustomHeadParts(parts);
+		}
+
+		public static void AppendCustomHeadParts(this IPageAssetsBuilder builder, params string[] parts)
+		{
+			builder.AddCustomHeadParts(parts, true);
+		}
         
 
         public static void AddScriptParts(this IPageAssetsBuilder builder, ResourceLocation location, params string[] parts)

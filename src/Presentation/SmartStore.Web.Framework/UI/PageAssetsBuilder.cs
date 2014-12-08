@@ -26,6 +26,7 @@ namespace SmartStore.Web.Framework.UI
         private readonly List<string> _metaDescriptionParts;
         private readonly List<string> _metaKeywordParts;
         private readonly List<string> _canonicalUrlParts;
+		private readonly List<string> _customHeadParts;
         private readonly List<string> _bodyCssClasses;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _scriptParts;
         private readonly Dictionary<ResourceLocation, List<WebAssetDescriptor>> _cssParts;
@@ -51,6 +52,7 @@ namespace SmartStore.Web.Framework.UI
             this._scriptParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             this._cssParts = new Dictionary<ResourceLocation, List<WebAssetDescriptor>>();
             this._canonicalUrlParts = new List<string>();
+			this._customHeadParts = new List<string>();
             this._bodyCssClasses = new List<string>();
 			this._linkParts = new List<RouteValueDictionary>();
 			this._storeContext = storeContext;
@@ -180,13 +182,30 @@ namespace SmartStore.Web.Framework.UI
         public string GenerateCanonicalUrls()
         {
             var result = new StringBuilder();
-            foreach (var canonicalUrl in _canonicalUrlParts)
+			var parts = _canonicalUrlParts.Distinct();
+			foreach (var part in parts)
             {
-                result.AppendFormat("<link rel=\"canonical\" href=\"{0}\" />", canonicalUrl);
-                result.Append(Environment.NewLine);
+                result.AppendFormat("<link rel=\"canonical\" href=\"{0}\" />", part);
+                result.AppendLine();
             }
             return result.ToString();
         }
+
+		public void AddCustomHeadParts(IEnumerable<string> parts, bool append = false)
+		{
+			AddPartsCore(_customHeadParts, parts, append);
+		}
+
+		public string GenerateCustomHead()
+		{
+			var result = new StringBuilder();
+			var parts = _customHeadParts.Distinct();
+			foreach (var part in parts)
+			{
+				result.AppendLine(part);
+			}
+			return result.ToString();
+		}
 
         public void AddScriptParts(ResourceLocation location, IEnumerable<string> parts, bool excludeFromBundling = false, bool append = false)
         {

@@ -9,6 +9,7 @@
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection
 * #538 Spcification attribute labels in product filter mask are not displayed localized
+* #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 
 
 ## SmartStore.NET 2.1.0

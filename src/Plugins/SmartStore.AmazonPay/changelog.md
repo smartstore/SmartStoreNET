@@ -1,5 +1,11 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.15##
+
+###Bugfixes###
+* Multistore configuration might be lost if "All stores" are left empty
+
+
 ##Pay with Amazon 1.14##
 
 ###Bugfixes###

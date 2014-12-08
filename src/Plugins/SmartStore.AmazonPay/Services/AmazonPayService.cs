@@ -1122,18 +1122,15 @@ namespace SmartStore.AmazonPay.Services
 		{
 			try
 			{
-				if (!IsActive(0))
-					return;
-
-				var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>());
-
-				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Ipn)
-					return;
-
 				var data = _api.ParseNotification(request);
 				var order = FindOrder(data);
 
-				if (order == null)
+				if (order == null || !IsActive(order.StoreId))
+					return;
+
+				var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>(order.StoreId));
+
+				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Ipn)
 					return;
 
 				if (data.MessageType.IsCaseInsensitiveEqual("AuthorizationNotification"))

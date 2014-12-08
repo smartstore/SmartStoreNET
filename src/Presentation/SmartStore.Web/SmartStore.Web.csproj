@@ -924,6 +924,8 @@
     <Content Include="Content\editors\ckeditor\plugins\scayt\README.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\LICENSE.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\README.md" />
+    <Content Include="Config\RewriteMaps.config" />
+    <Content Include="Config\RewriteRules.config" />
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />

@@ -272,7 +272,7 @@
 		<Value>Number of days after products should expire or no longer appear. A value of 0 causes that no expiry date will be exported.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays.Validate">
-		<Value>The value must be between 1 and 29 days.</Value>
+		<Value>The value must be between 0 and 29 days.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExportShipping">
 		<Value>Export shipping data</Value>

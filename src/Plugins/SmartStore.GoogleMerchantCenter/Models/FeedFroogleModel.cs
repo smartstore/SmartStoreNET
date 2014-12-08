@@ -7,9 +7,12 @@ using SmartStore.Web.Framework.Mvc;
 using Newtonsoft.Json;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Core.Domain.Catalog;
+using FluentValidation.Attributes;
+using SmartStore.GoogleMerchantCenter.Validators;
 
 namespace SmartStore.GoogleMerchantCenter.Models
 {
+	[Validator(typeof(ConfigurationValidator))]
 	public class FeedFroogleModel : PromotionFeedConfigModel
 	{
 		public string GridEditUrl { get; set; }

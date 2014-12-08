@@ -230,7 +230,7 @@
 		<Value>Nur online zu kaufen</Value>
 	</LocaleResource>
 	<LocaleResource Name="OnlineOnly.Hint">
-		<Value>Aktivieren Sie diese Option, wenn Produkte nur online erworben werden können. Aktivieren Sie diese Option nihct, falls Produkte auch in Ihrem Ladengeschäft erhältlich sind.</Value>
+		<Value>Aktivieren Sie diese Option, wenn Produkte nur online erworben werden können. Aktivieren Sie diese Option nicht, falls Produkte auch in Ihrem Ladengeschäft erhältlich sind.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DescriptionToPlainText">
 		<Value>HTML entfernen</Value>
@@ -272,7 +272,7 @@
 		<Value>Anzahl der Tage, nach dem die Artikel verfallen bzw. nicht mehr angezeigt werden sollen. Der Wert 0 bewirkt, dass kein Verfallsdatum exportiert wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExpirationDays.Validate">
-		<Value>Der Wert muss zwischen 1 und 29 Tagen liegen.</Value>
+		<Value>Der Wert muss zwischen 0 und 29 Tagen liegen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExportShipping">
 		<Value>Versanddaten exportieren</Value>

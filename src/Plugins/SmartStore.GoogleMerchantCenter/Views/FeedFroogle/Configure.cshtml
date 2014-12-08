@@ -37,7 +37,7 @@
     		$('#pnlGenerateStaticFileEachMinutes').toggle($('#@Html.FieldIdFor(m => m.TaskEnabled)').is(':checked'));
         }
     </script>
-		
+	
 	<form method="POST" action="@Url.Action("ConfigurePlugin", "Plugin", new { area = "Admin", systemName = Model.Helper.SystemName })" novalidate="novalidate">
     <table class="adminContent">
     <tr>

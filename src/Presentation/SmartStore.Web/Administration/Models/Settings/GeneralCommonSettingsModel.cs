@@ -22,12 +22,10 @@ namespace SmartStore.Admin.Models.Settings
             PdfSettings = new PdfSettingsModel();
             LocalizationSettings = new LocalizationSettingsModel(); 
             FullTextSettings = new FullTextSettingsModel();
-            //codehint: sm-add begin
             CompanyInformationSettings = new CompanyInformationSettingsModel();
             ContactDataSettings = new ContactDataSettingsModel();
             BankConnectionSettings = new BankConnectionSettingsModel();
             SocialSettings = new SocialSettingsModel();
-            //codehint: sm-add end
         }
 
         public StoreInformationSettingsModel StoreInformationSettings { get; set; }
@@ -36,12 +34,10 @@ namespace SmartStore.Admin.Models.Settings
         public PdfSettingsModel PdfSettings { get; set; }
         public LocalizationSettingsModel LocalizationSettings { get; set; }
         public FullTextSettingsModel FullTextSettings { get; set; }
-        //codehint: sm-add begin
         public CompanyInformationSettingsModel CompanyInformationSettings { get; set; }
         public ContactDataSettingsModel ContactDataSettings { get; set; }
         public BankConnectionSettingsModel BankConnectionSettings { get; set; }
         public SocialSettingsModel SocialSettings { get; set; }
-        //codehint: sm-add end
 
         #region Nested classes
 
@@ -89,6 +85,9 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalUrlsEnabled")]
             public bool CanonicalUrlsEnabled { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalHostNameRule")]
+			public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
         }
 
 		public partial class SecuritySettingsModel
@@ -103,9 +102,6 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
-
-
-
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabled")]
             public bool CaptchaEnabled { get; set; }

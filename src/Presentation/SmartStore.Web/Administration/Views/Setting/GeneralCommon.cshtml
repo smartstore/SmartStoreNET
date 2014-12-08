@@ -197,6 +197,16 @@
                 @Html.ValidationMessageFor(model => model.SeoSettings.CanonicalUrlsEnabled)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SeoSettings.CanonicalHostNameRule)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.SeoSettings.CanonicalHostNameRule)
+				@Html.DropDownListForEnum(model => model.SeoSettings.CanonicalHostNameRule)
+				@Html.ValidationMessageFor(model => model.SeoSettings.CanonicalHostNameRule)
+			</td>
+		</tr>
     </table>
 }
 @helper TabSecuritySettings()

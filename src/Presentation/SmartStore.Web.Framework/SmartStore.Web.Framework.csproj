@@ -249,6 +249,7 @@
     <Compile Include="Mvc\ProviderModel.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
+    <Compile Include="Seo\CanonicalHostNameAttribute.cs" />
     <Compile Include="Themes\ThemeFileResolver.cs" />
     <Compile Include="Themes\InheritedVirtualThemeFile.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />

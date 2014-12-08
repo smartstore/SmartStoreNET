@@ -975,6 +975,7 @@ namespace SmartStore.Admin.Controllers
 			model.SeoSettings.DefaultMetaDescription = seoSettings.DefaultMetaDescription;
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
 			model.SeoSettings.CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled;
+			model.SeoSettings.CanonicalHostNameRule = seoSettings.CanonicalHostNameRule;
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _settingService, false);
 
@@ -1145,6 +1146,7 @@ namespace SmartStore.Admin.Controllers
 			seoSettings.DefaultMetaDescription = model.SeoSettings.DefaultMetaDescription;
 			seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;
 			seoSettings.CanonicalUrlsEnabled = model.SeoSettings.CanonicalUrlsEnabled;
+			seoSettings.CanonicalHostNameRule = model.SeoSettings.CanonicalHostNameRule;
 
 			StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, _settingService);
 

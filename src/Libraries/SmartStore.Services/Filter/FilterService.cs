@@ -5,11 +5,11 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Text;
 using Newtonsoft.Json;
-using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
@@ -20,26 +20,29 @@ namespace SmartStore.Services.Filter
 
 		private readonly IProductService _productService;
 		private readonly ICategoryService _categoryService;
-		private readonly IStoreContext _storeContext;
 		private readonly CatalogSettings _catalogSettings;
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly ICommonServices _commonServices;
 
 		private IQueryable<Product> _products;
 
 		public FilterService(IProductService productService,
 			ICategoryService categoryService,
-			IStoreContext storeContext,
 			CatalogSettings catalogSettings,
 			IRepository<Product> productRepository,
-			IRepository<ProductCategory> productCategoryRepository)
+			IRepository<ProductCategory> productCategoryRepository,
+			ILocalizedEntityService localizedEntityService,
+			ICommonServices commonServices)
 		{
 			_productService = productService;
 			_categoryService = categoryService;
-			_storeContext = storeContext;
 			_catalogSettings = catalogSettings;
 			_productRepository = productRepository;
 			_productCategoryRepository = productCategoryRepository;
+			_localizedEntityService = localizedEntityService;
+			_commonServices = commonServices;
 		}
 
 		public static int MaxDisplayCriteria { get { return 4; } }
@@ -159,7 +162,7 @@ namespace SmartStore.Services.Filter
 				var searchContext = new ProductSearchContext()
 				{
 					FeaturedProducts = _catalogSettings.IncludeFeaturedProductsInNormalLists,
-					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+					StoreId = _commonServices.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
 				};
 
@@ -302,16 +305,24 @@ namespace SmartStore.Services.Filter
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
 					ID = g.Key.Id,
+					ParentId = g.FirstOrDefault().SpecificationAttribute.Id,
 					MatchCount = g.Count()
 				};
 
 
 			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
+			int languageId = _commonServices.WorkContext.WorkingLanguage.Id;
 
 			lst.ForEach(c =>
 			{
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
+
+				if (c.ParentId != 0)
+					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ParentId, "SpecificationAttribute", "Name");
+
+				if (c.ID.HasValue)
+					c.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ID.Value, "SpecificationAttributeOption", "Name");
 			});
 
 			return lst;

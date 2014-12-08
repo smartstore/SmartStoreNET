@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 ## SmartStore.NET 2.1.1
 
 ### New Features
@@ -8,6 +8,7 @@
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection
+* #538 Spcification attribute labels in product filter mask are not displayed localized
 
 
 ## SmartStore.NET 2.1.0

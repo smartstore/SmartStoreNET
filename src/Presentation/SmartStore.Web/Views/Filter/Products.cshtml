@@ -3,42 +3,50 @@
 
 @model ProductFilterModel
 @{
-    Layout = null;
+	Layout = null;
 }
 
-@helper FilterGroupContent(IEnumerable<FilterCriteria> criteria) {
-	if (criteria == null) {
+@helper FilterGroupContent(IEnumerable<FilterCriteria> criteria)
+{
+	if (criteria == null)
+	{
 		return;
 	}
 	foreach (var itm in criteria)
 	{
 		<div class="filter-item@(itm.IsInactive ? " ellipsis" : "")">
-		@if (itm.IsInactive) {
-			<a class="inactive" href="@Model.Context.GetUrl(itm)" title="@itm.ToDescription() (@itm.MatchCount)">@itm.ToDescription()</a>
-			<span class="count">(@itm.MatchCount)</span>
-		}
-		else {
-			<a class="active" href="@Model.Context.GetUrl(null, itm)" title="@T("Products.Filter.Remove")">
-				<i class="fa fa-times"></i>
-			</a>
-			<div class="applied-filter" title="@itm.ToDescription()">@itm.ToDescription()</div>
-		}
+			@if (itm.IsInactive)
+			{
+				<a class="inactive" href="@Model.Context.GetUrl(itm)" title="@itm.ToDescription() (@itm.MatchCount)">@itm.ToDescription()</a>
+				<span class="count">(@itm.MatchCount)</span>
+			}
+			else
+			{
+				<a class="active" href="@Model.Context.GetUrl(null, itm)" title="@T("Products.Filter.Remove")">
+					<i class="fa fa-times"></i>
+				</a>
+				<div class="applied-filter" title="@itm.ToDescription()">@itm.ToDescription()</div>
+			}
 		</div>
 	}
-	if (criteria.Count() > 0) {
+	if (criteria.Count() > 0)
+	{
 		<div class="foot">
 			<a href="#" class="more" rel="nofollow" data-toggle="modal" data-target="#product-filter-modal" data-multiselect="@criteria.First().ToString()">
 				@T(criteria.IsShowAllText() ? "Products.Filter.ShowAll" : "Products.Filter.SelectMultiple")
 			</a>
 		</div>
 	}
-	else {
+	else
+	{
 		<div class="note">@T("Products.Filter.NoneFound").</div>
 	}
 }
 
-@helper FilterGroup(IEnumerable<FilterCriteria> criteria, string caption, bool show = true) {
-	if (criteria == null || criteria.Any()) {
+@helper FilterGroup(IEnumerable<FilterCriteria> criteria, string caption, bool show = true)
+{
+	if (criteria == null || criteria.Any())
+	{
 		<div class="filter-group@(show ? " expanded" : "")@(criteria.Any(c => c.IsInactive) ? "" : " static")">
 			<div class="name ellipsis" title="@caption">
 				<i class="chevron-icon"></i>
@@ -51,18 +59,23 @@
 	}
 }
 
-@if (Model.Context.Criteria.Count <= 0) {
+@if (Model.Context.Criteria.Count <= 0)
+{
 	<div class="no-filter">@T("Products.Filter.NoneFound").</div>
 }
-else {
+else
+{
 	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity == FilterService.ShortcutPrice), T("Products.Price"), true)
 
 	@FilterGroup(Model.Context.Criteria.Where(c => c.Entity == "Manufacturer"), T("Products.Manufacturer"), true)
 
-	foreach (var grp in Model.Context.Criteria.Where(c => c.Entity == FilterService.ShortcutSpecAttribute).GroupBy(c => c.Name).OrderBy(g => g.Key)) {
+	foreach (var grp in Model.Context.Criteria.Where(c => c.Entity == FilterService.ShortcutSpecAttribute).GroupBy(c => c.Name).OrderBy(g => g.Key))
+	{
+		var first = grp.FirstOrDefault();
 		bool isActive = (Model.Context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutSpecAttribute && c.Name == grp.Key && !c.IsInactive) != null);
 		var criterias = grp.Where(c => c.IsInactive != isActive);
-	
-		@FilterGroup(isActive ? criterias : criterias.Take(FilterService.MaxDisplayCriteria), grp.Key, isActive)	
+		var caption = (first != null && first.NameLocalized.HasValue() ? first.NameLocalized : grp.Key);
+
+		@FilterGroup(isActive ? criterias : criterias.Take(FilterService.MaxDisplayCriteria), caption, isActive)
 	}
 }

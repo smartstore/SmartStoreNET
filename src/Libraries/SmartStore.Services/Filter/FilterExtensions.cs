@@ -41,7 +41,7 @@ namespace SmartStore.Services.Filter
 				return "{0} - {1}".FormatWith(valueLeft, valueRight);
 			}
 
-			string value = criteria.Value;
+			string value = (criteria.ValueLocalized.HasValue() ? criteria.ValueLocalized : criteria.Value);
 
 			if (criteria.Entity == FilterService.ShortcutPrice)
 				value = FormatPrice(criteria.Value);
@@ -66,7 +66,8 @@ namespace SmartStore.Services.Filter
 			return value;
 		}
 
-		public static FilterCriteria ParsePriceString(this string priceRange) {
+		public static FilterCriteria ParsePriceString(this string priceRange)
+		{
 			try
 			{
 				if (priceRange.HasValue())

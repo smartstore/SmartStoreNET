@@ -44,6 +44,7 @@
 
 .sg-image a {
 	display: inline-block;
+    max-width: 100%;
 }
 
 .sg-image a img {

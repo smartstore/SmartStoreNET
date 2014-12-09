@@ -883,6 +883,8 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+			StoreDependingSettings.CreateViewDataObject(storeScope);
+
 			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
 			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
 			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
@@ -891,7 +893,12 @@ namespace SmartStore.Admin.Controllers
             //merge settings
             var model = new CustomerUserSettingsModel();
             model.CustomerSettings = customerSettings.ToModel();
+
+			StoreDependingSettings.GetOverrideKeys(customerSettings, model.CustomerSettings, storeScope, _settingService, false);
+
             model.AddressSettings = addressSettings.ToModel();
+
+			StoreDependingSettings.GetOverrideKeys(addressSettings, model.AddressSettings, storeScope, _settingService, false);
 
             model.DateTimeSettings.AllowCustomersToSetTimeZone = dateTimeSettings.AllowCustomersToSetTimeZone;
             model.DateTimeSettings.DefaultStoreTimeZoneId = _dateTimeHelper.DefaultStoreTimeZone.Id;
@@ -905,34 +912,47 @@ namespace SmartStore.Admin.Controllers
                     });
             }
 
+			StoreDependingSettings.GetOverrideKeys(dateTimeSettings, model.DateTimeSettings, storeScope, _settingService, false);
+
             model.ExternalAuthenticationSettings.AutoRegisterEnabled = externalAuthenticationSettings.AutoRegisterEnabled;
+
+			StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, _settingService, false);
 
             return View(model);
         }
         [HttpPost]
-        public ActionResult CustomerUser(CustomerUserSettingsModel model)
+		public ActionResult CustomerUser(CustomerUserSettingsModel model, FormCollection form)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageSettings))
                 return AccessDeniedView();
 
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+
 			var customerSettings = _settingService.LoadSetting<CustomerSettings>(storeScope);
-			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
-			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
-			var externalAuthenticationSettings = _settingService.LoadSetting<ExternalAuthenticationSettings>(storeScope);
-
             customerSettings = model.CustomerSettings.ToEntity(customerSettings);
-            _settingService.SaveSetting(customerSettings);
 
+			StoreDependingSettings.UpdateSettings(customerSettings, form, storeScope, _settingService);
+
+			_settingService.SaveSetting(customerSettings, x => x.DefaultPasswordFormat, 0, false);
+
+			var addressSettings = _settingService.LoadSetting<AddressSettings>(storeScope);
             addressSettings = model.AddressSettings.ToEntity(addressSettings);
-            _settingService.SaveSetting(addressSettings);
 
+			StoreDependingSettings.UpdateSettings(addressSettings, form, storeScope, _settingService);
+
+			var dateTimeSettings = _settingService.LoadSetting<DateTimeSettings>(storeScope);
             dateTimeSettings.DefaultStoreTimeZoneId = model.DateTimeSettings.DefaultStoreTimeZoneId;
             dateTimeSettings.AllowCustomersToSetTimeZone = model.DateTimeSettings.AllowCustomersToSetTimeZone;
-            _settingService.SaveSetting(dateTimeSettings);
 
+			StoreDependingSettings.UpdateSettings(dateTimeSettings, form, storeScope, _settingService);
+
+			var externalAuthenticationSettings = _settingService.LoadSetting<ExternalAuthenticationSettings>(storeScope);
             externalAuthenticationSettings.AutoRegisterEnabled = model.ExternalAuthenticationSettings.AutoRegisterEnabled;
-            _settingService.SaveSetting(externalAuthenticationSettings);
+
+			StoreDependingSettings.UpdateSettings(externalAuthenticationSettings, form, storeScope, _settingService);
+
+			//now clear settings cache
+			_settingService.ClearCache();
 
             //activity log
             _customerActivityService.InsertActivity("EditSettings", _localizationService.GetResource("ActivityLog.EditSettings"));
@@ -981,7 +1001,6 @@ namespace SmartStore.Admin.Controllers
 
 			//security settings
 			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
-			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
 			model.SecuritySettings.EncryptionKey = securitySettings.EncryptionKey;
 			if (securitySettings.AdminAreaAllowedIpAddresses != null)
 			{
@@ -993,18 +1012,22 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 			model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions = securitySettings.HideAdminMenuItemsBasedOnPermissions;
-			model.SecuritySettings.CaptchaEnabled = captchaSettings.Enabled;
-			model.SecuritySettings.CaptchaShowOnLoginPage = captchaSettings.ShowOnLoginPage;
-			model.SecuritySettings.CaptchaShowOnRegistrationPage = captchaSettings.ShowOnRegistrationPage;
-			model.SecuritySettings.CaptchaShowOnContactUsPage = captchaSettings.ShowOnContactUsPage;
-			model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage = captchaSettings.ShowOnEmailWishlistToFriendPage;
-			model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage = captchaSettings.ShowOnEmailProductToFriendPage;
-			model.SecuritySettings.CaptchaShowOnAskQuestionPage = captchaSettings.ShowOnAskQuestionPage;
-			model.SecuritySettings.CaptchaShowOnBlogCommentPage = captchaSettings.ShowOnBlogCommentPage;
-			model.SecuritySettings.CaptchaShowOnNewsCommentPage = captchaSettings.ShowOnNewsCommentPage;
-			model.SecuritySettings.CaptchaShowOnProductReviewPage = captchaSettings.ShowOnProductReviewPage;
-			model.SecuritySettings.ReCaptchaPublicKey = captchaSettings.ReCaptchaPublicKey;
-			model.SecuritySettings.ReCaptchaPrivateKey = captchaSettings.ReCaptchaPrivateKey;
+
+			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
+			model.CaptchaSettings.Enabled = captchaSettings.Enabled;
+			model.CaptchaSettings.ShowOnLoginPage = captchaSettings.ShowOnLoginPage;
+			model.CaptchaSettings.ShowOnRegistrationPage = captchaSettings.ShowOnRegistrationPage;
+			model.CaptchaSettings.ShowOnContactUsPage = captchaSettings.ShowOnContactUsPage;
+			model.CaptchaSettings.ShowOnEmailWishlistToFriendPage = captchaSettings.ShowOnEmailWishlistToFriendPage;
+			model.CaptchaSettings.ShowOnEmailProductToFriendPage = captchaSettings.ShowOnEmailProductToFriendPage;
+			model.CaptchaSettings.ShowOnAskQuestionPage = captchaSettings.ShowOnAskQuestionPage;
+			model.CaptchaSettings.ShowOnBlogCommentPage = captchaSettings.ShowOnBlogCommentPage;
+			model.CaptchaSettings.ShowOnNewsCommentPage = captchaSettings.ShowOnNewsCommentPage;
+			model.CaptchaSettings.ShowOnProductReviewPage = captchaSettings.ShowOnProductReviewPage;
+			model.CaptchaSettings.ReCaptchaPublicKey = captchaSettings.ReCaptchaPublicKey;
+			model.CaptchaSettings.ReCaptchaPrivateKey = captchaSettings.ReCaptchaPrivateKey;
+
+			StoreDependingSettings.GetOverrideKeys(captchaSettings, model.CaptchaSettings, storeScope, _settingService, false);
 
 			//PDF settings
 			var pdfSettings = _settingService.LoadSetting<PdfSettings>(storeScope);
@@ -1022,6 +1045,8 @@ namespace SmartStore.Admin.Controllers
             model.LocalizationSettings.DefaultLanguageRedirectBehaviour = localizationSettings.DefaultLanguageRedirectBehaviour;
             model.LocalizationSettings.InvalidLanguageRedirectBehaviour = localizationSettings.InvalidLanguageRedirectBehaviour;
             model.LocalizationSettings.DetectBrowserUserLanguage = localizationSettings.DetectBrowserUserLanguage;
+
+			StoreDependingSettings.GetOverrideKeys(localizationSettings, model.LocalizationSettings, storeScope, _settingService, false);
 
 			//full-text support
 			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);
@@ -1152,7 +1177,6 @@ namespace SmartStore.Admin.Controllers
 
 			//security settings
 			var securitySettings = _settingService.LoadSetting<SecuritySettings>(storeScope);
-			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
 			if (securitySettings.AdminAreaAllowedIpAddresses == null)
 				securitySettings.AdminAreaAllowedIpAddresses = new List<string>();
 			securitySettings.AdminAreaAllowedIpAddresses.Clear();
@@ -1167,20 +1191,21 @@ namespace SmartStore.Admin.Controllers
 			securitySettings.HideAdminMenuItemsBasedOnPermissions = model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions;
 			_settingService.SaveSetting(securitySettings);
 
-			captchaSettings.Enabled = model.SecuritySettings.CaptchaEnabled;
-			captchaSettings.ShowOnLoginPage = model.SecuritySettings.CaptchaShowOnLoginPage;
-			captchaSettings.ShowOnRegistrationPage = model.SecuritySettings.CaptchaShowOnRegistrationPage;
-			captchaSettings.ShowOnContactUsPage = model.SecuritySettings.CaptchaShowOnContactUsPage;
-			captchaSettings.ShowOnEmailWishlistToFriendPage = model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage;
-			captchaSettings.ShowOnEmailProductToFriendPage = model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage;
-			captchaSettings.ShowOnAskQuestionPage = model.SecuritySettings.CaptchaShowOnAskQuestionPage;
-			captchaSettings.ShowOnBlogCommentPage = model.SecuritySettings.CaptchaShowOnBlogCommentPage;
-			captchaSettings.ShowOnNewsCommentPage = model.SecuritySettings.CaptchaShowOnNewsCommentPage;
-			captchaSettings.ShowOnProductReviewPage = model.SecuritySettings.CaptchaShowOnProductReviewPage;
-			captchaSettings.ReCaptchaPublicKey = model.SecuritySettings.ReCaptchaPublicKey;
-			captchaSettings.ReCaptchaPrivateKey = model.SecuritySettings.ReCaptchaPrivateKey;
+			var captchaSettings = _settingService.LoadSetting<CaptchaSettings>(storeScope);
+			captchaSettings.Enabled = model.CaptchaSettings.Enabled;
+			captchaSettings.ShowOnLoginPage = model.CaptchaSettings.ShowOnLoginPage;
+			captchaSettings.ShowOnRegistrationPage = model.CaptchaSettings.ShowOnRegistrationPage;
+			captchaSettings.ShowOnContactUsPage = model.CaptchaSettings.ShowOnContactUsPage;
+			captchaSettings.ShowOnEmailWishlistToFriendPage = model.CaptchaSettings.ShowOnEmailWishlistToFriendPage;
+			captchaSettings.ShowOnEmailProductToFriendPage = model.CaptchaSettings.ShowOnEmailProductToFriendPage;
+			captchaSettings.ShowOnAskQuestionPage = model.CaptchaSettings.ShowOnAskQuestionPage;
+			captchaSettings.ShowOnBlogCommentPage = model.CaptchaSettings.ShowOnBlogCommentPage;
+			captchaSettings.ShowOnNewsCommentPage = model.CaptchaSettings.ShowOnNewsCommentPage;
+			captchaSettings.ShowOnProductReviewPage = model.CaptchaSettings.ShowOnProductReviewPage;
+			captchaSettings.ReCaptchaPublicKey = model.CaptchaSettings.ReCaptchaPublicKey;
+			captchaSettings.ReCaptchaPrivateKey = model.CaptchaSettings.ReCaptchaPrivateKey;
 
-			_settingService.SaveSetting(captchaSettings);
+			StoreDependingSettings.UpdateSettings(captchaSettings, form, storeScope, _settingService);
 
 			if (captchaSettings.Enabled && (String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPublicKey) || String.IsNullOrWhiteSpace(captchaSettings.ReCaptchaPrivateKey)))
 			{
@@ -1197,19 +1222,25 @@ namespace SmartStore.Admin.Controllers
 
 			//localization settings
 			var localizationSettings = _settingService.LoadSetting<LocalizationSettings>(storeScope);
-			localizationSettings.UseImagesForLanguageSelection = model.LocalizationSettings.UseImagesForLanguageSelection;
-			if (localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
-			{
-				localizationSettings.SeoFriendlyUrlsForLanguagesEnabled = model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
-				//clear cached values of routes
-				System.Web.Routing.RouteTable.Routes.ClearSeoFriendlyUrlsCachedValueForRoutes();
-			}
 			localizationSettings.LoadAllLocaleRecordsOnStartup = model.LocalizationSettings.LoadAllLocaleRecordsOnStartup;
             localizationSettings.DefaultLanguageRedirectBehaviour = model.LocalizationSettings.DefaultLanguageRedirectBehaviour;
             localizationSettings.InvalidLanguageRedirectBehaviour = model.LocalizationSettings.InvalidLanguageRedirectBehaviour;
+			localizationSettings.UseImagesForLanguageSelection = model.LocalizationSettings.UseImagesForLanguageSelection;
             localizationSettings.DetectBrowserUserLanguage = model.LocalizationSettings.DetectBrowserUserLanguage;
 
-			_settingService.SaveSetting(localizationSettings);
+			StoreDependingSettings.UpdateSettings(localizationSettings, form, storeScope, _settingService);
+
+			_settingService.SaveSetting(localizationSettings, x => x.LoadAllLocaleRecordsOnStartup, 0, false);
+			_settingService.SaveSetting(localizationSettings, x => x.DefaultLanguageRedirectBehaviour, 0, false);
+			_settingService.SaveSetting(localizationSettings, x => x.InvalidLanguageRedirectBehaviour, 0, false);
+
+			if (localizationSettings.SeoFriendlyUrlsForLanguagesEnabled != model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
+			{
+				localizationSettings.SeoFriendlyUrlsForLanguagesEnabled = model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled;
+				_settingService.SaveSetting(localizationSettings, x => x.SeoFriendlyUrlsForLanguagesEnabled, 0, false);
+
+				System.Web.Routing.RouteTable.Routes.ClearSeoFriendlyUrlsCachedValueForRoutes();	// clear cached values of routes
+			}
 
 			//full-text
 			var commonSettings = _settingService.LoadSetting<CommonSettings>(storeScope);

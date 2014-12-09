@@ -19,6 +19,7 @@ namespace SmartStore.Admin.Models.Settings
             StoreInformationSettings = new StoreInformationSettingsModel();
             SeoSettings = new SeoSettingsModel();
             SecuritySettings = new SecuritySettingsModel();
+			CaptchaSettings = new CaptchaSettingsModel();
             PdfSettings = new PdfSettingsModel();
             LocalizationSettings = new LocalizationSettingsModel(); 
             FullTextSettings = new FullTextSettingsModel();
@@ -31,6 +32,7 @@ namespace SmartStore.Admin.Models.Settings
         public StoreInformationSettingsModel StoreInformationSettings { get; set; }
         public SeoSettingsModel SeoSettings { get; set; }
         public SecuritySettingsModel SecuritySettings { get; set; }
+		public CaptchaSettingsModel CaptchaSettings { get; set; }
         public PdfSettingsModel PdfSettings { get; set; }
         public LocalizationSettingsModel LocalizationSettings { get; set; }
         public FullTextSettingsModel FullTextSettings { get; set; }
@@ -45,18 +47,13 @@ namespace SmartStore.Admin.Models.Settings
         {
             public StoreInformationSettingsModel()
             {
-                // codehint: sm-delete
             }
             
-            // codehint: sm-delete
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosed")]
 			public bool StoreClosed { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.StoreClosedAllowForAdmins")]
             public bool StoreClosedAllowForAdmins { get; set; }
-            
-            // codehint: sm-delete
         }
 
 		public partial class SeoSettingsModel
@@ -102,45 +99,48 @@ namespace SmartStore.Admin.Models.Settings
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.HideAdminMenuItemsBasedOnPermissions")]
             public bool HideAdminMenuItemsBasedOnPermissions { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabled")]
-            public bool CaptchaEnabled { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnLoginPage")]
-            public bool CaptchaShowOnLoginPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnRegistrationPage")]
-            public bool CaptchaShowOnRegistrationPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnContactUsPage")]
-            public bool CaptchaShowOnContactUsPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailWishlistToFriendPage")]
-            public bool CaptchaShowOnEmailWishlistToFriendPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailProductToFriendPage")]
-            public bool CaptchaShowOnEmailProductToFriendPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnAskQuestionPage")]
-            public bool CaptchaShowOnAskQuestionPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnBlogCommentPage")]
-            public bool CaptchaShowOnBlogCommentPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage")]
-            public bool CaptchaShowOnNewsCommentPage { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
-            public bool CaptchaShowOnProductReviewPage { get; set; }
-            
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey")]
-            [AllowHtml]
-            public string ReCaptchaPublicKey { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
-            [AllowHtml]
-            public string ReCaptchaPrivateKey { get; set; }
         }
+
+		public partial class CaptchaSettingsModel
+		{
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabled")]
+			public bool Enabled { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnLoginPage")]
+			public bool ShowOnLoginPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnRegistrationPage")]
+			public bool ShowOnRegistrationPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnContactUsPage")]
+			public bool ShowOnContactUsPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailWishlistToFriendPage")]
+			public bool ShowOnEmailWishlistToFriendPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailProductToFriendPage")]
+			public bool ShowOnEmailProductToFriendPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnAskQuestionPage")]
+			public bool ShowOnAskQuestionPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnBlogCommentPage")]
+			public bool ShowOnBlogCommentPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage")]
+			public bool ShowOnNewsCommentPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage")]
+			public bool ShowOnProductReviewPage { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPublicKey")]
+			[AllowHtml]
+			public string ReCaptchaPublicKey { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.reCaptchaPrivateKey")]
+			[AllowHtml]
+			public string ReCaptchaPrivateKey { get; set; }
+		}
 
 		public partial class PdfSettingsModel
         {
@@ -187,7 +187,6 @@ namespace SmartStore.Admin.Models.Settings
             public SelectList SearchModeValues { get; set; }
         }
 
-        //codehint: sm-add begin
 		public partial class CompanyInformationSettingsModel
         {
 
@@ -324,7 +323,6 @@ namespace SmartStore.Admin.Models.Settings
             public string YoutubeLink { get; set; }
         }
 
-        //codehint: sm-add end
         #endregion
     }
 }

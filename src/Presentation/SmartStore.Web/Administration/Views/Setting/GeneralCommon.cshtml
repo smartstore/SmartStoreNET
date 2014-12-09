@@ -6,7 +6,6 @@
 @using SmartStore.Web.Framework.UI;
 
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Settings.GeneralCommon").Text;
 }
 @using (Html.BeginForm())
@@ -23,69 +22,41 @@
         
     
 <script type="text/javascript">
-    $(document).ready(function () {
+	$(document).ready(function () {
 
-        $("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
-        $("#@Html.FieldIdFor(model => model.SecuritySettings.CaptchaEnabled)").click(toggleReCaptcha);
+		$("#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)").click(toggleStoreClosed);
+		$("#@Html.FieldIdFor(model => model.CaptchaSettings.Enabled)").change(function () {
+			$('#SecuritySettingTable').find('.captcha-setting').toggle($(this).is(':checked'));
+    	}).trigger('change');
         $("#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)").click(toggleSeoLanguageUrls);
 
-        toggleStoreClosed();
-        toggleReCaptcha();
-        toggleSeoLanguageUrls();
+		toggleStoreClosed();
+		toggleSeoLanguageUrls();
 
-    	$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
-    		$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
-        }).trigger('change');
-    });    
+		$("#@Html.FieldIdFor(model => model.SocialSettings.ShowSocialLinksInFooter)").change(function () {
+			$('#SocialLinkTable').find('.social-link').toggle($(this).is(':checked'));
+		}).trigger('change');
+	});
 
-    function toggleStoreClosed() {
-        if ($('#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)').is(':checked')) {
-            $('#pnlStoreClosedAllowForAdmins').show();
-        }
-        else {
-            $('#pnlStoreClosedAllowForAdmins').hide();
-        }
-    }
+	function toggleStoreClosed() {
+		if ($('#@Html.FieldIdFor(model => model.StoreInformationSettings.StoreClosed)').is(':checked')) {
+			$('#pnlStoreClosedAllowForAdmins').show();
+		}
+		else {
+			$('#pnlStoreClosedAllowForAdmins').hide();
+		}
+	}
 
-    function toggleReCaptcha() {
-        if ($('#@Html.FieldIdFor(model => model.SecuritySettings.CaptchaEnabled)').is(':checked')) {
-            $('#ssCaptchaShowOnLoginPagepnl').show();
-            $('#ssCaptchaShowOnRegistrationPagepnl').show();
-            $('#ssCaptchaShowOnContactUsPagepnl').show();
-            $('#ssCaptchaShowOnEmailWishlistToFriendPagepnl').show();
-            $('#ssCaptchaShowOnEmailProductToFriendPagepnl').show();
-            $('#ssCaptchaShowOnAskQuestionPagepnl').show();
-            $('#ssCaptchaShowOnBlogCommentPagepnl').show();
-            $('#ssCaptchaShowOnNewsCommentPagepnl').show();
-            $('#ssCaptchaShowOnProductReviewPagepnl').show();
-            $('#ssReCaptchaPublicKeypnl').show();
-            $('#ssReCaptchaPrivateKeypnl').show();
-        }
-        else {
-            $('#ssCaptchaShowOnLoginPagepnl').hide();
-            $('#ssCaptchaShowOnRegistrationPagepnl').hide();
-            $('#ssCaptchaShowOnContactUsPagepnl').hide();
-            $('#ssCaptchaShowOnEmailWishlistToFriendPagepnl').hide();
-            $('#ssCaptchaShowOnEmailProductToFriendPagepnl').hide();
-            $('#ssCaptchaShowOnAskQuestionPagepnl').hide();
-            $('#ssCaptchaShowOnBlogCommentPagepnl').hide();
-            $('#ssCaptchaShowOnNewsCommentPagepnl').hide();
-            $('#ssCaptchaShowOnProductReviewPagepnl').hide();
-            $('#ssReCaptchaPublicKeypnl').hide();
-            $('#ssReCaptchaPrivateKeypnl').hide();
-        }
-    }
-
-    function toggleSeoLanguageUrls() {
-        if ($('#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)').is(':checked')) {
-            $('#pnlDefaultLanguageRedirectBehaviour').show();
-            $('#pnlInvalidLanguageRedirectBehaviour').show();
-        }
-        else {
-            $('#pnlDefaultLanguageRedirectBehaviour').hide();
-            $('#pnlInvalidLanguageRedirectBehaviour').hide();
-        }
-    }
+	function toggleSeoLanguageUrls() {
+		if ($('#@Html.FieldIdFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)').is(':checked')) {
+			$('#pnlDefaultLanguageRedirectBehaviour').show();
+			$('#pnlInvalidLanguageRedirectBehaviour').show();
+		}
+		else {
+			$('#pnlDefaultLanguageRedirectBehaviour').hide();
+			$('#pnlInvalidLanguageRedirectBehaviour').hide();
+		}
+	}
 </script>
     @Html.Action("StoreScopeConfiguration", "Setting")
     @Html.ValidationSummary(false)
@@ -97,7 +68,6 @@
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SecuritySettings").Text).Content(@TabSecuritySettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.LocalizationSettings").Text).Content(TabLocalizationSettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.PdfSettings").Text).Content(@TabPdfSettings());
-        //codehint: sm-delete TabLocalizationSettings
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings").Text).Content(@TabCompanyInformationSettings());
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.ContactDataSettings").Text).Content(@TabContactDataSettings()); 
         x.Add().Text(T("Admin.Configuration.Settings.GeneralCommon.SocialSettings").Text).Content(@TabSocialSettings());
@@ -131,7 +101,6 @@
 }
 @helper TabSEOSettings()
     {
-    
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -211,151 +180,154 @@
 }
 @helper TabSecuritySettings()
     {
-    <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.EncryptionKey)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.EncryptionKey)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.EncryptionKey)
-                <input type="submit" name="changeencryptionkey" value="@T("Admin.Common.Change")" id="changeencryptionkey" class="btn" />
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
-            </td>
-        </tr>
-        <tr>
-            <td colspan="2">
-                <div class="alert alert-info" style="margin-bottom: 0; margin-top: 8px">
-                    @T("Admin.Configuration.Settings.General.Common.Captcha.Hint")
-                </div>
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaEnabled)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaEnabled)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaEnabled)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnLoginPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnLoginPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnLoginPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnLoginPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnRegistrationPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnRegistrationPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnRegistrationPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnRegistrationPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnContactUsPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnContactUsPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnContactUsPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnContactUsPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnEmailWishlistToFriendPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnEmailWishlistToFriendPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnEmailProductToFriendPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnEmailProductToFriendPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnAskQuestionPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnAskQuestionPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnAskQuestionPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnAskQuestionPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnBlogCommentPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnBlogCommentPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnBlogCommentPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnBlogCommentPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnNewsCommentPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnNewsCommentPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnNewsCommentPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnNewsCommentPage)
-            </td>
-        </tr>
-        <tr id="ssCaptchaShowOnProductReviewPagepnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.CaptchaShowOnProductReviewPage)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.CaptchaShowOnProductReviewPage)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.CaptchaShowOnProductReviewPage)
-            </td>
-        </tr>
-        <tr id="ssReCaptchaPublicKeypnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.ReCaptchaPublicKey)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.ReCaptchaPublicKey)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.ReCaptchaPublicKey)
-            </td>
-        </tr>
-        <tr id="ssReCaptchaPrivateKeypnl">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SecuritySettings.ReCaptchaPrivateKey)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.SecuritySettings.ReCaptchaPrivateKey)
-                @Html.ValidationMessageFor(model => model.SecuritySettings.ReCaptchaPrivateKey)
-            </td>
-        </tr>
-    </table>
+		<table id="SecuritySettingTable" class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.EncryptionKey)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.EncryptionKey)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.EncryptionKey)
+					<input type="submit" name="changeencryptionkey" value="@T("Admin.Common.Change")" id="changeencryptionkey" class="btn" />
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.AdminAreaAllowedIpAddresses)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+					@Html.ValidationMessageFor(model => model.SecuritySettings.HideAdminMenuItemsBasedOnPermissions)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">&nbsp;</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					<div class="alert alert-info">
+						@T("Admin.Configuration.Settings.General.Common.Captcha.Hint")
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.Enabled)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.Enabled)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.Enabled)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnLoginPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnLoginPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnLoginPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnRegistrationPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnRegistrationPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnRegistrationPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnContactUsPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnContactUsPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnContactUsPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnEmailWishlistToFriendPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnEmailWishlistToFriendPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnEmailWishlistToFriendPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnEmailProductToFriendPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnEmailProductToFriendPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnEmailProductToFriendPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnAskQuestionPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnAskQuestionPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnAskQuestionPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnBlogCommentPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnBlogCommentPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnBlogCommentPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnNewsCommentPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ShowOnProductReviewPage)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPublicKey)
+				</td>
+			</tr>
+			<tr class="captcha-setting">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
+					@Html.ValidationMessageFor(model => model.CaptchaSettings.ReCaptchaPrivateKey)
+				</td>
+			</tr>
+		</table>
 }
 @helper TabPdfSettings()
     {
@@ -403,15 +375,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
-                @Html.ValidationMessageFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LocalizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             </td>
             <td class="adminData">
@@ -437,19 +400,26 @@
                 @Html.ValidationMessageFor(model => model.LocalizationSettings.InvalidLanguageRedirectBehaviour)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
+				@Html.ValidationMessageFor(model => model.LocalizationSettings.UseImagesForLanguageSelection)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LocalizationSettings.DetectBrowserUserLanguage)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.LocalizationSettings.DetectBrowserUserLanguage)
+                @Html.SettingEditorFor(model => model.LocalizationSettings.DetectBrowserUserLanguage)
                 @Html.ValidationMessageFor(model => model.LocalizationSettings.DetectBrowserUserLanguage)
             </td>
         </tr>
     </table>
 }
-@*codehint: sm-delete TabLocalizationSettings*@
-@*codehint: sm-add*@
 @helper TabCompanyInformationSettings()
     {
     <table class="adminContent">

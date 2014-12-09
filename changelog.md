@@ -7,6 +7,9 @@
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
 * (Developer) Implemented new HtmlHelper extension `AddCustomHeadParts`: registers whatever head (meta) tag you wish
 
+### Improvements
+* #545 Make all (applicable) settings multi-store-enabled
+
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection

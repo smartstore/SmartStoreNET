@@ -314,6 +314,13 @@ namespace SmartStore.PayPal
 			return true;
 		}
 
+        public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
+        {
+            var result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart,
+                _paypalStandardSettings.AdditionalFee, _paypalStandardSettings.AdditionalFeePercentage);
+            return result;
+        }
+
 		public override Type GetControllerType()
 		{
 			return typeof(PayPalStandardController);

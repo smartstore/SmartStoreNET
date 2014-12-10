@@ -9,6 +9,7 @@
 
 ### Improvements
 * #545 Make all (applicable) settings multi-store-enabled
+* The display order of attribute values are considered in the sorting of backend's attribute combination grid
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission

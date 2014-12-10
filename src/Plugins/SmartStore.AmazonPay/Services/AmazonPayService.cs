@@ -832,7 +832,7 @@ namespace SmartStore.AmazonPay.Services
 			}
 
 			if (errorId.HasValue())
-				Logger.InsertLog(LogLevel.Error, T("Plugins.Payments.AmazonPay.OrderNotFound", errorId), "");
+				Logger.InsertLog(LogLevel.Warning, T("Plugins.Payments.AmazonPay.OrderNotFound", errorId), "");
 
 			return order;
 		}

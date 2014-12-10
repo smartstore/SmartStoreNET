@@ -1728,7 +1728,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             //manufacturers
-            // model.AvailableManufacturers.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
             {
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
@@ -3187,7 +3186,6 @@ namespace SmartStore.Admin.Controllers
 				ProductId = model.ProductId,
 				// use Store property (not Store propertyId) because appropriate property is stored in it
 				StoreId = model.Store.ToInt(),
-				// codehint: sm-edit
 				// use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
 				CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null,
 				Quantity = model.Quantity,
@@ -3214,7 +3212,6 @@ namespace SmartStore.Admin.Controllers
 			//use Store property (not Store propertyId) because appropriate property is stored in it
 			tierPrice.StoreId = model.Store.ToInt();
 			//use CustomerRole property (not CustomerRoleId) because appropriate property is stored in it
-			// codehint: sm-edit
 			tierPrice.CustomerRoleId = model.CustomerRole.IsNumeric() && Int32.Parse(model.CustomerRole) != 0 ? Int32.Parse(model.CustomerRole) : (int?)null;
 			tierPrice.Quantity = model.Quantity;
 			tierPrice.Price = model.Price1;
@@ -3855,7 +3852,6 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			// codehint: sm-edit
 			// TODO: Replace ProductModel.ProductVariantAttributeCombinationModel by AddProductVariantAttributeCombinationModel
 			// when there's no grid-inline-editing anymore.
 
@@ -3877,6 +3873,21 @@ namespace SmartStore.Admin.Controllers
 				pvacModel.ProductUrl = productUrl + _productAttributeParser.SerializeQueryData(product.Id, x.AttributesXml);
 				pvacModel.ProductUrlTitle = productUrlTitle;
 
+				try
+				{
+					var firstAttribute = _productAttributeParser.DeserializeProductVariantAttributes(x.AttributesXml).FirstOrDefault();
+
+					var attribute = x.Product.ProductVariantAttributes.FirstOrDefault(y => y.Id == firstAttribute.Key);
+
+					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == int.Parse(firstAttribute.Value.First()));
+
+					pvacModel.DisplayOrder = firstAttribute.Key + attributeValue.DisplayOrder;
+				}
+				catch (Exception exc)
+				{
+					exc.Dump();
+				}
+
 				//if (x.IsDefaultCombination)
 				//	pvacModel.AttributesXml = "<b>{0}</b>".FormatWith(pvacModel.AttributesXml);
 
@@ -3885,7 +3896,8 @@ namespace SmartStore.Admin.Controllers
 				pvacModel.Warnings.AddRange(warnings);
 
 				return pvacModel;
-			}).ToList();
+			})
+			.OrderBy(x => x.DisplayOrder).ToList();
 
 			var model = new GridModel<ProductVariantAttributeCombinationModel>
 			{

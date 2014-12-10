@@ -1,5 +1,11 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.16##
+
+###Bugfixes###
+* Reflect refunds made at amazon seller central when using data polling
+
+
 ##Pay with Amazon 1.15##
 
 ###Bugfixes###

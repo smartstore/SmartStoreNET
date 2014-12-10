@@ -243,7 +243,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.PartialRefund.AmountToRefund")]
         public decimal AmountToRefund { get; set; }
         public decimal MaxAmountToRefund { get; set; }
-        public string PrimaryStoreCurrencyCode { get; set; }
+		public string MaxAmountToRefundFormatted { get; set; }
 
         //workflow info
         public bool CanCancelOrder { get; set; }

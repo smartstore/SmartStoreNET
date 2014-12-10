@@ -15,6 +15,7 @@
 * Fixed password recovery redirection
 * #538 Spcification attribute labels in product filter mask are not displayed localized
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
+* #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
 
 
 ## SmartStore.NET 2.1.0

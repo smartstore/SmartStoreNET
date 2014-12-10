@@ -700,8 +700,36 @@ namespace SmartStore.AmazonPay.Services
 			if (data.State.IsCaseInsensitiveEqual("Pending"))
 				return;
 
-			// a refund does not change the payment nor order status, so here is nothing to do but adding an order note
-			// to inform the merchant of the server-side refund processing.
+			if (data.RefundedAmount != null && data.RefundedAmount.Amount != 0.0)	// totally refunded amount
+			{
+				// we could only process it once cause otherwise order.RefundedAmount would getting wrong.
+				if (order.RefundedAmount == decimal.Zero)
+				{
+					decimal refundAmount = Convert.ToDecimal(data.RefundedAmount.Amount);
+					decimal receivable = order.OrderTotal - refundAmount;
+
+					if (receivable <= decimal.Zero)
+					{
+						if (_orderProcessingService.CanRefundOffline(order))
+						{
+							_orderProcessingService.RefundOffline(order);
+
+							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
+								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+						}
+					}
+					else
+					{
+						if (_orderProcessingService.CanPartiallyRefundOffline(order, refundAmount))
+						{
+							_orderProcessingService.PartiallyRefundOffline(order, refundAmount);
+
+							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
+								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+						}
+					}
+				}
+			}
 
 			if (client.Settings.DataFetching == AmazonPayDataFetchingType.Ipn)
 				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
@@ -1166,12 +1194,8 @@ namespace SmartStore.AmazonPay.Services
 				// ignore cancelled and completed (paid and shipped) orders. ignore old orders too.
 
 				var data = new AmazonPayApiData();
-				var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>());
-
-				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Polling)
-					return;
-
-				var isTooOld = DateTime.UtcNow.AddDays(-(client.Settings.PollingMaxOrderCreationDays));
+				int pollingMaxOrderCreationDays = _settingService.GetSettingByKey<int>("AmazonPaySettings.PollingMaxOrderCreationDays", 31);
+				var isTooOld = DateTime.UtcNow.AddDays(-(pollingMaxOrderCreationDays));
 
 				var query =
 					from x in _orderRepository.Table
@@ -1188,21 +1212,36 @@ namespace SmartStore.AmazonPay.Services
 				{
 					try
 					{
-						if (order.AuthorizationTransactionId.HasValue())
+						var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>(order.StoreId));
+
+						if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
 						{
-							var details = _api.GetAuthorizationDetails(client, order.AuthorizationTransactionId, out data);
+							if (order.AuthorizationTransactionId.HasValue())
+							{
+								var details = _api.GetAuthorizationDetails(client, order.AuthorizationTransactionId, out data);
 
-							ProcessAuthorizationResult(client, order, data, details);
+								ProcessAuthorizationResult(client, order, data, details);
+							}
+
+							if (order.CaptureTransactionId.HasValue())
+							{
+								if (_orderProcessingService.CanMarkOrderAsPaid(order) || _orderProcessingService.CanVoidOffline(order) || 
+									_orderProcessingService.CanRefundOffline(order) || _orderProcessingService.CanPartiallyRefundOffline(order, 0.01M))
+								{
+									var details = _api.GetCaptureDetails(client, order.CaptureTransactionId, out data);
+
+									ProcessCaptureResult(client, order, data);
+
+									if (_orderProcessingService.CanRefundOffline(order) || _orderProcessingService.CanPartiallyRefundOffline(order, 0.01M))
+									{
+										// note status polling: we cannot use GetRefundDetails to reflect refund(s) made at Amazon seller central cause we 
+										// do not have any refund-id and there is no api endpoint that serves them. so we only can process CaptureDetails.RefundedAmount.
+
+										ProcessRefundResult(client, order, data);
+									}
+								}
+							}
 						}
-
-						if (order.CaptureTransactionId.HasValue() && (_orderProcessingService.CanMarkOrderAsPaid(order) || _orderProcessingService.CanVoidOffline(order)))
-						{
-							var details = _api.GetCaptureDetails(client, order.CaptureTransactionId, out data);
-
-							ProcessCaptureResult(client, order, data);
-						}
-
-						// TODO... reflect refund(s) made at Amazon seller central?
 					}
 					catch (OffAmazonPaymentsServiceException exc)
 					{

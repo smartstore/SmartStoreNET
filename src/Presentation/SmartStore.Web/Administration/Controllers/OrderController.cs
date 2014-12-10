@@ -178,6 +178,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentNullException("model");
 
 			var store = _storeService.GetStoreById(order.StoreId);
+			var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
@@ -204,8 +205,6 @@ namespace SmartStore.Admin.Controllers
 			}
 
             #region Order totals
-
-            var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 
             //subtotal
             model.OrderSubtotalInclTax = _priceFormatter.FormatPrice(order.OrderSubtotalInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true);
@@ -370,8 +369,8 @@ namespace SmartStore.Admin.Controllers
             model.CanVoid = _orderProcessingService.CanVoid(order);
             model.CanVoidOffline = _orderProcessingService.CanVoidOffline(order);
 
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
             model.MaxAmountToRefund = order.OrderTotal - order.RefundedAmount;
+			model.MaxAmountToRefundFormatted =	_priceFormatter.FormatPrice(model.MaxAmountToRefund, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, false);
 
             //recurring payment record
             var recurringPayment = _orderService.SearchRecurringPayments(0, 0, order.Id, null, true).FirstOrDefault();

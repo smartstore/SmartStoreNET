@@ -38,9 +38,19 @@
             </td>
             <td class="adminData">
                 @Html.EditorFor(model => model.AmountToRefund) &nbsp;&nbsp;&nbsp; <span style="white-space: nowrap">
-                    @string.Format(@T("Admin.Orders.Fields.PartialRefund.AmountToRefund.Max").Text, Model.MaxAmountToRefund.ToString("G29"), Model.PrimaryStoreCurrencyCode)</span>
+                    @string.Format(@T("Admin.Orders.Fields.PartialRefund.AmountToRefund.Max").Text, Model.MaxAmountToRefundFormatted, "")</span>
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="submit" name="partialrefundorder" value="@T("Admin.Orders.Fields.Refund")" id="partialrefundorder" class="btn btn-primary">
+					<i class="fa fa-check"></i>
+					@T("Admin.Orders.Fields.Refund")
+				</button>
+			</td>
+		</tr>
     </table>
-    <input type="submit" name="partialrefundorder" value="@T("Admin.Orders.Fields.Refund")" id="partialrefundorder" class="btn btn-primary" />
 }

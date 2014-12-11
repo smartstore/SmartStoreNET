@@ -793,6 +793,10 @@
             </td>
             <td class="adminData">
                 @Model.PaymentMethod
+				@if (Model.PaymentMethodSystemName.HasValue())
+				{
+					<span class="muted">(@Model.PaymentMethodSystemName)</span>
+				}
             </td>
         </tr>
         <tr>
@@ -800,7 +804,8 @@
                 @Html.SmartLabelFor(model => model.PaymentStatus)
             </td>
             <td class="adminData">
-                @Model.PaymentStatus &nbsp;
+				<b>@Model.PaymentStatus</b>
+				&nbsp;
 				@if (Model.CanMarkOrderAsPaid)
 				{
 					<input type="submit" name="markorderaspaid" value="@T("Admin.Orders.Fields.MarkAsPaid")" id="markorderaspaid" class="btn" 

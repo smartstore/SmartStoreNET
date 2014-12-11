@@ -25,5 +25,9 @@ namespace SmartStore.Services.Payments
         /// All payment information is entered on the site and is available via button
         /// </summary>
         StandardAndButton = 25,
+		/// <summary>
+		/// Payment information is entered in checkout and customer is redirected to complete payment (e.g. 3D Secure) after order has been placed
+		/// </summary>
+		StandardAndRedirection = 30
     }
 }

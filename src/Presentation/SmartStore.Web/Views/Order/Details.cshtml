@@ -248,28 +248,27 @@
                             }
                             @if (!String.IsNullOrEmpty(Model.PaymentMethod))
                             {
-                                <div class="payment-method">
+                                <p class="payment-method">
                                     <div class="payment-method-label">
                                         <strong>@T("Order.PaymentMethod"):</strong>
                                     </div>
                                     <div class="payment-method-value">
                                         @Model.PaymentMethod
                                     </div>
-                                </div>
-                                if (!Model.PrintMode && Model.CanRePostProcessPayment)
-                                {
-                                @*Completing payment support (for redirection payment methods)*@
-                                <div class="repost">
-                                    @using (Html.BeginForm())
-                                    {
-                                        <input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button" />
-                                        <p class="hint muted">
-                                            @T("Order.CompletePayment.Hint")
-                                        </p>
-                                    }
-                                </div>
-                                }
-                            }
+                                </p>
+								@*Completing payment support (for redirection payment methods)*@
+								if (!Model.PrintMode && Model.CanRePostProcessPayment)
+								{
+									<div class="repost">
+										<p></p>
+									@using (Html.BeginForm())
+									{
+										<input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button btn-above" />
+										<div class="hint muted">@T("Order.CompletePayment.Hint")</div>
+									}
+									</div>
+								}
+							}
                             @if (Model.DisplayPurchaseOrderNumber)
                             {
                                 <div class="po">
@@ -354,14 +353,14 @@
                                         @Model.ShippingAddress.CountryName
                                     </div>
                                 }
-                                <div class="shipping-method">
+                                <p class="shipping-method">
                                     <div class="shipping-method-label">
                                         <strong>@T("Order.ShippingMethod"):</strong>
                                     </div>
                                     <div class="shipping-method-value">
                                         @Model.ShippingMethod
                                     </div>
-                                </div>
+                                </p>
                             </td>
                         }
                     </tr>

@@ -204,7 +204,7 @@ namespace SmartStore.Services.Payments
             if (paymentMethod == null)
                 return false; //Payment method couldn't be loaded (for example, was uninstalled)
 
-			if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection)
+			if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection && paymentMethod.Value.PaymentMethodType != PaymentMethodType.StandardAndRedirection)
                 return false;   //this option is available only for redirection payment methods
 
             if (order.Deleted)

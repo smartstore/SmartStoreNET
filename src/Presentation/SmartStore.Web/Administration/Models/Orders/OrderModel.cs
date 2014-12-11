@@ -122,6 +122,7 @@ namespace SmartStore.Admin.Models.Orders
         public string PaymentStatus { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
+		public string PaymentMethodSystemName { get; set; }
 
         //credit card info
         public bool AllowStoringCreditCardNumber { get; set; }

@@ -278,7 +278,8 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection)
+				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection ||
+					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndRedirection)
                 .ToList();
 
             foreach (var pm in boundPaymentMethods)

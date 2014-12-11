@@ -340,7 +340,8 @@ namespace SmartStore.Admin.Controllers
 					model.PurchaseOrderNumber = order.PurchaseOrderNumber;
 				}
 
-				model.PaymentMethod = "{0} ({1})".FormatWith(_pluginMediator.GetLocalizedFriendlyName(pm.Metadata), order.PaymentMethodSystemName);
+				model.PaymentMethod = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata);
+				model.PaymentMethodSystemName = order.PaymentMethodSystemName;
 			}
 			else
 			{

@@ -43,18 +43,24 @@
 
 /* Order Details
 ================================================ */
-.order-details .order-details-table{
+.order-details .order-details-table {
     width: 100%;
-    border: 0px;
+    border: 0;
     border-collapse: collapse;
     border-spacing: 0;
 }
 .order-details .order-details-table .billinginfo,
 .order-details .order-details-table .shippinginfo {
-    width:50%;
+    width: 50%;
 }
-.order-details .actions{
-    margin:10px 0px 10px 0px;
+.order-details .order-details-table tr td {
+	vertical-align: top;
+}
+.order-details .order-details-table tr td:first-child {
+	padding-right: 40px;
+}
+.order-details .actions {
+    margin: 10px 0 10px 0;
 }
 .order-details .checkout-attributes {
 	text-align: right;

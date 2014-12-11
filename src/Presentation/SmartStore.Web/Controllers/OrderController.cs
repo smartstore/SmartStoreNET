@@ -274,7 +274,6 @@ namespace SmartStore.Web.Controllers
             model.OrderTotal = _priceFormatter.FormatPrice(orderTotalInCustomerCurrency, true, order.CustomerCurrencyCode, false, _workContext.WorkingLanguage);
 
             //checkout attributes
-            //codehint: sm-edit
             model.CheckoutAttributeInfo = HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription));
             
             //order notes
@@ -523,7 +522,8 @@ namespace SmartStore.Web.Controllers
 
             var postProcessPaymentRequest = new PostProcessPaymentRequest()
             {
-                Order = order
+                Order = order,
+				IsRePostProcessPayment = true
             };
             _paymentService.PostProcessPayment(postProcessPaymentRequest);
 

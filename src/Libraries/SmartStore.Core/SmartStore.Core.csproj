@@ -156,6 +156,7 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
+    <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />

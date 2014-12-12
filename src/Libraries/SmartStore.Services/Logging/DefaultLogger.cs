@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Logging;
@@ -237,11 +237,11 @@ namespace SmartStore.Services.Logging
 					contentHash = (shortMessage
 						+ (context.HashNotFullMessage ? "" : fullMessage)
 						+ (context.HashIpAddress ? ipAddress.EmptyNull() : "")
-					).Hash(true, true);
+					).Hash(Encoding.Unicode, true);
 				}
 				else
 				{
-					contentHash = (shortMessage + fullMessage).Hash(true, true);
+					contentHash = (shortMessage + fullMessage).Hash(Encoding.Unicode, true);
 				}
 
 				log = _logRepository.Table.OrderByDescending(x => x.CreatedOnUtc).FirstOrDefault(x => x.ContentHash == contentHash);

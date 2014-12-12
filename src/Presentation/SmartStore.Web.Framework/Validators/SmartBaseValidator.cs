@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using FluentValidation;
 
 namespace SmartStore.Web.Framework.Validators
@@ -21,6 +22,20 @@ namespace SmartStore.Web.Framework.Validators
 					modelState.AddModelError(error.PropertyName + (++i).ToString(), error.ErrorMessage);
 				}
 			}
+		}
+
+		public bool Validate(T model, List<string> warnings)
+		{
+			var result = Validate(model);
+
+			if (!result.IsValid)
+			{
+				foreach (var error in result.Errors)
+					warnings.Add(error.ErrorMessage);
+
+				return false;
+			}
+			return true;
 		}
 	}
 }

@@ -237,20 +237,16 @@ namespace SmartStore
             return !string.IsNullOrEmpty(value);
         }
 
-		/// <remarks>codehint: sm-edit</remarks>
-		/// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", false, false).</remarks>
+		/// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", Encoding.ASCII, false).</remarks>
         [DebuggerStepThrough]
-        public static string Hash(this string value, bool toBase64 = false, bool unicode = false)
+		public static string Hash(this string value, Encoding encoding, bool toBase64 = false)
         {
-            Guard.ArgumentNotEmpty(value, "value");
+			if (value.IsNullOrEmpty())
+				return value;
 
-            using (MD5 md5 = MD5.Create())
+            using (var md5 = MD5.Create())
             {
-				byte[] data = null;
-				if (unicode)
-					data = Encoding.Unicode.GetBytes(value);
-				else
-					data = Encoding.ASCII.GetBytes(value);
+				byte[] data = encoding.GetBytes(value);
 
 				if (toBase64) 
                 {
@@ -263,6 +259,20 @@ namespace SmartStore
 				}
             }
         }
+
+		/// <summary>
+		/// Mask by replacing characters with asterisks.
+		/// </summary>
+		/// <param name="value">The string</param>
+		/// <param name="length">Number of characters to leave untouched.</param>
+		/// <returns>The mask string</returns>
+		[DebuggerStepThrough]
+		public static string Mask(this string value, int length)
+		{
+			if (value.HasValue())
+				return value.Substring(0, length) + new String('*', value.Length - length);
+			return value;
+		}
 
         [DebuggerStepThrough]
         public static bool IsWebUrl(this string value)
@@ -516,7 +526,6 @@ namespace SmartStore
 		}
 
 		/// <summary>Splits a string into two strings</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <returns>true: success, false: failure</returns>
         [DebuggerStepThrough]
 		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter) {
@@ -714,7 +723,6 @@ namespace SmartStore
         }
 
 		/// <summary>Debug.WriteLine</summary>
-		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
 		public static void Dump(this string value, bool appendMarks = false) 
         {
@@ -723,7 +731,6 @@ namespace SmartStore
 		}
 		
 		/// <summary>Smart way to create a HTML attribute with a leading space.</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="name">Name of the attribute.</param>
 		public static string ToAttribute(this string value, string name, bool htmlEncode = true) 
         {

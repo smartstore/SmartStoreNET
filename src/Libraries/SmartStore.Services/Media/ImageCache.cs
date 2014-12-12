@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Text;
 using System.Web;
 using ImageResizer;
 using SmartStore.Core;
@@ -197,7 +198,7 @@ namespace SmartStore.Services.Media
             {
                 return settings.MaxWidth.ToString();
             }
-            return settings.ToString().Hash();
+			return settings.ToString().Hash(Encoding.ASCII);
         }
 
         private bool NeedsProcessing(ResizeSettings settings)

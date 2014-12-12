@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Text;
+using System.ComponentModel;
 using System.Data;
 using System.Data.OleDb;
 using System.Diagnostics;
-using System.ComponentModel;
+using System.Text;
 using System.Web.Routing;
 using SmartStore.Core;
-using System.Globalization;
 
 namespace SmartStore
 {   
@@ -21,6 +20,18 @@ namespace SmartStore
 			}
 			catch { }
 		}
+		public static string ToAllMessages(this Exception exc)
+		{
+			var sb = new StringBuilder();
+
+			while (exc != null)
+			{
+				sb.Grow(exc.Message, " ");
+				exc = exc.InnerException;
+			}
+			return sb.ToString();
+		}
+
 		public static string ToElapsedMinutes(this Stopwatch watch) 
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalMinutes);
@@ -139,17 +150,6 @@ namespace SmartStore
 				else
 					sb.AppendFormat("{0}{1}", delimiter, grow);
 			}
-		}
-
-		/// <summary>
-		/// Rounds and formats a decimal culture invariant
-		/// </summary>
-		/// <param name="value">The decimal</param>
-		/// <param name="decimals">Rounding decimal number</param>
-		/// <returns>Formated value</returns>
-		public static string FormatInvariant(this decimal value, int decimals = 2)
-		{
-			return Math.Round(value, decimals).ToString("0.00", CultureInfo.InvariantCulture);
 		}
 
 		public static string SafeGet(this string[] arr, int index)

@@ -213,11 +213,10 @@ namespace SmartStore.PayPal.Controllers
 		public override string GetPaymentSummary(FormCollection form)
 		{
 			var number = form["CardNumber"];
-			var len = number.Length;
 			return "{0}, {1}, {2}".FormatCurrent(
 				form["CreditCardType"],
 				form["CardholderName"],
-				number.Substring(0, 4) + new String('*', len - 4)
+				number.Mask(4)
 			);
 		}
 

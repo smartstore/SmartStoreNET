@@ -187,11 +187,10 @@ namespace SmartStore.OfflinePayment.Controllers
 				if (type == "Manual")
 				{
 					var number = form["CardNumber"];
-					var len = number.Length;
 					return "{0}, {1}, {2}".FormatCurrent(
 						form["CreditCardType"],
 						form["CardholderName"],
-						number.Substring(0, 4) + new String('*', len - 4)
+						number.Mask(4)
 					);
 				}
 				else if (type == "DirectDebit")
@@ -199,18 +198,16 @@ namespace SmartStore.OfflinePayment.Controllers
 					if (form["DirectDebitAccountNumber"].HasValue() && (form["DirectDebitBankCode"].HasValue()) && form["DirectDebitAccountHolder"].HasValue())
 					{
 						var number = form["DirectDebitAccountNumber"];
-						var len = number.Length;
 						return "{0}, {1}, {2}".FormatCurrent(
 							form["DirectDebitAccountHolder"],
 							form["DirectDebitBankName"].NullEmpty() ?? form["DirectDebitBankCode"],
-							number.Substring(0, 4) + new String('*', len - 4)
+							number.Mask(4)
 						);
 					}
 					else if (form["DirectDebitIban"].HasValue())
 					{
 						var number = form["DirectDebitIban"];
-						var len = number.Length;
-						return number.Substring(0, 8) + new String('*', len - 8);
+						return number.Mask(8);
 					}
 				}
 			}

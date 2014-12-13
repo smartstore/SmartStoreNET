@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Mvc.Routing.Constraints;
 using System.Web.Routing;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc.Routes;
@@ -10,6 +11,8 @@ namespace SmartStore.Web.Infrastructure
     {
         public void RegisterRoutes(RouteCollection routes)
         {
+			var idConstraint = new MinRouteConstraint(1);
+			
 			/* Common
 			----------------------------------------*/
 			
@@ -81,19 +84,19 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("ChangeCurrency",
 				"changecurrency/{customercurrency}",
 				new { controller = "Common", action = "CurrencySelected" },
-				new { customercurrency = @"\d+" },
+				new { customercurrency = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapRoute("ChangeLanguage",
 				"changelanguage/{langid}",
 				new { controller = "Common", action = "SetLanguage" },
-				new { langid = @"\d+" },
+				new { langid = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ChangeTaxType",
 				"changetaxtype/{customertaxtype}",
 				new { controller = "Common", action = "TaxTypeSelected" },
-				new { customertaxtype = @"\d+" },
+				new { customertaxtype = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
 			/* Catalog
@@ -107,7 +110,7 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("ProductsByTag",
 				"producttag/{productTagId}/{SeName}",
 				new { controller = "Catalog", action = "ProductsByTag", SeName = UrlParameter.Optional },
-				new { productTagId = @"\d+" },
+				new { productTagId = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ProductTagsAll",
@@ -143,14 +146,14 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("AddProductToCartSimple",
 				"cart/addproductsimple/{productId}",
 				new { controller = "ShoppingCart", action = "AddProductSimple" },
-                new { productId = @"\d+" },
+				new { productId = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
             // add product to cart (with attributes and options). used on the product details pages.
 			routes.MapLocalizedRoute("AddProductToCart",
 				"cart/addproduct/{productId}/{shoppingCartTypeId}",
 				new { controller = "ShoppingCart", action = "AddProduct" },
-				new { productId = @"\d+", shoppingCartTypeId = @"\d+" },
+				new { productId = idConstraint, shoppingCartTypeId = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
 
@@ -165,7 +168,7 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("ReturnRequest",
 				"returnrequest/{orderId}",
 				new { controller = "ReturnRequest", action = "ReturnRequest" },
-				new { orderId = @"\d+" },
+				new { orderId = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
 
@@ -195,7 +198,7 @@ namespace SmartStore.Web.Infrastructure
             routes.MapLocalizedRoute("CustomerProfile",
                 "profile/{id}",
                 new { controller = "Profile", action = "Index", id = UrlParameter.Optional },
-                new { id = @"\d+"},
+				new { id = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
 
@@ -220,7 +223,7 @@ namespace SmartStore.Web.Infrastructure
             routes.MapLocalizedRoute("BlogRSS",
                 "blog/rss/{languageId}",
                 new { controller = "Blog", action = "ListRss" },
-                new { languageId = @"\d+" },
+				new { languageId = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
 
@@ -235,37 +238,37 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("BoardPostCreate",
 				"boards/postcreate/{id}/{quote}",
 				new { controller = "Boards", action = "PostCreate", quote = UrlParameter.Optional },
-				new { id = @"\d+" },
+				new { id = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("TopicSlug",
                 "boards/topic/{id}/{slug}",
                 new { controller = "Boards", action = "Topic", slug = UrlParameter.Optional },
-                new { id = @"\d+"},
+				new { id = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("TopicSlugPaged",
 				"boards/topic/{id}/{slug}/page/{page}",
 				new { controller = "Boards", action = "Topic" },
-				new { id = @"\d+", page = @"\d+" },
+				new { id = idConstraint, page = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("ForumSlug",
                 "boards/forum/{id}/{slug}",
                 new { controller = "Boards", action = "Forum", slug = UrlParameter.Optional },
-                new { id = @"\d+" },
+				new { id = idConstraint },
                 new[] { "SmartStore.Web.Controllers" });
 
 			routes.MapLocalizedRoute("ForumSlugPaged",
 				"boards/forum/{id}/{slug}/page/{page}",
 				new { controller = "Boards", action = "Forum" },
-				new { id = @"\d+", page = @"\d+" },
+				new { id = idConstraint, page = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("ForumGroupSlug",
 				"boards/forumgroup/{id}/{slug}",
 				new { controller = "Boards", action = "ForumGroup", slug = UrlParameter.Optional },
-				new { id = @"\d+" },
+				new { id = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("BoardSearch",
@@ -280,7 +283,7 @@ namespace SmartStore.Web.Infrastructure
 			routes.MapLocalizedRoute("RegisterResult",
 				"registerresult/{resultId}",
 				new { controller = "Customer", action = "RegisterResult" },
-				new { resultId = @"\d+" },
+				new { resultId = idConstraint },
 				new[] { "SmartStore.Web.Controllers" });
 
             routes.MapLocalizedRoute("PrivateMessages",

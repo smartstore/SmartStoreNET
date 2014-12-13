@@ -86,7 +86,7 @@ namespace SmartStore.Web.Framework.Seo
                     //no URL record found
 					data.Values["controller"] = "Error";
 					data.Values["action"] = "NotFound";
-                    return data;
+                    return data;				
                 }
                 if (!urlRecord.IsActive)
                 {

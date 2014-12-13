@@ -1,8 +1,10 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
+	using SmartStore.Core.Domain.Topics;
 	using SmartStore.Data.Setup;
+	using System.Linq;
 
 	public partial class V211 : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
@@ -22,6 +24,12 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+			var topic = context.Set<Topic>().FirstOrDefault(x => x.SystemName == "PageNotFound");
+			if (topic != null)
+			{
+				context.Set<Topic>().Remove(topic);
+			}
 		}
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
@@ -77,6 +85,24 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Orders.Fields.VoidOffline.Hint",
 				"Setzt the payment status to 'canceled' without contacting the payment provider.",
 				"Setzt den Zahlungsstatus auf 'Storniert', ohne dabei den Zahlungsanbieter zu kontaktieren.");
+
+			// Error Handling (404/500)
+			builder.Delete("PageTitle.PageNotFound");
+			builder.AddOrUpdate("ErrorPage.Title",
+				"Oops!",
+				"Oops!");
+			builder.AddOrUpdate("ErrorPage.Body",
+				@"We apologize, a server error ocurred while handling your request, this is not a problem with your computer or internet connection.
+			The details have been sent to our support team and we will investigate the issue very soon.<br /><br />
+			In the meantime, please retry your request as it may have been temporary.",
+				@"Leider ist ein Serverfehler aufgetreten, und das hat nichts mit Ihrem Computer oder Ihrem Internetanschluss zu tun.
+			Unser Support Team wurde bereits benachrichtigt und wird sich sehr bald um die Behebung kümmern.");
+			builder.AddOrUpdate("NotFoundPage.Title",
+				"404",
+				"404");
+			builder.AddOrUpdate("NotFoundPage.Body",
+				"Sorry! The page you were looking for could not be found.",
+				"Tut uns leid! Diese Adresse gibt es auf unserer Website nicht.");
 		}
     }
 }

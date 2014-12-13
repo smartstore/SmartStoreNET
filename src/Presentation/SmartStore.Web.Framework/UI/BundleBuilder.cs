@@ -87,6 +87,9 @@ namespace SmartStore.Web.Framework.UI
                 postfix = ".css";
             }
 
+			// TBD: routing fix
+			postfix = "";
+
             // compute hash
             var hash = "";
             using (SHA256 sha = new SHA256Managed())
@@ -114,7 +117,7 @@ namespace SmartStore.Web.Framework.UI
 
             var sb = new StringBuilder(prefix);
             sb.Append(hash);
-            sb.Append(postfix);
+			sb.Append(postfix); 
             return sb.ToString();
         }
 

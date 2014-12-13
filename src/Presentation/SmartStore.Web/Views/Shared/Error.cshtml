@@ -21,33 +21,37 @@
 <!DOCTYPE html>
 <html>
 <head>
-	<title>Error</title>
+	<title>Internal Server Error</title>
 	<style type="text/css">
-		body {
-			font-family: 'Segoe UI', Arial, helvetica, sans-serif;
+        body {
+            font-family: Arial, Helvetica, sans-serif;
+            font-size: 14px;
+            line-height: 20px;
+            color: #444;
+        }
+		.page {
+            width: 740px;
+            margin: 50px auto;
+            text-align: center;
+        }
+        h1, h2, h3, h4, h5, h6 {
+            font-family: 'Arial', 'Segoe UI', Arial, helvetica, sans-serif;
+            font-weight: 400;
+			margin: 0;
+        }
+        h1 {
+            font-size: 100px;
+			line-height: 140px;
+			color: #999;
+			margin-bottom: 50px;
+        }
+		p {
 			font-size: 16px;
 			line-height: 22px;
-			color: #555;
-		}
-
-		h1, h2, h3, h4, h5, h6 {
-			font-family: 'Segoe UI Semibold', 'Segoe UI', Arial, helvetica, sans-serif;
-			font-weight: 600;
-		}
-
-		h1 {
-			font-size: 30px;
-			line-height: 48px;
-		}
-
-		.page {
-			width: 840px;
-			margin: 0 auto;
-			text-align: center;
 		}
 
 		.error {
-			margin-top: 12px;
+			margin-top: 30px;
 			padding: 15px;
 			color: #a94442;
 			background-color: #f2dede;
@@ -57,31 +61,29 @@
 </head>
 <body>
 	<div class="page">
+		<img src="~/Content/Images/sad.png" width="128" height="128" />
+		
 		@if (title.HasValue())
 		{
-			<h1>@title</h1>
+			<h1>@Html.Raw(title)</h1>
 		}
 		else
 		{
-			<h1>We're sorry, an internal error has occurred.</h1>
+			<h1>Oops!</h1>
 		}
 
 		@if (text.HasValue())
 		{
-			<p>@text</p>
+			<p>@Html.Raw(text)</p>
 		}
 		else
 		{
 			<p>
-				Our supporting staff has been notified of this error and will address the issue shortly.
-				We  apologize for the inconvenience.
+				We apologize, an error ocurred while handling your request, this is not a problem with your computer or internet connection.
+				The details have been sent to our support team and we will investigate the issue very soon.
 				<br />
 				<br />
-				Please try clicking your browsers 'back' button or try reloading the home page.
-				If you continue to receive this message, please try again in a little while.
-				<br />
-				<br />
-				Thank you for your patience.
+				In the meantime, please retry your request as it may have been temporary.
 			</p>
 		}
 

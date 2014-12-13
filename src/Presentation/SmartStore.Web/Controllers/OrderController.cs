@@ -541,9 +541,9 @@ namespace SmartStore.Web.Controllers
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult ShipmentDetails(int shipmentId)
+        public ActionResult ShipmentDetails(int id /* shipmentId */)
         {
-            var shipment = _shipmentService.GetShipmentById(shipmentId);
+            var shipment = _shipmentService.GetShipmentById(id);
             if (shipment == null)
                 return new HttpUnauthorizedResult();
 

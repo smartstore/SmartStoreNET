@@ -153,8 +153,9 @@ namespace SmartStore.Web.Framework.Themes
 			}
 			else
 			{
-				bool isLess = false;
-				if (ThemeHelper.IsStyleSheet(relativePath, out isLess) && isLess)
+				bool isLess;
+				bool isBundle;
+				if (ThemeHelper.IsStyleSheet(relativePath, out isLess, out isBundle) && isLess)
 				{
 					// special consideration for LESS files: they can be validated
 					// in the backend. For validation, a "theme" query is appended 

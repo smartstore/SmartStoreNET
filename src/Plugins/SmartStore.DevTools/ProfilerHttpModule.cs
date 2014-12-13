@@ -5,6 +5,7 @@ using System.Web;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Web.Framework;
 using StackExchange.Profiling;
 
 namespace SmartStore.DevTools
@@ -15,6 +16,7 @@ namespace SmartStore.DevTools
 		public void Start()
 		{
 			DynamicModuleUtility.RegisterModule(typeof(ProfilerHttpModule));
+			SmartUrlRoutingModule.RegisterRoutablePath("/mini-profiler-resources/(.*)");
 		}
 	}
 

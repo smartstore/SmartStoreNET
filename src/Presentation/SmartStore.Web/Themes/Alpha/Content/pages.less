@@ -14,9 +14,26 @@
     line-height: 30px;
 }
 
+.not-found-page {
+	text-align: center;
+}
 .not-found-page .page-title h1 {
-	color: mix(@textColor, @bodyBackground, 30%);
+	color: mix(@textColor, @bodyBackground, 50%);
 	font-family: @baseFontFamily;
+	font-weight: 400;
+	font-size: 220px;
+	line-height: 280px;
+}
+.not-found-page .page-body {
+	font-size: 20px;
+	line-height: 30px;
+}
+.not-found-page .buttons {
+	margin: 50px 0;
+}
+.not-found-page .buttons .btn {
+	min-width: 150px;
+	&:first-child { margin-right: 10px }
 }
 
 .page.order-list-page .buttons .btn,

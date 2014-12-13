@@ -266,18 +266,10 @@
     <Content Include="changelog.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <Content Include="Content\Web.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Docs\Developer-Guide.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>
-    <Content Include="Scripts\Web.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="Views\WebApi\Configure.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

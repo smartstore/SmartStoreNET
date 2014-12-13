@@ -183,10 +183,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\Web.config">
-      <SubType>Designer</SubType>
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
     <None Include="packages.config" />
     <Content Include="web.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

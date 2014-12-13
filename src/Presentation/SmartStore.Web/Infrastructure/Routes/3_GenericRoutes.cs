@@ -38,6 +38,8 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Blog", action = "BlogPost" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			// TODO: actually this one's never reached, because the "GenericUrl" route
+			// at the top handles this.
 			routes.MapLocalizedRoute("PageNotFound",
 				"{*path}",
 				new { controller = "Error", action = "NotFound" },

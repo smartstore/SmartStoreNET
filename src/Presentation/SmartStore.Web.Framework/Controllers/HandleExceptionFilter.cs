@@ -21,16 +21,16 @@ namespace SmartStore.Web.Framework.Controllers
     {
 		private readonly Lazy<ILogger> _logger;
 		private readonly Lazy<IEnumerable<IExceptionFilter>> _exceptionFilters;
-		private readonly INotifier _notifier;
+		private readonly Lazy<IWorkContext> _workContext;
 
 		public HandleExceptionFilter(
 			Lazy<ILogger> logger, 
 			Lazy<IEnumerable<IExceptionFilter>> exceptionFilters,
-			INotifier notifier)
+			Lazy<IWorkContext> workContext)
 		{
 			this._logger = logger;
 			this._exceptionFilters = exceptionFilters;
-			this._notifier = notifier;
+			this._workContext = workContext;
 		}
 
         public void OnActionExecuting(ActionExecutingContext filterContext)
@@ -49,7 +49,7 @@ namespace SmartStore.Web.Framework.Controllers
 				{
 					if (ShouldHandleException(filterContext.Exception))
 					{
-						_logger.Value.Error("An unexpected error occurred", filterContext.Exception);
+						LogException(filterContext.Exception);
 
 						// inform exception filters of the exception that was suppressed
 						var exceptionContext = new ExceptionContext(filterContext.Controller.ControllerContext, filterContext.Exception);
@@ -111,10 +111,10 @@ namespace SmartStore.Web.Framework.Controllers
 
 			if (filterContext.Result is HttpNotFoundResult && !filterContext.IsChildAction)
 			{
-				// handle not found (404) from within the MVC pipleline (only called when HttpNotFoundResult is returned from actions)
+				// handle not found (404) from within the MVC pipeline (only called when HttpNotFoundResult is returned from actions)
 				var requestContext = filterContext.RequestContext;
 				var url = requestContext.HttpContext.Request.RawUrl;
-
+				
 				filterContext.Result = new ViewResult
 				{
 					ViewName = "NotFound",
@@ -139,6 +139,31 @@ namespace SmartStore.Web.Framework.Controllers
 				exception is ThreadAbortException ||
 				exception is SecurityException ||
 				exception is SEHException);
+		}
+
+		protected void LogException(Exception exception)
+		{
+			if (exception == null)
+				return;
+
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			//// ignore 404 HTTP errors
+			//var httpException = exception as HttpException;
+			//if (httpException != null && httpException.GetHttpCode() == 404)
+			//	return;
+
+			try
+			{
+				var logger = _logger.Value;
+				var workContext = _workContext.Value;
+				logger.Error(exception.Message, exception, workContext.CurrentCustomer);
+			}
+			catch
+			{
+				// don't throw new exception
+			}
 		}
 
     }

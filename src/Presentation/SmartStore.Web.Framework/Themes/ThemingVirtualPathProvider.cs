@@ -4,7 +4,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Caching;
 using System.Web.Hosting;
-using System.Web.Optimization;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 
@@ -69,22 +68,18 @@ namespace SmartStore.Web.Framework.Themes
         
         public override CacheDependency GetCacheDependency(string virtualPath, IEnumerable virtualPathDependencies, DateTime utcStart)
         {
-
             bool isLess;
-			if (!ThemeHelper.IsStyleSheet(virtualPath, out isLess))
+			bool isBundle;
+			if (!ThemeHelper.IsStyleSheet(virtualPath, out isLess, out isBundle))
 			{
 				return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
 			}
             else
             {
-                if (!isLess)
+                if (!isLess && !isBundle)
                 {
-					// the Bundler made the call (NOT the LESS HTTP handler)
-					var bundle = BundleTable.Bundles.GetBundleFor(virtualPath);
-					if (bundle == null)
-					{
-						return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
-					}
+					// it's a static css file (no bundle, no less)
+					return GetCacheDependencyInternal(virtualPath, virtualPathDependencies, utcStart);
                 }
                 
                 var arrPathDependencies = virtualPathDependencies.Cast<string>().ToArray();

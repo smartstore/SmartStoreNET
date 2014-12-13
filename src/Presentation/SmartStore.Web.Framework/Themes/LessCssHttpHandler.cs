@@ -28,7 +28,6 @@ namespace SmartStore.Web.Framework.Themes
             AssetHandlerSettings assetHandlerConfig)
             : base(cache, virtualFileSystemWrapper, assetHandlerConfig)
         {
-			var session = HttpContext.Current.Session;
 		}
 
         private bool IsThemeableRequest()

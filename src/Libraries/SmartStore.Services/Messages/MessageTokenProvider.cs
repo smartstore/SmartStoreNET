@@ -776,7 +776,7 @@ namespace SmartStore.Services.Messages
             }
 
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}orderdetails/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
+            tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
 
 
             //Codehint: sm-add
@@ -809,7 +809,7 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Shipment.ShipmentNumber", shipment.Id.ToString()));
             tokens.Add(new Token("Shipment.TrackingNumber", shipment.TrackingNumber));
             tokens.Add(new Token("Shipment.Product(s)", ProductListToHtmlTable(shipment, languageId), true));
-            tokens.Add(new Token("Shipment.URLForCustomer", string.Format("{0}orderdetails/shipment/{1}", _webHelper.GetStoreLocation(false), shipment.Id), true));
+            tokens.Add(new Token("Shipment.URLForCustomer", string.Format("{0}order/shipmentdetails/{1}", _webHelper.GetStoreLocation(false), shipment.Id), true));
 
             //event notification
             _eventPublisher.EntityTokensAdded(shipment, tokens);

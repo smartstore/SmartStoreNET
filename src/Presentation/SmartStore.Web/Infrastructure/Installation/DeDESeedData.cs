@@ -2043,11 +2043,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                     x.Title = "Versand und Rücksendungen";
                     x.Body = "<p>Informationen zu Versand und Rücksendungen. Sie können diese in der Admin-Seite zu bearbeiten.</p>";
                 })
-                .Alter("PageNotFound", x =>
-                {
-                    x.Title = "";
-                    x.Body = "<p><strong>Die von Ihnen angeforderte Seite wurde nicht gefunden, und wir haben eine Vermutung, warum:</strong> <ul> <li>Wenn Sie die URL direkt eingetippt haben, stellen Sie sicher, dass die Schreibweise korrekt ist.</li> <li>Die Seite existiert nicht mehr.</li> </ul> </p>";
-                })
                 .Alter("Imprint", x =>
                 {
                     x.Title = "Impressum";

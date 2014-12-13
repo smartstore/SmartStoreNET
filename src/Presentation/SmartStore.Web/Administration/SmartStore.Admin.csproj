@@ -1203,16 +1203,6 @@
     <Content Include="Views\Packaging\UploadPackage.cshtml" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Scripts\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Content\Web.config">
-      <SubType>Designer</SubType>
-    </Content>
-  </ItemGroup>
-  <ItemGroup>
     <Content Include="Views\Order\_AutoUpdateOrderItem.cshtml" />
   </ItemGroup>
   <PropertyGroup>

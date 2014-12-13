@@ -154,95 +154,9 @@ namespace SmartStore.Web
             if (result.HasValue())
             {
                 return result;
-            }
+            } 
 
             return base.GetVaryByCustomString(context, custom);
-        }
-		
-
-        protected void Application_Error(object sender, EventArgs e)
-        {
-			var exception = Server.GetLastError();
-
-			// TODO: make a setting and don't log error 404 if set
-			LogException(exception);
-			
-			var httpException = exception as HttpException;
-
-			// don't return 404 view if a static resource was requested
-			if (httpException != null && httpException.GetHttpCode() == 404 && WebHelper.IsStaticResourceRequested(Request))
-				return;
-
-			var httpContext = ((MvcApplication)sender).Context;
-
-			var currentController = " ";
-			var currentAction = " ";
-			var currentRouteData = RouteTable.Routes.GetRouteData(new HttpContextWrapper(httpContext));
-
-			if (currentRouteData != null)
-			{
-				if (currentRouteData.Values["controller"] != null && !String.IsNullOrEmpty(currentRouteData.Values["controller"].ToString()))
-					currentController = currentRouteData.Values["controller"].ToString();
-				if (currentRouteData.Values["action"] != null && !String.IsNullOrEmpty(currentRouteData.Values["action"].ToString()))
-					currentAction = currentRouteData.Values["action"].ToString();
-			}
-
-			var errorController = new ErrorController();
-			var routeData = new RouteData();
-			var errorAction = "Index";
-
-			if (httpException != null)
-			{
-				switch (httpException.GetHttpCode())
-				{
-					case 404:
-						errorAction = "NotFound";
-						break;
-					// TODO: more?
-				}
-			}			
-
-			var statusCode = httpException != null ? httpException.GetHttpCode() : 500;
-
-			// don't return error view if custom errors are disabled (in debug mode)
-			if (statusCode == 500 && !httpContext.IsCustomErrorEnabled)
-				return;
-
-			httpContext.ClearError();
-			httpContext.Response.Clear();
-			httpContext.Response.StatusCode = statusCode;
-			httpContext.Response.TrySkipIisCustomErrors = true;
-
-			routeData.Values["controller"] = "Error";
-			routeData.Values["action"] = errorAction;
-
-			errorController.ViewData.Model = new HandleErrorInfo(exception, currentController, currentAction);
-			((IController)errorController).Execute(new RequestContext(new HttpContextWrapper(httpContext), routeData));
-        }
-
-        protected void LogException(Exception exception)
-        {
-            if (exception == null)
-                return;
-            
-            if (!DataSettings.DatabaseIsInstalled())
-                return;
-
-			//// ignore 404 HTTP errors
-			//var httpException = exception as HttpException;
-			//if (httpException != null && httpException.GetHttpCode() == 404)
-			//	return;
-
-            try
-            {
-                var logger = EngineContext.Current.Resolve<ILogger>();
-                var workContext = EngineContext.Current.Resolve<IWorkContext>();
-                logger.Error(exception.Message, exception, workContext.CurrentCustomer);
-            }
-            catch
-            {
-                // don't throw new exception
-            }
         }
 
     }

@@ -4148,14 +4148,6 @@ namespace SmartStore.Data.Setup
 						Title = "Shipping & Returns",
 						Body = "<p>Put your shipping &amp; returns information here. You can edit this in the admin site.</p>"
 					},
-				new Topic
-					{
-						SystemName = "PageNotFound",
-						IncludeInSitemap = false,
-						IsPasswordProtected = false,
-						Title = "",
-						Body = "<p><strong>The page requested by you wasn't found, and we have a guess why.</strong><ul><li>If you typed the URL directly, please make sure the spelling is correct.</li><li>The page no longer exists.</li></ul></p>"
-					},
 
 				//codehint: sm-add begin
 				new Topic

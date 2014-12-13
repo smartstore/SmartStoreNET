@@ -12,10 +12,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult NotFound()
 		{
-			this.Response.StatusCode = 404;
-			this.Response.TrySkipIisCustomErrors = true;
-
-			return View();
+			return HttpNotFound();
 		}
 
 		public ActionResult Index()
@@ -24,6 +21,11 @@ namespace SmartStore.Web.Controllers
 			this.Response.TrySkipIisCustomErrors = true;
 
 			return View("Error");
+		}
+
+		public ActionResult DoThrow()
+		{
+			throw Error.Application("This error was thrown on purpose for testing reasons.");
 		}
 
 	}

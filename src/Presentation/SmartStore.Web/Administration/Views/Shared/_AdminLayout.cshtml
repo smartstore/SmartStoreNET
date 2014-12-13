@@ -7,7 +7,7 @@
 @using SmartStore;
 
 @{
-	Layout = "_AdminRoot";
+	Layout = "~/Administration/Views/Shared/_AdminRoot.cshtml";
 	
 	var currentCustomer = this.WorkContext.CurrentCustomer;
     var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;

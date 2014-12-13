@@ -6,10 +6,14 @@
 * SEO: added support for `<link hreflang="..." ... />` in multi-language stores. The tags are automatically rendered along with the language switcher.
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
 * (Developer) Implemented new HtmlHelper extension `AddCustomHeadParts`: registers whatever head (meta) tag you wish
+* (Developer) Added `SmartUrlRoutingModule`, which can pass static files to `UrlRoutingModule` if desired (e.g. used by MiniProfiler). This way static files can be handled by regular actions or filters, without polluting web.config.
 
 ### Improvements
 * #545 Make all (applicable) settings multi-store-enabled
 * The display order of attribute values are considered in the sorting of backend's attribute combination grid
+* Reworked routing: removed static file security barrier again (caused too much problems)
+* Optimized error handling and redesigned error pages
+* Removed `PageNotFound` topic. Text is a simple locale resource now.
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
@@ -17,6 +21,7 @@
 * #538 Spcification attribute labels in product filter mask are not displayed localized
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
+* Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 
 
 ## SmartStore.NET 2.1.0

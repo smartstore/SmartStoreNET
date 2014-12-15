@@ -1080,7 +1080,7 @@ namespace SmartStore.Web.Controllers
 
 				NotifySuccess(T("Products.EmailAFriend.SuccessfullySent"));
 
-				return RedirectToAction("ProductDetails", new { productId = id });
+				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
 			}
 
 			//If we got this far, something failed, redisplay form

@@ -1043,9 +1043,9 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("EmailAFriend")]
 		[CaptchaValidator]
-		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, bool captchaValid)
+		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
 		{
-			var product = _productService.GetProductById(model.ProductId);
+			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
@@ -1073,10 +1073,14 @@ namespace SmartStore.Web.Controllers
 				model.ProductName = product.GetLocalized(x => x.Name);
 				model.ProductSeName = product.GetSeName();
 
-				model.SuccessfullySent = true;
-				model.Result = T("Products.EmailAFriend.SuccessfullySent");
+				//model.SuccessfullySent = true;
+				//model.Result = T("Products.EmailAFriend.SuccessfullySent");
 
-				return View(model);
+				//return View(model);
+
+				NotifySuccess(T("Products.EmailAFriend.SuccessfullySent"));
+
+				return RedirectToAction("ProductDetails", new { productId = id });
 			}
 
 			//If we got this far, something failed, redisplay form

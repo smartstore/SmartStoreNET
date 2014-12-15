@@ -2,7 +2,7 @@
 @using SmartStore.Web.Models.Catalog;
 
 <div class="tell-a-friend">
-    <a href="@Url.Action("EmailAFriend", new { productId = Model.ProductId })" data-role="button" data-ajax="false">
+    <a href="@Url.Action("EmailAFriend", new { id = Model.ProductId })" data-role="button" data-ajax="false">
         <i class="fa fa-fw fa-envelope"></i>
         @T("Products.EmailAFriend")
     </a>

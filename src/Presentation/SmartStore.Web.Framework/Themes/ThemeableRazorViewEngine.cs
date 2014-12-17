@@ -63,19 +63,12 @@ namespace SmartStore.Web.Framework.Themes
 
 		protected override IView CreatePartialView(ControllerContext controllerContext, string partialPath)
 		{
-			string layoutPath = null;
-			var runViewStartPages = false;
-			var fileExtensions = base.FileExtensions;
-			//return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions);
-			return new RazorView(controllerContext, partialPath, layoutPath, runViewStartPages, fileExtensions, base.ViewPageActivator);
+			return new RazorView(controllerContext, partialPath, null, false, base.FileExtensions, base.ViewPageActivator);
 		}
 
 		protected override IView CreateView(ControllerContext controllerContext, string viewPath, string masterPath)
 		{
-			string layoutPath = masterPath;
-			var runViewStartPages = true;
-			var fileExtensions = base.FileExtensions;
-			return new RazorView(controllerContext, viewPath, layoutPath, runViewStartPages, fileExtensions, base.ViewPageActivator);
+			return new RazorView(controllerContext, viewPath, masterPath, true, base.FileExtensions, base.ViewPageActivator);
 		}
 	}
 }

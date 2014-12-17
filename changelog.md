@@ -9,6 +9,7 @@
 * (Developer) Added `SmartUrlRoutingModule`, which can pass static files to `UrlRoutingModule` if desired (e.g. used by MiniProfiler). This way static files can be handled by regular actions or filters, without polluting web.config.
 
 ### Improvements
+* (Perf) Faster application warmup
 * #545 Make all (applicable) settings multi-store-enabled
 * The display order of attribute values are considered in the sorting of backend's attribute combination grid
 * Reworked routing: removed static file security barrier again (caused too much problems)

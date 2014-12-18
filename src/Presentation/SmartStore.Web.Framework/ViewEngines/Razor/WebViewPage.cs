@@ -28,19 +28,26 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         private IThemeContext _themeContext;
         private ExpandoObject _themeVars;
         private bool? _isHomePage;
+		private int? _currentCategoryId;
+		private int? _currentManufacturerId;
+		private int? _currentProductId;
 
         protected int CurrentCategoryId
         {
             get
             {
-                var routeValues = Url.RequestContext.RouteData.Values;
-                int id = 0;
-                if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && 
-                    routeValues["action"].ToString().IsCaseInsensitiveEqual("category"))
-                {
-                    id = Convert.ToInt32(routeValues["categoryId"].ToString());
-                }
-                return id;
+				if (!_currentCategoryId.HasValue)
+				{
+					int id = 0;
+					var routeValues = Url.RequestContext.RouteData.Values;
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("category"))
+					{
+						id = Convert.ToInt32(routeValues["categoryId"].ToString());
+					}
+					_currentCategoryId = id;
+				}
+
+				return _currentCategoryId.Value;
             }
         }
 
@@ -48,14 +55,18 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         {
             get
             {
-                var routeValues = Url.RequestContext.RouteData.Values;
-                int id = 0;
-                if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") &&
-                    routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer"))
-                {
-                    id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
-                }
-                return id;
+				if (!_currentManufacturerId.HasValue)
+				{
+					var routeValues = Url.RequestContext.RouteData.Values;
+					int id = 0;
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer"))
+					{
+						id = Convert.ToInt32(routeValues["manufacturerId"].ToString());
+					}
+					_currentManufacturerId = id;
+				}
+
+				return _currentManufacturerId.Value;
             }
         }
 
@@ -63,14 +74,18 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
         {
             get
             {
-                var routeValues = Url.RequestContext.RouteData.Values;
-                int id = 0;
-                if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") &&
-                    routeValues["action"].ToString().IsCaseInsensitiveEqual("product"))
-                {
-                    id = Convert.ToInt32(routeValues["productId"].ToString());
-                }
-                return id;
+				if (!_currentProductId.HasValue)
+				{
+					var routeValues = Url.RequestContext.RouteData.Values;
+					int id = 0;
+					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") && routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails"))
+					{
+						id = Convert.ToInt32(routeValues["productId"].ToString());
+					}
+					_currentProductId = id;
+				}
+
+				return _currentProductId.Value;
             }
         }
 
@@ -84,6 +99,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
                     _isHomePage = routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
                         routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Index");
                 }
+
                 return _isHomePage.Value;
             }
         }

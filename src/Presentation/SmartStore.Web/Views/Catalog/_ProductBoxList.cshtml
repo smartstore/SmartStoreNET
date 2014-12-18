@@ -2,15 +2,16 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Core.Domain.Orders;
 @{
-    //prepare "Add to cart" AJAX link
+	// Perf: we use RouteValueDictionary instead of anonymous objects in this view because it's slightly faster
+	// prepare "Add to cart" AJAX link
     string addtocartlink = "";
     if (Model.ProductPrice.ForceRedirectionAfterAddingToCart)
     {
-        addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id, forceredirection = Model.ProductPrice.ForceRedirectionAfterAddingToCart });
+		addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "forceredirection", Model.ProductPrice.ForceRedirectionAfterAddingToCart } });
     }
     else
 	{
-		addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new { productId = Model.Id });
+		addtocartlink = Url.Action("AddProductSimple", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id } });
     }
 
     string leftContentWidth = (Model.ThumbDimension + 20).ToString() + "px";
@@ -32,7 +33,7 @@
 
 <div class="pull-left" style="width:@leftContentWidth">
     <figure class="picture">
-        <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.DefaultPictureModel.Title">
+        <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.DefaultPictureModel.Title">
             <img alt="@Model.DefaultPictureModel.AlternateText" src="@Model.DefaultPictureModel.ImageUrl" title="@Model.DefaultPictureModel.Title" />
         </a>
         @if (Model.ColorAttributes.Any())
@@ -56,7 +57,7 @@
 <div style="margin-left:@leftContentWidth">
     <div class="data">  
         <h3 class="name">
-            <a href="@Url.RouteUrl("Product", new { SeName = Model.SeName })" title="@Model.Name">
+            <a href="@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })" title="@Model.Name">
                 @if (Model.IsNew)
                 {
                     <span class="label label-isnew">@T("Common.New")</span>
@@ -117,7 +118,7 @@
                             @for (int i = 0; i < Model.Manufacturers.Count; i++)
                             {
                                 var item = Model.Manufacturers[i];
-                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
+                                <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", item.SeName } })">@item.Name</a>
                                 if (i != Model.Manufacturers.Count - 1)
                                 {
                                 <text>,</text>
@@ -153,7 +154,7 @@
                     {
                         <div class="manufacturer-item">
                             <div class="picture">
-                                <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })" title="@manufacturer.PictureModel.Title">
+                                <a href="@Url.RouteUrl("Manufacturer", new RouteValueDictionary { { "SeName", manufacturer.SeName } })" title="@manufacturer.PictureModel.Title">
                                     <img alt="@manufacturer.PictureModel.AlternateText" src="@manufacturer.PictureModel.ImageUrl" title="@manufacturer.PictureModel.Title" /></a>
                             </div>
                         </div>
@@ -210,7 +211,7 @@
                     @if (!Model.ProductPrice.DisableWishListButton)
                     {
                         <a class="ajax-cart-link" 
-                            data-href='@Url.Action("AddProduct", "ShoppingCart", new { productId = Model.Id, shoppingCartTypeId = (int)ShoppingCartType.Wishlist })'
+                            data-href='@Url.Action("AddProduct", "ShoppingCart", new RouteValueDictionary { { "productId", Model.Id }, { "shoppingCartTypeId", (int)ShoppingCartType.Wishlist } })'
                             href="#"
 						    rel="nofollow"
                             data-form-selector="#product-details-form"
@@ -223,7 +224,7 @@
                     @if (Model.CompareEnabled)
                     {
                         <a class="ajax-cart-link"
-                            data-href="@Url.Action("AddProductToCompare", new { id = Model.Id })"
+                            data-href="@Url.Action("AddProductToCompare", new RouteValueDictionary { { "id", Model.Id } })"
                             href="#"
 						    rel="nofollow"
                             data-type="compare"
@@ -236,7 +237,7 @@
            }
 
            <div class="buttons pull-right">     
-                <a href='@Url.RouteUrl("Product", new { SeName = Model.SeName })' class="btn" title="@T("Products.Details")" rel="tooltip">
+                <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn" title="@T("Products.Details")" rel="tooltip">
                     <i class="fa fa-info-circle"></i>
                 </a>
                  
@@ -255,7 +256,7 @@
                     }
                     else
                     {
-                        <a class="btn btn-primary add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+                        <a class="btn btn-primary add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })">
                             <i class="fa fa-envelope"></i>
                             @T("Products.CallForPrice.GoToForm")
                         </a>

@@ -25,37 +25,28 @@ namespace SmartStore.Web.Framework.Themes
 			// 0: view, 1: controller, 2: theme
 			ViewLocationFormats = new[]
             {
-                //themes
                 "~/Themes/{2}/Views/{1}/{0}.cshtml", 
+				"~/Views/{1}/{0}.cshtml", 
                 "~/Themes/{2}/Views/Shared/{0}.cshtml",
-
-                //default
-                "~/Views/{1}/{0}.cshtml", 
-                "~/Views/Shared/{0}.cshtml",
+				"~/Views/Shared/{0}.cshtml"
             };
 
 			// 0: view, 1: controller, 2: theme
 			MasterLocationFormats = new[]
             {
-                //themes
                 "~/Themes/{2}/Views/{1}/{0}.cshtml", 
+				"~/Views/{1}/{0}.cshtml",
                 "~/Themes/{2}/Views/Shared/{0}.cshtml", 
-
-                //default
-                "~/Views/{1}/{0}.cshtml", 
                 "~/Views/Shared/{0}.cshtml"
             };
 
 			// 0: view, 1: controller, 2: theme
 			PartialViewLocationFormats = new[]
             {
-				//themes
-				"~/Themes/{2}/Views/{1}/{0}.cshtml", 
+				"~/Themes/{2}/Views/{1}/{0}.cshtml",
+ 				"~/Views/{1}/{0}.cshtml",  
 				"~/Themes/{2}/Views/Shared/{0}.cshtml", 
-
-				//default
-				"~/Views/{1}/{0}.cshtml",  
-				"~/Views/Shared/{0}.cshtml", 
+				"~/Views/Shared/{0}.cshtml" 
             };
 
 			FileExtensions = new[] { "cshtml" };

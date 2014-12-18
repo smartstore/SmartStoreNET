@@ -1,4 +1,5 @@
 ﻿@model CategoryModel
+
 @{
 	Layout = "~/Views/Shared/_ColumnsThree.cshtml";
 	//Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
@@ -12,6 +13,7 @@
 		Html.AddCanonicalUrlParts(categoryUrl);
 	}
 }
+
 @using SmartStore.Core;
 @using SmartStore.Core.Domain.Common;
 @using SmartStore.Core.Domain.Seo;
@@ -30,7 +32,6 @@
 }
 
 <div class="page category-page">
-    @*category breadcrumb*@
     @if (Model.DisplayCategoryBreadcrumb) {
         <ul id="breadcrumb" class="breadcrumb">
             <li>
@@ -115,30 +116,30 @@
         @if (ShowListOptions()) {
             @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
 		}
-
+		
         @Html.Widget("categorydetails_before_product_list")
         @*product list*@
 		<div class="product-list-container">
 			@if (Model.Products.Count > 0) {
 	           if (Model.PagingFilteringContext.ViewMode == "list") {
-				        @*list mode*@
-				        <div class="product-list">
-					        @foreach (var product in Model.Products) {
-						        <article class="item-box details">
-							        @Html.Partial("_ProductBoxList", product)
-						        </article>   
-	                        }
-				        </div>       
+				    @*list mode*@
+				    <div class="product-list">
+					    @foreach (var product in Model.Products) {
+						    <article class="item-box details">
+							    @Html.Partial("_ProductBoxList", product)
+						    </article>   
+	                    }
+				    </div>       
 	           }
 	           else {
-				        @*grid mode*@
-				        <div class="product-grid">
-					        @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
-						        @<article class="item-box">
-							        @Html.Partial("_ProductBox", @item)
-						        </article>
-					        ))
-				        </div>
+				    @*grid mode*@
+				    <div class="product-grid">
+					    @(Html.DataList<ProductOverviewModel>(Model.Products, 3,
+						    @<article class="item-box">
+							    @Html.Partial("_ProductBox", item)
+						    </article>
+					    ))
+				    </div>
 	           }
            }
 

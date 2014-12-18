@@ -153,7 +153,6 @@ namespace SmartStore.Web.Controllers
 
             var model = category.ToModel();
 
-            // codehing: sm-edit (replaced)
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
                 AllowCustomersToSelectPageSize = category.AllowCustomersToSelectPageSize,
@@ -293,7 +292,7 @@ namespace SmartStore.Web.Controllers
                     ctx2.CategoryIds.Add(category.Id);
                     if (_catalogSettings.ShowProductsFromSubcategories)
                     {
-                        //include subcategories
+                        // include subcategories
 						ctx2.CategoryIds.AddRange(_helper.GetChildCategoryIds(category.Id));
                     }
                 }
@@ -323,7 +322,7 @@ namespace SmartStore.Web.Controllers
                     _specificationAttributeService, _services.WebHelper, _services.WorkContext);
             }
 
-            //template
+            // template
             var templateCacheKey = string.Format(ModelCacheEventConsumer.CATEGORY_TEMPLATE_MODEL_KEY, category.CategoryTemplateId);
             var templateViewPath = _services.Cache.Get(templateCacheKey, () =>
             {
@@ -333,7 +332,7 @@ namespace SmartStore.Web.Controllers
                 return template.ViewPath;
             });
 
-            //activity log
+            // activity log
 			_services.CustomerActivity.InsertActivity("PublicStore.ViewCategory", T("ActivityLog.PublicStore.ViewCategory"), category.Name);
 
             return View(templateViewPath, model);
@@ -363,32 +362,17 @@ namespace SmartStore.Web.Controllers
 			if (!_catalogSettings.CategoryBreadcrumbEnabled)
 				return Content("");
 
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles
-				.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-			var cacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_BREADCRUMB_MODEL_KEY, product.Id, _services.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds),
-				_services.StoreContext.CurrentStore.Id);
-			var cacheModel = _services.Cache.Get(cacheKey, () =>
+			var model = new ProductDetailsModel.ProductBreadcrumbModel
 			{
-				var model = new ProductDetailsModel.ProductBreadcrumbModel()
-				{
-					ProductId = product.Id,
-					ProductName = product.GetLocalized(x => x.Name),
-					ProductSeName = product.GetSeName()
-				};
-				var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
-				if (productCategories.Count > 0)
-				{
-					var category = productCategories[0].Category;
-					if (category != null)
-					{
-						var breadcrumb = _helper.GetCategoryBreadCrumb(category.Id, 0);
-						model.CategoryBreadcrumb = breadcrumb;
-					}
-				}
-				return model;
-			});
+				ProductId = product.Id,
+				ProductName = product.GetLocalized(x => x.Name),
+				ProductSeName = product.GetSeName()
+			};
 
-			return PartialView(cacheModel);
+			var breadcrumb = _helper.GetCategoryBreadCrumb(0, productId);
+			model.CategoryBreadcrumb = breadcrumb;
+
+			return PartialView(model);
 		}
 
         [ChildActionOnly]
@@ -464,7 +448,6 @@ namespace SmartStore.Web.Controllers
             // prepare picture model
             model.PictureModel = this.PrepareManufacturerPictureModel(manufacturer, model.Name);
 
-            // codehing: sm-edit (replaced)
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
                 AllowCustomersToSelectPageSize = manufacturer.AllowCustomersToSelectPageSize,

@@ -10,15 +10,17 @@
 
 ### Improvements
 * (Perf) Faster application warmup
-* #545 Make all (applicable) settings multi-store-enabled
-* The display order of attribute values are considered in the sorting of backend's attribute combination grid
+* (Perf) Faster product list rendering
 * Reworked routing: removed static file security barrier again (caused too much problems)
+* #545 Made all (applicable) settings multi-store-enabled
+* The display order of attribute values are considered in the sorting of backend's attribute combination grid
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection
+* #552 Left navbar should stay expanded on product detail pages
 * #538 Spcification attribute labels in product filter mask are not displayed localized
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling

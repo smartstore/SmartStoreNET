@@ -926,7 +926,7 @@ namespace SmartStore.Web.Controllers
 
 		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
-			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>(); // _cacheFactory("request").Value;
+			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () =>
@@ -938,6 +938,7 @@ namespace SmartStore.Web.Controllers
 				{
 					node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
 				}
+
 				if (node == null && currentProductId > 0)
 				{
 					var productCategories = _categoryService.GetProductCategoriesByProductId(currentProductId);
@@ -1182,7 +1183,7 @@ namespace SmartStore.Web.Controllers
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
 						var picture = product.GetDefaultProductPicture(_pictureService);
-						var pictureModel = new PictureModel()
+						var pictureModel = new PictureModel
 						{
 							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize),
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
@@ -1594,30 +1595,29 @@ namespace SmartStore.Web.Controllers
 
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(ICollection<ProductManufacturer> manufacturers)
 		{
-			//var manufacturers = _manufacturerService.GetProductManufacturersByProductId(productId);
-
 			var model = new List<ManufacturerOverviewModel>();
 
-			foreach (var manufacturer in manufacturers)
+			foreach (var pm in manufacturers)
 			{
+				var manufacturer = pm.Manufacturer;
 				var item = new ManufacturerOverviewModel
 				{
-					Id = manufacturer.Manufacturer.Id,
-					Name = manufacturer.Manufacturer.Name,
-					Description = manufacturer.Manufacturer.Description,
-					SeName = manufacturer.Manufacturer.GetSeName()
+					Id = manufacturer.Id,
+					Name = manufacturer.Name,
+					Description = manufacturer.Description,
+					SeName = manufacturer.GetSeName()
 
 				};
 
-				var pic = _pictureService.GetPictureById(manufacturer.Manufacturer.PictureId.GetValueOrDefault());
+				Picture pic = manufacturer.Picture;
 				if (pic != null)
 				{
-					item.PictureModel = new PictureModel()
+					item.PictureModel = new PictureModel
 					{
 						PictureId = pic.Id,
-						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Manufacturer.Name),
-						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Manufacturer.Name),
-						ImageUrl = _pictureService.GetPictureUrl(manufacturer.Manufacturer.PictureId.GetValueOrDefault()),
+						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Name),
+						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Name),
+						ImageUrl = _pictureService.GetPictureUrl(pic),
 					};
 				}
 

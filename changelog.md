@@ -14,6 +14,7 @@
 * Reworked routing: removed static file security barrier again (caused too much problems)
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.
+* PayPal settings are multi-store-enabled
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission

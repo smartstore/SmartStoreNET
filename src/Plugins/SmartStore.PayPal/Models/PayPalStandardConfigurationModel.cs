@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework;
+﻿using SmartStore.PayPal.Settings;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.PayPal.Models
@@ -31,5 +32,34 @@ namespace SmartStore.PayPal.Models
 
 		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.IpnUrl")]
 		public string IpnUrl { get; set; }
+
+        public void Copy(PayPalStandardPaymentSettings settings, bool fromSettings)
+        {
+            if (fromSettings)
+            {
+                UseSandbox = settings.UseSandbox;
+                BusinessEmail = settings.BusinessEmail;
+                PdtToken = settings.PdtToken;
+                PdtValidateOrderTotal = settings.PdtValidateOrderTotal;
+                AdditionalFee = settings.AdditionalFee;
+                AdditionalFeePercentage = settings.AdditionalFeePercentage;
+                PassProductNamesAndTotals = settings.PassProductNamesAndTotals;
+                EnableIpn = settings.EnableIpn;
+                IpnUrl = settings.IpnUrl;
+            }
+            else
+            {
+                settings.UseSandbox = UseSandbox;
+                settings.BusinessEmail = BusinessEmail;
+                settings.PdtToken = PdtToken;
+                settings.PdtValidateOrderTotal = PdtValidateOrderTotal;
+                settings.AdditionalFee = AdditionalFee;
+                settings.AdditionalFeePercentage = AdditionalFeePercentage;
+                settings.PassProductNamesAndTotals = PassProductNamesAndTotals;
+                settings.EnableIpn = EnableIpn;
+                settings.IpnUrl = IpnUrl;
+            }
+
+        }
 	}
 }

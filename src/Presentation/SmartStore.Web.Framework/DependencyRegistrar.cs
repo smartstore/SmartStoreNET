@@ -72,6 +72,7 @@ using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Utilities;
+using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework
 {
@@ -223,6 +224,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
             builder.RegisterType<PdfService>().As<IPdfService>().InstancePerRequest();
+			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 
             builder.RegisterType<ExternalAuthorizer>().As<IExternalAuthorizer>().InstancePerRequest();
             builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();

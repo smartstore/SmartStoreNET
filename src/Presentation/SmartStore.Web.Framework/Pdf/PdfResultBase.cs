@@ -2,7 +2,8 @@
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
-using NReco.PdfGenerator;
+using System.Web.Security;
+using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework.Pdf
 {
@@ -10,101 +11,24 @@ namespace SmartStore.Web.Framework.Pdf
 	{
 		private const string ContentType = "application/pdf";
 
-		public PdfResultBase()
+		protected PdfResultBase(IPdfConverter converter, PdfConvertOptions options)
 		{
-			this.Zoom = 1f;
+			Guard.ArgumentNotNull(() => converter);
+			
+			this.Converter = converter;
+			this.Options = options ?? new PdfConvertOptions();
 		}
 
-		#region Properties
+		protected IPdfConverter Converter { get; set; }
+
+		protected PdfConvertOptions Options { get; set; }
 
 		/// <summary>
 		/// The name of the generated PDF file.
 		/// </summary>
 		public string FileName { get; set; }
 
-		/// <summary>
-		/// Get or set option to generate grayscale PDF 
-		/// </summary>
-		public bool Grayscale { get; set; }
-
-		/// <summary>
-		/// Get or set option to generate low quality PDF (shrink the result document space) 
-		/// </summary>
-		public bool LowQuality { get; set; }
-
-		/// <summary>
-		/// Get or set PDF page margins (in mm) 
-		/// </summary>
-		public string Margins { get; set; }
-
-		/// <summary>
-		/// Get or set PDF page orientation
-		/// </summary>
-		public string Orientation { get; set; }
-
-		/// <summary>
-		/// Get or set custom page footer HTML
-		/// </summary>
-		public string PageFooterHtml { get; set; }
-
-		/// <summary>
-		/// Get or set custom page header HTML 
-		/// </summary>
-		public string PageHeaderHtml { get; set; }
-
-		/// <summary>
-		/// Get or set PDF page width (in mm)
-		/// </summary>
-		public float? PageWidth { get; set; }
-
-		/// <summary>
-		/// Get or set PDF page height (in mm) 
-		/// </summary>
-		public float? PageHeight { get; set; }
-
-		/// <summary>
-		/// Get or set PDF page orientation 
-		/// </summary>
-		public string Size { get; set; }
-
-		/// <summary>
-		/// Custom WkHtmlToPdf global options 
-		/// </summary>
-		public string CustomWkHtmlArgs { get; set; }
-
-		/// <summary>
-		/// Custom WkHtmlToPdf page options 
-		/// </summary>
-		public string CustomWkHtmlPageArgs { get; set; }
-
-		/// <summary>
-		/// Get or set zoom factor 
-		/// </summary>
-		public float Zoom { get; set; }
-
-		#endregion
-
-		#region Methods
-
 		protected abstract string GetUrl(ControllerContext context);
-
-		protected HtmlToPdfConverter CreateConverter()
-		{
-			var converter = new HtmlToPdfConverter 
-			{
-				CustomWkHtmlArgs = this.CustomWkHtmlArgs,
-				CustomWkHtmlPageArgs = this.CustomWkHtmlPageArgs,
-				Grayscale = this.Grayscale,
-				LowQuality = this.LowQuality,
-				PageFooterHtml = this.PageFooterHtml,
-				PageHeaderHtml = this.PageHeaderHtml,
-				PageHeight = this.PageHeight,
-				PageWidth = this.PageWidth,
-				Zoom = this.Zoom
-			};
-
-			return converter;
-		}
 
 		protected HttpResponseBase PrepareResponse(HttpResponseBase response)
 		{
@@ -120,31 +44,16 @@ namespace SmartStore.Web.Framework.Pdf
 			return response;
 		}
 
-		public byte[] BuildPdf(ControllerContext context)
-		{
-			Guard.ArgumentNotNull(() => context);
-
-			var converter = CreateConverter();
-			if (converter == null)
-			{
-				// TODO: ErrHandling
-			}
-
-			var buffer = CallConverter(context, converter);
-
-			return buffer;
-		}
-
-		protected virtual byte[] CallConverter(ControllerContext context, HtmlToPdfConverter converter)
+		protected virtual byte[] CallConverter(ControllerContext context)
 		{
 			var url = this.GetUrl(context);
-			var buffer = converter.GeneratePdfFromFile(url, null);
+			var buffer = Converter.ConvertFile(url, Options, null);
 			return buffer;
 		}
 
 		public override void ExecuteResult(ControllerContext context)
 		{
-			var buffer = BuildPdf(context);
+			var buffer = CallConverter(context);
 			var response = PrepareResponse(context.HttpContext.Response);
 			response.OutputStream.Write(buffer, 0, buffer.Length);
 		}
@@ -158,6 +67,5 @@ namespace SmartStore.Web.Framework.Pdf
 			return result;
 		}
 
-		#endregion
 	}
 }

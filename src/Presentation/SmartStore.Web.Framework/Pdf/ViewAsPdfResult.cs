@@ -6,14 +6,17 @@ using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Web.Framework.Controllers;
-using NReco.PdfGenerator;
+using SmartStore.Services.Pdf;
+using SmartStore.Core;
 
 namespace SmartStore.Web.Framework.Pdf
 {
 	public class ViewAsPdfResult : PdfResultBase
 	{
-		private static readonly Regex _htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-		private static readonly Regex _cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		public ViewAsPdfResult(IPdfConverter converter, PdfConvertOptions options)
+			: base(converter, options)
+		{
+		}
 
 		public string ViewName { get; set; }
 
@@ -26,13 +29,26 @@ namespace SmartStore.Web.Framework.Pdf
 			return string.Empty;
 		}
 
-		protected override byte[] CallConverter(ControllerContext context, HtmlToPdfConverter converter)
+		protected override byte[] CallConverter(ControllerContext context)
 		{
+			if (this.ViewName.IsEmpty())
+				this.ViewName = context.RouteData.GetRequiredString("action");
+			
 			var html = ViewToString(context, this.ViewName, this.MasterName, this.Model);
 
-			html = ReplaceRelativeUrls(html);
+			html = WebHelper.MakeAllUrlsAbsolute(html, context.HttpContext.Request);
 
-			var buffer = converter.GeneratePdf(html);
+			if (Options.PageHeader == null)
+			{
+				Options.PageHeader = RepeatablePdfSection.FromPartialView(this.ViewName + ".Header", this.Model, context, false);
+			}
+
+			if (Options.PageFooter == null)
+			{
+				Options.PageFooter = RepeatablePdfSection.FromPartialView(this.ViewName + ".Footer", this.Model, context, false);
+			}
+
+			var buffer = Converter.ConvertHtml(html, Options);
 			return buffer;
 		}
 
@@ -42,19 +58,5 @@ namespace SmartStore.Web.Framework.Pdf
 			return html;
 		}
 
-		protected string ReplaceRelativeUrls(string html)
-		{
-			string baseUrl = string.Format("{0}://{1}", HttpContext.Current.Request.Url.Scheme, HttpContext.Current.Request.Url.Authority.TrimEnd('/'));
-			
-			MatchEvaluator evaluator = (match) => {
-				var url = match.Groups["url"].Value;
-				return "{0}{1}".FormatCurrent(baseUrl, url.EnsureStartsWith("/"));
-			};
-			
-			html = _htmlPathPattern.Replace(html, evaluator);
-			html = _cssPathPattern.Replace(html, evaluator);
-
-			return html;
-		}
 	}
 }

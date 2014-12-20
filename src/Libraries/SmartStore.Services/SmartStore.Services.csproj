@@ -104,6 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="NReco.PdfGenerator">
+      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.2.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />
@@ -151,6 +154,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
     <Compile Include="Directory\McExchangeRateProvider.cs" />
     <Compile Include="Catalog\AdjustInventoryResult.cs" />
@@ -369,6 +373,12 @@
     <Compile Include="Payments\PaymentService.cs" />
     <Compile Include="Payments\ProcessPaymentResult.cs" />
     <Compile Include="Payments\RecurringPaymentType.cs" />
+    <Compile Include="Pdf\IRepeatablePdfSection.cs" />
+    <Compile Include="Pdf\PdfConvertOptions.cs" />
+    <Compile Include="Pdf\PdfPageMargins.cs" />
+    <Compile Include="Pdf\PdfPageSize.cs" />
+    <Compile Include="Pdf\PdfPagePrientation.cs" />
+    <Compile Include="Pdf\WkHtmlToPdfConverter.cs" />
     <Compile Include="Polls\IPollService.cs" />
     <Compile Include="Polls\PollService.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

@@ -133,9 +133,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NReco.PdfGenerator">
-      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.2.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
-    </Reference>
     <Reference Include="Recaptcha">
       <HintPath>..\..\packages\recaptcha.1.0.5.0\lib\.NetFramework 4.0\Recaptcha.dll</HintPath>
     </Reference>
@@ -250,6 +247,7 @@
     <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
     <Compile Include="Mvc\ProviderModel.cs" />
+    <Compile Include="Pdf\RepeatablePdfSection.cs" />
     <Compile Include="Pdf\UrlAsPdfResult.cs" />
     <Compile Include="Pdf\RouteAsPdfResult.cs" />
     <Compile Include="Pdf\ActionAsPdfResult.cs" />

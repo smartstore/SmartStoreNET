@@ -20,7 +20,9 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Pdf;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
@@ -41,6 +43,7 @@ namespace SmartStore.Web.Controllers
         private readonly IPaymentService _paymentService;
         private readonly ILocalizationService _localizationService;
         private readonly IPdfService _pdfService;
+		private readonly IPdfConverter _pdfConverter;
         private readonly IShippingService _shippingService;
         private readonly ICountryService _countryService;
         private readonly IWebHelper _webHelper;
@@ -65,7 +68,7 @@ namespace SmartStore.Web.Controllers
             ICurrencyService currencyService, IPriceFormatter priceFormatter,
             IOrderProcessingService orderProcessingService, IDateTimeHelper dateTimeHelper,
             IPaymentService paymentService, ILocalizationService localizationService,
-            IPdfService pdfService, IShippingService shippingService,
+            IPdfService pdfService, IPdfConverter pdfConverter, IShippingService shippingService,
             ICountryService countryService, IWebHelper webHelper, 
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             TaxSettings taxSettings, PdfSettings pdfSettings,
@@ -85,6 +88,7 @@ namespace SmartStore.Web.Controllers
             this._paymentService = paymentService;
             this._localizationService = localizationService;
             this._pdfService = pdfService;
+			this._pdfConverter = pdfConverter;
             this._shippingService = shippingService;
             this._countryService = countryService;
             this._webHelper = webHelper;
@@ -483,18 +487,50 @@ namespace SmartStore.Web.Controllers
             return View("Details", model);
         }
 
-		[ActionName("pdf")]
-        public ActionResult GetPdfInvoice(int id)
-        {
-            var order = _orderService.GetOrderById(id);
-            if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
-                return new HttpUnauthorizedResult();
+		//[ActionName("pdf")]
+		//public ActionResult GetPdfInvoice(int id)
+		//{
+		//	var order = _orderService.GetOrderById(id);
+		//	if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+		//		return new HttpUnauthorizedResult();
 
-            var orders = new List<Order>();
-            orders.Add(order);
+		//	var model = PrepareOrderDetailsModel(order);
+		//	var fileName = "order-{0}.pdf".FormatWith(order.Id);
+
+		//	var options = new PdfConvertOptions
+		//	{
+		//		BackgroundDisabled = true,
+		//		Grayscale = false,
+		//		LowQuality = false,
+		//		Margins = new PdfPageMargins { Top = 20, Bottom = 15, Left = 15, Right = 15 },
+		//		Orientation = PdfPagePrientation.Default,
+		//		Size = PdfPageSize.A3,
+		//		UsePrintMediaType = true,
+		//		PageHeader = RepeatablePdfSection.FromUrl("~/Header.html", this.Request),
+		//		PageFooter = RepeatablePdfSection.FromUrl("http://www.google.de", this.Request),
+		//		//UserStylesheetUrl = "http://getbootstrap.com/2.3.2/assets/css/bootstrap.css"
+		//	};
+
+		//	PdfResultBase result;
+
+		//	result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "Details.Print", Model = model/*, FileName = fileName*/ };
+		//	//result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
+
+		//	return result;
+		//}
+
+		[ActionName("pdf")]
+		public ActionResult GetPdfInvoice(int id)
+		{
+			var order = _orderService.GetOrderById(id);
+			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+				return new HttpUnauthorizedResult();
+
+			var orders = new List<Order>();
+			orders.Add(order);
 
 			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
-        }
+		}
 
         public ActionResult ReOrder(int id)
         {

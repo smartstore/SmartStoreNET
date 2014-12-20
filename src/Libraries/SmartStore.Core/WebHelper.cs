@@ -25,7 +25,9 @@ namespace SmartStore.Core
 		private static bool? s_optimizedCompilationsEnabled = null;
 		private static AspNetHostingPermissionLevel? s_trustLevel = null;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		
+		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
 		private string _storeHost;
@@ -688,6 +690,84 @@ namespace SmartStore.Core
 				}
 			}
 			return s_trustLevel.Value;
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to all (relative) urls in a html string
+		/// </summary>
+		/// <param name="html">The html string</param>
+		/// <param name="request">Request object</param>
+		/// <returns>The transformed result html</returns>
+		/// <remarks>
+		/// All html attributed named <c>src</c> and <c>href</c> are affected, also occurences of <c>url('path')</c> within embedded stylesheets.
+		/// </remarks>
+		public static string MakeAllUrlsAbsolute(string html, HttpRequestBase request)
+		{
+			Guard.ArgumentNotNull(() => request);
+
+			if (request.Url == null)
+			{
+				return html;
+			}
+
+			return MakeAllUrlsAbsolute(html, request.Url.Scheme, request.Url.Authority);
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to all (relative) urls in a html string
+		/// </summary>
+		/// <param name="html">The html string</param>
+		/// <param name="protocol">The protocol to prepend, e.g. <c>http</c></param>
+		/// <param name="host">The host name to prepend, e.g. <c>www.mysite.com</c></param>
+		/// <returns>The transformed result html</returns>
+		/// <remarks>
+		/// All html attributed named <c>src</c> and <c>href</c> are affected, also occurences of <c>url('path')</c> within embedded stylesheets.
+		/// </remarks>
+		public static string MakeAllUrlsAbsolute(string html, string protocol, string host)
+		{
+			Guard.ArgumentNotEmpty(() => html);
+			Guard.ArgumentNotEmpty(() => protocol);
+			Guard.ArgumentNotEmpty(() => host);
+
+			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
+
+			MatchEvaluator evaluator = (match) =>
+			{
+				var url = match.Groups["url"].Value;
+				return "{0}{1}".FormatCurrent(baseUrl, url.EnsureStartsWith("/"));
+			};
+
+			html = s_htmlPathPattern.Replace(html, evaluator);
+			html = s_cssPathPattern.Replace(html, evaluator);
+
+			return html;
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to the given (relative) url
+		/// </summary>
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
+		{
+			Guard.ArgumentNotEmpty(() => url);
+			Guard.ArgumentNotNull(() => request);
+
+			if (request.Url == null)
+			{
+				return url;
+			}
+
+			if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				return url;
+			}
+
+			if (url.StartsWith("~"))
+			{
+				url = VirtualPathUtility.ToAbsolute(url);
+			}
+
+			url = String.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			return url;
 		}
 
         private class StoreHost

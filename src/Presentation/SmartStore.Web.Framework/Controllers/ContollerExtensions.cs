@@ -52,7 +52,7 @@ namespace SmartStore.Web.Framework.Controllers
                 viewName = controller.ControllerContext.RouteData.GetRequiredString("action");
 
             controller.ViewData.Model = model;
-
+			
             using (var sw = new StringWriter())
             {
                 ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName.EmptyNull());
@@ -119,7 +119,7 @@ namespace SmartStore.Web.Framework.Controllers
 				viewName = controller.ControllerContext.RouteData.GetRequiredString("action");
 
 			controller.ViewData.Model = model;
-
+			
 			using (var sw = new StringWriter())
 			{
 				ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindView(controller.ControllerContext, viewName.EmptyNull(), masterName.EmptyNull());

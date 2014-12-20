@@ -152,8 +152,7 @@ namespace SmartStore.Services.Common
 
             var doc = new Document(pageSize, 40, 40, 40, 80);
             var writer = PdfWriter.GetInstance(doc, stream);
-            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings,
-				_localizationService, lang, _storeContext);
+            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings, _localizationService, lang, _storeContext);
             doc.Open();
             
             //fonts

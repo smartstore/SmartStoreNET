@@ -15,7 +15,7 @@
             @if (Model.DisplayPdfInvoice)
             {
                 <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
-					<i class="fa fa-arrow-circle-o-down"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
+					<i class="fa fa-file-pdf-o"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
 				</a>
             }
             <button type="submit" id="order-delete" class="btn btn-danger">

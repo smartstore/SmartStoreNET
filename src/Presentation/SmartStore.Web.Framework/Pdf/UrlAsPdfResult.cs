@@ -6,6 +6,8 @@ using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core;
+using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework.Pdf
 {
@@ -13,7 +15,8 @@ namespace SmartStore.Web.Framework.Pdf
 	{
 		private readonly string _url;
 
-		public UrlAsPdfResult(string url)
+		public UrlAsPdfResult(string url, IPdfConverter converter, PdfConvertOptions options)
+			: base(converter, options)
 		{
 			Guard.ArgumentNotEmpty(() => url);
 			this._url = url;
@@ -21,19 +24,7 @@ namespace SmartStore.Web.Framework.Pdf
 
 		protected override string GetUrl(ControllerContext context)
 		{
-			if (_url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || _url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
-			{
-				return _url;
-			}
-
-			string url = _url;
-			if (url.StartsWith("~"))
-			{
-				url = VirtualPathUtility.ToAbsolute(url);
-			}
-
-			url = String.Format("{0}://{1}{2}", context.HttpContext.Request.Url.Scheme, context.HttpContext.Request.Url.Authority, url);
-			return url;
+			return WebHelper.GetAbsoluteUrl(_url, context.HttpContext.Request);
 		}
 
 	}

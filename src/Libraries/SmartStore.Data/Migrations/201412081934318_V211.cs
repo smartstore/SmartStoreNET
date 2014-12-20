@@ -51,6 +51,7 @@ namespace SmartStore.Data.Migrations
 				"Omit www prefix",
 				"www-Präfix weglassen");
 
+			// order payment row
 			builder.AddOrUpdate("Admin.Orders.Fields.PartialRefundOffline",
 				"Partial refund (Offline)",
 				"Teilerstattung (Offline)");
@@ -103,6 +104,15 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("NotFoundPage.Body",
 				"Sorry! The page you were looking for could not be found.",
 				"Tut uns leid! Diese Adresse gibt es auf unserer Website nicht.");
+
+			// amazon payment review
+			builder.AddOrUpdate("Checkout.ConfirmYourOrder",
+				"Please confirm your order.",
+				"Bitte bestätigen Sie Ihren Auftrag.");
+
+			builder.AddOrUpdate("Checkout.ConfirmHint",
+				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything's as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
+				"Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf <strong>zurück</strong> vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf <strong>kaufen</strong> Ihre Bestellung.");
 		}
     }
 }

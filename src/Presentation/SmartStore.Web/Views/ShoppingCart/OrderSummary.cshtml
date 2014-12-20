@@ -367,27 +367,29 @@
 
 				@if (Model.IsEditable)
 				{
-					<div class="checkout-buttons">
-						@if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
-						{
-							<button type="button" 
-									class="btn btn-primary btn-large pull-right checkout-button" 
-									id="checkout" 
-									name="checkout"
-									onclick="$('#startcheckout').trigger('click'); return false;">
-								@T("Checkout.Button")&nbsp;
-								<i class="fa fa-arrow-right" style="font-size: 18px"></i>
-							</button>
-						}
-					</div>
+                    if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+					{
+					    <div class="checkout-buttons">
+						
+							    <button type="button" 
+									    class="btn btn-primary btn-large pull-right checkout-button" 
+									    id="checkout" 
+									    name="checkout"
+									    onclick="$('#startcheckout').trigger('click'); return false;">
+								    @T("Checkout.Button")&nbsp;
+								    <i class="fa fa-arrow-right" style="font-size: 18px"></i>
+							    </button>
+						
+					    </div>
                     
-					<div class="addon-buttons">
-						@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
-						@foreach(var item in Model.ButtonPaymentMethods.Items)
-						{
-							@Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
-						}
-					</div>
+					    <div class="addon-buttons">
+						    @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+						    @foreach(var item in Model.ButtonPaymentMethods.Items)
+						    {
+							    @Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
+						    }
+					    </div>
+                    }
 				}
 			</div>
 		</div>

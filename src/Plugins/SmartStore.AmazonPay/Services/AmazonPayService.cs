@@ -1049,7 +1049,10 @@ namespace SmartStore.AmazonPay.Services
 
 		public CapturePaymentResult Capture(CapturePaymentRequest request)
 		{
-			var result = new CapturePaymentResult();
+			var result = new CapturePaymentResult()
+			{
+				NewPaymentStatus = request.Order.PaymentStatus
+			};
 
 			try
 			{
@@ -1071,7 +1074,10 @@ namespace SmartStore.AmazonPay.Services
 
 		public RefundPaymentResult Refund(RefundPaymentRequest request)
 		{
-			var result = new RefundPaymentResult();
+			var result = new RefundPaymentResult()
+			{
+				NewPaymentStatus = request.Order.PaymentStatus
+			};
 
 			try
 			{
@@ -1105,7 +1111,10 @@ namespace SmartStore.AmazonPay.Services
 
 		public VoidPaymentResult Void(VoidPaymentRequest request)
 		{
-			var result = new VoidPaymentResult();
+			var result = new VoidPaymentResult()
+			{
+				NewPaymentStatus = request.Order.PaymentStatus
+			};
 
 			// redundant... cause payment infrastructure hides "void" and displays "refund" instead.
 			//if (request.Order.PaymentStatus == PaymentStatus.Paid)

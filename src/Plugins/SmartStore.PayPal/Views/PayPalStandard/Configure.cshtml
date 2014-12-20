@@ -41,10 +41,16 @@
             </td>
         </tr>
         <tr>
+            <td colspan="2">
+                @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+            </td>
+        </tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.UseSandbox)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.UseSandbox)
                 @Html.EditorFor(model => model.UseSandbox)
                 @Html.ValidationMessageFor(model => model.UseSandbox)
             </td>
@@ -54,6 +60,7 @@
                 @Html.SmartLabelFor(model => model.BusinessEmail)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.BusinessEmail)
                 @Html.EditorFor(model => model.BusinessEmail)
                 @Html.ValidationMessageFor(model => model.BusinessEmail)
             </td>
@@ -63,6 +70,7 @@
                 @Html.SmartLabelFor(model => model.PdtToken)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.PdtToken)
                 @Html.EditorFor(model => model.PdtToken)
                 @Html.ValidationMessageFor(model => model.PdtToken)
             </td>
@@ -72,6 +80,7 @@
                 @Html.SmartLabelFor(model => model.PdtValidateOrderTotal)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.PdtValidateOrderTotal)
                 @Html.EditorFor(model => model.PdtValidateOrderTotal)
                 @Html.ValidationMessageFor(model => model.PdtValidateOrderTotal)
             </td>
@@ -81,6 +90,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.AdditionalFee)
                 @Html.EditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
@@ -90,6 +100,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.AdditionalFeePercentage)
                 @Html.EditorFor(model => model.AdditionalFeePercentage)
                 @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
@@ -99,6 +110,7 @@
                 @Html.SmartLabelFor(model => model.PassProductNamesAndTotals)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.PassProductNamesAndTotals)
                 @Html.EditorFor(model => model.PassProductNamesAndTotals)
                 @Html.ValidationMessageFor(model => model.PassProductNamesAndTotals)
             </td>
@@ -108,6 +120,7 @@
                 @Html.SmartLabelFor(model => model.EnableIpn)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.EnableIpn)
                 @Html.EditorFor(model => model.EnableIpn)
                 @Html.ValidationMessageFor(model => model.EnableIpn)
             </td>
@@ -120,6 +133,7 @@
                 </span>
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.IpnUrl)
                 @Html.EditorFor(model => model.IpnUrl)
                 @Html.ValidationMessageFor(model => model.IpnUrl)
             </td>

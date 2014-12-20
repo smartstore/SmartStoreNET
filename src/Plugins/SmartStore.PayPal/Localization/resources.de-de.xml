@@ -9,6 +9,9 @@
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">
     <Children>
+      <LocaleResource Name="ConfigSaveNote">
+        <Value>Ihre Einstellungen wurden erfolgreich gespeichert.</Value>
+      </LocaleResource>
       <LocaleResource Name="UseSandbox">
         <Value>Sandbox benutzen</Value>
       </LocaleResource>

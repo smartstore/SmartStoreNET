@@ -19,6 +19,9 @@ using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Settings;
+using SmartStore.Services;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.PayPal.Controllers
 {
@@ -31,9 +34,10 @@ namespace SmartStore.PayPal.Controllers
 		private readonly IStoreContext _storeContext;
 		private readonly IWorkContext _workContext;
 		private readonly IWebHelper _webHelper;
-		private readonly PayPalStandardPaymentSettings _paypalStandardSettings;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
+        private readonly ICommonServices _services;
+        private readonly IStoreService _storeService;
 
         public PayPalStandardController(ISettingService settingService,
 			IPaymentService paymentService, IOrderService orderService,
@@ -41,38 +45,38 @@ namespace SmartStore.PayPal.Controllers
 			IStoreContext storeContext,
 			IWorkContext workContext,
 			IWebHelper webHelper,
-            PayPalStandardPaymentSettings paypalStandardSettings,
 			PaymentSettings paymentSettings,
-			ILocalizationService localizationService)
+            ILocalizationService localizationService, 
+            ICommonServices services,
+            IStoreService storeService)
 		{
-			this._settingService = settingService;
-			this._paymentService = paymentService;
-			this._orderService = orderService;
-			this._orderProcessingService = orderProcessingService;
-			this._storeContext = storeContext;
-			this._workContext = workContext;
-			this._webHelper = webHelper;
-            this._paypalStandardSettings = paypalStandardSettings;
-			this._paymentSettings = paymentSettings;
-			this._localizationService = localizationService;
+			_settingService = settingService;
+			_paymentService = paymentService;
+			_orderService = orderService;
+			_orderProcessingService = orderProcessingService;
+			_storeContext = storeContext;
+			_workContext = workContext;
+			_webHelper = webHelper;
+			_paymentSettings = paymentSettings;
+			_localizationService = localizationService;
+            _services = services;
+            _storeService = storeService;
 		}
 
 		[AdminAuthorize]
 		[ChildActionOnly]
 		public ActionResult Configure()
 		{
-			var model = new PayPalStandardConfigurationModel();
-            model.UseSandbox = _paypalStandardSettings.UseSandbox;
-            model.BusinessEmail = _paypalStandardSettings.BusinessEmail;
-            model.PdtToken = _paypalStandardSettings.PdtToken;
-            model.PdtValidateOrderTotal = _paypalStandardSettings.PdtValidateOrderTotal;
-            model.AdditionalFee = _paypalStandardSettings.AdditionalFee;
-            model.AdditionalFeePercentage = _paypalStandardSettings.AdditionalFeePercentage;
-            model.PassProductNamesAndTotals = _paypalStandardSettings.PassProductNamesAndTotals;
-            model.EnableIpn = _paypalStandardSettings.EnableIpn;
-            model.IpnUrl = _paypalStandardSettings.IpnUrl;
+            var model = new PayPalStandardConfigurationModel();
+            int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
 
-			return View(model);
+            model.Copy(settings, true);
+
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _settingService);
+
+            return View(model);
 		}
 
 		[HttpPost]
@@ -80,22 +84,21 @@ namespace SmartStore.PayPal.Controllers
 		[ChildActionOnly]
         public ActionResult Configure(PayPalStandardConfigurationModel model, FormCollection form)
 		{
-			if (!ModelState.IsValid)
-				return Configure();
+            if (!ModelState.IsValid)
+                return Configure();
 
-			//save settings
-            _paypalStandardSettings.UseSandbox = model.UseSandbox;
-            _paypalStandardSettings.BusinessEmail = model.BusinessEmail;
-            _paypalStandardSettings.PdtToken = model.PdtToken;
-            _paypalStandardSettings.PdtValidateOrderTotal = model.PdtValidateOrderTotal;
-            _paypalStandardSettings.AdditionalFee = model.AdditionalFee;
-            _paypalStandardSettings.AdditionalFeePercentage = model.AdditionalFeePercentage;
-            _paypalStandardSettings.PassProductNamesAndTotals = model.PassProductNamesAndTotals;
-            _paypalStandardSettings.EnableIpn = model.EnableIpn;
-            _paypalStandardSettings.IpnUrl = model.IpnUrl;
-            _settingService.SaveSetting(_paypalStandardSettings);
+            var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+            int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
 
-			return View(model);
+            model.Copy(settings, false);
+
+            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _settingService);
+            _settingService.ClearCache();
+
+            NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
+
+            return Configure();
 		}
 
 		public ActionResult PaymentInfo()
@@ -128,6 +131,8 @@ namespace SmartStore.PayPal.Controllers
             var processor = provider != null ? provider.Value as PayPalStandardProvider : null;
 			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
+
+            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(_storeContext.CurrentStore.Id);
 
 			if (processor.GetPDTDetails(tx, out values, out response))
 			{
@@ -186,7 +191,7 @@ namespace SmartStore.PayPal.Controllers
 					_orderService.UpdateOrder(order);
 
 					//validate order total
-                    if (_paypalStandardSettings.PdtValidateOrderTotal && !Math.Round(total, 2).Equals(Math.Round(order.OrderTotal, 2)))
+                    if (settings.PdtValidateOrderTotal && !Math.Round(total, 2).Equals(Math.Round(order.OrderTotal, 2)))
 					{
 						Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.UnequalTotalOrder").FormatWith(total, order.OrderTotal));
 

@@ -23,12 +23,20 @@
                 </div>
             </td>
         </tr>
+
+        <tr>
+            <td colspan="2">
+                @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+            </td>
+        </tr>
+        
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
-                @Html.DropDownList("TransactMode", Model.TransactModeValues)
+                @Html.SettingOverrideCheckbox(model => model.TransactMode)
+                @Html.DropDownListFor(model => model.TransactMode, Model.TransactModeValues)
             </td>
         </tr>
         <tr>
@@ -36,6 +44,7 @@
                 @Html.SmartLabelFor(model => model.UseSandbox)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.UseSandbox)
                 @Html.EditorFor(model => model.UseSandbox)
                 @Html.ValidationMessageFor(model => model.UseSandbox)
             </td>
@@ -45,6 +54,7 @@
                 @Html.SmartLabelFor(model => model.ApiAccountName)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.ApiAccountName)
                 @Html.EditorFor(model => model.ApiAccountName)
                 @Html.ValidationMessageFor(model => model.ApiAccountName)
             </td>
@@ -54,6 +64,7 @@
                 @Html.SmartLabelFor(model => model.ApiAccountPassword)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.ApiAccountPassword)
                 @Html.EditorFor(model => model.ApiAccountPassword)
                 @Html.ValidationMessageFor(model => model.ApiAccountPassword)
             </td>
@@ -63,6 +74,7 @@
                 @Html.SmartLabelFor(model => model.Signature)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.Signature)
                 @Html.EditorFor(model => model.Signature)
                 @Html.ValidationMessageFor(model => model.Signature)
             </td>
@@ -72,6 +84,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.AdditionalFee)
                 @Html.EditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
@@ -81,6 +94,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
             </td>
             <td class="adminData">
+                @Html.SettingOverrideCheckbox(model => model.AdditionalFeePercentage)
                 @Html.EditorFor(model => model.AdditionalFeePercentage)
                 @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>

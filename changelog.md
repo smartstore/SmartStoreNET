@@ -7,6 +7,7 @@
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
 * (Developer) Implemented new HtmlHelper extension `AddCustomHeadParts`: registers whatever head (meta) tag you wish
 * (Developer) Added `SmartUrlRoutingModule`, which can pass static files to `UrlRoutingModule` if desired (e.g. used by MiniProfiler). This way static files can be handled by regular actions or filters, without polluting web.config.
+* New payment plugin "Payone"
 
 ### Improvements
 * (Perf) Faster application warmup
@@ -16,6 +17,7 @@
 * The display order of attribute values are considered in the sorting of backend's attribute combination grid
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.
+* PayPal settings are multi-store-enabled
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
@@ -25,6 +27,7 @@
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
+* Email a friend redirects to "not found"
 
 
 ## SmartStore.NET 2.1.0

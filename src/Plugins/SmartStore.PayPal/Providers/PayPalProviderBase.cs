@@ -121,7 +121,10 @@ namespace SmartStore.PayPal
         /// <returns>Capture payment result</returns>
         public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
         {
-            var result = new CapturePaymentResult();
+			var result = new CapturePaymentResult()
+			{
+				NewPaymentStatus = capturePaymentRequest.Order.PaymentStatus
+			};
 
             string authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
             var req = new DoCaptureReq();
@@ -162,7 +165,11 @@ namespace SmartStore.PayPal
         /// <returns>RefundPaymentResult</returns>
         public override RefundPaymentResult Refund(RefundPaymentRequest request)
         {
-            var result = new RefundPaymentResult();
+			var result = new RefundPaymentResult()
+			{
+				NewPaymentStatus = request.Order.PaymentStatus
+			};
+
             string transactionId = request.Order.CaptureTransactionId;
 
             var req = new RefundTransactionReq();
@@ -202,7 +209,10 @@ namespace SmartStore.PayPal
         /// <returns>Result</returns>
         public override VoidPaymentResult Void(VoidPaymentRequest request)
         {
-            var result = new VoidPaymentResult();
+			var result = new VoidPaymentResult()
+			{
+				NewPaymentStatus = request.Order.PaymentStatus
+			};
 
             string transactionId = request.Order.AuthorizationTransactionId;
             if (String.IsNullOrEmpty(transactionId))

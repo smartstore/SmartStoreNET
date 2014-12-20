@@ -1,11 +1,17 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.PayPal.Settings;
+using SmartStore.PayPal.Controllers;
+using System.Collections.Generic;
 
 namespace SmartStore.PayPal.Models
 {
     public abstract class ApiConfigurationModel: ModelBase
 	{
+        public string[] ConfigGroups { get; set; }
+
         [SmartResourceDisplayName("Plugins.Payments.PayPal.UseSandbox")]
 		public bool UseSandbox { get; set; }
 
@@ -30,7 +36,30 @@ namespace SmartStore.PayPal.Models
 	}
 
     public class PayPalDirectConfigurationModel : ApiConfigurationModel
-    { 
+    {
+        public void Copy(PayPalDirectPaymentSettings settings, bool fromSettings)
+        {
+            if (fromSettings)
+            {
+                UseSandbox = settings.UseSandbox;
+                TransactMode = Convert.ToInt32(settings.TransactMode);
+                ApiAccountName = settings.ApiAccountName;
+                ApiAccountPassword = settings.ApiAccountPassword;
+                Signature = settings.Signature;
+                AdditionalFee = settings.AdditionalFee;
+                AdditionalFeePercentage = settings.AdditionalFeePercentage;
+            }
+            else
+            {
+                settings.UseSandbox = UseSandbox;
+                settings.TransactMode = (TransactMode)TransactMode;
+                settings.ApiAccountName = ApiAccountName;
+                settings.ApiAccountPassword = ApiAccountPassword;
+                settings.Signature = Signature;
+                settings.AdditionalFee = AdditionalFee;
+                settings.AdditionalFeePercentage = AdditionalFeePercentage;
+            }
+        }
     }
 
     public class PayPalExpressConfigurationModel : ApiConfigurationModel
@@ -49,5 +78,41 @@ namespace SmartStore.PayPal.Models
 
         [SmartResourceDisplayName("Plugins.Payments.PayPalExpress.Fields.DefaultShippingPrice")]
         public decimal DefaultShippingPrice { get; set; }
+
+        public void Copy(PayPalExpressPaymentSettings settings, bool fromSettings)
+        {
+            if (fromSettings)
+            {
+                UseSandbox = settings.UseSandbox;
+                TransactMode = Convert.ToInt32(settings.TransactMode);
+                ApiAccountName = settings.ApiAccountName;
+                ApiAccountPassword = settings.ApiAccountPassword;
+                Signature = settings.Signature;
+                AdditionalFee = settings.AdditionalFee;
+                AdditionalFeePercentage = settings.AdditionalFeePercentage;
+                DisplayCheckoutButton = settings.DisplayCheckoutButton;
+                ConfirmedShipment = settings.ConfirmedShipment;
+                NoShipmentAddress = settings.NoShipmentAddress;
+                CallbackTimeout = settings.CallbackTimeout;
+                DefaultShippingPrice = settings.DefaultShippingPrice;
+            }
+            else {
+                settings.UseSandbox = UseSandbox;
+                settings.TransactMode = (TransactMode)TransactMode;
+                settings.ApiAccountName = ApiAccountName;
+                settings.ApiAccountPassword = ApiAccountPassword;
+                settings.Signature = Signature;
+                settings.AdditionalFee = AdditionalFee;
+                settings.AdditionalFeePercentage = AdditionalFeePercentage;
+                settings.DisplayCheckoutButton = DisplayCheckoutButton;
+                settings.ConfirmedShipment = ConfirmedShipment;
+                settings.NoShipmentAddress = NoShipmentAddress;
+                settings.CallbackTimeout = CallbackTimeout;
+                settings.DefaultShippingPrice = DefaultShippingPrice;
+            }
+        }
+
     }
+
+
 }

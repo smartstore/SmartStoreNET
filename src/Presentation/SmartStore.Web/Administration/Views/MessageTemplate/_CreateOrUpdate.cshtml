@@ -12,7 +12,7 @@
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
-
+    
     //generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
@@ -188,20 +188,8 @@
                 if (!token)
                     return false;
                
-
-                if (navigator.isIE) {
-                    // MSIE
-                    var editorId = $('.mceEditor:visible').prev().attr('id');
-                    var editor = tinymce.editors[editorId];
-                    if (editor) {
-                        editor.execCommand('mceInsertContent', false, '%{0}%'.format(token));
-                    }
-                }
-                else {
-                    tinyMCE.execCommand('mceInsertContent', false, '%{0}%'.format(token));
-                }
+                CKEDITOR.instances.Body.insertHtml('%{0}%'.format(token));
                 
-
                 return false;
             });         
 

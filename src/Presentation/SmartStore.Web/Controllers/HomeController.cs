@@ -288,29 +288,26 @@ namespace SmartStore.Web.Controllers
         {
             if (!String.IsNullOrEmpty(url))
             {
-                if (url.StartsWith("//") || url.StartsWith("http://"))
+				if (url.StartsWith("//") || url.StartsWith("/") || url.StartsWith("http://") || url.StartsWith("https://"))
                 {
                     //  //www.domain.de/dir
                     //  http://www.domain.de/dir
                     // nothing needs to be done
+					return url;
                 }
                 else if (url.StartsWith("~/"))
                 {
                     //  ~/directory
-                    url = Url.Content(url);
-                }
-                else if (url.StartsWith("/"))
-                {
-                    //  /directory
-                    url = Url.Content("~" + url);
+                    return Url.Content(url);
                 }
                 else
                 {
                     //  directory
-                    url = Url.Content("~/" + url);
+                    return Url.Content("~/" + url);
                 }
             }
-            return url;
+
+            return url.EmptyNull();
         }
         
         #endregion helper functions

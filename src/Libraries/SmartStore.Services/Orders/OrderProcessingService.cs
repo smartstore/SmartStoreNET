@@ -488,6 +488,8 @@ namespace SmartStore.Services.Orders
                 processPaymentRequest.OrderGuid = Guid.NewGuid();
 
             var result = new PlaceOrderResult();
+			var utcNow = DateTime.UtcNow;
+
             try
             {
                 #region Order details (customer, totals)
@@ -614,11 +616,6 @@ namespace SmartStore.Services.Orders
                 var customerTaxDisplayType = TaxDisplayType.IncludingTax;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-                    //if (_taxSettings.AllowCustomersToSelectTaxDisplayType)
-                    //    customerTaxDisplayType = customer.TaxDisplayType;
-                    //else
-                    //    customerTaxDisplayType = _taxSettings.TaxDisplayType;
-
 					customerTaxDisplayType = _workContext.GetTaxDisplayTypeFor(customer, processPaymentRequest.StoreId);
                 }
                 else
@@ -1064,8 +1061,8 @@ namespace SmartStore.Services.Orders
                             ShippingMethod = shippingMethodName,
                             ShippingRateComputationMethodSystemName = shippingRateComputationMethodSystemName,
                             VatNumber = vatNumber,
-                            CreatedOnUtc = DateTime.UtcNow,
-							UpdatedOnUtc = DateTime.UtcNow,
+							CreatedOnUtc = utcNow,
+							UpdatedOnUtc = utcNow,
                             CustomerOrderComment = extraData.ContainsKey("CustomerComment") ? extraData["CustomerComment"] : ""
                         };
                         _orderService.InsertOrder(order);
@@ -1165,7 +1162,7 @@ namespace SmartStore.Services.Orders
                                             SenderEmail = giftCardSenderEmail,
                                             Message = giftCardMessage,
                                             IsRecipientNotified = false,
-                                            CreatedOnUtc = DateTime.UtcNow
+											CreatedOnUtc = utcNow
                                         };
                                         _giftCardService.InsertGiftCard(gc);
                                     }
@@ -1233,7 +1230,7 @@ namespace SmartStore.Services.Orders
                                             SenderEmail = giftCardSenderEmail,
                                             Message = giftCardMessage,
                                             IsRecipientNotified = false,
-                                            CreatedOnUtc = DateTime.UtcNow
+											CreatedOnUtc = utcNow
                                         };
                                         _giftCardService.InsertGiftCard(gc);
                                     }
@@ -1253,7 +1250,7 @@ namespace SmartStore.Services.Orders
 								{
 									Discount = discount,
 									Order = order,
-									CreatedOnUtc = DateTime.UtcNow
+									CreatedOnUtc = utcNow
 								};
 								_discountService.InsertDiscountUsageHistory(duh);
 							}
@@ -1270,7 +1267,7 @@ namespace SmartStore.Services.Orders
 									GiftCard = agc.GiftCard,
 									UsedWithOrder = order,
 									UsedValue = amountUsed,
-									CreatedOnUtc = DateTime.UtcNow
+									CreatedOnUtc = utcNow
 								};
 								agc.GiftCard.GiftCardUsageHistory.Add(gcuh);
 								_giftCardService.UpdateGiftCard(agc.GiftCard);
@@ -1296,9 +1293,9 @@ namespace SmartStore.Services.Orders
                                 CycleLength = processPaymentRequest.RecurringCycleLength,
                                 CyclePeriod = processPaymentRequest.RecurringCyclePeriod,
                                 TotalCycles = processPaymentRequest.RecurringTotalCycles,
-                                StartDateUtc = DateTime.UtcNow,
+                                StartDateUtc = utcNow,
                                 IsActive = true,
-                                CreatedOnUtc = DateTime.UtcNow,
+								CreatedOnUtc = utcNow,
                                 InitialOrder = order,
                             };
                             _orderService.InsertRecurringPayment(rp);
@@ -1318,7 +1315,7 @@ namespace SmartStore.Services.Orders
                                         var rph = new RecurringPaymentHistory()
                                         {
                                             RecurringPayment = rp,
-                                            CreatedOnUtc = DateTime.UtcNow,
+											CreatedOnUtc = utcNow,
                                             OrderId = order.Id,
                                         };
                                         rp.RecurringPaymentHistory.Add(rph);
@@ -1344,7 +1341,7 @@ namespace SmartStore.Services.Orders
                             {
                                 Note = T("OrderPlaced"),
                                 DisplayToCustomer = false,
-                                CreatedOnUtc = DateTime.UtcNow
+								CreatedOnUtc = utcNow
                             });
                         _orderService.UpdateOrder(order);
 
@@ -1356,7 +1353,7 @@ namespace SmartStore.Services.Orders
                             {
                                 Note = string.Format(T("MerchantEmailQueued"), orderPlacedStoreOwnerNotificationQueuedEmailId),
                                 DisplayToCustomer = false,
-                                CreatedOnUtc = DateTime.UtcNow
+								CreatedOnUtc = utcNow
                             });
                             _orderService.UpdateOrder(order);
                         }
@@ -1368,7 +1365,7 @@ namespace SmartStore.Services.Orders
                             {
                                 Note = string.Format(T("CustomerEmailQueued"), orderPlacedCustomerNotificationQueuedEmailId),
                                 DisplayToCustomer = false,
-                                CreatedOnUtc = DateTime.UtcNow
+								CreatedOnUtc = utcNow
                             });
                             _orderService.UpdateOrder(order);
                         }

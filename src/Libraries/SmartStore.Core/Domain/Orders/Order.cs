@@ -468,7 +468,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<DiscountUsageHistory> DiscountUsageHistory
         {
-            get { return _discountUsageHistory ?? (_discountUsageHistory = new List<DiscountUsageHistory>()); }
+			get { return _discountUsageHistory ?? (_discountUsageHistory = new HashSet<DiscountUsageHistory>()); }
             protected set { _discountUsageHistory = value; }
         }
 
@@ -477,7 +477,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<GiftCardUsageHistory> GiftCardUsageHistory
         {
-            get { return _giftCardUsageHistory ?? (_giftCardUsageHistory = new List<GiftCardUsageHistory>()); }
+			get { return _giftCardUsageHistory ?? (_giftCardUsageHistory = new HashSet<GiftCardUsageHistory>()); }
             protected set { _giftCardUsageHistory = value; }
         }
 
@@ -487,7 +487,7 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public virtual ICollection<OrderNote> OrderNotes
         {
-            get { return _orderNotes ?? (_orderNotes = new List<OrderNote>()); }
+			get { return _orderNotes ?? (_orderNotes = new HashSet<OrderNote>()); }
             protected set { _orderNotes = value; }
         }
 
@@ -497,7 +497,7 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public virtual ICollection<OrderItem> OrderItems
         {
-            get { return _orderItems ?? (_orderItems = new List<OrderItem>()); }
+			get { return _orderItems ?? (_orderItems = new HashSet<OrderItem>()); }
             protected set { _orderItems = value; }
         }
 
@@ -507,7 +507,7 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public virtual ICollection<Shipment> Shipments
         {
-            get { return _shipments ?? (_shipments = new List<Shipment>()); }
+			get { return _shipments ?? (_shipments = new HashSet<Shipment>()); }
             protected set { _shipments = value; }
         }
 

@@ -62,18 +62,27 @@ namespace SmartStore.Services.Common
 			return null;
 		}
 
-		/// <summary>Checks whether two addresses are sufficiently equal.</summary>
-		public static bool IsSameAs(this Address ad1, Address ad2)
+		/// <summary>
+		/// Checks whether two addresses are sufficiently equal.
+		/// </summary>
+		public static bool IsSameAs(this Address address, Address other)
 		{
-			if (ad1 != null && ad2 != null)
+			if (address != null && other != null)
 			{
-				if (ad1.FirstName == ad2.FirstName && ad1.LastName == ad2.LastName && ad1.Company == ad2.Company &&
-					ad1.Address1 == ad2.Address1 && ad1.Address2 == ad2.Address2 &&
-					ad1.ZipPostalCode == ad2.ZipPostalCode && ad1.City == ad2.City && ad1.StateProvinceId == ad2.StateProvinceId && ad1.CountryId == ad2.CountryId)
+				if (address.FirstName == other.FirstName && 
+					address.LastName == other.LastName && 
+					address.Company == other.Company &&
+					address.Address1 == other.Address1 && 
+					address.Address2 == other.Address2 &&
+					address.ZipPostalCode == other.ZipPostalCode && 
+					address.City == other.City && 
+					address.StateProvinceId == other.StateProvinceId && 
+					address.CountryId == other.CountryId)
 				{
 					return true;
 				}
 			}
+
 			return false;
 		}
     }

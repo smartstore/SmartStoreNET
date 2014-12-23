@@ -53,7 +53,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<PermissionRecord> PermissionRecords
         {
-            get { return _permissionRecords ?? (_permissionRecords = new List<PermissionRecord>()); }
+			get { return _permissionRecords ?? (_permissionRecords = new HashSet<PermissionRecord>()); }
             protected set { _permissionRecords = value; }
         }
     }

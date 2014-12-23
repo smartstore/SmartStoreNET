@@ -13,21 +13,14 @@ namespace SmartStore.Core
     [DataContract]
     public abstract partial class BaseEntity
     {
-        /// <summary>
+		private int? _cachedHashcode;
+		
+		/// <summary>
         /// Gets or sets the entity identifier
         /// </summary>
-		[DataMember, DatabaseGenerated(DatabaseGeneratedOption.Identity)]
+		[DataMember]
+		[DatabaseGenerated(DatabaseGeneratedOption.Identity)]
         public int Id { get; set; }
-
-        public override bool Equals(object obj)
-        {
-            return Equals(obj as BaseEntity);
-        }
-
-        private static bool IsTransient(BaseEntity obj)
-        {
-            return obj != null && Equals(obj.Id, default(int));
-        }
 
         public Type GetUnproxiedType()
         {
@@ -40,7 +33,21 @@ namespace SmartStore.Core
 			return t;
         }
 
-        public virtual bool Equals(BaseEntity other)
+		/// <summary>
+		/// Transient objects are not associated with an item already in storage.  For instance,
+		/// a Product entity is transient if its Id is 0.
+		/// </summary>
+		public virtual bool IsTransient
+		{
+			get { return Id == 0; }
+		}
+
+		public override bool Equals(object obj)
+		{
+			return Equals(obj as BaseEntity);
+		}
+
+        protected virtual bool Equals(BaseEntity other)
         {
             if (other == null)
                 return false;
@@ -48,14 +55,11 @@ namespace SmartStore.Core
             if (ReferenceEquals(this, other))
                 return true;
 
-            if (!IsTransient(this) &&
-                !IsTransient(other) &&
-                Equals(Id, other.Id))
+            if (HasSameNonDefaultIds(other))
             {
                 var otherType = other.GetUnproxiedType();
-                var thisType = GetUnproxiedType();
-                return thisType.IsAssignableFrom(otherType) ||
-                        otherType.IsAssignableFrom(thisType);
+                var thisType = this.GetUnproxiedType();
+                return thisType.Equals(otherType);
             }
 
             return false;
@@ -63,9 +67,27 @@ namespace SmartStore.Core
 
         public override int GetHashCode()
         {
-            if (Equals(Id, default(int)))
-                return base.GetHashCode();
-            return Id.GetHashCode();
+			// once hashcode is generated, never change it!
+			if (_cachedHashcode.HasValue)
+				return _cachedHashcode.Value;
+
+			if (this.IsTransient)
+			{
+				_cachedHashcode = base.GetHashCode();
+			}
+			else
+			{
+				unchecked
+				{
+					// It's possible for two objects to return the same hash code based on
+					// identically valued properties, even if they're of two different types,
+					// so we include the object's type in the hash calculation
+					int hashCode = GetUnproxiedType().GetHashCode();
+					_cachedHashcode = (hashCode * 31) ^ Id.GetHashCode();
+				}
+			}
+
+			return _cachedHashcode.Value;
         }
 
         public static bool operator ==(BaseEntity x, BaseEntity y)
@@ -77,5 +99,10 @@ namespace SmartStore.Core
         {
             return !(x == y);
         }
+
+		private bool HasSameNonDefaultIds(BaseEntity other)
+		{
+			return !this.IsTransient && !other.IsTransient && this.Id == other.Id;
+		}
     }
 }

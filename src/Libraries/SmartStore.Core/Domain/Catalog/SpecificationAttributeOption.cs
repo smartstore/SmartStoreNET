@@ -42,7 +42,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductSpecificationAttribute> ProductSpecificationAttributes
         {
-            get { return _productSpecificationAttributes ?? (_productSpecificationAttributes = new List<ProductSpecificationAttribute>()); }
+			get { return _productSpecificationAttributes ?? (_productSpecificationAttributes = new HashSet<ProductSpecificationAttribute>()); }
             protected set { _productSpecificationAttributes = value; }
         }
     }

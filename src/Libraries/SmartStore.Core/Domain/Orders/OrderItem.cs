@@ -139,7 +139,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<GiftCard> AssociatedGiftCards
         {
-            get { return _associatedGiftCards ?? (_associatedGiftCards = new List<GiftCard>()); }
+			get { return _associatedGiftCards ?? (_associatedGiftCards = new HashSet<GiftCard>()); }
             protected set { _associatedGiftCards = value; }
         }
     }

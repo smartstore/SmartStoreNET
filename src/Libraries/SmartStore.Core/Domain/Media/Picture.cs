@@ -40,7 +40,7 @@ namespace SmartStore.Core.Domain.Media
 		[DataMember]
 		public virtual ICollection<ProductPicture> ProductPictures
         {
-            get { return _productPictures ?? (_productPictures = new List<ProductPicture>()); }
+			get { return _productPictures ?? (_productPictures = new HashSet<ProductPicture>()); }
             protected set { _productPictures = value; }
         }
     }

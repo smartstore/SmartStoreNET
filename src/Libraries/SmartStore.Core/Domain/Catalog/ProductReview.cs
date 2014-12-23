@@ -50,7 +50,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public virtual ICollection<ProductReviewHelpfulness> ProductReviewHelpfulnessEntries
         {
-            get { return _productReviewHelpfulnessEntries ?? (_productReviewHelpfulnessEntries = new List<ProductReviewHelpfulness>()); }
+			get { return _productReviewHelpfulnessEntries ?? (_productReviewHelpfulnessEntries = new HashSet<ProductReviewHelpfulness>()); }
             protected set { _productReviewHelpfulnessEntries = value; }
         }
     }

@@ -1,3 +1,4 @@
+using System.Diagnostics;
 using System.Runtime.Serialization;
 namespace SmartStore.Core.Domain.Configuration
 {
@@ -5,6 +6,7 @@ namespace SmartStore.Core.Domain.Configuration
     /// Represents a setting
     /// </summary>
 	[DataContract]
+	[DebuggerDisplay("{Name}: {Value}")]
 	public partial class Setting : BaseEntity
     {
         public Setting() { }
@@ -33,10 +35,5 @@ namespace SmartStore.Core.Domain.Configuration
 		/// </summary>
 		[DataMember]
 		public int StoreId { get; set; }
-
-        public override string ToString()
-        {
-            return Name;
-        }
     }
 }

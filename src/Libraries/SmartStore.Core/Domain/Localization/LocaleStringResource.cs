@@ -1,8 +1,10 @@
+using System.Diagnostics;
 namespace SmartStore.Core.Domain.Localization
 {
     /// <summary>
     /// Represents a locale string resource
     /// </summary>
+	[DebuggerDisplay("{ResourceName} - {ResourceValue}")]
     public partial class LocaleStringResource : BaseEntity
     {
         /// <summary>
@@ -35,10 +37,6 @@ namespace SmartStore.Core.Domain.Localization
         /// </summary>
         public virtual Language Language { get; set; }
 
-        public override string ToString()
-        {
-            return string.Format("{0} - {1}", ResourceName, ResourceValue);
-        }
     }
 
 }

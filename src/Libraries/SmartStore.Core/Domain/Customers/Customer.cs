@@ -148,7 +148,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<ExternalAuthenticationRecord> ExternalAuthenticationRecords
         {
-            get { return _externalAuthenticationRecords ?? (_externalAuthenticationRecords = new List<ExternalAuthenticationRecord>()); }
+			get { return _externalAuthenticationRecords ?? (_externalAuthenticationRecords = new HashSet<ExternalAuthenticationRecord>()); }
             protected set { _externalAuthenticationRecords = value; }
         }
 
@@ -157,7 +157,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<CustomerContent> CustomerContent
         {
-            get { return _customerContent ?? (_customerContent = new List<CustomerContent>()); }
+			get { return _customerContent ?? (_customerContent = new HashSet<CustomerContent>()); }
             protected set { _customerContent = value; }
         }
 
@@ -166,7 +166,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<CustomerRole> CustomerRoles
         {
-            get { return _customerRoles ?? (_customerRoles = new List<CustomerRole>()); }
+			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
             protected set { _customerRoles = value; }
         }
 
@@ -175,7 +175,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<ShoppingCartItem> ShoppingCartItems
         {
-            get { return _shoppingCartItems ?? (_shoppingCartItems = new List<ShoppingCartItem>()); }
+			get { return _shoppingCartItems ?? (_shoppingCartItems = new HashSet<ShoppingCartItem>()); }
             protected set { _shoppingCartItems = value; }            
         }
 
@@ -185,7 +185,7 @@ namespace SmartStore.Core.Domain.Customers
 		[DataMember]
 		public virtual ICollection<Order> Orders
         {
-            get { return _orders ?? (_orders = new List<Order>()); }
+			get { return _orders ?? (_orders = new HashSet<Order>()); }
             protected set { _orders = value; }            
         }
 
@@ -194,7 +194,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<RewardPointsHistory> RewardPointsHistory
         {
-            get { return _rewardPointsHistory ?? (_rewardPointsHistory = new List<RewardPointsHistory>()); }
+			get { return _rewardPointsHistory ?? (_rewardPointsHistory = new HashSet<RewardPointsHistory>()); }
             protected set { _rewardPointsHistory = value; }            
         }
 
@@ -204,7 +204,7 @@ namespace SmartStore.Core.Domain.Customers
 		[DataMember]
 		public virtual ICollection<ReturnRequest> ReturnRequests
         {
-            get { return _returnRequests ?? (_returnRequests = new List<ReturnRequest>()); }
+			get { return _returnRequests ?? (_returnRequests = new HashSet<ReturnRequest>()); }
             protected set { _returnRequests = value; }            
         }
         
@@ -226,7 +226,7 @@ namespace SmartStore.Core.Domain.Customers
 		[DataMember]
 		public virtual ICollection<Address> Addresses
         {
-            get { return _addresses ?? (_addresses = new List<Address>()); }
+			get { return _addresses ?? (_addresses = new HashSet<Address>()); }
             protected set { _addresses = value; }            
         }
 
@@ -235,7 +235,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<ForumTopic> ForumTopics
         {
-            get { return _forumTopics ?? (_forumTopics = new List<ForumTopic>()); }
+			get { return _forumTopics ?? (_forumTopics = new HashSet<ForumTopic>()); }
             protected set { _forumTopics = value; }
         }
 
@@ -244,7 +244,7 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public virtual ICollection<ForumPost> ForumPosts
         {
-            get { return _forumPosts ?? (_forumPosts = new List<ForumPost>()); }
+			get { return _forumPosts ?? (_forumPosts = new HashSet<ForumPost>()); }
             protected set { _forumPosts = value; }
         }
         

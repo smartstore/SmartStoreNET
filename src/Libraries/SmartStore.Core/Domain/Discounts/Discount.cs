@@ -118,7 +118,7 @@ namespace SmartStore.Core.Domain.Discounts
         /// </summary>
         public virtual ICollection<DiscountRequirement> DiscountRequirements
         {
-            get { return _discountRequirements ?? (_discountRequirements = new List<DiscountRequirement>()); }
+			get { return _discountRequirements ?? (_discountRequirements = new HashSet<DiscountRequirement>()); }
             protected set { _discountRequirements = value; }
         }
 
@@ -128,7 +128,7 @@ namespace SmartStore.Core.Domain.Discounts
 		[DataMember]
 		public virtual ICollection<Category> AppliedToCategories
         {
-            get { return _appliedToCategories ?? (_appliedToCategories = new List<Category>()); }
+			get { return _appliedToCategories ?? (_appliedToCategories = new HashSet<Category>()); }
             protected set { _appliedToCategories = value; }
         }
 
@@ -137,7 +137,7 @@ namespace SmartStore.Core.Domain.Discounts
 		/// </summary>
 		public virtual ICollection<Product> AppliedToProducts
 		{
-			get { return _appliedToProducts ?? (_appliedToProducts = new List<Product>()); }
+			get { return _appliedToProducts ?? (_appliedToProducts = new HashSet<Product>()); }
 			protected set { _appliedToProducts = value; }
 		}
     }

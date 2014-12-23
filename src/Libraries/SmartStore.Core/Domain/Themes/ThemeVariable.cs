@@ -31,7 +31,7 @@ namespace SmartStore.Core.Domain.Themes
 		/// </summary>
 		public int StoreId { get; set; }
 
-        public override bool Equals(BaseEntity other)
+        protected override bool Equals(BaseEntity other)
         {
             var equals = base.Equals(other);
             if (!equals)

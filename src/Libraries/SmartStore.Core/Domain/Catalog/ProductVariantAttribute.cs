@@ -81,7 +81,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductVariantAttributeValue> ProductVariantAttributeValues
         {
-            get { return _productVariantAttributeValues ?? (_productVariantAttributeValues = new List<ProductVariantAttributeValue>()); }
+			get { return _productVariantAttributeValues ?? (_productVariantAttributeValues = new HashSet<ProductVariantAttributeValue>()); }
             protected set { _productVariantAttributeValues = value; }
         }
 

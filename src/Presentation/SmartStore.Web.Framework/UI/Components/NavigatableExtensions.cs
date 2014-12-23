@@ -163,8 +163,7 @@ namespace SmartStore.Web.Framework.UI
 					var virtualPath = requestContext.RouteData.Route.GetVirtualPath(requestContext, routeValues);
 					if (virtualPath != null)
 					{
-						str = VirtualPathUtility.Combine(requestContext.HttpContext.Request.ApplicationPath, virtualPath.VirtualPath);
-						
+						str = VirtualPathUtility.Combine(VirtualPathUtility.AppendTrailingSlash(requestContext.HttpContext.Request.ApplicationPath), virtualPath.VirtualPath);
 					}
 					else
 					{

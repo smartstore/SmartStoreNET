@@ -7,7 +7,8 @@
 <div class="section-header">
 	<div class="title">
 		<img src="@Url.Content(Model.IconUrl)" alt="@Model.FriendlyName" />
-		@ViewBag.Title <a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
+		@ViewBag.Title <span class="muted">(@(Model.SystemName))</span>
+		<a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
 	</div>
 	<div class="options">
 		<a class="btn" href='@Url.Action("UpdateStringResources", new { systemName = Model.SystemName, returnUrl = Request.RawUrl })'>

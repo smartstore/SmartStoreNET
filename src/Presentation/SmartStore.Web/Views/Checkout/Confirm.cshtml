@@ -127,14 +127,22 @@
                                     }
                                         </text>
                                 }
-                                if (termOfServiceOk) {
+								
+                            	if (termOfServiceOk) {
+                            		var submitOrderEvent = jQuery.Event('submitOrder');
+                            		submitOrderEvent.isOrderValid = true;
+                            		submitOrderEvent.isMobile = false;
 
-                                    checkoutButton.attr("disabled", "disabled");
-                                    checkoutButton.find(".fa-caret-right")
-                                        .removeClass("fa-caret-right")
-                                        .addClass("fa-spinner fa-spin");
+                            		$(this).trigger(submitOrderEvent);
 
-                                    $('#confirm-order-form').submit();
+                            		if (true === submitOrderEvent.isOrderValid) {
+                            			checkoutButton.attr("disabled", "disabled");
+                            			checkoutButton.find(".fa-caret-right")
+											.removeClass("fa-caret-right")
+											.addClass("fa-spinner fa-spin");
+
+                            			$('#confirm-order-form').submit();
+                            		}
                                 }
                             });
                         });

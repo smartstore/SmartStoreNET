@@ -96,6 +96,7 @@
     @*This is used so that themes can inject content into the header*@
     @Html.Partial("Head")
 
+	@Html.MetaAcceptLanguage()
     @Html.Partial("_ClientRes")
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)

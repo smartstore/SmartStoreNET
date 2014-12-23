@@ -487,37 +487,37 @@ namespace SmartStore.Web.Controllers
             return View("Details", model);
         }
 
-		//[ActionName("pdf")]
-		//public ActionResult GetPdfInvoice(int id)
-		//{
-		//	var order = _orderService.GetOrderById(id);
-		//	if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
-		//		return new HttpUnauthorizedResult();
+		[ActionName("pdf2")]
+		public ActionResult GetPdfInvoice2(int id)
+		{
+			var order = _orderService.GetOrderById(id);
+			if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
+				return new HttpUnauthorizedResult();
 
-		//	var model = PrepareOrderDetailsModel(order);
-		//	var fileName = "order-{0}.pdf".FormatWith(order.Id);
+			var model = PrepareOrderDetailsModel(order);
+			var fileName = "order-{0}.pdf".FormatWith(order.Id);
 
-		//	var options = new PdfConvertOptions
-		//	{
-		//		BackgroundDisabled = true,
-		//		Grayscale = false,
-		//		LowQuality = false,
-		//		Margins = new PdfPageMargins { Top = 20, Bottom = 15, Left = 15, Right = 15 },
-		//		Orientation = PdfPagePrientation.Default,
-		//		Size = PdfPageSize.A3,
-		//		UsePrintMediaType = true,
-		//		PageHeader = RepeatablePdfSection.FromUrl("~/Header.html", this.Request),
-		//		PageFooter = RepeatablePdfSection.FromUrl("http://www.google.de", this.Request),
-		//		//UserStylesheetUrl = "http://getbootstrap.com/2.3.2/assets/css/bootstrap.css"
-		//	};
+			var options = new PdfConvertOptions
+			{
+				BackgroundDisabled = true,
+				Grayscale = false,
+				LowQuality = false,
+				Margins = new PdfPageMargins { Top = 20, Bottom = 15, Left = 15, Right = 15 },
+				Orientation = PdfPagePrientation.Default,
+				Size = PdfPageSize.A3,
+				UsePrintMediaType = true,
+				//PageHeader = RepeatablePdfSection.FromUrl("~/Header.html", this.Request),
+				//PageFooter = RepeatablePdfSection.FromUrl("http://www.google.de", this.Request),
+				//UserStylesheetUrl = "http://getbootstrap.com/2.3.2/assets/css/bootstrap.css"
+			};
 
-		//	PdfResultBase result;
+			PdfResultBase result;
 
-		//	result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "Details.Print", Model = model/*, FileName = fileName*/ };
-		//	//result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
+			result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "Details.Print", Model = model/*, FileName = fileName*/ };
+			//result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
 
-		//	return result;
-		//}
+			return result;
+		}
 
 		[ActionName("pdf")]
 		public ActionResult GetPdfInvoice(int id)

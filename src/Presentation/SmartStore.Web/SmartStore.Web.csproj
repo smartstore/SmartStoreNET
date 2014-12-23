@@ -956,6 +956,7 @@
     <Content Include="Content\Images\smartstore.net-200-black.png" />
     <Content Include="Content\Images\smartstore.net-200-white.png" />
     <Content Include="Content\install\images\bg.png" />
+    <Content Include="Content\print.css" />
     <Content Include="Content\samples\0000730-apple-iphone-4s-weis.jpg" />
     <Content Include="Content\samples\0000740-antonio-vivaldi-der-fruhling-100.jpg" />
     <Content Include="Content\samples\0000746_apple_125.jpeg" />

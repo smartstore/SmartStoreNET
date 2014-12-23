@@ -69,12 +69,15 @@ namespace SmartStore.Web.Infrastructure
             {
                 widget.Value.GetDisplayWidgetRoute(widgetZone, model, storeId, out actionName, out controllerName, out routeValues);
 
-                yield return new WidgetRouteInfo 
-                { 
-                    ActionName = actionName, 
-                    ControllerName = controllerName, 
-                    RouteValues = routeValues 
-                };
+				if (actionName.HasValue() && controllerName.HasValue())
+				{
+					yield return new WidgetRouteInfo
+					{
+						ActionName = actionName,
+						ControllerName = controllerName,
+						RouteValues = routeValues
+					};
+				}
             }
 
             #endregion

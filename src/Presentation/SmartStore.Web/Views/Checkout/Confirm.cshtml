@@ -83,7 +83,7 @@
             </div>  
         }
         
-        @Html.Widget("checkout_confirm_bottom")
+        @Html.Widget("checkout_confirm_before_summary")
 
         <div class="order-summary-body">
             @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
@@ -160,5 +160,7 @@
                 }
             </div>
         </div>
+
+		@Html.Widget("checkout_confirm_bottom")
     </div>
 </div>

@@ -60,6 +60,9 @@
                 </label>
             }
         }
+
+		@Html.Widget("mobile_checkout_confirm_before_summary")
+
         <div class="order-summary-body">
             @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
         </div>
@@ -110,8 +113,8 @@
                     </button>
                 }
             </div>
-        </div>  
-        @Html.Widget("mobile_checkout_confirm_bottom")
+        </div>
+		@Html.Widget("mobile_checkout_confirm_bottom")
 
     </div>
 </div>

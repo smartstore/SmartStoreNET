@@ -9,6 +9,7 @@ namespace SmartStore.Admin.Models.Settings
         public CatalogSettingsModel()
         {
             this.AvailableDefaultViewModes = new List<SelectListItem>();
+			this.AvailableDeliveryTimes = new List<SelectListItem>();
         }
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductSku")]
@@ -200,6 +201,10 @@ namespace SmartStore.Admin.Models.Settings
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SuppressSkuSearch")]
 		public bool SuppressSkuSearch { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock")]
+		public int? DeliveryTimeIdForEmptyStock { get; set; }
+
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
+		public IList<SelectListItem> AvailableDeliveryTimes { get; private set; }
     }
 }

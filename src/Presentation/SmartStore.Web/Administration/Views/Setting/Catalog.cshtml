@@ -613,7 +613,6 @@
                 @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedNumber)
             </td>
         </tr>
-		@*codehint: sm-add*@
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisplayAllImagesNumber)
@@ -632,6 +631,16 @@
                 @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductDetail)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.DeliveryTimeIdForEmptyStock)
+				@Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)

@@ -584,7 +584,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ActiveShippingRateComputationMethodSystemNames, mo => mo.Ignore())
                 .ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
             Mapper.CreateMap<CatalogSettings, CatalogSettingsModel>()
-                .ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore());
+                .ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
             Mapper.CreateMap<CatalogSettingsModel, CatalogSettings>()
                 .ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())

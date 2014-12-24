@@ -215,13 +215,16 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
         /// <returns>The stock message</returns>
-        public static bool DisplayDeliveryTimeAccordingToStock(this Product product)
+        public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
+				if (catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
+					return true;
+
 				return (product.StockQuantity > 0);
 			}
             return true;

@@ -42,7 +42,7 @@ namespace SmartStore.Core.Domain.Catalog
 			MaximumBackInStockSubscriptions = 200;
 			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
 			ManufacturersBlockItemsToDisplay = 5;
-			DisplayAllImagesNumber = 6;	// codehint: sm-add
+			DisplayAllImagesNumber = 6;
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
 			ShowVariantCombinationPriceAdjustment = true;
@@ -156,7 +156,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public string PageShareCode { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display reviews in product lists
         /// </summary>
@@ -297,7 +296,6 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public string ProductsByTagPageSizeOptions { get; set; }
 
-        //codehint: sm-add begin
         public int ProductSearchPageSize { get; set; }
 
         public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
@@ -321,8 +319,6 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowDiscountSign { get; set; }
 
 		public bool SuppressSkuSearch { get; set; }
-
-        //codehint: sm-add end
 
         /// <summary>
         /// Gets or sets the available customer selectable default page size options
@@ -405,5 +401,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the height of collapsed text
 		/// </summary>
 		public int HtmlTextCollapsedHeight { get; set; }
+
+		/// <summary>
+		/// Gets or sets an identifier for a delivery time dislayed when stock is empty
+		/// </summary>
+		public int? DeliveryTimeIdForEmptyStock { get; set; }
     }
 }

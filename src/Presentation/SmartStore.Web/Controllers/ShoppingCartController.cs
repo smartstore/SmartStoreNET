@@ -273,11 +273,14 @@ namespace SmartStore.Web.Controllers
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml);
 			}
 
-			var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
-			if (deliveryTime != null)
+			if (product.DisplayDeliveryTimeAccordingToStock(_catalogSettings))
 			{
-				model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
-				model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(product);
+				if (deliveryTime != null)
+				{
+					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+					model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				}
 			}
 
 

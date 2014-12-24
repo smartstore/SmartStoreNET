@@ -713,7 +713,7 @@ namespace SmartStore.Web.Controllers
 
 			if (model.IsAvailable)
 			{
-				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(product);
 				if (deliveryTime != null)
 				{
 					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -723,7 +723,7 @@ namespace SmartStore.Web.Controllers
 
 			model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
 			model.IsShipEnabled = product.IsShipEnabled;
-			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();
+			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
 			if (model.DeliveryTimeName.IsNullOrEmpty() && model.DisplayDeliveryTime)
 			{
@@ -1256,7 +1256,8 @@ namespace SmartStore.Web.Controllers
 				model.TotalReviews = product.ApprovedTotalReviews;
 				model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
 				model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
-				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(minPriceProduct);
 				if (deliveryTime != null)
 				{
 					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -1264,7 +1265,7 @@ namespace SmartStore.Web.Controllers
 				}
 
 				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
-				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock();
+				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
 
 				model.DisplayBasePrice = _catalogSettings.ShowBasePriceInProductLists;

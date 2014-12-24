@@ -70,6 +70,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly ILocalizedEntityService _localizedEntityService;
 		private readonly ILanguageService _languageService;
+		private readonly IDeliveryTimeService _deliveryTimesService;
 
 		private StoreDependingSettingHelper _storeDependingSettings;
 
@@ -89,7 +90,8 @@ namespace SmartStore.Admin.Controllers
 			IMaintenanceService maintenanceService, IStoreService storeService,
 			IWorkContext workContext, IGenericAttributeService genericAttributeService,
 			ILocalizedEntityService localizedEntityService,
-			ILanguageService languageService)
+			ILanguageService languageService,
+			IDeliveryTimeService deliveryTimesService)
         {
             this._settingService = settingService;
             this._countryService = countryService;
@@ -114,6 +116,7 @@ namespace SmartStore.Admin.Controllers
 			this._genericAttributeService = genericAttributeService;
 			this._localizedEntityService = localizedEntityService;
 			this._languageService = languageService;
+			this._deliveryTimesService = deliveryTimesService;
         }
 
 		#endregion 
@@ -569,6 +572,17 @@ namespace SmartStore.Admin.Controllers
             model.AvailableDefaultViewModes.Add(
 				new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
 			);
+
+			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
+			foreach (var dt in deliveryTimes)
+			{
+				model.AvailableDeliveryTimes.Add(new SelectListItem()
+				{
+					Text = dt.Name,
+					Value = dt.Id.ToString(),
+					Selected = dt.Id == catalogSettings.DeliveryTimeIdForEmptyStock
+				});
+			}
 
             return View(model);
         }

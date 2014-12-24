@@ -113,6 +113,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Checkout.ConfirmHint",
 				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything's as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
 				"Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf <strong>zurück</strong> vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf <strong>kaufen</strong> Ihre Bestellung.");
+
+			// new setting
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock",
+				"Delivery time dislayed when stock is empty",
+				"Lieferzeit, die bei einem leerem Lagerbestand angezeigt wird",
+				"Delivery time to be dislayed when the stock quantity of a product is equal or less 0.",
+				"Lieferzeit, die angezeigt wird, wenn der Warenbestand des Produktes kleiner gleich 0 ist.");
 		}
     }
 }

@@ -15,6 +15,7 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
@@ -89,6 +90,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly IDbContext _dbContext;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly IGenericAttributeService _genericAttributeService;
 
         #endregion
 
@@ -136,7 +138,8 @@ namespace SmartStore.Admin.Controllers
 			MeasureSettings measureSettings,
 			IPriceFormatter priceFormatter,
 			IDbContext dbContext,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			IGenericAttributeService genericAttributeService)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -179,6 +182,7 @@ namespace SmartStore.Admin.Controllers
 			this._priceFormatter = priceFormatter;
 			this._dbContext = dbContext;
 			this._eventPublisher = eventPublisher;
+			this._genericAttributeService = genericAttributeService;
 
 			T = NullLocalizer.Instance;
         }
@@ -1306,6 +1310,12 @@ namespace SmartStore.Admin.Controllers
             };
             _categoryService.InsertProductCategory(productCategory);
 
+				
+			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+				model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
+
             return ProductCategoryList(command, model.ProductId);
         }
 
@@ -1319,11 +1329,21 @@ namespace SmartStore.Admin.Controllers
             if (productCategory == null)
                 throw new ArgumentException("No product category mapping found with the specified id");
 
+			bool categoryChanged = (Int32.Parse(model.Category) != productCategory.CategoryId);
+
             //use Category property (not CategoryId) because appropriate property is stored in it
             productCategory.CategoryId = Int32.Parse(model.Category);
             productCategory.IsFeaturedProduct = model.IsFeaturedProduct;
             productCategory.DisplayOrder = model.DisplayOrder;
             _categoryService.UpdateProductCategory(productCategory);
+
+			if (categoryChanged)
+			{
+				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+					model.Category, _catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedCategories, mru.ToString());
+			}
 
             return ProductCategoryList(command, productCategory.ProductId);
         }

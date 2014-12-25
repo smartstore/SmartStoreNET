@@ -63,19 +63,19 @@ namespace SmartStore.Services.Common
 		}
 
 		/// <summary>
-		/// Checks whether two addresses are sufficiently equal.
+		/// Checks whether the postal data of two addresses are equal.
 		/// </summary>
-		public static bool IsSameAs(this Address address, Address other)
+		public static bool IsPostalDataEqual(this Address address, Address other)
 		{
 			if (address != null && other != null)
 			{
-				if (address.FirstName == other.FirstName && 
-					address.LastName == other.LastName && 
-					address.Company == other.Company &&
-					address.Address1 == other.Address1 && 
-					address.Address2 == other.Address2 &&
-					address.ZipPostalCode == other.ZipPostalCode && 
-					address.City == other.City && 
+				if (address.FirstName.IsCaseInsensitiveEqual(other.FirstName) && 
+					address.LastName.IsCaseInsensitiveEqual(other.LastName) && 
+					address.Company.IsCaseInsensitiveEqual(other.Company) &&
+					address.Address1.IsCaseInsensitiveEqual(other.Address1) && 
+					address.Address2.IsCaseInsensitiveEqual(other.Address2) &&
+					address.ZipPostalCode.IsCaseInsensitiveEqual(other.ZipPostalCode) && 
+					address.City.IsCaseInsensitiveEqual(other.City) && 
 					address.StateProvinceId == other.StateProvinceId && 
 					address.CountryId == other.CountryId)
 				{

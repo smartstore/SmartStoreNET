@@ -49,6 +49,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
 			HtmlTextCollapsedHeight = 260;
+			MostRecentlyUsedCategoriesMaxSize = 6;
         }
 
         /// <summary>
@@ -406,5 +407,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets an identifier for a delivery time dislayed when stock is empty
 		/// </summary>
 		public int? DeliveryTimeIdForEmptyStock { get; set; }
+
+		/// <summary>
+		/// Gets or sets how many items to display maximally in the most recently used category list
+		/// </summary>
+		public int MostRecentlyUsedCategoriesMaxSize { get; set; }
     }
 }

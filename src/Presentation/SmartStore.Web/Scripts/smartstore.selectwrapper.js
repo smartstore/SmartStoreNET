@@ -9,6 +9,11 @@
 
     $.fn.selectWrapper = function (options) {
 
+    	if (options && !_.str.isBlank(options.resetDataUrl) && lists[options.resetDataUrl]) {
+    		lists[options.resetDataUrl] = null;
+    		return this.each(function () { });
+    	}
+
         return this.each(function () {
 
             var sel = $(this);

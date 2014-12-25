@@ -1,18 +1,23 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -22,7 +27,6 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.UI;
-using SmartStore.Core.Events;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -131,7 +135,6 @@ namespace SmartStore.Admin.Controllers
                                                            localized.LanguageId);
 
                 //search engine name
-				// codehint: sm-edit
                 var seName = category.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
                 _urlRecordService.SaveSlug(category, seName, localized.LanguageId);
             }
@@ -331,27 +334,57 @@ namespace SmartStore.Admin.Controllers
         }
 
         //ajax
-        // codehint: sm-edit
         public ActionResult AllCategories(string label, int selectedId)
         {
             var categories = _categoryService.GetAllCategories(showHidden: true);
             var mappedCategories = categories.ToDictionary(x => x.Id);
-            // codehint: sm-edit
+
             if (label.HasValue())
             {
                 categories.Insert(0, new Category { Name = label, Id = 0 });
             }
 
-            // codehint: sm-edit
-            var list = from c in categories
-                       select new { 
-                           id = c.Id.ToString(),
-                           text = c.GetCategoryBreadCrumb(_categoryService, mappedCategories), 
-                           selected = c.Id == selectedId 
-                       };
+            var query = 
+				from c in categories
+				select new { 
+					id = c.Id.ToString(),
+					text = c.GetCategoryBreadCrumb(_categoryService, mappedCategories), 
+					selected = c.Id == selectedId
+				};
 
-            // codehint: sm-edit
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			var data = query.ToList();
+
+			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedCategories),
+				_catalogSettings.MostRecentlyUsedCategoriesMaxSize);
+
+			// TODO: insert disabled option separator (select2 v.3.4.2 or higher required)
+			//if (mru.Count > 0)
+			//{
+			//	data.Insert(0, new
+			//	{
+			//		id = "",
+			//		text = "----------------------",
+			//		selected = false,
+			//		disabled = true
+			//	});
+			//}
+
+			for (int i = mru.Count - 1; i >= 0; --i)
+			{
+				string id = mru[i];
+				var item = categories.FirstOrDefault(x => x.Id.ToString() == id);
+				if (item != null)
+				{
+					data.Insert(0, new
+					{
+						id = id,
+						text = item.GetCategoryBreadCrumb(_categoryService, mappedCategories),
+						selected = false
+					});
+				}
+			}
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Tree()
@@ -461,7 +494,6 @@ namespace SmartStore.Admin.Controllers
 
             var model = new CategoryModel();
             //parent categories
-            // codehint: sm-delete
             //locales
             AddLocales(_languageService, model.Locales);
             //templates
@@ -472,11 +504,10 @@ namespace SmartStore.Admin.Controllers
 			//Stores
 			PrepareStoresMappingModel(model, null, false);
             //default values
-            model.PageSize = 12; // codehint: sm-edit > 4;
+            model.PageSize = 12;
             model.Published = true;
 
             model.AllowCustomersToSelectPageSize = true;
-            //model.PageSizeOptions = _catalogSettings.DefaultPageSizeOptions; // codehint: sm-edit > _catalogSettings.DefaultCategoryPageSizeOptions;
 
             return View(model);
         }
@@ -529,11 +560,8 @@ namespace SmartStore.Admin.Controllers
             //templates
             PrepareTemplatesModel(model);
             //parent categories
-            // codehint: sm-delete
-            // codehint: sm-edit
             if (model.ParentCategoryId.HasValue)
             {
-                // codehint: sm-edit
                 var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
                 if (parentCategory != null && !parentCategory.Deleted)
                     model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
@@ -561,11 +589,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = category.ToModel();
             //parent categories
-            // codehint: sm-delete
-            // codehint: sm-edit
             if (model.ParentCategoryId.HasValue)
             {
-                // codehint: sm-edit
                 var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
                 if (parentCategory != null && !parentCategory.Deleted)
                     model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
@@ -662,11 +687,8 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             //parent categories
-            // codehint: sm-delete
-            // codehint: sm-edit
             if (model.ParentCategoryId.HasValue)
             {
-                // codehint: sm-edit
                 var parentCategory = _categoryService.GetCategoryById(model.ParentCategoryId.Value);
                 if (parentCategory != null && !parentCategory.Deleted)
                     model.ParentCategoryBreadcrumb = parentCategory.GetCategoryBreadCrumb(_categoryService);
@@ -836,7 +858,6 @@ namespace SmartStore.Admin.Controllers
             }
 
             //manufacturers
-            // model.AvailableManufacturers.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" }); // codehint: sm-delete
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
                 model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
 

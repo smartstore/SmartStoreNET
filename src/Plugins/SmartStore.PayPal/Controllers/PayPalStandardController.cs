@@ -2,32 +2,27 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Globalization;
-using System.Text;
 using System.Linq;
+using System.Text;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Localization;
-using Autofac;
-using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Settings;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Settings;
 using SmartStore.Services;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalStandardController : PaymentControllerBase
 	{
-		private readonly ISettingService _settingService;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
@@ -39,7 +34,7 @@ namespace SmartStore.PayPal.Controllers
         private readonly ICommonServices _services;
         private readonly IStoreService _storeService;
 
-        public PayPalStandardController(ISettingService settingService,
+        public PayPalStandardController(
 			IPaymentService paymentService, IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			IStoreContext storeContext,
@@ -50,7 +45,6 @@ namespace SmartStore.PayPal.Controllers
             ICommonServices services,
             IStoreService storeService)
 		{
-			_settingService = settingService;
 			_paymentService = paymentService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
@@ -63,25 +57,22 @@ namespace SmartStore.PayPal.Controllers
             _storeService = storeService;
 		}
 
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
 		{
             var model = new PayPalStandardConfigurationModel();
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
+            var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
 
             model.Copy(settings, true);
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _settingService);
+            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
             return View(model);
 		}
 
-		[HttpPost]
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly]
         public ActionResult Configure(PayPalStandardConfigurationModel model, FormCollection form)
 		{
             if (!ModelState.IsValid)
@@ -89,13 +80,16 @@ namespace SmartStore.PayPal.Controllers
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
+            var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(storeScope);
 
             model.Copy(settings, false);
 
-            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _settingService);
-            _settingService.ClearCache();
+            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 
+			// multistore context not possible, see IPN handling
+			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+            _services.Settings.ClearCache();
             NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
 
             return Configure();
@@ -132,9 +126,9 @@ namespace SmartStore.PayPal.Controllers
 			if (processor == null)
 				throw new SmartException(_localizationService.GetResource("Plugins.Payments.PayPalStandard.NoModuleLoading"));
 
-            var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(_storeContext.CurrentStore.Id);
+            var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>();
 
-			if (processor.GetPDTDetails(tx, out values, out response))
+			if (processor.GetPDTDetails(tx, settings, out values, out response))
 			{
 				string orderNumber = string.Empty;
 				values.TryGetValue("custom", out orderNumber);

@@ -7,7 +7,7 @@
 <div class="section-header">
 	<div class="title">
 		<img src="@Url.Content(Model.IconUrl)" alt="@Model.FriendlyName" />
-		@ViewBag.Title <span class="muted">(@(Model.SystemName))</span>
+		@ViewBag.Title <span class="subtitle muted">(@(Model.SystemName))</span>
 		<a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
 	</div>
 	<div class="options">

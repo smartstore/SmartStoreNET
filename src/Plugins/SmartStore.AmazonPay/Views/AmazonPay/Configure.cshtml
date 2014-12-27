@@ -2,29 +2,30 @@
 @using SmartStore.Web.Framework.UI;
 @using SmartStore.AmazonPay.Models;
 @using SmartStore.AmazonPay.Extensions;
+@model ConfigurationModel
 @{
     Layout = "";
 	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
 	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Scripts/smartstore.amazonpay.js"));
 }
-@model ConfigurationModel
 
-<a href="https://sellercentral-europe.amazon.com" target="_blank">
-	<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/images/logo.gif")" alt="amazon payments" class="config-logo" />
-</a>
-
-<div class="clear"></div>
-
-<div class="alert alert-info">
-	<button class="close" data-dismiss="alert">×</button>
-	@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
-</div>
-
-<div class="clear"></div>
+<table class="plugin-intro-table">
+	<tr>
+		<td>
+			<div class="alert alert-info">
+				<button class="close" data-dismiss="alert">×</button>
+				@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
+			</div>
+		</td>
+		<td>
+			<a href="https://sellercentral-europe.amazon.com" target="_blank">
+				<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/images/logo.gif")" alt="amazon payments" class="config-logo" />
+			</a>
+		</td>
+	</tr>
+</table>
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
-
-<div class="clear"></div>
 
 @using (Html.BeginForm())
 {

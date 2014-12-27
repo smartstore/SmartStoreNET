@@ -1,30 +1,19 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
-using System.Net;
-using System.Text;
-using System.Web;
-using System.Web.Routing;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
+using SmartStore.PayPal.Controllers;
+using SmartStore.PayPal.PayPalSvc;
+using SmartStore.PayPal.Services;
+using SmartStore.PayPal.Settings;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.PayPal;
-using SmartStore.PayPal.Services;
-using SmartStore.PayPal.PayPalSvc;
-using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Controllers;
 
 namespace SmartStore.PayPal
 {
@@ -41,7 +30,7 @@ namespace SmartStore.PayPal
 		private readonly ICurrencyService _currencyService;
 		private readonly ICustomerService _customerService;
 		private readonly CurrencySettings _currencySettings;
-		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+
 		#endregion
 
 		#region Ctor
@@ -49,13 +38,11 @@ namespace SmartStore.PayPal
         public PayPalDirectProvider( ICurrencyService currencyService, 
             ICustomerService customerService,
 			CurrencySettings currencySettings, 
-			IOrderTotalCalculationService orderTotalCalculationService,
             IComponentContext ctx)
 		{
 			_currencyService = currencyService;
 			_customerService = customerService;
 			_currencySettings = currencySettings;
-			_orderTotalCalculationService = orderTotalCalculationService;
 		}
 
 		#endregion
@@ -77,6 +64,7 @@ namespace SmartStore.PayPal
             var result = new ProcessPaymentResult();
 
             var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
+			var settings = CommonServices.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
             
             var req = new DoDirectPaymentReq();
             req.DoDirectPaymentRequest = new DoDirectPaymentRequestType();
@@ -86,7 +74,7 @@ namespace SmartStore.PayPal
             details.IPAddress = CommonServices.WebHelper.GetCurrentIpAddress();
             if (details.IPAddress == null || details.IPAddress == "::1")
                 details.IPAddress = "127.0.0.1";
-            if (Settings.TransactMode == TransactMode.Authorize)
+            if (settings.TransactMode == TransactMode.Authorize)
                 details.PaymentAction = PaymentActionCodeType.Authorization;
             else
                 details.PaymentAction = PaymentActionCodeType.Sale;
@@ -146,8 +134,8 @@ namespace SmartStore.PayPal
             //send request
             using (var service = new PayPalAPIAASoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
                 string error = "";
@@ -156,7 +144,7 @@ namespace SmartStore.PayPal
                 {
                     result.AvsResult = response.AVSCode;
                     result.AuthorizationTransactionCode = response.CVV2Code;
-                    if (Settings.TransactMode == TransactMode.Authorize)
+                    if (settings.TransactMode == TransactMode.Authorize)
                     {
                         result.AuthorizationTransactionId = response.TransactionID;
                         result.AuthorizationTransactionResult = response.Ack.ToString();
@@ -189,6 +177,7 @@ namespace SmartStore.PayPal
 			var result = new ProcessPaymentResult();
 
 			var customer = _customerService.GetCustomerById(processPaymentRequest.CustomerId);
+			var settings = CommonServices.Settings.LoadSetting<PayPalDirectPaymentSettings>(processPaymentRequest.StoreId);
 
 			var req = new CreateRecurringPaymentsProfileReq();
 			req.CreateRecurringPaymentsProfileRequest = new CreateRecurringPaymentsProfileRequestType();
@@ -259,8 +248,8 @@ namespace SmartStore.PayPal
 
 			using (var service = new PayPalAPIAASoapBinding())
 			{
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
 				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";

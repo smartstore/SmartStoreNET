@@ -29,7 +29,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Messages;
@@ -46,7 +45,6 @@ namespace SmartStore.AmazonPay.Services
 		private readonly HttpContextBase _httpContext;
 		private readonly ICommonServices _services;
 		private readonly IPaymentService _paymentService;
-		private readonly ISettingService _settingService;
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICurrencyService _currencyService;
@@ -66,7 +64,6 @@ namespace SmartStore.AmazonPay.Services
 			HttpContextBase httpContext,
 			ICommonServices services,
 			IPaymentService paymentService,
-			ISettingService settingService,
 			IGenericAttributeService genericAttributeService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICurrencyService currencyService,
@@ -85,7 +82,6 @@ namespace SmartStore.AmazonPay.Services
 			_httpContext = httpContext;
 			_services = services;
 			_paymentService = paymentService;
-			_settingService = settingService;
 			_genericAttributeService = genericAttributeService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_currencyService = currencyService;
@@ -349,7 +345,7 @@ namespace SmartStore.AmazonPay.Services
 
 				if (IsActive(store.Id))
 				{
-					var settings = _settingService.LoadSetting<AmazonPaySettings>(store.Id);
+					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 					if (settings.SellerId.HasValue())
 						return settings.GetWidgetUrl();
 				}
@@ -451,7 +447,7 @@ namespace SmartStore.AmazonPay.Services
 				}
 
 				var currency = _services.WorkContext.WorkingCurrency;
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(store.Id);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 
 				model.SellerId = settings.SellerId;
 				model.ClientId = settings.AccessKey;
@@ -749,7 +745,7 @@ namespace SmartStore.AmazonPay.Services
 					data.Order = _orderService.GetOrderById(data.OrderId);
 
 					if (data.Settings == null)
-						data.Settings = _settingService.LoadSetting<AmazonPaySettings>(data.Order.StoreId);
+						data.Settings = _services.Settings.LoadSetting<AmazonPaySettings>(data.Order.StoreId);
 
 					if (data.Client == null)
 						data.Client = new AmazonPayClient(data.Settings);
@@ -891,7 +887,7 @@ namespace SmartStore.AmazonPay.Services
 				var store = _storeService.GetStoreById(request.StoreId);
 				var customer = _customerService.GetCustomerById(request.CustomerId);
 				var currency = _services.WorkContext.WorkingCurrency;
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(store.Id);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);
 
@@ -960,7 +956,7 @@ namespace SmartStore.AmazonPay.Services
 				var orderGuid = request.OrderGuid.ToString();
 				var store = _storeService.GetStoreById(request.StoreId);
 				var currency = _services.WorkContext.WorkingCurrency;
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(store.Id);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);
 
@@ -1009,7 +1005,7 @@ namespace SmartStore.AmazonPay.Services
 			//try
 			//{
 			//	int orderId = request.Order.Id;
-			//	var settings = _settingService.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
+			//	var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 
 			//	if (orderId != 0 && settings.StatusFetching == AmazonPayStatusFetchingType.Polling)
 			//	{
@@ -1056,7 +1052,7 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 				var client = new AmazonPayClient(settings);
 
 				_api.Capture(client, request, result);
@@ -1081,7 +1077,7 @@ namespace SmartStore.AmazonPay.Services
 
 			try
 			{
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 				var client = new AmazonPayClient(settings);
 
 				string amazonRefundId = _api.Refund(client, request, result);
@@ -1136,7 +1132,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				if (request.Order.PaymentStatus == PaymentStatus.Pending || request.Order.PaymentStatus == PaymentStatus.Authorized)
 				{
-					var settings = _settingService.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
+					var settings = _services.Settings.LoadSetting<AmazonPaySettings>(request.Order.StoreId);
 					var client = new AmazonPayClient(settings);
 
 					var orderAttribute = DeserializeOrderAttribute(request.Order);
@@ -1165,7 +1161,7 @@ namespace SmartStore.AmazonPay.Services
 				if (order == null || !IsActive(order.StoreId))
 					return;
 
-				var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>(order.StoreId));
+				var client = new AmazonPayClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
 
 				if (client.Settings.DataFetching != AmazonPayDataFetchingType.Ipn)
 					return;
@@ -1203,7 +1199,7 @@ namespace SmartStore.AmazonPay.Services
 				// ignore cancelled and completed (paid and shipped) orders. ignore old orders too.
 
 				var data = new AmazonPayApiData();
-				int pollingMaxOrderCreationDays = _settingService.GetSettingByKey<int>("AmazonPaySettings.PollingMaxOrderCreationDays", 31);
+				int pollingMaxOrderCreationDays = _services.Settings.GetSettingByKey<int>("AmazonPaySettings.PollingMaxOrderCreationDays", 31);
 				var isTooOld = DateTime.UtcNow.AddDays(-(pollingMaxOrderCreationDays));
 
 				var query =
@@ -1221,7 +1217,7 @@ namespace SmartStore.AmazonPay.Services
 				{
 					try
 					{
-						var client = new AmazonPayClient(_settingService.LoadSetting<AmazonPaySettings>(order.StoreId));
+						var client = new AmazonPayClient(_services.Settings.LoadSetting<AmazonPaySettings>(order.StoreId));
 
 						if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
 						{

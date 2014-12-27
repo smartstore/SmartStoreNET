@@ -1,30 +1,24 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
-using System.Diagnostics;
+using System.Globalization;
 using System.IO;
-using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Routing;
 using Autofac;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
+using SmartStore.PayPal.PayPalSvc;
+using SmartStore.PayPal.Services;
+using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.PayPal.PayPalSvc;
-using SmartStore.PayPal.Settings;
-using System.Globalization;
-using SmartStore.PayPal.Services;
-using SmartStore.Core.Plugins;
 
 namespace SmartStore.PayPal
 {
@@ -34,8 +28,6 @@ namespace SmartStore.PayPal
 		{
 			Logger = NullLogger.Instance;
 		}
-
-		public TSetting Settings { get; set; }
 
 		public ILogger Logger { get; set; }
 
@@ -70,7 +62,10 @@ namespace SmartStore.PayPal
         /// <returns>Result</returns>
         public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
-            var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(Settings));
+			// settings: multistore context not possible here. we need the custom value to determine what store it is.
+			var settings = CommonServices.Settings.LoadSetting<TSetting>();
+            var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
+
             req.Method = "POST";
             req.ContentType = "application/x-www-form-urlencoded";
             req.UserAgent = HttpContext.Current.Request.UserAgent;
@@ -109,9 +104,17 @@ namespace SmartStore.PayPal
         /// <returns>Additional handling fee</returns>
         public override decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart)
         {
-            var result = this.CalculateAdditionalFee(OrderTotalCalculationService, cart,
-                Settings.AdditionalFee, Settings.AdditionalFeePercentage);
-            return result;
+			var result = decimal.Zero;
+			try
+			{
+				var settings = CommonServices.Settings.LoadSetting<TSetting>();
+
+				result = this.CalculateAdditionalFee(OrderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
+			}
+			catch (Exception)
+			{
+			}
+			return result;
         }
 
         /// <summary>
@@ -126,7 +129,9 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = capturePaymentRequest.Order.PaymentStatus
 			};
 
+			var settings = CommonServices.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
             string authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
+
             var req = new DoCaptureReq();
             req.DoCaptureRequest = new DoCaptureRequestType();
             req.DoCaptureRequest.Version = PayPalHelper.GetApiVersion();
@@ -138,8 +143,8 @@ namespace SmartStore.PayPal
 
             using (var service = new PayPalAPIAASoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoCaptureResponseType response = service.DoCapture(req);
 
                 string error = "";
@@ -170,6 +175,7 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = request.Order.PaymentStatus
 			};
 
+			var settings = CommonServices.Settings.LoadSetting<TSetting>(request.Order.StoreId);
             string transactionId = request.Order.CaptureTransactionId;
 
             var req = new RefundTransactionReq();
@@ -182,8 +188,8 @@ namespace SmartStore.PayPal
 
             using (var service = new PayPalAPISoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 RefundTransactionResponseType response = service.RefundTransaction(req);
 
                 string error = string.Empty;
@@ -215,6 +221,8 @@ namespace SmartStore.PayPal
 			};
 
             string transactionId = request.Order.AuthorizationTransactionId;
+			var settings = CommonServices.Settings.LoadSetting<TSetting>(request.Order.StoreId);
+
             if (String.IsNullOrEmpty(transactionId))
                 transactionId = request.Order.CaptureTransactionId;
 
@@ -226,8 +234,8 @@ namespace SmartStore.PayPal
 
             using (var service = new PayPalAPIAASoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 DoVoidResponseType response = service.DoVoid(req);
 
                 string error = "";
@@ -252,9 +260,9 @@ namespace SmartStore.PayPal
         /// <returns>Result</returns>
         public override CancelRecurringPaymentResult CancelRecurringPayment(CancelRecurringPaymentRequest request)
         {
-
             var result = new CancelRecurringPaymentResult();
             var order = request.Order;
+			var settings = CommonServices.Settings.LoadSetting<TSetting>(order.StoreId);
 
             var req = new ManageRecurringPaymentsProfileStatusReq();
             req.ManageRecurringPaymentsProfileStatusRequest = new ManageRecurringPaymentsProfileStatusRequestType();
@@ -268,8 +276,8 @@ namespace SmartStore.PayPal
 
             using (var service = new PayPalAPIAASoapBinding())
             {
-                service.Url = PayPalHelper.GetPaypalServiceUrl(Settings);
-                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(Settings);
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 var response = service.ManageRecurringPaymentsProfileStatus(req);
 
                 string error = "";

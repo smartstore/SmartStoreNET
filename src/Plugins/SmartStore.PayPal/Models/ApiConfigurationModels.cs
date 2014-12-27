@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Web.Mvc;
+using SmartStore.PayPal.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
-using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Controllers;
-using System.Collections.Generic;
 
 namespace SmartStore.PayPal.Models
 {
@@ -96,7 +94,8 @@ namespace SmartStore.PayPal.Models
                 CallbackTimeout = settings.CallbackTimeout;
                 DefaultShippingPrice = settings.DefaultShippingPrice;
             }
-            else {
+            else
+			{
                 settings.UseSandbox = UseSandbox;
                 settings.TransactMode = (TransactMode)TransactMode;
                 settings.ApiAccountName = ApiAccountName;

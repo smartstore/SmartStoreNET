@@ -5,45 +5,40 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
+using Autofac;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Plugins;
-using Autofac;
-using SmartStore.PayPal;
+using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Models;
 using SmartStore.PayPal.Validators;
-using SmartStore.Web.Framework.Settings;
 using SmartStore.Services;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalDirectController : PaymentControllerBase
 	{
 		private readonly PluginHelper _helper;
-		private readonly ISettingService _settingService;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
         private readonly ICommonServices _services;
         private readonly IStoreService _storeService;
 
-		public PayPalDirectController(ISettingService settingService,
+		public PayPalDirectController(
 			IPaymentService paymentService, IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			PaymentSettings paymentSettings, 
             IComponentContext ctx, ICommonServices services,
             IStoreService storeService)
 		{
-			_settingService = settingService;
 			_paymentService = paymentService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
@@ -52,7 +47,6 @@ namespace SmartStore.PayPal.Controllers
 			_helper = new PluginHelper(ctx, "SmartStore.PayPal", "Plugins.Payments.PayPalDirect");
 		}
 
-		// codehint: sm-add
 		private SelectList TransactModeValues(TransactMode selected)
 		{
 			return new SelectList(new List<object>()
@@ -62,27 +56,24 @@ namespace SmartStore.PayPal.Controllers
 			}, "ID", "Name", (int)selected);
 		}
 
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
 		{
             var model = new PayPalDirectConfigurationModel();
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+            var settings = _services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
 
             model.Copy(settings, true);
 
             model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _settingService);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
             return View(model);
 		}
 
-		[HttpPost]
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalDirectConfigurationModel model, FormCollection form)
 		{
             if (!ModelState.IsValid)
@@ -90,16 +81,17 @@ namespace SmartStore.PayPal.Controllers
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
+			var settings = _services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
 
             model.Copy(settings, false);
 
-            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _settingService);
-            _settingService.ClearCache();
+			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 
+			// multistore context not possible, see IPN handling
+			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+			_services.Settings.ClearCache();
             NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
-
-            model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
             return Configure();
 		}
@@ -330,11 +322,11 @@ namespace SmartStore.PayPal.Controllers
 								}
 
 								//this.OrderService.InsertOrderNote(newOrder.OrderId, sb.ToString(), DateTime.UtcNow);
-								Logger.Information(_helper.GetResource("IpnLogInfo"), new SmartException(sb.ToString()));		// codehint: sm-edit
+								Logger.Information(_helper.GetResource("IpnLogInfo"), new SmartException(sb.ToString()));
 							}
 							else
 							{
-								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));		// codehint: sm-edit
+								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion

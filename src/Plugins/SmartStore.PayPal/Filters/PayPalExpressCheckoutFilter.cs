@@ -4,7 +4,6 @@ using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;

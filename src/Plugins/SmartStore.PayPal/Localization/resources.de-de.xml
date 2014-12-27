@@ -136,6 +136,18 @@
       <LocaleResource Name="Fields.NoShipmentAddress.Hint">
         <Value>Bestimmen Sie ob auf der PayPal Seite die Lieferadresse angezeigt werden soll.</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.CallbackTimeout">
+        <Value>Zeitlimit für API-Callback</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.CallbackTimeout.Hint">
+        <Value>Legt das Zeitlimit für API-Callbacks fest.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.DefaultShippingPrice">
+        <Value>Versandkosten (Fallback)</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.DefaultShippingPrice.Hint">
+        <Value>Legt die Versandkosten fest, falls keine anderen ermittelt werden können.</Value>
+      </LocaleResource>
     </Children>
   </LocaleResource>
   

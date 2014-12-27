@@ -107,6 +107,10 @@
 		    <Value>Authorize immediately, debit later</Value>
 	    </LocaleResource>
 
+      <LocaleResource Name="SelectionText">
+        <Value>or</Value>
+      </LocaleResource>
+
       <LocaleResource Name="Fields.DisplayCheckoutButton">
         <Value>Activate checkout button in shopping cart</Value>
       </LocaleResource>
@@ -125,10 +129,18 @@
       <LocaleResource Name="Fields.NoShipmentAddress.Hint">
         <Value>Disables display of the shipping address.</Value>
       </LocaleResource>
-  
-      <LocaleResource Name="SelectionText">
-        <Value>or</Value>
+      <LocaleResource Name="Fields.CallbackTimeout">
+        <Value>Timeout for API callback</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.CallbackTimeout.Hint">
+        <Value>Determines the timeout for API callbacks.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.DefaultShippingPrice">
+        <Value>Shipping costs (fallback)</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.DefaultShippingPrice.Hint">
+        <Value>Determines shipping costs if no other could be obtained.</Value>
+      </LocaleResource>  
     </Children>
   </LocaleResource>
 

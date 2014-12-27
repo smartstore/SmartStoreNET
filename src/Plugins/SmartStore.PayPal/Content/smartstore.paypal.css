@@ -16,16 +16,10 @@
 .configure-paypal-standard .logo 
 .paypal-standard-public .logo{
     width: 200px; 
-    height: 53px; 
-    margin-bottom: 10px;
+    height: 53px;
 }
 .paypal-standard-public {
     margin-bottom: 10px;
-}
-.configure-paypal-standard .enable-ipn-hint{
-    float: right; 
-    font-size: 0.9em; 
-    font-style: italic;
 }
 .button-save {
     padding-top: 10px;

@@ -19,6 +19,8 @@
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.
 * PayPal settings are multi-store-enabled
+* #555 Product edit: Improve category select box. Add history (last x selected items) above all others.
+* #510 Payment plugins: Qualify configuration(s) for multistores
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission

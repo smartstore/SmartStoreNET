@@ -26,10 +26,21 @@ namespace SmartStore.PayPal.Settings
 
     public class PayPalDirectPaymentSettings : PayPalApiSettingsBase, ISettings
     {
+		public PayPalDirectPaymentSettings()
+		{
+			TransactMode = TransactMode.Authorize;
+            UseSandbox = true;
+		}
     }
 
     public class PayPalExpressPaymentSettings : PayPalApiSettingsBase, ISettings 
     {
+		public PayPalExpressPaymentSettings()
+		{
+			UseSandbox = true;
+            TransactMode = TransactMode.Authorize;
+		}
+
         /// <summary>
         /// Determines whether the checkout button is displayed beneath the cart
         /// </summary>
@@ -58,6 +69,13 @@ namespace SmartStore.PayPal.Settings
 
     public class PayPalStandardPaymentSettings : PayPalSettingsBase, ISettings
     {
+		public PayPalStandardPaymentSettings()
+		{
+			UseSandbox = true;
+            PdtValidateOrderTotal = true;
+            EnableIpn = true;
+		}
+
         public string BusinessEmail { get; set; }
         public string PdtToken { get; set; }
         public bool PassProductNamesAndTotals { get; set; }

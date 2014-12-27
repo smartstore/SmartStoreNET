@@ -1,47 +1,33 @@
-﻿@{
-    Layout = "";
-    Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
-}
-@model PayPalExpressConfigurationModel
-@using SmartStore.PayPal.Models;
+﻿@using SmartStore.PayPal.Models;
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.UI;
+@model PayPalExpressConfigurationModel
+@{
+	Layout = "";
+	Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
+}
 
-<table>
-    <tr>
-        <td colspan="2">
-            <a href="https://www.paypal.com/" target="_blank">
-                <img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
-            </a>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            <div class="alert alert-info fade in">
-                <button class="close" data-dismiss="alert">x</button>
-                @Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
-            </div>
-        </td>
-    </tr>
-    <tr>
-        <td colspan="2">
-            @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
-        </td>
-    </tr>
+<table class="plugin-intro-table">
+	<tr>
+		<td>
+			<div class="alert alert-info">
+				<button class="close" data-dismiss="alert">×</button>
+				@Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
+			</div>
+		</td>
+		<td>
+			<a href="https://www.paypal.com/" target="_blank">
+				<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
+			</a>
+		</td>
+	</tr>
 </table>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 
 @using (Html.BeginForm())
 {
     <table class="adminContent configure-paypal-express">
-        <tr>
-            <td colspan="2">
-                <div class="admin-config-group">
-                    <div class="title">
-                        @Model.ConfigGroups.SafeGet(0)
-                    </div>
-                </div>
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TransactMode)
@@ -56,7 +42,7 @@
                 @Html.SmartLabelFor(model => model.UseSandbox)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.UseSandbox)
+				@*multistore context not possible, see IPN handling*@
                 @Html.EditorFor(model => model.UseSandbox)
                 @Html.ValidationMessageFor(model => model.UseSandbox)
             </td>
@@ -66,8 +52,7 @@
                 @Html.SmartLabelFor(model => model.ApiAccountName)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.ApiAccountName)
-                @Html.EditorFor(model => model.ApiAccountName)
+                @Html.SettingEditorFor(model => model.ApiAccountName)
                 @Html.ValidationMessageFor(model => model.ApiAccountName)
             </td>
         </tr>
@@ -76,8 +61,7 @@
                 @Html.SmartLabelFor(model => model.ApiAccountPassword)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.ApiAccountPassword)
-                @Html.EditorFor(model => model.ApiAccountPassword)
+                @Html.SettingEditorFor(model => model.ApiAccountPassword)
                 @Html.ValidationMessageFor(model => model.ApiAccountPassword)
             </td>
         </tr>
@@ -86,8 +70,7 @@
                 @Html.SmartLabelFor(model => model.Signature)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.Signature)
-                @Html.EditorFor(model => model.Signature)
+                @Html.SettingEditorFor(model => model.Signature)
                 @Html.ValidationMessageFor(model => model.Signature)
             </td>
         </tr>
@@ -96,8 +79,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.AdditionalFee)
-                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>
@@ -106,8 +88,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.AdditionalFeePercentage)
-                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
                 @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
         </tr>
@@ -117,8 +98,7 @@
                 @Html.SmartLabelFor(model => model.DisplayCheckoutButton)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.DisplayCheckoutButton)
-                @Html.EditorFor(model => model.DisplayCheckoutButton)
+                @Html.SettingEditorFor(model => model.DisplayCheckoutButton)
                 @Html.ValidationMessageFor(model => model.DisplayCheckoutButton)
             </td>
         </tr>
@@ -127,8 +107,7 @@
                 @Html.SmartLabelFor(model => model.ConfirmedShipment)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.ConfirmedShipment)
-                @Html.EditorFor(model => model.ConfirmedShipment)
+                @Html.SettingEditorFor(model => model.ConfirmedShipment)
                 @Html.ValidationMessageFor(model => model.ConfirmedShipment)
             </td>
         </tr>
@@ -137,8 +116,7 @@
                 @Html.SmartLabelFor(model => model.NoShipmentAddress)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.NoShipmentAddress)
-                @Html.EditorFor(model => model.NoShipmentAddress)
+                @Html.SettingEditorFor(model => model.NoShipmentAddress)
                 @Html.ValidationMessageFor(model => model.NoShipmentAddress)
             </td>
         </tr>
@@ -147,8 +125,7 @@
                 @Html.SmartLabelFor(model => model.CallbackTimeout)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.CallbackTimeout)
-                @Html.EditorFor(model => model.CallbackTimeout)
+                @Html.SettingEditorFor(model => model.CallbackTimeout)
                 @Html.ValidationMessageFor(model => model.CallbackTimeout)
             </td>
         </tr>
@@ -157,12 +134,10 @@
                 @Html.SmartLabelFor(model => model.DefaultShippingPrice)
             </td>
             <td class="adminData">
-                @Html.SettingOverrideCheckbox(model => model.DefaultShippingPrice)
-                @Html.EditorFor(model => model.DefaultShippingPrice)
+                @Html.SettingEditorFor(model => model.DefaultShippingPrice)
                 @Html.ValidationMessageFor(model => model.DefaultShippingPrice)
             </td>
         </tr>
-
         <tr>
             <td>&nbsp;</td>
             <td class="button-save">

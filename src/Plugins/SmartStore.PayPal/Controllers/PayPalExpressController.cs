@@ -1,14 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Globalization;
-using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using SmartStore.Core;
+using Autofac;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -16,39 +15,32 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.PayPal.Models;
 using SmartStore.PayPal.PayPalSvc;
+using SmartStore.PayPal.Services;
+using SmartStore.PayPal.Settings;
 using SmartStore.PayPal.Validators;
 using SmartStore.Services;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
-using Autofac;
-using SmartStore.PayPal.Settings;
-using SmartStore.PayPal.Services;
-using SmartStore.Core.Domain.Logging;
 using SmartStore.Web.Framework.Settings;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalExpressController : PaymentControllerBase
 	{
 		private readonly PluginHelper _helper;
-		private readonly ISettingService _settingService;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
 		private readonly ILogger _logger;
 		private readonly PaymentSettings _paymentSettings;
 		private readonly ILocalizationService _localizationService;
-		private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
 		private readonly OrderSettings _orderSettings;
 		private readonly ICurrencyService _currencyService;
 		private readonly CurrencySettings _currencySettings;
@@ -58,33 +50,30 @@ namespace SmartStore.PayPal.Controllers
         private readonly ICommonServices _services;
         private readonly IStoreService _storeService;
 
-		public PayPalExpressController(ISettingService settingService,
+		public PayPalExpressController(
 			IPaymentService paymentService, IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			ILogger logger, 
 			PaymentSettings paymentSettings, ILocalizationService localizationService,
-			IWorkContext workContext, OrderSettings orderSettings,
+			OrderSettings orderSettings,
 			ICurrencyService currencyService, CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService, ICustomerService customerService,
-			IGenericAttributeService genericAttributeService, IStoreContext storeContext,
+			IGenericAttributeService genericAttributeService,
             IComponentContext ctx, ICommonServices services,
             IStoreService storeService)
 		{
-			_settingService = settingService;
 			_paymentService = paymentService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
 			_logger = logger;
 			_paymentSettings = paymentSettings;
 			_localizationService = localizationService;
-			_workContext = workContext;
 			_orderSettings = orderSettings;
 			_currencyService = currencyService;
 			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_customerService = customerService;
 			_genericAttributeService = genericAttributeService;
-			_storeContext = storeContext;
             _services = services;
             _storeService = storeService;
 
@@ -107,27 +96,24 @@ namespace SmartStore.PayPal.Controllers
 			}, "ID", "Name", (int)selected);
 		}
 
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
 		{
             var model = new PayPalExpressConfigurationModel();
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalExpressPaymentSettings>();
+            var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
 
             model.Copy(settings, true);
 
             model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _settingService);
+            storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
 
 			return View(model);
 		}
 
-		[HttpPost]
-		[AdminAuthorize]
-		[ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(PayPalExpressConfigurationModel model, FormCollection form)
 		{
 			if (!ModelState.IsValid)
@@ -135,16 +121,17 @@ namespace SmartStore.PayPal.Controllers
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
             int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
-            var settings = _settingService.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
+            var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(storeScope);
 
             model.Copy(settings, false);
 
-            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _settingService);
-            _settingService.ClearCache();
+            storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
 
+			// multistore context not possible, see IPN handling
+			_services.Settings.SaveSetting(settings, x => x.UseSandbox, 0, false);
+
+            _services.Settings.ClearCache();
             NotifySuccess(_services.Localization.GetResource("Plugins.Payments.PayPal.ConfigSaveNote"));
-
-            model.TransactModeValues = TransactModeValues(settings.TransactMode);
 
 			return Configure();
 		}
@@ -157,7 +144,7 @@ namespace SmartStore.PayPal.Controllers
 
 			if (model.CurrentPageIsBasket)
 			{
-				var culture = _workContext.WorkingLanguage.LanguageCulture;
+				var culture = _services.WorkContext.WorkingLanguage.LanguageCulture;
 				var buttonUrl = "https://www.paypalobjects.com/{0}/i/btn/btn_xpressCheckout.gif".FormatWith(culture.Replace("-", "_"));
 				model.SubmitButtonImageUrl = PayPalHelper.CheckIfButtonExists(buttonUrl);
 			}
@@ -379,13 +366,13 @@ namespace SmartStore.PayPal.Controllers
 			try
 			{
 				//user validation
-				if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
+				if ((_services.WorkContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
 					return RedirectToRoute("Login");
 
-                var settings = _settingService.LoadSetting<PayPalExpressPaymentSettings>(_storeContext.CurrentStore.Id);
+				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
 
 				//var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+				var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
 				if (cart.Count == 0)
 					return RedirectToRoute("ShoppingCart");
@@ -420,7 +407,7 @@ namespace SmartStore.PayPal.Controllers
 				resultTemp += subTotalWithDiscountBase;
 
 				// get customer
-				int customerId = Convert.ToInt32(_workContext.CurrentCustomer.Id.ToString());
+				int customerId = Convert.ToInt32(_services.WorkContext.CurrentCustomer.Id.ToString());
 				var customer = _customerService.GetCustomerById(customerId);
 
 				//Get discounts that apply to Total
@@ -439,10 +426,10 @@ namespace SmartStore.PayPal.Controllers
 
 				decimal tempDiscount = discountAmount + orderSubTotalDiscountAmountBase;
 
-				resultTemp = _currencyService.ConvertFromPrimaryStoreCurrency(resultTemp, _workContext.WorkingCurrency);
+				resultTemp = _currencyService.ConvertFromPrimaryStoreCurrency(resultTemp, _services.WorkContext.WorkingCurrency);
 				if (tempDiscount > decimal.Zero)
 				{
-					tempDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(tempDiscount, _workContext.WorkingCurrency);
+					tempDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(tempDiscount, _services.WorkContext.WorkingCurrency);
 				}
 
 				processPaymentRequest.PaymentMethodSystemName = "Payments.PayPalExpress";
@@ -452,7 +439,7 @@ namespace SmartStore.PayPal.Controllers
 
 				//var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
 
-				processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
+				processPaymentRequest.CustomerId = _services.WorkContext.CurrentCustomer.Id;
 				this.Session["OrderPaymentInfo"] = processPaymentRequest;
 
 				var resp = processor.SetExpressCheckout(processPaymentRequest, cart);
@@ -464,7 +451,8 @@ namespace SmartStore.PayPal.Controllers
 					processPaymentRequest.IsShippingMethodSet = PayPalHelper.CurrentPageIsBasket(this.RouteData);
 					this.Session["OrderPaymentInfo"] = processPaymentRequest;
 
-					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, "Payments.PayPalExpress", _storeContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, "Payments.PayPalExpress",
+						_services.StoreContext.CurrentStore.Id);
 
 					var result = new RedirectResult(String.Format(
                         PayPalHelper.GetPaypalUrl(settings) + 
@@ -480,7 +468,7 @@ namespace SmartStore.PayPal.Controllers
 						error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
 					}
 
-                    _logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _workContext.CurrentCustomer);
+					_logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _services.WorkContext.CurrentCustomer);
                     
                     NotifyError(error.ToString(), false);
                 
@@ -489,7 +477,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			catch (Exception ex)
 			{
-                _logger.InsertLog(LogLevel.Error, ex.Message, ex.StackTrace, _workContext.CurrentCustomer);
+				_logger.InsertLog(LogLevel.Error, ex.Message, ex.StackTrace, _services.WorkContext.CurrentCustomer);
 
                 NotifyError(ex.Message, false);
 
@@ -514,10 +502,11 @@ namespace SmartStore.PayPal.Controllers
 				this.Session["OrderPaymentInfo"] = paymentInfo;
 				var customer = _customerService.GetCustomerById(paymentInfo.CustomerId);
 
-				_workContext.CurrentCustomer = customer;
-				_customerService.UpdateCustomer(_workContext.CurrentCustomer);
+				_services.WorkContext.CurrentCustomer = customer;
+				_customerService.UpdateCustomer(_services.WorkContext.CurrentCustomer);
 
-				var selectedShippingOption = _workContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, _storeContext.CurrentStore.Id);
+				var selectedShippingOption = _services.WorkContext.CurrentCustomer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption,
+					_services.StoreContext.CurrentStore.Id);
 				if (selectedShippingOption != null)
 				{
 					return RedirectToAction("Confirm", "Checkout", new { area = "" });
@@ -525,7 +514,8 @@ namespace SmartStore.PayPal.Controllers
 				else
 				{
 					//paymentInfo.RequiresPaymentWorkflow = false;
-					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentInfo.PaymentMethodSystemName, _storeContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentInfo.PaymentMethodSystemName,
+						_services.StoreContext.CurrentStore.Id);
 					_customerService.UpdateCustomer(customer);
 
 					return RedirectToAction("BillingAddress", "Checkout", new { area = "" });
@@ -539,7 +529,7 @@ namespace SmartStore.PayPal.Controllers
                     error.AppendLine(String.Format("{0} | {1} | {2}", errormsg.ErrorCode, errormsg.ShortMessage, errormsg.LongMessage));
                 }
 
-                _logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _workContext.CurrentCustomer);
+				_logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _services.WorkContext.CurrentCustomer);
 
                 NotifyError(error.ToString(), false);
 

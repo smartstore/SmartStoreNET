@@ -302,16 +302,16 @@ namespace SmartStore.Web.Controllers
 				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
                 decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                if (rate > decimal.Zero)
-                    pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
+                
+				if (rate != decimal.Zero)
+					pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
 
                 model.PaymentMethods.Add(pmModel);
             }
             
             // find a selected (previously) payment method
 			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				 SystemCustomerAttributeNames.SelectedPaymentMethod,
-				 _genericAttributeService, _storeContext.CurrentStore.Id);
+				 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
 
 			bool selected = false;
 			if (selectedPaymentMethodSystemName.HasValue())

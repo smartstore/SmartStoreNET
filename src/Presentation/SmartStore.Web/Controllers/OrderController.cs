@@ -187,8 +187,12 @@ namespace SmartStore.Web.Controllers
                         model.OrderShipping = _priceFormatter.FormatShippingPrice(orderShippingExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
                         //payment method additional fee
                         var paymentMethodAdditionalFeeExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.PaymentMethodAdditionalFeeExclTax, order.CurrencyRate);
-                        if (paymentMethodAdditionalFeeExclTaxInCustomerCurrency > decimal.Zero)
-                            model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+
+						if (paymentMethodAdditionalFeeExclTaxInCustomerCurrency != decimal.Zero)
+						{
+							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeExclTaxInCustomerCurrency,
+								true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, false);
+						}
                     }
                     break;
                 case TaxDisplayType.IncludingTax:
@@ -205,8 +209,12 @@ namespace SmartStore.Web.Controllers
                         model.OrderShipping = _priceFormatter.FormatShippingPrice(orderShippingInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
                         //payment method additional fee
                         var paymentMethodAdditionalFeeInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.PaymentMethodAdditionalFeeInclTax, order.CurrencyRate);
-                        if (paymentMethodAdditionalFeeInclTaxInCustomerCurrency > decimal.Zero)
-                            model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+
+						if (paymentMethodAdditionalFeeInclTaxInCustomerCurrency != decimal.Zero)
+						{
+							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeInclTaxInCustomerCurrency,
+								true, order.CustomerCurrencyCode, _workContext.WorkingLanguage, true);
+						}
                     }
                     break;
             }

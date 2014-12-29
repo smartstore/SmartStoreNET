@@ -234,10 +234,10 @@ namespace SmartStore.Services.Payments
                 return decimal.Zero;
 
 			decimal result = paymentMethod.Value.GetAdditionalHandlingFee(cart);
-            if (result < decimal.Zero)
-                result = decimal.Zero;
+
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 result = Math.Round(result, 2);
+
             return result;
         }
 

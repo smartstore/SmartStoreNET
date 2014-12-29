@@ -49,7 +49,7 @@ namespace SmartStore.Services.Payments
             if (paymentMethod == null)
                 throw new ArgumentNullException("paymentMethod");
 
-            if (fee <= 0)
+            if (fee == decimal.Zero)
                 return fee;
 
             var result = decimal.Zero;

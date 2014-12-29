@@ -7,7 +7,6 @@ using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 
@@ -17,27 +16,22 @@ namespace SmartStore.AmazonPay
 	public class Plugin : PaymentPluginBase, IConfigurable
 	{
 		private readonly IAmazonPayService _apiService;
-		private readonly ISettingService _settingService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICommonServices _services;
 
 		public Plugin(
 			IAmazonPayService apiService,
-			ISettingService settingService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICommonServices services)
 		{
 			_apiService = apiService;
-			_settingService = settingService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_services = services;
 		}
 
 		public override void Install()
 		{
-			var paymentSettings = new AmazonPaySettings();
-
-			_settingService.SaveSetting<AmazonPaySettings>(paymentSettings);
+			_services.Settings.SaveSetting<AmazonPaySettings>(new AmazonPaySettings());
 
 			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
@@ -50,7 +44,7 @@ namespace SmartStore.AmazonPay
 		{
 			_apiService.DataPollingTaskDelete();
 
-			_settingService.DeleteSetting<AmazonPaySettings>();
+			_services.Settings.DeleteSetting<AmazonPaySettings>();
 
 			_services.Localization.DeleteLocaleStringResources(this.PluginDescriptor.ResourceRootKey);
 
@@ -79,7 +73,7 @@ namespace SmartStore.AmazonPay
 			var result = decimal.Zero;
 			try
 			{
-				var settings = _settingService.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
+				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(_services.StoreContext.CurrentStore.Id);
 
 				result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}

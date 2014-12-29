@@ -18,7 +18,6 @@ using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
@@ -40,15 +39,13 @@ namespace SmartStore.PayPal
         private readonly HttpContextBase _httpContext;
         private readonly ICommonServices _commonServices;
         private readonly ILogger _logger;
-		private readonly ISettingService _settingService;
 
         public PayPalStandardProvider(ICurrencyService currencyService, 
             HttpContextBase httpContext,
 			CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
             ICommonServices commonServices, 
-            ILogger logger,
-			ISettingService settingService)
+            ILogger logger)
 		{
 			_currencyService = currencyService;
 			_currencySettings = currencySettings;
@@ -56,7 +53,6 @@ namespace SmartStore.PayPal
             _httpContext = httpContext;
             _commonServices = commonServices;
             _logger = logger;
-			_settingService = settingService;
 		}
 
 		/// <summary>
@@ -69,7 +65,7 @@ namespace SmartStore.PayPal
 			var result = new ProcessPaymentResult();
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
-			var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(processPaymentRequest.StoreId);
+			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(processPaymentRequest.StoreId);
 
             if (settings.BusinessEmail.IsNullOrEmpty() || settings.PdtToken.IsNullOrEmpty())
 			{
@@ -88,7 +84,7 @@ namespace SmartStore.PayPal
 			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
 				return;
 
-			var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
+			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
 
 			var builder = new StringBuilder();
             builder.Append(PayPalHelper.GetPaypalUrl(settings));
@@ -308,7 +304,7 @@ namespace SmartStore.PayPal
 			var result = decimal.Zero;
 			try
 			{
-				var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>(_commonServices.StoreContext.CurrentStore.Id);
+				var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(_commonServices.StoreContext.CurrentStore.Id);
 
 				result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}
@@ -562,7 +558,7 @@ namespace SmartStore.PayPal
         public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
 			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-			var settings = _settingService.LoadSetting<PayPalStandardPaymentSettings>();
+			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>();
 
             var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
             req.Method = "POST";

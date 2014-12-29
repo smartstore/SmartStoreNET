@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.OfflinePayment.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -33,7 +34,7 @@ namespace SmartStore.OfflinePayment.Models
 	public class ManualConfigurationModel : ConfigurationModelBase
 	{
 		[SmartResourceDisplayName("Plugins.Payments.Manual.Fields.TransactMode")]
-		public int TransactMode { get; set; }
+		public TransactMode TransactMode { get; set; }
 		public SelectList TransactModeValues { get; set; }
 	}
 

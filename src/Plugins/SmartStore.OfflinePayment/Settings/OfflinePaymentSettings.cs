@@ -5,7 +5,7 @@ using SmartStore.Core.Configuration;
 
 namespace SmartStore.OfflinePayment.Settings
 {
-	public abstract class PaymentSettingsBase
+	public abstract class PaymentSettingsBase : ISettings
 	{
 		public string DescriptionText { get; set; }
 		public decimal AdditionalFee { get; set; }

@@ -183,6 +183,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
+    <Content Include="changelog.md">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <None Include="packages.config" />
     <Content Include="web.config">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

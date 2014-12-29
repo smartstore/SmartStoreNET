@@ -5,6 +5,7 @@
 	Layout = "";
 }
 
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 
 @using (Html.BeginForm())
 {
@@ -14,6 +15,7 @@
                 @Html.SmartLabelFor(model => model.TransactMode)
             </td>
             <td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.TransactMode)
                 @Html.DropDownList("TransactMode", Model.TransactModeValues)
             </td>
         </tr>
@@ -22,7 +24,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFee)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalFee)
+                @Html.SettingEditorFor(model => model.AdditionalFee)
                 @Html.ValidationMessageFor(model => model.AdditionalFee)
             </td>
         </tr>
@@ -31,7 +33,7 @@
                 @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AdditionalFeePercentage)
+                @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
                 @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
             </td>
         </tr>

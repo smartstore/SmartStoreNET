@@ -68,12 +68,15 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         public virtual string GetCurrentIpAddress()
         {
-			if (_httpContext != null && _httpContext.Request != null)
-			{
-				return _httpContext.Request.UserHostAddress.EmptyNull();
-			}
+			string result = null;
 
-			return string.Empty;
+			if (_httpContext != null && _httpContext.Request != null)
+				result = _httpContext.Request.UserHostAddress;
+
+			if (result == "::1")
+				result = "127.0.0.1";
+
+			return result.EmptyNull();
         }
         
         /// <summary>

@@ -69,15 +69,19 @@ namespace SmartStore.PayPal
             var req = new DoDirectPaymentReq();
             req.DoDirectPaymentRequest = new DoDirectPaymentRequestType();
             req.DoDirectPaymentRequest.Version = PayPalHelper.GetApiVersion();
+
             var details = new DoDirectPaymentRequestDetailsType();
             req.DoDirectPaymentRequest.DoDirectPaymentRequestDetails = details;
             details.IPAddress = CommonServices.WebHelper.GetCurrentIpAddress();
-            if (details.IPAddress == null || details.IPAddress == "::1")
+
+            if (details.IPAddress.IsNullOrEmpty())
                 details.IPAddress = "127.0.0.1";
+
             if (settings.TransactMode == TransactMode.Authorize)
                 details.PaymentAction = PaymentActionCodeType.Authorization;
             else
                 details.PaymentAction = PaymentActionCodeType.Sale;
+
             //credit card
             details.CreditCard = new CreditCardDetailsType();
             details.CreditCard.CreditCardNumber = processPaymentRequest.CreditCardNumber;

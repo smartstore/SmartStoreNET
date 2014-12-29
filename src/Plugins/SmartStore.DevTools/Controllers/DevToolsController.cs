@@ -54,6 +54,8 @@ namespace SmartStore.DevTools.Controllers
 			if (!ModelState.IsValid)
 				return Configure();
 
+			ModelState.Clear();
+
 			// load settings for a chosen store scope
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);

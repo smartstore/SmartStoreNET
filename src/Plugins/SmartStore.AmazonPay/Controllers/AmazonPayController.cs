@@ -65,6 +65,8 @@ namespace SmartStore.AmazonPay.Controllers
 			if (!ModelState.IsValid)
 				return Configure();
 
+			ModelState.Clear();
+
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
 			var settings = _services.Settings.LoadSetting<AmazonPaySettings>(storeScope);

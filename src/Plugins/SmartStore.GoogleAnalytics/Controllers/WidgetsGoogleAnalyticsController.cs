@@ -70,6 +70,8 @@ namespace SmartStore.GoogleAnalytics.Controllers
 		[ValidateInput(false)]
         public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
+			ModelState.Clear();
+
 			//load settings for a chosen store scope
 			var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
 			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(storeScope);

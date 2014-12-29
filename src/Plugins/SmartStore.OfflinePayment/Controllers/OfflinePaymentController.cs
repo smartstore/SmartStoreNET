@@ -71,6 +71,8 @@ namespace SmartStore.OfflinePayment.Controllers
 			where TModel : ConfigurationModelBase, new()
 			where TSetting : PaymentSettingsBase, new()
 		{
+			ModelState.Clear();
+
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
 			int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
 			var settings = _services.Settings.LoadSetting<TSetting>(storeScope);

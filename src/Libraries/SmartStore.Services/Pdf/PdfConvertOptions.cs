@@ -16,6 +16,8 @@ namespace SmartStore.Services.Pdf
 			this.Cookies = new Dictionary<string, string>();
 			this.UsePrintMediaType = true;
 			this.Margins = new PdfPageMargins();
+			this.HeaderSpacing = 5;
+			this.FooterSpacing = 5;
 			this.Orientation = PdfPagePrientation.Default;
 			this.Size = PdfPageSize.Default;
 		}
@@ -59,6 +61,16 @@ namespace SmartStore.Services.Pdf
 		/// Get or set PDF page height (in mm) 
 		/// </summary>
 		public float? PageHeight { get; set; }
+
+		/// <summary>
+		/// Get or set repeatable header spacing (in mm)
+		/// </summary>
+		public float? HeaderSpacing { get; set; }
+
+		/// <summary>
+		/// Get or set repeatable footer spacing (in mm)
+		/// </summary>
+		public float? FooterSpacing { get; set; }
 
 		/// <summary>
 		/// Get or set PDF page orientation 

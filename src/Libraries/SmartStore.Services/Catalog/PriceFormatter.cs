@@ -156,8 +156,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <param name="language">Language</param>
         /// <returns>Price</returns>
-        public string FormatPrice(decimal price, bool showCurrency,
-            string currencyCode, bool showTax, Language language)
+        public string FormatPrice(decimal price, bool showCurrency, string currencyCode, bool showTax, Language language)
         {
             var currency = _currencyService.GetCurrencyByCode(currencyCode);
             if (currency == null)
@@ -189,17 +188,22 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        public string FormatPrice(decimal price, bool showCurrency,
-            string currencyCode, Language language, bool priceIncludesTax)
+        public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-            var currency = _currencyService.GetCurrencyByCode(currencyCode);
-            if (currency == null)
-            {
-                currency = new Currency();
-                currency.CurrencyCode = currencyCode;
-            }
-            return FormatPrice(price, showCurrency, currency, language, priceIncludesTax);
+			bool showTax = _taxSettings.DisplayTaxSuffix;
+			return FormatPrice(price, showCurrency, currencyCode, language, priceIncludesTax, showTax);
         }
+
+		public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+		{
+			var currency = _currencyService.GetCurrencyByCode(currencyCode);
+			if (currency == null)
+			{
+				currency = new Currency();
+				currency.CurrencyCode = currencyCode;
+			}
+			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+		}
 
         /// <summary>
         /// Formats the price
@@ -210,12 +214,10 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        public string FormatPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax)
+        public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax)
         {
             bool showTax = _taxSettings.DisplayTaxSuffix;
-            return FormatPrice(price, showCurrency, targetCurrency, language, 
-                priceIncludesTax, showTax);
+            return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
         /// <summary>
@@ -228,7 +230,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <returns>Price</returns>
-        public string FormatPrice(decimal price, bool showCurrency,  Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
+        public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
             // Round before rendering (also take "BitCoin" into account, where more than 2 decimal places are relevant)
             price = targetCurrency.CurrencyCode.IsCaseInsensitiveEqual("btc") ? Math.Round(price, 6) : Math.Round(price, 2);

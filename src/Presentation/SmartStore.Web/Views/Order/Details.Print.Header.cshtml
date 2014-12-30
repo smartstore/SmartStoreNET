@@ -1,6 +1,27 @@
-﻿
+﻿@model PrintableOrderDetailsModel
+@using SmartStore.Web.Models.Order;
+
 @{
     Layout = null;
 }
 
-<h1 style='margin-bottom: 100px'>Test Header, Page: <span class='page'></span> of <span class='topage'></span></h1>
+<link rel="stylesheet" type="text/css" href="~/Content/print.css" />
+
+<table style="width: 100%; height: 100px">
+	<tr>
+		<td style="width: 50%">
+			@*<div><b>@T("PDFInvoice.Order#", Model.OrderNumber)</b></div>
+			<div>@T("PDFInvoice.OrderDate", Model.CreatedOn.ToString("D"))</div>*@
+		</td>
+		<td style="width: 50%; text-align: right; vertical-align: middle">
+			@if (Model.PrintLogoUrl.HasValue())
+			{
+				<img src="@Model.PrintLogoUrl" alt="" style="max-height: 100px" />
+			}
+			else
+			{
+				<h2>@Model.StoreName</h2>
+			}
+		</td>
+	</tr>
+</table>

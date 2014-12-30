@@ -43,6 +43,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Seo;
 
 namespace SmartStore.Admin.Infrastructure
 {

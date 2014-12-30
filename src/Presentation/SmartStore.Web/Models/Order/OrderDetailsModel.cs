@@ -1,12 +1,32 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Order
 {
-    public partial class OrderDetailsModel : EntityModelBase
+	public partial class PrintableOrderDetailsModel : OrderDetailsModel
+	{
+		public PrintableOrderDetailsModel()
+		{
+			MerchantCompanyInfo = new CompanyInformationSettings();
+			MerchantBankAccount = new BankConnectionSettings();
+			MerchantContactData = new ContactDataSettings();
+		}
+
+		public bool PdfMode { get; set; }
+		public string PrintLogoUrl { get; set; }
+		public string StoreName { get; set; }
+		public string StoreUrl { get; set; }
+
+		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+		public BankConnectionSettings MerchantBankAccount { get; set; }
+		public ContactDataSettings MerchantContactData { get; set; }
+	}
+	
+	public partial class OrderDetailsModel : EntityModelBase
     {
         public OrderDetailsModel()
         {
@@ -19,6 +39,8 @@ namespace SmartStore.Web.Models.Order
             BillingAddress = new AddressModel();
             ShippingAddress = new AddressModel();
         }
+
+		public int StoreId { get; set; }
 
         public string OrderNumber { get; set; }
         public bool PrintMode { get; set; }
@@ -109,6 +131,7 @@ namespace SmartStore.Web.Models.Order
         {
             public string Rate { get; set; }
             public string Value { get; set; }
+			public string Label { get; set; }
         }
 
         public partial class GiftCard : ModelBase

@@ -157,6 +157,16 @@ namespace SmartStore.Services.Pdf
 				sb.AppendFormat(CultureInfo.InvariantCulture, " --password {0}", options.Password);
 			}
 
+			if (options.HeaderSpacing.HasValue && options.PageHeader != null)
+			{
+				sb.AppendFormat(CultureInfo.InvariantCulture, " --header-spacing {0}", options.HeaderSpacing.Value);
+			}
+
+			if (options.FooterSpacing.HasValue && options.PageFooter != null)
+			{
+				sb.AppendFormat(CultureInfo.InvariantCulture, " --footer-spacing {0}", options.FooterSpacing.Value);
+			}
+
 			if (options.Post != null && options.Post.Count > 0)
 			{
 				CreateRepeatableFlags("--post", options.Post, sb);

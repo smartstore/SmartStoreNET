@@ -47,6 +47,9 @@ namespace SmartStore.Admin.Models.Settings
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.FilterEnabled")]
         public bool FilterEnabled { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists")]
+		public bool IncludeFeaturedProductsInNormalLists { get; set; }
         
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowShareButton")]
         public bool ShowShareButton { get; set; }

@@ -32,6 +32,7 @@
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 * Email a friend redirects to "not found"
+* #567 Products marked as 'Featured' should also be included in regular lists
 
 
 ## SmartStore.NET 2.1.0

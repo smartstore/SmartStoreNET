@@ -120,6 +120,13 @@ namespace SmartStore.Data.Migrations
 				"Lieferzeit, die bei einem leerem Lagerbestand angezeigt wird",
 				"Delivery time to be dislayed when the stock quantity of a product is equal or less 0.",
 				"Lieferzeit, die angezeigt wird, wenn der Warenbestand des Produktes kleiner gleich 0 ist.");
+
+			// old setting now with ui
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists",
+				"Show featured product in lists",
+				"Top-Produkte in Listen anzeigen",
+				"Determines to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
+				"Legt fest, dass Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
 		}
     }
 }

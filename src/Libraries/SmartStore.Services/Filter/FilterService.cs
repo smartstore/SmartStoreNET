@@ -161,7 +161,7 @@ namespace SmartStore.Services.Filter
 			{
 				var searchContext = new ProductSearchContext()
 				{
-					FeaturedProducts = _catalogSettings.IncludeFeaturedProductsInNormalLists,
+					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
 					StoreId = _commonServices.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
 				};
@@ -247,13 +247,12 @@ namespace SmartStore.Services.Filter
 		}
 		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
 		{
-			bool includeFeatured = _catalogSettings.IncludeFeaturedProductsInNormalLists;
 			var query = ProductFilter(context);
 
 			var manus =
 				from p in query
 				from pm in p.ProductManufacturers
-				where pm.IsFeaturedProduct == includeFeatured && !pm.Manufacturer.Deleted
+				where !pm.Manufacturer.Deleted
 				select pm.Manufacturer;
 
 			var grouped =
@@ -468,12 +467,10 @@ namespace SmartStore.Services.Filter
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
-				bool includeFeatured = _catalogSettings.IncludeFeaturedProductsInNormalLists;
-
 				var pmq =
 					from p in query
 					from pm in p.ProductManufacturers
-					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct) && !pm.Manufacturer.Deleted
+					where !pm.Manufacturer.Deleted
 					select pm;
 
 				query = pmq

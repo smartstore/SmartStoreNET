@@ -301,6 +301,15 @@
                     @Html.ValidationMessageFor(model => model.ShowProductsFromSubcategories)
                 </td>
             </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IncludeFeaturedProductsInNormalLists)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.IncludeFeaturedProductsInNormalLists)
+					@Html.ValidationMessageFor(model => model.IncludeFeaturedProductsInNormalLists)
+				</td>
+			</tr>
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
@@ -337,7 +346,6 @@
                     @Html.ValidationMessageFor(model => model.FilterEnabled)
                 </td>
             </tr>
-
         </table>
     </fieldset>
     
@@ -748,37 +756,4 @@
         </tr>
     </table>
 } 
-    <table>
-
-        @* codehint: Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen in der View *@
-@*        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsPageSize)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSize">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSizeOptions">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSizeOptions)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsPageSizeOptions)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSizeOptions)
-            </td>
-        </tr>*@
-        @*codehint: sm-add end*@
-
-    </table>
 }

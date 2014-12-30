@@ -1,35 +1,30 @@
-﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
+﻿using System.Reflection;
 using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
-using SmartStore.Admin.Models.Cms;
-using SmartStore.Admin.Models.ContentSlider;
 using SmartStore.Admin.Models.Common;
+using SmartStore.Admin.Models.ContentSlider;
 using SmartStore.Admin.Models.Customers;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Discounts;
-using SmartStore.Admin.Models.ExternalAuthentication;
 using SmartStore.Admin.Models.Forums;
 using SmartStore.Admin.Models.Localization;
 using SmartStore.Admin.Models.Logging;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Admin.Models.News;
 using SmartStore.Admin.Models.Orders;
-using SmartStore.Admin.Models.Payments;
 using SmartStore.Admin.Models.Plugins;
 using SmartStore.Admin.Models.Polls;
 using SmartStore.Admin.Models.Settings;
 using SmartStore.Admin.Models.Shipping;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Models.Tax;
-using SmartStore.Admin.Models.Topics;
 using SmartStore.Admin.Models.Themes;
+using SmartStore.Admin.Models.Topics;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Cms;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
@@ -42,20 +37,12 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Domain.Topics;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Authentication.External;
-using SmartStore.Services.Cms;
-using SmartStore.Services.Payments;
-using SmartStore.Services.Shipping;
-using SmartStore.Services.Seo;
-using SmartStore.Services.Tax;
-using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Admin.Models.Stores;
-using AutoMapper.Mappers;
 
 namespace SmartStore.Admin.Infrastructure
 {
@@ -189,7 +176,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableCategoryTemplates, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.Breadcrumb, mo => mo.Ignore())
-				.ForMember(dest => dest.ParentCategoryBreadcrumb, mo => mo.Ignore()) // codehint: sm-edit
+				.ForMember(dest => dest.ParentCategoryBreadcrumb, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
 				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
@@ -327,7 +314,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore());
 
-            // codehint: sm-add begin
             // Delivery times 
             Mapper.CreateMap<DeliveryTime, DeliveryTimeModel>()
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
@@ -365,8 +351,6 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Product, mo => mo.Ignore())
                 .ForMember(dest => dest.AssignedPictureIds, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));
-
-            //codehint: sm-add end
 
             //measure weights
             Mapper.CreateMap<MeasureWeight, MeasureWeightModel>()
@@ -591,10 +575,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSearchTermMinimumLength, mo => mo.Ignore())
                 .ForMember(dest => dest.UseSmallProductBoxOnHomePage, mo => mo.Ignore())
-                .ForMember(dest => dest.IncludeFeaturedProductsInNormalLists, mo => mo.Ignore())
-                //.ForMember(dest => dest.DefaultPageSizeOptions, mo => mo.Ignore())
-                .ForMember(dest => dest.DefaultCategoryPageSizeOptions, mo => mo.Ignore()) // codehint: Obsolete soon
-                .ForMember(dest => dest.DefaultManufacturerPageSizeOptions, mo => mo.Ignore()) // codehint: Obsolete soon
+                .ForMember(dest => dest.DefaultCategoryPageSizeOptions, mo => mo.Ignore())
+                .ForMember(dest => dest.DefaultManufacturerPageSizeOptions, mo => mo.Ignore())
                 .ForMember(dest => dest.MaximumBackInStockSubscriptions, mo => mo.Ignore())
                 .ForMember(dest => dest.DisplayTierPricesWithDiscounts, mo => mo.Ignore())
                 .ForMember(dest => dest.FileUploadMaximumSizeBytes, mo => mo.Ignore())
@@ -638,7 +620,6 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<AddressSettings,  CustomerUserSettingsModel.AddressSettingsModel>();
             Mapper.CreateMap<CustomerUserSettingsModel.AddressSettingsModel, AddressSettings>();
 
-            // codehint: sm-add
 			Mapper.CreateMap<ThemeSettings, ThemeListModel>()
 				.ForMember(dest => dest.AvailableBundleOptimizationValues, mo => mo.Ignore())
 				.ForMember(dest => dest.DesktopThemes, mo => mo.Ignore())

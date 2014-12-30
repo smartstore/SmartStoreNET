@@ -152,7 +152,8 @@ namespace SmartStore.Services.Common
 
             var doc = new Document(pageSize, 40, 40, 40, 80);
             var writer = PdfWriter.GetInstance(doc, stream);
-            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings, _contactDataSettings, _localizationService, lang, _storeContext);
+            writer.PageEvent = new OrderPdfPageEvents(_pictureService, _pdfSettings, _companyInformationSettings, _bankConnectionSettings,
+				_contactDataSettings, _localizationService, lang, _storeContext);
             doc.Open();
             
             //fonts
@@ -231,7 +232,8 @@ namespace SmartStore.Services.Common
                 addressTable.SetWidths(new[] { 50, 50 });
 
                 //billing address
-                string company = String.Format("{0}, {1}, {2} {3}", _companyInformationSettings.CompanyName, 
+                string company = String.Format("{0}, {1}, {2} {3}",
+					_companyInformationSettings.CompanyName, 
                     _companyInformationSettings.Street, 
                     _companyInformationSettings.ZipCode,
                     _companyInformationSettings.City);
@@ -250,6 +252,7 @@ namespace SmartStore.Services.Common
                     cell.AddElement(new Paragraph(order.BillingAddress.Company, font));
                 }
                 cell.AddElement(new Paragraph(String.Format(order.BillingAddress.FirstName + " " + order.BillingAddress.LastName), font));
+
                 if (_addressSettings.StreetAddressEnabled)
                 {
                     cell.AddElement(new Paragraph(order.BillingAddress.Address1, font));
@@ -258,7 +261,9 @@ namespace SmartStore.Services.Common
                 {
                     cell.AddElement(new Paragraph(order.BillingAddress.Address2, font));
                 }
-                if (_addressSettings.CityEnabled || _addressSettings.StateProvinceEnabled || _addressSettings.ZipPostalCodeEnabled || _addressSettings.CountryEnabled && order.BillingAddress.Country != null)
+
+                if (_addressSettings.CityEnabled || _addressSettings.StateProvinceEnabled || _addressSettings.ZipPostalCodeEnabled ||
+					_addressSettings.CountryEnabled && order.BillingAddress.Country != null)
                 {
                     cell.AddElement(new Paragraph(String.Format("{0} {1} - {2} {3}", 
                         order.BillingAddress.Country != null ? order.BillingAddress.Country.GetLocalized(x => x.TwoLetterIsoCode, lang.Id) : "",
@@ -272,6 +277,7 @@ namespace SmartStore.Services.Common
                 //legal + shop infos 
                 cell = new PdfPCell();
                 cell.Border = Rectangle.NO_BORDER;
+
                 var paragraph = new Paragraph(_companyInformationSettings.CompanyName, font);
                 paragraph.Alignment = Element.ALIGN_RIGHT;
                 cell.AddElement(paragraph);
@@ -296,34 +302,44 @@ namespace SmartStore.Services.Common
                 cell.AddElement(paragraph);
 
                 //phone
-                paragraph = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.Phone", lang.Id), _contactDataSettings.CompanyTelephoneNumber), font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
+				if (_contactDataSettings.CompanyTelephoneNumber.HasValue())
+				{
+					paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.Phone", lang.Id) + " " + _contactDataSettings.CompanyTelephoneNumber, font);
+					paragraph.Alignment = Element.ALIGN_RIGHT;
+					cell.AddElement(paragraph);
+				}
 
                 //fax
-                paragraph = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.Fax", lang.Id), _contactDataSettings.CompanyFaxNumber), font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
+				if (_contactDataSettings.CompanyFaxNumber.HasValue())
+				{
+					paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.Fax", lang.Id) + " " + _contactDataSettings.CompanyFaxNumber, font);
+					paragraph.Alignment = Element.ALIGN_RIGHT;
+					cell.AddElement(paragraph);
+				}
 
                 //tax number/ust-id
-                paragraph = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.TaxNumber", lang.Id), _companyInformationSettings.TaxNumber), font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
+				if (_companyInformationSettings.TaxNumber.HasValue())
+				{
+					paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.TaxNumber", lang.Id) + " " + _companyInformationSettings.TaxNumber, font);
+					paragraph.Alignment = Element.ALIGN_RIGHT;
+					cell.AddElement(paragraph);
+				}
 
                 //vat id
-                paragraph = new Paragraph(String.Format(_localizationService.GetResource("PDFInvoice.VatId", lang.Id), _companyInformationSettings.VatId), font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
+				if (_companyInformationSettings.VatId.HasValue())
+				{
+					paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.VatId", lang.Id) + " " +  _companyInformationSettings.VatId, font);
+					paragraph.Alignment = Element.ALIGN_RIGHT;
+					cell.AddElement(paragraph);
+				}
 
                 //commercial register heading
-                paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.CommercialRegisterHeading", lang.Id), font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
-
-                //handelregister
-                paragraph = new Paragraph(_companyInformationSettings.CommercialRegister, font);
-                paragraph.Alignment = Element.ALIGN_RIGHT;
-                cell.AddElement(paragraph);
+				if (_companyInformationSettings.CommercialRegister.HasValue())
+				{
+					paragraph = new Paragraph(_localizationService.GetResource("PDFInvoice.CommercialRegisterHeading", lang.Id) + " " + _companyInformationSettings.CommercialRegister, font);
+					paragraph.Alignment = Element.ALIGN_RIGHT;
+					cell.AddElement(paragraph);
+				}
 
                 addressTable.AddCell(cell);
 
@@ -389,9 +405,11 @@ namespace SmartStore.Services.Common
 
                     //product name
 					string name = p.GetLocalized(x => x.Name, lang.Id);
+
 					cell = new PdfPCell();
 					cell.Padding = cellPadding;
 					cell.HorizontalAlignment = Element.ALIGN_LEFT;
+
                     cell.AddElement(new Paragraph(name, font));
 
 					if (p.ProductType == ProductType.BundledProduct)

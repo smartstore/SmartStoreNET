@@ -33,6 +33,7 @@
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 * Email a friend redirects to "not found"
 * #567 Products marked as 'Featured' should also be included in regular lists
+* Fixed some missing company information in order to PDF export
 
 
 ## SmartStore.NET 2.1.0

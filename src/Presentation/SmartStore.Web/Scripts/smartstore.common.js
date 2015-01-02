@@ -67,6 +67,17 @@
 			return Function.constructor.apply(null, argNames);
 		}
 
+		function decode(str) {
+			try {
+				if (str)
+					return decodeURIComponent(escape(str));
+			}
+			catch (e) {
+				return str;
+			}
+			return str;
+		}
+
 		if (!Modernizr.csstransitions) {
 			$.fn.transition = $.fn.animate;
 		}
@@ -157,19 +168,20 @@
 			.ajaxSuccess(function (ev, xhr) {
 				var msg = xhr.getResponseHeader('X-Message');
 				if (msg) {
-					displayNotification(msg, xhr.getResponseHeader('X-Message-Type'));
+					console.log(decode(msg));
+					displayNotification(decode(msg), xhr.getResponseHeader('X-Message-Type'));
 				}
 			})
 			.ajaxError(function (ev, xhr) {
 				var msg = xhr.getResponseHeader('X-Message');
 				if (msg) {
-					displayNotification(msg, xhr.getResponseHeader('X-Message-Type'));
+					displayNotification(decode(msg), xhr.getResponseHeader('X-Message-Type'));
 				}
 				else {
 					try {
 						var data = JSON.parse(xhr.responseText);
 						if (data.error && data.message) {
-							displayNotification(data.message, "error");
+							displayNotification(decode(data.message), "error");
 						}
 					}
 					catch (ex) {

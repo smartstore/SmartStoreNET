@@ -168,7 +168,6 @@
 			.ajaxSuccess(function (ev, xhr) {
 				var msg = xhr.getResponseHeader('X-Message');
 				if (msg) {
-					console.log(decode(msg));
 					displayNotification(decode(msg), xhr.getResponseHeader('X-Message-Type'));
 				}
 			})

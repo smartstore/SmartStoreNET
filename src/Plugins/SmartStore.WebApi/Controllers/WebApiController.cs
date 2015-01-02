@@ -1,14 +1,13 @@
-﻿using SmartStore.Core.Domain.Common;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Mvc;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Services;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.WebApi;
 using SmartStore.WebApi.Models;
 using SmartStore.WebApi.Security;
 using SmartStore.WebApi.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Security;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.WebApi;
-using System;
-using System.Web.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.WebApi.Controllers
@@ -16,44 +15,39 @@ namespace SmartStore.WebApi.Controllers
 	[AdminAuthorize]
 	public class WebApiController : PluginControllerBase
 	{
-		private readonly IPermissionService _permissionService;
 		private readonly WebApiSettings _webApiSettings;
-		private readonly ISettingService _settingService;
 		private readonly IWebApiPluginService _webApiPluginService;
 		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly ILocalizationService _localizationService;
+		private readonly ICommonServices _services;
 
 		public WebApiController(
-			IPermissionService permissionService,
 			WebApiSettings settings,
-			ISettingService settingService,
 			IWebApiPluginService webApiPluginService,
 			AdminAreaSettings adminAreaSettings,
-			ILocalizationService localizationService)
+			ICommonServices services)
 		{
-			_permissionService = permissionService;
 			_webApiSettings = settings;
-			_settingService = settingService;
 			_webApiPluginService = webApiPluginService;
 			_adminAreaSettings = adminAreaSettings;
-			_localizationService = localizationService;
+			_services = services;
 		}
 
 		private bool HasPermission(bool notify = true)
 		{
-			bool hasPermission = _permissionService.Authorize(WebApiPermissionProvider.ManageWebApi);
+			bool hasPermission = _services.Permissions.Authorize(WebApiPermissionProvider.ManageWebApi);
 
 			if (notify && !hasPermission)
-				NotifyError(_localizationService.GetResource("Admin.AccessDenied.Description"));
+				NotifyError(_services.Localization.GetResource("Admin.AccessDenied.Description"));
 
 			return hasPermission;
 		}
+
 		private void AddButtonText()
 		{
-			ViewData["ButtonTextEnable"] = _localizationService.GetResource("Plugins.Api.WebApi.Activate");
-            ViewData["ButtonTextDisable"] = _localizationService.GetResource("Plugins.Api.WebApi.Deactivate");
-            ViewData["ButtonTextRemoveKeys"] = _localizationService.GetResource("Plugins.Api.WebApi.RemoveKeys");
-            ViewData["ButtonTextCreateKeys"] = _localizationService.GetResource("Plugins.Api.WebApi.CreateKeys");
+			ViewData["ButtonTextEnable"] = _services.Localization.GetResource("Plugins.Api.WebApi.Activate");
+			ViewData["ButtonTextDisable"] = _services.Localization.GetResource("Plugins.Api.WebApi.Deactivate");
+			ViewData["ButtonTextRemoveKeys"] = _services.Localization.GetResource("Plugins.Api.WebApi.RemoveKeys");
+			ViewData["ButtonTextCreateKeys"] = _services.Localization.GetResource("Plugins.Api.WebApi.CreateKeys");
 		}
 
 		public ActionResult Configure()
@@ -82,11 +76,14 @@ namespace SmartStore.WebApi.Controllers
 		[FormValueRequired("savegeneralsettings")]
 		public ActionResult SaveGeneralSettings(WebApiConfigModel model)
 		{
-			if (!HasPermission(false) || !ModelState.IsValid)
+			if (!ModelState.IsValid)
 				return Configure();
 
+			if (!HasPermission(false))
+				return AccessDeniedPartialView();
+
 			model.Copy(_webApiSettings, false);
-			_settingService.SaveSetting(_webApiSettings);
+			_services.Settings.SaveSetting(_webApiSettings);
 
 			WebApiCaching.Remove(WebApiControllingCacheData.Key);
 
@@ -96,6 +93,9 @@ namespace SmartStore.WebApi.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult GridUserData(GridCommand command)
 		{
+			if (!HasPermission())
+				return new JsonResult { Data = new GridModel<WebApiUserModel>()	{ Data = new List<WebApiUserModel>() }};
+
 			var model = _webApiPluginService.GetGridModel(command.Page - 1, command.PageSize);
 
 			AddButtonText();
@@ -106,25 +106,29 @@ namespace SmartStore.WebApi.Controllers
 		[HttpPost]
 		public void ApiButtonCreateKeys(int customerId)
 		{
-			_webApiPluginService.CreateKeys(customerId);
+			if (HasPermission())
+				_webApiPluginService.CreateKeys(customerId);
 		}
 
 		[HttpPost]
 		public void ApiButtonRemoveKeys(int customerId)
 		{
-			_webApiPluginService.RemoveKeys(customerId);
+			if (HasPermission())
+				_webApiPluginService.RemoveKeys(customerId);
 		}
 
 		[HttpPost]
 		public void ApiButtonEnable(int customerId)
 		{
-			_webApiPluginService.EnableOrDisableUser(customerId, true);
+			if (HasPermission())
+				_webApiPluginService.EnableOrDisableUser(customerId, true);
 		}
 
 		[HttpPost]
 		public void ApiButtonDisable(int customerId)
 		{
-			_webApiPluginService.EnableOrDisableUser(customerId, false);
+			if (HasPermission())
+				_webApiPluginService.EnableOrDisableUser(customerId, false);
 		}
 
 	}

@@ -102,29 +102,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(Topic topic, TopicModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(topic);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(topic, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
         #endregion
         
         #region List
@@ -221,14 +198,15 @@ namespace SmartStore.Admin.Controllers
 
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
-                //No topic found with the specified id
                 return RedirectToAction("List");
 
             var model = topic.ToModel();
             model.Url = Url.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
+			
 			//Store
 			PrepareStoresMappingModel(model, topic, false);
-            //locales
+            
+			//locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Title = topic.GetLocalized(x => x.Title, languageId, false, false);
@@ -249,7 +227,6 @@ namespace SmartStore.Admin.Controllers
 
             var topic = _topicService.GetTopicById(model.Id);
             if (topic == null)
-                //No topic found with the specified id
                 return RedirectToAction("List");
 
             model.Url = Url.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
@@ -263,19 +240,18 @@ namespace SmartStore.Admin.Controllers
             {
                 topic = model.ToEntity(topic);
                 _topicService.UpdateTopic(topic);
+				
 				//Stores
-				SaveStoreMappings(topic, model);
-                //locales
+				_storeMappingService.SaveStoreMappings<Topic>(topic, model.SelectedStoreIds);
+                
+				//locales
                 UpdateLocales(topic, model);
                 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Topics.Updated"));
                 return continueEditing ? RedirectToAction("Edit", topic.Id) : RedirectToAction("List");
             }
 
-
             //If we got this far, something failed, redisplay form
-
-
 			//Store
 			PrepareStoresMappingModel(model, topic, true);
 
@@ -290,7 +266,6 @@ namespace SmartStore.Admin.Controllers
 
             var topic = _topicService.GetTopicById(id);
             if (topic == null)
-                //No topic found with the specified id
                 return RedirectToAction("List");
 
             _topicService.DeleteTopic(topic);

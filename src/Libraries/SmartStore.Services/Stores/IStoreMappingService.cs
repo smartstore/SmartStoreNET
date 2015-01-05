@@ -38,6 +38,14 @@ namespace SmartStore.Services.Stores
 		IList<StoreMapping> GetStoreMappings<T>(T entity) where T : BaseEntity, IStoreMappingSupported;
 
 		/// <summary>
+		/// Gets store mapping records
+		/// </summary>
+		/// <param name="entityName">Could be null</param>
+		/// <param name="entityId">Could be 0</param>
+		/// <returns>Store mapping record query</returns>
+		IQueryable<StoreMapping> GetStoreMappingsFor(string entityName, int entityId);
+
+		/// <summary>
 		/// Save the store napping for an entity
 		/// </summary>
 		/// <typeparam name="T">Entity type</typeparam>

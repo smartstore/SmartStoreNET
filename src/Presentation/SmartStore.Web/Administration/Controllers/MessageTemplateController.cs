@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
@@ -138,29 +136,6 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 		}
-
-		[NonAction]
-		protected void SaveStoreMappings(MessageTemplate messageTemplate, MessageTemplateModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(messageTemplate);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(messageTemplate, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
         
         #endregion
         
@@ -177,6 +152,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = new MessageTemplateListModel();
+
 			//stores
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
@@ -210,9 +186,7 @@ namespace SmartStore.Admin.Controllers
 
             var messageTemplate = _messageTemplateService.GetMessageTemplateById(id);
             if (messageTemplate == null)
-                //No message template found with the specified id
                 return RedirectToAction("List");
-
 
             var model = messageTemplate.ToModel();
 
@@ -221,9 +195,11 @@ namespace SmartStore.Admin.Controllers
             //available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
+			
 			//Store
 			PrepareStoresMappingModel(model, messageTemplate, false);
-            //locales
+            
+			//locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.BccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, languageId, false, false);
@@ -246,16 +222,17 @@ namespace SmartStore.Admin.Controllers
 
             var messageTemplate = _messageTemplateService.GetMessageTemplateById(model.Id);
             if (messageTemplate == null)
-                //No message template found with the specified id
                 return RedirectToAction("List");
             
             if (ModelState.IsValid)
             {
                 messageTemplate = model.ToEntity(messageTemplate);
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
+				
 				//Stores
-				SaveStoreMappings(messageTemplate, model);
-                //locales
+				_storeMappingService.SaveStoreMappings<MessageTemplate>(messageTemplate, model.SelectedStoreIds);
+                
+				//locales
                 UpdateLocales(messageTemplate, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));
@@ -265,9 +242,11 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
-            //available email accounts
+            
+			//available email accounts
             foreach (var ea in _emailAccountService.GetAllEmailAccounts())
                 model.AvailableEmailAccounts.Add(ea.ToModel());
+			
 			//Store
 			PrepareStoresMappingModel(model, messageTemplate, true);
             return View(model);
@@ -281,7 +260,6 @@ namespace SmartStore.Admin.Controllers
 
 			var messageTemplate = _messageTemplateService.GetMessageTemplateById(id);
 			if (messageTemplate == null)
-				//No message template found with the specified id
 				return RedirectToAction("List");
 
 			_messageTemplateService.DeleteMessageTemplate(messageTemplate);
@@ -299,7 +277,6 @@ namespace SmartStore.Admin.Controllers
 
 			var messageTemplate = _messageTemplateService.GetMessageTemplateById(model.Id);
 			if (messageTemplate == null)
-				//No message template found with the specified id
 				return RedirectToAction("List");
 
 			try

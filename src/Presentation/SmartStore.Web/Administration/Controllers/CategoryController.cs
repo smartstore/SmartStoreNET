@@ -255,29 +255,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(Category category, CategoryModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(category);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(category, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
         #endregion
 
         #region List / tree
@@ -525,12 +502,15 @@ namespace SmartStore.Admin.Controllers
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 _categoryService.InsertCategory(category);
-                //search engine name
+                
+				//search engine name
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
-                //locales
+                
+				//locales
                 UpdateLocales(category, model);
-                //disounts
+                
+				//disounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
                 {
@@ -538,14 +518,18 @@ namespace SmartStore.Admin.Controllers
                         category.AppliedDiscounts.Add(discount);
                 }
                 _categoryService.UpdateCategory(category);
+
                 //update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
+
                 //update picture seo file name
                 UpdatePictureSeoNames(category);
+
                 //ACL (customer roles)
                 SaveCategoryAcl(category, model);
+
 				//Stores
-				SaveStoreMappings(category, model);
+				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 
@@ -584,7 +568,6 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(id);
             if (category == null || category.Deleted)
-                //No category found with the specified id
                 return RedirectToAction("List");
 
             var model = category.ToModel();
@@ -627,7 +610,6 @@ namespace SmartStore.Admin.Controllers
 
             var category = _categoryService.GetCategoryById(model.Id);
             if (category == null || category.Deleted)
-                //No category found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -659,8 +641,10 @@ namespace SmartStore.Admin.Controllers
                     }
                 }
                 _categoryService.UpdateCategory(category);
+
                 //update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
+
                 //delete an old picture (if deleted or updated)
                 if (prevPictureId > 0 && prevPictureId != category.PictureId)
                 {
@@ -668,12 +652,15 @@ namespace SmartStore.Admin.Controllers
                     if (prevPicture != null)
                         _pictureService.DeletePicture(prevPicture);
                 }
+
                 //update picture seo file name
                 UpdatePictureSeoNames(category);
+
                 //ACL
                 SaveCategoryAcl(category, model);
+
 				//Stores
-				SaveStoreMappings(category, model);
+				_storeMappingService.SaveStoreMappings<Category>(category, model.SelectedStoreIds);
 
 				_eventPublisher.Publish(new ModelBoundEvent(model, category, form));
 

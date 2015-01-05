@@ -22,6 +22,7 @@
 * #555 Product edit: Improve category select box. Add history (last x selected items) above all others.
 * #510 Payment plugins: Qualify configuration(s) for multistores
 * #556 A negative value should be possible for additional payment fees
+* Dashboard: Order items linked with order list
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission

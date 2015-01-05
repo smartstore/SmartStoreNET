@@ -127,6 +127,11 @@ namespace SmartStore.Data.Migrations
 				"Top-Produkte in Listen anzeigen",
 				"Determines to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
 				"Legt fest, dass Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
+
+			// new notification
+			builder.AddOrUpdate("Admin.Order.NotFound",
+				"An order with this number was not found.",
+				"Ein Auftrag mit dieser Nummer wurde nicht gefunden.");
 		}
     }
 }

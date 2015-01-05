@@ -11,7 +11,6 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.SalesReport.Average.SumTodayOrders")]
         public string SumTodayOrders { get; set; }
 
-        /// <![CDATA[ codehint: sm-add ]]>
         [SmartResourceDisplayName("Common.Count")]
         public int CountTodayOrders { get; set; }
         
@@ -26,5 +25,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.SalesReport.Average.SumAllTimeOrders")]
         public string SumAllTimeOrders { get; set; }
+
+		public string Url { get; set; }
     }
 }

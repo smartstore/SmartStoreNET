@@ -752,26 +752,17 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult List()
+        public ActionResult List(OrderListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
-
-            var model = new OrderListModel();
 
             model.AvailableOrderStatuses = OrderStatus.Pending.ToSelectList(false).ToList();
             model.AvailablePaymentStatuses = PaymentStatus.Pending.ToSelectList(false).ToList();
             model.AvailableShippingStatuses = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
 
 			//stores
-			foreach (var store in _storeService.GetAllStores())
-			{
-				model.AvailableStores.Add(new SelectListItem()
-				{
-					Text = store.Name,
-					Value = store.Id.ToString()
-				});
-			}
+			model.AvailableStores.AddRange(_storeService.GetAllStores().ToList().ToSelectListItems());
 			model.AvailableStores.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
@@ -840,10 +831,13 @@ namespace SmartStore.Admin.Controllers
         public ActionResult GoToOrderId(OrderListModel model)
         {
             var order = _orderService.GetOrderByNumber(model.GoDirectlyToNumber);
+
             if (order != null)
                 return RedirectToAction("Edit", "Order", new { id = order.Id });
-            else
-                return List();
+
+			NotifyWarning(_localizationService.GetResource("Admin.Order.NotFound"));
+
+			return RedirectToAction("List", "Order");
         }
 
         #endregion
@@ -2703,11 +2697,14 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected virtual IList<OrderAverageReportLineSummaryModel> GetOrderAverageReportModel()
         {
+			var urlHelper = new UrlHelper(Request.RequestContext);
             var report = new List<OrderAverageReportLineSummary>();
+
 			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Pending));
 			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Processing));
 			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Complete));
 			report.Add(_orderReportService.OrderAverageReport(0, OrderStatus.Cancelled));
+
             var model = report.Select(x =>
             {
                 return new OrderAverageReportLineSummaryModel()
@@ -2719,6 +2716,7 @@ namespace SmartStore.Admin.Controllers
                     SumThisMonthOrders = _priceFormatter.FormatPrice(x.SumThisMonthOrders, true, false),
                     SumThisYearOrders = _priceFormatter.FormatPrice(x.SumThisYearOrders, true, false),
                     SumAllTimeOrders = _priceFormatter.FormatPrice(x.SumAllTimeOrders, true, false),
+					Url = urlHelper.Action("List", "Order", new { OrderStatusIds = (int)x.OrderStatus })
                 };
             }).ToList();
 
@@ -2751,13 +2749,16 @@ namespace SmartStore.Admin.Controllers
         protected virtual IList<OrderIncompleteReportLineModel> GetOrderIncompleteReportModel()
         {
             var model = new List<OrderIncompleteReportLineModel>();
+			var urlHelper = new UrlHelper(Request.RequestContext);
+
             //not paid
 			var psPending = _orderReportService.GetOrderAverageReportLine(0, null, new int[] { (int)PaymentStatus.Pending }, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalUnpaidOrders"),
                 Count = psPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(psPending.SumOrders, true, false)
+                Total = _priceFormatter.FormatPrice(psPending.SumOrders, true, false),
+				Url = urlHelper.Action("List", "Order", new { PaymentStatusIds = (int)PaymentStatus.Pending })
             });
             
             //not shipped
@@ -2766,16 +2767,20 @@ namespace SmartStore.Admin.Controllers
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalNotShippedOrders"),
                 Count = ssPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false)
+                Total = _priceFormatter.FormatPrice(ssPending.SumOrders, true, false),
+				Url = urlHelper.Action("List", "Order", new { ShippingStatusIds = (int)ShippingStatus.NotYetShipped })
             });
+
             //pending
 			var osPending = _orderReportService.GetOrderAverageReportLine(0, new int[] { (int)OrderStatus.Pending }, null, null, null, null, null, true);
             model.Add(new OrderIncompleteReportLineModel()
             {
                 Item = _localizationService.GetResource("Admin.SalesReport.Incomplete.TotalIncompleteOrders"),
                 Count = osPending.CountOrders,
-                Total = _priceFormatter.FormatPrice(osPending.SumOrders, true, false)
+                Total = _priceFormatter.FormatPrice(osPending.SumOrders, true, false),
+				Url = urlHelper.Action("List", "Order", new { OrderStatusIds = (int)OrderStatus.Pending })
             });
+
             return model;
         }
         [ChildActionOnly]

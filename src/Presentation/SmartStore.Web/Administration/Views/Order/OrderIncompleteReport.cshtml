@@ -22,7 +22,16 @@
 				@foreach (var x in Model)
 				{
 					<tr>
-						<td>@x.Item</td>
+						<td>
+							@if (x.Url.HasValue())
+							{
+								<a href="@x.Url">@x.Item</a>
+							}
+							else
+							{
+								@x.Item
+							}
+						</td>
 						<td>@x.Total</td>
 						<td>@x.Count</td>
 					</tr>

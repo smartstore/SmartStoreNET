@@ -1913,8 +1913,8 @@
     <Content Include="Themes\AlphaBlack\Content\custom.less" />
     <Content Include="Views\Shared\_Print2.cshtml" />
     <Content Include="Views\Order\Details.Print.cshtml" />
-    <Content Include="Views\Order\Details.Print.Header.cshtml" />
-    <Content Include="Views\Order\Details.Print.Footer.cshtml" />
+    <Content Include="Views\Shared\_Pdf.Header.cshtml" />
+    <Content Include="Views\Shared\_Pdf.Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

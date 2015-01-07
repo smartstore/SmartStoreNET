@@ -23,7 +23,7 @@ h1, h2, h3, h4, h5, h6 {
 h1 {font-size: 19pt;}
 h2 {font-size: 17pt;}
 h3 {font-size: 15pt;}
-h4, h5, h6{font-size: 14pt;}
+h4, h5, h6 {font-size: 14pt;}
 
 
 p, h2, h3 { orphans: 3; widows: 3; }
@@ -35,19 +35,6 @@ hr {
 	border: 0;
 	border-top: 1px solid #aaa;
 	margin: 10px 0;
-}
-
-.text-muted {
-	color: #777;
-}
-.text-left {
-	text-align: left;
-}
-.text-center {
-	text-align: center;
-}
-.text-right {
-	text-align: right;
 }
 
 /* Images */
@@ -88,48 +75,184 @@ a[href^="#"]:after, a[href^="javascript:"]:after {
 	content: "";
 }
 
-/* Table */
-table { 
-	x-margin: 1px; 
-	x-text-align: left; 
-}
-th { 
-	x-border-bottom: 1px solid #333;  
-	font-weight: bold; 
-}
-td { 
-	x-border-bottom: 1px solid #333; 
-}
-th, 
-td { 
-	x-padding: 4px 10px 4px 0; 
-	vertical-align: top;
-}
-tfoot { 
-	x-font-style: italic; 
-}
-caption { 
-	x-background: #fff; 
-	x-margin-bottom: 2em; 
-	x-text-align: left; 
-}
-thead {
-	display: table-header-group;
-}
 img,
 tr {
 	page-break-inside: avoid;
 } 
 
-table.bordered {
+
+/* -------------------------------------------------------------- 
+ 	Utils
+-------------------------------------------------------------- */
+
+.margin-top-10		{ margin-top: 10px !important;  }
+.margin-top-20		{ margin-top: 20px !important;  }
+.margin-top-30		{ margin-top: 30px !important;  }
+.margin-top-40		{ margin-top: 40px !important;  }
+.margin-top-50		{ margin-top: 50px !important;  }
+.margin-top-60		{ margin-top: 60px !important;  }
+
+.margin-bottom-10	{ margin-bottom: 10px !important;  }
+.margin-bottom-20	{ margin-bottom: 20px !important;  }
+.margin-bottom-30	{ margin-bottom: 30px !important;  }
+.margin-bottom-40	{ margin-bottom: 40px !important;  }
+.margin-bottom-50	{ margin-bottom: 50px !important;  }
+.margin-bottom-60	{ margin-bottom: 60px !important;  }
+
+.text-muted		{ color: #777 }
+.text-left		{ text-align: left }
+.text-center	{ text-align: center }
+.text-right		{ text-align: right }
+
+.pull-left		{ float: left }
+.pull-right		{ float: right }
+
+.small			{ font-size: 11pt; }
+.x-small		{ font-size: 10pt; }
+.xx-small		{ font-size: 9pt; }
+
+.nobr			{ white-space: nowrap !important }
+
+.clearfix:before, 
+.clearfix:after {
+    display: table;
+    content: " ";
+}
+.clearfix:after {
+	clear: both;
+}
+
+/* -------------------------------------------------------------- 
+ 	Tables
+-------------------------------------------------------------- */
+
+table { 
+	width: 100%;
+	max-width: 100%;
+	border-spacing: 0;
 	border-collapse: collapse;
 }
-table.bordered td,
-table.bordered th {
-	border-bottom: 1px solid #aaa;
-	padding: 12px 8px;
+
+caption {
+	padding-top: 8px;
+	padding-bottom: 8px;
+	text-align: left;
 }
-table.bordered th {
-	x-background-color: #e5e5e5;
-	border-bottom-width: 2px;
+
+thead {
+	display: table-header-group;
+}
+
+
+th, td { 
+	vertical-align: top;
+	text-align: left;
+	line-height: 1.45;
+}
+
+
+.table {
+	margin-bottom: 20px;
+}
+
+.table tr {
+	border-top: 1px solid #999;
+}
+
+.table > thead > tr {
+	border-bottom: 2px solid #999;
+}
+
+.table th,
+.table td {
+	padding: 8px;
+	background-color: #fff;
+}
+
+.table > thead > tr > th {
+	vertical-align: bottom;
+}
+
+.table-bordered {
+	border: 1px solid #999;
+}
+.table-bordered th,
+.table-bordered td {
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+}
+
+
+/* -------------------------------------------------------------- 
+ 	Order Summary (receipts like invoice, packaging slip etc.)
+-------------------------------------------------------------- */
+
+.order-summary tbody td,
+.order-summary tbody th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+}
+
+.order-summary > tbody > tr,
+.order-summary > tfoot > tr {
+	border-top: none;
+}
+
+.order-summary > tbody {
+	border-top: 1px solid #999;
+	page-break-inside: avoid;
+}
+
+.order-summary td .attributes {
+	margin-left: 30px;
+}
+
+.order-summary tr.child-row > td {
+	padding-top: 0;
+}
+
+.order-summary tr.child-row > td > .associated-product {
+	margin-left: 30px;
+}
+
+/* -------------------------------------------------------------- 
+ 	Order address & info
+-------------------------------------------------------------- */
+
+.order-address {
+	width: 60%;
+	box-sizing: border-box;
+}
+
+.order-address .header {
+	display: inline-block; 
+	border-bottom: 1px solid #777; 
+	padding-bottom: 5px;
+}
+
+.order-info {
+	width: 40%;
+	box-sizing: border-box;
+	border: 1px solid #777; 
+	padding: 10px;
+}
+
+.order-info td {
+	width: 50%;
+}
+.order-info td.label {
+	font-weight: bold;
+}
+
+/* -------------------------------------------------------------- 
+ 	Order totals
+-------------------------------------------------------------- */
+
+.order-totals td.label {
+	font-weight: bold;
+	padding-left: 0;
+}
+
+.order-totals td.value {
+	text-align: right;
 }

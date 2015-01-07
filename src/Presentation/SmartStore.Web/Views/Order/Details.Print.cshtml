@@ -12,6 +12,7 @@
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 
 	var colWidths = Model.ShowSku ? new int[] { 40, 15, 10 } : new int[] { 50, 20, 10 };
+	var footSpan = Model.ShowSku ? 4 : 3;
 
 	var company = Model.MerchantCompanyInfo;
 	var contact = Model.MerchantContactData;
@@ -21,32 +22,25 @@
 @helper OrderLine(OrderDetailsModel.OrderItemModel item)
 {
 	<tr>
-		<td class="text-left">
+		<td>
 			@item.ProductName
-			@if (item.ProductType == ProductType.BundledProduct)
+			@if (item.AttributeInfo.HasValue())
 			{
-				
-			}
-			else
-			{
-				if (item.AttributeInfo.HasValue())
-				{
-					<div class="attributes" style="margin-left: 30px; font-size: 11pt;">
-						@Html.Raw(item.AttributeInfo)
-					</div>
-				}			
-			}
+				<div class="attributes small">
+					@Html.Raw(item.AttributeInfo)
+				</div>
+			}			
 		</td>
 		@if (Model.ShowSku)
 		{
-			<td class="text-left">
+			<td>
 				@item.Sku
 			</td>
 		}
 		<td class="text-right">
 			@item.UnitPrice
 		</td>
-		<td class="text-left">
+		<td>
 			@item.Quantity
 		</td>
 		<td class="text-right">
@@ -55,95 +49,224 @@
 	</tr>
 }
 
-<table style="width: 100%">
-	<tr>
-		<td style="width: 60%; vertical-align: top; padding-top: 40px">
-			<div>
-				<span style="border-bottom: 1px solid #777; display: inline-block; padding-bottom: 5px; font-size: 10pt">
-					@company.CompanyName &middot; @company.Street @company.Street2 &middot; @company.ZipCode @company.City &middot; @company.CountryName @company.StateName
-				</span>
-			</div>
-			<div style="margin-top: 10px">
-				@if (address.CompanyEnabled && address.Company.HasValue())
-				{
-					<div>@address.Company</div>
-				}
-				<div>@address.FirstName @address.LastName</div>
-				@if (address.StreetAddressEnabled && address.Address1.HasValue())
-				{
-					<div>@address.Address1</div>
-				}
-				@if (address.StreetAddress2Enabled && address.Address2.HasValue())
-				{
-					<div>@address.Address2</div>
-				}
-				@if (address.ZipPostalCodeEnabled || address.CityEnabled)
-				{
-					<div>@address.ZipPostalCode @address.City</div>
-				}
-				@if (address.StateProvinceEnabled || address.CountryEnabled)
-				{
-					<div>
-						@address.CountryName.EmptyNull()
-						@if (address.StateProvinceName.HasValue())
-						{
-							if (address.CountryName.HasValue())
-							{
-								<text>, </text>
-							}
-							<text>@address.StateProvinceName</text>
-						}
-					</div>
-				}
-			</div>
-		</td>
-		<td style="width: 40%; vertical-align: top; text-align: right">
-			<div style="border: 1px solid #777; padding: 10px">
-				<table style="width: 100%; text-align: left; font-size: 11pt">
-					<tr>
-						<td style="width: 50%; font-weight: 700">Auftrag#:</td>
-						<td style="width: 50%">@Model.OrderNumber</td>
-					</tr>
-					<tr>
-						<td style="width: 50%; font-weight: 700">Datum:</td>
-						<td style="width: 50%">@Model.CreatedOn.ToShortDateString()</td>
-					</tr>
-					<tr>
-						<td style="width: 50%; font-weight: 700">@T("Order.PaymentMethod"):</td>
-						<td style="width: 50%">@Model.PaymentMethod</td>
-					</tr>
-					<tr>
-						<td style="width: 50%; font-weight: 700">@T("Order.ShippingMethod"):</td>
-						<td style="width: 50%">@Model.ShippingMethod</td>
-					</tr>
-				</table>
-			</div>
-		</td>
-	</tr>
-</table>
-
-<h3>@T("PDFInvoice.Product(s)")</h3>
-
-<table style="width: 100%" class="bordered">
-	<thead>
-		<tr>
-			<th class="text-left" style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
+@helper BundleItems(OrderDetailsModel.OrderItemModel parentItem) 
+{
+	if (parentItem.BundleItems == null)
+	{
+		return;
+	}
+			
+	foreach (var item in parentItem.BundleItems.OrderBy(x => x.DisplayOrder))
+	{
+		<tr class="child-row">
+			<td>
+				<div class="associated-product">
+					@item.ProductName
+					@if (item.AttributeInfo.HasValue())
+					{
+						<div class="attributes small">
+							@Html.Raw(item.AttributeInfo)
+						</div>
+					}
+				</div>
+			</td>
 			@if (Model.ShowSku)
 			{
-				<th class="text-left" style="width: @(colWidths[2])%">@T("PDFInvoice.SKU")</th>
+				<td>&nbsp;</td>
+			}
+			<td class="text-right">
+				@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+				{
+					<span class="small">
+						@Html.Raw(item.PriceWithDiscount)
+					</span>
+				}
+				else
+				{
+					<text>&nbsp;</text>
+				}
+			</td>
+			<td class="small">
+				@if (parentItem.BundlePerItemShoppingCart)
+				{
+					<text>@item.Quantity</text>
+				}
+				else
+				{
+					<text>&nbsp;</text>
+				}
+			</td>
+			<td>&nbsp;</td>
+		</tr>
+	}
+}
+
+<!-- Address & Info -->
+<div class="clearfix">
+	<div class="order-address margin-top-40 pull-left">
+		<div>
+			<span class="header x-small">
+				@company.CompanyName &middot; @company.Street @company.Street2 &middot; @company.ZipCode @company.City &middot; @company.CountryName @company.StateName
+			</span>
+		</div>
+		<div class="margin-top-10">
+			@if (address.CompanyEnabled && address.Company.HasValue())
+			{
+				<div>@address.Company</div>
+			}
+			<div>@address.FirstName @address.LastName</div>
+			@if (address.StreetAddressEnabled && address.Address1.HasValue())
+			{
+				<div>@address.Address1</div>
+			}
+			@if (address.StreetAddress2Enabled && address.Address2.HasValue())
+			{
+				<div>@address.Address2</div>
+			}
+			@if (address.ZipPostalCodeEnabled || address.CityEnabled)
+			{
+				<div>@address.ZipPostalCode @address.City</div>
+			}
+			@if (address.StateProvinceEnabled || address.CountryEnabled)
+			{
+				<div>
+					@address.CountryName.EmptyNull()
+					@if (address.StateProvinceName.HasValue())
+					{
+						if (address.CountryName.HasValue())
+						{
+							<text>, </text>
+						}
+						<text>@address.StateProvinceName</text>
+					}
+				</div>
+			}
+		</div>
+	</div>
+
+	<div class="order-info small pull-right">
+		<table>
+			<tr>
+				<td class="label">Auftrag#:</td>
+				<td class="value">@Model.OrderNumber</td>
+			</tr>
+			<tr>
+				<td class="label">Datum:</td>
+				<td class="value">@Model.CreatedOn.ToShortDateString()</td>
+			</tr>
+			<tr>
+				<td class="label">@T("Order.PaymentMethod"):</td>
+				<td class="value">@Model.PaymentMethod</td>
+			</tr>
+			<tr>
+				<td class="label">@T("Order.ShippingMethod"):</td>
+				<td class="value">@Model.ShippingMethod</td>
+			</tr>
+		</table>
+	</div>
+</div>
+
+<h3 style="margin-top: 100px">@T("PDFInvoice.Product(s)")</h3>
+
+<table class="table order-summary">
+	<thead>
+		<tr>
+			<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
+			@if (Model.ShowSku)
+			{
+				<th style="width: @(colWidths[2])%">@T("PDFInvoice.SKU")</th>
 			}	
 			<th class="text-right" style="width: @(colWidths[1])%">@T("PDFInvoice.ProductPrice")</th>
-			<th class="text-left" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
+			<th style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
 			<th class="text-right" style="width: @(colWidths[1])%">@T("PDFInvoice.ProductTotal")</th>
 		</tr>
 	</thead>
-	<tbody>
-		@for (int i = 0; i < Model.Items.Count; i++)
-		{
-			var item = Model.Items[i];
+	@for (int i = 0; i < Model.Items.Count; i++)
+	{
+		var item = Model.Items[i];
+		<tbody>
 			@OrderLine(item)
-		}
-	</tbody>
+			@if (item.ProductType == ProductType.BundledProduct)
+			{
+				@BundleItems(item)
+			}
+		</tbody>	
+	}
 </table>
+
+<div class="pull-right" style="width: 40%; page-break-inside: avoid">
+	<table class="table order-totals">
+		<tr>
+			<td class="label">@T("Order.SubTotal"):</td>
+			<td class="value">@Model.OrderSubtotal</td>
+		</tr>
+		@if (Model.OrderSubTotalDiscount.HasValue())
+		{
+			<tr>
+				<td class="label">@T("Order.SubTotalDiscount"):</td>
+				<td class="value">@Model.OrderSubTotalDiscount</td>
+			</tr>
+		}
+		@if (Model.IsShippable)
+		{
+			<tr>
+				<td class="label">@T("Order.Shipping"):</td>
+				<td class="value">@Model.OrderShipping</td>
+			</tr>
+		}
+		@if (Model.PaymentMethodAdditionalFee.HasValue())
+		{
+			<tr>
+				<td class="label">@T("Order.PaymentMethodAdditionalFee"):</td>
+				<td class="value">@Model.PaymentMethodAdditionalFee</td>
+			</tr>
+		}
+		@if (Model.DisplayTaxRates && Model.TaxRates.Count > 0)
+		{
+			foreach (var taxRate in Model.TaxRates)
+			{
+				<tr>
+					<td class="label">@taxRate.Label:</td>
+					<td class="value">@taxRate.Value</td>
+				</tr>
+			}
+		}
+		@if (Model.DisplayTax)
+		{
+			<tr>
+				<td class="label">@T("Order.Tax"):</td>
+				<td class="value text-right">@Model.Tax</td>
+			</tr>
+		}
+		@if (Model.OrderTotalDiscount.HasValue())
+		{
+			<tr>
+				<td class="label">@T("Order.TotalDiscount"):</td>
+				<td class="value">@Model.OrderTotalDiscount</td>
+			</tr>
+		}
+		@if (Model.GiftCards.Count > 0)
+		{
+			foreach (var gc in Model.GiftCards)
+			{
+				<tr>
+					<td class="label">@Html.Raw(string.Format(T("Order.GiftCardInfo").Text, gc.CouponCode)):</td>
+					<td class="value">@gc.Amount</td>
+				</tr>
+			}
+		}
+		@if (Model.RedeemedRewardPoints > 0)
+		{
+			<tr>
+				<td class="label">@string.Format(T("Order.RewardPoints").Text, Model.RedeemedRewardPoints):</td>
+				<td class="value">@Model.RedeemedRewardPointsAmount</td>
+			</tr>
+		}
+		<tr>
+			<td class="label">@T("Order.OrderTotal"):</td>
+			<td class="value"><strong>@Model.OrderTotal</strong></td>
+		</tr>
+	</table>
+</div>
 
 

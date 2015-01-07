@@ -18,7 +18,6 @@
         $("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
         $("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
         $("#@Html.FieldIdFor(model => model.IsGiftCard)").click(toggleGiftCard);
-        $("#@Html.FieldIdFor(model => model.CustomerEntersPrice)").click(toggleCustomerEntersPrice);
         $("#@Html.FieldIdFor(model => model.IsDownload)").click(toggleDownloadableProduct);
         $("#@Html.FieldIdFor(model => model.UnlimitedDownloads)").click(toggleDownloadableProduct);
         $("#@Html.FieldIdFor(model => model.HasSampleDownload)").click(toggleDownloadableProduct);
@@ -30,7 +29,6 @@
     	toggleProductType();
         toggleRequireOtherProducts();
         toggleGiftCard();
-        toggleCustomerEntersPrice();
         toggleDownloadableProduct();
         toggleRecurring();
         toggleShipping();

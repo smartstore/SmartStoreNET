@@ -31,6 +31,7 @@
 * #538 Spcification attribute labels in product filter mask are not displayed localized
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
+* #577 Exception thrown because of missing TaxRate table when opening tax by region provider configuration
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 * Email a friend redirects to "not found"
 * #567 Products marked as 'Featured' should also be included in regular lists

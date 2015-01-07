@@ -8,6 +8,7 @@
 	var fieldBasePriceBaseAmount;
 
 	$(function () {
+		$("#@Html.FieldIdFor(model => model.CustomerEntersPrice)").click(toggleCustomerEntersPrice);
 		$("#@Html.FieldIdFor(model => model.BasePriceEnabled)").click(toggleBasePrice);
 
 		fieldBasePriceMeasureUnit = $("#@Html.FieldIdFor(model => model.BasePriceMeasureUnit)");
@@ -19,6 +20,7 @@
 		fieldBasePriceAmount.on("blur", getCurrentBasePrice);
 		fieldBasePriceBaseAmount.on("blur", getCurrentBasePrice);
 
+		toggleCustomerEntersPrice();
 		getCurrentBasePrice();
 		toggleBasePrice();
 
@@ -34,27 +36,39 @@
 						"basePriceAmount": fieldBasePriceAmount.val(),
 						"basePriceBaseAmount": fieldBasePriceBaseAmount.val()
 					},
-				success: function (data) {
-					$("#BasePriceAmountInfo").html(data.BasePrice);
-				},
-				error: function (xhr, ajaxOptions, thrownError){
-					alert(thrownError);
-				}
-			});
+					success: function (data) {
+						$("#BasePriceAmountInfo").html(data.BasePrice);
+					},
+					error: function (xhr, ajaxOptions, thrownError){
+						alert(thrownError);
+					}
+				});
+			}
+			return false;
 		}
-		return false;
-	}
 
-	function toggleBasePrice() {
-		if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
-			$('#pnlBasePriceBaseAmount').show();
-			$('#pnlBasePriceAmount').show();
+		function toggleBasePrice() {
+			if ($('#@Html.FieldIdFor(model => model.BasePriceEnabled)').is(':checked')) {
+				$('#pnlBasePriceBaseAmount').show();
+				$('#pnlBasePriceAmount').show();
+			}
+			else {
+				$('#pnlBasePriceBaseAmount').hide();
+				$('#pnlBasePriceAmount').hide();
+			}
 		}
-		else {
-			$('#pnlBasePriceBaseAmount').hide();
-			$('#pnlBasePriceAmount').hide();
+
+		function toggleCustomerEntersPrice() {
+			var src = $('#@Html.FieldIdFor(model => model.CustomerEntersPrice)');
+			if (src.is(':checked')) {
+				$('#pnlMinimumCustomerEnteredPrice').show();
+				$('#pnlMaximumCustomerEnteredPrice').show();
+			}
+			else {
+				$('#pnlMinimumCustomerEnteredPrice').hide();
+				$('#pnlMaximumCustomerEnteredPrice').hide();
+			}
 		}
-	}
 	})
 </script>
 

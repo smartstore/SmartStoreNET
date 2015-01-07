@@ -1001,6 +1001,7 @@ namespace SmartStore.Admin.Controllers
 				product.AllowCustomerReviews = true;
 				product.Published = true;
 				product.VisibleIndividually = true;
+				product.MaximumCustomerEnteredPrice = 1000;
 
 				if (product.ProductType == ProductType.BundledProduct)
 				{

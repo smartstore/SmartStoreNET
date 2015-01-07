@@ -573,9 +573,8 @@ namespace SmartStore.Web.Controllers
 				//CustomPageFlags = "--header-spacing 5",
 				HeaderSpacing = 5,
 				FooterSpacing = 5,
-				//PageHeader = RepeatablePdfSection.FromUrl("~/Header.html", this.Request),
-				//PageFooter = RepeatablePdfSection.FromUrl("http://www.google.de", this.Request),
-				//UserStylesheetUrl = "http://getbootstrap.com/2.3.2/assets/css/bootstrap.css"
+				PageHeader = RepeatablePdfSection.FromPartialView("_Pdf.Header", model, this.ControllerContext, false),
+				PageFooter = RepeatablePdfSection.FromPartialView("_Pdf.Footer", model, this.ControllerContext, false)
 			};
 
 			PdfResultBase result;

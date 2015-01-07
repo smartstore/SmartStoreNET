@@ -64,7 +64,7 @@
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)' == 'EFMigrations|AnyCPU'">
     <DebugSymbols>true</DebugSymbols>
-    <OutputPath>bin\EFMigrations\</OutputPath>
+    <OutputPath>..\..\Presentation\SmartStore.Web\bin\</OutputPath>
     <DefineConstants>DEBUG;TRACE</DefineConstants>
     <DebugType>full</DebugType>
     <PlatformTarget>AnyCPU</PlatformTarget>

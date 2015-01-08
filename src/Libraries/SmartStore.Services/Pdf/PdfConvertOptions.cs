@@ -45,12 +45,12 @@ namespace SmartStore.Services.Pdf
 		/// <summary>
 		/// Get or set custom page footer
 		/// </summary>
-		public IRepeatablePdfSection PageFooter { get; set; }
+		public IPdfHeaderFooter PageFooter { get; set; }
 
 		/// <summary>
 		/// Get or set custom page header 
 		/// </summary>
-		public IRepeatablePdfSection PageHeader { get; set; }
+		public IPdfHeaderFooter PageHeader { get; set; }
 
 		/// <summary>
 		/// Get or set PDF page width (in mm)
@@ -71,6 +71,16 @@ namespace SmartStore.Services.Pdf
 		/// Get or set repeatable footer spacing (in mm)
 		/// </summary>
 		public float? FooterSpacing { get; set; }
+
+		/// <summary>
+		/// Display line below the header
+		/// </summary>
+		public bool ShowHeaderLine { get; set; }
+
+		/// <summary>
+		/// Display line above the footer
+		/// </summary>
+		public bool ShowFooterLine { get; set; }
 
 		/// <summary>
 		/// Get or set PDF page orientation 

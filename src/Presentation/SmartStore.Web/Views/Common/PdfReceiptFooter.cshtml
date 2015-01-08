@@ -1,27 +1,26 @@
-﻿@model PrintableOrderDetailsModel
-@using SmartStore.Web.Models.Order;
+﻿@model PdfReceiptHeaderFooterModel
+@using SmartStore.Web.Framework.Pdf;
 
 @{
-    Layout = null;
+	Layout = "~/Views/Shared/_Print.cshtml";
+	
 	var company = Model.MerchantCompanyInfo;
 	var bank = Model.MerchantBankAccount;
 	var contact = Model.MerchantContactData;
 }
 
-<link rel="stylesheet" type="text/css" href="~/Content/print.css" />
-
 @*<hr />*@
 
-<table style="font-size: 9pt; width: 100%; color: #888;">
+<table class="text-muted text-smallest">
 	<tr>
-		<td style="width: 33%; vertical-align: top">
+		<td style="width: 33%;">
 			<div>@company.CompanyName</div>
 			<div>@company.Salutation @company.Title @company.Firstname @company.Lastname</div>
 			<div>@company.Street @company.Street2</div>
 			<div>@company.ZipCode @company.City</div>
 			<div>@company.CountryName, @company.StateName</div>
 		</td>
-		<td style="width: 33%; vertical-align: top">
+		<td style="width: 33%;">
 			<div>@T("PDFInvoice.Footer.Url", Model.StoreUrl)</div>
 			@if (contact.ContactEmailAddress.HasValue())
 			{
@@ -30,25 +29,25 @@
 			@if (contact.CompanyTelephoneNumber.HasValue())
 			{
 				<div>@T("PDFInvoice.Footer.Fon", contact.CompanyTelephoneNumber)</div>
-			}			
+			}
 			@if (contact.CompanyFaxNumber.HasValue())
 			{
 				<div>@T("PDFInvoice.Footer.Fax", contact.CompanyFaxNumber)</div>
-			}			
+			}
 			@if (company.TaxNumber.HasValue())
 			{
 				<div>@T("PDFInvoice.TaxNumber") @company.TaxNumber</div>
-			}		
+			}
 			@if (company.VatId.HasValue())
 			{
 				<div>@T("PDFInvoice.VatId") @company.VatId</div>
-			}				
+			}
 			@if (company.CommercialRegister.HasValue())
 			{
 				<div>@T("PDFInvoice.CommercialRegisterHeading") @company.CommercialRegister</div>
-			}						
+			}
 		</td>
-		<td style="width: 33%; vertical-align: top">
+		<td style="width: 33%;">
 			<div>@bank.Bankname</div>
 			<div>@T("PDFInvoice.Footer.Bankcode", bank.Bankcode)</div>
 			<div>@T("PDFInvoice.Footer.AccountNumber", bank.AccountNumber)</div>
@@ -58,5 +57,3 @@
 		</td>
 	</tr>
 </table>
-
-@*<h3 style='margin-bottom: 100px'>Test Footer, Page: <span class='page'></span> of <span class='topage'></span></h3>*@

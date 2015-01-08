@@ -1,0 +1,24 @@
+﻿@model PdfReceiptHeaderFooterModel
+@using SmartStore.Web.Framework.Pdf;
+
+@{
+	Layout = "~/Views/Shared/_Print.cshtml";
+}
+
+<header>
+	<table style="height: 100px;">
+		<tr>
+			<td style="text-align: right; vertical-align: middle">
+				@if (Model.LogoUrl.HasValue())
+				{
+					<img src="@Model.LogoUrl" alt="" style="max-height: 100px" />
+				}
+				else
+				{
+					<h2>@Model.StoreName</h2>
+				}
+			</td>
+		</tr>
+	</table>
+</header>
+

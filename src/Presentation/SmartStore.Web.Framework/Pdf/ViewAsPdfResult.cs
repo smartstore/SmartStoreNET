@@ -40,12 +40,12 @@ namespace SmartStore.Web.Framework.Pdf
 
 			if (Options.PageHeader == null)
 			{
-				Options.PageHeader = RepeatablePdfSection.FromPartialView(this.ViewName + ".Header", this.Model, context, false);
+				Options.PageHeader = PdfHeaderFooter.FromPartialView(this.ViewName + ".Header", this.Model, context, false);
 			}
 
 			if (Options.PageFooter == null)
 			{
-				Options.PageFooter = RepeatablePdfSection.FromPartialView(this.ViewName + ".Footer", this.Model, context, false);
+				Options.PageFooter = PdfHeaderFooter.FromPartialView(this.ViewName + ".Footer", this.Model, context, false);
 			}
 
 			var buffer = Converter.ConvertHtml(html, Options);

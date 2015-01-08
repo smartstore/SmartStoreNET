@@ -12,7 +12,8 @@ using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Framework.Pdf
 {
-	public class RepeatablePdfSection : IRepeatablePdfSection
+	
+	public class PdfHeaderFooter : IPdfHeaderFooter
 	{
 		private string _html;
 		private string _url;
@@ -43,11 +44,17 @@ namespace SmartStore.Web.Framework.Pdf
 			}
 		}
 
-		public virtual string Process(out bool isUrl)
+		public PdfHeaderFooterKind Kind
 		{
-			isUrl = false;
+			get 
+			{
+				return _url.HasValue() ? PdfHeaderFooterKind.Url : PdfHeaderFooterKind.Html; 
+			}
+		}
 
-			if (this.Html.HasValue())
+		public virtual string Process(string flag)
+		{
+			if (this.Kind == PdfHeaderFooterKind.Html)
 			{
 				if (HttpContext.Current != null && HttpContext.Current.Request != null)
 				{
@@ -59,72 +66,74 @@ namespace SmartStore.Web.Framework.Pdf
 					return this.Html;
 				}
 			}
-			else if (this.Url.HasValue())
-			{
-				isUrl = true;
-				return this.Url;
-			}
 
-			return null;
+			return this.Url;
 		}
 
-		public static RepeatablePdfSection FromHtml(string html)
+		public static IPdfHeaderFooter FromText(string textLeft = null, string textCenter = null, string textRight = null, string fontName = null, float? fontSize = null)
+		{
+			return new SimplePdfHeaderFooter
+			{
+				TextLeft = textLeft,
+				TextCenter = textCenter,
+				TextRight = textRight,
+				FontName = fontName,
+				FontSize = fontSize
+			};
+		}
+
+		public static IPdfHeaderFooter FromHtml(string html)
 		{
 			Guard.ArgumentNotEmpty(() => html);
 
-			return new RepeatablePdfSection
+			return new PdfHeaderFooter
 			{
 				Html = html
 			};
 		}
 
-		public static RepeatablePdfSection FromUrl(string url, HttpRequestBase request)
+		public static IPdfHeaderFooter FromUrl(string url, HttpRequestBase request)
 		{
 			Guard.ArgumentNotEmpty(() => url);
 			Guard.ArgumentNotNull(() => request);
 
-			return new RepeatablePdfSection
+			return new PdfHeaderFooter
 			{
 				Url = WebHelper.GetAbsoluteUrl(url, request)
 			};
 		}
 
-		public static RepeatablePdfSection FromAction(string action, string controller, RouteValueDictionary routeValues, ControllerContext context)
+		public static IPdfHeaderFooter FromAction(string action, string controller, RouteValueDictionary routeValues, ControllerContext context)
 		{
 			Guard.ArgumentNotNull(() => context);
 
 			string protocol = context.HttpContext.Request.Url.Scheme;
 			string host = context.HttpContext.Request.Url.Host;
-			return new RepeatablePdfSection
+			return new PdfHeaderFooter
 			{
 				Url = UrlHelper.GenerateUrl(null, action, controller, protocol, host, null, routeValues, RouteTable.Routes, context.RequestContext, true)
 			};
 		}
 
-		public static RepeatablePdfSection FromRoute(string routeName, RouteValueDictionary routeValues, ControllerContext context)
+		public static IPdfHeaderFooter FromRoute(string routeName, RouteValueDictionary routeValues, ControllerContext context)
 		{
 			Guard.ArgumentNotEmpty(() => routeName);
 			Guard.ArgumentNotNull(() => context);
 
 			string protocol = context.HttpContext.Request.Url.Scheme;
 			string host = context.HttpContext.Request.Url.Host;
-			return new RepeatablePdfSection
+			return new PdfHeaderFooter
 			{
 				Url = UrlHelper.GenerateUrl(routeName, null, null, protocol, host, null, routeValues, RouteTable.Routes, context.RequestContext, true)
 			};
 		}
 
-		//public static RepeatablePdfSection FromView(string viewName, string masterName, object model, ControllerContext context, bool throwOnError)
-		//{
-		//	return FromViewInternal(viewName, masterName, model, false, context, throwOnError);
-		//}
-
-		public static RepeatablePdfSection FromPartialView(string partialViewName, object model, ControllerContext context, bool throwOnError)
+		public static IPdfHeaderFooter FromPartialView(string partialViewName, object model, ControllerContext context, bool throwOnError)
 		{
 			return FromViewInternal(partialViewName, null, model, true, context, throwOnError);
 		}
 
-		private static RepeatablePdfSection FromViewInternal(string viewName, string masterName, object model, bool isPartial, ControllerContext context, bool throwOnError)
+		private static PdfHeaderFooter FromViewInternal(string viewName, string masterName, object model, bool isPartial, ControllerContext context, bool throwOnError)
 		{
 			Guard.ArgumentNotNull(() => context);
 
@@ -149,11 +158,12 @@ namespace SmartStore.Web.Framework.Pdf
 				}
 			}
 
-			return new RepeatablePdfSection
+			return new PdfHeaderFooter
 			{
 				Html = html
 			};
 		}
 
 	}
+
 }

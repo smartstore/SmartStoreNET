@@ -1707,7 +1707,6 @@
     <Content Include="Views\Shared\_CreateOrUpdateAddress.cshtml" />
     <Content Include="Views\Shared\_CreateOrUpdateAddress.Mobile.cshtml" />
     <Content Include="Views\Shared\_Notifications.Mobile.cshtml" />
-    <Content Include="Views\Shared\_Print.cshtml" />
     <Content Include="Views\Shared\_Root.Head.Mobile.cshtml" />
     <Content Include="Views\Shared\_Root.Mobile.cshtml" />
     <Content Include="Views\Shared\_RootPopup.cshtml" />
@@ -1911,10 +1910,10 @@
     <Content Include="Themes\Alpha\Content\skin.less" />
     <Content Include="Themes\Alpha\Content\typo.less" />
     <Content Include="Themes\AlphaBlack\Content\custom.less" />
-    <Content Include="Views\Shared\_Print2.cshtml" />
+    <Content Include="Views\Shared\_Print.cshtml" />
     <Content Include="Views\Order\Details.Print.cshtml" />
-    <Content Include="Views\Shared\_Pdf.Header.cshtml" />
-    <Content Include="Views\Shared\_Pdf.Footer.cshtml" />
+    <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
+    <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

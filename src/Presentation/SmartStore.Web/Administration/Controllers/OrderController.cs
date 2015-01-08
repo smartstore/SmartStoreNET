@@ -939,15 +939,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 				return AccessDeniedView();
 
-			var orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
-
-			if (orders.Count <= 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "orders.pdf");			
+			return RedirectToAction("PrintMany", "Order", new { pdf = true, area = "" });			
 		}
 
 		[HttpPost]
@@ -956,16 +948,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 				return AccessDeniedView();
 
-			int[] ids = selectedIds.ToIntArray();
-			var orders = _orderService.GetOrdersByIds(ids);
-
-			if (orders.Count <= 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "orders.pdf");
+			return RedirectToAction("PrintMany", "Order", new { ids = selectedIds, pdf = true, area = "" });
 		}
 
         #endregion
@@ -1321,18 +1304,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var order = _orderService.GetOrderById(orderId);
-
-			if (order == null)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-            var orders = new List<Order>();
-            orders.Add(order);
-
-			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
+			return RedirectToAction("Print", "Order", new { id = orderId, pdf = true, area = "" });
         }
 
         [HttpPost, ActionName("Edit")]

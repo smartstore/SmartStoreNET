@@ -9,6 +9,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
 {
@@ -66,6 +67,11 @@ namespace SmartStore.Services
 		}
 
 		ISettingService Settings
+		{
+			get;
+		}
+
+		IStoreService StoreService
 		{
 			get;
 		}

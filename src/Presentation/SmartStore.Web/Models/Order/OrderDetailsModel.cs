@@ -7,30 +7,14 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Order
 {
-	public partial class PrintableOrderDetailsModel : OrderDetailsModel
-	{
-		public PrintableOrderDetailsModel()
-		{
-			MerchantCompanyInfo = new CompanyInformationSettings();
-			MerchantBankAccount = new BankConnectionSettings();
-			MerchantContactData = new ContactDataSettings();
-		}
-
-		public bool PdfMode { get; set; }
-		public string PrintLogoUrl { get; set; }
-		public string StoreName { get; set; }
-		public string StoreUrl { get; set; }
-
-		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
-		public BankConnectionSettings MerchantBankAccount { get; set; }
-		public ContactDataSettings MerchantContactData { get; set; }
-	}
 	
 	public partial class OrderDetailsModel : EntityModelBase
     {
         public OrderDetailsModel()
         {
-            TaxRates = new List<TaxRate>();
+			MerchantCompanyInfo = new CompanyInformationSettings();
+			
+			TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
             OrderNotes = new List<OrderNote>();
@@ -42,9 +26,11 @@ namespace SmartStore.Web.Models.Order
 
 		public int StoreId { get; set; }
 
+		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+
         public string OrderNumber { get; set; }
-        public bool PrintMode { get; set; }
         public bool DisplayPdfInvoice { get; set; }
+		public bool RenderOrderNotes { get; set; }
 
         public DateTime CreatedOn { get; set; }
 

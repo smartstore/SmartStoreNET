@@ -1,35 +1,35 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Web.Mvc;
-using SmartStore.Core;
+using System.Web.Routing;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Localization;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Pdf;
+using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
-using SmartStore.Services.Pdf;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
-using SmartStore.Core.Localization;
-using SmartStore.Services;
-using SmartStore.Services.Media;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Web.Controllers
 {
@@ -51,7 +51,6 @@ namespace SmartStore.Web.Controllers
 		private readonly IProductService _productService;
 		private readonly IProductAttributeFormatter _productAttributeFormatter;
 		private readonly IStoreService _storeService;
-		private readonly Lazy<IPictureService> _pictureService;
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
@@ -94,7 +93,6 @@ namespace SmartStore.Web.Controllers
 			this._productService = productService;
 			this._productAttributeFormatter = productAttributeFormatter;
 			this._storeService = storeService;
-			this._pictureService = pictureService;
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
 			this._pluginMediator = pluginMediator;
 			this._services = services;
@@ -108,44 +106,8 @@ namespace SmartStore.Web.Controllers
 
         #region Utilities
 
-		[NonAction]
-		protected OrderDetailsModel PrepareOrderDetailsModel(Order order)
-		{
-			return PrepareOrderDetailsModel<OrderDetailsModel>(order);
-		}
-
-		[NonAction]
-		protected void ProcessPrintableOrderDetailsModel(PrintableOrderDetailsModel model)
-		{
-			var store = _storeService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
-
-			var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
-			var bankSettings = _services.Settings.LoadSetting<BankConnectionSettings>(store.Id);
-			var contactSettings = _services.Settings.LoadSetting<ContactDataSettings>(store.Id);
-			var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
-
-			model.StoreName = store.Name;
-			model.StoreUrl = store.Url;
-
-			var logoPicture = _pictureService.Value.GetPictureById(pdfSettings.LogoPictureId);
-			if (logoPicture == null)
-			{
-				logoPicture = _pictureService.Value.GetPictureById(store.LogoPictureId);
-			}
-
-			if (logoPicture != null)
-			{
-				model.PrintLogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, showDefaultPicture: false);
-			}
-
-
-			model.MerchantCompanyInfo = companyInfoSettings;
-			model.MerchantBankAccount = bankSettings;
-			model.MerchantContactData = contactSettings;
-		}
-
         [NonAction]
-        protected TModel PrepareOrderDetailsModel<TModel>(Order order) where TModel : OrderDetailsModel, new()
+		protected OrderDetailsModel PrepareOrderDetailsModel(Order order)
         {
             if (order == null)
                 throw new ArgumentNullException("order");		
@@ -157,9 +119,11 @@ namespace SmartStore.Web.Controllers
 			var taxSettings = _services.Settings.LoadSetting<TaxSettings>(store.Id);
 			var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
 			var addressSettings = _services.Settings.LoadSetting<AddressSettings>(store.Id);
-			 
-            var model = new TModel();
+			var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
 
+			var model = new OrderDetailsModel();
+
+			model.MerchantCompanyInfo = companyInfoSettings;
             model.Id = order.Id;
 			model.StoreId = order.StoreId;
             model.OrderNumber = order.GetOrderNumber();
@@ -168,6 +132,7 @@ namespace SmartStore.Web.Controllers
 			model.IsReOrderAllowed = orderSettings.IsReOrderAllowed;
             model.IsReturnRequestAllowed = _orderProcessingService.IsReturnRequestAllowed(order);
 			model.DisplayPdfInvoice = pdfSettings.Enabled;
+			model.RenderOrderNotes = pdfSettings.RenderOrderNotes;
 
             //shipping info
 			model.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_services.Localization, _services.WorkContext);
@@ -279,14 +244,14 @@ namespace SmartStore.Web.Controllers
                     var orderTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderTax, order.CurrencyRate);
                     //TODO pass languageId to _priceFormatter.FormatPrice
 					model.Tax = _priceFormatter.FormatPrice(orderTaxInCustomerCurrency, true, order.CustomerCurrencyCode, false, _services.WorkContext.WorkingLanguage);
-
                     foreach (var tr in order.TaxRatesDictionary)
                     {
-                        var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
+						var rate = _priceFormatter.FormatTaxRate(tr.Key);
+						var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_services.WorkContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
 						model.TaxRates.Add(new OrderDetailsModel.TaxRate()
                         {
-                            Rate = _priceFormatter.FormatTaxRate(tr.Key),
-							Label = T(labelKey, tr.Key),
+                            Rate = rate,
+							Label = T(labelKey).Text.FormatCurrent(rate),
                             //TODO pass languageId to _priceFormatter.FormatPrice
 							Value = _priceFormatter.FormatPrice(_currencyService.ConvertCurrency(tr.Value, order.CurrencyRate), true, order.CustomerCurrencyCode, false, _services.WorkContext.WorkingLanguage),
                         });
@@ -526,26 +491,45 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ActionName("print")]
-        [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult PrintOrderDetails(int id)
-        {
-            var order = _orderService.GetOrderById(id);
+		//[ActionName("print2")]
+		//[Obsolete("Will be removed soon")]
+		//[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		//public ActionResult PrintOrderDetails(int id)
+		//{
+		//	var order = _orderService.GetOrderById(id);
 
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
+		//	if (IsNonExistentOrder(order))
+		//		return HttpNotFound();
 
-			if (IsUnauthorizedOrder(order))
-				return new HttpUnauthorizedResult();
+		//	if (IsUnauthorizedOrder(order))
+		//		return new HttpUnauthorizedResult();
 
-            var model = PrepareOrderDetailsModel(order);
-            model.PrintMode = true;
+		//	var model = PrepareOrderDetailsModel(order);
+		//	model.PrintMode = true;
 
-            return View("Details", model);
-        }
+		//	return View("Details", model);
+		//}
 
-		[ActionName("pdf2")]
-		public ActionResult GetPdfInvoice2(int id)
+		//[ActionName("pdf")]
+		//[Obsolete("Will be removed soon")]
+		//public ActionResult GetPdfInvoice(int id)
+		//{
+		//	var order = _orderService.GetOrderById(id);
+
+		//	if (IsNonExistentOrder(order))
+		//		return HttpNotFound();
+
+		//	if (IsUnauthorizedOrder(order))
+		//		return new HttpUnauthorizedResult();
+
+		//	var orders = new List<Order>();
+		//	orders.Add(order);
+
+		//	return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
+		//}
+
+		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
+		public ActionResult Print(int id, bool pdf = false)
 		{
 			var order = _orderService.GetOrderById(id);
 
@@ -555,51 +539,65 @@ namespace SmartStore.Web.Controllers
 			if (IsUnauthorizedOrder(order))
 				return new HttpUnauthorizedResult();
 
-			var model = PrepareOrderDetailsModel<PrintableOrderDetailsModel>(order);
-			ProcessPrintableOrderDetailsModel(model);
-			model.PdfMode = true;
+			var model = PrepareOrderDetailsModel(order);
 
-			var fileName = "order-{0}.pdf".FormatWith(order.Id);
-
-			var options = new PdfConvertOptions
-			{
-				BackgroundDisabled = false,
-				Grayscale = false,
-				LowQuality = false,
-				//Margins = new PdfPageMargins { Top = 20, Bottom = 15, Left = 15, Right = 15 },
-				Orientation = PdfPagePrientation.Default,
-				Size = PdfPageSize.A4,
-				UsePrintMediaType = true,
-				//CustomPageFlags = "--header-spacing 5",
-				HeaderSpacing = 5,
-				FooterSpacing = 5,
-				PageHeader = RepeatablePdfSection.FromPartialView("_Pdf.Header", model, this.ControllerContext, false),
-				PageFooter = RepeatablePdfSection.FromPartialView("_Pdf.Footer", model, this.ControllerContext, false)
-			};
-
-			PdfResultBase result;
-
-			result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "Details.Print", Model = model/*, FileName = fileName*/ };
-			//result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
-
-			return result;
+			return PrintCore(new List<OrderDetailsModel> { model }, pdf, "order-{0}.pdf".FormatWith(order.Id));
 		}
 
-		[ActionName("pdf")]
-		public ActionResult GetPdfInvoice(int id)
+		[AdminAuthorize]
+		public ActionResult PrintMany(string ids = null, bool pdf = false)
 		{
-			var order = _orderService.GetOrderById(id);
-
-			if (IsNonExistentOrder(order))
-				return HttpNotFound();
-
-			if (IsUnauthorizedOrder(order))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
 				return new HttpUnauthorizedResult();
 
-			var orders = new List<Order>();
-			orders.Add(order);
+			IList<Order> orders;
 
-			return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
+			if (ids.HasValue())
+			{
+				int[] intIds = ids.ToIntArray();
+				orders = _orderService.GetOrdersByIds(intIds);
+			}
+			else
+			{
+				orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+			}
+
+			if (orders.Count == 0)
+			{
+				//	NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				//	return RedirectToAction("List");
+			}
+
+			var listModel = orders.Select(x => PrepareOrderDetailsModel(x)).ToList();
+
+			return PrintCore(listModel, pdf, "orders.pdf");
+		}
+
+		[NonAction]
+		private ActionResult PrintCore(List<OrderDetailsModel> model, bool pdf, string pdfFileName)
+		{
+			ViewBag.PdfMode = pdf;
+			var viewName = "Details.Print";
+
+			if (pdf)
+			{
+				// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
+				var storeId = model[0].StoreId;
+				var routeValues = new RouteValueDictionary(new { storeId = storeId });
+				var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
+				
+				var options = new PdfConvertOptions
+				{
+					Orientation = PdfPagePrientation.Default,
+					Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+					PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
+					PageFooter = PdfHeaderFooter.FromAction("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
+				};
+
+				return new ViewAsPdfResult(_pdfConverter, options) { ViewName = viewName, Model = model/*, FileName = pdfFileName*/ };
+			}
+			
+			return View(viewName, model);
 		}
 
         public ActionResult ReOrder(int id)

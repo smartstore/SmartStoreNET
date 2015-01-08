@@ -83,31 +83,35 @@ namespace SmartStore.Services.Pdf
 
 			if (options.PageHeader != null)
 			{
-				ProcessRepeatableSection("header", options.PageHeader, converter);
+				ProcessHeaderFooter("header", options.PageHeader, converter);
 			}
 			if (options.PageFooter != null)
 			{
-				ProcessRepeatableSection("footer", options.PageFooter, converter);
+				ProcessHeaderFooter("footer", options.PageFooter, converter);
 			}
 
 			return converter;
 		}
 
-		private void ProcessRepeatableSection(string flag, IRepeatablePdfSection section, HtmlToPdfConverter converter)
+		private void ProcessHeaderFooter(string flag, IPdfHeaderFooter section, HtmlToPdfConverter converter)
 		{
-			bool isUrl;
-			var result = section.Process(out isUrl);
+			var result = section.Process(flag);
+			var kind = section.Kind;
 
 			if (result.IsEmpty())
 				return;
 
-			if (isUrl)
+			if (kind == PdfHeaderFooterKind.Url)
 			{
 				converter.CustomWkHtmlPageArgs += " --{0}-html \"{1}\"".FormatInvariant(flag, result);
 			}
-			else
+			else if (kind == PdfHeaderFooterKind.Args)
 			{
-				// TODO: (MC) This is a very weak mechanism to determine if html is partial. Find a better way.
+				converter.CustomWkHtmlPageArgs += " {0}".FormatInvariant(result);
+			}
+			else if (kind == PdfHeaderFooterKind.Html)
+			{
+				// TODO: (mc) This is a very weak mechanism to determine if html is partial. Find a better way!
 				bool isPartial = !result.Trim().StartsWith("<!DOCTYPE", StringComparison.OrdinalIgnoreCase);
 				if (isPartial)
 				{
@@ -165,6 +169,16 @@ namespace SmartStore.Services.Pdf
 			if (options.FooterSpacing.HasValue && options.PageFooter != null)
 			{
 				sb.AppendFormat(CultureInfo.InvariantCulture, " --footer-spacing {0}", options.FooterSpacing.Value);
+			}
+
+			if (options.ShowHeaderLine)
+			{
+				sb.Append(" --header-line");
+			}
+
+			if (options.ShowFooterLine)
+			{
+				sb.Append(" --footer-line");
 			}
 
 			if (options.Post != null && options.Post.Count > 0)

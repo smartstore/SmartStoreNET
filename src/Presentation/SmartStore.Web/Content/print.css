@@ -1,35 +1,35 @@
-﻿/* -------------------------------------------------------------- 
-  
- Hartija Css Print Framework
-   * Version:   1.0 (Customized)
- 
--------------------------------------------------------------- */
-
+﻿
 body { 
 	width: 100% !important;
-	margin: 0 !important;
-	padding: 0 !important;
-	line-height: 1.45; 
-	font-family: Arial, sans-serif; 
+	margin: 0;
+	padding: 0;
 	color: #000; 
 	background: none; 
-	font-size: 13pt; 
+	font-size: 13pt;
+	line-height: 1.45em; 
+	font-family: Arial, sans-serif; 
+}
+
+body.screen {
+	font-size: 14px;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 { 
 	page-break-after: avoid; 
 }
-h1 {font-size: 19pt;}
-h2 {font-size: 17pt;}
-h3 {font-size: 15pt;}
-h4, h5, h6 {font-size: 14pt;}
+h1	{ font-size: 1.5em; }
+h2	{ font-size: 1.3em; }
+h3	{ font-size: 1.2em; }
+h4, 
+h5, 
+h6	{ font-size: 1.1em; }
 
 
 p, h2, h3 { orphans: 3; widows: 3; }
 
-code { font: 12pt Courier, monospace; } 
-blockquote { margin: 1.2em; padding: 1em;  font-size: 12pt; }
+code { font: 0.9em Courier, monospace; } 
+blockquote { margin: 1.2em; padding: 1em;  font-size: 0.9em; }
 hr { 
 	box-sizing: content-box; 
 	border: 0;
@@ -37,24 +37,23 @@ hr {
 	margin: 10px 0;
 }
 
-/* Images */
 img { 
-	x-float: left; 
-	x-margin: 1em 1.5em 1.5em 0; 
 	max-width: 100% !important; 
 }
 a img { border: none; }
 
-/* Links */
-a:link, a:visited { 
+a:link, 
+a:visited { 
 	background: transparent; 
 	font-weight: 700; 
 	text-decoration: underline; 
-	color:#333; 
+	color: #333; 
 }
-a:link[href^="http://"]:after, a[href^="http://"]:visited:after { 
+
+a:link[href^="http://"]:after, 
+a[href^="http://"]:visited:after { 
 	content: " (" attr(href) ") "; 
-	font-size: 90%; 
+	font-size: 0.9; 
 }
 
 abbr[title]:after { 
@@ -65,13 +64,17 @@ abbr[title]:after {
 a[href^="http://"] {
 	color: #000; 
 }
-a[href$=".jpg"]:after, a[href$=".jpeg"]:after, a[href$=".gif"]:after, a[href$=".png"]:after { 
+a[href$=".jpg"]:after, 
+a[href$=".jpeg"]:after, 
+a[href$=".gif"]:after, 
+a[href$=".png"]:after { 
 	content: " (" attr(href) ") "; 
-	display:none; 
+	display: none; 
 }
 
 /* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
-a[href^="#"]:after, a[href^="javascript:"]:after {
+a[href^="#"]:after, 
+a[href^="javascript:"]:after {
 	content: "";
 }
 
@@ -79,6 +82,23 @@ img,
 tr {
 	page-break-inside: avoid;
 } 
+
+
+/* -------------------------------------------------------------- 
+ 	Layout
+-------------------------------------------------------------- */
+
+.screen .container {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 1170px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+.document:not(:last-child) {
+	page-break-after: always;
+}
 
 
 /* -------------------------------------------------------------- 
@@ -104,12 +124,12 @@ tr {
 .text-center	{ text-align: center }
 .text-right		{ text-align: right }
 
+.text-small		{ font-size: 0.85em; }
+.text-smaller	{ font-size: 0.77em; }
+.text-smallest	{ font-size: 0.69em; }
+
 .pull-left		{ float: left }
 .pull-right		{ float: right }
-
-.small			{ font-size: 11pt; }
-.x-small		{ font-size: 10pt; }
-.xx-small		{ font-size: 9pt; }
 
 .nobr			{ white-space: nowrap !important }
 
@@ -147,7 +167,7 @@ thead {
 th, td { 
 	vertical-align: top;
 	text-align: left;
-	line-height: 1.45;
+	line-height: 1.45em;
 }
 
 
@@ -220,7 +240,7 @@ th, td {
 -------------------------------------------------------------- */
 
 .order-address {
-	width: 60%;
+	width: 55%;
 	box-sizing: border-box;
 }
 
@@ -247,6 +267,10 @@ th, td {
 /* -------------------------------------------------------------- 
  	Order totals
 -------------------------------------------------------------- */
+
+.attr-caption {
+	font-weight: bold;
+}
 
 .order-totals td.label {
 	font-weight: bold;

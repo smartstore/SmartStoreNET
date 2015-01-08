@@ -4,14 +4,8 @@
 @using SmartStore.Web.Models.Order;
 @using SmartStore.Services.Localization;
 @{
-    if (!Model.PrintMode)
-    {
-        Layout = "~/Views/Shared/_ColumnsOne.cshtml";
-    }
-    else
-    {
-        Layout = "~/Views/Shared/_Print.cshtml";
-    }
+    Layout = "~/Views/Shared/_ColumnsOne.cshtml";
+
     //title
     Html.AddTitleParts(T("PageTitle.OrderDetails").Text);
 }
@@ -26,14 +20,7 @@
 			</td>
 		}
 		<td>
-			@if (!Model.PrintMode)
-			{
-				<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
-			}
-			else
-			{
-				@item.ProductName
-			}
+			<a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
 			@if (!String.IsNullOrEmpty(item.AttributeInfo))
 			{
 				<div class="attributes">
@@ -111,39 +98,28 @@
 	}
 }
 
-@if (Model.PrintMode)
-{
-    <script type="text/javascript">
-        $(document).ready(function () {
-            window.print();
-        });
-    </script>
-}
 <div class="page order-details">
-    @if (!Model.PrintMode)
-    {
-        <div class="clearfix">
-            <div class="page-title pull-left">
-                <div class="title">
-                    <h1>@T("Order.OrderInformation")</h1>
-                </div>
-            </div>
-
-            <div class="print-buttons pull-right" style="margin-top: 12px">
-                <a href="@Url.Action("print", new { id = Model.Id })" target="_blank" class="btn print-order-button" rel="nofollow">
-                    <i class="fa fa-print"></i>
-                    @T("Order.Print")
-                </a>
-                @if (Model.DisplayPdfInvoice)
-                {
-                    <a href="@Url.Action("pdf", new { id = Model.Id })" class="btn pdf-order-button" rel="nofollow">
-						<i class="fa fa-file-pdf-o"></i>
-                        @T("Order.GetPDFInvoice")
-                    </a>
-                }
+    <div class="clearfix">
+        <div class="page-title pull-left">
+            <div class="title">
+                <h1>@T("Order.OrderInformation")</h1>
             </div>
         </div>
-    }
+
+        <div class="print-buttons pull-right" style="margin-top: 12px">
+            <a href="@Url.Action("print", new { id = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
+                <i class="fa fa-print"></i>
+                @T("Order.Print")
+            </a>
+            @if (Model.DisplayPdfInvoice)
+			{
+				<a href="@Url.Action("print", new { id = Model.Id, pdf = true })" class="btn pdf-order-button" rel="nofollow">
+					<i class="fa fa-file-pdf-o"></i>
+					@T("Order.GetPDFInvoice")
+				</a>
+			}
+        </div>
+    </div>
 
     <div class="page-body">
         @Html.Widget("orderdetails_page_top")
@@ -257,15 +233,15 @@
                                     </div>
                                 </p>
 								@*Completing payment support (for redirection payment methods)*@
-								if (!Model.PrintMode && Model.CanRePostProcessPayment)
+								if (Model.CanRePostProcessPayment)
 								{
 									<div class="repost">
 										<p></p>
-									@using (Html.BeginForm())
-									{
-										<input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button btn-above" />
-										<div class="hint muted">@T("Order.CompletePayment.Hint")</div>
-									}
+										@using (Html.BeginForm())
+										{
+											<input type="submit" name="repost-payment" value="@T("Order.CompletePayment")" class="btn btn-primary re-order-button btn-above" />
+											<div class="hint muted">@T("Order.CompletePayment.Hint")</div>
+										}
 									</div>
 								}
 							}
@@ -426,28 +402,26 @@
                     </div>
                 }
 
-                @if (!Model.PrintMode)
-                {
-                    <div class="actions clearfix">
-						<div class="pull-right">
-							@if (Model.IsReturnRequestAllowed)
-							{
-								<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })" rel="nofollow">
-									<i class="fa fa-reply"></i>
-									@T("Order.ReturnItems")
-								</a>
-							}
+                <div class="actions clearfix">
+					<div class="pull-right">
+						@if (Model.IsReturnRequestAllowed)
+						{
+							<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })" rel="nofollow">
+								<i class="fa fa-reply"></i>
+								@T("Order.ReturnItems")
+							</a>
+						}
 
-							@if (Model.IsReOrderAllowed)
-							{
-								<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })" rel="nofollow">
-									<i class="fa fa-shopping-cart"></i>
-									@T("Order.Reorder")
-								</a>
-							}
-						</div>
-                    </div>
-                }
+						@if (Model.IsReOrderAllowed)
+						{
+							<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })" rel="nofollow">
+								<i class="fa fa-shopping-cart"></i>
+								@T("Order.Reorder")
+							</a>
+						}
+					</div>
+                </div>
+
             </div>
         }
         @Html.Widget("orderdetails_page_afterproducts")
@@ -600,113 +574,108 @@
 
 		@Html.Widget("orderdetails_page_aftertotal")
 
-        @if (!Model.PrintMode)
+        if (Model.Shipments.Count > 0)
         {
-            if (Model.Shipments.Count > 0)
-            {
-            <div class="section-title">
-                @T("Order.Shipments")
-            </div>
+			<div class="section-title">
+				@T("Order.Shipments")
+			</div>
 
-            <div class="shipments-box">
-                <table class="table">
-                    <thead>
+			<div class="shipments-box">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @T("Order.Shipments.ID")
+                        </th>
+                        <th>
+                            @T("Order.Shipments.TrackingNumber")
+                        </th>
+                        <th>
+                            @T("Order.Shipments.ShippedDate")
+                        </th>
+                        <th>
+                            @T("Order.Shipments.DeliveryDate")
+                        </th>
+                        <th>
+                            @T("Order.Shipments.ViewDetails")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.Shipments)
+                    {
                         <tr>
-                            <th>
-                                @T("Order.Shipments.ID")
-                            </th>
-                            <th>
-                                @T("Order.Shipments.TrackingNumber")
-                            </th>
-                            <th>
-                                @T("Order.Shipments.ShippedDate")
-                            </th>
-                            <th>
-                                @T("Order.Shipments.DeliveryDate")
-                            </th>
-                            <th>
-                                @T("Order.Shipments.ViewDetails")
-                            </th>
+                            <td>
+                                @item.Id.ToString()
+                            </td>
+                            <td>
+                                @item.TrackingNumber
+                            </td>
+                            <td>
+                                @if (item.ShippedDate.HasValue)
+                                {
+                                    @item.ShippedDate.Value.ToString("D")
+                                }
+                                else
+                                {
+                                    @T("Order.Shipments.ShippedDate.NotYet")
+                                }
+                            </td>
+                            <td>
+                                @if (item.DeliveryDate.HasValue)
+                                {
+                                    @item.DeliveryDate.Value.ToString("D")
+                                }
+                                else
+                                {
+                                    @T("Order.Shipments.DeliveryDate.NotYet")
+                                }
+                            </td>
+                            <td>
+                                <a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")">@T("Order.Shipments.ViewDetails")</a>
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.Shipments)
-                        {
-                            <tr>
-                                <td>
-                                    @item.Id.ToString()
-                                </td>
-                                <td>
-                                    @item.TrackingNumber
-                                </td>
-                                <td>
-                                    @if (item.ShippedDate.HasValue)
-                                    {
-                                        @item.ShippedDate.Value.ToString("D")
-                                    }
-                                    else
-                                    {
-                                        @T("Order.Shipments.ShippedDate.NotYet")
-                                    }
-                                </td>
-                                <td>
-                                    @if (item.DeliveryDate.HasValue)
-                                    {
-                                        @item.DeliveryDate.Value.ToString("D")
-                                    }
-                                    else
-                                    {
-                                        @T("Order.Shipments.DeliveryDate.NotYet")
-                                    }
-                                </td>
-                                <td>
-									<a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")" rel="nofollow">@T("Order.Shipments.ViewDetails")</a>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            }
+                    }
+                </tbody>
+            </table>
+        </div>
         }
 
-        @if (!Model.PrintMode)
+        if (Model.OrderNotes.Count > 0)
         {
-            if (Model.OrderNotes.Count > 0)
-            {
-            <div class="section-title">
-                @T("Order.Notes")
-            </div>
+			<div class="section-title">
+				@T("Order.Notes")
+			</div>
 
-            <div class="ordernotes-box">
-                <table class="table">
-                    <thead>
+			<div class="ordernotes-box">
+            <table class="table">
+                <thead>
+                    <tr>
+                        <th>
+                            @T("Order.Notes.CreatedOn")
+                        </th>
+                        <th>
+                            @T("Order.Notes.Note")
+                        </th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model.OrderNotes)
+                    {
                         <tr>
-                            <th>
-                                @T("Order.Notes.CreatedOn")
-                            </th>
-                            <th>
-                                @T("Order.Notes.Note")
-                            </th>
+                            <td>
+                                @item.CreatedOn.ToString()
+                            </td>
+                            <td>
+                                @Html.Raw(item.Note)
+                            </td>
                         </tr>
-                    </thead>
-                    <tbody>
-                        @foreach (var item in Model.OrderNotes)
-                        {
-                            <tr>
-                                <td>
-                                    @item.CreatedOn.ToString()
-                                </td>
-                                <td>
-                                    @Html.Raw(item.Note)
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-            </div>
-            }
+                    }
+                </tbody>
+            </table>
+        </div>
         }
+
         @Html.Widget("orderdetails_page_bottom")
 	</div>
 </div>

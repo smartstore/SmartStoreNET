@@ -132,7 +132,7 @@ namespace SmartStore.Services.Catalog
                                     {
                                         //hyperlinks are allowed
                                         var downloadLink = string.Format("{0}download/getfileupload/?downloadId={1}", _webHelper.GetStoreLocation(false), download.DownloadGuid);
-                                        attributeText = string.Format("<a href=\"{0}\" rel=\"nofollow\" class=\"fileuploadattribute\">{1}</a>", downloadLink, fileName);
+                                        attributeText = string.Format("<a href=\"{0}\" class=\"fileuploadattribute\">{1}</a>", downloadLink, fileName);
                                     }
                                     else
                                     {

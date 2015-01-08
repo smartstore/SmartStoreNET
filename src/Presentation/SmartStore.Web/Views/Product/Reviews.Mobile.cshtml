@@ -94,11 +94,11 @@
                                     <div>
                                         @T("Reviews.From"):
                                         @if (review.AllowViewingProfiles)
-                                        {
-                                            <a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })">@(review.CustomerName)</a>
-                                        }
-                                        else
-                                        {
+										{
+											<a href="@Url.RouteUrl("CustomerProfile", new { id = review.CustomerId })" rel="nofollow">@(review.CustomerName)</a>
+										}
+										else
+										{
                                             @review.CustomerName
                                         }
                                     </div>

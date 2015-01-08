@@ -12,8 +12,8 @@
     <div class="page-body">
         <div data-role="navbar" data-iconpos="left">
             <ul>
-                <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" data-icon="arrow-l" @(!Model.SentItemsTabSelected ? @Html.Raw(" class=\"ui-btn-active\"") : null) >@T("PrivateMessages.Inbox")</a></li>
-                <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "sent" })" data-icon="arrow-r" @(Model.SentItemsTabSelected ? @Html.Raw(" class=\"ui-btn-active\"") : null) >@T("PrivateMessages.SentItems")</a></li>
+                <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow" data-icon="arrow-l" @(!Model.SentItemsTabSelected ? @Html.Raw(" class=\"ui-btn-active\"") : null)>@T("PrivateMessages.Inbox")</a></li>
+                <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "sent" })" rel="nofollow" data-icon="arrow-r" @(Model.SentItemsTabSelected ? @Html.Raw(" class=\"ui-btn-active\"") : null)>@T("PrivateMessages.SentItems")</a></li>
             </ul>
         </div>
         @if (Model.SentItemsTabSelected)

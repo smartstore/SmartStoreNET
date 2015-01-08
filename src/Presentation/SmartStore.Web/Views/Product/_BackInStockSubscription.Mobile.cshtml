@@ -4,11 +4,11 @@
 {
     <div class="back-in-stock-subscription">
         @if (Model.IsCurrentCustomerRegistered)
-        {
-            <a href="@Url.Action("BackInStockSubscribe", new { id = Model.Id })" data-role="button" data-ajax="false">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
-        }
-        else
-        {
+		{
+			<a href="@Url.Action("BackInStockSubscribe", new { id = Model.Id })" data-role="button" data-ajax="false" rel="nofollow">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
+		}
+		else
+		{
             <a href="@Url.RouteUrl("Login")" data-role="button">@T("BackInStockSubscriptions.NotifyMeWhenAvailable")</a>
         }
     </div>

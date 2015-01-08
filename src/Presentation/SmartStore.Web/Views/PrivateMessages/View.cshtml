@@ -45,18 +45,18 @@
             </tr>
             <tr>
                 <td colspan="2" class="options">
-                    <a class="btn btn-primary" href='@Url.Action("Send", new { id = Model.FromCustomerId, replyToMessageId = Model.Id })'>
-                        <i class="fa fa-share"></i>
-                        @T("PrivateMessages.View.ReplyButton")
-                    </a>
-                    <a class="btn btn-danger" href='@Url.Action("Delete", new { id = Model.Id })'>
-                        <i class="fa fa-trash-o"></i>
-                        @T("PrivateMessages.View.DeleteButton")
-                    </a>
-                    <a class="btn" href='@Url.RouteUrl("PrivateMessages")'>
-                        <i class="fa fa-user"></i>
-                        @T("PrivateMessages.View.BackButton")
-                    </a>
+					<a class="btn btn-primary" href='@Url.Action("Send", new { id = Model.FromCustomerId, replyToMessageId = Model.Id })' rel="nofollow">
+						<i class="fa fa-share"></i>
+						@T("PrivateMessages.View.ReplyButton")
+					</a>
+					<a class="btn btn-danger" href='@Url.Action("Delete", new { id = Model.Id })' rel="nofollow">
+						<i class="fa fa-trash-o"></i>
+						@T("PrivateMessages.View.DeleteButton")
+					</a>
+					<a class="btn" href='@Url.RouteUrl("PrivateMessages")' rel="nofollow">
+						<i class="fa fa-user"></i>
+						@T("PrivateMessages.View.BackButton")
+					</a>
                 </td>
             </tr>
         </table>

@@ -180,7 +180,7 @@
 
                                     var downloadLink = "@storeUrl" + "download/getfileupload/?downloadId=" + result.downloadGuid;
                                     var fileName = data.files[0].name;
-                                    var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute">' + fileName + '</a>';
+                                    var fileLink = '<a href="' + downloadLink + '" class="fileuploadattribute" rel="nofollow">' + fileName + '</a>';
 
                                     elFile.html(fileLink).removeClass("hide");
 

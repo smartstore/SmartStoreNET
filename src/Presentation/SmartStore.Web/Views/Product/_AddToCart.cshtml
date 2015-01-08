@@ -130,15 +130,15 @@
                             @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
                             <i class="fa fa-plus-circle"></i>
                         </a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-warning add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
-                            <i class="fa fa-envelope"></i>
-                            @T("Products.CallForPrice.GoToForm")
-                        </a>
-                    }
-                }
+					}
+					else
+					{
+						<a class="btn btn-warning add-to-cart-button" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+							<i class="fa fa-envelope"></i>
+							@T("Products.CallForPrice.GoToForm")
+						</a>
+					}
+				}
             </div>
         
         </div>

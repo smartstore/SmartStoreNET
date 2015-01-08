@@ -23,13 +23,13 @@
         </div>
         <div class="manage">
             @if (Model.IsCurrentCustomerAllowedToEditPost)
-            {          
-                <a href="@Url.Action("PostEdit", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.EditPost")</a>         
-            }
+			{
+				<a href="@Url.Action("PostEdit", new { id = @Model.Id })" rel="nofollow" data-inline="true" data-role="button">@T("Forum.EditPost")</a>
+			}
             @if (Model.IsCurrentCustomerAllowedToDeletePost)
-            {
-                <a href="@Url.Action("PostDelete", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.DeletePost")</a>
-            }
+			{
+				<a href="@Url.Action("PostDelete", new { id = @Model.Id })" rel="nofollow" data-inline="true" data-role="button">@T("Forum.DeletePost")</a>
+			}
         </div>
     </div>
     <div class="post-content">

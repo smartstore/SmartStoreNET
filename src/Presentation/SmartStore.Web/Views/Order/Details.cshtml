@@ -432,7 +432,7 @@
 						<div class="pull-right">
 							@if (Model.IsReturnRequestAllowed)
 							{
-								<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })">
+								<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })" rel="nofollow">
 									<i class="fa fa-reply"></i>
 									@T("Order.ReturnItems")
 								</a>
@@ -440,7 +440,7 @@
 
 							@if (Model.IsReOrderAllowed)
 							{
-								<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })">
+								<a class="btn btn-primary re-order-button" href="@Url.Action("ReOrder", new { id = Model.Id })" rel="nofollow">
 									<i class="fa fa-shopping-cart"></i>
 									@T("Order.Reorder")
 								</a>
@@ -660,7 +660,7 @@
                                     }
                                 </td>
                                 <td>
-                                    <a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")">@T("Order.Shipments.ViewDetails")</a>
+									<a href="@Url.Action("ShipmentDetails", new { id = item.Id })" title="@T("Order.Shipments.ViewDetails")" rel="nofollow">@T("Order.Shipments.ViewDetails")</a>
                                 </td>
                             </tr>
                         }

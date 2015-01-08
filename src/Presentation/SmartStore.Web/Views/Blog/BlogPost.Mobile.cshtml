@@ -85,11 +85,11 @@
                                 <div class="comment-info">
                                     <div class="user-info">
                                         @if (comment.AllowViewingProfiles)
-                                        {
-                                            <a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" class="username">@(comment.CustomerName)</a>
-                                        }
-                                        else
-                                        {
+										{
+											<a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" rel="nofollow" class="username">@(comment.CustomerName)</a>
+										}
+										else
+										{
                                             <span class="username">@(comment.CustomerName)</span>
                                         }
                                     </div>

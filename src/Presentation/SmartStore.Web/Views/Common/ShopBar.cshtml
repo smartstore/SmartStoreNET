@@ -32,27 +32,28 @@
 
         <!-- ACCOUNT -->
         <div class="shopbar-tool pull-right loaded" id="shopbar-account">
-            <a class='shopbar-button clearfix@(!Model.IsAuthenticated ? " no-drop" : "")' data-target="shopbar-flyout-account" href="@accountUrl">
-                <figure class="shopbar-button-icon pull-left">
-                    <i class="sm-icon-user-5"></i>
-                </figure>
-                <span class="shopbar-button-label pull-left">
-                    @if (Model.IsAuthenticated)
-                    {
-                        <span>@Model.CustomerEmailUsername</span><br />
-                        <span style="font-weight: bold">
-                            @T("Account.MyAccount")
-                            <i class="fa fa-caret-down"></i>
-                        </span>
-                    }
-                    else
-                    {
-                        <span>@T("Common.Shopbar.GuestGreeting")</span><br />
-                        <span style="font-weight: bold">@T("Account.Login")</span>
-                    }
-                </span>
-                <span class="sm-arrow"></span>
-            </a>
+			<a class='shopbar-button clearfix@(!Model.IsAuthenticated ? " no-drop" : "")' data-target="shopbar-flyout-account" href="@accountUrl" rel="nofollow">
+				<figure class="shopbar-button-icon pull-left">
+					<i class="sm-icon-user-5"></i>
+				</figure>
+				<span class="shopbar-button-label pull-left">
+					@if (Model.IsAuthenticated)
+					{
+						<span>@Model.CustomerEmailUsername</span><br />
+						<span style="font-weight: bold">
+							@T("Account.MyAccount")
+							<i class="fa fa-caret-down"></i>
+						</span>
+					}
+					else
+					{
+						<span>@T("Common.Shopbar.GuestGreeting")</span><br />
+						<span style="font-weight: bold">@T("Account.Login")</span>
+					}
+				</span>
+				<span class="sm-arrow"></span>
+			</a>
+
             @if (Model.IsAuthenticated) 
             {
                 @Html.Action("AccountDropdown", "Common")

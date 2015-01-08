@@ -178,16 +178,16 @@
                     data-action="add">
                     <i class="fa fa-shopping-cart"></i>      
                 </a>
-            }
-            else
-            {
-                <a class="btn btn-primary add-to-cart-button"
-                   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
-                   title="@T("Products.CallForPrice.GoToForm")">
-                    <i class="fa fa-envelope"></i>
-                </a>
-            }
-        }
+			}
+			else
+			{
+				<a class="btn btn-primary add-to-cart-button" rel="nofollow"
+				   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
+				   title="@T("Products.CallForPrice.GoToForm")">
+					<i class="fa fa-envelope"></i>
+				</a>
+			}
+		}
         <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn">
             <i class="fa fa-info-circle"></i>
             @T("Products.Details")

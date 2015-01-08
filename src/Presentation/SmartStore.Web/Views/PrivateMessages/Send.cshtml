@@ -26,11 +26,11 @@
                     </td>
                     <td>
                         @if (Model.AllowViewingToProfile)
-                        {
-                                <a href="@Url.RouteUrl("CustomerProfile", new { id = Model.ToCustomerId })">@(Model.CustomerToName)</a>
-                        }
-                        else
-                        {
+						{
+							<a href="@Url.RouteUrl("CustomerProfile", new { id = Model.ToCustomerId })" rel="nofollow">@(Model.CustomerToName)</a>
+						}
+						else
+						{
                                @Model.CustomerToName
                         }
                     </td>

@@ -27,11 +27,11 @@
                 </p>
                 <p>
                     @T("Checkout.OrderNumber"): 
-                    <a href="@Url.Action("Details", "Order", new { id = Model.OrderId })">@Model.OrderNumber</a>
+					<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" rel="nofollow">@Model.OrderNumber</a>
                 </p>
             </div>
             <p class="select-button">
-				<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" class="btn btn-warning">
+				<a href="@Url.Action("Details", "Order", new { id = Model.OrderId })" class="btn btn-warning" rel="nofollow">
 					<i class="fa fa-list-alt"></i>
 					@T("Checkout.PlacedOrderDetails")
 				</a>

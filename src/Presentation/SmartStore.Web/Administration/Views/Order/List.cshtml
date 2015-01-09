@@ -19,22 +19,52 @@
         <div class="options">
 			<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					Export
+					@T("Common.Export")
 					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
-					<li><a href="@Url.Action("ExportXmlAll")">@T("Admin.Common.ExportToXml.All")</a></li>
-					<li><a href="@Url.Action("ExportExcelAll")">@T("Admin.Common.ExportToExcel.All")</a></li>
-					<li><a href="@Url.Action("ExportPdfAll")">@T("Admin.Common.ExportToPdf.All")</a></li>
-
-					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Order")">@T("Admin.Common.ExportToXml.Selected")</a></li>				
-					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Order")">@T("Admin.Common.ExportToExcel.Selected")</a></li>					
-					<li><a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdfSelected", "Order")">@T("Admin.Common.ExportToPdf.Selected")</a></li>
+					<li>
+						<a href="@Url.Action("ExportXmlAll")">
+							<i class="fa fa-fw fa-code"></i>
+							@T("Admin.Common.ExportToXml.All")
+						</a>
+					</li>
+					<li>
+						<a href="@Url.Action("ExportExcelAll")">
+							<i class="fa fa-fw fa-file-excel-o"></i>
+							@T("Admin.Common.ExportToExcel.All")
+						</a>
+					</li>
+					<li>
+						<a href="@Url.Action("ExportPdfAll")">
+							<i class="fa fa-fw fa-file-pdf-o"></i>
+							@T("Admin.Common.ExportToPdf.All")
+						</a>
+					</li>
+					<li class="divider"></li>
+					<li>
+						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Order")">
+							<i class="fa fa-fw fa-code"></i>
+							@T("Admin.Common.ExportToXml.Selected")
+						</a>
+					</li>				
+					<li>
+						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Order")">
+							<i class="fa fa-fw fa-file-excel-o"></i>
+							@T("Admin.Common.ExportToExcel.Selected")
+						</a>
+					</li>					
+					<li>
+						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdfSelected", "Order")">
+							<i class="fa fa-fw fa-file-pdf-o"></i>
+							@T("Admin.Common.ExportToPdf.Selected")
+						</a>
+					</li>
 				</ul>
 			</div>
         </div>
     </div>
-    <table width="100%">
+    <table style="width: 100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StartDate)

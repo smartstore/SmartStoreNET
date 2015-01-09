@@ -415,7 +415,7 @@ namespace SmartStore.Web.Controllers
 				Quantity = orderItem.Quantity,
 				AttributeInfo = orderItem.AttributeDescription
 			};
-
+			
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 			{
 				var bundleData = orderItem.GetBundleData();
@@ -564,8 +564,8 @@ namespace SmartStore.Web.Controllers
 
 			if (orders.Count == 0)
 			{
-				//	NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				//	return RedirectToAction("List");
+				NotifyInfo(T("Admin.Common.ExportNoData"));
+				return RedirectToReferrer();
 			}
 
 			var listModel = orders.Select(x => PrepareOrderDetailsModel(x)).ToList();
@@ -578,14 +578,14 @@ namespace SmartStore.Web.Controllers
 		{
 			ViewBag.PdfMode = pdf;
 			var viewName = "Details.Print";
-
+			
 			if (pdf)
 			{
 				// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 				var storeId = model[0].StoreId;
-				var routeValues = new RouteValueDictionary(new { storeId = storeId });
+				var routeValues = new RouteValueDictionary{{ "storeId", storeId }};
 				var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
-				
+
 				var options = new PdfConvertOptions
 				{
 					Orientation = PdfPagePrientation.Default,
@@ -594,9 +594,9 @@ namespace SmartStore.Web.Controllers
 					PageFooter = PdfHeaderFooter.FromAction("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
 				};
 
-				return new ViewAsPdfResult(_pdfConverter, options) { ViewName = viewName, Model = model/*, FileName = pdfFileName*/ };
+				return new ViewAsPdfResult(_pdfConverter, options) { ViewName = viewName, Model = model, FileName = pdfFileName };
 			}
-			
+
 			return View(viewName, model);
 		}
 

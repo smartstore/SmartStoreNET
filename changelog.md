@@ -2,6 +2,7 @@
 ## SmartStore.NET 2.1.1
 
 ### New Features
+* Html to PDF converter: PDF documents are created from regular HTML templates now, therefore radically simplifying PDF output customization.
 * SEO: added new settings `Canonical host name rule`. Enforces permanent redirection to a single domain name for a better page rank (e.g. myshop.com > www.myshop.com or vice versa)
 * SEO: added support for `<link hreflang="..." ... />` in multi-language stores. The tags are automatically rendered along with the language switcher.
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
@@ -15,6 +16,7 @@
 * (Perf) Faster product list rendering
 * Reworked routing: removed static file security barrier again (caused too much problems)
 * #545 Made all (applicable) settings multi-store-enabled
+* #579 Make all relative urls absolute prior sending email
 * The display order of attribute values are considered in the sorting of backend's attribute combination grid
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.

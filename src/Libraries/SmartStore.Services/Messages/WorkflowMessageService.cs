@@ -84,11 +84,11 @@ namespace SmartStore.Services.Messages
             var bcc = messageTemplate.GetLocalized((mt) => mt.BccEmailAddresses, languageId);
             var subject = messageTemplate.GetLocalized((mt) => mt.Subject, languageId);
             var body = messageTemplate.GetLocalized((mt) => mt.Body, languageId);
-
+			
             // Replace subject and body tokens 
             var subjectReplaced = _tokenizer.Replace(subject, tokens, false);
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
-
+			
             bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
 
             var email = new QueuedEmail()

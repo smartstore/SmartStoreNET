@@ -18,6 +18,14 @@
 	}
 }
 
+@functions {
+	private IHtmlString JoinValues(string[] values, string separator = " ")
+	{
+		var normalized = values.Where(x => x.HasValue());
+		return MvcHtmlString.Create(String.Join(separator, normalized));
+	}
+}
+
 <style type="text/css">
 	.checkout-attributes > table {
 		width: auto;
@@ -30,18 +38,24 @@
 <div class="container">
 	@foreach (var order in Model)
 	{
-		var colWidths = order.ShowSku ? new int[] { 40, 15, 10 } : new int[] { 50, 20, 10 };
+		var colWidths = order.ShowSku ? new int[] { 45, 20, 5, 15, 15 } : new int[] { 65, 0, 5, 15, 15 };
 
 		var company = order.MerchantCompanyInfo;
 		var address = order.BillingAddress;
 		
 		<div class="document">
+			@Html.Widget("invoice_top")
+
 			<!-- Address & Info -->
-			<div class="clearfix">
+			<div class="clearfix" style="margin-bottom: 100px">
 				<div class="order-address margin-top-40 pull-left">
 					<div>
 						<span class="header text-smallest">
-							@company.CompanyName &middot; @company.Street @company.Street2 &middot; @company.ZipCode @company.City &middot; @company.CountryName @company.StateName
+							@{
+								var city = JoinValues(new string[] { company.ZipCode, company.City }).ToString();
+								var country = JoinValues(new string[] { company.CountryName, company.StateName }, ", ").ToString();
+							}
+							@JoinValues(new string[] { company.CompanyName, company.Street, company.Street2, city, country }, " &middot; ")
 						</span>
 					</div>
 					<div class="margin-top-10">
@@ -49,7 +63,7 @@
 						{
 							<div>@address.Company</div>
 						}
-						<div>@address.FirstName @address.LastName</div>
+						<div>@JoinValues(new string[] { address.FirstName, address.LastName })</div>
 						@if (address.StreetAddressEnabled && address.Address1.HasValue())
 						{
 							<div>@address.Address1</div>
@@ -60,33 +74,25 @@
 						}
 						@if (address.ZipPostalCodeEnabled || address.CityEnabled)
 						{
-							<div>@address.ZipPostalCode @address.City</div>
+							<div>@JoinValues(new string[] { address.ZipPostalCode, address.City })</div>
 						}
 						@if (address.StateProvinceEnabled || address.CountryEnabled)
 						{
-							<div>
-								@address.CountryName.EmptyNull()
-								@if (address.StateProvinceName.HasValue())
-								{
-									if (address.CountryName.HasValue())
-									{
-										<text>, </text>
-									}
-									<text>@address.StateProvinceName</text>
-								}
-							</div>
+							<div>@JoinValues(new string[] { address.CountryName, address.StateProvinceName }, ", ")</div>
 						}
 					</div>
 				</div>
 
+				@Html.Widget("invoice_orderinfo_top")
+
 				<div class="order-info text-small pull-right">
 					<table>
 						<tr>
-							<td class="label">Auftrag#:</td>
+							<td class="label">@T("PDFInvoice.Order#"):</td>
 							<td class="value">@order.OrderNumber</td>
 						</tr>
 						<tr>
-							<td class="label">Datum:</td>
+							<td class="label">@T("Common.Date"):</td>
 							<td class="value">@order.CreatedOn.ToShortDateString()</td>
 						</tr>
 						<tr>
@@ -98,11 +104,15 @@
 							<td class="value">@order.ShippingMethod</td>
 						</tr>
 					</table>
+					@Html.Widget("invoice_orderinfotable_after")
 				</div>
+
+				@Html.Widget("invoice_orderinfo_bottom")
 			</div>
 			
 			<!-- Order lines -->
-			<h3 style="margin-top: 100px">@T("PDFInvoice.Product(s)")</h3>
+			@Html.Widget("invoice_lines_before")
+			<h3>@T("PDFInvoice.Product(s)")</h3>
 
 			<table class="table order-summary">
 				<thead>
@@ -110,11 +120,11 @@
 						<th style="width: @(colWidths[0])%">@T("PDFInvoice.ProductName")</th>
 						@if (order.ShowSku)
 						{
-							<th style="width: @(colWidths[2])%">@T("PDFInvoice.SKU")</th>
+							<th style="width: @(colWidths[1])%">@T("PDFInvoice.SKU")</th>
 						}
-						<th class="text-right" style="width: @(colWidths[1])%">@T("PDFInvoice.ProductPrice")</th>
-						<th style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
-						<th class="text-right" style="width: @(colWidths[1])%">@T("PDFInvoice.ProductTotal")</th>
+						<th class="text-center" style="width: @(colWidths[2])%">@T("PDFInvoice.ProductQuantity")</th>
+						<th class="text-right" style="width: @(colWidths[3])%">@T("PDFInvoice.ProductPrice")</th>
+						<th class="text-right" style="width: @(colWidths[4])%">@T("PDFInvoice.ProductTotal")</th>
 					</tr>
 				</thead>
 				@for (int i = 0; i < order.Items.Count; i++)
@@ -131,6 +141,7 @@
 			</table>
 
 			<!-- Checkout attributes -->
+			@Html.Widget("invoice_checkoutattributes_before")
 			@if (order.CheckoutAttributeInfo.HasValue())
 			{
 				<div class="checkout-attributes margin-bottom-30">
@@ -139,6 +150,7 @@
 			}
 
 			<!-- Order totals -->
+			@Html.Widget("invoice_ordertotals_before")
 			<div class="order-totals clearfix">
 				<div class="pull-right" style="width: 40%; page-break-inside: avoid">
 					<table class="table order-totals">
@@ -217,6 +229,7 @@
 			</div>
 
 			<!-- Order notes -->
+			@Html.Widget("invoice_ordernotes_before")
 			@if (order.RenderOrderNotes && order.OrderNotes.Count > 0)
 			{
 				<h3>@T("PDFInvoice.OrderNotes")</h3>
@@ -249,6 +262,8 @@
 					</table>
 				</div>
 			}
+			
+			@Html.Widget("invoice_bottom")
 		</div>
 	}
 </div>
@@ -272,11 +287,11 @@
 				@item.Sku
 			</td>
 		}
+		<td class="text-center">
+			@item.Quantity
+		</td>
 		<td class="text-right">
 			@item.UnitPrice
-		</td>
-		<td>
-			@item.Quantity
 		</td>
 		<td class="text-right">
 			@item.SubTotal
@@ -309,22 +324,22 @@
 			{
 				<td>&nbsp;</td>
 			}
-			<td class="text-right">
-				@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
+			<td class="text-center text-small">
+				@if (parentItem.BundlePerItemShoppingCart)
 				{
-					<span class="text-small">
-						@Html.Raw(item.PriceWithDiscount)
-					</span>
+					<text>@item.Quantity</text>
 				}
 				else
 				{
 					<text>&nbsp;</text>
 				}
 			</td>
-			<td class="text-small">
-				@if (parentItem.BundlePerItemShoppingCart)
+			<td class="text-right">
+				@if (!String.IsNullOrWhiteSpace(item.PriceWithDiscount))
 				{
-					<text>@item.Quantity</text>
+					<span class="text-small">
+						@Html.Raw(item.PriceWithDiscount)
+					</span>
 				}
 				else
 				{

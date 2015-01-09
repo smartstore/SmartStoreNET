@@ -111,7 +111,7 @@ namespace SmartStore.Data.Migrations
 				"Bitte bestätigen Sie Ihren Auftrag.");
 
 			builder.AddOrUpdate("Checkout.ConfirmHint",
-				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything's as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
+				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything is as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
 				"Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf <strong>zurück</strong> vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf <strong>kaufen</strong> Ihre Bestellung.");
 
 			// new setting
@@ -123,15 +123,55 @@ namespace SmartStore.Data.Migrations
 
 			// old setting now with ui
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists",
-				"Show featured product in lists",
+				"Show featured products in lists",
 				"Top-Produkte in Listen anzeigen",
-				"Determines to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
-				"Legt fest, dass Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
+				"Specifies whether to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
+				"Legt fest, ob Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
 
 			// new notification
 			builder.AddOrUpdate("Admin.Order.NotFound",
 				"An order with this number was not found.",
 				"Ein Auftrag mit dieser Nummer wurde nicht gefunden.");
+
+			// PDF
+			builder.AddOrUpdate("Common.Date",
+				"Date",
+				"Datum");
+
+			builder.Delete(
+				"PDFInvoice.Address", 
+				"PDFInvoice.Address2",
+				"PDFInvoice.BillingInformation",
+				"PDFInvoice.Company",
+				"PDFInvoice.CreatedOn",
+				"PDFInvoice.Discount",
+				"PDFInvoice.Fax",
+				"PDFInvoice.GiftCardInfo",
+				"PDFInvoice.Name",
+				"PDFInvoice.Note",
+				"PDFInvoice.OrderDate",
+				"PDFInvoice.OrderTotal",
+				"PDFInvoice.PaymentMethod",
+				"PDFInvoice.PaymentMethodAdditionalFee",
+				"PDFInvoice.Phone",
+				"PDFInvoice.PurchaseOrderNumber",
+				"PDFInvoice.RewardPoints",
+				"PDFInvoice.ShippingInformation",
+				"PDFInvoice.ShippingMethod",
+				"PDFInvoice.Sub-Total",
+				"PDFInvoice.Shipping",
+				"PDFInvoice.Tax",
+				"PDFInvoice.TaxRate",
+				"PDFInvoice.VATNumber");
+
+			builder.AddOrUpdate("PDFInvoice.Footer.Bankcode").Value("de", "BLZ: {0}");
+			builder.AddOrUpdate("PDFInvoice.TaxNumber").Value("en", "Tax Number: {0}");
+			builder.AddOrUpdate("PDFInvoice.Order#",
+				"Order#",
+				"Auftrag#");
+			builder.AddOrUpdate("PDFInvoice.SKU",
+				"SKU",
+				"Artikelnr.");
 		}
     }
 }

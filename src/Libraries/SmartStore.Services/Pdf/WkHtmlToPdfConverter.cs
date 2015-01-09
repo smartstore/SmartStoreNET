@@ -70,14 +70,6 @@ namespace SmartStore.Services.Pdf
 				Zoom = options.Zoom
 			};
 
-			if (options.Margins != null)
-			{
-				converter.Margins.Bottom = options.Margins.Bottom;
-				converter.Margins.Left = options.Margins.Left;
-				converter.Margins.Right = options.Margins.Right;
-				converter.Margins.Top = options.Margins.Top;
-			}
-
 			converter.CustomWkHtmlArgs = options.CustomFlags;
 			converter.CustomWkHtmlPageArgs = CreateCustomPageFlags(options);
 
@@ -90,7 +82,64 @@ namespace SmartStore.Services.Pdf
 				ProcessHeaderFooter("footer", options.PageFooter, converter);
 			}
 
+			// apply our special "margin fix" to header & footer
+			ApplyHeaderFooterMarginFix(options);
+
+			if (options.Margins != null)
+			{
+				converter.Margins.Bottom = options.Margins.Bottom;
+				converter.Margins.Left = options.Margins.Left;
+				converter.Margins.Right = options.Margins.Right;
+				converter.Margins.Top = options.Margins.Top;
+			}
+
 			return converter;
+		}
+
+		private void ApplyHeaderFooterMarginFix(PdfConvertOptions o)
+		{
+			var header = o.PageHeader;
+			var footer = o.PageFooter;
+			var t = o.Margins.Top;
+			var b = o.Margins.Bottom;
+
+			float? newT = null;
+			float? newB = null;
+
+			// When both are simple: set both to 15.
+			// When only one is simple: set simple to 15 and the other (html) to 35
+			// When both are html: do nothing
+
+			if (header == null && footer == null)
+				return;
+
+			if (header.Kind == PdfHeaderFooterKind.Args && header.Kind == footer.Kind)
+			{
+				// both are simple
+				newT = 15;
+				newB = 15;
+			}
+			else
+			{
+				if (header.Kind != PdfHeaderFooterKind.Args && footer.Kind == PdfHeaderFooterKind.Args)
+				{
+					// header is html, footer is simple
+					newT = 35;
+					newB = 15;
+				}
+				else if (header.Kind == PdfHeaderFooterKind.Args && footer.Kind != PdfHeaderFooterKind.Args)
+				{
+					// header is simple, footer is html
+					newT = 15;
+					newB = 35;
+				}
+			}
+
+			if (!t.HasValue && newT.HasValue)
+				o.Margins.Top = newT;
+
+			if (!b.HasValue && newB.HasValue)
+				o.Margins.Bottom = newB;
 		}
 
 		private void ProcessHeaderFooter(string flag, IPdfHeaderFooter section, HtmlToPdfConverter converter)

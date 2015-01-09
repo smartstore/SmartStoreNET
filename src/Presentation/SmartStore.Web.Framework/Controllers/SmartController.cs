@@ -85,6 +85,16 @@ namespace SmartStore.Web.Framework.Controllers
 			_notifier.Value.Error(exception.Message, durable);
 		}
 
+		protected virtual ActionResult RedirectToReferrer()
+		{
+			if (Request.UrlReferrer != null && Request.UrlReferrer.ToString().HasValue())
+			{
+				return Redirect(Request.UrlReferrer.ToString());
+			}
+
+			return RedirectToRoute("HomePage");
+		}
+
 		/// <summary>
 		/// On exception
 		/// </summary>

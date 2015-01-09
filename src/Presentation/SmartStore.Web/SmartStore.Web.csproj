@@ -1032,7 +1032,6 @@
     <Content Include="Content\x-editable\bootstrap-editable.js" />
     <Content Include="Content\x-editable\bootstrap-editable.min.js" />
     <Content Include="favicon.ico" />
-    <Content Include="App_Data\Pdf\OpenSans-Regular.ttf" />
     <Content Include="Content\install\install.less" />
     <Content Include="Content\install\variables.custom.less" />
     <Content Include="Content\install\variables.less" />
@@ -1733,7 +1732,6 @@
     <Content Include="Views\Product\_BackInStockSubscription.cshtml" />
     <Content Include="Views\Product\BackInStockSubscribePopup.cshtml" />
     <Content Include="Views\Customer\BackInStockSubscriptions.cshtml" />
-    <Content Include="App_Data\Pdf\FreeSerif.ttf" />
     <Content Include="Views\Home\Index.Mobile.cshtml" />
     <Content Include="Themes\Mobile\theme.config">
       <SubType>Designer</SubType>

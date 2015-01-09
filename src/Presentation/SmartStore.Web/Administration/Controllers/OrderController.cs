@@ -948,6 +948,12 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 				return AccessDeniedView();
 
+			if (selectedIds.IsEmpty())
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
 			return RedirectToAction("PrintMany", "Order", new { ids = selectedIds, pdf = true, area = "" });
 		}
 

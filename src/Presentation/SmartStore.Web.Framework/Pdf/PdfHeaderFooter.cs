@@ -70,7 +70,7 @@ namespace SmartStore.Web.Framework.Pdf
 			return this.Url;
 		}
 
-		public static IPdfHeaderFooter FromText(string textLeft = null, string textCenter = null, string textRight = null, string fontName = null, float? fontSize = null)
+		public static IPdfHeaderFooter FromText(string textLeft = null, string textCenter = null, string textRight = null, string fontName = "Arial", float? fontSize = 10)
 		{
 			return new SimplePdfHeaderFooter
 			{

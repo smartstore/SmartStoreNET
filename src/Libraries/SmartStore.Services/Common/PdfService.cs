@@ -112,12 +112,15 @@ namespace SmartStore.Services.Common
 
         protected virtual Font GetFont()
         {
-            //SmartStore.NET supports unicode characters
-            //SmartStore.NET uses Free Serif font by default (~/App_Data/Pdf/OpenSans-Regular.ttf file)
-            string fontPath = Path.Combine(_webHelper.MapPath("~/App_Data/Pdf/"), _pdfSettings.FontFileName);
-            var baseFont = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
-            var font = new Font(baseFont, 10, Font.NORMAL);
-            return font;
+			////SmartStore.NET supports unicode characters
+			////SmartStore.NET uses Free Serif font by default (~/App_Data/Pdf/OpenSans-Regular.ttf file)
+			//string fontPath = Path.Combine(_webHelper.MapPath("~/App_Data/Pdf/"), _pdfSettings.FontFileName);
+			//var baseFont = BaseFont.CreateFont(fontPath, BaseFont.IDENTITY_H, BaseFont.EMBEDDED);
+			//var font = new Font(baseFont, 10, Font.NORMAL);
+			//return font;
+
+			var fnt = FontFactory.GetFont("Arial", 10);
+			return fnt;
         }
 
         #endregion

@@ -42,7 +42,7 @@
                 </div>
                 <div class="options">
                     <input type="submit" value="@T("PrivateMessages.Send.SendButton")" data-inline="true" />
-					<a href="@Url.RouteUrl("PrivateMessages")" data-role="button" data-inline="true" rel="nofollow">@T("PrivateMessages.Send.CancelButton")</a>
+					<a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" data-role="button" data-inline="true" rel="nofollow">@T("PrivateMessages.Send.CancelButton")</a>
                 </div>
             </div>
         </div>

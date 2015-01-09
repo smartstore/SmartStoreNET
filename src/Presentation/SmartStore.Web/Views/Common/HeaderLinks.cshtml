@@ -21,7 +21,7 @@
             
             if (Model.AllowPrivateMessages)
             {
-				<li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })" class="ico-inbox" rel="nofollow">@T("PrivateMessages.Inbox")</a>
+				<li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" class="ico-inbox" rel="nofollow">@T("PrivateMessages.Inbox")</a>
 					@Model.UnreadPrivateMessages
 				</li>
             }

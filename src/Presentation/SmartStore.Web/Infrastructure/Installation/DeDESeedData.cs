@@ -616,7 +616,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                     });
                     x.StateProvinces.Add(new StateProvince()
                     {
-                        Name = "Tiral",
+                        Name = "Tirol",
                         Abbreviation = "T",
                         Published = true,
                         DisplayOrder = 1,

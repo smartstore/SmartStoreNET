@@ -26,7 +26,7 @@ namespace SmartStore.Web.Framework.Themes
 		{
 			ThemesBasePath = CommonHelper.GetAppSetting<string>("sm:ThemesBasePath", "~/Themes/").EnsureEndsWith("/");
 
-			var pattern = @"^{0}(.*)/(.*)(\.png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
+			var pattern = @"^{0}(.*)/(.+)(\.)(png|gif|jpg|jpeg|css|less|js|cshtml|svg|json)$".FormatInvariant(ThemesBasePath);
 			s_inheritableThemeFilePattern = new Regex(pattern, RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_themeVarsPattern = new Regex(@"^~/\.db/themevars.less$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);
 			s_extensionlessPathPattern = new Regex(@"/(.+)/([^/.]*)$", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.Singleline);

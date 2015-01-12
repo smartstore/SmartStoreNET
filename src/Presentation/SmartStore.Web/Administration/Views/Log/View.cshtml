@@ -109,9 +109,8 @@
                     @Html.SmartLabelFor(model => model.FullMessage)
                 </td>
                 <td class="adminData">
-                    <pre>
-                        @Html.DisplayFor(model => model.FullMessage)
-                    </pre>
+					@*No whitespace within pre tag*@
+                    <pre>@Html.DisplayFor(model => model.FullMessage)</pre>
                 </td>
             </tr>
         }

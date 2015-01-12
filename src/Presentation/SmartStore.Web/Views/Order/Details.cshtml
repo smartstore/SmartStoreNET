@@ -574,7 +574,7 @@
 
 		@Html.Widget("orderdetails_page_aftertotal")
 
-        if (Model.Shipments.Count > 0)
+        @if (Model.Shipments.Count > 0)
         {
 			<div class="section-title">
 				@T("Order.Shipments")
@@ -641,7 +641,7 @@
         </div>
         }
 
-        if (Model.OrderNotes.Count > 0)
+        @if (Model.OrderNotes.Count > 0)
         {
 			<div class="section-title">
 				@T("Order.Notes")

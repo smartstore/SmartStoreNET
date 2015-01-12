@@ -5516,7 +5516,7 @@
 		<Value>PDFs aktivieren</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PdfEnabled.Hint">
-		<Value>Aktiviert PDFs. Rechnungen werden als PDF versandt.</Value>
+		<Value>Aktiviert PDFs. Bestellbestätigungen können als PDF runtergeladen werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PdfLetterPageSizeEnabled">
 		<Value>US-Letter-Format benutzen</Value>

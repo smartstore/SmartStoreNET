@@ -898,7 +898,7 @@ namespace SmartStore.Web.Controllers
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
             {
-                unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
+                unreadMessage = unreadMessageCount.ToString();
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&

@@ -7,6 +7,7 @@ using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using System.Web.Routing;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
@@ -23,6 +24,7 @@ using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -33,6 +35,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Pdf;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -40,6 +43,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Pdf;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -91,6 +95,8 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDbContext _dbContext;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IGenericAttributeService _genericAttributeService;
+        private readonly IPdfConverter _pdfConverter;
+        private readonly ICommonServices _services;
 
         #endregion
 
@@ -139,7 +145,9 @@ namespace SmartStore.Admin.Controllers
 			IPriceFormatter priceFormatter,
 			IDbContext dbContext,
 			IEventPublisher eventPublisher,
-			IGenericAttributeService genericAttributeService)
+			IGenericAttributeService genericAttributeService,
+            IPdfConverter pdfConverter,
+            ICommonServices services)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -183,6 +191,8 @@ namespace SmartStore.Admin.Controllers
 			this._dbContext = dbContext;
 			this._eventPublisher = eventPublisher;
 			this._genericAttributeService = genericAttributeService;
+            _pdfConverter = pdfConverter;
+            _services = services;
 
 			T = NullLocalizer.Instance;
         }
@@ -2799,27 +2809,105 @@ namespace SmartStore.Admin.Controllers
 			}
         }
 
-		public ActionResult ExportPdfAll()
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+        //public ActionResult ExportPdfAll()
+        //{
+        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+        //        return AccessDeniedView();
 
-			var ctx = new ProductSearchContext();
-			ctx.LanguageId = _workContext.WorkingLanguage.Id;
-			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = int.MaxValue;
-			ctx.ShowHidden = true;
+        //    var ctx = new ProductSearchContext();
+        //    ctx.LanguageId = _workContext.WorkingLanguage.Id;
+        //    ctx.OrderBy = ProductSortingEnum.Position;
+        //    ctx.PageSize = int.MaxValue;
+        //    ctx.ShowHidden = true;
 
-			var products = _productService.SearchProducts(ctx);
+        //    var products = _productService.SearchProducts(ctx);
 
-			if (products.Count <= 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
+        //    if (products.Count <= 0)
+        //    {
+        //        NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+        //        return RedirectToAction("List");
+        //    }
 
-			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
-		}
+        //    return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+        //}
+
+        public ActionResult ExportPdfAll()
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+                return AccessDeniedView();
+
+            var ctx = new ProductSearchContext();
+            ctx.LanguageId = _workContext.WorkingLanguage.Id;
+            ctx.OrderBy = ProductSortingEnum.Position;
+            ctx.PageSize = int.MaxValue;
+            ctx.ShowHidden = true;
+
+            var model = new PrintableProductsModel();
+            PreparePrintableProductsModel(model);
+            var products = _productService.SearchProducts(ctx);
+
+            foreach (var product in products) 
+            {
+                var productModel = new PrintableProductModel();
+                var picture = product.ProductPictures.FirstOrDefault().Picture;
+                productModel.Name = product.Name;
+                productModel.ShortDescription = product.ShortDescription;
+                productModel.FullDescription = product.FullDescription;
+                productModel.PictureUrl = _pictureService.GetPictureUrl(picture, 300, false);
+
+                model.Products.Add(productModel);
+            }
+
+            var fileName = "products.pdf";
+
+            var options = new PdfConvertOptions
+            {
+                Size = PdfPageSize.A4,
+                HeaderSpacing = 5,
+                FooterSpacing = 5,
+                ShowHeaderLine = true,
+                ShowFooterLine = true,
+                PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
+                PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
+                //Margins = new PdfPageMargins { Top = 30 }
+            };
+
+            PdfResultBase result;
+
+            result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "PdfCatalog.Print", Model = model /*, FileName = fileName */ };
+            //result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
+
+            return result;
+        }
+
+        [NonAction]
+        protected void PreparePrintableProductsModel(PrintableProductsModel model)
+        {
+            //var store = _storeService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
+            var store = _services.StoreContext.CurrentStore;
+
+            var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
+            var contactSettings = _services.Settings.LoadSetting<ContactDataSettings>(store.Id);
+            var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
+
+            model.StoreName = store.Name;
+            model.StoreUrl = store.Url;
+
+            var logoPicture = _pictureService.GetPictureById(pdfSettings.LogoPictureId);
+            if (logoPicture == null)
+            {
+                logoPicture = _pictureService.GetPictureById(store.LogoPictureId);
+            }
+
+            if (logoPicture != null)
+            {
+                model.PrintLogoUrl = _pictureService.GetPictureUrl(logoPicture, showDefaultPicture: false);
+            }
+
+            model.MerchantCompanyInfo = companyInfoSettings;
+            model.MerchantContactData = contactSettings;
+        }
+
 
 		[HttpPost]
 		public ActionResult ExportPdfSelected(string selectedIds)

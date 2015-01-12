@@ -215,6 +215,7 @@
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
+    <Compile Include="Models\Catalog\PrintableProductsModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
     <Compile Include="Models\Catalog\BulkEditListModel.cs" />
@@ -467,6 +468,8 @@
     <Content Include="Views\Theme\PreviewTool.cshtml" />
     <Content Include="Views\Shared\_AdminRoot.cshtml" />
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
+    <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
+    <Content Include="Views\Product\PdfCatalog.Print.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

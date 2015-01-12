@@ -1,9 +1,28 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Admin.Models.Common;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
+
+    public partial class PrintableShipmentModel : ShipmentModel
+    {
+        public PrintableShipmentModel()
+        {
+            MerchantCompanyInfo = new CompanyInformationSettings();
+        }
+
+        public bool PdfMode { get; set; }
+        public string ShippingMethod { get; set; }
+
+        public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+
+        public Address ShippingAddress { get; set; }
+
+    }
+
     public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()

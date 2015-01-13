@@ -172,6 +172,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("PDFInvoice.SKU",
 				"SKU",
 				"Artikelnr.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount").Value("de", "Mindestbestellwert Gesamtsumme");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Gesamtsumme fest.");
 		}
     }
 }

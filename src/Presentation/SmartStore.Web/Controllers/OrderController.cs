@@ -188,35 +188,56 @@ namespace SmartStore.Web.Controllers
                         //order subtotal
                         var orderSubtotalExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderSubtotalExclTax, order.CurrencyRate);
 						model.OrderSubtotal = _priceFormatter.FormatPrice(orderSubtotalExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
-                        //discount (applied to order subtotal)
+                        
+						//discount (applied to order subtotal)
                         var orderSubTotalDiscountExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderSubTotalDiscountExclTax, order.CurrencyRate);
-                        if (orderSubTotalDiscountExclTaxInCustomerCurrency > decimal.Zero)
-							model.OrderSubTotalDiscount = _priceFormatter.FormatPrice(-orderSubTotalDiscountExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
-                        //order shipping
+						if (orderSubTotalDiscountExclTaxInCustomerCurrency > decimal.Zero)
+						{
+							model.OrderSubTotalDiscount = _priceFormatter.FormatPrice(-orderSubTotalDiscountExclTaxInCustomerCurrency, true, 
+								order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
+						}
+                        
+						//order shipping
                         var orderShippingExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderShippingExclTax, order.CurrencyRate);
-						model.OrderShipping = _priceFormatter.FormatShippingPrice(orderShippingExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false);
+						model.OrderShipping = _priceFormatter.FormatShippingPrice(orderShippingExclTaxInCustomerCurrency, true,
+							order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false);
+
                         //payment method additional fee
                         var paymentMethodAdditionalFeeExclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.PaymentMethodAdditionalFeeExclTax, order.CurrencyRate);
-                        if (paymentMethodAdditionalFeeExclTaxInCustomerCurrency > decimal.Zero)
-							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false);
+
+						if (paymentMethodAdditionalFeeExclTaxInCustomerCurrency != decimal.Zero)
+						{
+							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeExclTaxInCustomerCurrency, true,
+								order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false);
+						}
                     }
                     break;
+
                 case TaxDisplayType.IncludingTax:
                     {
                         //order subtotal
                         var orderSubtotalInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderSubtotalInclTax, order.CurrencyRate);
 						model.OrderSubtotal = _priceFormatter.FormatPrice(orderSubtotalInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true, false);
-                        //discount (applied to order subtotal)
+                        
+						//discount (applied to order subtotal)
                         var orderSubTotalDiscountInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderSubTotalDiscountInclTax, order.CurrencyRate);
-                        if (orderSubTotalDiscountInclTaxInCustomerCurrency > decimal.Zero)
-							model.OrderSubTotalDiscount = _priceFormatter.FormatPrice(-orderSubTotalDiscountInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true, false);
+						if (orderSubTotalDiscountInclTaxInCustomerCurrency > decimal.Zero)
+						{
+							model.OrderSubTotalDiscount = _priceFormatter.FormatPrice(-orderSubTotalDiscountInclTaxInCustomerCurrency, true,
+								order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true, false);
+						}
+
                         //order shipping
                         var orderShippingInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.OrderShippingInclTax, order.CurrencyRate);
 						model.OrderShipping = _priceFormatter.FormatShippingPrice(orderShippingInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true);
-                        //payment method additional fee
+                        
+						//payment method additional fee
                         var paymentMethodAdditionalFeeInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(order.PaymentMethodAdditionalFeeInclTax, order.CurrencyRate);
-                        if (paymentMethodAdditionalFeeInclTaxInCustomerCurrency > decimal.Zero)
-							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeInclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true);
+						if (paymentMethodAdditionalFeeInclTaxInCustomerCurrency != decimal.Zero)
+						{
+							model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeInclTaxInCustomerCurrency, true,
+								order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, true);
+						}
                     }
                     break;
             }

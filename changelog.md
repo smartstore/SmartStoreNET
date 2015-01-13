@@ -38,6 +38,7 @@
 * Email a friend redirects to "not found"
 * #567 Products marked as 'Featured' should also be included in regular lists
 * Fixed some missing company information in order to PDF export
+* #583 Fixed "The property rate with the value x is malformed" when creating products
 
 
 ## SmartStore.NET 2.1.0

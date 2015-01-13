@@ -109,7 +109,20 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
         string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax);
-        /// <summary>
+
+		/// <summary>
+		/// Formats the shipping price
+		/// </summary>
+		/// <param name="price">Price</param>
+		/// <param name="showCurrency">A value indicating whether to show a currency</param>
+		/// <param name="currencyCode">Target currency code</param>
+		/// <param name="language">Language</param>
+		/// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
+		/// <param name="showTax">A value indicating whether to show tax suffix</param>
+		/// <returns>Price</returns>
+		string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax);
+		
+		/// <summary>
         /// Formats the shipping price
         /// </summary>
         /// <param name="price">Price</param>
@@ -152,6 +165,18 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
         string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax);
+
+		/// <summary>
+		/// Formats the payment method additional fee
+		/// </summary>
+		/// <param name="price">Price</param>
+		/// <param name="showCurrency">A value indicating whether to show a currency</param>
+		/// <param name="currencyCode">Target currency code</param>
+		/// <param name="language">Language</param>
+		/// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
+		/// <param name="showTax">A value indicating whether to show tax suffix</param>
+		/// <returns>Price</returns>
+		string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax);
 
         /// <summary>
         /// Formats the payment method additional fee

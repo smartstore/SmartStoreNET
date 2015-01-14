@@ -470,6 +470,7 @@
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
     <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
     <Content Include="Views\Product\PdfCatalog.Print.cshtml" />
+    <Content Include="Views\Product\PdfCatalog.Print.Footer.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

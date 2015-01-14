@@ -111,7 +111,7 @@ namespace SmartStore
         public static void ArgumentNotEmpty(Func<string> arg)
         {
             if (arg().IsEmpty())
-                throw Error.ArgumentNullOrEmpty(arg);
+				throw Error.ArgumentNullOrEmpty(arg);
         }
 
         [DebuggerStepThrough]

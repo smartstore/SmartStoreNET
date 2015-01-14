@@ -2839,7 +2839,7 @@ namespace SmartStore.Admin.Controllers
             var ctx = new ProductSearchContext();
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageSize = int.MaxValue;
+			ctx.PageSize = int.MaxValue;
             ctx.ShowHidden = true;
 
             var model = new PrintableProductsModel();
@@ -2849,11 +2849,19 @@ namespace SmartStore.Admin.Controllers
             foreach (var product in products) 
             {
                 var productModel = new PrintableProductModel();
-                var picture = product.ProductPictures.FirstOrDefault().Picture;
+				
                 productModel.Name = product.Name;
                 productModel.ShortDescription = product.ShortDescription;
                 productModel.FullDescription = product.FullDescription;
-                productModel.PictureUrl = _pictureService.GetPictureUrl(picture, 300, false);
+
+				var pictures = _pictureService.GetPicturesByProductId(product.Id);
+				if (pictures.Count > 0)
+				{
+					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
+				}
+
+				//var picture = product.ProductPictures.FirstOrDefault().Picture;
+				//productModel.PictureUrl = _pictureService.GetPictureUrl(picture, 300, false);
 
                 model.Products.Add(productModel);
             }
@@ -2868,7 +2876,7 @@ namespace SmartStore.Admin.Controllers
                 ShowHeaderLine = true,
                 ShowFooterLine = true,
                 PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
-                PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
+                //PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
                 //Margins = new PdfPageMargins { Top = 30 }
             };
 

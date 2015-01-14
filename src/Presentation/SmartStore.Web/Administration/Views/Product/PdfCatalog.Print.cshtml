@@ -23,9 +23,13 @@
             <p>
                 @Html.Raw(product.FullDescription)
             </p>
-            <div style="text-align:center;padding-top:50px;">
-                <img src="@product.PictureUrl" />
-            </div>
+			@if (product.PictureUrl.HasValue())
+			{
+				<div class="text-center margin-top-50">
+					<img src="@product.PictureUrl" />
+				</div>
+			}
+
         </div>
     }
 </div>

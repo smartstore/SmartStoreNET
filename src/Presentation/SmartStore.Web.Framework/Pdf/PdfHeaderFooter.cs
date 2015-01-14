@@ -56,7 +56,7 @@ namespace SmartStore.Web.Framework.Pdf
 		{
 			if (this.Kind == PdfHeaderFooterKind.Html)
 			{
-				if (HttpContext.Current != null && HttpContext.Current.Request != null)
+				if (HttpContext.Current != null && HttpContext.Current.Request != null && this.Html.HasValue())
 				{
 					var html = WebHelper.MakeAllUrlsAbsolute(this.Html, new HttpRequestWrapper(HttpContext.Current.Request));
 					return html;
@@ -155,6 +155,10 @@ namespace SmartStore.Web.Framework.Pdf
 				if (throwOnError)
 				{
 					throw ex;
+				}
+				else
+				{
+					return null;
 				}
 			}
 

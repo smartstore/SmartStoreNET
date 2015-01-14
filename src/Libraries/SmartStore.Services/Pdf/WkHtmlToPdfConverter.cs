@@ -103,15 +103,15 @@ namespace SmartStore.Services.Pdf
 			var t = o.Margins.Top;
 			var b = o.Margins.Bottom;
 
+			if (header == null || footer == null)
+				return;
+
 			float? newT = null;
 			float? newB = null;
 
 			// When both are simple: set both to 15.
 			// When only one is simple: set simple to 15 and the other (html) to 35
 			// When both are html: do nothing
-
-			if (header == null && footer == null)
-				return;
 
 			if (header.Kind == PdfHeaderFooterKind.Args && header.Kind == footer.Kind)
 			{

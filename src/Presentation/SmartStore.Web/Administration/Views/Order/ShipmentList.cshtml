@@ -19,7 +19,7 @@
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
-                <a href="@Url.Action("PdfPackagingSlipAll")" class="btn">
+                <a href="@Url.Action("PdfPackagingSlipAll", new { pdf = true })" class="btn">
 					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
 				</a>
                 <button type="submit" id="exportpackagingslips-selected" class="btn">
@@ -128,7 +128,7 @@
             $('#exportpackagingslips-selected').click(function (e) {
                 e.preventDefault();
                 //redirect to required URL
-                setLocation('@(Url.Action("PdfPackagingSlipSelected", "Order"))?selectedIds=' + selectedIds.join(","));
+                setLocation('@(Url.Action("PdfPackagingSlipSelected", "Order"))?pdf=true&selectedIds=' + selectedIds.join(","));
                 return false;
             });
 

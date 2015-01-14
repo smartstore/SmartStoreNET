@@ -173,6 +173,27 @@ namespace SmartStore.Data.Migrations
 				"SKU",
 				"Artikelnr.");
 
+            builder.AddOrUpdate("PDFPackagingSlip.DeliveryDate",
+                "Delivery date",
+				"Lieferdatum");
+            builder.AddOrUpdate("PDFPackagingSlip.Weight",
+                "Weight",
+				"Gewicht");
+            builder.AddOrUpdate("PDFPackagingSlip.DeliveryDate",
+                "Delivery date",
+                "Lieferdatum");
+            builder.AddOrUpdate("PDFPackagingSlip.TrackingNumber",
+                "Tracking number",
+                "Trackingnummer");
+            builder.AddOrUpdate("PDFPackagingSlip.ShippingMethod",
+                "Shipping method",
+                "Versandart");
+            builder.AddOrUpdate("PDFPackagingSlip.ProductListHeadline",
+                "Shipped products",
+                "Gelieferte Produkte");
+            
+            
+
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount").Value("de", "Mindestbestellwert Gesamtsumme");

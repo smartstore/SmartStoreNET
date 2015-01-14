@@ -221,7 +221,6 @@ namespace SmartStore.Web.Controllers
                     {
                         Id = x.Id,
                         Name = x.GetLocalized(y => y.Name),
-                        // codehint: sm-add
                         ISOCode = x.CurrencyCode,
                         Symbol = GetCurrencySymbol(x.DisplayLocale) ?? x.CurrencyCode
                     })
@@ -237,7 +236,6 @@ namespace SmartStore.Web.Controllers
             return model;
         }
 
-        // codehint: sm-add
         // TODO: Zentral auslagern
         private static string GetCurrencySymbol(string locale)
         {

@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -33,13 +34,12 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.Core.Logging;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Controllers
 {
@@ -976,9 +976,12 @@ namespace SmartStore.Web.Controllers
                     }
                     else
                     {
+						sci.Item.Product.MergeWithCombination(sci.Item.AttributesXml);
+
                         decimal taxRate = decimal.Zero;
                         decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
                         decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
+
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
                     }
 
@@ -1247,7 +1250,6 @@ namespace SmartStore.Web.Controllers
 
             #region Quantity
 
-			// codehint: sm-edit
 			int quantity = 1;
 			string key1 = "addtocart_{0}.EnteredQuantity".FormatWith(productId);
 			string key2 = "addtocart_{0}.AddToCart.EnteredQuantity".FormatWith(productId);
@@ -2530,10 +2532,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        /// <summary>
-        /// <remarks>codehint: sm-add</remarks>
-        /// </summary>
-        /// <returns></returns>
         public ActionResult FlyoutWishlist()
         {
             Customer customer = _workContext.CurrentCustomer;
@@ -2564,7 +2562,7 @@ namespace SmartStore.Web.Controllers
                 }
             });
 
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber); // codehint: sm-add;
+            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
             model.ThumbSize = _mediaSettings.MiniCartThumbPictureSize;
 
             return PartialView(model);

@@ -182,6 +182,8 @@ namespace SmartStore.Services.Orders
 			{
 				decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
 
+				shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml);
+
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{
 					// Gross > Net RoundFix

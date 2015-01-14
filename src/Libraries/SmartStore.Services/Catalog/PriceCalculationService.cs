@@ -284,7 +284,7 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var itemData in items.Where(x => x.IsValid()))
 				{
-					decimal itemPrice = (itemData.PriceOverride ?? GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData));
+					decimal itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData);
 
 					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
@@ -563,25 +563,16 @@ namespace SmartStore.Services.Catalog
 				}
                 else
                 {
-					var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, shoppingCartItem.Item.AttributesXml);
+					decimal attributesTotalPrice = decimal.Zero;
+					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
-					if (combination != null && combination.Price.HasValue)
+					if (pvaValues != null)
 					{
-						finalPrice = combination.Price.Value;
+						foreach (var pvaValue in pvaValues)
+							attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
 					}
-					else
-					{
-						decimal attributesTotalPrice = decimal.Zero;
-						var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 
-						if (pvaValues != null)
-						{
-							foreach (var pvaValue in pvaValues)
-								attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-						}
-
-						finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
-					}
+					finalPrice = GetFinalPrice(product, customer, attributesTotalPrice, includeDiscounts, shoppingCartItem.Item.Quantity, shoppingCartItem.BundleItemData);
                 }
             }
 

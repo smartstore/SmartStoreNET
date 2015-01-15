@@ -104,8 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
-    <Reference Include="NReco.PdfGenerator">
-      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.2.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
+    <Reference Include="NReco.PdfGenerator, Version=1.1.3.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\NReco.PdfGenerator.1.1.3.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
@@ -155,6 +156,9 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Pdf\Content\PdfHtmlContent.cs" />
+    <Compile Include="Pdf\Content\IPdfContent.cs" />
+    <Compile Include="Pdf\Content\PdfUrlContent.cs" />
     <Compile Include="Pdf\IPdfConverter.cs" />
     <Compile Include="Directory\EcbExchangeRateProvider.cs" />
     <Compile Include="Directory\McExchangeRateProvider.cs" />
@@ -375,8 +379,13 @@
     <Compile Include="Payments\ProcessPaymentResult.cs" />
     <Compile Include="Payments\RecurringPaymentType.cs" />
     <Compile Include="Pdf\IPdfHeaderFooter.cs" />
+    <Compile Include="Pdf\Options\IPdfOptions.cs" />
+    <Compile Include="Pdf\Options\PdfHeaderFooterOptions.cs" />
+    <Compile Include="Pdf\PdfConvertSettings.cs" />
     <Compile Include="Pdf\PdfConvertOptions.cs" />
     <Compile Include="Pdf\PdfPageMargins.cs" />
+    <Compile Include="Pdf\Options\PdfTocOptions.cs" />
+    <Compile Include="Pdf\Options\PdfPageOptions.cs" />
     <Compile Include="Pdf\PdfPageSize.cs" />
     <Compile Include="Pdf\PdfPagePrientation.cs" />
     <Compile Include="Pdf\WkHtmlToPdfConverter.cs" />

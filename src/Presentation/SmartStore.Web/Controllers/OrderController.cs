@@ -590,23 +590,27 @@ namespace SmartStore.Web.Controllers
 		{
 			ViewBag.PdfMode = pdf;
 			var viewName = "Details.Print";
-			
+
 			if (pdf)
 			{
 				// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
 				var storeId = model[0].StoreId;
-				var routeValues = new RouteValueDictionary{{ "storeId", storeId }};
+				var routeValues = new RouteValueDictionary { { "storeId", storeId } };
 				var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
 
-				var options = new PdfConvertOptions
+				var settings = new PdfConvertSettings
 				{
 					Orientation = PdfPagePrientation.Default,
 					Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-					PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
-					PageFooter = PdfHeaderFooter.FromAction("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
+					Page = new PdfViewContent(viewName, model, this.ControllerContext),
+					PageOptions = new PdfPageOptions(),
+					Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
+					HeaderOptions = new PdfHeaderFooterOptions(),
+					Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext),
+					FooterOptions = new PdfHeaderFooterOptions()
 				};
 
-				return new ViewAsPdfResult(_pdfConverter, options) { ViewName = viewName, Model = model, FileName = pdfFileName };
+				return new PdfResult(_pdfConverter, settings) { FileName = pdfFileName };
 			}
 
 			return View(viewName, model);

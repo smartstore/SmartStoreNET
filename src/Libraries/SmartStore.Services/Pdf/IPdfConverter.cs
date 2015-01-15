@@ -23,5 +23,13 @@ namespace SmartStore.Services.Pdf
 		/// <param name="coverHtml">First page HTML</param>
 		/// <returns>The PDF binary data</returns>
 		byte[] ConvertFile(string htmlFilePath, PdfConvertOptions options, string coverHtml = null);
+
+
+		/// <summary>
+		/// Converts html content to PDF
+		/// </summary>
+		/// <param name="settings">The settings to be used for the conversion process</param>
+		/// <returns>The PDF binary data</returns>
+		byte[] Convert(PdfConvertSettings settings);
 	}
 }

@@ -2866,26 +2866,37 @@ namespace SmartStore.Admin.Controllers
                 model.Products.Add(productModel);
             }
 
-            var fileName = "products.pdf";
+			var options = new PdfConvertOptions
+			{
+				Size = PdfPageSize.A4,
+				HeaderSpacing = 5,
+				FooterSpacing = 5,
+				ShowHeaderLine = true,
+				ShowFooterLine = true,
+				PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
+				//PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
+				//Margins = new PdfPageMargins { Top = 30 }
+			};
 
-            var options = new PdfConvertOptions
-            {
-                Size = PdfPageSize.A4,
-                HeaderSpacing = 5,
-                FooterSpacing = 5,
-                ShowHeaderLine = true,
-                ShowFooterLine = true,
-                PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
-                //PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
-                //Margins = new PdfPageMargins { Top = 30 }
-            };
+			PdfResultBase result;
 
-            PdfResultBase result;
+			result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "PdfCatalog.Print", Model = model /*, FileName = "products.pdf" */ };
 
-            result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "PdfCatalog.Print", Model = model /*, FileName = fileName */ };
-            //result = new UrlAsPdfResult("http://blog.icanmakethiswork.io/2012/04/making-pdfs-from-html-in-c-using.html", _pdfConverter, options);
+			return result;
 
-            return result;
+			//var settings = new PdfConvertSettings
+			//{
+			//	Orientation = PdfPagePrientation.Default,
+			//	Size = _pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+			//	Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
+			//	PageOptions = new PdfPageOptions(),
+			//	Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
+			//	HeaderOptions = new PdfHeaderFooterOptions(),
+			//	Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext),
+			//	FooterOptions = new PdfHeaderFooterOptions()
+			//};
+
+			//return new PdfResult(_pdfConverter, settings) { /*FileName = "products.pdf"*/ };
         }
 
         [NonAction]

@@ -247,9 +247,13 @@
     <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
     <Compile Include="Mvc\ProviderModel.cs" />
+    <Compile Include="Pdf\Content\PdfRouteContent.cs" />
+    <Compile Include="Pdf\Content\PdfPartialViewContent.cs" />
+    <Compile Include="Pdf\Content\PdfViewContent.cs" />
     <Compile Include="Pdf\PdfHeaderFooter.cs" />
     <Compile Include="Pdf\PdfReceiptHeaderFooterModel.cs" />
     <Compile Include="Pdf\PdfHeaderFooterVariables.cs" />
+    <Compile Include="Pdf\PdfResult.cs" />
     <Compile Include="Pdf\SimplePdfHeaderFooter.cs" />
     <Compile Include="Pdf\UrlAsPdfResult.cs" />
     <Compile Include="Pdf\RouteAsPdfResult.cs" />

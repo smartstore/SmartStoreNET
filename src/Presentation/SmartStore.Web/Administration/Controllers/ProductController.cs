@@ -2850,9 +2850,9 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 			}
 
-			if (products.Count > 200)
+			if (products.Count > 500)
 			{
-				NotifyWarning("TODO Localize: Too many products!");
+				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToAction("List");
 			}
 
@@ -2878,13 +2878,17 @@ namespace SmartStore.Admin.Controllers
 				Title = model.StoreName,
 				Size = _pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
 				Margins = new PdfPageMargins { Top = 30, Bottom = 15 },
-				Cover = new PdfViewContent("PdfCatalog.Print.Cover", model, this.ControllerContext),
-				TocOptions = new PdfTocOptions { Enabled = true, TocHeaderText = "TODO Localize: Inhaltsverzeichnis" },
 				Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
 				Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
 				HeaderOptions = new PdfHeaderFooterOptions { ShowLine = true },
 				Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext)
 			};
+
+			if (products.Count > 5)
+			{
+				settings.Cover = new PdfViewContent("PdfCatalog.Print.Cover", model, this.ControllerContext);
+				settings.TocOptions = new PdfTocOptions { Enabled = true, TocHeaderText = T("Admin.Common.ExportToPdf.TocTitle") };
+			}
 
 			return new PdfResult(_pdfConverter, settings) { FileName = "products.pdf" };
         }

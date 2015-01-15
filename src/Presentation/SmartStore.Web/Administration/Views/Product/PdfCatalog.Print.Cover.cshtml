@@ -7,11 +7,11 @@
 <div class="container">
 	@if (Model.PrintLogoUrl.HasValue())
 	{
-		<div class="text-center">
+		<div class="text-center margin-bottom-50">
 			<img src="@Model.PrintLogoUrl" />
 			<br />
 			<span class="text-muted">NOTE: use a larger picture here</span>
 		</div>
 	}
-	<h1 class="margin-top-50 text-center" style="font-size: 100px">@Model.StoreName</h1>
+	<h1 class="margin-top-50 text-center" style="font-size: 80px; font-weight: 400;">@Model.StoreName</h1>
 </div>

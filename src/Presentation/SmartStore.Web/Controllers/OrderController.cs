@@ -548,9 +548,9 @@ namespace SmartStore.Web.Controllers
 				return RedirectToReferrer();
 			}
 
-			if (orders.Count > 200)
+			if (orders.Count > 500)
 			{
-				NotifyWarning("TODO Localize: Too many orders");
+				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToReferrer();
 			}
 

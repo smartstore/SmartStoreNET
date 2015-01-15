@@ -191,7 +191,13 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("PDFPackagingSlip.ProductListHeadline",
                 "Shipped products",
                 "Gelieferte Produkte");
-            
+
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.TooManyItems",
+				"Too many items! The PDF conversion is limited to 500 items. Please reduce the amount of selected records.",
+				"Zu viele Objekte! Mehr als 500 Objekte können nicht konvertiert werden. Bitte reduzieren Sie die Anzahl ausgewählter Datensätze.");
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.TocTitle",
+				"Table of contents",
+				"Inhaltsverzeichnis");
             
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");

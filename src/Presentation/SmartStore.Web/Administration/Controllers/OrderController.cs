@@ -2381,9 +2381,9 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToReferrer();
 			}
 
-			if (shipments.Count > 200)
+			if (shipments.Count > 500)
 			{
-				NotifyWarning("TODO Localize: too many items!");
+				NotifyWarning(_localizationService.GetResource("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToReferrer();
 			}
 

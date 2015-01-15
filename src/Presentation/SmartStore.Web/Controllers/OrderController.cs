@@ -4,6 +4,7 @@ using System.Linq;
 using System.Net.Mime;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Orders;
@@ -54,6 +55,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
+
 
         #endregion
 
@@ -503,43 +505,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		//[ActionName("print2")]
-		//[Obsolete("Will be removed soon")]
-		//[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-		//public ActionResult PrintOrderDetails(int id)
-		//{
-		//	var order = _orderService.GetOrderById(id);
-
-		//	if (IsNonExistentOrder(order))
-		//		return HttpNotFound();
-
-		//	if (IsUnauthorizedOrder(order))
-		//		return new HttpUnauthorizedResult();
-
-		//	var model = PrepareOrderDetailsModel(order);
-		//	model.PrintMode = true;
-
-		//	return View("Details", model);
-		//}
-
-		//[ActionName("pdf")]
-		//[Obsolete("Will be removed soon")]
-		//public ActionResult GetPdfInvoice(int id)
-		//{
-		//	var order = _orderService.GetOrderById(id);
-
-		//	if (IsNonExistentOrder(order))
-		//		return HttpNotFound();
-
-		//	if (IsUnauthorizedOrder(order))
-		//		return new HttpUnauthorizedResult();
-
-		//	var orders = new List<Order>();
-		//	orders.Add(order);
-
-		//	return File(_pdfService.PrintOrdersToPdf(orders), MediaTypeNames.Application.Pdf, "order-{0}.pdf".FormatWith(order.Id));
-		//}
-
 		[RequireHttpsByConfigAttribute(SslRequirement.Yes)]
 		public ActionResult Print(int id, bool pdf = false)
 		{
@@ -564,19 +529,28 @@ namespace SmartStore.Web.Controllers
 
 			IList<Order> orders;
 
-			if (ids.HasValue())
+			using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
-				int[] intIds = ids.ToIntArray();
-				orders = _orderService.GetOrdersByIds(intIds);
-			}
-			else
-			{
-				orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+				if (ids != null)
+				{
+					int[] intIds = ids.ToIntArray();
+					orders = _orderService.GetOrdersByIds(intIds);
+				}
+				else
+				{
+					orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+				}
 			}
 
 			if (orders.Count == 0)
 			{
 				NotifyInfo(T("Admin.Common.ExportNoData"));
+				return RedirectToReferrer();
+			}
+
+			if (orders.Count > 200)
+			{
+				NotifyWarning("TODO Localize: Too many orders");
 				return RedirectToReferrer();
 			}
 
@@ -600,14 +574,11 @@ namespace SmartStore.Web.Controllers
 
 				var settings = new PdfConvertSettings
 				{
-					Orientation = PdfPagePrientation.Default,
 					Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+					Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
 					Page = new PdfViewContent(viewName, model, this.ControllerContext),
-					PageOptions = new PdfPageOptions(),
 					Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
-					HeaderOptions = new PdfHeaderFooterOptions(),
-					Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext),
-					FooterOptions = new PdfHeaderFooterOptions()
+					Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
 				};
 
 				return new PdfResult(_pdfConverter, settings) { FileName = pdfFileName };

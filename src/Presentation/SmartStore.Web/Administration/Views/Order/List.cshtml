@@ -36,7 +36,7 @@
 						</a>
 					</li>
 					<li>
-						<a href="@Url.Action("ExportPdfAll")">
+						<a href="@Url.Action("ExportPdf", new { all = true })">
 							<i class="fa fa-fw fa-file-pdf-o"></i>
 							@T("Admin.Common.ExportToPdf.All")
 						</a>
@@ -55,7 +55,7 @@
 						</a>
 					</li>					
 					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdfSelected", "Order")">
+						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", "Order", new { all = false })">
 							<i class="fa fa-fw fa-file-pdf-o"></i>
 							@T("Admin.Common.ExportToPdf.Selected")
 						</a>

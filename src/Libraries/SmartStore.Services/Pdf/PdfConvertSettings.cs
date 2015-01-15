@@ -13,8 +13,18 @@ namespace SmartStore.Services.Pdf
 			this.Margins = new PdfPageMargins();
 			this.Orientation = PdfPagePrientation.Default;
 			this.Size = PdfPageSize.Default;
+			this.PageOptions = new PdfPageOptions();
+			this.HeaderOptions = new PdfHeaderFooterOptions();
+			this.FooterOptions = new PdfHeaderFooterOptions();
+			this.CoverOptions = new PdfPageOptions();
+			this.TocOptions = new PdfTocOptions();
 		}
-		
+
+		/// <summary>
+		/// The title of the generated pdf file (The title of the first document is used if not specified)
+		/// </summary>
+		public string Title { get; set; }
+
 		/// <summary>
 		/// Get or set option to generate grayscale PDF 
 		/// </summary>

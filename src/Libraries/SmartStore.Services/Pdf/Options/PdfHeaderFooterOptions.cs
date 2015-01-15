@@ -49,7 +49,10 @@ namespace SmartStore.Services.Pdf
 		/// </summary>
 		public string TextRight { get; set; }
 
-
+		public bool HasText
+		{
+			get { return TextLeft.HasValue() || TextCenter.HasValue() || TextRight.HasValue(); }
+		}
 		
 		public void Process(string flag, StringBuilder builder)
 		{
@@ -62,14 +65,17 @@ namespace SmartStore.Services.Pdf
 			{
 				builder.AppendFormat(" --{0}-line", flag);
 			}
-			
-			if (FontName.HasValue())
+
+			if (HasText)
 			{
-				builder.AppendFormat(CultureInfo.InvariantCulture, " --{0}-font-name \"{1}\"", flag, FontName);
-			}
-			if (FontSize.HasValue)
-			{
-				builder.AppendFormat(CultureInfo.InvariantCulture, " --{0}-font-size {1}", flag, FontSize.Value);
+				if (FontName.HasValue())
+				{
+					builder.AppendFormat(CultureInfo.InvariantCulture, " --{0}-font-name \"{1}\"", flag, FontName);
+				}
+				if (FontSize.HasValue)
+				{
+					builder.AppendFormat(CultureInfo.InvariantCulture, " --{0}-font-size {1}", flag, FontSize.Value);
+				}
 			}
 
 			if (TextLeft.HasValue())

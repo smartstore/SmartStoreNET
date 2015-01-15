@@ -7,31 +7,20 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Orders
 {
 
-    public partial class PrintableShipmentModel : ShipmentModel
-    {
-        public PrintableShipmentModel()
-        {
-            MerchantCompanyInfo = new CompanyInformationSettings();
-        }
-
-        public bool PdfMode { get; set; }
-        public string ShippingMethod { get; set; }
-
-        public CompanyInformationSettings MerchantCompanyInfo { get; set; }
-
-        public Address ShippingAddress { get; set; }
-
-    }
-
     public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()
         {
             this.Items = new List<ShipmentItemModel>();
+			MerchantCompanyInfo = new CompanyInformationSettings();
         }
-        [SmartResourceDisplayName("Admin.Orders.Shipments.ID")]
-        public override int Id { get; set; }
-        [SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
+
+		public int StoreId { get; set; }
+		public string ShippingMethod { get; set; }
+		public Address ShippingAddress { get; set; }
+		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+		
+		[SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
         public int OrderId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Shipments.TotalWeight")]
         public string TotalWeight { get; set; }

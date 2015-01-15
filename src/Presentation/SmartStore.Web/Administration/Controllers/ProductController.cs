@@ -2809,42 +2809,52 @@ namespace SmartStore.Admin.Controllers
 			}
         }
 
-        //public ActionResult ExportPdfAll()
-        //{
-        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-        //        return AccessDeniedView();
-
-        //    var ctx = new ProductSearchContext();
-        //    ctx.LanguageId = _workContext.WorkingLanguage.Id;
-        //    ctx.OrderBy = ProductSortingEnum.Position;
-        //    ctx.PageSize = int.MaxValue;
-        //    ctx.ShowHidden = true;
-
-        //    var products = _productService.SearchProducts(ctx);
-
-        //    if (products.Count <= 0)
-        //    {
-        //        NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-        //        return RedirectToAction("List");
-        //    }
-
-        //    return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
-        //}
-
-        public ActionResult ExportPdfAll()
+		public ActionResult ExportPdf(bool all, string selectedIds = null)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var ctx = new ProductSearchContext();
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = int.MaxValue;
-            ctx.ShowHidden = true;
+			if (!all && selectedIds.IsEmpty())
+			{
+				NotifyInfo(T("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
 
             var model = new PrintableProductsModel();
             PreparePrintableProductsModel(model);
-            var products = _productService.SearchProducts(ctx);
+
+			IList<Product> products;
+
+			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
+			{
+				if (all)
+				{
+					products = _productService.SearchProducts(new ProductSearchContext
+					{
+						LanguageId = _workContext.WorkingLanguage.Id,
+						OrderBy = ProductSortingEnum.Position,
+						PageSize = int.MaxValue,
+						ShowHidden = true
+					});
+				}
+				else
+				{
+					var ids = selectedIds.ToIntArray();
+					products = _productService.GetProductsByIds(ids);
+				}
+			}
+
+			if (products.Count == 0)
+			{
+				NotifyInfo(T("Admin.Common.ExportNoData"));
+				return RedirectToAction("List");
+			}
+
+			if (products.Count > 200)
+			{
+				NotifyWarning("TODO Localize: Too many products!");
+				return RedirectToAction("List");
+			}
 
             foreach (var product in products) 
             {
@@ -2860,43 +2870,23 @@ namespace SmartStore.Admin.Controllers
 					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
 				}
 
-				//var picture = product.ProductPictures.FirstOrDefault().Picture;
-				//productModel.PictureUrl = _pictureService.GetPictureUrl(picture, 300, false);
-
                 model.Products.Add(productModel);
             }
 
-			var options = new PdfConvertOptions
+			var settings = new PdfConvertSettings
 			{
-				Size = PdfPageSize.A4,
-				HeaderSpacing = 5,
-				FooterSpacing = 5,
-				ShowHeaderLine = true,
-				ShowFooterLine = true,
-				PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
-				//PageFooter = PdfHeaderFooter.FromText(null, "[title]", "[page] von [topage]")
-				//Margins = new PdfPageMargins { Top = 30 }
+				Title = model.StoreName,
+				Size = _pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+				Margins = new PdfPageMargins { Top = 30, Bottom = 15 },
+				Cover = new PdfViewContent("PdfCatalog.Print.Cover", model, this.ControllerContext),
+				TocOptions = new PdfTocOptions { Enabled = true, TocHeaderText = "TODO Localize: Inhaltsverzeichnis" },
+				Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
+				Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
+				HeaderOptions = new PdfHeaderFooterOptions { ShowLine = true },
+				Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext)
 			};
 
-			PdfResultBase result;
-
-			result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "PdfCatalog.Print", Model = model /*, FileName = "products.pdf" */ };
-
-			return result;
-
-			//var settings = new PdfConvertSettings
-			//{
-			//	Orientation = PdfPagePrientation.Default,
-			//	Size = _pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-			//	Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
-			//	PageOptions = new PdfPageOptions(),
-			//	Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
-			//	HeaderOptions = new PdfHeaderFooterOptions(),
-			//	Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext),
-			//	FooterOptions = new PdfHeaderFooterOptions()
-			//};
-
-			//return new PdfResult(_pdfConverter, settings) { /*FileName = "products.pdf"*/ };
+			return new PdfResult(_pdfConverter, settings) { FileName = "products.pdf" };
         }
 
         [NonAction]

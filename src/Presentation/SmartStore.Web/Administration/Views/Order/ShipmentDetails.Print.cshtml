@@ -1,4 +1,4 @@
-﻿@model IEnumerable<PrintableShipmentModel>
+﻿@model IEnumerable<ShipmentModel>
 @using SmartStore.Core.Domain.Orders;
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Admin.Models.Shipping;
@@ -10,12 +10,6 @@
 
     //title
     Html.AddTitleParts(T("Admin.Orders.Shipments.ViewDetails").Text);
-
-    var pdfMode = ViewBag.PdfMode == true;
-    if (!pdfMode)
-    {
-        Html.AddBodyCssClass("screen");
-    }
 }
 
 @functions {
@@ -136,7 +130,7 @@
     }
 </div>
 
-@helper ShipmentLine(PrintableShipmentModel.ShipmentItemModel item)
+@helper ShipmentLine(ShipmentModel.ShipmentItemModel item)
 {
     <tr>
         <td class="text-left">

@@ -7,6 +7,7 @@ using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Orders;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
@@ -646,23 +647,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected void ProcessPrintableShipmentModel(PrintableShipmentModel model)
-        {
-            //var store = _storeService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
-            var store = _services.StoreContext.CurrentStore;
-
-            var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
-
-            var order = _orderService.GetOrderById(model.OrderId);
-            model.ShippingAddress = order.ShippingAddress;
-            model.ShippingMethod = order.ShippingMethod;
-
-            model.MerchantCompanyInfo = companyInfoSettings;
-        }
-
-
-        [NonAction]
-        protected TModel PrepareShipmentModel<TModel>(Shipment shipment, bool prepareProducts) where TModel : ShipmentModel, new()
+		protected ShipmentModel PrepareShipmentModel(Shipment shipment, bool prepareProducts, bool prepareAddresses)
         {
             //measures
             var baseWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
@@ -670,10 +655,14 @@ namespace SmartStore.Admin.Controllers
             var baseDimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId);
             var baseDimensionIn = baseDimension != null ? baseDimension.Name : "";
 
-            var model = new TModel()
+			var orderStoreId = shipment.Order.StoreId;
+
+			var model = new ShipmentModel
             {
                 Id = shipment.Id,
                 OrderId = shipment.OrderId,
+				StoreId = orderStoreId,
+				ShippingMethod = shipment.Order.ShippingMethod,
                 TrackingNumber = shipment.TrackingNumber,
                 TotalWeight = shipment.TotalWeight.HasValue ? string.Format("{0:F2} [{1}]", shipment.TotalWeight, baseWeightIn) : "",
                 ShippedDate = shipment.ShippedDateUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(shipment.ShippedDateUtc.Value, DateTimeKind.Utc).ToString() : _localizationService.GetResource("Admin.Orders.Shipments.ShippedDate.NotYet"),
@@ -682,6 +671,15 @@ namespace SmartStore.Admin.Controllers
                 CanDeliver = shipment.ShippedDateUtc.HasValue && !shipment.DeliveryDateUtc.HasValue,
                 DisplayPdfPackagingSlip = _pdfSettings.Enabled,
             };
+
+			if (prepareAddresses)
+			{
+				model.ShippingAddress = shipment.Order.ShippingAddress;
+
+				var store = _services.StoreService.GetStoreById(orderStoreId) ?? _services.StoreContext.CurrentStore;
+				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
+				model.MerchantCompanyInfo = companyInfoSettings;
+			}
 
             if (prepareProducts)
             {
@@ -961,21 +959,12 @@ namespace SmartStore.Admin.Controllers
             return File(bytes, "text/xls", "orders.xlsx");
         }
 
-		public ActionResult ExportPdfAll()
+		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
 				return AccessDeniedView();
 
-			return RedirectToAction("PrintMany", "Order", new { pdf = true, area = "" });			
-		}
-
-		[HttpPost]
-		public ActionResult ExportPdfSelected(string selectedIds)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-				return AccessDeniedView();
-
-			if (selectedIds.IsEmpty())
+			if (!all && selectedIds.IsEmpty())
 			{
 				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
@@ -2071,7 +2060,7 @@ namespace SmartStore.Admin.Controllers
                 command.Page - 1, command.PageSize);
             var gridModel = new GridModel<ShipmentModel>
             {
-                Data = shipments.Select(shipment => PrepareShipmentModel<ShipmentModel>(shipment, false)),
+                Data = shipments.Select(shipment => PrepareShipmentModel(shipment, false, false)),
                 Total = shipments.TotalCount
             };
 			return new JsonResult
@@ -2094,7 +2083,7 @@ namespace SmartStore.Admin.Controllers
             var shipmentModels = new List<ShipmentModel>();
             var shipments = order.Shipments.OrderBy(s => s.CreatedOnUtc).ToList();
             foreach (var shipment in shipments)
-                shipmentModels.Add(PrepareShipmentModel<ShipmentModel>(shipment, false));
+                shipmentModels.Add(PrepareShipmentModel(shipment, false, false));
 
             var model = new GridModel<ShipmentModel>
             {
@@ -2269,7 +2258,7 @@ namespace SmartStore.Admin.Controllers
                 //No shipment found with the specified id
                 return RedirectToAction("List");
 
-            var model = PrepareShipmentModel<ShipmentModel>(shipment, true);
+            var model = PrepareShipmentModel(shipment, true, true);
 
             return View(model);
         }
@@ -2360,149 +2349,68 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        //public ActionResult PdfPackagingSlip(int shipmentId)
-        //{
-        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-        //        return AccessDeniedView();
+		public ActionResult PdfPackagingSlips(bool all, string selectedIds = null)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
+				return AccessDeniedView();
 
-        //    var shipment = _shipmentService.GetShipmentById(shipmentId);
-        //    if (shipment == null)
-        //        //no shipment found with the specified id
-        //        return RedirectToAction("List");
-
-        //    var order = shipment.Order;
-
-        //    var shipments = new List<Shipment>();
-        //    shipments.Add(shipment);
-
-        //    return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslip-{0}.pdf".FormatWith(shipment.Id));
-        //}
-
-        //public ActionResult PdfPackagingSlip(int shipmentId)
-        //{
-        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-        //        return AccessDeniedView();
-
-        //    var shipment = _shipmentService.GetShipmentById(shipmentId);
-        //    if (shipment == null)
-        //        //No shipment found with the specified id
-        //        return HttpNotFound();
-
-        //    var model = PrepareShipmentModel<PrintableShipmentModel>(shipment, true);
-        //    ProcessPrintableShipmentModel(model);
-
-        //    var fileName = "packagingslip-{0}.pdf".FormatWith(shipmentId);
-
-        //    // TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
-        //    var storeId = shipment.Order.StoreId;
-        //    var routeValues = new RouteValueDictionary(new { storeId = storeId, area = "" });
-        //    var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
-
-        //    var options = new PdfConvertOptions
-        //    {
-        //        Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-        //        PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
-        //        PageFooter = PdfHeaderFooter.FromAction("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
-        //    };
-
-        //    PdfResultBase result;
-
-        //    result = new ViewAsPdfResult(_pdfConverter, options) { ViewName = "ShipmentDetails.Print", Model = new List<PrintableShipmentModel> { model }, FileName = fileName };
-
-        //    return result;
-        //}
-
-        public ActionResult PdfPackagingSlip(int shipmentId, bool pdf = false)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            var shipment = _shipmentService.GetShipmentById(shipmentId);
-            if (shipment == null)
-                //No shipment found with the specified id
-                return HttpNotFound();
-
-            var model = PrepareShipmentModel<PrintableShipmentModel>(shipment, true);
-            ProcessPrintableShipmentModel(model);
-
-            return PdfPackagingSlipCore(new List<PrintableShipmentModel> { model }, pdf, "packagingslips.pdf".FormatWith(shipmentId), shipment.Order.StoreId);
-        }
-
-        public ActionResult PdfPackagingSlipAll()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            var shipments = _shipmentService.GetAllShipments(null, null, null, 0, int.MaxValue);
-            var ids = "";
-            if (shipments.Count <= 0)
-            {
-                NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-                return RedirectToAction("List");
-            }
-            else {
-                foreach (var shipment in shipments) {
-                    ids += shipment.Id + ",";
-                }
-            }
-
-            return RedirectToAction("PdfPackagingSlipSelected", "Order", new { selectedIds = ids, pdf = true });	
-			//return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslips.pdf");
-        }
-
-        public ActionResult PdfPackagingSlipSelected(string selectedIds, bool pdf = false)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-                return AccessDeniedView();
-
-            var shipments = new List<Shipment>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                shipments.AddRange(_shipmentService.GetShipmentsByIds(ids));
-            }
-
-			if (shipments.Count <= 0)
+			if (!all && selectedIds.IsEmpty())
 			{
 				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("ShipmentList");
+				return RedirectToReferrer();
 			}
 
-            var listModel = shipments.Select(x => PrepareShipmentModel<PrintableShipmentModel>(x, true)).ToList();
-            listModel.Each(x => ProcessPrintableShipmentModel(x));
+			IList<Shipment> shipments;
 
-			//return File(_pdfService.PrintPackagingSlipsToPdf(shipments), MediaTypeNames.Application.Pdf, "packagingslips.pdf");
-            return PdfPackagingSlipCore(listModel, pdf, "packagingslips.pdf", _services.StoreContext.CurrentStore.Id);
-        }
+			using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, forceNoTracking: true))
+			{
+				if (all)
+				{
+					shipments = _shipmentService.GetAllShipments(null, null, null, 0, int.MaxValue);
+				}
+				else
+				{
+					var ids = selectedIds.ToIntArray();
+					shipments = _shipmentService.GetShipmentsByIds(ids);
+				}
+			}
 
-        //bis auf store id und viewname das gleiche wie SmartStore.Web->OrderController->PrintCore
-        //TODO: generisch machen
-        private ActionResult PdfPackagingSlipCore(List<PrintableShipmentModel> model, bool pdf, string pdfFileName, int storeId)
-		{
-            ViewBag.PdfMode = pdf;
-            var viewName = "ShipmentDetails.Print";
+			if (shipments.Count == 0)
+			{
+				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+				return RedirectToReferrer();
+			}
 
-            if (pdf)
-            {
-                var routeValues = new RouteValueDictionary(new { storeId = storeId, area = "" });
-                var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
+			if (shipments.Count > 200)
+			{
+				NotifyWarning("TODO Localize: too many items!");
+				return RedirectToReferrer();
+			}
 
-                var options = new PdfConvertOptions
-                {
-                    Orientation = PdfPagePrientation.Default,
-                    Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-                    PageHeader = PdfHeaderFooter.FromAction("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
-                    PageFooter = PdfHeaderFooter.FromAction("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
-                };
+			string pdfFileName = "PackagingSlips.pdf";
+			if (shipments.Count == 1)
+			{
+				pdfFileName = "PackagingSlip-{0}.pdf".FormatInvariant(shipments[0].Id);
+			}
 
-                return new ViewAsPdfResult(_pdfConverter, options) { ViewName = viewName, Model = model, FileName = pdfFileName };
-            }
+			var model = shipments.Select(x => PrepareShipmentModel(x, true, true)).ToList();
 
-            return View(viewName, model);
-        }
+			// TODO: (mc) this is bad for multi-document processing, where orders can originate from different stores.
+			var storeId = model[0].StoreId;
+			var routeValues = new RouteValueDictionary(new { storeId = storeId, area = "" });
+			var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(storeId);
+
+			var settings = new PdfConvertSettings
+			{
+				Size = pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
+				Margins = new PdfPageMargins { Top = 35, Bottom = 35 },
+				Page = new PdfViewContent("ShipmentDetails.Print", model, this.ControllerContext),
+				Header = new PdfRouteContent("PdfReceiptHeader", "Common", routeValues, this.ControllerContext),
+				Footer = new PdfRouteContent("PdfReceiptFooter", "Common", routeValues, this.ControllerContext)
+			};
+
+			return new PdfResult(_pdfConverter, settings) { FileName = pdfFileName };
+		}
 
         #endregion
 

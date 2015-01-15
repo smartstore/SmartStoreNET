@@ -12,6 +12,11 @@ namespace SmartStore.Services.Pdf
 		}
 
 		/// <summary>
+		/// TOC creation enabled
+		/// </summary>
+		public bool Enabled { get; set; }
+
+		/// <summary>
 		/// The header text of the toc (default Table of Contents)
 		/// </summary>
 		public string TocHeaderText { get; set; }
@@ -63,7 +68,7 @@ namespace SmartStore.Services.Pdf
 
 			if (TocTextSizeShrink.HasValue)
 			{
-				builder.AppendFormat(" --toc-text-size-shrink {0}", TocTextSizeShrink);
+				builder.AppendFormat(" --toc-text-size-shrink {0}", TocTextSizeShrink.Value);
 			}
 
 			base.Process(flag, builder);

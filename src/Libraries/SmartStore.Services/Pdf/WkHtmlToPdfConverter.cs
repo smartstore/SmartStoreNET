@@ -113,9 +113,6 @@ namespace SmartStore.Services.Pdf
 				Size = (PageSize)(int)settings.Size,
 			};
 
-			//// apply our special "margin fix" to header & footer
-			//ApplyHeaderFooterMarginFix(settings);
-
 			if (settings.Margins != null)
 			{
 				converter.Margins.Bottom = settings.Margins.Bottom;
@@ -125,6 +122,12 @@ namespace SmartStore.Services.Pdf
 			}
 
 			var sb = new StringBuilder(settings.CustomFlags);
+
+			// doc title
+			if (settings.Title.HasValue())
+			{
+				sb.AppendFormat(CultureInfo.CurrentCulture, " --title \"{0}\"", settings.Title);
+			}
 
 			// Cover content & options
 			if (settings.Cover != null)
@@ -142,9 +145,9 @@ namespace SmartStore.Services.Pdf
 			}
 
 			// Toc options
-			if (settings.TocOptions != null)
+			if (settings.TocOptions != null && settings.TocOptions.Enabled)
 			{
-				settings.CoverOptions.Process("cover", sb);
+				settings.TocOptions.Process("toc", sb);
 			}
 
 			// apply cover & toc
@@ -167,7 +170,7 @@ namespace SmartStore.Services.Pdf
 					settings.Header.WriteArguments("header", sb);
 				}
 			}
-			if (settings.HeaderOptions != null)
+			if (settings.HeaderOptions != null && (settings.Header != null || settings.HeaderOptions.HasText))
 			{
 				settings.HeaderOptions.Process("header", sb);
 			}
@@ -182,7 +185,7 @@ namespace SmartStore.Services.Pdf
 					settings.Footer.WriteArguments("footer", sb);
 				}
 			}
-			if (settings.FooterOptions != null)
+			if (settings.FooterOptions != null && (settings.Footer != null || settings.FooterOptions.HasText))
 			{
 				settings.FooterOptions.Process("footer", sb);
 			}

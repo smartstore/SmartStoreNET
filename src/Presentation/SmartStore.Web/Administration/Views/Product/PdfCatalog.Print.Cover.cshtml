@@ -1,0 +1,17 @@
+﻿@model PrintableProductsModel
+@using SmartStore.Core.Html;
+@{
+    Layout = "~/Views/Shared/_Print.cshtml";
+}
+
+<div class="container">
+	@if (Model.PrintLogoUrl.HasValue())
+	{
+		<div class="text-center">
+			<img src="@Model.PrintLogoUrl" />
+			<br />
+			<span class="text-muted">NOTE: use a larger picture here</span>
+		</div>
+	}
+	<h1 class="margin-top-50 text-center" style="font-size: 100px">@Model.StoreName</h1>
+</div>

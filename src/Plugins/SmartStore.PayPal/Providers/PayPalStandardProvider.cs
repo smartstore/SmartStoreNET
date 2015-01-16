@@ -8,6 +8,7 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -223,10 +224,20 @@ namespace SmartStore.PayPal
 			builder.AppendFormat("&invoice={0}", HttpUtility.UrlEncode(orderNumber));
 			builder.AppendFormat("&rm=2", new object[0]);
 
+			Address address = null;
+
 			if (postProcessPaymentRequest.Order.ShippingStatus != ShippingStatus.ShippingNotRequired)
+			{
+				address = postProcessPaymentRequest.Order.ShippingAddress ?? postProcessPaymentRequest.Order.BillingAddress;
+
 				builder.AppendFormat("&no_shipping=2", new object[0]);
+			}
 			else
+			{
+				address = postProcessPaymentRequest.Order.BillingAddress;
+
 				builder.AppendFormat("&no_shipping=1", new object[0]);
+			}
 
             string returnUrl = _commonServices.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/PDTHandler";
             string cancelReturnUrl = _commonServices.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/CancelOrder";
@@ -245,15 +256,15 @@ namespace SmartStore.PayPal
 
 			//address
 			builder.AppendFormat("&address_override=1");
-			builder.AppendFormat("&first_name={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.FirstName));
-			builder.AppendFormat("&last_name={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.LastName));
-			builder.AppendFormat("&address1={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Address1));
-			builder.AppendFormat("&address2={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Address2));
-			builder.AppendFormat("&city={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.City));
-			//if (!String.IsNullOrEmpty(postProcessPaymentRequest.Order.BillingAddress.PhoneNumber))
+			builder.AppendFormat("&first_name={0}", HttpUtility.UrlEncode(address.FirstName));
+			builder.AppendFormat("&last_name={0}", HttpUtility.UrlEncode(address.LastName));
+			builder.AppendFormat("&address1={0}", HttpUtility.UrlEncode(address.Address1));
+			builder.AppendFormat("&address2={0}", HttpUtility.UrlEncode(address.Address2));
+			builder.AppendFormat("&city={0}", HttpUtility.UrlEncode(address.City));
+			//if (!String.IsNullOrEmpty(address.PhoneNumber))
 			//{
 			//    //strip out all non-digit characters from phone number;
-			//    string billingPhoneNumber = System.Text.RegularExpressions.Regex.Replace(postProcessPaymentRequest.Order.BillingAddress.PhoneNumber, @"\D", string.Empty);
+			//    string billingPhoneNumber = System.Text.RegularExpressions.Regex.Replace(address.PhoneNumber, @"\D", string.Empty);
 			//    if (billingPhoneNumber.Length >= 10)
 			//    {
 			//        builder.AppendFormat("&night_phone_a={0}", HttpUtility.UrlEncode(billingPhoneNumber.Substring(0, 3)));
@@ -261,18 +272,18 @@ namespace SmartStore.PayPal
 			//        builder.AppendFormat("&night_phone_c={0}", HttpUtility.UrlEncode(billingPhoneNumber.Substring(6, 4)));
 			//    }
 			//}
-			if (postProcessPaymentRequest.Order.BillingAddress.StateProvince != null)
-				builder.AppendFormat("&state={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.StateProvince.Abbreviation));
+			if (address.StateProvince != null)
+				builder.AppendFormat("&state={0}", HttpUtility.UrlEncode(address.StateProvince.Abbreviation));
 			else
 				builder.AppendFormat("&state={0}", "");
 
-			if (postProcessPaymentRequest.Order.BillingAddress.Country != null)
-				builder.AppendFormat("&country={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Country.TwoLetterIsoCode));
+			if (address.Country != null)
+				builder.AppendFormat("&country={0}", HttpUtility.UrlEncode(address.Country.TwoLetterIsoCode));
 			else
 				builder.AppendFormat("&country={0}", "");
 
-			builder.AppendFormat("&zip={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.ZipPostalCode));
-			builder.AppendFormat("&email={0}", HttpUtility.UrlEncode(postProcessPaymentRequest.Order.BillingAddress.Email));
+			builder.AppendFormat("&zip={0}", HttpUtility.UrlEncode(address.ZipPostalCode));
+			builder.AppendFormat("&email={0}", HttpUtility.UrlEncode(address.Email));
 
 			_httpContext.Response.Redirect(builder.ToString());
 		}

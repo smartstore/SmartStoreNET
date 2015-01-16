@@ -40,6 +40,7 @@
 * Fixed some missing company information in order to PDF export
 * #583 Fixed "The property rate with the value x is malformed" when creating products
 * Fixed ignored discount and tier price when product has attribute combination price
+* PayPal Standard provider now using shipping rather than billing address if shipping is required
 
 
 ## SmartStore.NET 2.1.0

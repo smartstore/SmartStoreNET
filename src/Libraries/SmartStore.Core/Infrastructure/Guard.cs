@@ -110,8 +110,11 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static void ArgumentNotEmpty(Func<string> arg)
         {
-            if (arg().IsEmpty())
-				throw Error.ArgumentNullOrEmpty(arg);
+			if (arg().IsEmpty())
+			{
+				string argName = GetParamName(arg);
+				throw Error.Argument(argName, "String parameter '{0}' cannot be null or all whitespace.", argName);
+			}
         }
 
         [DebuggerStepThrough]

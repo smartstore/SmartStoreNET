@@ -17,7 +17,7 @@ namespace SmartStore.Web.Framework.Pdf
 		}
 
 		public PdfViewContent(string viewName, string masterName, object model, ControllerContext controllerContext)
-			: base(ViewToString(viewName, masterName, model, false, controllerContext, false))
+			: base(ViewToString(viewName, masterName, model, false, controllerContext, true))
 		{
 		}
 

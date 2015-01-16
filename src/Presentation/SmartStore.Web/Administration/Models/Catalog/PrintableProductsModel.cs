@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using AutoMapper;
@@ -39,9 +40,38 @@ namespace SmartStore.Admin.Models.Catalog
 
     public partial class PrintableProductModel : EntityModelBase
     {
+        public PrintableProductModel()
+        {
+            SpecificationAttributes = new List<PrintableProductSpecificationModel>();
+            BundledItems = new List<PrintableProductModel>();
+            AssociatedProducts = new List<PrintableProductModel>();
+        }
+
         public string Name { get; set; }
         public string ShortDescription { get; set; }
         public string FullDescription { get; set; }
         public string PictureUrl { get; set; }
+
+        public string Sku { get; set; }
+        public string Manufacturer { get; set; }
+        public string Weight { get; set; }
+        public string Length { get; set; }
+        public string Width { get; set; }
+        public string Height { get; set; }
+
+        public IList<PrintableProductSpecificationModel> SpecificationAttributes { get; set; }
+
+        public ProductType ProductType { get; set; }
+        public IList<PrintableProductModel> BundledItems { get; set; }
+        public IList<PrintableProductModel> AssociatedProducts { get; set; }
+    }
+
+    public partial class PrintableProductSpecificationModel : ModelBase
+    {
+        public int SpecificationAttributeId { get; set; }
+
+        public string SpecificationAttributeName { get; set; }
+
+        public string SpecificationAttributeOption { get; set; }
     }
 }

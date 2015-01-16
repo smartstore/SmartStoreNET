@@ -198,7 +198,36 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.ExportToPdf.TocTitle",
 				"Table of contents",
 				"Inhaltsverzeichnis");
-            
+
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Sku",
+                "SKU",
+                "Artikelnr.");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Manufacturer",
+				"Hersteller",
+                "Manufacturer");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Weight",
+                "Weight",
+				"Gewicht");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Length",
+				"Legth",
+				"Länge");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Width",
+                "Width",
+				"Breite");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.Height",
+                "Height",
+				"Höhe");
+
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.SpecificationAttributes",
+                "Specification attributes",
+                "Spezifikation");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.BundledItems",
+                "Bundled items",
+                "Produktset besteht aus");
+            builder.AddOrUpdate("Admin.Common.ExportToPdf.AssociatedProducts",
+                "Associated products",
+                "Gruppierte Produkte");
+
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");

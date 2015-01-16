@@ -2856,6 +2856,9 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 			}
 
+
+            string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+
             foreach (var product in products) 
             {
                 var productModel = new PrintableProductModel();
@@ -2864,11 +2867,66 @@ namespace SmartStore.Admin.Controllers
                 productModel.ShortDescription = product.ShortDescription;
                 productModel.FullDescription = product.FullDescription;
 
+                productModel.Sku = product.Sku;
+                productModel.Weight = (product.Weight > 0) ? "{0} {1}".FormatCurrent(product.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : ""; ;
+                productModel.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
+                productModel.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : ""; 
+                productModel.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
+
+                var manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id).ToList();
+
+                productModel.SpecificationAttributes = PrepareProductSpecificationModel(product.Id);
+
+                var i = 1;
+                foreach(var manufacturer in manufacturers) {
+                    productModel.Manufacturer += manufacturer.Manufacturer.Name;
+
+                    if (i < manufacturers.Count)
+                        productModel.Manufacturer += ", ";
+
+                    i++;
+                }
+
 				var pictures = _pictureService.GetPicturesByProductId(product.Id);
 				if (pictures.Count > 0)
 				{
 					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
 				}
+
+                productModel.ProductType = product.ProductType;
+
+                if (product.ProductType == ProductType.GroupedProduct)
+                {
+                    var searchContext = new ProductSearchContext()
+                    {
+                        ParentGroupedProductId = product.Id,
+                        PageSize = int.MaxValue,
+                        ShowHidden = true
+                    };
+
+                    foreach (var associatedProduct in _productService.SearchProducts(searchContext))
+                    {
+                        productModel.AssociatedProducts.Add(new PrintableProductModel()
+                        {
+                            Name = associatedProduct.Name,
+                            ShortDescription = associatedProduct.ShortDescription,
+                            PictureUrl = _pictureService.GetPictureUrl(associatedProduct.ProductPictures.FirstOrDefault().PictureId, 80, false)
+                        });
+                    }
+                }
+
+                if (product.ProductType == ProductType.BundledProduct)
+                {
+                    foreach (var bundledProduct in _productService.GetBundleItems(product.Id).Select(x => x.Item))
+                    {
+                        productModel.BundledItems.Add(new PrintableProductModel()
+                        {
+                            Name = bundledProduct.Name,
+                            ShortDescription = bundledProduct.ShortDescription,
+                            PictureUrl = _pictureService.GetPictureUrl(bundledProduct.BundleProduct.ProductPictures.FirstOrDefault().PictureId, 80, false)
+                        });
+                    }
+                }
 
                 model.Products.Add(productModel);
             }
@@ -2891,6 +2949,21 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return new PdfResult(_pdfConverter, settings) { FileName = "products.pdf" };
+        }
+
+        public IList<PrintableProductSpecificationModel> PrepareProductSpecificationModel(int productId)
+        {
+            var model = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId, null, true)
+                .Select(psa =>
+                {
+                    return new PrintableProductSpecificationModel()
+                    {
+                        SpecificationAttributeId = psa.SpecificationAttributeOption.SpecificationAttributeId,
+                        SpecificationAttributeName = psa.SpecificationAttributeOption.SpecificationAttribute.GetLocalized(x => x.Name),
+                        SpecificationAttributeOption = psa.SpecificationAttributeOption.GetLocalized(x => x.Name)
+                    };
+                }).ToList();
+            return model;
         }
 
         [NonAction]
@@ -2922,23 +2995,23 @@ namespace SmartStore.Admin.Controllers
         }
 
 
-		[HttpPost]
-		public ActionResult ExportPdfSelected(string selectedIds)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-				return AccessDeniedView();
+        //[HttpPost]
+        //public ActionResult ExportPdfSelected(string selectedIds)
+        //{
+        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+        //        return AccessDeniedView();
 
-			int[] ids = selectedIds.ToIntArray();
-			var products = _productService.GetProductsByIds(ids);
+        //    int[] ids = selectedIds.ToIntArray();
+        //    var products = _productService.GetProductsByIds(ids);
 
-			if (products.Count <= 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
+        //    if (products.Count <= 0)
+        //    {
+        //        NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+        //        return RedirectToAction("List");
+        //    }
 
-			return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
-		}
+        //    return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
+        //}
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)

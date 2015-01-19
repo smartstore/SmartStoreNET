@@ -30,10 +30,10 @@ namespace SmartStore.Services.ExportImport
 		/// <summary>
 		/// Writes a single product
 		/// </summary>
-		/// <param name="writer">The XML text writer</param>
+		/// <param name="writer">The XML writer</param>
 		/// <param name="product">The product</param>
 		/// <param name="culture">Used culture</param>
-		void WriteProductToXml(XmlTextWriter writer, Product product, CultureInfo culture = null);
+		void WriteProductToXml(XmlWriter writer, Product product, CultureInfo culture = null);
 
         /// <summary>
         /// Export product list to xml
@@ -46,8 +46,9 @@ namespace SmartStore.Services.ExportImport
 		/// Export product(s) to XML
 		/// </summary>
 		/// <param name="writeProducts">Action to export product entities</param>
+		/// <param name="settings">XML writer settings</param>
 		/// <returns>Result in XML format</returns>
-		string ExportProductsToXml(Action<XmlTextWriter> writeProducts);
+		string ExportProductsToXml(Action<XmlWriter> writeProducts, XmlWriterSettings settings = null);
 
         /// <summary>
         /// Export products to XLSX

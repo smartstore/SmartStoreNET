@@ -219,7 +219,7 @@ namespace SmartStore.Services.ExportImport
 		/// <param name="writer">The XML text writer</param>
 		/// <param name="product">The product</param>
 		/// <param name="culture">Used culture</param>
-		public virtual void WriteProductToXml(XmlTextWriter writer, Product product, CultureInfo culture = null)
+		public virtual void WriteProductToXml(XmlWriter writer, Product product, CultureInfo culture = null)
 		{
 			if (culture == null)
 				culture = CultureInfo.InvariantCulture;
@@ -541,24 +541,26 @@ namespace SmartStore.Services.ExportImport
 		/// Export product(s) to XML
 		/// </summary>
 		/// <param name="writeProducts">Action to export product entities</param>
+		/// <param name="settings">XML writer settings</param>
 		/// <returns>Result in XML format</returns>
-		public virtual string ExportProductsToXml(Action<XmlTextWriter> writeProducts)
+		public virtual string ExportProductsToXml(Action<XmlWriter> writeProducts, XmlWriterSettings settings = null)
 		{
 			var sb = new StringBuilder();
-			var stringWriter = new StringWriter(sb);
-			var xmlWriter = new XmlTextWriter(stringWriter);
+			using (var stringWriter = new StringWriter(sb))
+			using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+			{
+				xmlWriter.WriteStartDocument();
+				xmlWriter.WriteStartElement("Products");
+				xmlWriter.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
-			xmlWriter.WriteStartDocument();
-			xmlWriter.WriteStartElement("Products");
-			xmlWriter.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
+				writeProducts(xmlWriter);
 
-			writeProducts(xmlWriter);
+				xmlWriter.WriteEndElement();
+				xmlWriter.WriteEndDocument();
+				xmlWriter.Close();
 
-			xmlWriter.WriteEndElement();
-			xmlWriter.WriteEndDocument();
-			xmlWriter.Close();
-
-			return stringWriter.ToString();
+				return stringWriter.ToString();
+			}
 		}
 
         /// <summary>

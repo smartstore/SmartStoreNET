@@ -79,8 +79,10 @@ namespace SmartStore.Web.Infrastructure.Installation
             var httpContext = EngineContext.Current.Resolve<HttpContextBase>();
 
             var cookie = new HttpCookie(LanguageCookieName);
+			cookie.HttpOnly = true;
             cookie.Value = languageCode;
             cookie.Expires = DateTime.Now.AddHours(24);
+
             httpContext.Response.Cookies.Remove(LanguageCookieName);
             httpContext.Response.Cookies.Add(cookie);
         }

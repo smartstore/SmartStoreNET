@@ -148,6 +148,7 @@ namespace SmartStore
 			if (cookie == null && createIfMissing)
 			{
 				cookie = new HttpCookie("sm.PreviewModeOverrides");
+				cookie.HttpOnly = true;
 				context.Request.Cookies.Set(cookie);
 			}
 

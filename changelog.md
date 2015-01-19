@@ -25,6 +25,7 @@
 * #510 Payment plugins: Qualify configuration(s) for multistores
 * #556 A negative value should be possible for additional payment fees
 * Dashboard: Order items linked with order list
+* Security: Missing http-only flag for some cookies set
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission

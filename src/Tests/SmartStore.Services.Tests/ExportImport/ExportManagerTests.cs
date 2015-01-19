@@ -18,6 +18,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
+using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Tests.ExportImport
 {
@@ -31,6 +32,7 @@ namespace SmartStore.Services.Tests.ExportImport
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IExportManager _exportManager;
         ILanguageService _languageService;
+		MediaSettings _mediaSettings;
 
         [SetUp]
         public new void SetUp()
@@ -41,9 +43,10 @@ namespace SmartStore.Services.Tests.ExportImport
             _pictureService = MockRepository.GenerateMock<IPictureService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
             _languageService = MockRepository.GenerateMock<ILanguageService>();
+			_mediaSettings = MockRepository.GenerateMock<MediaSettings>();
 
             _exportManager = new ExportManager(_categoryService,
-                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService, _languageService);
+                _manufacturerService, _productService, _pictureService, _newsLetterSubscriptionService, _languageService, _mediaSettings);
         }
 
         //[Test]

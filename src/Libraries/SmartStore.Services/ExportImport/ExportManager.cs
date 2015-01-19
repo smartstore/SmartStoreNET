@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Drawing;
+using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
@@ -10,7 +11,9 @@ using OfficeOpenXml.Style;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -34,6 +37,7 @@ namespace SmartStore.Services.ExportImport
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly ILanguageService _languageService;
+		private readonly MediaSettings _mediaSettings;
 
         #endregion
 
@@ -44,7 +48,8 @@ namespace SmartStore.Services.ExportImport
             IProductService productService,
             IPictureService pictureService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
-            ILanguageService languageService)
+            ILanguageService languageService,
+			MediaSettings mediaSettings)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
@@ -52,7 +57,12 @@ namespace SmartStore.Services.ExportImport
             this._pictureService = pictureService;
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._languageService = languageService;
+			this._mediaSettings = mediaSettings;
+
+			Logger = NullLogger.Instance;
         }
+
+		public ILogger Logger { get; set; }
 
         #endregion
 
@@ -203,312 +213,353 @@ namespace SmartStore.Services.ExportImport
             return stringWriter.ToString();
         }
 
+		/// <summary>
+		/// Writes a single product
+		/// </summary>
+		/// <param name="writer">The XML text writer</param>
+		/// <param name="product">The product</param>
+		/// <param name="culture">Used culture</param>
+		public virtual void WriteProductToXml(XmlTextWriter writer, Product product, CultureInfo culture = null)
+		{
+			if (culture == null)
+				culture = CultureInfo.InvariantCulture;
+
+			writer.WriteElementString("ProductId", null, product.Id.ToString());
+			writer.WriteElementString("ProductTypeId", null, product.ProductTypeId.ToString());
+			writer.WriteElementString("ParentGroupedProductId", null, product.ParentGroupedProductId.ToString());
+			writer.WriteElementString("VisibleIndividually", null, product.VisibleIndividually.ToString());
+			writer.WriteElementString("Name", null, product.Name.RemoveInvalidXmlChars());
+
+			writer.WriteStartElement("ShortDescription");
+			writer.WriteCData(product.ShortDescription.RemoveInvalidXmlChars());
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("FullDescription");
+			writer.WriteCData(product.FullDescription.RemoveInvalidXmlChars());
+			writer.WriteEndElement();
+
+			writer.WriteElementString("AdminComment", null, product.AdminComment.RemoveInvalidXmlChars());
+			writer.WriteElementString("ProductTemplateId", null, product.ProductTemplateId.ToString());
+			writer.WriteElementString("ShowOnHomePage", null, product.ShowOnHomePage.ToString());
+			writer.WriteElementString("MetaKeywords", null, product.MetaKeywords.RemoveInvalidXmlChars());
+			writer.WriteElementString("MetaDescription", null, product.MetaDescription.RemoveInvalidXmlChars());
+			writer.WriteElementString("MetaTitle", null, product.MetaTitle.RemoveInvalidXmlChars());
+			writer.WriteElementString("SEName", null, product.GetSeName(0));
+			writer.WriteElementString("AllowCustomerReviews", null, product.AllowCustomerReviews.ToString());
+			writer.WriteElementString("SKU", null, product.Sku);
+			writer.WriteElementString("ManufacturerPartNumber", null, product.ManufacturerPartNumber);
+			writer.WriteElementString("Gtin", null, product.Gtin);
+			writer.WriteElementString("IsGiftCard", null, product.IsGiftCard.ToString());
+			writer.WriteElementString("GiftCardType", null, product.GiftCardType.ToString());
+			writer.WriteElementString("RequireOtherProducts", null, product.RequireOtherProducts.ToString());
+			writer.WriteElementString("RequiredProductIds", null, product.RequiredProductIds);
+			writer.WriteElementString("AutomaticallyAddRequiredProducts", null, product.AutomaticallyAddRequiredProducts.ToString());
+			writer.WriteElementString("IsDownload", null, product.IsDownload.ToString());
+			writer.WriteElementString("DownloadId", null, product.DownloadId.ToString());
+			writer.WriteElementString("UnlimitedDownloads", null, product.UnlimitedDownloads.ToString());
+			writer.WriteElementString("MaxNumberOfDownloads", null, product.MaxNumberOfDownloads.ToString());
+			writer.WriteElementString("DownloadExpirationDays", null, product.DownloadExpirationDays.HasValue ? product.DownloadExpirationDays.ToString() : "");
+			writer.WriteElementString("DownloadActivationType", null, product.DownloadActivationType.ToString());
+			writer.WriteElementString("HasSampleDownload", null, product.HasSampleDownload.ToString());
+			writer.WriteElementString("SampleDownloadId", null, product.SampleDownloadId.ToString());
+			writer.WriteElementString("HasUserAgreement", null, product.HasUserAgreement.ToString());
+			writer.WriteElementString("UserAgreementText", null, product.UserAgreementText.RemoveInvalidXmlChars());
+			writer.WriteElementString("IsRecurring", null, product.IsRecurring.ToString());
+			writer.WriteElementString("RecurringCycleLength", null, product.RecurringCycleLength.ToString());
+			writer.WriteElementString("RecurringCyclePeriodId", null, product.RecurringCyclePeriodId.ToString());
+			writer.WriteElementString("RecurringTotalCycles", null, product.RecurringTotalCycles.ToString());
+			writer.WriteElementString("IsShipEnabled", null, product.IsShipEnabled.ToString());
+			writer.WriteElementString("IsFreeShipping", null, product.IsFreeShipping.ToString());
+			writer.WriteElementString("AdditionalShippingCharge", null, product.AdditionalShippingCharge.ToString(culture));
+			writer.WriteElementString("IsEsd", null, product.IsEsd.ToString());
+			writer.WriteElementString("IsTaxExempt", null, product.IsTaxExempt.ToString());
+			writer.WriteElementString("TaxCategoryId", null, product.TaxCategoryId.ToString());
+			writer.WriteElementString("ManageInventoryMethodId", null, product.ManageInventoryMethodId.ToString());
+			writer.WriteElementString("StockQuantity", null, product.StockQuantity.ToString());
+			writer.WriteElementString("DisplayStockAvailability", null, product.DisplayStockAvailability.ToString());
+			writer.WriteElementString("DisplayStockQuantity", null, product.DisplayStockQuantity.ToString());
+			writer.WriteElementString("MinStockQuantity", null, product.MinStockQuantity.ToString());
+			writer.WriteElementString("LowStockActivityId", null, product.LowStockActivityId.ToString());
+			writer.WriteElementString("NotifyAdminForQuantityBelow", null, product.NotifyAdminForQuantityBelow.ToString());
+			writer.WriteElementString("BackorderModeId", null, product.BackorderModeId.ToString());
+			writer.WriteElementString("AllowBackInStockSubscriptions", null, product.AllowBackInStockSubscriptions.ToString());
+			writer.WriteElementString("OrderMinimumQuantity", null, product.OrderMinimumQuantity.ToString());
+			writer.WriteElementString("OrderMaximumQuantity", null, product.OrderMaximumQuantity.ToString());
+			writer.WriteElementString("AllowedQuantities", null, product.AllowedQuantities);
+			writer.WriteElementString("DisableBuyButton", null, product.DisableBuyButton.ToString());
+			writer.WriteElementString("DisableWishlistButton", null, product.DisableWishlistButton.ToString());
+			writer.WriteElementString("AvailableForPreOrder", null, product.AvailableForPreOrder.ToString());
+			writer.WriteElementString("CallForPrice", null, product.CallForPrice.ToString());
+			writer.WriteElementString("Price", null, product.Price.ToString(culture));
+			writer.WriteElementString("OldPrice", null, product.OldPrice.ToString(culture));
+			writer.WriteElementString("ProductCost", null, product.ProductCost.ToString(culture));
+			writer.WriteElementString("SpecialPrice", null, product.SpecialPrice.HasValue ? product.SpecialPrice.Value.ToString(culture) : "");
+			writer.WriteElementString("SpecialPriceStartDateTimeUtc", null, product.SpecialPriceStartDateTimeUtc.HasValue ? product.SpecialPriceStartDateTimeUtc.Value.ToString(culture) : "");
+			writer.WriteElementString("SpecialPriceEndDateTimeUtc", null, product.SpecialPriceEndDateTimeUtc.HasValue ? product.SpecialPriceEndDateTimeUtc.Value.ToString(culture) : "");
+			writer.WriteElementString("CustomerEntersPrice", null, product.CustomerEntersPrice.ToString());
+			writer.WriteElementString("MinimumCustomerEnteredPrice", null, product.MinimumCustomerEnteredPrice.ToString(culture));
+			writer.WriteElementString("MaximumCustomerEnteredPrice", null, product.MaximumCustomerEnteredPrice.ToString(culture));
+			writer.WriteElementString("LowestAttributeCombinationPrice", null, product.LowestAttributeCombinationPrice.HasValue ? product.LowestAttributeCombinationPrice.Value.ToString(culture) : "");
+			writer.WriteElementString("Weight", null, product.Weight.ToString(culture));
+			writer.WriteElementString("Length", null, product.Length.ToString(culture));
+			writer.WriteElementString("Width", null, product.Width.ToString(culture));
+			writer.WriteElementString("Height", null, product.Height.ToString(culture));
+			writer.WriteElementString("Published", null, product.Published.ToString());
+			writer.WriteElementString("CreatedOnUtc", null, product.CreatedOnUtc.ToString(culture));
+			writer.WriteElementString("UpdatedOnUtc", null, product.UpdatedOnUtc.ToString(culture));
+
+			if (product.DeliveryTimeId.HasValue)
+				writer.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
+
+			writer.WriteElementString("BasePriceEnabled", null, product.BasePriceEnabled.ToString());
+			writer.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
+
+			if (product.BasePriceAmount.HasValue)
+				writer.WriteElementString("BasePriceAmount", null, product.BasePriceAmount.Value.ToString(culture));
+
+			if (product.BasePriceBaseAmount.HasValue)
+				writer.WriteElementString("BasePriceBaseAmount", null, product.BasePriceBaseAmount.Value.ToString());
+
+			writer.WriteElementString("BundleTitleText", null, product.BundleTitleText.RemoveInvalidXmlChars());
+			writer.WriteElementString("BundlePerItemShipping", null, product.BundlePerItemShipping.ToString());
+			writer.WriteElementString("BundlePerItemPricing", null, product.BundlePerItemPricing.ToString());
+			writer.WriteElementString("BundlePerItemShoppingCart", null, product.BundlePerItemShoppingCart.ToString());
+
+			writer.WriteStartElement("ProductDiscounts");
+			foreach (var discount in product.AppliedDiscounts)
+			{
+				writer.WriteStartElement("ProductDiscount");
+				writer.WriteElementString("DiscountId", null, discount.Id.ToString());
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("TierPrices");
+			foreach (var tierPrice in product.TierPrices)
+			{
+				writer.WriteStartElement("TierPrice");
+				writer.WriteElementString("TierPriceId", null, tierPrice.Id.ToString());
+				writer.WriteElementString("StoreId", null, tierPrice.StoreId.ToString());
+				writer.WriteElementString("CustomerRoleId", null, tierPrice.CustomerRoleId.HasValue ? tierPrice.CustomerRoleId.ToString() : "0");
+				writer.WriteElementString("Quantity", null, tierPrice.Quantity.ToString());
+				writer.WriteElementString("Price", null, tierPrice.Price.ToString(culture));
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("ProductAttributes");
+			foreach (var attribute in product.ProductVariantAttributes)
+			{
+				writer.WriteStartElement("ProductVariantAttribute");
+				writer.WriteElementString("ProductVariantAttributeId", null, attribute.Id.ToString());
+				writer.WriteElementString("ProductAttributeId", null, attribute.ProductAttributeId.ToString());
+				writer.WriteElementString("TextPrompt", null, attribute.TextPrompt.RemoveInvalidXmlChars());
+				writer.WriteElementString("IsRequired", null, attribute.IsRequired.ToString());
+				writer.WriteElementString("AttributeControlTypeId", null, attribute.AttributeControlTypeId.ToString());
+				writer.WriteElementString("DisplayOrder", null, attribute.DisplayOrder.ToString());
+				writer.WriteStartElement("ProductVariantAttributeValues");
+
+				foreach (var attributeValue in attribute.ProductVariantAttributeValues)
+				{
+					writer.WriteStartElement("ProductVariantAttributeValue");
+					writer.WriteElementString("ProductVariantAttributeValueId", null, attributeValue.Id.ToString());
+					writer.WriteElementString("Name", null, attributeValue.Name.RemoveInvalidXmlChars());
+					writer.WriteElementString("PriceAdjustment", null, attributeValue.PriceAdjustment.ToString(culture));
+					writer.WriteElementString("WeightAdjustment", null, attributeValue.WeightAdjustment.ToString(culture));
+					writer.WriteElementString("IsPreSelected", null, attributeValue.IsPreSelected.ToString());
+					writer.WriteElementString("DisplayOrder", null, attributeValue.DisplayOrder.ToString());
+					writer.WriteElementString("ValueTypeId", null, attributeValue.ValueTypeId.ToString());
+					writer.WriteElementString("LinkedProductId", null, attributeValue.LinkedProductId.ToString());
+					writer.WriteElementString("Quantity", null, attributeValue.Quantity.ToString());
+					writer.WriteEndElement();
+				}
+				writer.WriteEndElement();
+
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();	// ProductAttributes
+
+			writer.WriteStartElement("ProductVariantAttributeCombinations");
+			foreach (var combination in product.ProductVariantAttributeCombinations)
+			{
+				writer.WriteStartElement("ProductVariantAttributeCombination");
+
+				writer.WriteElementString("ProductVariantAttributeCombinationId", null, combination.Id.ToString());
+				writer.WriteElementString("AllowOutOfStockOrders", null, combination.AllowOutOfStockOrders.ToString());
+				writer.WriteElementString("StockQuantity", null, combination.StockQuantity.ToString());
+				writer.WriteElementString("AssignedPictureIds", null, combination.AssignedPictureIds);
+
+				writer.WriteStartElement("AttributesXml");
+				writer.WriteCData(combination.AttributesXml);
+				writer.WriteEndElement(); // AttributesXml
+
+				writer.WriteElementString("IsActive", null, combination.IsActive.ToString());
+				//xmlWriter.WriteElementString("IsDefaultCombination", null, combination.IsDefaultCombination.ToString());
+				if (combination.BasePriceAmount.HasValue)
+					writer.WriteElementString("BasePriceAmount", null, combination.BasePriceAmount.Value.ToString(culture));
+				if (combination.BasePriceBaseAmount.HasValue)
+					writer.WriteElementString("BasePriceBaseAmount", null, combination.BasePriceBaseAmount.Value.ToString());
+				if (combination.DeliveryTimeId.HasValue)
+					writer.WriteElementString("DeliveryTimeId", null, combination.DeliveryTimeId.Value.ToString());
+				if (combination.Length.HasValue)
+					writer.WriteElementString("Length", null, combination.Length.Value.ToString(culture));
+				if (combination.Width.HasValue)
+					writer.WriteElementString("Width", null, combination.Width.Value.ToString(culture));
+				if (combination.Height.HasValue)
+					writer.WriteElementString("Height", null, combination.Height.Value.ToString(culture));
+				if (combination.Height.HasValue)
+					writer.WriteElementString("Height", null, combination.Height.Value.ToString(culture));
+				if (combination.Gtin.HasValue())
+					writer.WriteElementString("Gtin", null, combination.Gtin);
+				if (combination.Sku.HasValue())
+					writer.WriteElementString("Sku", null, combination.Sku);
+				if (combination.ManufacturerPartNumber.HasValue())
+					writer.WriteElementString("ManufacturerPartNumber", null, combination.ManufacturerPartNumber);
+				if (combination.Price.HasValue)
+					writer.WriteElementString("Price", null, combination.Price.Value.ToString(culture));
+
+				writer.WriteEndElement();	// ProductVariantAttributeCombination
+			}
+			writer.WriteEndElement(); // ProductVariantAttributeCombinations
+
+			writer.WriteStartElement("ProductPictures");
+			foreach (var productPicture in product.ProductPictures)
+			{
+				writer.WriteStartElement("ProductPicture");
+				writer.WriteElementString("ProductPictureId", null, productPicture.Id.ToString());
+				writer.WriteElementString("PictureId", null, productPicture.PictureId.ToString());
+				writer.WriteElementString("DisplayOrder", null, productPicture.DisplayOrder.ToString());
+				writer.WriteElementString("ThumbImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, _mediaSettings.ProductThumbPictureSize, false));
+				writer.WriteElementString("ImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, _mediaSettings.ProductDetailsPictureSize, false));
+				writer.WriteElementString("FullSizeImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, 0, false));
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("ProductCategories");
+			var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
+			if (productCategories != null)
+			{
+				foreach (var productCategory in productCategories)
+				{
+					writer.WriteStartElement("ProductCategory");
+					writer.WriteElementString("ProductCategoryId", null, productCategory.Id.ToString());
+					writer.WriteElementString("CategoryId", null, productCategory.CategoryId.ToString());
+					writer.WriteElementString("IsFeaturedProduct", null, productCategory.IsFeaturedProduct.ToString());
+					writer.WriteElementString("DisplayOrder", null, productCategory.DisplayOrder.ToString());
+					writer.WriteEndElement();
+				}
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("ProductManufacturers");
+			var productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
+			if (productManufacturers != null)
+			{
+				foreach (var productManufacturer in productManufacturers)
+				{
+					writer.WriteStartElement("ProductManufacturer");
+					writer.WriteElementString("ProductManufacturerId", null, productManufacturer.Id.ToString());
+					writer.WriteElementString("ManufacturerId", null, productManufacturer.ManufacturerId.ToString());
+					writer.WriteElementString("IsFeaturedProduct", null, productManufacturer.IsFeaturedProduct.ToString());
+					writer.WriteElementString("DisplayOrder", null, productManufacturer.DisplayOrder.ToString());
+					writer.WriteEndElement();
+				}
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("ProductSpecificationAttributes");
+			foreach (var productSpecificationAttribute in product.ProductSpecificationAttributes)
+			{
+				writer.WriteStartElement("ProductSpecificationAttribute");
+				writer.WriteElementString("ProductSpecificationAttributeId", null, productSpecificationAttribute.Id.ToString());
+				writer.WriteElementString("SpecificationAttributeOptionId", null, productSpecificationAttribute.SpecificationAttributeOptionId.ToString());
+				writer.WriteElementString("AllowFiltering", null, productSpecificationAttribute.AllowFiltering.ToString());
+				writer.WriteElementString("ShowOnProductPage", null, productSpecificationAttribute.ShowOnProductPage.ToString());
+				writer.WriteElementString("DisplayOrder", null, productSpecificationAttribute.DisplayOrder.ToString());
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+
+			writer.WriteStartElement("ProductBundleItems");
+			var bundleItems = _productService.GetBundleItems(product.Id, true);
+			foreach (var bundleItem in bundleItems.Select(x => x.Item))
+			{
+				writer.WriteStartElement("ProductBundleItem");
+
+				writer.WriteElementString("ProductId", null, bundleItem.ProductId.ToString());
+				writer.WriteElementString("BundleProductId", null, bundleItem.BundleProductId.ToString());
+				writer.WriteElementString("Quantity", null, bundleItem.Quantity.ToString());
+				if (bundleItem.Discount.HasValue)
+					writer.WriteElementString("Discount", null, bundleItem.Discount.Value.ToString(culture));
+				writer.WriteElementString("DiscountPercentage", null, bundleItem.DiscountPercentage.ToString());
+				writer.WriteElementString("Name", null, bundleItem.GetLocalizedName());
+				writer.WriteElementString("ShortDescription", null, bundleItem.ShortDescription.RemoveInvalidXmlChars());
+				writer.WriteElementString("FilterAttributes", null, bundleItem.FilterAttributes.ToString());
+				writer.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());
+				writer.WriteElementString("Visible", null, bundleItem.Visible.ToString());
+				writer.WriteElementString("Published", null, bundleItem.Published.ToString());
+				writer.WriteElementString("DisplayOrder", null, bundleItem.DisplayOrder.ToString());
+				writer.WriteElementString("CreatedOnUtc", null, bundleItem.CreatedOnUtc.ToString(culture));
+				writer.WriteElementString("UpdatedOnUtc", null, bundleItem.UpdatedOnUtc.ToString(culture));
+
+				writer.WriteEndElement();
+			}
+			writer.WriteEndElement();
+		}
+
         /// <summary>
-        /// Export product list to xml
+        /// Export product list to XML
         /// </summary>
         /// <param name="products">Products</param>
         /// <returns>Result in XML format</returns>
         public virtual string ExportProductsToXml(IList<Product> products)
         {
-            var sb = new StringBuilder();
-            var stringWriter = new StringWriter(sb);
-            var xmlWriter = new XmlTextWriter(stringWriter);
-            xmlWriter.WriteStartDocument();
-            xmlWriter.WriteStartElement("Products");
-            xmlWriter.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
-
-            foreach (var product in products)
-            {
-                xmlWriter.WriteStartElement("Product");
-
-                xmlWriter.WriteElementString("ProductId", null, product.Id.ToString());
-				xmlWriter.WriteElementString("ProductTypeId", null, product.ProductTypeId.ToString());
-				xmlWriter.WriteElementString("ParentGroupedProductId", null, product.ParentGroupedProductId.ToString());
-				xmlWriter.WriteElementString("VisibleIndividually", null, product.VisibleIndividually.ToString());
-                xmlWriter.WriteElementString("Name", null, product.Name);
-                xmlWriter.WriteElementString("ShortDescription", null, product.ShortDescription);
-                xmlWriter.WriteElementString("FullDescription", null, product.FullDescription.RemoveInvalidXmlChars());
-                xmlWriter.WriteElementString("AdminComment", null, product.AdminComment);
-                xmlWriter.WriteElementString("ProductTemplateId", null, product.ProductTemplateId.ToString());
-                xmlWriter.WriteElementString("ShowOnHomePage", null, product.ShowOnHomePage.ToString());
-                xmlWriter.WriteElementString("MetaKeywords", null, product.MetaKeywords);
-                xmlWriter.WriteElementString("MetaDescription", null, product.MetaDescription);
-                xmlWriter.WriteElementString("MetaTitle", null, product.MetaTitle);
-                xmlWriter.WriteElementString("SEName", null, product.GetSeName(0));
-                xmlWriter.WriteElementString("AllowCustomerReviews", null, product.AllowCustomerReviews.ToString());
-				xmlWriter.WriteElementString("SKU", null, product.Sku);
-				xmlWriter.WriteElementString("ManufacturerPartNumber", null, product.ManufacturerPartNumber);
-				xmlWriter.WriteElementString("Gtin", null, product.Gtin);
-				xmlWriter.WriteElementString("IsGiftCard", null, product.IsGiftCard.ToString());
-				xmlWriter.WriteElementString("GiftCardType", null, product.GiftCardType.ToString());
-				xmlWriter.WriteElementString("RequireOtherProducts", null, product.RequireOtherProducts.ToString());
-				xmlWriter.WriteElementString("RequiredProductIds", null, product.RequiredProductIds);
-				xmlWriter.WriteElementString("AutomaticallyAddRequiredProducts", null, product.AutomaticallyAddRequiredProducts.ToString());
-				xmlWriter.WriteElementString("IsDownload", null, product.IsDownload.ToString());
-				xmlWriter.WriteElementString("DownloadId", null, product.DownloadId.ToString());
-				xmlWriter.WriteElementString("UnlimitedDownloads", null, product.UnlimitedDownloads.ToString());
-				xmlWriter.WriteElementString("MaxNumberOfDownloads", null, product.MaxNumberOfDownloads.ToString());
-				if (product.DownloadExpirationDays.HasValue)
-					xmlWriter.WriteElementString("DownloadExpirationDays", null, product.DownloadExpirationDays.ToString());
-				else
-					xmlWriter.WriteElementString("DownloadExpirationDays", null, string.Empty);
-				xmlWriter.WriteElementString("DownloadActivationType", null, product.DownloadActivationType.ToString());
-				xmlWriter.WriteElementString("HasSampleDownload", null, product.HasSampleDownload.ToString());
-				xmlWriter.WriteElementString("SampleDownloadId", null, product.SampleDownloadId.ToString());
-				xmlWriter.WriteElementString("HasUserAgreement", null, product.HasUserAgreement.ToString());
-				xmlWriter.WriteElementString("UserAgreementText", null, product.UserAgreementText);
-				xmlWriter.WriteElementString("IsRecurring", null, product.IsRecurring.ToString());
-				xmlWriter.WriteElementString("RecurringCycleLength", null, product.RecurringCycleLength.ToString());
-				xmlWriter.WriteElementString("RecurringCyclePeriodId", null, product.RecurringCyclePeriodId.ToString());
-				xmlWriter.WriteElementString("RecurringTotalCycles", null, product.RecurringTotalCycles.ToString());
-				xmlWriter.WriteElementString("IsShipEnabled", null, product.IsShipEnabled.ToString());
-				xmlWriter.WriteElementString("IsFreeShipping", null, product.IsFreeShipping.ToString());
-				xmlWriter.WriteElementString("AdditionalShippingCharge", null, product.AdditionalShippingCharge.ToString());
-				xmlWriter.WriteElementString("IsEsd", null, product.IsEsd.ToString());
-				xmlWriter.WriteElementString("IsTaxExempt", null, product.IsTaxExempt.ToString());
-				xmlWriter.WriteElementString("TaxCategoryId", null, product.TaxCategoryId.ToString());
-				xmlWriter.WriteElementString("ManageInventoryMethodId", null, product.ManageInventoryMethodId.ToString());
-				xmlWriter.WriteElementString("StockQuantity", null, product.StockQuantity.ToString());
-				xmlWriter.WriteElementString("DisplayStockAvailability", null, product.DisplayStockAvailability.ToString());
-				xmlWriter.WriteElementString("DisplayStockQuantity", null, product.DisplayStockQuantity.ToString());
-				xmlWriter.WriteElementString("MinStockQuantity", null, product.MinStockQuantity.ToString());
-				xmlWriter.WriteElementString("LowStockActivityId", null, product.LowStockActivityId.ToString());
-				xmlWriter.WriteElementString("NotifyAdminForQuantityBelow", null, product.NotifyAdminForQuantityBelow.ToString());
-				xmlWriter.WriteElementString("BackorderModeId", null, product.BackorderModeId.ToString());
-				xmlWriter.WriteElementString("AllowBackInStockSubscriptions", null, product.AllowBackInStockSubscriptions.ToString());
-				xmlWriter.WriteElementString("OrderMinimumQuantity", null, product.OrderMinimumQuantity.ToString());
-				xmlWriter.WriteElementString("OrderMaximumQuantity", null, product.OrderMaximumQuantity.ToString());
-				xmlWriter.WriteElementString("AllowedQuantities", null, product.AllowedQuantities);
-				xmlWriter.WriteElementString("DisableBuyButton", null, product.DisableBuyButton.ToString());
-				xmlWriter.WriteElementString("DisableWishlistButton", null, product.DisableWishlistButton.ToString());
-				xmlWriter.WriteElementString("AvailableForPreOrder", null, product.AvailableForPreOrder.ToString());
-				xmlWriter.WriteElementString("CallForPrice", null, product.CallForPrice.ToString());
-				xmlWriter.WriteElementString("Price", null, product.Price.ToString());
-				xmlWriter.WriteElementString("OldPrice", null, product.OldPrice.ToString());
-				xmlWriter.WriteElementString("ProductCost", null, product.ProductCost.ToString());
-				xmlWriter.WriteElementString("SpecialPrice", null, product.SpecialPrice.HasValue ? product.SpecialPrice.ToString() : "");
-				xmlWriter.WriteElementString("SpecialPriceStartDateTimeUtc", null, product.SpecialPriceStartDateTimeUtc.HasValue ? product.SpecialPriceStartDateTimeUtc.ToString() : "");
-				xmlWriter.WriteElementString("SpecialPriceEndDateTimeUtc", null, product.SpecialPriceEndDateTimeUtc.HasValue ? product.SpecialPriceEndDateTimeUtc.ToString() : "");
-				xmlWriter.WriteElementString("CustomerEntersPrice", null, product.CustomerEntersPrice.ToString());
-				xmlWriter.WriteElementString("MinimumCustomerEnteredPrice", null, product.MinimumCustomerEnteredPrice.ToString());
-				xmlWriter.WriteElementString("MaximumCustomerEnteredPrice", null, product.MaximumCustomerEnteredPrice.ToString());
-				xmlWriter.WriteElementString("LowestAttributeCombinationPrice", null, product.LowestAttributeCombinationPrice.HasValue ? product.LowestAttributeCombinationPrice.ToString() : "");
-				xmlWriter.WriteElementString("Weight", null, product.Weight.ToString());
-				xmlWriter.WriteElementString("Length", null, product.Length.ToString());
-				xmlWriter.WriteElementString("Width", null, product.Width.ToString());
-				xmlWriter.WriteElementString("Height", null, product.Height.ToString());
-                xmlWriter.WriteElementString("Published", null, product.Published.ToString());
-                xmlWriter.WriteElementString("CreatedOnUtc", null, product.CreatedOnUtc.ToString());
-                xmlWriter.WriteElementString("UpdatedOnUtc", null, product.UpdatedOnUtc.ToString());
-
-				if (product.DeliveryTimeId.HasValue)
-					xmlWriter.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
-				xmlWriter.WriteElementString("BasePriceEnabled", null, product.BasePriceEnabled.ToString());
-				xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
-				if (product.BasePriceAmount.HasValue)
-					xmlWriter.WriteElementString("BasePriceAmount", null, product.BasePriceAmount.Value.ToString());
-				if (product.BasePriceBaseAmount.HasValue)
-					xmlWriter.WriteElementString("BasePriceBaseAmount", null, product.BasePriceBaseAmount.Value.ToString());
-
-				xmlWriter.WriteElementString("BundleTitleText", null, product.BundleTitleText);
-				xmlWriter.WriteElementString("BundlePerItemShipping", null, product.BundlePerItemShipping.ToString());
-				xmlWriter.WriteElementString("BundlePerItemPricing", null, product.BundlePerItemPricing.ToString());
-				xmlWriter.WriteElementString("BundlePerItemShoppingCart", null, product.BundlePerItemShoppingCart.ToString());
-
-				xmlWriter.WriteStartElement("ProductDiscounts");
-				var discounts = product.AppliedDiscounts;
-				foreach (var discount in discounts)
+			string result = ExportProductsToXml(writer =>
+			{
+				foreach (var product in products)
 				{
-					xmlWriter.WriteStartElement("ProductDiscount");
-					xmlWriter.WriteElementString("DiscountId", null, discount.Id.ToString());
-					xmlWriter.WriteEndElement();
-				}
-				xmlWriter.WriteEndElement();
+					writer.WriteStartElement("Product");
 
-
-				xmlWriter.WriteStartElement("TierPrices");
-				var tierPrices = product.TierPrices;
-				foreach (var tierPrice in tierPrices)
-				{
-					xmlWriter.WriteStartElement("TierPrice");
-					xmlWriter.WriteElementString("TierPriceId", null, tierPrice.Id.ToString());
-					xmlWriter.WriteElementString("StoreId", null, tierPrice.StoreId.ToString());
-					xmlWriter.WriteElementString("CustomerRoleId", null, tierPrice.CustomerRoleId.HasValue ? tierPrice.CustomerRoleId.ToString() : "0");
-					xmlWriter.WriteElementString("Quantity", null, tierPrice.Quantity.ToString());
-					xmlWriter.WriteElementString("Price", null, tierPrice.Price.ToString());
-					xmlWriter.WriteEndElement();
-				}
-				xmlWriter.WriteEndElement();
-
-				xmlWriter.WriteStartElement("ProductAttributes");
-				var productVariantAttributes = product.ProductVariantAttributes;
-				foreach (var productVariantAttribute in productVariantAttributes)
-				{
-					xmlWriter.WriteStartElement("ProductVariantAttribute");
-					xmlWriter.WriteElementString("ProductVariantAttributeId", null, productVariantAttribute.Id.ToString());
-					xmlWriter.WriteElementString("ProductAttributeId", null, productVariantAttribute.ProductAttributeId.ToString());
-					xmlWriter.WriteElementString("TextPrompt", null, productVariantAttribute.TextPrompt);
-					xmlWriter.WriteElementString("IsRequired", null, productVariantAttribute.IsRequired.ToString());
-					xmlWriter.WriteElementString("AttributeControlTypeId", null, productVariantAttribute.AttributeControlTypeId.ToString());
-					xmlWriter.WriteElementString("DisplayOrder", null, productVariantAttribute.DisplayOrder.ToString());
-
-					xmlWriter.WriteStartElement("ProductVariantAttributeValues");
-					var productVariantAttributeValues = productVariantAttribute.ProductVariantAttributeValues;
-					foreach (var productVariantAttributeValue in productVariantAttributeValues)
+					try
 					{
-						xmlWriter.WriteStartElement("ProductVariantAttributeValue");
-						xmlWriter.WriteElementString("ProductVariantAttributeValueId", null, productVariantAttributeValue.Id.ToString());
-						xmlWriter.WriteElementString("Name", null, productVariantAttributeValue.Name);
-						xmlWriter.WriteElementString("PriceAdjustment", null, productVariantAttributeValue.PriceAdjustment.ToString());
-						xmlWriter.WriteElementString("WeightAdjustment", null, productVariantAttributeValue.WeightAdjustment.ToString());
-						xmlWriter.WriteElementString("IsPreSelected", null, productVariantAttributeValue.IsPreSelected.ToString());
-						xmlWriter.WriteElementString("DisplayOrder", null, productVariantAttributeValue.DisplayOrder.ToString());
-						xmlWriter.WriteElementString("ValueTypeId", null, productVariantAttributeValue.ValueTypeId.ToString());
-						xmlWriter.WriteElementString("LinkedProductId", null, productVariantAttributeValue.LinkedProductId.ToString());
-						xmlWriter.WriteElementString("Quantity", null, productVariantAttributeValue.Quantity.ToString());
-						xmlWriter.WriteEndElement();
+						WriteProductToXml(writer, product);
 					}
-					xmlWriter.WriteEndElement();
+					catch (Exception exc)
+					{
+						Logger.Error("{0} (Product.Id {1})".FormatWith(exc.Message, product.Id), exc);
+					}
 
-					xmlWriter.WriteEndElement();
+					writer.WriteEndElement();		// Product
 				}
-				xmlWriter.WriteEndElement();	// ProductAttributes
+			});
 
-				xmlWriter.WriteStartElement("ProductVariantAttributeCombinations");
-				var combinations = product.ProductVariantAttributeCombinations;
-				foreach (var combination in combinations)
-				{
-					xmlWriter.WriteStartElement("ProductVariantAttributeCombination");
-					xmlWriter.WriteElementString("ProductVariantAttributeCombinationId", null, combination.Id.ToString());
-					xmlWriter.WriteElementString("AllowOutOfStockOrders", null, combination.AllowOutOfStockOrders.ToString());
-					xmlWriter.WriteElementString("StockQuantity", null, combination.StockQuantity.ToString());
-					xmlWriter.WriteElementString("AssignedPictureIds", null, combination.AssignedPictureIds);
-					xmlWriter.WriteStartElement("AttributesXml");
-					xmlWriter.WriteCData(combination.AttributesXml);
-					xmlWriter.WriteEndElement(); // AttributesXml
-					xmlWriter.WriteElementString("IsActive", null, combination.IsActive.ToString());
-					//xmlWriter.WriteElementString("IsDefaultCombination", null, combination.IsDefaultCombination.ToString());
-					if (combination.BasePriceAmount.HasValue)
-						xmlWriter.WriteElementString("BasePriceAmount", null, combination.BasePriceAmount.Value.ToString());
-					if (combination.BasePriceBaseAmount.HasValue)
-						xmlWriter.WriteElementString("BasePriceBaseAmount", null, combination.BasePriceBaseAmount.Value.ToString());
-					if (combination.DeliveryTimeId.HasValue)
-						xmlWriter.WriteElementString("DeliveryTimeId", null, combination.DeliveryTimeId.Value.ToString());
-					if (combination.Length.HasValue)
-						xmlWriter.WriteElementString("Length", null, combination.Length.Value.ToString());
-					if (combination.Width.HasValue)
-						xmlWriter.WriteElementString("Width", null, combination.Width.Value.ToString());
-					if (combination.Height.HasValue)
-						xmlWriter.WriteElementString("Height", null, combination.Height.Value.ToString());
-					if (combination.Height.HasValue)
-						xmlWriter.WriteElementString("Height", null, combination.Height.Value.ToString());
-					if (combination.Gtin.HasValue())
-						xmlWriter.WriteElementString("Gtin", null, combination.Gtin);
-					if (combination.Sku.HasValue())
-						xmlWriter.WriteElementString("Sku", null, combination.Sku);
-					if (combination.ManufacturerPartNumber.HasValue())
-						xmlWriter.WriteElementString("ManufacturerPartNumber", null, combination.ManufacturerPartNumber);
-					if (combination.Price.HasValue)
-						xmlWriter.WriteElementString("Price", null, combination.Price.Value.ToString());
-
-					xmlWriter.WriteEndElement();	// ProductVariantAttributeCombination
-				}
-				xmlWriter.WriteEndElement(); // ProductVariantAttributeCombinations
-
-                xmlWriter.WriteStartElement("ProductPictures");
-                var productPictures = product.ProductPictures;
-                foreach (var productPicture in productPictures)
-                {
-                    xmlWriter.WriteStartElement("ProductPicture");
-                    xmlWriter.WriteElementString("ProductPictureId", null, productPicture.Id.ToString());
-                    xmlWriter.WriteElementString("PictureId", null, productPicture.PictureId.ToString());
-                    xmlWriter.WriteElementString("DisplayOrder", null, productPicture.DisplayOrder.ToString());
-                    xmlWriter.WriteEndElement();
-                }
-                xmlWriter.WriteEndElement();
-
-                xmlWriter.WriteStartElement("ProductCategories");
-                var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
-                if (productCategories != null)
-                {
-                    foreach (var productCategory in productCategories)
-                    {
-                        xmlWriter.WriteStartElement("ProductCategory");
-                        xmlWriter.WriteElementString("ProductCategoryId", null, productCategory.Id.ToString());
-                        xmlWriter.WriteElementString("CategoryId", null, productCategory.CategoryId.ToString());
-                        xmlWriter.WriteElementString("IsFeaturedProduct", null, productCategory.IsFeaturedProduct.ToString());
-                        xmlWriter.WriteElementString("DisplayOrder", null, productCategory.DisplayOrder.ToString());
-                        xmlWriter.WriteEndElement();
-                    }
-                }
-                xmlWriter.WriteEndElement();
-
-                xmlWriter.WriteStartElement("ProductManufacturers");
-                var productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
-                if (productManufacturers != null)
-                {
-                    foreach (var productManufacturer in productManufacturers)
-                    {
-                        xmlWriter.WriteStartElement("ProductManufacturer");
-                        xmlWriter.WriteElementString("ProductManufacturerId", null, productManufacturer.Id.ToString());
-                        xmlWriter.WriteElementString("ManufacturerId", null, productManufacturer.ManufacturerId.ToString());
-                        xmlWriter.WriteElementString("IsFeaturedProduct", null, productManufacturer.IsFeaturedProduct.ToString());
-                        xmlWriter.WriteElementString("DisplayOrder", null, productManufacturer.DisplayOrder.ToString());
-                        xmlWriter.WriteEndElement();
-                    }
-                }
-                xmlWriter.WriteEndElement();
-
-                xmlWriter.WriteStartElement("ProductSpecificationAttributes");
-                var productSpecificationAttributes = product.ProductSpecificationAttributes;
-                foreach (var productSpecificationAttribute in productSpecificationAttributes)
-                {
-                    xmlWriter.WriteStartElement("ProductSpecificationAttribute");
-                    xmlWriter.WriteElementString("ProductSpecificationAttributeId", null, productSpecificationAttribute.Id.ToString());
-                    xmlWriter.WriteElementString("SpecificationAttributeOptionId", null, productSpecificationAttribute.SpecificationAttributeOptionId.ToString());
-                    xmlWriter.WriteElementString("AllowFiltering", null, productSpecificationAttribute.AllowFiltering.ToString());
-                    xmlWriter.WriteElementString("ShowOnProductPage", null, productSpecificationAttribute.ShowOnProductPage.ToString());
-                    xmlWriter.WriteElementString("DisplayOrder", null, productSpecificationAttribute.DisplayOrder.ToString());
-                    xmlWriter.WriteEndElement();
-                }
-                xmlWriter.WriteEndElement();
-
-				xmlWriter.WriteStartElement("ProductBundleItems");
-				var bundleItems = _productService.GetBundleItems(product.Id, true);
-				foreach (var bundleItem in bundleItems.Select(x => x.Item))
-				{
-					xmlWriter.WriteStartElement("ProductBundleItem");
-
-					xmlWriter.WriteElementString("ProductId", null, bundleItem.ProductId.ToString());
-					xmlWriter.WriteElementString("BundleProductId", null, bundleItem.BundleProductId.ToString());
-					xmlWriter.WriteElementString("Quantity", null, bundleItem.Quantity.ToString());
-					if (bundleItem.Discount.HasValue)
-						xmlWriter.WriteElementString("Discount", null, bundleItem.Discount.Value.ToString());
-					xmlWriter.WriteElementString("DiscountPercentage", null, bundleItem.DiscountPercentage.ToString());
-					xmlWriter.WriteElementString("Name", null, bundleItem.GetLocalizedName());
-					xmlWriter.WriteElementString("ShortDescription", null, bundleItem.ShortDescription);
-					xmlWriter.WriteElementString("FilterAttributes", null, bundleItem.FilterAttributes.ToString());
-					xmlWriter.WriteElementString("HideThumbnail", null, bundleItem.HideThumbnail.ToString());
-					xmlWriter.WriteElementString("Visible", null, bundleItem.Visible.ToString());
-					xmlWriter.WriteElementString("Published", null, bundleItem.Published.ToString());
-					xmlWriter.WriteElementString("DisplayOrder", null, bundleItem.DisplayOrder.ToString());
-					xmlWriter.WriteElementString("CreatedOnUtc", null, bundleItem.CreatedOnUtc.ToString());
-					xmlWriter.WriteElementString("UpdatedOnUtc", null, bundleItem.UpdatedOnUtc.ToString());
-
-					xmlWriter.WriteEndElement();
-				}
-				xmlWriter.WriteEndElement();
-
-
-
-                xmlWriter.WriteEndElement();
-            }
-
-            xmlWriter.WriteEndElement();
-            xmlWriter.WriteEndDocument();
-            xmlWriter.Close();
-            return stringWriter.ToString();
+			return result;
         }
+
+		/// <summary>
+		/// Export product(s) to XML
+		/// </summary>
+		/// <param name="writeProducts">Action to export product entities</param>
+		/// <returns>Result in XML format</returns>
+		public virtual string ExportProductsToXml(Action<XmlTextWriter> writeProducts)
+		{
+			var sb = new StringBuilder();
+			var stringWriter = new StringWriter(sb);
+			var xmlWriter = new XmlTextWriter(stringWriter);
+
+			xmlWriter.WriteStartDocument();
+			xmlWriter.WriteStartElement("Products");
+			xmlWriter.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
+
+			writeProducts(xmlWriter);
+
+			xmlWriter.WriteEndElement();
+			xmlWriter.WriteEndDocument();
+			xmlWriter.Close();
+
+			return stringWriter.ToString();
+		}
 
         /// <summary>
         /// Export products to XLSX

@@ -432,6 +432,26 @@ namespace SmartStore
             return defaultValue;
         }
 
+		/// <summary>
+		/// Parse ISO-8601 UTC timestamp including milliseconds.
+		/// </summary>
+		/// <remarks>
+		/// Dublicate can be found in HmacAuthentication class.
+		/// </remarks>
+		public static DateTime? ToDateTimeIso8601(this string value)
+		{
+			if (value.HasValue())
+			{
+				DateTime dt;
+				if (DateTime.TryParseExact(value, "o", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dt))
+					return dt;
+
+				if (DateTime.TryParseExact(value, "yyyy-MM-ddTHH:mm:ss.fffZ", CultureInfo.InvariantCulture, DateTimeStyles.AdjustToUniversal, out dt))
+					return dt;
+			}
+			return null;
+		}
+
         public static Guid ToGuid(this string value)
         {
             if ((!String.IsNullOrEmpty(value)) && (value.Trim().Length == 22))

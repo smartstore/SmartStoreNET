@@ -1,8 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
+using System.Xml;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.ExportImport
@@ -25,12 +27,27 @@ namespace SmartStore.Services.ExportImport
         /// <returns>Result in XML format</returns>
         string ExportCategoriesToXml();
 
+		/// <summary>
+		/// Writes a single product
+		/// </summary>
+		/// <param name="writer">The XML text writer</param>
+		/// <param name="product">The product</param>
+		/// <param name="culture">Used culture</param>
+		void WriteProductToXml(XmlTextWriter writer, Product product, CultureInfo culture = null);
+
         /// <summary>
         /// Export product list to xml
         /// </summary>
         /// <param name="products">Products</param>
         /// <returns>Result in XML format</returns>
         string ExportProductsToXml(IList<Product> products);
+
+		/// <summary>
+		/// Export product(s) to XML
+		/// </summary>
+		/// <param name="writeProducts">Action to export product entities</param>
+		/// <returns>Result in XML format</returns>
+		string ExportProductsToXml(Action<XmlTextWriter> writeProducts);
 
         /// <summary>
         /// Export products to XLSX

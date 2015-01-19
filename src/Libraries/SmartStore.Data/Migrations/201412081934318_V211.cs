@@ -199,9 +199,6 @@ namespace SmartStore.Data.Migrations
 				"Table of contents",
 				"Inhaltsverzeichnis");
 
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Sku",
-                "SKU",
-                "Artikelnr.");
             builder.AddOrUpdate("Admin.Common.ExportToPdf.Manufacturer",
 				"Hersteller",
                 "Manufacturer");
@@ -228,6 +225,22 @@ namespace SmartStore.Data.Migrations
                 "Associated products",
                 "Gruppierte Produkte");
 
+            //TODO
+            builder.AddOrUpdate("PDFProductCatalog.CompanyEmailAddress",
+                "Mail",
+                "E-Mail");
+            builder.AddOrUpdate("PDFProductCatalog.CompanyTelephoneNumber",
+                "Phone",
+                "Telefon");
+            builder.AddOrUpdate("PDFProductCatalog.CompanyFaxNumber",
+                "Fax",
+                "Fax");
+            builder.AddOrUpdate("PDFProductCatalog.Cover.Address",
+                "Address",
+                "Anschrift");
+            builder.AddOrUpdate("PDFProductCatalog.Cover.ContactData",
+                "Contact data",
+                "Kontaktdaten");
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");

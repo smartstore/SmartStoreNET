@@ -1,6 +1,9 @@
-﻿
+﻿html {
+    height: 100% !important;
+}
 body { 
 	width: 100% !important;
+    height: 100% !important;
 	margin: 0;
 	padding: 0;
 	color: #000; 
@@ -9,7 +12,6 @@ body {
 	line-height: 1.45em; 
 	font-family: Arial, sans-serif; 
 }
-
 body.screen {
 	font-size: 14px;
 }
@@ -279,4 +281,32 @@ th, td {
 
 .order-totals td.value {
 	text-align: right;
+}
+
+/* -------------------------------------------------------------- 
+ 	catalog
+-------------------------------------------------------------- */
+
+.additional-products {
+    width: 45%;
+    float: left;
+    margin-top: 20px;
+    margin-right: 20px;
+    min-height: 100px;
+    page-break-inside: avoid;
+}
+.additional-products .picture {
+    float: left;
+    margin-right: 20px;
+    min-width: 80px;
+    text-align: center;
+}
+.company-address {
+    position: fixed;
+    right: 0px;
+    bottom: 0px;
+    margin-top: 200px;
+}
+.container {
+    height: 100% !important;
 }

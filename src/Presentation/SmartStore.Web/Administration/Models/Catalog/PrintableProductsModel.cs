@@ -53,6 +53,7 @@ namespace SmartStore.Admin.Models.Catalog
         public string PictureUrl { get; set; }
 
         public string Sku { get; set; }
+        public string Price { get; set; }
         public string Manufacturer { get; set; }
         public string Weight { get; set; }
         public string Length { get; set; }

@@ -22,15 +22,25 @@
             </p>
 
             <div>
-
                 <table>
                     @if (!String.IsNullOrEmpty(product.Sku)) { 
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Sku"):
+                                @T("PDFProductCatalog.SKU"):
                             </td>
                             <td>
                                 @product.Sku
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Price))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Price"):
+                            </td>
+                            <td>
+                                @product.Price
                             </td>
                         </tr>
                     }
@@ -49,7 +59,7 @@
                     {
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Weight"):
+                                @T("PDFProductCatalog.Weight"):
                             </td>
                             <td>
                                 @product.Weight
@@ -90,7 +100,6 @@
                         </tr>
                     }
                 </table>
-
             </div>
 
             <p>
@@ -106,12 +115,12 @@
             
             @if(product.SpecificationAttributes.Count > 0)
             {
-                <h3>Spezifikationsattribute</h3>
+                <h3>@T("Admin.Common.ExportToPdf.SpecificationAttributes")</h3>
                 <table class="margin-top-30 table">
                     @foreach (var specattr in product.SpecificationAttributes)
                     {
                         <tr>
-                            <td width="25%" class="attr-caption">
+                            <td width="25%" class="attr-caption ">
                                 @specattr.SpecificationAttributeName :
                             </td>
                             <td>
@@ -125,31 +134,43 @@
             @if(product.BundledItems.Count > 0) 
             {
                 <hr />
-                <h3>Bundle Produkte</h3>
+                <h3>@T("Admin.Common.ExportToPdf.BundledItems")</h3>
                 foreach (var bundleProduct in product.BundledItems)
                 {
-                    <div style="width:50%;float:left;">
-                        <div style="float: left; margin-right: 20px">
+                    <div class="additional-products text-small">
+                        <div class="picture">
                             <img src="@bundleProduct.PictureUrl" />
                         </div>
-                        <div>@bundleProduct.Name</div>
+                        <div>
+                            @bundleProduct.Name
+                            <br />
+                            @bundleProduct.ShortDescription
+                        </div>
+
                     </div>
                 }
+                
+                <div class="clearfix"></div>
             }
 
             @if (product.AssociatedProducts.Count > 0)
             {
                 <hr />
-                <h3>Gruppierte Produkte</h3>
+                <h3>@T("Admin.Common.ExportToPdf.AssociatedProducts")</h3>
                 foreach (var groupedProduct in product.AssociatedProducts)
                 {
-                    <div style="width:50%;float:left;">
-                        <div style="float:left;margin-right:20px">
+                    <div class="additional-products text-small">
+                        <div class="picture">
                             <img src="@groupedProduct.PictureUrl" />
                         </div>
-                        <div>@groupedProduct.Name</div>
+                        <div>
+                            @groupedProduct.Name
+                            <br />
+                            @groupedProduct.ShortDescription
+                        </div>
                     </div>
                 }
+                <div class="clearfix"></div>
             }
 
         </div>

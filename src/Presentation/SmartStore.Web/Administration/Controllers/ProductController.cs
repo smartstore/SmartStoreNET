@@ -2858,6 +2858,7 @@ namespace SmartStore.Admin.Controllers
 
 
             string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+            string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
 
             foreach (var product in products) 
             {
@@ -2868,6 +2869,7 @@ namespace SmartStore.Admin.Controllers
                 productModel.FullDescription = product.FullDescription;
 
                 productModel.Sku = product.Sku;
+                productModel.Price = product.Price.ToString("0.00") + " " + currencyCode;
                 productModel.Weight = (product.Weight > 0) ? "{0} {1}".FormatCurrent(product.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : ""; ;
                 productModel.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
                 productModel.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : ""; 
@@ -2909,7 +2911,11 @@ namespace SmartStore.Admin.Controllers
                         productModel.AssociatedProducts.Add(new PrintableProductModel()
                         {
                             Name = associatedProduct.Name,
-                            ShortDescription = associatedProduct.ShortDescription,
+                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"), 
+                                associatedProduct.Price.ToString("0.00"), 
+                                currencyCode, 
+                                T("PDFProductCatalog.SKU"), 
+                                associatedProduct.Sku),
                             PictureUrl = _pictureService.GetPictureUrl(associatedProduct.ProductPictures.FirstOrDefault().PictureId, 80, false)
                         });
                     }
@@ -2921,9 +2927,13 @@ namespace SmartStore.Admin.Controllers
                     {
                         productModel.BundledItems.Add(new PrintableProductModel()
                         {
-                            Name = bundledProduct.Name,
-                            ShortDescription = bundledProduct.ShortDescription,
-                            PictureUrl = _pictureService.GetPictureUrl(bundledProduct.BundleProduct.ProductPictures.FirstOrDefault().PictureId, 80, false)
+                            Name = bundledProduct.Product.Name,
+                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"),
+                                bundledProduct.Product.Price.ToString("0.00"),
+                                currencyCode,
+                                T("PDFProductCatalog.SKU"),
+                                bundledProduct.Product.Sku),
+                            PictureUrl = _pictureService.GetPictureUrl(bundledProduct.Product.ProductPictures.FirstOrDefault().PictureId, 80, false)
                         });
                     }
                 }

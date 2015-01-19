@@ -3,6 +3,7 @@
 
 ### New Features
 * Html to PDF converter: PDF documents are created from regular HTML templates now, therefore radically simplifying PDF output customization.
+* Html widgets: added option to create a wrapper around widget content
 * SEO: added new settings `Canonical host name rule`. Enforces permanent redirection to a single domain name for a better page rank (e.g. myshop.com > www.myshop.com or vice versa)
 * SEO: added support for `<link hreflang="..." ... />` in multi-language stores. The tags are automatically rendered along with the language switcher.
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section

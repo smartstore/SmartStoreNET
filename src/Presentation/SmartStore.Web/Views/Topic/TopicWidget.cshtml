@@ -5,6 +5,12 @@
     Layout = "";
 }
 
+@if (!Model.WrapContent)
+{
+	<text>@Html.Raw(Model.Html)</text>
+	return;
+}
+
 <div class="block @(Model.IsBordered ? "block-bordered" : "") topic-widget topic-widget-@Model.SystemName">
     @if (Model.ShowTitle) {
         <div class="block-title">

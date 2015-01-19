@@ -6,11 +6,14 @@
 
 <script type="text/javascript">
     $(document).ready(function () {
-        $("#@Html.FieldIdFor(model => model.IsPasswordProtected)").click(togglePassword);
+        $("#@Html.FieldIdFor(model => model.IsPasswordProtected)").on('click', togglePassword);
         togglePassword();
 
-        $("#@Html.FieldIdFor(model => model.RenderAsWidget)").click(toggleRenderAsWidget);
-        toggleRenderAsWidget();
+        $("#@Html.FieldIdFor(model => model.RenderAsWidget)").on('click', toggleRenderAsWidget);
+    	toggleRenderAsWidget();
+
+    	$("#@Html.FieldIdFor(model => model.WidgetWrapContent)").on('click', toggleWidgetWrapContent);
+    	toggleWidgetWrapContent();
     });
 
     function togglePassword() {
@@ -25,17 +28,26 @@
     function toggleRenderAsWidget() {
         if ($('#@Html.FieldIdFor(model => model.RenderAsWidget)').is(':checked')) {
             $('#pnlWidgetZone').show();
-            $('#pnlWidgetShowTitle').show();
-            $('#pnlWidgetBordered').show();
+            $('#pnlWidgetWrapContent').show();
             $('#pnlPriority').show();
         }
         else {
             $('#pnlWidgetZone').hide();
-            $('#pnlWidgetShowTitle').hide();
-            $('#pnlWidgetBordered').hide();
+            $('#pnlWidgetWrapContent').hide();
             $('#pnlPriority').hide();
         }
     }
+
+	function toggleWidgetWrapContent() {
+		if ($('#@Html.FieldIdFor(model => model.WidgetWrapContent)').is(':checked')) {
+			$('#pnlWidgetShowTitle').show();
+			$('#pnlWidgetBordered').show();
+		}
+		else {
+			$('#pnlWidgetShowTitle').hide();
+			$('#pnlWidgetBordered').hide();
+		}
+	}
 
 </script>
 @Html.HiddenFor(model => model.Id)
@@ -121,6 +133,24 @@
                 @Html.ValidationMessageFor(model => model.WidgetZone)
             </td>
         </tr>
+		<tr id="pnlPriority">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Priority)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Priority)
+				@Html.ValidationMessageFor(model => model.Priority)
+			</td>
+		</tr>
+		<tr id="pnlWidgetWrapContent">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.WidgetWrapContent)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.WidgetWrapContent)
+				@Html.ValidationMessageFor(model => model.WidgetWrapContent)
+			</td>
+		</tr>
         <tr id="pnlWidgetShowTitle">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.WidgetShowTitle)
@@ -137,15 +167,6 @@
             <td class="adminData">
                 @Html.EditorFor(x => x.WidgetBordered)
                 @Html.ValidationMessageFor(model => model.WidgetBordered)
-            </td>
-        </tr>
-        <tr id="pnlPriority">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.Priority)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(x => x.Priority)
-                @Html.ValidationMessageFor(model => model.Priority)
             </td>
         </tr>
     </table>

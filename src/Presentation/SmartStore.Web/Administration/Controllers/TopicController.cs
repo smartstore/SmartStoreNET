@@ -183,9 +183,7 @@ namespace SmartStore.Admin.Controllers
                 return continueEditing ? RedirectToAction("Edit", new { id = topic.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
-
-			//Stores
+            // If we got this far, something failed, redisplay form
 			PrepareStoresMappingModel(model, null, true);
 
             return View(model);

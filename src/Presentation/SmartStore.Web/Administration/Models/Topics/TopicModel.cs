@@ -31,7 +31,8 @@ namespace SmartStore.Admin.Models.Topics
         
         public TopicModel()
         {
-            Locales = new List<TopicLocalizedModel>();
+			WidgetWrapContent = true;
+			Locales = new List<TopicLocalizedModel>();
 			AvailableStores = new List<StoreModel>();
             AvailableWidgetZones = s_widgetZones;
         }
@@ -87,6 +88,9 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetZone")]
         [UIHint("WidgetZone")]
         public string WidgetZone { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetWrapContent")]
+		public bool WidgetWrapContent { get; set; }
 
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.WidgetShowTitle")]
         public bool WidgetShowTitle { get; set; }

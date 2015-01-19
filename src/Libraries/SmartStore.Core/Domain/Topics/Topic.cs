@@ -71,6 +71,11 @@ namespace SmartStore.Core.Domain.Topics
         /// </summary>
         public string WidgetZone { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the content should be surrounded by a topic block wrapper
+		/// </summary>
+		public bool? WidgetWrapContent { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the title should be displayed in the widget block
         /// </summary>

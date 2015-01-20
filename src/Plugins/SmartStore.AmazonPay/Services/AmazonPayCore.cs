@@ -87,6 +87,18 @@ namespace SmartStore.AmazonPay.Services
 		public bool? CaptureNow { get; set; }
 		public DateTime Creation { get; set; }
 		public DateTime? Expiration { get; set; }
+
+		public string AnyAmazonId
+		{
+			get
+			{
+				if (CaptureId.HasValue())
+					return CaptureId;
+				if (AuthorizationId.HasValue())
+					return AuthorizationId;
+				return RefundId;
+			}
+		}
 	}
 
 

@@ -815,6 +815,9 @@ namespace SmartStore.AmazonPay.Services
 			else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
 			{
 				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayCore.SystemName, data.CaptureId)) == null)
+					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+				if (order == null)
 					errorId = "CaptureId {0}".FormatWith(data.CaptureId);
 			}
 			else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
@@ -824,6 +827,9 @@ namespace SmartStore.AmazonPay.Services
 					.FirstOrDefault();
 
 				if (attribute == null || (order = _orderService.GetOrderById(attribute.EntityId)) == null)
+					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+				if (order == null)
 					errorId = "RefundId {0}".FormatWith(data.RefundId);
 			}
 

@@ -1,6 +1,11 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.18##
+###Bugfixes###
+* Order wasn't found if the capturing\refunding took place at Amazon Seller Central and the notification came through IPN
+
 ##Pay with Amazon 1.17##
+###Improvements###
 * Amazon payments review
 
 ##Pay with Amazon 1.16##

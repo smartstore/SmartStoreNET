@@ -246,6 +246,14 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount").Value("de", "Mindestbestellwert Gesamtsumme");
             builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Gesamtsumme fest.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail",
+                "Show product reviews in product detail view",
+                "Zeige Produktbewertungen in der Produktdetailansicht");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail.Hint",
+                "Determines whether product reviews are shown in product detail view.",
+                "Legt fest, ob Produktbewertungen in der Produktdetailansicht angezeigt werden.");
+
 		}
     }
 }

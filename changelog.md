@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 ## SmartStore.NET 2.1.1
 
 ### New Features
@@ -11,6 +11,7 @@
 * (Developer) Added `SmartUrlRoutingModule`, which can pass static files to `UrlRoutingModule` if desired (e.g. used by MiniProfiler). This way static files can be handled by regular actions or filters, without polluting web.config.
 * New payment plugin "Payone"
 * Option to set a delivery time for products available for order with stock quantity < 1
+* Option to disable product reviews on product detail page
 
 ### Improvements
 * (Perf) Faster application warmup

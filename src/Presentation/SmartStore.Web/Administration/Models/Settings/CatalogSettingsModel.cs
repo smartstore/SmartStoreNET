@@ -75,6 +75,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists")]
         public bool ShowProductReviewsInProductLists { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail")]
+        public bool ShowProductReviewsInProductDetail { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductReviewsMustBeApproved")]
         public bool ProductReviewsMustBeApproved { get; set; }
 

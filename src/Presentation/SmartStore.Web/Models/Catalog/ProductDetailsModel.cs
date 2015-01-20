@@ -92,6 +92,7 @@ namespace SmartStore.Web.Models.Catalog
         public string DeliveryTimeHexValue { get; set; }
 
 		public bool DisplayDeliveryTime { get; set; }
+        public bool DisplayProductReviews { get; set; }
 		public bool IsShipEnabled { get; set; }
 		public bool DisplayDeliveryTimeAccordingToStock { get; set; }
 		public bool IsBasePriceEnabled { get; set; }

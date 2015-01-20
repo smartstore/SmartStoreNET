@@ -163,6 +163,11 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ShowProductReviewsInProductLists { get; set; }
 
         /// <summary>
+        /// Gets or sets a value indicating whether to display reviews in product detail
+        /// </summary>
+        public bool ShowProductReviewsInProductDetail { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating product reviews must be approved
         /// </summary>
         public bool ProductReviewsMustBeApproved { get; set; }

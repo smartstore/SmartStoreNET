@@ -168,6 +168,7 @@ namespace SmartStore.Web.Controllers
 				ShowSku = _catalogSettings.ShowProductSku,
 				Sku = product.Sku,
 				ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,
+                DisplayProductReviews = _catalogSettings.ShowProductReviewsInProductDetail,
 				ManufacturerPartNumber = product.ManufacturerPartNumber,
 				ShowGtin = _catalogSettings.ShowGtin,
 				Gtin = product.Gtin,

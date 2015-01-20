@@ -66,12 +66,14 @@
             <div class="category-description">
                 @Html.Raw(Html.CollapsedText(Model.Description))
             </div>
-		}
-        @Html.Widget("categorydetails_before_subcategories")
-        @*subcategories*@
-        @if (Model.SubCategories.Count > 0) {
-            <div class="category-grid sub-category-grid">
+        }
 
+        @*subcategories*@
+        @if (Model.SubCategories.Count > 0 && Model.ShowSubcategoriesAboveProductLists)
+        {    
+            @Html.Widget("categorydetails_before_subcategories")
+            
+            <div class="category-grid sub-category-grid">
                 @(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, 3,
 				@<article class="item-box equalized-column" data-equalized-column-name="subcat">
                     <div class="category-item sub-category-item">
@@ -86,11 +88,12 @@
                 </article>
 				))
             </div>
-		}
-        @Html.Widget("categorydetails_before_featured_products")
+        }
+        
         @*featured products*@
+        @Html.Widget("categorydetails_before_featured_products")
+
         @if (Model.FeaturedProducts.Count > 0) {
-			//codehint: sm-edit
             <div class="featured-product-grid product-list scroll">
                 <div class="section-title">
                     @T("Products.FeaturedProducts")
@@ -117,8 +120,9 @@
             @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
 		}
 		
-        @Html.Widget("categorydetails_before_product_list")
         @*product list*@
+        @Html.Widget("categorydetails_before_product_list")
+
 		<div class="product-list-container">
 			@if (Model.Products.Count > 0) {
 	           if (Model.PagingFilteringContext.ViewMode == "list") {

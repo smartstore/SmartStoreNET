@@ -32,6 +32,7 @@ namespace SmartStore.Web.Models.Catalog
         public IList<MenuItem> CategoryBreadcrumb { get; set; }
 
         public bool DisplayFilter { get; set; }
+        public bool ShowSubcategoriesAboveProductLists { get; set; }
         
         public IList<SubCategoryModel> SubCategories { get; set; }
 

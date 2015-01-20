@@ -25,6 +25,7 @@ namespace SmartStore.Core.Domain.Catalog
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
             FilterEnabled = true;
+            ShowSubcategoriesAboveProductLists = true;
 			ProductSearchAutoCompleteEnabled = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
@@ -146,6 +147,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether filter is enabled
         /// </summary>
         public bool FilterEnabled { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether sub categories above product lists are enabled
+        /// </summary>
+        public bool ShowSubcategoriesAboveProductLists { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether a 'Share button' is enabled
@@ -307,12 +313,6 @@ namespace SmartStore.Core.Domain.Catalog
         public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
 
         public string ProductSearchPageSizeOptions { get; set; }
-
-        public int RecentlyAddedProductsPageSize { get; set; }
-
-        public bool RecentlyAddedProductsAllowCustomersToSelectPageSize { get; set; }
-
-        public string RecentlyAddedProductsPageSizeOptions { get; set; }
 		
 		public int DisplayAllImagesNumber { get; set; }
 

@@ -12,6 +12,7 @@
 * New payment plugin "Payone"
 * Option to set a delivery time for products available for order with stock quantity < 1
 * Option to disable product reviews on product detail page
+* Option to supress display of sub category picture links
 
 ### Improvements
 * (Perf) Faster application warmup

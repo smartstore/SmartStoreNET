@@ -184,6 +184,7 @@ namespace SmartStore.Web.Controllers
             }
 
 			model.DisplayFilter = _catalogSettings.FilterEnabled;
+            model.ShowSubcategoriesAboveProductLists = _catalogSettings.ShowSubcategoriesAboveProductLists;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 

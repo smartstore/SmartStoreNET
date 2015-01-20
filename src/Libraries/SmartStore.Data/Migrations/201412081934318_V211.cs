@@ -199,29 +199,26 @@ namespace SmartStore.Data.Migrations
 				"Table of contents",
 				"Inhaltsverzeichnis");
 
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Manufacturer",
+            builder.AddOrUpdate("PDFProductCatalog.Manufacturer",
 				"Hersteller",
                 "Manufacturer");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Weight",
-                "Weight",
-				"Gewicht");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Length",
+            builder.AddOrUpdate("PDFProductCatalog.Length",
 				"Legth",
 				"Länge");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Width",
+            builder.AddOrUpdate("PDFProductCatalog.Width",
                 "Width",
 				"Breite");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.Height",
+            builder.AddOrUpdate("PDFProductCatalog.Height",
                 "Height",
 				"Höhe");
 
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.SpecificationAttributes",
+            builder.AddOrUpdate("PDFProductCatalog.SpecificationAttributes",
                 "Specification attributes",
                 "Spezifikation");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.BundledItems",
+            builder.AddOrUpdate("PDFProductCatalog.BundledItems",
                 "Bundled items",
                 "Produktset besteht aus");
-            builder.AddOrUpdate("Admin.Common.ExportToPdf.AssociatedProducts",
+            builder.AddOrUpdate("PDFProductCatalog.AssociatedProducts",
                 "Associated products",
                 "Gruppierte Produkte");
 

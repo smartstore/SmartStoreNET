@@ -5,6 +5,9 @@
 }
 
 <div class="container" style="height:95%">
+    
+    @Html.Widget("pdfcatalog_cover_top")
+
     @if (Model.PrintLogoUrl.HasValue())
     {
         <div class="text-center margin-bottom-50">
@@ -12,7 +15,12 @@
             <br />
         </div>
     }
+    
+    @Html.Widget("pdfcatalog_cover_logo_after")
+
     <h1 class="margin-top-50 text-center" style="font-size: 80px; font-weight: 400;">@Model.StoreName</h1>
+
+    @Html.Widget("pdfcatalog_cover_storename_after")
 
     <div class="company-address text-small">
         @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.CompanyName))

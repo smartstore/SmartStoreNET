@@ -16,6 +16,7 @@
     @foreach (var product in Model.Products)
     {
         <div class="document">
+            @Html.Widget("pdfcatalog_productdetail_top")
             <h1>@product.Name</h1>
             <p>
                 @product.ShortDescription
@@ -48,7 +49,7 @@
                     {
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Manufacturer"):
+                                @T("PDFProductCatalog.Manufacturer"):
                             </td>
                             <td>
                                 @product.Manufacturer
@@ -70,7 +71,7 @@
                     {
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Length"):
+                                @T("PDFProductCatalog.Length"):
                             </td>
                             <td>
                                 @product.Length
@@ -81,7 +82,7 @@
                     {
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Width"):
+                                @T("PDFProductCatalog.Width"):
                             </td>
                             <td>
                                 @product.Width
@@ -92,7 +93,7 @@
                     {
                         <tr>
                             <td width="25%" class="attr-caption">
-                                @T("Admin.Common.ExportToPdf.Height"):
+                                @T("PDFProductCatalog.Height"):
                             </td>
                             <td>
                                 @product.Height
@@ -102,9 +103,13 @@
                 </table>
             </div>
 
+            @Html.Widget("pdfcatalog_productdetail_fulldescription_before")
+
             <p>
                 @Html.Raw(product.FullDescription)
             </p>
+
+            @Html.Widget("pdfcatalog_productdetail_picture_before")
 
 			@if (product.PictureUrl.HasValue())
 			{
@@ -115,7 +120,9 @@
             
             @if(product.SpecificationAttributes.Count > 0)
             {
-                <h3>@T("Admin.Common.ExportToPdf.SpecificationAttributes")</h3>
+                @Html.Widget("pdfcatalog_productdetail_specificationattributes_before")
+                
+                <h3>@T("PDFProductCatalog.SpecificationAttributes")</h3>
                 <table class="margin-top-30 table">
                     @foreach (var specattr in product.SpecificationAttributes)
                     {
@@ -134,7 +141,8 @@
             @if(product.BundledItems.Count > 0) 
             {
                 <hr />
-                <h3>@T("Admin.Common.ExportToPdf.BundledItems")</h3>
+                @Html.Widget("pdfcatalog_productdetail_bundleditems_before")
+                <h3>@T("PDFProductCatalog.BundledItems")</h3>
                 foreach (var bundleProduct in product.BundledItems)
                 {
                     <div class="additional-products text-small">
@@ -156,7 +164,8 @@
             @if (product.AssociatedProducts.Count > 0)
             {
                 <hr />
-                <h3>@T("Admin.Common.ExportToPdf.AssociatedProducts")</h3>
+                @Html.Widget("pdfcatalog_productdetail_associatedproducts_before")
+                <h3>@T("PDFProductCatalog.AssociatedProducts")</h3>
                 foreach (var groupedProduct in product.AssociatedProducts)
                 {
                     <div class="additional-products text-small">

@@ -223,7 +223,6 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
-            builder.RegisterType<PdfService>().As<IPdfService>().InstancePerRequest();
 			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 
             builder.RegisterType<ExternalAuthorizer>().As<IExternalAuthorizer>().InstancePerRequest();

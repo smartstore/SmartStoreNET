@@ -60,7 +60,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IEncryptionService _encryptionService;
         private readonly IPaymentService _paymentService;
         private readonly IMeasureService _measureService;
-        private readonly IPdfService _pdfService;
         private readonly IAddressService _addressService;
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
@@ -106,7 +105,7 @@ namespace SmartStore.Admin.Controllers
             IDateTimeHelper dateTimeHelper, IPriceFormatter priceFormatter, ILocalizationService localizationService,
             IWorkContext workContext, ICurrencyService currencyService,
             IEncryptionService encryptionService, IPaymentService paymentService,
-            IMeasureService measureService, IPdfService pdfService,
+            IMeasureService measureService,
             IAddressService addressService, ICountryService countryService,
             IStateProvinceService stateProvinceService, IProductService productService,
             IExportManager exportManager, IPermissionService permissionService,
@@ -138,7 +137,6 @@ namespace SmartStore.Admin.Controllers
             this._encryptionService = encryptionService;
             this._paymentService = paymentService;
             this._measureService = measureService;
-            this._pdfService = pdfService;
             this._addressService = addressService;
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;

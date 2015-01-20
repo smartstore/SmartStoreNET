@@ -347,6 +347,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductUrlTitle, mo => mo.Ignore())
                 .ForMember(dest => dest.Warnings, mo => mo.Ignore())
+				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
             Mapper.CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
                 .ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
@@ -585,7 +586,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
                 .ForMember(dest => dest.ShowProductImagesInSearchAutoComplete, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSearchPageSize, mo => mo.Ignore())
-                .ForMember(dest => dest.ManufacturersBlockItemsToDisplay, mo => mo.Ignore());
+                .ForMember(dest => dest.ManufacturersBlockItemsToDisplay, mo => mo.Ignore())
+				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
 				.ForMember(dest => dest.PointsForPurchases_OverrideForStore, mo => mo.Ignore());

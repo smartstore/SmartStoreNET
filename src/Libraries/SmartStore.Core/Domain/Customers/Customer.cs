@@ -254,7 +254,7 @@ namespace SmartStore.Core.Domain.Customers
 
         public virtual void RemoveAddress(Address address)
         {
-            if (this.Addresses.Contains(address))
+			if (this.Addresses.Contains(address))
             {
                 if (this.BillingAddress == address) this.BillingAddress = null;
                 if (this.ShippingAddress == address) this.ShippingAddress = null;

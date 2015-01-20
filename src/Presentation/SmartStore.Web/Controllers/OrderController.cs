@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Net.Mime;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core.Data;
@@ -14,7 +13,6 @@ using SmartStore.Core.Html;
 using SmartStore.Core.Localization;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -45,7 +43,6 @@ namespace SmartStore.Web.Controllers
         private readonly IOrderProcessingService _orderProcessingService;
         private readonly IDateTimeHelper _dateTimeHelper;
         private readonly IPaymentService _paymentService;
-        private readonly IPdfService _pdfService;
 		private readonly IPdfConverter _pdfConverter;
         private readonly IShippingService _shippingService;
         private readonly ICountryService _countryService;
@@ -69,7 +66,6 @@ namespace SmartStore.Web.Controllers
             IOrderProcessingService orderProcessingService, 
 			IDateTimeHelper dateTimeHelper,
             IPaymentService paymentService,
-            IPdfService pdfService, 
 			IPdfConverter pdfConverter, 
 			IShippingService shippingService,
             ICountryService countryService,
@@ -88,7 +84,6 @@ namespace SmartStore.Web.Controllers
             this._orderProcessingService = orderProcessingService;
             this._dateTimeHelper = dateTimeHelper;
             this._paymentService = paymentService;
-            this._pdfService = pdfService;
 			this._pdfConverter = pdfConverter;
             this._shippingService = shippingService;
             this._countryService = countryService;

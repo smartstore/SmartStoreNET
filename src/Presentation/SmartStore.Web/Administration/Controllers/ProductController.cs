@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -68,7 +67,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly IProductTagService _productTagService;
         private readonly ICopyProductService _copyProductService;
-        private readonly IPdfService _pdfService;
         private readonly IExportManager _exportManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
@@ -118,7 +116,6 @@ namespace SmartStore.Admin.Controllers
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
             ICopyProductService copyProductService,
-			IPdfService pdfService,
             IExportManager exportManager,
 			IImportManager importManager,
             ICustomerActivityService customerActivityService,
@@ -164,7 +161,6 @@ namespace SmartStore.Admin.Controllers
             this._taxCategoryService = taxCategoryService;
             this._productTagService = productTagService;
             this._copyProductService = copyProductService;
-            this._pdfService = pdfService;
             this._exportManager = exportManager;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
@@ -3003,25 +2999,6 @@ namespace SmartStore.Admin.Controllers
             model.MerchantCompanyInfo = companyInfoSettings;
             model.MerchantContactData = contactSettings;
         }
-
-
-        //[HttpPost]
-        //public ActionResult ExportPdfSelected(string selectedIds)
-        //{
-        //    if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-        //        return AccessDeniedView();
-
-        //    int[] ids = selectedIds.ToIntArray();
-        //    var products = _productService.GetProductsByIds(ids);
-
-        //    if (products.Count <= 0)
-        //    {
-        //        NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-        //        return RedirectToAction("List");
-        //    }
-
-        //    return File(_pdfService.PrintProductsToPdf(products), MediaTypeNames.Application.Pdf, "products.pdf");
-        //}
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)

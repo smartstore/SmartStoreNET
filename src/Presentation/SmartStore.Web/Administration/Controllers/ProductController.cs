@@ -2874,16 +2874,7 @@ namespace SmartStore.Admin.Controllers
                 var manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id).ToList();
 
                 productModel.SpecificationAttributes = PrepareProductSpecificationModel(product.Id);
-
-                var i = 1;
-                foreach(var manufacturer in manufacturers) {
-                    productModel.Manufacturer += manufacturer.Manufacturer.Name;
-
-                    if (i < manufacturers.Count)
-                        productModel.Manufacturer += ", ";
-
-                    i++;
-                }
+				productModel.Manufacturer = String.Join(", ", manufacturers.Select(x => x.Manufacturer.Name));
 
 				var pictures = _pictureService.GetPicturesByProductId(product.Id);
 				if (pictures.Count > 0)
@@ -2904,7 +2895,7 @@ namespace SmartStore.Admin.Controllers
 
                     foreach (var associatedProduct in _productService.SearchProducts(searchContext))
                     {
-                        productModel.AssociatedProducts.Add(new PrintableProductModel()
+                        productModel.AssociatedProducts.Add(new PrintableProductModel
                         {
                             Name = associatedProduct.Name,
                             ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"), 
@@ -2945,7 +2936,7 @@ namespace SmartStore.Admin.Controllers
 				Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
 				Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
 				HeaderOptions = new PdfHeaderFooterOptions { ShowLine = true },
-				Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext)
+				Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext),
 			};
 
 			if (products.Count > 5)

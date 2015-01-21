@@ -180,7 +180,6 @@ namespace SmartStore.Services.Configuration
 			ClearCache();
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		private void DeleteSettingsJson<T>()
 		{
 			Type t = typeof(T);

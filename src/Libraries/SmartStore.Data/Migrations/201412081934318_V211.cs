@@ -200,8 +200,8 @@ namespace SmartStore.Data.Migrations
 				"Inhaltsverzeichnis");
 
             builder.AddOrUpdate("PDFProductCatalog.Manufacturer",
-				"Hersteller",
-                "Manufacturer");
+                "Manufacturer",
+                "Hersteller");
             builder.AddOrUpdate("PDFProductCatalog.Length",
 				"Legth",
 				"Länge");
@@ -222,7 +222,7 @@ namespace SmartStore.Data.Migrations
                 "Associated products",
                 "Gruppierte Produkte");
 
-            //TODO
+
             builder.AddOrUpdate("PDFProductCatalog.CompanyEmailAddress",
                 "Mail",
                 "E-Mail");

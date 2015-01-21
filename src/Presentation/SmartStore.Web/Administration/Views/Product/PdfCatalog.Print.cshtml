@@ -103,6 +103,13 @@
                 </table>
             </div>
 
+            @if (product.PictureUrl.HasValue())
+            {
+                <div class="text-center margin-top-50">
+                    <img src="@product.PictureUrl" />
+                </div>
+            }
+            
             @Html.Widget("pdfcatalog_productdetail_fulldescription_before")
 
             <p>
@@ -110,13 +117,6 @@
             </p>
 
             @Html.Widget("pdfcatalog_productdetail_picture_before")
-
-			@if (product.PictureUrl.HasValue())
-			{
-				<div class="text-center margin-top-50">
-					<img src="@product.PictureUrl" />
-				</div>
-			}
             
             @if(product.SpecificationAttributes.Count > 0)
             {

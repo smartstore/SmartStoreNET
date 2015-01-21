@@ -2815,11 +2815,8 @@ namespace SmartStore.Admin.Controllers
 				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
 			}
-
-            var model = new PrintableProductsModel();
-            PreparePrintableProductsModel(model);
-
-			IList<Product> products;
+            
+            IList<Product> products;
 
 			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
@@ -2852,81 +2849,8 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("List");
 			}
 
-
-            string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
-            string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
-
-            foreach (var product in products) 
-            {
-                var productModel = new PrintableProductModel();
-				
-                productModel.Name = product.Name;
-                productModel.ShortDescription = product.ShortDescription;
-                productModel.FullDescription = product.FullDescription;
-
-                productModel.Sku = product.Sku;
-                productModel.Price = product.Price.ToString("0.00") + " " + currencyCode;
-                productModel.Weight = (product.Weight > 0) ? "{0} {1}".FormatCurrent(product.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : ""; ;
-                productModel.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
-                productModel.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : ""; 
-                productModel.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
-
-                var manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id).ToList();
-
-                productModel.SpecificationAttributes = PrepareProductSpecificationModel(product.Id);
-				productModel.Manufacturer = String.Join(", ", manufacturers.Select(x => x.Manufacturer.Name));
-
-				var pictures = _pictureService.GetPicturesByProductId(product.Id);
-				if (pictures.Count > 0)
-				{
-					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
-				}
-
-                productModel.ProductType = product.ProductType;
-
-                if (product.ProductType == ProductType.GroupedProduct)
-                {
-                    var searchContext = new ProductSearchContext()
-                    {
-                        ParentGroupedProductId = product.Id,
-                        PageSize = int.MaxValue,
-                        ShowHidden = true
-                    };
-
-                    foreach (var associatedProduct in _productService.SearchProducts(searchContext))
-                    {
-                        productModel.AssociatedProducts.Add(new PrintableProductModel
-                        {
-                            Name = associatedProduct.Name,
-                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"), 
-                                associatedProduct.Price.ToString("0.00"), 
-                                currencyCode, 
-                                T("PDFProductCatalog.SKU"), 
-                                associatedProduct.Sku),
-                            PictureUrl = _pictureService.GetPictureUrl(associatedProduct.ProductPictures.FirstOrDefault().PictureId, 80, false)
-                        });
-                    }
-                }
-
-                if (product.ProductType == ProductType.BundledProduct)
-                {
-                    foreach (var bundledProduct in _productService.GetBundleItems(product.Id).Select(x => x.Item))
-                    {
-                        productModel.BundledItems.Add(new PrintableProductModel()
-                        {
-                            Name = bundledProduct.Product.Name,
-                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"),
-                                bundledProduct.Product.Price.ToString("0.00"),
-                                currencyCode,
-                                T("PDFProductCatalog.SKU"),
-                                bundledProduct.Product.Sku),
-                            PictureUrl = _pictureService.GetPictureUrl(bundledProduct.Product.ProductPictures.FirstOrDefault().PictureId, 80, false)
-                        });
-                    }
-                }
-
-                model.Products.Add(productModel);
-            }
+            var model = new PrintableProductsModel();
+            PreparePrintableProductsModel(model, products);
 
 			var settings = new PdfConvertSettings
 			{
@@ -2964,7 +2888,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        protected void PreparePrintableProductsModel(PrintableProductsModel model)
+        protected void PreparePrintableProductsModel(PrintableProductsModel model, IList<Product> products)
         {
             //var store = _storeService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
             var store = _services.StoreContext.CurrentStore;
@@ -2989,6 +2913,96 @@ namespace SmartStore.Admin.Controllers
 
             model.MerchantCompanyInfo = companyInfoSettings;
             model.MerchantContactData = contactSettings;
+
+            string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+            string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+
+            foreach (var product in products) 
+            {
+                var productModel = new PrintableProductModel();
+				
+                productModel.Name = product.GetLocalized(x => x.Name);
+                productModel.ShortDescription = product.GetLocalized(x => x.ShortDescription);
+                productModel.FullDescription = product.GetLocalized(x => x.FullDescription);
+
+                productModel.Sku = product.Sku;
+                productModel.Price = product.Price.ToString("0.00") + " " + currencyCode;
+                productModel.Weight = (product.Weight > 0) ? "{0} {1}".FormatCurrent(product.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : ""; ;
+                productModel.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
+                productModel.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : ""; 
+                productModel.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
+
+                var manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id).ToList();
+
+                productModel.SpecificationAttributes = PrepareProductSpecificationModel(product.Id);
+				productModel.Manufacturer = String.Join(", ", manufacturers.Select(x => x.Manufacturer.GetLocalized(y => y.Name)));
+
+				var pictures = _pictureService.GetPicturesByProductId(product.Id);
+				if (pictures.Count > 0)
+				{
+					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
+				}
+
+                productModel.ProductType = product.ProductType;
+
+                if (product.ProductType == ProductType.GroupedProduct)
+                {
+                    var searchContext = new ProductSearchContext()
+                    {
+                        ParentGroupedProductId = product.Id,
+                        PageSize = int.MaxValue,
+                        ShowHidden = true
+                    };
+
+                    foreach (var associatedProduct in _productService.SearchProducts(searchContext))
+                    {
+                        var picture = associatedProduct.ProductPictures.FirstOrDefault();
+                        var pictureUrl = String.Empty;
+                        if (picture != null) 
+                        {
+                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 80, false);
+                        }
+
+                        productModel.AssociatedProducts.Add(new PrintableProductModel
+                        {
+                            Name = associatedProduct.GetLocalized(x => x.Name),
+                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"), 
+                                associatedProduct.Price.ToString("0.00"), 
+                                currencyCode, 
+                                T("PDFProductCatalog.SKU"), 
+                                associatedProduct.Sku),
+                            PictureUrl = pictureUrl
+                        });
+                    }
+                }
+
+                if (product.ProductType == ProductType.BundledProduct)
+                {
+                    foreach (var bundledProduct in _productService.GetBundleItems(product.Id).Select(x => x.Item))
+                    {
+                        var picture = bundledProduct.Product.ProductPictures.FirstOrDefault();
+                        var pictureUrl = String.Empty;
+                        if (picture != null) 
+                        { 
+                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 80, false);
+                        }
+
+                        productModel.BundledItems.Add(new PrintableProductModel()
+                        {
+                            Name = bundledProduct.Product.GetLocalized(x => x.Name),
+                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"),
+                                bundledProduct.Product.Price.ToString("0.00"),
+                                currencyCode,
+                                T("PDFProductCatalog.SKU"),
+                                bundledProduct.Product.Sku),
+                            PictureUrl = pictureUrl
+                        });
+                    }
+                }
+
+                model.Products.Add(productModel);
+            }
+
         }
 
 		[HttpPost]

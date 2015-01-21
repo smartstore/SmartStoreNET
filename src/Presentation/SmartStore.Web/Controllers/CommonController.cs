@@ -923,17 +923,27 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-		public ActionResult PdfReceiptHeader(PdfHeaderFooterVariables vars, int storeId = 0)
+		public ActionResult PdfReceiptHeader(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
 		{
 			var model = PreparePdfReceiptHeaderFooterModel(storeId);
 			model.Variables = vars;
+
+			ViewBag.IsPartial = isPartial;
+
+			if (isPartial)
+				return PartialView(model);
 			return View(model);
 		}
 
-		public ActionResult PdfReceiptFooter(PdfHeaderFooterVariables vars, int storeId = 0)
+		public ActionResult PdfReceiptFooter(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
 		{
 			var model = PreparePdfReceiptHeaderFooterModel(storeId);
 			model.Variables = vars;
+
+			ViewBag.IsPartial = isPartial;
+
+			if (isPartial)
+				return PartialView(model);
 			return View(model);
 		}
 

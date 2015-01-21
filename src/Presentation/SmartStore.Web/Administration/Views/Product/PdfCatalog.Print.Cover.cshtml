@@ -29,7 +29,7 @@
 	@Html.Widget("pdfcatalog_cover_storename_after")
 
 	<div style="position: fixed; bottom: 0; width: 100%">
-		@Html.Action("PdfReceiptFooter", "Common", new { area = "" })
+		@Html.Action("PdfReceiptFooter", "Common", new { area = "", isPartial = true })
 	</div>
 
 </div>

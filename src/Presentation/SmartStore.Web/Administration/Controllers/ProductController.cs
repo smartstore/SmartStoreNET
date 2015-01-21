@@ -2940,7 +2940,7 @@ namespace SmartStore.Admin.Controllers
 				var pictures = _pictureService.GetPicturesByProductId(product.Id);
 				if (pictures.Count > 0)
 				{
-					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 500, false);
+					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 0, false);
 				}
 
                 productModel.ProductType = product.ProductType;
@@ -2960,7 +2960,7 @@ namespace SmartStore.Admin.Controllers
                         var pictureUrl = String.Empty;
                         if (picture != null) 
                         {
-                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 80, false);
+                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 75, false);
                         }
 
                         productModel.AssociatedProducts.Add(new PrintableProductModel
@@ -2984,7 +2984,7 @@ namespace SmartStore.Admin.Controllers
                         var pictureUrl = String.Empty;
                         if (picture != null) 
                         { 
-                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 80, false);
+                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 75, false);
                         }
 
                         productModel.BundledItems.Add(new PrintableProductModel()

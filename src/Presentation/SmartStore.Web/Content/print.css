@@ -310,3 +310,7 @@ th, td {
 .container {
     height: 100% !important;
 }
+.detail-picture img {
+    max-width: 500px !important;
+    max-height: 500px !important;
+}

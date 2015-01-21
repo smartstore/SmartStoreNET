@@ -34,7 +34,7 @@
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection
 * #552 Left navbar should stay expanded on product detail pages
-* #538 Spcification attribute labels in product filter mask are not displayed localized
+* #538 Specification attribute labels in product filter mask are not displayed localized
 * #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
 * #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
 * #577 Exception thrown because of missing TaxRate table when opening tax by region provider configuration

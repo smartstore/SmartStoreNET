@@ -49,6 +49,7 @@ namespace SmartStore.Core.Domain.Catalog
 			ShowVariantCombinationPriceAdjustment = true;
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
+            ShowProductReviewsInProductDetail = true;
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
         }

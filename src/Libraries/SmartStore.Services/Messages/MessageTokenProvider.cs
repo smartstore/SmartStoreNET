@@ -761,8 +761,8 @@ namespace SmartStore.Services.Messages
 			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
-
             tokens.Add(new Token("Order.Product(s)", ProductListToHtmlTable(order, languageId), true));
+            tokens.Add(new Token("Order.CustomerComment", order.CustomerOrderComment, true));
 
             var language = _languageService.GetLanguageById(languageId);
             if (language != null && !String.IsNullOrEmpty(language.LanguageCulture))
@@ -778,8 +778,6 @@ namespace SmartStore.Services.Messages
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
 
-
-            //Codehint: sm-add
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", languageId), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", languageId), true));
 
@@ -1059,6 +1057,7 @@ namespace SmartStore.Services.Messages
                 "%Order.ShippingCountry%",
                 "%Order.PaymentMethod%",
                 "%Order.VatNumber%", 
+                "%Order.CustomerComment%", 
                 "%Order.Product(s)%",
                 "%Order.CreatedOn%",
                 "%Order.OrderURLForCustomer%",
@@ -1112,7 +1111,6 @@ namespace SmartStore.Services.Messages
                 "%PrivateMessage.Subject%", 
                 "%PrivateMessage.Text%",
                 "%BackInStockSubscription.ProductName%",
-                //codehint: sm-add
                 "%Order.Disclaimer%",
                 "%Order.ConditionsOfUse%",
                 "%Company.CompanyName%",

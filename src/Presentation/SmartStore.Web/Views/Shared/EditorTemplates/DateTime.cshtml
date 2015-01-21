@@ -20,6 +20,12 @@
 			{
 				return ViewData["pickTime"].Convert<bool>();
 			}
+			else if (ViewData.ContainsKey("pickTimeFieldIds"))
+			{
+				var ids = ViewData["pickTimeFieldIds"] as List<string>;
+				var id = ViewData.TemplateInfo.GetFullHtmlFieldId(string.Empty);
+				return ids.Contains(id);
+			}
 			return false;
 		}
 	}

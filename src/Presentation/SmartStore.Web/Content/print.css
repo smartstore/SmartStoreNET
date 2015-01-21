@@ -1,9 +1,5 @@
-﻿html {
-    height: 100% !important;
-}
-body { 
+﻿body { 
 	width: 100% !important;
-    height: 100% !important;
 	margin: 0;
 	padding: 0;
 	color: #000; 
@@ -301,16 +297,8 @@ th, td {
     min-width: 80px;
     text-align: center;
 }
-.company-address {
-    position: fixed;
-    right: 0px;
-    bottom: 0px;
-    margin-top: 200px;
-}
-.container {
-    height: 100% !important;
-}
+
 .detail-picture img {
     max-width: 500px !important;
-    max-height: 500px !important;
+    /*max-height: 500px !important;*/
 }

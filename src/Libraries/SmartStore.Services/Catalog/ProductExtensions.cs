@@ -35,6 +35,7 @@ namespace SmartStore.Services.Catalog
             {
 				product.MergeWithCombination(combination);
             }
+
 			return combination;
         }
 

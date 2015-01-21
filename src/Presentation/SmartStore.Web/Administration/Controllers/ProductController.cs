@@ -2890,9 +2890,8 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected void PreparePrintableProductsModel(PrintableProductsModel model, IList<Product> products)
         {
-            //var store = _storeService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
             var store = _services.StoreContext.CurrentStore;
-
+			
             var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
             var contactSettings = _services.Settings.LoadSetting<ContactDataSettings>(store.Id);
             var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
@@ -2960,7 +2959,7 @@ namespace SmartStore.Admin.Controllers
                         var pictureUrl = String.Empty;
                         if (picture != null) 
                         {
-                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 75, false);
+                            pictureUrl = _pictureService.GetPictureUrl(picture.Picture, 75, false);
                         }
 
                         productModel.AssociatedProducts.Add(new PrintableProductModel
@@ -2984,7 +2983,7 @@ namespace SmartStore.Admin.Controllers
                         var pictureUrl = String.Empty;
                         if (picture != null) 
                         { 
-                            pictureUrl = _pictureService.GetPictureUrl(picture.PictureId, 75, false);
+                            pictureUrl = _pictureService.GetPictureUrl(picture.Picture, 75, false);
                         }
 
                         productModel.BundledItems.Add(new PrintableProductModel()

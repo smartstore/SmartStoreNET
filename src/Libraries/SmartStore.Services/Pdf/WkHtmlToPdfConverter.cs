@@ -131,7 +131,7 @@ namespace SmartStore.Services.Pdf
 				var path = settings.Header.Process("header");
 				if (path.HasValue())
 				{
-					sb.AppendFormat(" --header-html \"{0}\" ", path);
+					sb.AppendFormat(" --header-html \"{0}\"", path);
 					settings.Header.WriteArguments("header", sb);
 				}
 			}
@@ -146,7 +146,7 @@ namespace SmartStore.Services.Pdf
 				var path = settings.Footer.Process("footer");
 				if (path.HasValue())
 				{
-					sb.AppendFormat(" --footer-html \"{0}\" ", path);
+					sb.AppendFormat(" --footer-html \"{0}\"", path);
 					settings.Footer.WriteArguments("footer", sb);
 				}
 			}

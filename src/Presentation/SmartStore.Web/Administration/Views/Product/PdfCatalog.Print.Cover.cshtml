@@ -4,6 +4,12 @@
     Layout = "~/Views/Shared/_Print.cshtml";
 }
 
+<style type="text/css">
+	html, body {
+		height: 100% !important;
+	}
+</style>
+
 <div class="container" style="height:95%">
     
     @Html.Widget("pdfcatalog_cover_top")
@@ -18,76 +24,12 @@
     
     @Html.Widget("pdfcatalog_cover_logo_after")
 
-    <h1 class="margin-top-50 text-center" style="font-size: 80px; font-weight: 400;">@Model.StoreName</h1>
+    <h1 class="text-center" style="font-size: 80px; font-weight: 400; padding-top: 200px">@Model.StoreName</h1>
 
-    @Html.Widget("pdfcatalog_cover_storename_after")
+	@Html.Widget("pdfcatalog_cover_storename_after")
 
-    <div class="company-address text-small">
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.CompanyName))
-        {
-            <div class="section-title">
-                @Model.MerchantCompanyInfo.CompanyName
-            </div>
-        }
-        <div style="text-decoration:underline">
-            @T("PDFProductCatalog.Cover.Address")
-        </div>
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.Firstname) || !String.IsNullOrEmpty(Model.MerchantCompanyInfo.Lastname))
-        {
-            <div class="name">
-
-                @Model.MerchantCompanyInfo.Firstname @Model.MerchantCompanyInfo.Lastname
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.Street))
-        {
-            <div class="street">
-                @Model.MerchantCompanyInfo.Street
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.Street2))
-        {
-            <div class="street2">
-                @Model.MerchantCompanyInfo.Street2
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.ZipCode) || !String.IsNullOrEmpty(Model.MerchantCompanyInfo.City))
-        {
-            <div class="city">
-                @Model.MerchantCompanyInfo.ZipCode @Model.MerchantCompanyInfo.City
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantCompanyInfo.CountryName))
-        {
-            <div class="country">
-                @Model.MerchantCompanyInfo.CountryName
-            </div>
-        }
-        <div style="text-decoration:underline">
-            @T("PDFProductCatalog.Cover.ContactData")
-        </div>
-        @if (!String.IsNullOrEmpty(Model.MerchantContactData.CompanyEmailAddress))
-        {
-            <div class="email">
-                @T("PDFProductCatalog.CompanyEmailAddress"): 
-                @Model.MerchantContactData.CompanyEmailAddress
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantContactData.CompanyTelephoneNumber))
-        {
-            <div class="phone">
-                @T("PDFProductCatalog.CompanyTelephoneNumber"): 
-                @Model.MerchantContactData.CompanyTelephoneNumber
-            </div>
-        }
-        @if (!String.IsNullOrEmpty(Model.MerchantContactData.CompanyFaxNumber))
-        {
-            <div class="fax">
-                @T("PDFProductCatalog.CompanyFaxNumber"): 
-                @Model.MerchantContactData.CompanyFaxNumber
-            </div>
-        }
-    </div>
-
+	<div style="position: fixed; bottom: 0; width: 100%">
+		@Html.Action("PdfReceiptFooter", "Common", new { area = "" })
+	</div>
 
 </div>

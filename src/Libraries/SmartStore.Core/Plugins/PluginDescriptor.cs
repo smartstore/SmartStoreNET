@@ -22,13 +22,14 @@ namespace SmartStore.Core.Plugins
             this.MinAppVersion = SmartStoreVersion.Version;
         }
 
-        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
-            : this()
-        {
-            this.ReferencedAssembly = referencedAssembly;
-            this.OriginalAssemblyFile = originalAssemblyFile;
-            this.PluginType = pluginType;
-        }
+		// Unit tests
+		public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
+			: this()
+		{
+			this.ReferencedAssembly = referencedAssembly;
+			this.OriginalAssemblyFile = originalAssemblyFile;
+			this.PluginType = pluginType;
+		}
 
         /// <summary>
         /// Plugin file name
@@ -38,13 +39,7 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// The physical path of the runtime plugin
         /// </summary>
-        public string PhysicalPath
-        {
-            get
-            {
-                return OriginalAssemblyFile.Directory.FullName;
-            }
-        }
+		public string PhysicalPath { get; set; }
 
         /// <summary>
         /// Gets the file name of the brand image (without path)
@@ -183,7 +178,7 @@ namespace SmartStore.Core.Plugins
 					try 
 					{
 						// try to get root-key from first entry of XML file
-						string localizationDir = Path.Combine(OriginalAssemblyFile.Directory.FullName, "Localization");
+						string localizationDir = Path.Combine(PhysicalPath, "Localization");
 
 						if (System.IO.Directory.Exists(localizationDir)) 
 						{

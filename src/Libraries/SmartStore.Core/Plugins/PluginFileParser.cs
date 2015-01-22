@@ -98,7 +98,9 @@ namespace SmartStore.Core.Plugins
             if (String.IsNullOrEmpty(text))
                 return descriptor;
 
-			descriptor.FolderName = new DirectoryInfo(Path.GetDirectoryName(filePath)).Name;
+			string dirName = Path.GetDirectoryName(filePath);
+			descriptor.PhysicalPath = dirName;
+			descriptor.FolderName = new DirectoryInfo(dirName).Name;
 
             var settings = new List<string>();
             using (var reader = new StringReader(text))
@@ -200,9 +202,9 @@ namespace SmartStore.Core.Plugins
                 throw new ArgumentException("plugin");
 
             //get the Description.txt file path
-            if (plugin.OriginalAssemblyFile == null)
+            if (plugin.PhysicalPath.IsEmpty())
                 throw new Exception(string.Format("Cannot load original assembly path for {0} plugin.", plugin.SystemName));
-            var filePath = Path.Combine(plugin.OriginalAssemblyFile.Directory.FullName, "Description.txt");
+            var filePath = Path.Combine(plugin.PhysicalPath, "Description.txt");
             if (!File.Exists(filePath))
                 throw new Exception(string.Format("Description file for {0} plugin does not exist. {1}", plugin.SystemName, filePath));
 

@@ -3,6 +3,7 @@
 
 ### New Features
 * #428 Implement category option to override global list view type
+* #485 Enable shop admin to change creation date of a blog entry
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status

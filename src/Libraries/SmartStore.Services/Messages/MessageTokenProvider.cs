@@ -892,7 +892,6 @@ namespace SmartStore.Services.Messages
         {
             tokens.Add(new Token("NewsLetterSubscription.Email", subscription.Email));
 
-
             const string urlFormat = "{0}newsletter/subscriptionactivation/{1}/{2}";
 
             var activationUrl = String.Format(urlFormat, _webHelper.GetStoreLocation(false), subscription.NewsLetterSubscriptionGuid, "true");

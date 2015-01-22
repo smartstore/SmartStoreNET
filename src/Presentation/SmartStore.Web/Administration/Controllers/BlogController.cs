@@ -155,6 +155,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var blogPost = model.ToEntity();
+                blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 blogPost.CreatedOnUtc = DateTime.UtcNow;
@@ -189,6 +190,7 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = blogPost.ToModel();
+            model.CreatedOnUtc = blogPost.CreatedOnUtc;
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
 			//Store
@@ -209,6 +211,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 blogPost = model.ToEntity(blogPost);
+                blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 _blogService.UpdateBlogPost(blogPost);

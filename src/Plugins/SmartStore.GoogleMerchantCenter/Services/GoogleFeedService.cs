@@ -1,5 +1,4 @@
 using System;
-using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -12,7 +11,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
@@ -301,147 +299,156 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					return defaultValue;
 			}
 		}
-		private string WriteItem(XmlWriter writer, Store store, Product product, Currency currency, string measureWeightSystemKey)
+		private void WriteItem(FeedFileCreationContext fileCreation, XmlWriter writer, Product product, Currency currency, string measureWeightSystemKey)
 		{
-			var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
-			var mainImageUrl = Helper.GetMainProductImageUrl(store, product);
-			var googleProduct = GetGoogleProductRecord(product.Id);
-			var category = ProductCategory(googleProduct);
+			writer.WriteStartElement("item");
 
-			if (category.IsNullOrEmpty())
-				return Helper.GetResource("MissingDefaultCategory");
-
-			string manuName = (manu != null ? manu.Manufacturer.GetLocalized(x => x.Name, Settings.LanguageId, true, false) : null);
-			string productName = product.GetLocalized(x => x.Name, Settings.LanguageId, true, false);
-			string shortDescription = product.GetLocalized(x => x.ShortDescription, Settings.LanguageId, true, false);
-			string fullDescription = product.GetLocalized(x => x.FullDescription, Settings.LanguageId, true, false);
-
-			var brand = (manuName ?? Settings.Brand);
-			var mpn = Helper.GetManufacturerPartNumber(product);
-
-			bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
-
-			writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
-
-			writer.WriteStartElement("title");
-			writer.WriteCData(productName.Truncate(70));
-			writer.WriteEndElement();
-
-			var description = Helper.BuildProductDescription(productName, shortDescription, fullDescription, manuName, d =>
+			try
 			{
-				if (fullDescription.IsNullOrEmpty() && shortDescription.IsNullOrEmpty())
-				{
-					var rnd = new Random();
+				var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
+				var mainImageUrl = Helper.GetMainProductImageUrl(fileCreation.Store, product);
+				var googleProduct = GetGoogleProductRecord(product.Id);
+				var category = ProductCategory(googleProduct);
 
-					switch (rnd.Next(1, 5))
+				if (category.IsNullOrEmpty())
+					fileCreation.ErrorMessage = Helper.GetResource("MissingDefaultCategory");
+
+				string manuName = (manu != null ? manu.Manufacturer.GetLocalized(x => x.Name, Settings.LanguageId, true, false) : null);
+				string productName = product.GetLocalized(x => x.Name, Settings.LanguageId, true, false);
+				string shortDescription = product.GetLocalized(x => x.ShortDescription, Settings.LanguageId, true, false);
+				string fullDescription = product.GetLocalized(x => x.FullDescription, Settings.LanguageId, true, false);
+
+				var brand = (manuName ?? Settings.Brand);
+				var mpn = Helper.GetManufacturerPartNumber(product);
+
+				bool identifierExists = product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue();
+
+				writer.WriteElementString("g", "id", _googleNamespace, product.Id.ToString());
+
+				writer.WriteStartElement("title");
+				writer.WriteCData(productName.Truncate(70));
+				writer.WriteEndElement();
+
+				var description = Helper.BuildProductDescription(productName, shortDescription, fullDescription, manuName, d =>
+				{
+					if (fullDescription.IsNullOrEmpty() && shortDescription.IsNullOrEmpty())
 					{
-						case 1: return d.Grow(Settings.AppendDescriptionText1, " ");
-						case 2: return d.Grow(Settings.AppendDescriptionText2, " ");
-						case 3: return d.Grow(Settings.AppendDescriptionText3, " ");
-						case 4: return d.Grow(Settings.AppendDescriptionText4, " ");
-						case 5: return d.Grow(Settings.AppendDescriptionText5, " ");
+						var rnd = new Random();
+
+						switch (rnd.Next(1, 5))
+						{
+							case 1: return d.Grow(Settings.AppendDescriptionText1, " ");
+							case 2: return d.Grow(Settings.AppendDescriptionText2, " ");
+							case 3: return d.Grow(Settings.AppendDescriptionText3, " ");
+							case 4: return d.Grow(Settings.AppendDescriptionText4, " ");
+							case 5: return d.Grow(Settings.AppendDescriptionText5, " ");
+						}
+					}
+					return d;
+				});
+
+				writer.WriteStartElement("description");
+				writer.WriteCData(description.RemoveInvalidXmlChars());
+				writer.WriteEndElement();
+
+				writer.WriteStartElement("g", "google_product_category", _googleNamespace);
+				writer.WriteCData(category);
+				writer.WriteFullEndElement();
+
+				string productType = Helper.GetCategoryPath(product);
+				if (productType.HasValue())
+				{
+					writer.WriteStartElement("g", "product_type", _googleNamespace);
+					writer.WriteCData(productType);
+					writer.WriteFullEndElement();
+				}
+
+				writer.WriteElementString("link", Helper.GetProductDetailUrl(fileCreation.Store, product));
+				writer.WriteElementString("g", "image_link", _googleNamespace, mainImageUrl);
+
+				foreach (string additionalImageUrl in Helper.GetAdditionalProductImages(fileCreation.Store, product, mainImageUrl))
+				{
+					writer.WriteElementString("g", "additional_image_link", _googleNamespace, additionalImageUrl);
+				}
+
+				writer.WriteElementString("g", "condition", _googleNamespace, Condition());
+				writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
+
+				decimal price = Helper.GetProductPrice(product, currency);
+				string specialPriceDate;
+
+				if (SpecialPrice(product, out specialPriceDate))
+				{
+					writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
+					writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+
+					// get regular price ignoring any special price
+					decimal specialPrice = product.SpecialPrice.Value;
+					product.SpecialPrice = null;
+					price = Helper.GetProductPrice(product, currency);
+					product.SpecialPrice = specialPrice;
+
+					_dbContext.SetToUnchanged<Product>(product);
+				}
+
+				writer.WriteElementString("g", "price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
+
+				writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
+				writer.WriteCData("brand", brand, "g", _googleNamespace);
+				writer.WriteCData("mpn", mpn, "g", _googleNamespace);
+
+				writer.WriteCData("gender", Gender(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("age_group", AgeGroup(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("color", Color(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("size", Size(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("material", Material(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("pattern", Pattern(googleProduct), "g", _googleNamespace);
+				writer.WriteCData("item_group_id", ItemGroupId(googleProduct), "g", _googleNamespace);
+
+				writer.WriteElementString("g", "online_only", _googleNamespace, Settings.OnlineOnly ? "y" : "n");
+				writer.WriteElementString("g", "identifier_exists", _googleNamespace, identifierExists ? "TRUE" : "FALSE");
+
+				if (Settings.ExpirationDays > 0)
+				{
+					writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(Settings.ExpirationDays).ToString("yyyy-MM-dd"));
+				}
+
+				if (Settings.ExportShipping)
+				{
+					string weightInfo, weight = product.Weight.FormatInvariant();
+
+					if (measureWeightSystemKey.IsCaseInsensitiveEqual("gram"))
+						weightInfo = weight + " g";
+					else if (measureWeightSystemKey.IsCaseInsensitiveEqual("lb"))
+						weightInfo = weight + " lb";
+					else if (measureWeightSystemKey.IsCaseInsensitiveEqual("ounce"))
+						weightInfo = weight + " oz";
+					else
+						weightInfo = weight + " kg";
+
+					writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
+				}
+
+				if (Settings.ExportBasePrice && product.BasePriceHasValue)
+				{
+					string measureUnit = BasePriceUnits(product.BasePriceMeasureUnit);
+
+					if (BasePriceSupported(product.BasePriceBaseAmount ?? 0, measureUnit))
+					{
+						string basePriceMeasure = "{0} {1}".FormatWith((product.BasePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
+						string basePriceBaseMeasure = "{0} {1}".FormatWith(product.BasePriceBaseAmount, measureUnit);
+
+						writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
+						writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
 					}
 				}
-				return d;
-			});
-
-			writer.WriteStartElement("description");
-			writer.WriteCData(description.RemoveInvalidXmlChars());
-			writer.WriteEndElement();
-
-			writer.WriteStartElement("g", "google_product_category", _googleNamespace);
-			writer.WriteCData(category);
-			writer.WriteFullEndElement();
-
-			string productType = Helper.GetCategoryPath(product);
-			if (productType.HasValue())
+			}
+			catch (Exception exc)
 			{
-				writer.WriteStartElement("g", "product_type", _googleNamespace);
-				writer.WriteCData(productType);
-				writer.WriteFullEndElement();
+				fileCreation.Logger.Error(exc.Message, exc);
 			}
 
-			writer.WriteElementString("link", Helper.GetProductDetailUrl(store, product));
-			writer.WriteElementString("g", "image_link", _googleNamespace, mainImageUrl);
-
-			foreach (string additionalImageUrl in Helper.GetAdditionalProductImages(store, product, mainImageUrl))
-			{
-				writer.WriteElementString("g", "additional_image_link", _googleNamespace, additionalImageUrl);
-			}
-
-			writer.WriteElementString("g", "condition", _googleNamespace, Condition());
-			writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
-
-			decimal price = Helper.GetProductPrice(product, currency);
-			string specialPriceDate;
-
-			if (SpecialPrice(product, out specialPriceDate))
-			{
-				writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
-				writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
-
-				// get regular price ignoring any special price
-				decimal specialPrice = product.SpecialPrice.Value;
-				product.SpecialPrice = null;
-				price = Helper.GetProductPrice(product, currency);
-				product.SpecialPrice = specialPrice;
-
-				_dbContext.SetToUnchanged<Product>(product);
-			}
-
-			writer.WriteElementString("g", "price", _googleNamespace, price.FormatInvariant() + " " + currency.CurrencyCode);
-
-			writer.WriteCData("gtin", product.Gtin, "g", _googleNamespace);
-			writer.WriteCData("brand", brand, "g", _googleNamespace);
-			writer.WriteCData("mpn", mpn, "g", _googleNamespace);
-
-			writer.WriteCData("gender", Gender(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("age_group", AgeGroup(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("color", Color(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("size", Size(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("material", Material(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("pattern", Pattern(googleProduct), "g", _googleNamespace);
-			writer.WriteCData("item_group_id", ItemGroupId(googleProduct), "g", _googleNamespace);
-
-			writer.WriteElementString("g", "online_only", _googleNamespace, Settings.OnlineOnly ? "y" : "n");
-			writer.WriteElementString("g", "identifier_exists", _googleNamespace, identifierExists ? "TRUE" : "FALSE");
-
-			if (Settings.ExpirationDays > 0)
-			{
-				writer.WriteElementString("g", "expiration_date", _googleNamespace, DateTime.UtcNow.AddDays(Settings.ExpirationDays).ToString("yyyy-MM-dd"));
-			}
-
-			if (Settings.ExportShipping)
-			{
-				string weightInfo, weight = product.Weight.FormatInvariant();
-
-				if (measureWeightSystemKey.IsCaseInsensitiveEqual("gram"))
-					weightInfo = weight + " g";
-				else if (measureWeightSystemKey.IsCaseInsensitiveEqual("lb"))
-					weightInfo = weight + " lb";
-				else if (measureWeightSystemKey.IsCaseInsensitiveEqual("ounce"))
-					weightInfo = weight + " oz";
-				else
-					weightInfo = weight + " kg";
-
-				writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
-			}
-
-			if (Settings.ExportBasePrice && product.BasePriceHasValue)
-			{
-				string measureUnit = BasePriceUnits(product.BasePriceMeasureUnit);
-
-				if (BasePriceSupported(product.BasePriceBaseAmount ?? 0, measureUnit))
-				{
-					string basePriceMeasure = "{0} {1}".FormatWith((product.BasePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
-					string basePriceBaseMeasure = "{0} {1}".FormatWith(product.BasePriceBaseAmount, measureUnit);
-
-					writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
-					writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
-				}
-			}
-
-			return null;
+			writer.WriteEndElement(); // item
 		}
 		
 		public string[] GetTaxonomyList()
@@ -659,19 +666,13 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					var searchContext = new ProductSearchContext()
 					{
 						OrderBy = ProductSortingEnum.CreatedOn,
-						PageSize = int.MaxValue,
+						PageSize = Settings.PageSize,
 						StoreId = fileCreation.Store.Id,
 						VisibleIndividuallyOnly = true
 					};
 
-					string breakingError = null;
-					var qualifiedProducts = new List<Product>();
 					var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
-					var products = _productService.SearchProducts(searchContext);
 					var measureWeightSystemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
-
-					if (fileCreation.TotalRecords == 0)
-						fileCreation.TotalRecords = products.Count * fileCreation.StoreCount;
 
 					writer.WriteStartDocument();
 					writer.WriteStartElement("rss");
@@ -682,46 +683,57 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					writer.WriteElementString("link", "http://base.google.com/base/");
 					writer.WriteElementString("description", "Information about products");
 
-					foreach (var product in products)
+					for (int i = 0; i < 9999999; ++i)
 					{
-						fileCreation.Report();
+						searchContext.PageIndex = i;
 
-						Helper.GetQualifiedProductsByProduct(product, fileCreation.Store, qualifiedProducts);
+						var products = _productService.SearchProducts(searchContext);
 
-						foreach (var qualifiedProduct in qualifiedProducts)
+						if (fileCreation.TotalRecords == 0)
+							fileCreation.TotalRecords = products.TotalCount * fileCreation.StoreCount;	// approx
+
+						foreach (var product in products)
 						{
-							writer.WriteStartElement("item");
+							fileCreation.Report();
 
-							try
+							if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 							{
-								breakingError = WriteItem(writer, fileCreation.Store, qualifiedProduct, currency, measureWeightSystemKey);
+								WriteItem(fileCreation, writer, product, currency, measureWeightSystemKey);
 							}
-							catch (Exception exc)
+							else if (product.ProductType == ProductType.GroupedProduct)
 							{
-								fileCreation.Logger.Error(exc.Message, exc);
+								var associatedSearchContext = new ProductSearchContext()
+								{
+									OrderBy = ProductSortingEnum.CreatedOn,
+									PageSize = int.MaxValue,
+									StoreId = fileCreation.Store.Id,
+									VisibleIndividuallyOnly = false,
+									ParentGroupedProductId = product.Id
+								};
+
+								foreach (var associatedProduct in _productService.SearchProducts(associatedSearchContext))
+								{
+									WriteItem(fileCreation, writer, product, currency, measureWeightSystemKey);
+								}
 							}
 
-							writer.WriteEndElement(); // item
+							if (taskContext.CancellationToken.IsCancellationRequested)
+							{
+								fileCreation.Logger.Warning("A cancellation has been requested");
+								break;
+							}
 						}
 
-						if (breakingError.HasValue())
-						{
-							fileCreation.Logger.Error(breakingError);
+						if (!products.HasNextPage)
 							break;
-						}
-						if (taskContext.CancellationToken.IsCancellationRequested)
-						{
-							fileCreation.Logger.Warning("A cancellation has been requested");
-							break;
-						}
 					}
 
 					writer.WriteEndElement(); // channel
 					writer.WriteEndElement(); // rss
 					writer.WriteEndDocument();
 
-					if (breakingError.HasValue())
-						throw new SmartException(breakingError);
+					if (fileCreation.ErrorMessage.HasValue())
+						fileCreation.Logger.Error(fileCreation.ErrorMessage);
 				}
 				catch (Exception exc)
 				{

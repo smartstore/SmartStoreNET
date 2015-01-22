@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
 using System.IO;
-using System.Web;
-using System.Web.Mvc;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Async;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Media;
-using SmartStore.Services.Tasks;
-using SmartStore.Services.Stores;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 
 namespace SmartStore.Web.Framework.Plugins
@@ -507,31 +506,6 @@ namespace SmartStore.Web.Framework.Plugins
 				}
 			}
 			return urls;
-		}
-
-		public void GetQualifiedProductsByProduct(Product product, Store store, List<Product> result)
-		{
-			result.Clear();
-
-			if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
-			{
-				result.Add(product);
-			}
-			else if (product.ProductType == ProductType.GroupedProduct)
-			{
-				var associatedSearchContext = new ProductSearchContext()
-				{
-					OrderBy = ProductSortingEnum.CreatedOn,
-					PageSize = int.MaxValue,
-					StoreId = store.Id,
-					VisibleIndividuallyOnly = false,
-					ParentGroupedProductId = product.Id
-				};
-
-				var productService = ProductService;
-
-				result.AddRange(productService.SearchProducts(associatedSearchContext));
-			}
 		}
 
 		internal string LookupCategoryPath(int id)

@@ -164,6 +164,12 @@ namespace SmartStore.Core.Domain.Catalog
         public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>
+        /// Gets or sets the date and time of instance update
+        /// </summary>
+        [DataMember]
+        public string DefaultViewMode { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of applied discounts
         /// </summary>
 		[DataMember]

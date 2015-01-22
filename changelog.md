@@ -1,11 +1,17 @@
-﻿# Release Notes
+# Release Notes
 ## SmartStore.NET 2.5
+
+### New Features
+* #428 Implement category option to override global list view type
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
 
 
+
+
+# Release Notes
 ## SmartStore.NET 2.1.1
 
 ### New Features

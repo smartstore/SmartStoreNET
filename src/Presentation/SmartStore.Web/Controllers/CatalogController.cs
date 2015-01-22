@@ -151,6 +151,11 @@ namespace SmartStore.Web.Controllers
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
+            if (!String.IsNullOrEmpty(category.DefaultViewMode))
+            {
+                command.ViewMode = category.DefaultViewMode;
+            }
+
             var model = category.ToModel();
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext

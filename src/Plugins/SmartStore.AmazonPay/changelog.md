@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.19##
+###Bugfixes###
+* Declined authorization IPN did not void the payment status
+
 ##Pay with Amazon 1.18##
 ###Bugfixes###
 * Order wasn't found if the capturing\refunding took place at Amazon Seller Central and the notification came through IPN

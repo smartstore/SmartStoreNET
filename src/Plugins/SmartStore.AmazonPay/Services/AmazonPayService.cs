@@ -649,6 +649,10 @@ namespace SmartStore.AmazonPay.Services
 			{
 				_orderProcessingService.VoidOffline(order);		// cancelation at amazon seller central
 			}
+			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
+			{
+				_orderProcessingService.VoidOffline(order);
+			}
 
 			if (!newResult.IsCaseInsensitiveEqual(order.AuthorizationTransactionResult))
 			{

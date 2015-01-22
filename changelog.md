@@ -1,4 +1,11 @@
-# Release Notes
+﻿# Release Notes
+## SmartStore.NET 2.5
+
+### Bugfixes
+* Amazon payments: Declined authorization IPN did not void the payment status
+* Fixed „Payment method couldn't be loaded“ when order amount is zero
+
+
 ## SmartStore.NET 2.1.1
 
 ### New Features
@@ -35,8 +42,8 @@
 * Fixed password recovery redirection
 * #552 Left navbar should stay expanded on product detail pages
 * #538 Specification attribute labels in product filter mask are not displayed localized
-* #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
-* #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
+* #540 Amazon payments: Multistore configuration might be lost if "All stores" are left empty
+* #532 Amazon payments: Reflect refunds made at amazon seller central when using data polling
 * #577 Exception thrown because of missing TaxRate table when opening tax by region provider configuration
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 * Email a friend redirects to "not found"
@@ -45,6 +52,7 @@
 * #583 Fixed "The property rate with the value x is malformed" when creating products
 * Fixed ignored discount and tier price when product has attribute combination price
 * PayPal Standard provider now using shipping rather than billing address if shipping is required
+* Amazon payments: Order wasn't found if the capturing\refunding took place at Amazon Seller Central and the notification came through IPN
 
 
 ## SmartStore.NET 2.1.0

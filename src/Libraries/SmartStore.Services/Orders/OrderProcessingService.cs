@@ -874,18 +874,20 @@ namespace SmartStore.Services.Orders
 
                 //payment workflow
                 Provider<IPaymentMethod> paymentMethod = null;
-                if (!skipPaymentWorkflow)
-                {
-                    paymentMethod = _paymentService.LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
-                    if (paymentMethod == null)
-                        throw new SmartException("Payment method couldn't be loaded");
+				if (!skipPaymentWorkflow)
+				{
+					paymentMethod = _paymentService.LoadPaymentMethodBySystemName(processPaymentRequest.PaymentMethodSystemName);
+					if (paymentMethod == null)
+						throw new SmartException("Payment method couldn't be loaded");
 
-                    //ensure that payment method is active
-                    if (!paymentMethod.IsPaymentMethodActive(_paymentSettings))
-                        throw new SmartException("Payment method is not active");
-                }
-                else
-                    processPaymentRequest.PaymentMethodSystemName = "";
+					//ensure that payment method is active
+					if (!paymentMethod.IsPaymentMethodActive(_paymentSettings))
+						throw new SmartException("Payment method is not active");
+				}
+				else
+				{
+					processPaymentRequest.PaymentMethodSystemName = "";
+				}
 
                 //recurring or standard shopping cart?
                 bool isRecurringShoppingCart = false;

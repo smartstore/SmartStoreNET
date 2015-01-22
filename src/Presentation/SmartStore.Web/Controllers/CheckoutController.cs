@@ -797,11 +797,13 @@ namespace SmartStore.Web.Controllers
             var model = new CheckoutConfirmModel();
             try
             {
+				bool isPaymentPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
+
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
                 {
                     //Check whether payment workflow is required
-                    if (IsPaymentWorkflowRequired(cart))
+					if (isPaymentPaymentWorkflowRequired)
 						return RedirectToAction("PaymentMethod");
 
 					processPaymentRequest = new ProcessPaymentRequest();
@@ -824,11 +826,14 @@ namespace SmartStore.Web.Controllers
 
                 if (placeOrderResult.Success)
                 {
-                    var postProcessPaymentRequest = new PostProcessPaymentRequest()
-                    {
-                        Order = placeOrderResult.PlacedOrder
-                    };
-                    _paymentService.PostProcessPayment(postProcessPaymentRequest);
+					if (isPaymentPaymentWorkflowRequired)
+					{
+						var postProcessPaymentRequest = new PostProcessPaymentRequest()
+						{
+							Order = placeOrderResult.PlacedOrder
+						};
+						_paymentService.PostProcessPayment(postProcessPaymentRequest);
+					}
 
 					_httpContext.Session["PaymentData"] = null;
 					_httpContext.Session["OrderPaymentInfo"] = null;

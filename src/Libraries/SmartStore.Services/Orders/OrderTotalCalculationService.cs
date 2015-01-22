@@ -181,6 +181,9 @@ namespace SmartStore.Services.Orders
 
             foreach (var shoppingCartItem in cart)
 			{
+				if (shoppingCartItem.Item.Product == null)
+					continue;
+
 				decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
 
 				IProductAttributeParser productAttrParser;

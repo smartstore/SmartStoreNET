@@ -204,7 +204,7 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.ProductReviews.Deleted"));
             return RedirectToAction("List");
         }
-
+        
         [HttpPost]
         public ActionResult ApproveSelected(ICollection<int> selectedIds)
         {
@@ -231,6 +231,31 @@ namespace SmartStore.Admin.Controllers
 
             return Json(new { Result = true });
         }
+
+        [HttpPost]
+        public ActionResult DeleteSelected(ICollection<int> selectedIds)
+        {
+            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+                return AccessDeniedView();
+
+            if (selectedIds != null)
+            {
+                foreach (var id in selectedIds)
+                {
+                    var productReview = _customerContentService.GetCustomerContentById(id) as ProductReview;
+                    if (productReview != null)
+                    {
+                        var product = productReview.Product;
+                        _customerContentService.DeleteCustomerContent(productReview);
+                        //update product totals
+                        _productService.UpdateProductReviewTotals(product);
+                    }
+                }
+            }
+
+            return Json(new { Result = true });
+        }
+
 
         [HttpPost]
         public ActionResult DisapproveSelected(ICollection<int> selectedIds)

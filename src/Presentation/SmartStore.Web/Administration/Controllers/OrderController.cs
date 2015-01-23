@@ -403,6 +403,7 @@ namespace SmartStore.Admin.Controllers
             model.BillingAddress.LastNameRequired = true;
             model.BillingAddress.EmailEnabled = true;
             model.BillingAddress.EmailRequired = true;
+            model.BillingAddress.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
             model.BillingAddress.CompanyEnabled = _addressSettings.CompanyEnabled;
             model.BillingAddress.CompanyRequired = _addressSettings.CompanyRequired;
             model.BillingAddress.CountryEnabled = _addressSettings.CountryEnabled;
@@ -432,6 +433,7 @@ namespace SmartStore.Admin.Controllers
                 model.ShippingAddress.LastNameRequired = true;
                 model.ShippingAddress.EmailEnabled = true;
                 model.ShippingAddress.EmailRequired = true;
+                model.ShippingAddress.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
                 model.ShippingAddress.CompanyEnabled = _addressSettings.CompanyEnabled;
                 model.ShippingAddress.CompanyRequired = _addressSettings.CompanyRequired;
                 model.ShippingAddress.CountryEnabled = _addressSettings.CountryEnabled;
@@ -728,6 +730,7 @@ namespace SmartStore.Admin.Controllers
 			model.Address.LastNameRequired = true;
 			model.Address.EmailEnabled = true;
 			model.Address.EmailRequired = true;
+            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
 			model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
 			model.Address.CompanyRequired = _addressSettings.CompanyRequired;
 			model.Address.CountryEnabled = _addressSettings.CountryEnabled;

@@ -34,6 +34,7 @@
 @Html.HiddenFor(model => model.LastNameRequired)
 @Html.HiddenFor(model => model.EmailEnabled)
 @Html.HiddenFor(model => model.EmailRequired)
+@Html.HiddenFor(model => model.ValidateEmailAddress)
 @Html.HiddenFor(model => model.CompanyEnabled)
 @Html.HiddenFor(model => model.CompanyRequired)
 @Html.HiddenFor(model => model.CountryEnabled)
@@ -51,148 +52,160 @@
 @Html.HiddenFor(model => model.FaxEnabled)
 @Html.HiddenFor(model => model.FaxRequired)
 <table>
-@if (Model.FirstNameEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.FirstName)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.FirstName)
-        @Html.ValidationMessageFor(model => model.FirstName)
-    </td>
-</tr>
-}
-@if (Model.LastNameEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.LastName)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.LastName)
-        @Html.ValidationMessageFor(model => model.LastName)
-    </td>
-</tr>
-}
-@if (Model.EmailEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.Email)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.Email)
-        @Html.ValidationMessageFor(model => model.Email)
-    </td>
-</tr>
-}
-@if (Model.CompanyEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.Company)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.Company)
-        @Html.ValidationMessageFor(model => model.Company)
-    </td>
-</tr>
-}
-@if (Model.CountryEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.CountryId)
-    </td>
-    <td class="adminData">
-        @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, T("Admin.Address.SelectCountry").Text)
-        @Html.ValidationMessageFor(model => model.CountryId)
-    </td>
-</tr>
-}
-@if (Model.CountryEnabled && Model.StateProvinceEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.StateProvinceId)
-    </td>
-    <td class="adminData">
-        @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
-        @Html.ValidationMessageFor(model => model.StateProvinceId)
-    </td>
-</tr>
-}
-@if (Model.CityEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.City)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.City)
-        @Html.ValidationMessageFor(model => model.City)
-    </td>
-</tr>
-}
-@if (Model.StreetAddressEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.Address1)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.Address1)
-        @Html.ValidationMessageFor(model => model.Address1)
-    </td>
-</tr>
-}
-@if (Model.StreetAddress2Enabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.Address2)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.Address2)
-        @Html.ValidationMessageFor(model => model.Address2)
-    </td>
-</tr>
-}
-@if (Model.ZipPostalCodeEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.ZipPostalCode)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.ZipPostalCode)
-        @Html.ValidationMessageFor(model => model.ZipPostalCode)
-    </td>
-</tr>
-}
-@if (Model.PhoneEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.PhoneNumber)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.PhoneNumber)
-        @Html.ValidationMessageFor(model => model.PhoneNumber)
-    </td>
-</tr>
-}
-@if (Model.FaxEnabled)
-{
-<tr>
-    <td class="adminTitle">
-        @Html.SmartLabelFor(model => model.FaxNumber)
-    </td>
-    <td class="adminData">
-        @Html.EditorFor(model => model.FaxNumber)
-        @Html.ValidationMessageFor(model => model.FaxNumber)
-    </td>
-</tr>
-}
+    @if (Model.FirstNameEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.FirstName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.FirstName)
+                @Html.ValidationMessageFor(model => model.FirstName)
+            </td>
+        </tr>
+    }
+    @if (Model.LastNameEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.LastName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.LastName)
+                @Html.ValidationMessageFor(model => model.LastName)
+            </td>
+        </tr>
+    }
+    @if (Model.EmailEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Email)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Email)
+                @Html.ValidationMessageFor(model => model.Email)
+            </td>
+        </tr>
+    }
+    @if (Model.ValidateEmailAddress && Model.EmailEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.EmailMatch)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.EmailMatch)
+                @Html.ValidationMessageFor(model => model.EmailMatch)
+            </td>
+        </tr>
+    }
+    @if (Model.CompanyEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Company)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Company)
+                @Html.ValidationMessageFor(model => model.Company)
+            </td>
+        </tr>
+    }
+    @if (Model.CountryEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CountryId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries, T("Admin.Address.SelectCountry").Text)
+                @Html.ValidationMessageFor(model => model.CountryId)
+            </td>
+        </tr>
+    }
+    @if (Model.CountryEnabled && Model.StateProvinceEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.StateProvinceId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
+                @Html.ValidationMessageFor(model => model.StateProvinceId)
+            </td>
+        </tr>
+    }
+    @if (Model.CityEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.City)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.City)
+                @Html.ValidationMessageFor(model => model.City)
+            </td>
+        </tr>
+    }
+    @if (Model.StreetAddressEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Address1)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Address1)
+                @Html.ValidationMessageFor(model => model.Address1)
+            </td>
+        </tr>
+    }
+    @if (Model.StreetAddress2Enabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Address2)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Address2)
+                @Html.ValidationMessageFor(model => model.Address2)
+            </td>
+        </tr>
+    }
+    @if (Model.ZipPostalCodeEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ZipPostalCode)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.ZipPostalCode)
+                @Html.ValidationMessageFor(model => model.ZipPostalCode)
+            </td>
+        </tr>
+    }
+    @if (Model.PhoneEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.PhoneNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.PhoneNumber)
+                @Html.ValidationMessageFor(model => model.PhoneNumber)
+            </td>
+        </tr>
+    }
+    @if (Model.FaxEnabled)
+    {
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.FaxNumber)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.FaxNumber)
+                @Html.ValidationMessageFor(model => model.FaxNumber)
+            </td>
+        </tr>
+    }
 </table>

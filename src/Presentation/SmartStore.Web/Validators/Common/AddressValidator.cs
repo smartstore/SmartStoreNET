@@ -59,6 +59,15 @@ namespace SmartStore.Web.Validators.Common
             {
                 RuleFor(x => x.FaxNumber).NotEmpty().WithMessage(localizationService.GetResource("Account.Fields.Fax.Required"));
             }
+            if (addressSettings.ValidateEmailAddress)
+            {
+                RuleFor(x => x.EmailMatch)
+                    .NotEmpty()
+                    .WithMessage(localizationService.GetResource("Admin.Address.Fields.EmailMatch.Required"))
+                    .Equal(x => x.Email)
+                    .WithMessage(localizationService.GetResource("Admin.Address.Fields.EmailMatch.MustMatchEmail"));
+            }
+
         }
     }
 }

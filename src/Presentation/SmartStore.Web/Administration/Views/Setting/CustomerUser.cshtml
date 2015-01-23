@@ -574,6 +574,15 @@
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.AddressSettings.ValidateEmailAddress)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.AddressSettings.ValidateEmailAddress)
+                @Html.ValidationMessageFor(model => model.AddressSettings.ValidateEmailAddress)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AddressSettings.CompanyEnabled)
             </td>
             <td class="adminData">

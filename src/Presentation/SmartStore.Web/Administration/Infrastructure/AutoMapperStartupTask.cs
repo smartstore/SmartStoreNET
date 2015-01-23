@@ -85,6 +85,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.LastNameRequired, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailRequired, mo => mo.Ignore())
+                .ForMember(dest => dest.ValidateEmailAddress, mo => mo.Ignore())
                 .ForMember(dest => dest.CompanyEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.CompanyRequired, mo => mo.Ignore())
                 .ForMember(dest => dest.CountryEnabled, mo => mo.Ignore())

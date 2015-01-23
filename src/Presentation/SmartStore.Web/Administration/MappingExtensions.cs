@@ -519,7 +519,9 @@ namespace SmartStore.Admin
 
         public static AddressModel ToModel(this Address entity)
         {
-            return Mapper.Map<Address, AddressModel>(entity);
+            var addressModel = Mapper.Map<Address, AddressModel>(entity);
+            addressModel.EmailMatch = entity.Email;
+            return addressModel;
         }
 
         public static Address ToEntity(this AddressModel model)
@@ -781,9 +783,6 @@ namespace SmartStore.Admin
         {
             return Mapper.Map(model, destination);
         }
-
-        //codehint: sm-add end
-
 
         public static TaxSettingsModel ToModel(this TaxSettings entity)
         {

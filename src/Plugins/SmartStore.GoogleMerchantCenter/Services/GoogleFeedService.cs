@@ -713,7 +713,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 								foreach (var associatedProduct in _productService.SearchProducts(associatedSearchContext))
 								{
-									WriteItem(fileCreation, writer, product, currency, measureWeightSystemKey);
+									WriteItem(fileCreation, writer, associatedProduct, currency, measureWeightSystemKey);
 								}
 							}
 

@@ -6,7 +6,7 @@ namespace SmartStore.Data.Migrations
 	using SmartStore.Data.Setup;
 	using System.Linq;
 
-    public partial class DefaultViewModeForCategories : DbMigration, ILocaleResourcesProvider
+    public partial class DefaultViewModeForCategories : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {

@@ -1,7 +1,7 @@
 ﻿using System;
-using System.Configuration;
-using System.Web.Hosting;
 using System.IO;
+using System.Threading;
+using System.Web.Hosting;
 using SmartStore.Utilities;
 
 namespace SmartStore
@@ -126,6 +126,98 @@ namespace SmartStore
 					exc.Dump();
 				}
 			}
+		}
+
+		/// <summary>
+		/// Safe way to delete all directory content
+		/// </summary>
+		/// <param name="directoryPath">A directory path</param>
+		public static void ClearDirectory(string directoryPath, bool selfToo)
+		{
+			if (directoryPath.IsNullOrEmpty())
+				return;
+
+			try
+			{
+				var dir = new DirectoryInfo(directoryPath);
+
+				foreach (var fi in dir.GetFiles())
+				{
+					try
+					{
+						fi.IsReadOnly = false;
+						fi.Delete();
+					}
+					catch (Exception)
+					{
+						try
+						{
+							Thread.Sleep(0);
+							fi.Delete();
+						}
+						catch (Exception) { }
+					}
+				}
+
+				foreach (var di in dir.GetDirectories())
+				{
+					ClearDirectory(di.FullName, false);
+
+					try
+					{
+						di.Delete();
+					}
+					catch (Exception)
+					{
+						try
+						{
+							Thread.Sleep(0);
+							di.Delete();
+						}
+						catch (Exception) { }
+					}
+				}
+			}
+			catch (Exception) { }
+
+			if (selfToo)
+			{
+				try
+				{
+					Directory.Delete(directoryPath, true);	// just deletes the (now empty) directory
+				}
+				catch (Exception) { }
+			}
+		}
+
+		/// <summary>
+		/// Safe way to count files in a directory
+		/// </summary>
+		/// <param name="directoryPath">A directory path</param>
+		/// <returns>File count</returns>
+		public static int CountFiles(string directoryPath)
+		{
+			try
+			{
+				return Directory.GetFiles(directoryPath).Length;
+			}
+			catch (Exception) { }
+
+			return 0;
+		}
+
+		/// <summary>
+		/// Safe way to empty a file
+		/// </summary>
+		/// <param name="path">File path</param>
+		public static void ClearFile(string path)
+		{
+			try
+			{
+				if (path.HasValue())
+					File.WriteAllText(path, "");
+			}
+			catch (Exception) { }
 		}
 	}
 }

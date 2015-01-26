@@ -427,8 +427,11 @@ namespace SmartStore.Services.ExportImport
 			{
 				writer.WriteStartElement("ProductPicture");
 				writer.WriteElementString("ProductPictureId", null, productPicture.Id.ToString());
-				writer.WriteElementString("PictureId", null, productPicture.PictureId.ToString());
 				writer.WriteElementString("DisplayOrder", null, productPicture.DisplayOrder.ToString());
+
+				writer.WriteElementString("PictureId", null, productPicture.PictureId.ToString());
+				writer.WriteElementString("SeoFilename", null, productPicture.Picture.SeoFilename);
+				writer.WriteElementString("MimeType", null, productPicture.Picture.MimeType);
 				writer.WriteElementString("ThumbImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, _mediaSettings.ProductThumbPictureSize, false));
 				writer.WriteElementString("ImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, _mediaSettings.ProductDetailsPictureSize, false));
 				writer.WriteElementString("FullSizeImageUrl", null, _pictureService.GetPictureUrl(productPicture.Picture, 0, false));

@@ -2450,6 +2450,7 @@ namespace SmartStore.Admin.Controllers
 
             return new JsonResult
             {
+				MaxJsonLength = int.MaxValue,
                 Data = model
             };
         }

@@ -13,6 +13,7 @@ Feed plugins: product query now paged to reduce memory payload
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
 * #557 Localize MVC validation strings
+* Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
 
 
 ## SmartStore.NET 2.1.1

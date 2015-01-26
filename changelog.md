@@ -12,6 +12,7 @@ Feed plugins: product query now paged to reduce memory payload
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
+* #557 Localize MVC validation strings
 
 
 ## SmartStore.NET 2.1.1

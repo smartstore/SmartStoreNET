@@ -92,6 +92,11 @@ namespace SmartStore.Web
 			// Routes
 			RegisterRoutes(RouteTable.Routes, installed);
 
+			// localize MVC resources
+			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
+			DefaultModelBinder.ResourceClassKey = "MvcLocalization";
+			ErrorMessageProvider.SetResourceClassKey("MvcLocalization");
+
 			if (installed)
 			{
 				// register our themeable razor view engine we use

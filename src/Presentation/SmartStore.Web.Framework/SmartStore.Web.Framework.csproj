@@ -245,6 +245,7 @@
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
     <Compile Include="Extensions\RouteExtensions.cs" />
+    <Compile Include="Mvc\ErrorMessageProvider.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
     <Compile Include="Mvc\ProviderModel.cs" />
     <Compile Include="Pdf\Content\PdfRouteContent.cs" />

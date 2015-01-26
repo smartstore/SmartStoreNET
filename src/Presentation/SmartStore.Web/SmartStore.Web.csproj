@@ -236,6 +236,16 @@
       <DesignTime>True</DesignTime>
       <DependentUpon>GridLocalization.resx</DependentUpon>
     </Compile>
+    <Compile Include="App_GlobalResources\MvcLocalization.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MvcLocalization.resx</DependentUpon>
+    </Compile>
+    <Compile Include="App_GlobalResources\MvcLocalization.de.Designer.cs">
+      <AutoGen>True</AutoGen>
+      <DesignTime>True</DesignTime>
+      <DependentUpon>MvcLocalization.de.resx</DependentUpon>
+    </Compile>
     <Compile Include="Controllers\BoardsController.cs" />
     <Compile Include="Controllers\CatalogController.cs" />
     <Compile Include="Controllers\CatalogHelper.cs" />
@@ -901,6 +911,11 @@
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\fonts\Fontastic.svg" />
     <Content Include="51Degrees.config" />
+    <Content Include="App_GlobalResources\MvcLocalization.de.resx">
+      <Generator>ResXFileCodeGenerator</Generator>
+      <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Config\BundleTransformer.Configuration.xsd">
       <SubType>Designer</SubType>
     </None>
@@ -2156,6 +2171,12 @@
     <Content Include="App_GlobalResources\GridLocalization.resx">
       <Generator>GlobalResourceProxyGenerator</Generator>
       <LastGenOutput>GridLocalization.designer.cs</LastGenOutput>
+    </Content>
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="App_GlobalResources\MvcLocalization.resx">
+      <Generator>GlobalResourceProxyGenerator</Generator>
+      <LastGenOutput>MvcLocalization.Designer.cs</LastGenOutput>
     </Content>
   </ItemGroup>
   <PropertyGroup>

@@ -165,12 +165,6 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Checkout", action = "Index" },
                 new[] { "SmartStore.Web.Controllers" });
 
-			routes.MapLocalizedRoute("ReturnRequest",
-				"returnrequest/{orderId}",
-				new { controller = "ReturnRequest", action = "ReturnRequest" },
-				new { orderId = idConstraint },
-				new[] { "SmartStore.Web.Controllers" });
-
 
 			/* Newsletter
 			----------------------------------------*/

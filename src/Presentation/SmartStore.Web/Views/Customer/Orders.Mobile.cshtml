@@ -89,7 +89,7 @@
                                 <div class="buttons">
                                     @if (order.IsReturnRequestAllowed)
 									{
-										<a href="@Url.RouteUrl("ReturnRequest", new { orderId = order.Id })" data-role="button" rel="nofollow">@T("Account.CustomerOrders.ReturnItems")</a>
+										<a href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = order.Id })" data-role="button" rel="nofollow">@T("Account.CustomerOrders.ReturnItems")</a>
 									}
 									<a href="@Url.Action("Details", "Order", new { id = order.Id })" data-role="button" rel="nofollow">@T("Account.CustomerOrders.OrderDetails")</a>
                                 </div>

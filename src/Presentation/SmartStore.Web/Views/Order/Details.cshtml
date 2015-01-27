@@ -406,7 +406,7 @@
 					<div class="pull-right">
 						@if (Model.IsReturnRequestAllowed)
 						{
-							<a class="btn return-items-button" href="@Url.RouteUrl("ReturnRequest", new { orderId = Model.Id })" rel="nofollow">
+							<a class="btn return-items-button" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = Model.Id })" rel="nofollow">
 								<i class="fa fa-reply"></i>
 								@T("Order.ReturnItems")
 							</a>

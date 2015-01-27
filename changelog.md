@@ -12,6 +12,7 @@ Feed plugins: product query now paged to reduce memory payload
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
+* #598 Wrong input parameter name for ReturnRequestSubmit
 * #557 Localize MVC validation strings
 * Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
 * Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes

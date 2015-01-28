@@ -151,7 +151,7 @@ namespace SmartStore.Web.Controllers
             if (command.PageNumber <= 0)
                 command.PageNumber = 1;
 
-            if (!String.IsNullOrEmpty(category.DefaultViewMode))
+            if (command.ViewMode.IsEmpty() && category.DefaultViewMode.HasValue())
             {
                 command.ViewMode = category.DefaultViewMode;
             }

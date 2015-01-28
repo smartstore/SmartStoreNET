@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml.XPath;
 
 namespace SmartStore
@@ -13,19 +14,21 @@ namespace SmartStore
 		/// <param name="node">The node</param>
 		/// <param name="xpath">Optional xpath</param>
 		/// <param name="defaultValue">Optional default value</param>
+		/// <param name="culture">If null is passed, CultureInfo.InvariantCulture is used.</param>
 		/// <returns>The value</returns>
-		public static T GetValue<T>(this XPathNavigator node, string xpath = null, T defaultValue = default(T))
+		public static T GetValue<T>(this XPathNavigator node, string xpath = null, T defaultValue = default(T), CultureInfo culture = null)
 		{
 			try
 			{
 				if (node != null)
 				{
-					if (xpath.IsNullOrEmpty())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(node.Value);
+					if (xpath.IsNullOrEmpty() && node.Value.HasValue())
+						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, node.Value);
 
 					var n = node.SelectSingleNode(xpath);
-					if (n != null)
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(n.Value);
+
+					if (n != null && n.Value.HasValue())
+						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, n.Value);
 				}
 			}
 			catch (Exception exc)

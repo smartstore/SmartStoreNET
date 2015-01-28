@@ -1,23 +1,18 @@
 using System;
 using System.Collections.Generic;
 using System.Drawing;
-using System.Drawing.Drawing2D;
-using System.Drawing.Imaging;
 using System.IO;
 using System.Linq;
+using System.Text;
+using ImageResizer;
 using SmartStore.Core;
-using SmartStore.Core.IO;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
-using SmartStore.Services.Configuration;
 using SmartStore.Core.Events;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
-using SmartStore.Services.Seo;
-using ImageResizer;
-using ImageResizer.Configuration;
-using System.Threading;
-using System.Text;
+using SmartStore.Services.Configuration;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Media
@@ -139,6 +134,42 @@ namespace SmartStore.Services.Media
                 return resultStream.GetBuffer();
             }
         }
+
+		/// <summary>
+		/// Finds an equal picture by comparing the binary buffer
+		/// </summary>
+		/// <param name="path">The picture to find a duplicate for</param>
+		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
+		public byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures)
+		{
+			try
+			{
+				var myBuffer = File.ReadAllBytes(path);
+
+				foreach (var picture in productPictures)
+				{
+					var otherBuffer = LoadPictureBinary(picture);
+					using (var myStream = new MemoryStream(myBuffer))
+					{
+						using (var otherStream = new MemoryStream(otherBuffer))
+						{
+							var equals = myStream.ContentsEqual(otherStream);
+							if (equals)
+							{
+								return null;
+							}
+						}
+					}
+				}
+
+				return myBuffer;
+			}
+			catch
+			{
+				return null;
+			}
+		}
 
         private string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
         {

@@ -32,8 +32,8 @@ namespace SmartStore.Services.ExportImport
 		/// </summary>
 		/// <param name="writer">The XML writer</param>
 		/// <param name="product">The product</param>
-		/// <param name="culture">Used culture</param>
-		void WriteProductToXml(XmlWriter writer, Product product, CultureInfo culture = null);
+		/// <param name="context">Context objects</param>
+		void WriteProductToXml(XmlWriter writer, Product product, XmlExportContext context);
 
         /// <summary>
         /// Export product list to xml

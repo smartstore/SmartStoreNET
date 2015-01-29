@@ -215,6 +215,10 @@
     <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.cs" />
+    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.Designer.cs">
+      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -430,6 +434,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501291549546_OrderItemTaxRate.resx">
+      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

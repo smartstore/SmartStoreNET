@@ -520,6 +520,7 @@ namespace SmartStore.Admin.Controllers
                 //unit price
                 orderItemModel.UnitPriceInclTaxValue = orderItem.UnitPriceInclTax;
                 orderItemModel.UnitPriceExclTaxValue = orderItem.UnitPriceExclTax;
+				orderItemModel.TaxRate = orderItem.TaxRate;
                 orderItemModel.UnitPriceInclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceInclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, true, true);
                 orderItemModel.UnitPriceExclTax = _priceFormatter.FormatPrice(orderItem.UnitPriceExclTax, true, primaryStoreCurrency, _workContext.WorkingLanguage, false, true);
                 //discounts
@@ -585,8 +586,9 @@ namespace SmartStore.Admin.Controllers
 			var order = _orderService.GetOrderById(orderId);
 
 			decimal taxRate = decimal.Zero;
+			decimal unitPriceTaxRate = decimal.Zero;
 			decimal unitPrice = _priceCalculationService.GetFinalPrice(product, null, customer, decimal.Zero, false, 1);
-			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out taxRate);
+			decimal unitPriceInclTax = _taxService.GetProductPrice(product, unitPrice, true, customer, out unitPriceTaxRate);
 			decimal unitPriceExclTax = _taxService.GetProductPrice(product, unitPrice, false, customer, out taxRate);
 
             var model = new OrderModel.AddOrderProductModel.ProductDetailsModel()
@@ -598,6 +600,7 @@ namespace SmartStore.Admin.Controllers
 				Quantity = 1,
 				UnitPriceInclTax = unitPriceInclTax,
 				UnitPriceExclTax = unitPriceExclTax,
+				TaxRate = unitPriceTaxRate,
 				SubTotalInclTax = unitPriceInclTax,
 				SubTotalExclTax = unitPriceExclTax,
 				ShowUpdateTotals = (order.OrderStatusId <= (int)OrderStatus.Pending),
@@ -1298,7 +1301,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             var model = new OrderModel();
@@ -1315,7 +1317,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             _orderProcessingService.DeleteOrder(order);
@@ -1339,7 +1340,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             if (order.AllowStoringCreditCardNumber)
@@ -1374,7 +1374,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             if (order.AllowStoringDirectDebit)
@@ -1413,7 +1412,6 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(id);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
             order.OrderSubtotalInclTax = model.OrderSubtotalInclTaxValue;
@@ -1462,6 +1460,7 @@ namespace SmartStore.Admin.Controllers
 				oi.Quantity = model.NewQuantity.Value;
 				oi.UnitPriceInclTax = model.NewUnitPriceInclTax ?? oi.UnitPriceInclTax;
 				oi.UnitPriceExclTax = model.NewUnitPriceExclTax ?? oi.UnitPriceExclTax;
+				oi.TaxRate = model.NewTaxRate ?? oi.TaxRate;
 				oi.DiscountAmountInclTax = model.NewDiscountInclTax ?? oi.DiscountAmountInclTax;
 				oi.DiscountAmountExclTax = model.NewDiscountExclTax ?? oi.DiscountAmountExclTax;
 				oi.PriceInclTax = model.NewPriceInclTax ?? oi.PriceInclTax;
@@ -1809,6 +1808,8 @@ namespace SmartStore.Admin.Controllers
             decimal.TryParse(form["SubTotalInclTax"], out priceInclTax);
             var priceExclTax = decimal.Zero;
             decimal.TryParse(form["SubTotalExclTax"], out priceExclTax);
+			var unitPriceTaxRate = decimal.Zero;
+			decimal.TryParse(form["TaxRate"], out unitPriceTaxRate);
 
             var warnings = new List<string>();
             string attributes = "";
@@ -1884,6 +1885,7 @@ namespace SmartStore.Admin.Controllers
                     UnitPriceExclTax = unitPriceExclTax,
                     PriceInclTax = priceInclTax,
                     PriceExclTax = priceExclTax,
+					TaxRate = unitPriceTaxRate,
                     AttributeDescription = attributeDescription,
                     AttributesXml = attributes,
                     Quantity = quantity,

@@ -711,11 +711,11 @@ namespace SmartStore.Services.Orders
 
                 //shipping total
                 decimal? orderShippingTotalInclTax, orderShippingTotalExclTax = null;
+				decimal orderShippingTaxRate = decimal.Zero;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
-                    decimal taxRate = decimal.Zero;
                     Discount shippingTotalDiscount = null;
-                    orderShippingTotalInclTax = _orderTotalCalculationService.GetShoppingCartShippingTotal(cart, true, out taxRate, out shippingTotalDiscount);
+                    orderShippingTotalInclTax = _orderTotalCalculationService.GetShoppingCartShippingTotal(cart, true, out orderShippingTaxRate, out shippingTotalDiscount);
                     orderShippingTotalExclTax = _orderTotalCalculationService.GetShoppingCartShippingTotal(cart, false);
                     if (!orderShippingTotalInclTax.HasValue || !orderShippingTotalExclTax.HasValue)
                         throw new SmartException("Shipping total couldn't be calculated");
@@ -727,20 +727,22 @@ namespace SmartStore.Services.Orders
                 {
                     orderShippingTotalInclTax = initialOrder.OrderShippingInclTax;
                     orderShippingTotalExclTax = initialOrder.OrderShippingExclTax;
+					orderShippingTaxRate = initialOrder.OrderShippingTaxRate;
                 }
 
                 //payment total
-                decimal paymentAdditionalFeeInclTax, paymentAdditionalFeeExclTax;
+				decimal paymentAdditionalFeeInclTax, paymentAdditionalFeeExclTax, paymentAdditionalFeeTaxRate;
                 if (!processPaymentRequest.IsRecurringPayment)
                 {
                     decimal paymentAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, processPaymentRequest.PaymentMethodSystemName);
-                    paymentAdditionalFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentAdditionalFee, true, customer);
+                    paymentAdditionalFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentAdditionalFee, true, customer, out paymentAdditionalFeeTaxRate);
                     paymentAdditionalFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentAdditionalFee, false, customer);
                 }
                 else
                 {
                     paymentAdditionalFeeInclTax = initialOrder.PaymentMethodAdditionalFeeInclTax;
                     paymentAdditionalFeeExclTax = initialOrder.PaymentMethodAdditionalFeeExclTax;
+					paymentAdditionalFeeTaxRate = initialOrder.PaymentMethodAdditionalFeeTaxRate;
                 }
 
                 //tax total
@@ -1018,8 +1020,10 @@ namespace SmartStore.Services.Orders
                             OrderSubTotalDiscountExclTax = orderSubTotalDiscountExclTax,
                             OrderShippingInclTax = orderShippingTotalInclTax.Value,
                             OrderShippingExclTax = orderShippingTotalExclTax.Value,
+							OrderShippingTaxRate = orderShippingTaxRate,
                             PaymentMethodAdditionalFeeInclTax = paymentAdditionalFeeInclTax,
                             PaymentMethodAdditionalFeeExclTax = paymentAdditionalFeeExclTax,
+							PaymentMethodAdditionalFeeTaxRate = paymentAdditionalFeeTaxRate,
                             TaxRates = taxRates,
                             OrderTax = orderTaxTotal,
                             OrderTotal = orderTotal.Value,
@@ -1078,9 +1082,10 @@ namespace SmartStore.Services.Orders
                             {
                                 //prices
                                 decimal taxRate = decimal.Zero;
+								decimal unitPriceTaxRate = decimal.Zero;
                                 decimal scUnitPrice = _priceCalculationService.GetUnitPrice(sc, true);
                                 decimal scSubTotal = _priceCalculationService.GetSubTotal(sc, true);
-                                decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, true, customer, out taxRate);
+								decimal scUnitPriceInclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, true, customer, out unitPriceTaxRate);
                                 decimal scUnitPriceExclTax = _taxService.GetProductPrice(sc.Item.Product, scUnitPrice, false, customer, out taxRate);
                                 decimal scSubTotalInclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, true, customer, out taxRate);
                                 decimal scSubTotalExclTax = _taxService.GetProductPrice(sc.Item.Product, scSubTotal, false, customer, out taxRate);
@@ -1108,6 +1113,7 @@ namespace SmartStore.Services.Orders
                                     UnitPriceExclTax = scUnitPriceExclTax,
                                     PriceInclTax = scSubTotalInclTax,
                                     PriceExclTax = scSubTotalExclTax,
+									TaxRate = unitPriceTaxRate,
                                     AttributeDescription = attributeDescription,
                                     AttributesXml = sc.Item.AttributesXml,
                                     Quantity = sc.Item.Quantity,
@@ -1193,6 +1199,7 @@ namespace SmartStore.Services.Orders
                                     UnitPriceExclTax = orderItem.UnitPriceExclTax,
                                     PriceInclTax = orderItem.PriceInclTax,
                                     PriceExclTax = orderItem.PriceExclTax,
+									TaxRate = orderItem.TaxRate,
                                     AttributeDescription = orderItem.AttributeDescription,
                                     AttributesXml = orderItem.AttributesXml,
                                     Quantity = orderItem.Quantity,

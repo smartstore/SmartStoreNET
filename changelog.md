@@ -16,6 +16,7 @@ Feed plugins: product query now paged to reduce memory payload
 * #557 Localize MVC validation strings
 * Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
 * Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes
+* Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
 
 
 ## SmartStore.NET 2.1.1

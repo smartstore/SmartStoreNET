@@ -27,6 +27,7 @@ namespace SmartStore.Admin.Models.Orders
 		public int? NewQuantity { get; set; }
 		public decimal? NewUnitPriceInclTax { get; set; }
 		public decimal? NewUnitPriceExclTax { get; set; }
+		public decimal? NewTaxRate { get; set; }
 		public decimal? NewDiscountInclTax { get; set; }
 		public decimal? NewDiscountExclTax { get; set; }
 		public decimal? NewPriceInclTax { get; set; }

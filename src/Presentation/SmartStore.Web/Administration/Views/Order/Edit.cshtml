@@ -1323,6 +1323,7 @@
 					form.find('input[name=NewQuantity]').val(table.find('input[name=pvQuantity' + orderItemId + ']').val());
 					form.find('input[name=NewUnitPriceInclTax]').val(table.find('input[name=pvUnitPriceInclTax' + orderItemId + ']').val());
 					form.find('input[name=NewUnitPriceExclTax]').val(table.find('input[name=pvUnitPriceExclTax' + orderItemId + ']').val());
+					form.find('input[name=NewTaxRate]').val(table.find('input[name=pvTaxRate' + orderItemId + ']').val());
 					form.find('input[name=NewDiscountInclTax]').val(table.find('input[name=pvDiscountInclTax' + orderItemId + ']').val());
 					form.find('input[name=NewDiscountExclTax]').val(table.find('input[name=pvDiscountExclTax' + orderItemId + ']').val());
 					form.find('input[name=NewPriceInclTax]').val(table.find('input[name=pvPriceInclTax' + orderItemId + ']').val());
@@ -1540,6 +1541,14 @@
                                                     <input name="pvUnitPriceExclTax@(item.Id)" type="text" value="@item.UnitPriceExclTaxValue" id="pvUnitPriceExclTax@(item.Id)" style="width:100px;" />
                                                 </td>
                                             </tr>
+											<tr>
+												<td>
+													@T("Admin.Orders.Products.AddNew.TaxRate")
+												</td>
+												<td>
+													<input name="pvTaxRate@(item.Id)" type="text" value="@item.TaxRate" id="pvTaxRate@(item.Id)" style="width:100px;" />
+												</td>
+											</tr>
                                         </table>
                                     </div>
                                 </td>

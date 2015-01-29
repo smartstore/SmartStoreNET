@@ -287,6 +287,7 @@ namespace SmartStore.Admin.Models.Orders
             public string UnitPriceExclTax { get; set; }
             public decimal UnitPriceInclTaxValue { get; set; }
             public decimal UnitPriceExclTaxValue { get; set; }
+			public decimal TaxRate { get; set; }
 
             public int Quantity { get; set; }
 
@@ -462,6 +463,9 @@ namespace SmartStore.Admin.Models.Orders
                 public decimal UnitPriceInclTax { get; set; }
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceExclTax")]
                 public decimal UnitPriceExclTax { get; set; }
+
+				[SmartResourceDisplayName("Admin.Orders.Products.AddNew.TaxRate")]
+				public decimal TaxRate { get; set; }
 
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.Quantity")]
                 public int Quantity { get; set; }

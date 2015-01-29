@@ -25,6 +25,7 @@ namespace SmartStore.Data.Tests.Orders
                 UnitPriceExclTax = 2.1M,
                 PriceInclTax = 3.1M,
                 PriceExclTax = 4.1M,
+				TaxRate = 19.0M,
                 DiscountAmountInclTax = 5.1M,
                 DiscountAmountExclTax = 6.1M,
 				ProductCost = 7.1M,

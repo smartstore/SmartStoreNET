@@ -230,7 +230,7 @@ namespace SmartStore.Services.ExportImport
 
 			writer.WriteElementString("Id", null, product.Id.ToString());
 			writer.WriteElementString("Name", null, product.Name.RemoveInvalidXmlChars());
-			writer.WriteElementString("SEName", null, product.GetSeName(0, true, false));
+			writer.WriteElementString("SeName", null, product.GetSeName(0, true, false));
 
 			writer.WriteStartElement("ShortDescription");
 			writer.WriteCData(product.ShortDescription.RemoveInvalidXmlChars());
@@ -459,10 +459,21 @@ namespace SmartStore.Services.ExportImport
 				foreach (var productManufacturer in productManufacturers)
 				{
 					writer.WriteStartElement("ProductManufacturer");
+
 					writer.WriteElementString("ProductManufacturerId", null, productManufacturer.Id.ToString());
 					writer.WriteElementString("ManufacturerId", null, productManufacturer.ManufacturerId.ToString());
 					writer.WriteElementString("IsFeaturedProduct", null, productManufacturer.IsFeaturedProduct.ToString());
 					writer.WriteElementString("DisplayOrder", null, productManufacturer.DisplayOrder.ToString());
+
+					writer.WriteStartElement("Manufacturer");
+					writer.WriteElementString("Name", null, productManufacturer.Manufacturer.Name);
+					writer.WriteElementString("SeName", null, productManufacturer.Manufacturer.GetSeName(0, true, false));
+					writer.WriteElementString("Description", null, productManufacturer.Manufacturer.Description.RemoveInvalidXmlChars());
+					writer.WriteElementString("MetaKeywords", null, productManufacturer.Manufacturer.MetaKeywords.RemoveInvalidXmlChars());
+					writer.WriteElementString("MetaDescription", null, productManufacturer.Manufacturer.MetaDescription.RemoveInvalidXmlChars());
+					writer.WriteElementString("MetaTitle", null, productManufacturer.Manufacturer.MetaTitle.RemoveInvalidXmlChars());
+					writer.WriteEndElement();
+
 					writer.WriteEndElement();
 				}
 			}
@@ -504,10 +515,19 @@ namespace SmartStore.Services.ExportImport
 			}
 			writer.WriteEndElement();
 
-			writer.WriteStartElement("Localizations");
+			writer.WriteStartElement("LocalizedProperties");
 			foreach (var language in context.Languages)
 			{
-				writer.WriteStartElement("Localization");
+				writer.WriteStartElement("LocalizedProperty");
+
+				writer.WriteElementString("Name", null, product.GetLocalized(x => x.Name, language.Id, false, false));
+				writer.WriteElementString("ShortDescription", null, product.GetLocalized(x => x.ShortDescription, language.Id, false, false));
+				writer.WriteElementString("FullDescription", null, product.GetLocalized(x => x.FullDescription, language.Id, false, false));
+				writer.WriteElementString("MetaKeywords", null, product.GetLocalized(x => x.MetaKeywords, language.Id, false, false));
+				writer.WriteElementString("MetaDescription", null, product.GetLocalized(x => x.MetaDescription, language.Id, false, false));
+				writer.WriteElementString("MetaTitle", null, product.GetLocalized(x => x.MetaTitle, language.Id, false, false));
+				writer.WriteElementString("SEName", null, product.GetSeName(language.Id, false, false));
+				writer.WriteElementString("BundleTitleText", null, product.GetLocalized(x => x.BundleTitleText, language.Id, false, false));
 				
 				writer.WriteStartElement("Language");
 				writer.WriteElementString("Id", null, language.Id.ToString());
@@ -517,20 +537,9 @@ namespace SmartStore.Services.ExportImport
 				writer.WriteElementString("Published", null, language.Published.ToString());
 				writer.WriteEndElement();
 
-				writer.WriteStartElement("Product");
-				writer.WriteElementString("Name", null, product.GetLocalized(x => x.Name, language.Id, false, false));
-				writer.WriteElementString("ShortDescription", null, product.GetLocalized(x => x.ShortDescription, language.Id, false, false));
-				writer.WriteElementString("FullDescription", null, product.GetLocalized(x => x.FullDescription, language.Id, false, false));
-				writer.WriteElementString("MetaKeywords", null, product.GetLocalized(x => x.MetaKeywords, language.Id, false, false));
-				writer.WriteElementString("MetaDescription", null, product.GetLocalized(x => x.MetaDescription, language.Id, false, false));
-				writer.WriteElementString("MetaTitle", null, product.GetLocalized(x => x.MetaTitle, language.Id, false, false));
-				writer.WriteElementString("SEName", null, product.GetSeName(language.Id, false, false));
-				writer.WriteElementString("BundleTitleText", null, product.GetLocalized(x => x.BundleTitleText, language.Id, false, false));
-				writer.WriteEndElement();
-
-				writer.WriteEndElement();	// Localization
+				writer.WriteEndElement();	// LocalizedProperty
 			}
-			writer.WriteEndElement();		// Localizations
+			writer.WriteEndElement();		// LocalizedProperties
 		}
 
         /// <summary>

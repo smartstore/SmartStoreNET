@@ -2,6 +2,7 @@
 using System.ComponentModel;
 using System.Globalization;
 using System.Xml.XPath;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore
 {
@@ -14,16 +15,25 @@ namespace SmartStore
 		/// <param name="node">The node</param>
 		/// <param name="xpath">Optional xpath</param>
 		/// <param name="defaultValue">Optional default value</param>
+		/// <param name="language">For localized values. Xpath scheme: Localized/xpath[@culture = 'language.LanguageCulture']</param>
 		/// <param name="culture">If null is passed, CultureInfo.InvariantCulture is used.</param>
 		/// <returns>The value</returns>
-		public static T GetValue<T>(this XPathNavigator node, string xpath = null, T defaultValue = default(T), CultureInfo culture = null)
+		public static T GetValue<T>(this XPathNavigator node, string xpath = null, T defaultValue = default(T), Language language = null, CultureInfo culture = null)
 		{
 			try
 			{
 				if (node != null)
 				{
-					if (xpath.IsNullOrEmpty() && node.Value.HasValue())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, node.Value);
+					if (xpath.IsNullOrEmpty())
+					{
+						if (node.Value.HasValue())
+							return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, node.Value);
+
+						return defaultValue;
+					}
+
+					if (language != null)
+						xpath = "Localized/{0}[@culture = '{1}']".FormatWith(xpath, language.LanguageCulture.EmptyNull().ToLower());
 
 					var n = node.SelectSingleNode(xpath);
 
@@ -40,15 +50,15 @@ namespace SmartStore
 		}
 
 		/// <summary>
-		/// Safe way to get the value of a xpath navigator item
+		/// Safe way to get a string value of a xpath navigator item
 		/// </summary>
-		/// <typeparam name="T">Type</typeparam>
 		/// <param name="node">The node</param>
 		/// <param name="xpath">Optional xpath</param>
 		/// <param name="defaultValue">Optional default value</param>
 		/// <returns>The value</returns>
-		public static string GetValue(this XPathNavigator node, string xpath = null, string defaultValue = null)
+		public static string GetString(this XPathNavigator node, string xpath = null, string defaultValue = null)
 		{
+			// note: better not merge GetString(...) and GetValue<T>(...)
 			try
 			{
 				if (node != null)
@@ -57,6 +67,7 @@ namespace SmartStore
 						return node.Value;
 
 					var n = node.SelectSingleNode(xpath);
+
 					if (n != null)
 						return n.Value;
 				}
@@ -67,6 +78,21 @@ namespace SmartStore
 			}
 
 			return defaultValue;
+		}
+
+		/// <summary>
+		/// Safe way to get a localized string value of a xpath navigator item
+		/// </summary>
+		/// <param name="node">The node</param>
+		/// <param name="language">For localized values. Xpath scheme: Localized/xpath[@culture = 'language.LanguageCulture']</param>
+		/// <param name="xpath">Optional xpath</param>
+		/// <param name="defaultValue">Optional default value</param>
+		/// <returns>The value</returns>
+		public static string GetString(this XPathNavigator node, Language language, string xpath, string defaultValue = null)
+		{
+			return node.GetString(
+				"Localized/{0}[@culture = '{1}']".FormatWith(xpath.EmptyNull(), language.LanguageCulture.EmptyNull().ToLower()),
+				defaultValue);
 		}
 	}
 }

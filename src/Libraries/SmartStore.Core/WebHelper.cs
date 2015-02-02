@@ -27,6 +27,7 @@ namespace SmartStore.Core
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		private static readonly Regex s_crawlerPattern = new Regex(@"Yandex|ichiro|NaverBot|Baiduspider|Yahoo|sogou|YoudaoBot|bitlybot", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -604,29 +605,26 @@ namespace SmartStore.Core
         /// <returns>Result</returns>
         public virtual bool IsSearchEngine(HttpContextBase context)
         {
-            //we accept HttpContext instead of HttpRequest and put required logic in try-catch block
-            //more info: http://www.nopcommerce.com/boards/t/17711/unhandled-exception-request-is-not-available-in-this-context.aspx
             if (context == null)
                 return false;
 
             bool result = false;
             try
             {
-				if (context.Request.GetType().ToString().Contains("Fake"))	// codehint: sm-add
+				if (context.Request.GetType().ToString().Contains("Fake"))
 					return false;
 
                 result = context.Request.Browser.Crawler;
                 if (!result)
                 {
-                    //put any additional known crawlers in the Regex below for some custom validation
-                    //var regEx = new Regex("Twiceler|twiceler|BaiDuSpider|baduspider|Slurp|slurp|ask|Ask|Teoma|teoma|Yahoo|yahoo");
-                    //result = regEx.Match(request.UserAgent).Success;
+					result = s_crawlerPattern.IsMatch(context.Request.UserAgent);
                 }
             }
             catch (Exception exc)
             {
                 Debug.WriteLine(exc);
             }
+
             return result;
         }
 

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel;
 using System.Xml;
 using SmartStore.Core.Domain.Localization;
 
@@ -15,7 +14,9 @@ namespace SmartStore
 					writer.WriteStartElement(name);
 				else
 					writer.WriteStartElement(prefix, name, ns);
+
 				writer.WriteCData(value.RemoveInvalidXmlChars());
+
 				writer.WriteEndElement();
 			}
 		}
@@ -48,9 +49,9 @@ namespace SmartStore
 					writer.WriteAttributeString("culture", language.LanguageCulture.EmptyNull().ToLower());
 
 				if (asCData)
-					writer.WriteCData(value);
+					writer.WriteCData(value.RemoveInvalidXmlChars());
 				else
-					writer.WriteString(value);
+					writer.WriteString(value.RemoveInvalidXmlChars());
 
 				writer.WriteEndElement();
 			}

@@ -674,6 +674,7 @@ namespace SmartStore.Services.ExportImport
 			_rsProductPicture.AutoCommitEnabled = true;
 
 			ProductPicture lastInserted = null;
+			int equalPictureId = 0;
 
 			foreach (var row in batch)
 			{
@@ -695,7 +696,7 @@ namespace SmartStore.Services.ExportImport
 							continue;
 
                         var currentPictures = _rsProductPicture.Expand(_rsProductPicture.TableUntracked, x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
-                        var pictureBinary = _pictureService.FindEqualPicture(picture, currentPictures);
+                        var pictureBinary = _pictureService.FindEqualPicture(picture, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{

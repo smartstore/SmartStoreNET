@@ -207,19 +207,27 @@ namespace SmartStore.Services.Orders
 
 			if (storeId > 0)
 				query = query.Where(o => o.StoreId == storeId);
+
 			if (customerId > 0)
 				query = query.Where(o => o.CustomerId == customerId);
+
             if (startTime.HasValue)
                 query = query.Where(o => startTime.Value <= o.CreatedOnUtc);
+
             if (endTime.HasValue)
                 query = query.Where(o => endTime.Value >= o.CreatedOnUtc);
+
             if (!String.IsNullOrEmpty(billingEmail))
                 query = query.Where(o => o.BillingAddress != null && !String.IsNullOrEmpty(o.BillingAddress.Email) && o.BillingAddress.Email.Contains(billingEmail));
+
 			if (billingName.HasValue())
+			{
 				query = query.Where(o => o.BillingAddress != null && (
-					(!String.IsNullOrEmpty(o.BillingAddress.LastName) && o.BillingAddress.LastName.Contains(billingName)) || 
+					(!String.IsNullOrEmpty(o.BillingAddress.LastName) && o.BillingAddress.LastName.Contains(billingName)) ||
 					(!String.IsNullOrEmpty(o.BillingAddress.FirstName) && o.BillingAddress.FirstName.Contains(billingName))
 				));
+			}
+
             if (orderNumber.HasValue())
                 query = query.Where(o => o.OrderNumber.ToLower().Contains(orderNumber.ToLower()));
 
@@ -234,7 +242,6 @@ namespace SmartStore.Services.Orders
 
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);
-
 
 			if (!String.IsNullOrEmpty(orderGuid))
 			{

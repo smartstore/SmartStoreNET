@@ -151,7 +151,8 @@ namespace SmartStore.Services.Catalog
                 throw new ArgumentNullException("product");
 
             product.Deleted = true;
-            //delete product
+			product.DeliveryTimeId = null;
+
             UpdateProduct(product);
         }
 

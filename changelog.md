@@ -1,13 +1,15 @@
 ﻿# Release Notes
 
-## SmartStore.NET 2.5
+## SmartStore.NET 2.2
 
 ### New Features
 * #428 Implement category option to override global list view type
 * #485 Enable shop admin to change creation date of a blog entry
 
 ### Improvements
-Feed plugins: product query now paged to reduce memory payload
+* Feed plugins: product query now paged to reduce memory payload
+* Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
+* Payone: CC-Check via client API, not via Server API (requires PCI certification)
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status

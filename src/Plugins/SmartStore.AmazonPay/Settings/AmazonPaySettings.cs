@@ -61,6 +61,9 @@ namespace SmartStore.AmazonPay.Settings
 
 		public string GetWidgetUrl()
 		{
+			if (SellerId.IsNullOrEmpty())
+				return null;
+
 			string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandbox : AmazonPayCore.UrlWidgetProduction);
 			url = url.FormatWith(Marketplace ?? "de");
 

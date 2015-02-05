@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 1.20##
+###Bugfixes###
+* PlatformID must be .NET ID not merchant ID. PlatformID needs to be identical for all orders
+
 ##Pay with Amazon 1.19##
 ###Bugfixes###
 * Declined authorization IPN did not void the payment status

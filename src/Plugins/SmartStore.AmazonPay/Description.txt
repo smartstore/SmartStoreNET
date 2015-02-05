@@ -1,6 +1,6 @@
 ﻿FriendlyName: Pay with Amazon
 SystemName: SmartStore.AmazonPay
-Version: 1.19
+Version: 1.20
 Group: Payment
 MinAppVersion: 2.1.0
 Author: SmartStore AG

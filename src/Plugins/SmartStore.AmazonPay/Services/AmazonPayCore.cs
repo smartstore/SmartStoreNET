@@ -9,7 +9,7 @@ namespace SmartStore.AmazonPay.Services
 {
 	public static class AmazonPayCore
 	{
-		public static string AppVersion { get { return "1.14"; } }
+		public static string PlatformId { get { return "A3OJ83WFYM72IY"; } }
 		public static string AppName { get { return "SmartStore.Net " + SystemName; } }
 		public static string SystemName { get { return "SmartStore.AmazonPay"; } }
 		public static string AmazonPayCheckoutStateKey { get { return SystemName + ".CheckoutState"; } }

@@ -19,6 +19,8 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Helpers;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -204,7 +206,7 @@ namespace SmartStore.AmazonPay.Api
 
 			var attributes = new OrderReferenceAttributes();
 			//attributes.SellerNote = client.Settings.SellerNoteOrderReference.Truncate(1024);
-			attributes.PlatformId = client.Settings.SellerId;
+			attributes.PlatformId = AmazonPayCore.PlatformId;
 
 			if (orderTotalAmount.HasValue)
 			{
@@ -757,15 +759,23 @@ namespace SmartStore.AmazonPay.Api
 	{
 		public AmazonPayClient(AmazonPaySettings settings)
 		{
+			string appVersion = "1.0";
+
+			try
+			{
+				appVersion = EngineContext.Current.Resolve<IPluginFinder>().GetPluginDescriptorBySystemName(AmazonPayCore.SystemName).Version.ToString();
+			}
+			catch (Exception) { }
+
 			var config = new OffAmazonPaymentsServiceConfig()
 			{
 				ServiceURL = (settings.UseSandbox ? AmazonPayCore.UrlApiEuSandbox : AmazonPayCore.UrlApiEuProduction)
 			};
 
-			config.SetUserAgent(AmazonPayCore.AppName, AmazonPayCore.AppVersion);
+			config.SetUserAgent(AmazonPayCore.AppName, appVersion);
 
 			Settings = settings;
-			Service = new OffAmazonPaymentsServiceClient(AmazonPayCore.AppName, AmazonPayCore.AppVersion, settings.AccessKey, settings.SecretKey, config);
+			Service = new OffAmazonPaymentsServiceClient(AmazonPayCore.AppName, appVersion, settings.AccessKey, settings.SecretKey, config);
 		}
 
 		public IOffAmazonPaymentsService Service { get; private set; }

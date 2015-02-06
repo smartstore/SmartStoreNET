@@ -141,7 +141,7 @@
 
     function toggleShipping() {
         if ($('#@Html.FieldIdFor(model => model.IsShipEnabled)').is(':checked')) {
-            $('#pnlDeliveryTime').show();   //codehint: sm-add
+            $('#pnlDeliveryTime').show();
             $('#pnlFreeShipping').show();
             $('#pnlAdditionalShippingCharge').show();
             $('#pnlWeight').show();
@@ -649,8 +649,6 @@
 				@Html.ValidationMessageFor(model => model.IsShipEnabled)
 			</td>
 		</tr>
-
-		@*codehint: sm-add*@
 		<tr id="pnlDeliveryTime">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DeliveryTimeId)
@@ -678,6 +676,15 @@
 				@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
 			</td>
 		</tr>
+        <tr id="pnlQuantityUnit">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.QuantityUnitId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.QuantityUnitId, Model.AvailableQuantityUnits, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.QuantityUnitId)
+            </td>
+        </tr>
 		<tr id="pnlWeight">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Weight)

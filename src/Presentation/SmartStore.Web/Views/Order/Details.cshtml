@@ -33,6 +33,7 @@
 		</td>
 		<td class="ac">
 			@item.Quantity
+            @item.QuantityUnit
 		</td>
 		<td class="ar text-success">
 			@item.SubTotal
@@ -66,7 +67,7 @@
 								@if (item.Quantity > 1 && parentItem.BundlePerItemShoppingCart)
 								{
 									<text>
-										&#215;&nbsp;@item.Quantity
+										&#215;&nbsp;@item.Quantity 
 									</text>
 								}
 							</div>

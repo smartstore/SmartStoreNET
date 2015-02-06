@@ -243,8 +243,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableMeasureWeights, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableQuantityUnits, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
@@ -281,6 +282,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
+                .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore())
@@ -322,6 +324,11 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<DeliveryTimeModel, DeliveryTime>();
 
+            // Measure unit
+            Mapper.CreateMap<QuantityUnit, QuantityUnitModel>()
+                .ForMember(dest => dest.Locales, mo => mo.Ignore());
+            Mapper.CreateMap<QuantityUnitModel, QuantityUnit>();
+
             // ContentSlider slides
             Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
                 .ForMember(dest => dest.Id, mo => mo.Ignore())
@@ -352,6 +359,7 @@ namespace SmartStore.Admin.Infrastructure
                 .AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
             Mapper.CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
                 .ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
+                .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
                 .ForMember(dest => dest.Product, mo => mo.Ignore())
                 .ForMember(dest => dest.AssignedPictureIds, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));

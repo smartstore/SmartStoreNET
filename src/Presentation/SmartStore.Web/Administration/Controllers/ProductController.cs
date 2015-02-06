@@ -85,6 +85,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly CatalogSettings _catalogSettings;
 		private readonly IDownloadService _downloadService;
 		private readonly IDeliveryTimeService _deliveryTimesService;
+        private readonly IQuantityUnitService _quantityUnitService;
 		private readonly ICurrencyService _currencyService;
 		private readonly CurrencySettings _currencySettings;
 		private readonly IMeasureService _measureService;
@@ -135,6 +136,7 @@ namespace SmartStore.Admin.Controllers
 			CatalogSettings catalogSettings,
 			IDownloadService downloadService,
 			IDeliveryTimeService deliveryTimesService,
+            IQuantityUnitService quantityUnitService,
 			ICurrencyService currencyService,
 			CurrencySettings currencySettings,
 			IMeasureService measureService,
@@ -179,6 +181,7 @@ namespace SmartStore.Admin.Controllers
 			this._catalogSettings = catalogSettings;
 			this._downloadService = downloadService;
 			this._deliveryTimesService = deliveryTimesService;
+            this._quantityUnitService = quantityUnitService;
 			this._currencyService = currencyService;
 			this._currencySettings = currencySettings;
 			this._measureService = measureService;
@@ -247,6 +250,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsShipEnabled = m.IsShipEnabled;
 			p.DeliveryTimeId = m.DeliveryTimeId == 0 ? (int?)null : m.DeliveryTimeId;
+            p.QuantityUnitId = m.QuantityUnitId == 0 ? (int?)null : m.QuantityUnitId;
 			p.IsFreeShipping = m.IsFreeShipping;
 			p.AdditionalShippingCharge = m.AdditionalShippingCharge;
 			p.Weight = m.Weight;
@@ -713,17 +717,29 @@ namespace SmartStore.Admin.Controllers
 				});
 			}
 
+            // quantity units
+            var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
+            foreach (var mu in quantityUnits)
+            {
+                model.AvailableQuantityUnits.Add(new SelectListItem()
+                {
+                    Text = mu.Name,
+                    Value = mu.Id.ToString(),
+                    Selected = product != null && !setPredefinedValues && mu.Id == product.QuantityUnitId.GetValueOrDefault()
+                });
+            }
+
 			// BasePrice aka PAnGV
 			var measureUnits = _measureService.GetAllMeasureWeights()
 				.Select(x => x.SystemKeyword).Concat(_measureService.GetAllMeasureDimensions().Select(x => x.SystemKeyword)).ToList();
 
 			// don't forget biz import!
-			if (product != null && !setPredefinedValues && product.BasePriceMeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePriceMeasureUnit)))
+            if (product != null && !setPredefinedValues && product.BasePriceMeasureUnit.HasValue() && !measureUnits.Exists(u => u.IsCaseInsensitiveEqual(product.BasePriceMeasureUnit)))
 			{
-				measureUnits.Add(product.BasePriceMeasureUnit);
+                measureUnits.Add(product.BasePriceMeasureUnit);
 			}
 
-			foreach (var mu in measureUnits)
+            foreach (var mu in measureUnits)
 			{
 				model.AvailableMeasureUnits.Add(new SelectListItem()
 				{

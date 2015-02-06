@@ -323,6 +323,8 @@ namespace SmartStore.Core.Domain.Catalog
 
         public int? LabelAsNewForMaxDays { get; set; }
 
+        public bool ShowDefaultQuantityUnit { get; set; }
+
         public bool ShowDiscountSign { get; set; }
 
 		public bool SuppressSkuSearch { get; set; }

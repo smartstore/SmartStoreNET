@@ -59,6 +59,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight")]
         public int HtmlTextCollapsedHeight { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit")]
+        public bool ShowDefaultQuantityUnit { get; set; }
+
         #endregion
 
         #region Product lists

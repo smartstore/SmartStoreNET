@@ -61,6 +61,7 @@ namespace SmartStore.Web.Controllers
 		private readonly CurrencySettings _currencySettings;
 		private readonly TaxSettings _taxSettings;
 		private readonly IMeasureService _measureService;
+        private readonly IQuantityUnitService _quantityUnitService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly ISettingService _settingService;
@@ -93,6 +94,7 @@ namespace SmartStore.Web.Controllers
 			CurrencySettings currencySettings,
 			CaptchaSettings captchaSettings,
 			IMeasureService measureService,
+            IQuantityUnitService quantityUnitService,
 			MeasureSettings measureSettings,
 			TaxSettings taxSettings,
 			IDeliveryTimeService deliveryTimeService,
@@ -120,6 +122,7 @@ namespace SmartStore.Web.Controllers
 			this._backInStockSubscriptionService = backInStockSubscriptionService;
 			this._downloadService = downloadService;
 			this._measureService = measureService;
+            this._quantityUnitService = quantityUnitService;
 			this._measureSettings = measureSettings;
 			this._taxSettings = taxSettings;
 			this._deliveryTimeService = deliveryTimeService;
@@ -130,7 +133,6 @@ namespace SmartStore.Web.Controllers
 			this._captchaSettings = captchaSettings;
 			this._currencySettings = currencySettings;
 			this._menuPublisher = _menuPublisher;
-
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -731,6 +733,12 @@ namespace SmartStore.Web.Controllers
 				model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
 			}
 
+            var quantityUnit = _quantityUnitService.GetQuantityUnit(product);
+            if (quantityUnit != null)
+            {
+                model.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
+            }
+
 			//back in stock subscriptions)
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
 				product.BackorderMode == BackorderMode.NoBackorders &&
@@ -1249,7 +1257,7 @@ namespace SmartStore.Web.Controllers
 					minPriceProduct.Height.ToString("F2"),
 					minPriceProduct.Length.ToString("F2")
 				);
-				model.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+                model.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 				model.ThumbDimension = _mediaSettings.ProductThumbPictureSize;
 				model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductList;
 				model.LegalInfo = T("Tax.LegalInfoFooter").Text.FormatWith(taxInfo, shippingInfoLink);

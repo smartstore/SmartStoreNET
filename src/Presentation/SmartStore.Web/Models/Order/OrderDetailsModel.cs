@@ -93,8 +93,8 @@ namespace SmartStore.Web.Models.Order
             public string UnitPrice { get; set; }
             public string SubTotal { get; set; }
             public int Quantity { get; set; }
+            public string QuantityUnit { get; set; }
             public string AttributeInfo { get; set; }
-
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 

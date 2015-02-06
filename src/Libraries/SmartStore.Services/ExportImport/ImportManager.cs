@@ -408,6 +408,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.Width);
 				row.SetProperty(result, product, (x) => x.Height);
 				row.SetProperty(result, product, (x) => x.DeliveryTimeId);
+                row.SetProperty(result, product, (x) => x.QuantityUnitId);
 				row.SetProperty(result, product, (x) => x.BasePriceEnabled);
 				row.SetProperty(result, product, (x) => x.BasePriceMeasureUnit);
 				row.SetProperty(result, product, (x) => x.BasePriceAmount);

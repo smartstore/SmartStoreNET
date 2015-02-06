@@ -303,8 +303,11 @@ namespace SmartStore.Services.ExportImport
 
 				if (product.DeliveryTimeId.HasValue)
 					xmlWriter.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
+                if (product.QuantityUnitId.HasValue)
+                    xmlWriter.WriteElementString("QuantityUnitId", null, product.QuantityUnitId.Value.ToString());
+
 				xmlWriter.WriteElementString("BasePriceEnabled", null, product.BasePriceEnabled.ToString());
-				xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
+                xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
 				if (product.BasePriceAmount.HasValue)
 					xmlWriter.WriteElementString("BasePriceAmount", null, product.BasePriceAmount.Value.ToString());
 				if (product.BasePriceBaseAmount.HasValue)
@@ -394,6 +397,8 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("BasePriceBaseAmount", null, combination.BasePriceBaseAmount.Value.ToString());
 					if (combination.DeliveryTimeId.HasValue)
 						xmlWriter.WriteElementString("DeliveryTimeId", null, combination.DeliveryTimeId.Value.ToString());
+                    if (combination.QuantityUnitId.HasValue)
+                        xmlWriter.WriteElementString("QuantityUnitId", null, combination.QuantityUnitId.Value.ToString());
 					if (combination.Length.HasValue)
 						xmlWriter.WriteElementString("Length", null, combination.Length.Value.ToString());
 					if (combination.Width.HasValue)
@@ -612,6 +617,7 @@ namespace SmartStore.Services.ExportImport
                     "Picture2",
                     "Picture3",
 					"DeliveryTimeId",
+                    "QuantityUnitId",
 					"BasePriceEnabled",
 					"BasePriceMeasureUnit",
 					"BasePriceAmount",
@@ -904,6 +910,8 @@ namespace SmartStore.Services.ExportImport
 
 					cells[row, col].Value = p.DeliveryTimeId;
 					col++;
+                    cells[row, col].Value = p.QuantityUnitId;
+                    col++;
 					cells[row, col].Value = p.BasePriceEnabled;
 					col++;
 					cells[row, col].Value = p.BasePriceMeasureUnit;

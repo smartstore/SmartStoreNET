@@ -3,14 +3,14 @@ using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Data.Mapping.Directory
 {
-    public partial class DeliveryTimeMap : EntityTypeConfiguration<DeliveryTime>
+    public partial class QuantityUnitMap : EntityTypeConfiguration<QuantityUnit>
     {
-        public DeliveryTimeMap()
+        public QuantityUnitMap()
         {
-            this.ToTable("DeliveryTime");
+            this.ToTable("QuantityUnit");
             this.HasKey(c => c.Id);
             this.Property(c => c.Name).IsRequired().HasMaxLength(50);
-            this.Property(c => c.ColorHexValue).IsRequired().HasMaxLength(50);
+            this.Property(c => c.Description).IsRequired().HasMaxLength(50);
             this.Property(c => c.DisplayLocale).HasMaxLength(50);
             this.Property(c => c.DisplayOrder);
         }

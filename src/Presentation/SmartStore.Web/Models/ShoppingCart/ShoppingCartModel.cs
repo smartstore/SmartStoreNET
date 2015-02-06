@@ -96,6 +96,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public bool IsShipEnabled { get; set; }
 
+            public string QuantityUnit { get; set; }
+
             public string DeliveryTimeName { get; set; }
             
             public string DeliveryTimeHexValue { get; set; }

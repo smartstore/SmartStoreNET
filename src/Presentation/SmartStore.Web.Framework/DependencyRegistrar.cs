@@ -162,7 +162,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CurrencyService>().As<ICurrencyService>().InstancePerRequest();
 
 			builder.RegisterType<DeliveryTimeService>().As<IDeliveryTimeService>().InstancePerRequest();
-
+            builder.RegisterType<QuantityUnitService>().As<IQuantityUnitService>().InstancePerRequest();
 			builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerRequest();
 			builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerRequest();
 

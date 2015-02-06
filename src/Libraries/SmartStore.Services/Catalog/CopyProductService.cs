@@ -211,6 +211,7 @@ namespace SmartStore.Services.Catalog
 				CreatedOnUtc = utcNow,
 				UpdatedOnUtc = utcNow,
 				DeliveryTimeId = product.DeliveryTimeId,
+                QuantityUnitId = product.QuantityUnitId,
 				BasePriceEnabled = product.BasePriceEnabled,
 				BasePriceMeasureUnit = product.BasePriceMeasureUnit,
 				BasePriceAmount = product.BasePriceAmount,
@@ -467,6 +468,7 @@ namespace SmartStore.Services.Catalog
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
 					DeliveryTimeId = combination.DeliveryTimeId,
+                    QuantityUnitId = combination.QuantityUnitId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};

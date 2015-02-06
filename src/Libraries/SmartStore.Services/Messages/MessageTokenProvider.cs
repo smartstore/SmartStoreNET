@@ -54,22 +54,20 @@ namespace SmartStore.Services.Messages
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
         private readonly IProductAttributeParser _productAttributeParser;
-
         private readonly StoreInformationSettings _storeSettings;
         private readonly MessageTemplatesSettings _templatesSettings;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly TaxSettings _taxSettings;
-
         private readonly IEventPublisher _eventPublisher;
-
         private readonly CompanyInformationSettings _companyInfoSettings;
         private readonly BankConnectionSettings _bankConnectionSettings;
         private readonly ContactDataSettings _contactDataSettings;
         private readonly ITopicService _topicService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
-
+        private readonly IQuantityUnitService _quantityUnitService;
+        
         #endregion
 
         #region Ctor
@@ -87,7 +85,7 @@ namespace SmartStore.Services.Messages
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
             ContactDataSettings contactDataSettings, ITopicService topicService,
-			IDeliveryTimeService deliveryTimeService)
+            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -102,20 +100,19 @@ namespace SmartStore.Services.Messages
             this._orderService = orderService;
             this._paymentService = paymentService;
             this._productAttributeParser = productAttributeParser;
-
             this._storeSettings = storeSettings;
             this._templatesSettings = templatesSettings;
             this._emailAccountSettings = emailAccountSettings;
             this._catalogSettings = catalogSettings;
             this._taxSettings = taxSettings;
             this._eventPublisher = eventPublisher;
-            
             this._companyInfoSettings = companyInfoSettings;
             this._bankConnectionSettings = bankConnectionSettings;
             this._contactDataSettings = contactDataSettings;
             this._topicService = topicService;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._deliveryTimeService = deliveryTimeService;
+            this._quantityUnitService = quantityUnitService;
         }
 
         #endregion
@@ -230,7 +227,10 @@ namespace SmartStore.Services.Messages
                 }
                 sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: right;\">{0}</td>", unitPriceStr));
 
-                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0}</td>", orderItem.Quantity));
+                var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0} {1}</td>", 
+                    orderItem.Quantity, 
+                    quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name)));
 
                 string priceStr = string.Empty;
                 switch (order.CustomerTaxDisplayType)

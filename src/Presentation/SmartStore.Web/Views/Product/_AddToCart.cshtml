@@ -120,6 +120,11 @@
                             @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
                         }
 
+                        //if display measure unit
+                        <span style="margin-right: 5px; margin-left: -10px;">
+                            @Model.QuantityUnitName
+                        </span>
+                        
                         <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
                             href="#"
 					        rel="nofollow"

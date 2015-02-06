@@ -8,7 +8,7 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a currency
     /// </summary>
 	[DataContract]
-	public partial class DeliveryTime : BaseEntity, ILocalizedEntity
+    public partial class QuantityUnit : BaseEntity, ILocalizedEntity
     {
         /// <summary>
         /// Gets or sets the name
@@ -20,7 +20,7 @@ namespace SmartStore.Core.Domain.Directory
         /// Gets or sets the hex value
         /// </summary>
 		[DataMember]
-		public string ColorHexValue { get; set; }
+		public string Description { get; set; }
 
         /// <summary>
         /// Gets or sets the display locale
@@ -34,6 +34,11 @@ namespace SmartStore.Core.Domain.Directory
 		[DataMember]
 		public int DisplayOrder { get; set; }
 
+        /// <summary>
+        /// Gets or sets the default quantity unit
+        /// </summary>
+		[DataMember]
+        public bool IsDefault { get; set; }
+        
     }
-
 }

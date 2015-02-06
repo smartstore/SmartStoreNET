@@ -294,6 +294,15 @@
                 @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDefaultQuantityUnit)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDefaultQuantityUnit)
+                @Html.ValidationMessageFor(model => model.ShowDefaultQuantityUnit)
+            </td>
+        </tr>
     </table>
 }
         

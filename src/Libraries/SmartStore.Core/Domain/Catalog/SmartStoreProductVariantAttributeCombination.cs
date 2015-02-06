@@ -51,6 +51,12 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
         public virtual DeliveryTime DeliveryTime { get; set; }
 
+        [DataMember]
+        public int? QuantityUnitId { get; set; }
+
+        [DataMember]
+        public virtual QuantityUnit QuantityUnit { get; set; }
+
 		[DataMember]
 		public bool IsActive { get; set; }
 		//public bool IsDefaultCombination { get; set; }

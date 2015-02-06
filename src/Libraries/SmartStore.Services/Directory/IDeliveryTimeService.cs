@@ -38,16 +38,19 @@ namespace SmartStore.Services.Directory
         /// <summary>
         /// Gets all delivery times
         /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>delivery time collection</returns>
         IList<DeliveryTime> GetAllDeliveryTimes();
 
         /// <summary>
         /// Inserts a delivery time
         /// </summary>
-        /// <param name="currency">DeliveryTime</param>
+        /// <param name="deliveryTime">DeliveryTime</param>
         void InsertDeliveryTime(DeliveryTime deliveryTime);
 
+        /// <summary>
+        /// Updates a delivery time
+        /// </summary>
+        /// <param name="deliveryTime">DeliveryTime</param>
 		void UpdateDeliveryTime(DeliveryTime deliveryTime);
     }
 }

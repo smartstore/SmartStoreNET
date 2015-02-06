@@ -27,7 +27,9 @@ namespace SmartStore.Admin.Models.Catalog
             AvailableProductTags = new List<SelectListItem>();
 			AvailableTaxCategories = new List<SelectListItem>();
 			AvailableDeliveryTimes = new List<SelectListItem>();
-			AvailableMeasureUnits = new List<SelectListItem>();
+            AvailableMeasureUnits = new List<SelectListItem>();
+            AvailableQuantityUnits = new List<SelectListItem>();
+			AvailableMeasureWeights = new List<SelectListItem>();
 			AddPictureModel = new ProductPictureModel();
 			AddSpecificationAttributeModel = new AddProductSpecificationAttributeModel();
 			AvailableManageInventoryMethods = new List<SelectListItem>();
@@ -369,11 +371,16 @@ namespace SmartStore.Admin.Models.Catalog
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.BasePriceBaseAmount")]
 		public int? BasePriceBaseAmount { get; set; }
 
-		public IList<SelectListItem> AvailableMeasureUnits { get; set; }
-
+        public IList<SelectListItem> AvailableMeasureWeights { get; set; }
+        public IList<SelectListItem> AvailableMeasureUnits { get; set; }
+        
 		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.DeliveryTime")]
 		public int? DeliveryTimeId { get; set; }
 		public IList<SelectListItem> AvailableDeliveryTimes { get; set; }
+
+        [SmartResourceDisplayName("Admin.Catalog.Products.Fields.QuantityUnit")]
+        public int? QuantityUnitId { get; set; }
+        public IList<SelectListItem> AvailableQuantityUnits { get; set; }
 
 		public string ProductSelectCheckboxClass { get; set; }
         

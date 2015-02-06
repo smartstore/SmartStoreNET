@@ -52,7 +52,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICheckoutAttributeFormatter _checkoutAttributeFormatter;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _services;
-
+        private readonly IQuantityUnitService _quantityUnitService;
 
         #endregion
 
@@ -75,7 +75,8 @@ namespace SmartStore.Web.Controllers
 			IProductAttributeFormatter productAttributeFormatter,
 			Lazy<IPictureService> pictureService,
 			PluginMediator pluginMediator,
-			ICommonServices services)
+			ICommonServices services,
+            IQuantityUnitService quantityUnitService)
         {
             this._orderService = orderService;
             this._shipmentService = shipmentService;
@@ -93,7 +94,7 @@ namespace SmartStore.Web.Controllers
             this._checkoutAttributeFormatter = checkoutAttributeFormatter;
 			this._pluginMediator = pluginMediator;
 			this._services = services;
-
+            this._quantityUnitService = quantityUnitService;
 			T = NullLocalizer.Instance;
         }
 
@@ -424,7 +425,10 @@ namespace SmartStore.Web.Controllers
 				Quantity = orderItem.Quantity,
 				AttributeInfo = orderItem.AttributeDescription
 			};
-			
+
+            var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
+            model.QuantityUnit = quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name);
+            
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 			{
 				var bundleData = orderItem.GetBundleData();

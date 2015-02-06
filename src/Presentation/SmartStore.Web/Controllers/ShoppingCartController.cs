@@ -81,7 +81,6 @@ namespace SmartStore.Web.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly HttpContextBase _httpContext;
-
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -91,6 +90,7 @@ namespace SmartStore.Web.Controllers
         private readonly CaptchaSettings _captchaSettings;
         private readonly AddressSettings _addressSettings;
 		private readonly PluginMediator _pluginMediator;
+        private readonly IQuantityUnitService _quantityUnitService;
 
         #endregion
 
@@ -120,8 +120,8 @@ namespace SmartStore.Web.Controllers
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
-			HttpContextBase httpContext,
-			PluginMediator pluginMediator)
+			HttpContextBase httpContext, PluginMediator pluginMediator,
+            IQuantityUnitService quantityUnitService)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -157,7 +157,6 @@ namespace SmartStore.Web.Controllers
 			this._genericAttributeService = genericAttributeService;
             this._deliveryTimeService = deliveryTimeService;
 			this._httpContext = httpContext;
-            
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
@@ -167,6 +166,7 @@ namespace SmartStore.Web.Controllers
             this._captchaSettings = captchaSettings;
             this._addressSettings = addressSettings;
 			this._pluginMediator = pluginMediator;
+            this._quantityUnitService = quantityUnitService;
         }
 
         #endregion
@@ -283,6 +283,13 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
+            //if show measure Unit
+            if (product.QuantityUnitId != null)
+            { 
+                var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+                if(quantityUnit != null)
+                    model.QuantityUnit = quantityUnit.GetLocalized(x => x.Name);
+            }
 
 			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();

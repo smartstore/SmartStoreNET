@@ -662,7 +662,10 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsUnauthorizedOrder(Order order)
 		{
-			return order == null || order.CustomerId != _services.WorkContext.CurrentCustomer.Id;
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+                return order == null || order.CustomerId != _services.WorkContext.CurrentCustomer.Id;
+            else
+                return order == null;
 		}
 
         #endregion

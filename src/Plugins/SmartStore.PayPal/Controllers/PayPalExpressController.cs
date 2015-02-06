@@ -372,8 +372,6 @@ namespace SmartStore.PayPal.Controllers
 					return RedirectToRoute("Login");
 
 				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
-
-				//var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
 				var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
 				if (cart.Count == 0)
@@ -394,6 +392,8 @@ namespace SmartStore.PayPal.Controllers
 					throw new SmartException("PayPal Express Checkout module cannot be loaded");
 
 				var processPaymentRequest = new PayPalProcessPaymentRequest();
+
+                processPaymentRequest.StoreId = _services.StoreContext.CurrentStore.Id;
 
 				//Get sub-total and discounts that apply to sub-total
 				decimal orderSubTotalDiscountAmountBase = decimal.Zero;

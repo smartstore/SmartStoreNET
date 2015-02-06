@@ -97,7 +97,9 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit",
                 "Show default quantity unit",
-                "Zeige die Standard-Verpackungseinheit");
+                "Zeige die Standard-Verpackungseinheit",
+				"Show default quantity unit if the product has no quantity unit set.",
+				"Zeige die Standard-Verpackungseinheit, falls für das Produkt keine Verpackungseinheit festgelegt ist.");
             
         }
     }

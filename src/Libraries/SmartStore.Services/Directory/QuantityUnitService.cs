@@ -108,7 +108,7 @@ namespace SmartStore.Services.Directory
         /// <returns>QuantityUnit</returns>
         public virtual QuantityUnit GetQuantityUnitById(int? quantityUnitId)
         {
-            if (quantityUnitId == 0 || quantityUnitId == null)
+			if (quantityUnitId == null || quantityUnitId == 0)
             {
                 if(_catalogSettings.ShowDefaultQuantityUnit)
                 {

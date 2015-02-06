@@ -699,7 +699,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public virtual DeliveryTime DeliveryTime { get; set; }
 
         /// <summary>
-        /// Gets or sets the delivery time identifier
+        /// Gets or sets the quantity unit identifier
         /// </summary>
         [DataMember]
         public int? QuantityUnitId

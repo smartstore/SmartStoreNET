@@ -19,15 +19,11 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Name")]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.DisplayLocale")]
-        [AllowHtml]
-        public string DisplayLocale { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Description")]
+		[SmartResourceDisplayName("Common.Description")]
         [AllowHtml]
         public string Description { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.DisplayOrder")]
+		[SmartResourceDisplayName("Common.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.IsDefault")]
@@ -43,7 +39,7 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Name")]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.QuantityUnit.Fields.Description")]
+		[SmartResourceDisplayName("Common.Description")]
         public string Description { get; set; }
     }
 }

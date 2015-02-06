@@ -1,9 +1,9 @@
 ﻿@model Telerik.Web.Mvc.GridModel<QuantityUnitModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.QuantityUnit").Text;
 }
+
 <div class="section-header">
     <div class="title">
 		<i class="fa fa-gift"></i>
@@ -16,6 +16,7 @@
         </a>
     </div>
 </div>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -30,8 +31,12 @@
                         columns.Bound(x => x.Description)
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
+							.Width(100)
                             .Centered();
                         columns.Bound(x => x.IsDefault)
+							.Template(item => @Html.SymbolForBool(item.IsDefault))
+							.ClientTemplate(@Html.SymbolForBool("IsDefault"))
+							.Width(100)
                             .Centered();
                     })     
                )

@@ -40,7 +40,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.Company, new { @class="control-label" + (Model.CompanyRequired ? " required" : "") , @for="Company" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.Company, (Model.CompanyRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.Company, (Model.CompanyRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.Company)
         </div>
     </div>
@@ -69,7 +69,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.Address1, new { @class="control-label" + (Model.StreetAddressRequired ? " required" : "") , @for="Address1" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.Address1, (Model.StreetAddressRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.Address1, (Model.StreetAddressRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.Address1)
         </div>
     </div>
@@ -80,7 +80,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.Address2, new { @class="control-label" + (Model.StreetAddress2Required ? " required" : "") , @for="Address2" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.Address2, (Model.StreetAddress2Required ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.Address2, (Model.StreetAddress2Required ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.Address2)
         </div>
     </div>
@@ -91,7 +91,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.ZipPostalCode, new { @class="control-label" + (Model.ZipPostalCodeRequired ? " required" : "") , @for="ZipPostalCode" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.ZipPostalCode, (Model.ZipPostalCodeRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.ZipPostalCode, (Model.ZipPostalCodeRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.ZipPostalCode)
         </div>
     </div>
@@ -102,7 +102,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.City, new { @class="control-label" + (Model.CityRequired ? " required": ""), @for="City" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.City, (Model.CityRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.City, (Model.CityRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.City)
         </div>
     </div>
@@ -159,7 +159,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.PhoneNumber, new { @class="control-label" + (Model.PhoneRequired ? " required" : "") , @for="PhoneNumber" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.PhoneNumber, (Model.PhoneRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.PhoneNumber, (Model.PhoneRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.PhoneNumber)
         </div>
     </div>
@@ -170,7 +170,7 @@
     <div class="control-group">
         @Html.LabelFor(model => model.FaxNumber, new { @class="control-label" + (Model.FaxRequired ? " required" : ""), @for="FaxNumber" } )
         <div class="controls">
-            @Html.TextBoxFor(model => model.FaxNumber, (Model.FaxRequired ? null : new { placeholder = "Optional" } ) )
+            @Html.TextBoxFor(model => model.FaxNumber, (Model.FaxRequired ? null : new { placeholder = "Volitelné" } ) )
             @Html.ValidationMessageFor(model => model.FaxNumber)
         </div>
     </div>

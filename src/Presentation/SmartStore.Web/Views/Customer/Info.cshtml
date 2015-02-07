@@ -188,7 +188,7 @@
                         <div class="control-group">
                             @Html.LabelFor(model => model.VatNumber, new { @class = "control-label", @for = "VatNumber" })
                             <div class="controls">
-                                @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
+                                @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Volitelné" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
                                 <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
                             </div>
                         </div>
@@ -291,7 +291,7 @@
                             <div class="control-group">
                                 @Html.LabelFor(model => model.Signature, new { @class = "control-label", @for = "Signature" })
                                 <div class="controls">
-                                    @Html.TextAreaFor(model => model.Signature, new { placeholder = "Optional", @class = "account-signature-text" })
+                                    @Html.TextAreaFor(model => model.Signature, new { placeholder = "Volitelné", @class = "account-signature-text" })
                                 </div>
                             </div>
                         }

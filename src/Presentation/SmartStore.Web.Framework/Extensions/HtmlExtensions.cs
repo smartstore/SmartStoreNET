@@ -432,7 +432,7 @@ namespace SmartStore.Web.Framework
             object attrs = null;
             if (!required && (editorType == InputEditorType.TextBox || editorType == InputEditorType.Password))
             {
-                attrs = new { placeholder = "Optional" /* TODO: Loc */  };
+                attrs = new { placeholder = "Volitelné" /* TODO: Loc */  };
             }
             //var x = ModelMetadata.FromLambdaExpression(expression, html.ViewData).DisplayName;
             switch (editorType)

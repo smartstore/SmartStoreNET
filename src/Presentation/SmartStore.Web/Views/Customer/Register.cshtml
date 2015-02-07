@@ -139,7 +139,7 @@
                             <div class="control-group">
                                 @Html.LabelFor(model => model.VatNumber, new { @class = "control-label", @for = "VatNumber" })
                                 <div class="controls">
-                                    @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
+                                    @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Volitelné" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
                                     <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
                                 </div>
                             </div>

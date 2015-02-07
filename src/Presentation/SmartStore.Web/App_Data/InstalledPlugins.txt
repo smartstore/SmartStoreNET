@@ -1,0 +1,4 @@
+SmartStore.DiscountRules
+SmartStore.OfflinePayment
+SmartStore.Shipping
+SmartStore.Tax

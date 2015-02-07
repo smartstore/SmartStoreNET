@@ -393,7 +393,7 @@ namespace SmartStore.Services.Orders
                 hasQtyWarnings = true;
             }
             var allowedQuantities = product.ParseAllowedQuatities();
-            if (allowedQuantities.Length > 0 && !allowedQuantities.Contains(quantity))
+            if (allowedQuantities.Length > 0 && allowedQuantities.First() != 0 && (quantity % allowedQuantities.First() != 0))
             {
                 warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.AllowedQuantities"), string.Join(", ", allowedQuantities)));
             }

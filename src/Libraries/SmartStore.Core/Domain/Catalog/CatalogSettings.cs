@@ -25,6 +25,7 @@ namespace SmartStore.Core.Domain.Catalog
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
             FilterEnabled = true;
+            MaxFilterItemsToDisplay = 4;
             ShowSubcategoriesAboveProductLists = true;
 			ProductSearchAutoCompleteEnabled = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
@@ -148,6 +149,16 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a value indicating whether filter is enabled
         /// </summary>
         public bool FilterEnabled { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value which determines the maximum number of displayed filter items
+        /// </summary>
+        public int MaxFilterItemsToDisplay { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether all filter criterias should be expanded
+        /// </summary>
+        public bool ExpandAllFilterCriterias { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether sub categories above product lists are enabled

@@ -365,6 +365,26 @@
                     @Html.ValidationMessageFor(model => model.FilterEnabled)
                 </td>
             </tr>
+
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.MaxFilterItemsToDisplay)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.MaxFilterItemsToDisplay)
+                    @Html.ValidationMessageFor(model => model.MaxFilterItemsToDisplay)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ExpandAllFilterCriterias)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ExpandAllFilterCriterias)
+                    @Html.ValidationMessageFor(model => model.ExpandAllFilterCriterias)
+                </td>
+            </tr>
+
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.ShowSubcategoriesAboveProductLists)

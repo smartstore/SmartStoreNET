@@ -1,15 +1,20 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2
 
 ### New Features
 * #428 Implement category option to override global list view type
 * #485 Enable shop admin to change creation date of a blog entry
+* #258 Implement email validation in checkout
+* Quantity unit management
+* Option to determine the maximum amount of filter items
+* Option to determine whether all filter groups should be display expanded
 
 ### Improvements
 * Feed plugins: product query now paged to reduce memory payload
 * Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)
+* #189 Allow deletion of multiple reviews
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status
@@ -19,6 +24,7 @@
 * Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
 * Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes
 * Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
+* Print order as pdf redirected to login although the admin already was logged in 
 
 
 ## SmartStore.NET 2.1.1

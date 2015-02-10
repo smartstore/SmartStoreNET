@@ -37,6 +37,18 @@ namespace SmartStore.Data.Migrations
 				"Steuersatz",
 				"The tax rate for the product",
 				"Die Steuerrate des Produktes");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay",
+                "Maximum filter items",
+				"Maximale Anzahl von Filtereinträgen",
+                "Determines the maximum amount of filter items to display",
+                "Bestimmt die maximale Anzahl von angezeigten Filtereinträgen");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriterias",
+				"Expand all filter groups",
+				"Alle Filtergruppen aufklappen",
+                "Determines whether all filter groups are displayed expanded",
+                "Legt fest ob alle Filtergruppen aufgeklappt angezeigt werden");
+            
 		}
     }
 }

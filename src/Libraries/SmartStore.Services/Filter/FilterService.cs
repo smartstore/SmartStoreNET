@@ -45,7 +45,6 @@ namespace SmartStore.Services.Filter
 			_commonServices = commonServices;
 		}
 
-		public static int MaxDisplayCriteria { get { return 4; } }
 		public static string ShortcutPrice { get { return "_Price"; } }
 		public static string ShortcutSpecAttribute { get { return "_SpecId"; } }
 
@@ -269,7 +268,7 @@ namespace SmartStore.Services.Filter
 			grouped = grouped.OrderByDescending(m => m.MatchCount);
 
 			if (!getAll)
-				grouped = grouped.Take(MaxDisplayCriteria);
+				grouped = grouped.Take(_catalogSettings.MaxFilterItemsToDisplay);
 
 			var lst = grouped.ToList();
 
@@ -583,6 +582,14 @@ namespace SmartStore.Services.Filter
 				context.Criteria.AddRange(inactive);
 			}
 		}
+
+        public bool IsShowAllText(IEnumerable<FilterCriteria> criteriaGroup)
+        {
+            if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
+                return false;
+
+            return (criteriaGroup.Count() >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));
+        }
 	}
 }
 

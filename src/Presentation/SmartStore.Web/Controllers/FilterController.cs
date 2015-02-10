@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Filter;
 using SmartStore.Web.Models.Filter;
 
@@ -8,10 +9,12 @@ namespace SmartStore.Web.Controllers
 	public partial class FilterController : Controller		// not BaseController cause of performance
     {
 		private readonly IFilterService _filterService;
+        private readonly CatalogSettings _catalogSettings;
 
-		public FilterController(IFilterService filterService)
+		public FilterController(IFilterService filterService, CatalogSettings catalogSettings)
 		{
 			_filterService = filterService;
+            _catalogSettings = catalogSettings;
 		}
 
 		public ActionResult Products(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
@@ -20,7 +23,12 @@ namespace SmartStore.Web.Controllers
 		
 			_filterService.ProductFilterable(context);
 
-			return PartialView(new ProductFilterModel { Context = context });
+            return PartialView(new ProductFilterModel { 
+                Context = context, 
+                IsShowAllText = _filterService.IsShowAllText(context.Criteria),
+                MaxFilterItemsToDisplay = _catalogSettings.MaxFilterItemsToDisplay,
+                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriterias
+            });
 		}
 
 		[HttpPost]
@@ -34,7 +42,7 @@ namespace SmartStore.Web.Controllers
 				ParentCategoryID = categoryID,
 				CategoryIds = new List<int> { categoryID },
 				Criteria = _filterService.Deserialize(active),
-				OrderBy = orderby
+				OrderBy = orderby,
 			};
 
 			context.Criteria.AddRange(_filterService.Deserialize(inactive));
@@ -64,7 +72,12 @@ namespace SmartStore.Web.Controllers
 
 			_filterService.ProductFilterableMultiSelect(context, filterMultiSelect);
 
-			return PartialView(new ProductFilterModel { Context = context });
+            return PartialView(new ProductFilterModel { 
+                Context = context, 
+                IsShowAllText = _filterService.IsShowAllText(context.Criteria),
+                MaxFilterItemsToDisplay = _catalogSettings.MaxFilterItemsToDisplay,
+                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriterias
+            });
 		}
     }
 }

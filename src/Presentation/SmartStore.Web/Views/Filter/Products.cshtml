@@ -33,7 +33,7 @@
 	{
 		<div class="foot">
 			<a href="#" class="more" rel="nofollow" data-toggle="modal" data-target="#product-filter-modal" data-multiselect="@criteria.First().ToString()">
-				@T(criteria.IsShowAllText() ? "Products.Filter.ShowAll" : "Products.Filter.SelectMultiple")
+				@T(Model.IsShowAllText ? "Products.Filter.ShowAll" : "Products.Filter.SelectMultiple")
 			</a>
 		</div>
 	}
@@ -76,6 +76,6 @@ else
 		var criterias = grp.Where(c => c.IsInactive != isActive);
 		var caption = (first != null && first.NameLocalized.HasValue() ? first.NameLocalized : grp.Key);
 
-		@FilterGroup(isActive ? criterias : criterias.Take(FilterService.MaxDisplayCriteria), caption, isActive)
+		@FilterGroup(isActive ? criterias : criterias.Take(Model.MaxFilterItemsToDisplay), caption, Model.ExpandAllFilterGroups ? true : isActive)
 	}
 }

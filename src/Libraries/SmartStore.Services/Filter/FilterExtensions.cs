@@ -178,13 +178,5 @@ namespace SmartStore.Services.Filter
 			}
 			return false;
 		}
-
-		public static bool IsShowAllText(this IEnumerable<FilterCriteria> criteriaGroup)
-		{
-			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
-				return false;
-
-			return (criteriaGroup.Count() >= FilterService.MaxDisplayCriteria || criteriaGroup.Any(c => !c.IsInactive));
-		}
 	}
 }

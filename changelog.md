@@ -8,7 +8,7 @@
 * #258 Implement email validation in checkout
 * Quantity unit management
 * Option to determine the maximum amount of filter items
-* Option to determine whether all filter groups should be display expanded
+* Option to determine whether all filter groups should be displayed expanded
 
 ### Improvements
 * Feed plugins: product query now paged to reduce memory payload

@@ -158,7 +158,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets a value indicating whether all filter criterias should be expanded
         /// </summary>
-        public bool ExpandAllFilterCriterias { get; set; }
+        public bool ExpandAllFilterCriteria { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether sub categories above product lists are enabled

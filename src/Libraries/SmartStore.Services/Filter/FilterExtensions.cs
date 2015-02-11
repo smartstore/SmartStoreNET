@@ -120,11 +120,13 @@ namespace SmartStore.Services.Filter
 			}
 			return null;
 		}
+
 		public static bool StringToPrice(string value, out decimal result)
 		{
 			result = 0;
 			return (value.HasValue() && decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
 		}
+
 		public static bool StringToPrice(this string[] range, int index, out decimal result)
 		{
 			result = 0;
@@ -170,6 +172,7 @@ namespace SmartStore.Services.Filter
 
 			return url;
 		}
+
 		public static bool IsActive(this FilterProductContext context, FilterCriteria criteria)
 		{
 			if (criteria != null && context.Criteria != null)

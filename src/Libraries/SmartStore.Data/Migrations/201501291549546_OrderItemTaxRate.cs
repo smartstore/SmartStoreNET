@@ -40,14 +40,14 @@ namespace SmartStore.Data.Migrations
 
             builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay",
                 "Maximum filter items",
-				"Maximale Anzahl von Filtereinträgen",
+				"Maximale Anzahl Filtereinträge",
                 "Determines the maximum amount of filter items to display",
-                "Bestimmt die maximale Anzahl von angezeigten Filtereinträgen");
-            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriterias",
+                "Bestimmt die maximale Anzahl angezeigter Filtereinträge");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria",
 				"Expand all filter groups",
 				"Alle Filtergruppen aufklappen",
-                "Determines whether all filter groups are displayed expanded",
-                "Legt fest ob alle Filtergruppen aufgeklappt angezeigt werden");
+                "Determines whether all filter groups should be displayed expanded",
+                "Legt fest, ob alle Filtergruppen aufgeklappt angezeigt werden sollen");
             
 		}
     }

@@ -90,8 +90,8 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay")]
         public int MaxFilterItemsToDisplay { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriterias")]
-        public bool ExpandAllFilterCriterias { get; set; }
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
+        public bool ExpandAllFilterCriteria { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowSubcategoriesAboveProductLists")]
         public bool ShowSubcategoriesAboveProductLists { get; set; }

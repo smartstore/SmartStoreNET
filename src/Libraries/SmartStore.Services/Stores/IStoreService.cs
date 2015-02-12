@@ -43,7 +43,6 @@ namespace SmartStore.Services.Stores
 		/// <summary>
 		/// True if there's only one store. Otherwise False.
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		bool IsSingleStoreMode();
 	}
 }

@@ -19,7 +19,5 @@ namespace SmartStore.Services.Filter
 
 		void ProductFilterable(FilterProductContext context);
 		void ProductFilterableMultiSelect(FilterProductContext context, string filterMultiSelect);
-
-        bool IsShowAllText(IEnumerable<FilterCriteria> criteriaGroup);
 	}
 }

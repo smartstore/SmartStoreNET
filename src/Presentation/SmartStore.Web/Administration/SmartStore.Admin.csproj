@@ -240,6 +240,7 @@
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
+    <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
@@ -478,6 +479,7 @@
     <Content Include="Views\QuantityUnit\Create.cshtml" />
     <Content Include="Views\QuantityUnit\Edit.cshtml" />
     <Content Include="Views\QuantityUnit\List.cshtml" />
+    <Content Include="Views\Plugin\LicensePlugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

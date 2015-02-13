@@ -115,6 +115,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Mapping\Plugins\LicenseMap.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
@@ -215,13 +216,18 @@
     <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.cs" />
     <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
-    </Compile>    <Compile Include="Migrations\201501291135374_QuantityUnits.cs" />
+    </Compile>
+    <Compile Include="Migrations\201501291135374_QuantityUnits.cs" />
     <Compile Include="Migrations\201501291135374_QuantityUnits.Designer.cs">
       <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201501291549546_OrderItemTaxRate.cs" />
     <Compile Include="Migrations\201501291549546_OrderItemTaxRate.Designer.cs">
       <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502120858030_Licensing.cs" />
+    <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -438,10 +444,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
-    </EmbeddedResource>    <EmbeddedResource Include="Migrations\201501291549546_OrderItemTaxRate.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501291549546_OrderItemTaxRate.resx">
       <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
-    </EmbeddedResource>    <EmbeddedResource Include="Migrations\201501291135374_QuantityUnits.resx">
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501291135374_QuantityUnits.resx">
       <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

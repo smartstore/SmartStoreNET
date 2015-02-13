@@ -2225,7 +2225,9 @@ if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\amd64\*.*" "$(TargetDir)amd64"
 
 if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
-     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"</PostBuildEvent>
+     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"
+
+xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"</PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>

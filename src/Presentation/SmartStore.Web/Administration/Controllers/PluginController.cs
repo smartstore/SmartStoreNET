@@ -8,6 +8,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Domain.Plugins;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
@@ -18,6 +19,7 @@ using SmartStore.Services.Cms;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Plugins;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
@@ -47,6 +49,7 @@ namespace SmartStore.Admin.Controllers
         private readonly WidgetSettings _widgetSettings;
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
+		private readonly ILicenseService _licenseService;
 
 	    #endregion
 
@@ -65,7 +68,8 @@ namespace SmartStore.Admin.Controllers
 			ExternalAuthenticationSettings externalAuthenticationSettings, 
             WidgetSettings widgetSettings,
 			IProviderManager providerManager,
-			PluginMediator pluginMediator)
+			PluginMediator pluginMediator,
+			ILicenseService licenseService)
 		{
             this._pluginFinder = pluginFinder;
             this._localizationService = localizationService;
@@ -81,6 +85,8 @@ namespace SmartStore.Admin.Controllers
             this._widgetSettings = widgetSettings;
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
+			this._licenseService = licenseService;
+
 			T = NullLocalizer.Instance;
 		}
 
@@ -137,6 +143,13 @@ namespace SmartStore.Admin.Controllers
 							model.ConfigurationRoute = new RouteInfo(actionName, controllerName, routeValues);
 						}
 					}
+				}
+
+				if (pluginDescriptor.IsLicensable)
+				{
+					// we always show license button to serve ability to delete a license
+					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
+					model.IsLicensed = (_licenseService.GetAllLicenses().FirstOrDefault(x => x.SystemName == pluginDescriptor.SystemName) != null);
 				}
             }
             return model;
@@ -317,6 +330,93 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.ListUrl = listUrl.NullEmpty() ?? listUrl2;
 
 			return View(model);
+		}
+
+		public ActionResult LicensePlugin(string systemName, string licenseKey)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedPartialView();
+
+			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);
+			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
+				return Content(T("Admin.Common.ResourceNotFound"));
+
+			var licensable = descriptor.Instance() as ILicensable;
+			var stores = _storeService.GetAllStores();
+			var licenses = _licenseService.GetAllLicenses().Where(x => x.SystemName == systemName);
+
+			var model = new LicensePluginModel()
+			{
+				SystemName = systemName,
+				Licenses = new List<LicensePluginModel.LicenseModel>()
+			};
+
+			if (licensable.OneLicenseForAllStores())
+			{
+				model.Licenses.Add(new LicensePluginModel.LicenseModel()
+				{
+					LicenseKey = licenses.Where(x => x.StoreId == 0).Select(x => x.Key).FirstOrDefault(),
+					StoreId = 0
+				});
+			}
+			else
+			{
+				foreach (var store in stores)
+				{
+					var key = licenses.Where(x => x.StoreId == store.Id).Select(x => x.Key).FirstOrDefault();
+					model.Licenses.Add(new LicensePluginModel.LicenseModel()
+					{
+						LicenseKey = key,
+						OldLicenseKey = key,
+						StoreId = store.Id,
+						StoreName = store.Name,
+						StoreUrl = store.Url
+					});
+				}
+			}
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult LicensePlugin(string systemName, LicensePluginModel model)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePlugins))
+				return AccessDeniedView();
+
+			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);
+			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
+				return HttpNotFound();
+
+			var licenses = _licenseService.GetAllLicenses().Where(x => x.SystemName == systemName);
+
+			foreach (var item in model.Licenses)
+			{
+				var existingLicense = licenses.FirstOrDefault(x => x.Key == item.OldLicenseKey);
+
+				if (existingLicense != null && (item.LicenseKey.IsNullOrEmpty() || existingLicense.Key != item.LicenseKey))
+					_licenseService.DeleteLicense(existingLicense);
+
+				if (item.LicenseKey.IsNullOrEmpty() || (existingLicense != null && existingLicense.Key == item.LicenseKey))
+					continue;
+
+				// TODO: licensing component
+				
+				_licenseService.InsertLicense(new License()
+				{
+					Key = item.LicenseKey,
+					UsageId = "abc",
+					SystemName = systemName,
+					ActivatedOnUtc = DateTime.UtcNow,
+					StoreId = item.StoreId
+				});
+			}
+
+			// TODO: delete\reset cache via licensing component
+
+			NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
+
+			return RedirectToAction("List");
 		}
 
 		public ActionResult EditProviderPopup(string systemName)

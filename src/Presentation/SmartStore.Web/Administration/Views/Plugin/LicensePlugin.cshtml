@@ -1,0 +1,33 @@
+﻿@model LicensePluginModel
+
+@{
+	Layout = null;
+}
+
+<form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })">
+	<table class="adminContent">
+		@for (int i = 0; i < Model.Licenses.Count; ++i)
+		{
+			if (Model.Licenses.Count > 1)
+			{
+				<tr>
+					<td colspan="2">
+						<div class="admin-config-group" style="@(i==0 ? "" : "margin-top: 12px;")">
+							<div class="small-title">@Model.Licenses[i].StoreName (@Model.Licenses[i].StoreUrl)</div>
+						</div>
+					</td>
+				</tr>
+			}
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Licenses[i].LicenseKey)
+				</td>
+				<td class="adminData">
+					@Html.HiddenFor(model => model.Licenses[i].StoreId)
+					@Html.HiddenFor(model => model.Licenses[i].OldLicenseKey)
+					@Html.EditorFor(model => model.Licenses[i].LicenseKey)
+				</td>
+			</tr>
+		}
+	</table>
+</form>

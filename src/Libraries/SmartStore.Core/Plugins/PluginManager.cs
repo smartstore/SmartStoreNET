@@ -280,6 +280,7 @@ namespace SmartStore.Core.Plugins
 					{
 						descriptor.PluginType = t;
 						descriptor.IsConfigurable = typeof(IConfigurable).IsAssignableFrom(t);
+						descriptor.IsLicensable = typeof(ILicensable).IsAssignableFrom(t);
 						pluginFound = true;
 					}
 					else if (descriptor.Installed && typeof(IPreApplicationStart).IsAssignableFrom(t) && !t.IsInterface && t.IsClass && !t.IsAbstract && t.HasDefaultConstructor())

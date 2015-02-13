@@ -383,6 +383,8 @@
     <Compile Include="Pdf\PdfPageSize.cs" />
     <Compile Include="Pdf\PdfPagePrientation.cs" />
     <Compile Include="Pdf\WkHtmlToPdfConverter.cs" />
+    <Compile Include="Plugins\ILicenseService.cs" />
+    <Compile Include="Plugins\LicenseService.cs" />
     <Compile Include="Polls\IPollService.cs" />
     <Compile Include="Polls\PollService.cs" />
     <Compile Include="Properties\Settings.Designer.cs">

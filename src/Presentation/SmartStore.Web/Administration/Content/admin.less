@@ -315,14 +315,21 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
-.admin-config-group .title {
+.admin-config-group .title,
+.admin-config-group .small-title {
     font-family: @headingsFontFamily;
     font-weight: @headingsFontWeight;
     color: inherit; 
+	border-bottom: 1px solid #ddd;
+}
+.admin-config-group .title {
     font-size: 18px;
 	margin: 12px 0;
 	padding: 12px 0;
-	border-bottom: 1px solid #ddd;
+}
+.admin-config-group .small-title {
+	margin: 2px 0;
+	padding: 2px 0;
 }
 
 

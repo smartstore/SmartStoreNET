@@ -1080,6 +1080,8 @@ namespace SmartStore.Services.Orders
                             //move shopping cart items to order products
                             foreach (var sc in cart)
                             {
+								sc.Item.Product.MergeWithCombination(sc.Item.AttributesXml);
+
                                 //prices
                                 decimal taxRate = decimal.Zero;
 								decimal unitPriceTaxRate = decimal.Zero;

@@ -1285,7 +1285,7 @@ namespace SmartStore.Web.Controllers
 				var addShippingPrice = _currencyService.ConvertCurrency(minPriceProduct.AdditionalShippingCharge,
 					_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId), _services.WorkContext.WorkingCurrency);
 
-				if (addShippingPrice > 0)
+				if (addShippingPrice > 0 && _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
 				{
 					model.TransportSurcharge = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
 				}

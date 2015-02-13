@@ -343,7 +343,7 @@ namespace SmartStore.Admin.Controllers
 
 			var licensable = descriptor.Instance() as ILicensable;
 			var stores = _storeService.GetAllStores();
-			var licenses = _licenseService.GetAllLicenses().Where(x => x.SystemName == systemName);
+			var licenses = _licenseService.GetLicenses(systemName);
 
 			var model = new LicensePluginModel
 			{
@@ -388,7 +388,7 @@ namespace SmartStore.Admin.Controllers
 			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
 				return HttpNotFound();
 
-			var licenses = _licenseService.GetAllLicenses().Where(x => x.SystemName == systemName);
+			var licenses = _licenseService.GetLicenses(systemName);
 
 			foreach (var item in model.Licenses)
 			{

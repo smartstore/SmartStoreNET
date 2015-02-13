@@ -37,11 +37,10 @@ namespace SmartStore.Services.Plugins
 		License GetLicense(int licenseId);
 
 		/// <summary>
-		/// Gets a license
+		/// Gets licenses by system name
 		/// </summary>
 		/// <param name="systemName">Plugin system name</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <returns>License</returns>
-		License GetLicense(string systemName, int storeId);
+		/// <returns>Licenses</returns>
+		IList<License> GetLicenses(string systemName);
 	}
 }

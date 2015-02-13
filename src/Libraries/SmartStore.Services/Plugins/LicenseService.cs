@@ -107,15 +107,14 @@ namespace SmartStore.Services.Plugins
 		}
 
 		/// <summary>
-		/// Gets a license
+		/// Gets licenses by system name
 		/// </summary>
 		/// <param name="systemName">Plugin system name</param>
-		/// <param name="storeId">Store identifier</param>
-		/// <returns>License</returns>
-		public License GetLicense(string systemName, int storeId)
+		/// <returns>Licenses</returns>
+		public IList<License> GetLicenses(string systemName)
 		{
-			var license = GetAllLicenses().FirstOrDefault(x => x.SystemName == systemName && x.StoreId == storeId);
-			return license;
+			var licenses = GetAllLicenses().Where(x => x.SystemName == systemName);
+			return licenses.ToList();
 		}
 
 		/// <summary>

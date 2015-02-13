@@ -658,7 +658,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				order.AuthorizationTransactionResult = newResult;
 
-				if (order.CaptureTransactionId.IsNullOrEmpty() && data.CaptureId.HasValue())
+				if (order.CaptureTransactionId.IsEmpty() && data.CaptureId.HasValue())
 					order.CaptureTransactionId = data.CaptureId;	// captured at amazon seller central
 
 				_orderService.UpdateOrder(order);
@@ -779,7 +779,7 @@ namespace SmartStore.AmazonPay.Services
 
 			PollingLoop(d, () =>
 			{
-				if (d.Order.AuthorizationTransactionId.IsNullOrEmpty())
+				if (d.Order.AuthorizationTransactionId.IsEmpty())
 					return false;
 
 				var details = _api.GetAuthorizationDetails(d.Client, d.Order.AuthorizationTransactionId, out data);
@@ -795,7 +795,7 @@ namespace SmartStore.AmazonPay.Services
 
 			PollingLoop(d, () =>
 			{
-				if (d.Order.CaptureTransactionId.IsNullOrEmpty())
+				if (d.Order.CaptureTransactionId.IsEmpty())
 					return false;
 
 				_api.GetCaptureDetails(d.Client, d.Order.CaptureTransactionId, out data);

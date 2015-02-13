@@ -89,7 +89,7 @@ namespace SmartStore
                 }
             }
 
-            if (contentType.IsNullOrEmpty())
+			if (contentType.IsEmpty())
             {
                 contentType = SmartStore.Core.IO.MimeTypes.MapNameToMimeType(fileName);
             }

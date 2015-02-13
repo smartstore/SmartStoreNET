@@ -55,6 +55,7 @@ namespace SmartStore.Services.Filter
 				return value;
 			return alternativeValue;
 		}
+
 		private string FormatParameterIndex(ref int index)
 		{
 			//if (curlyBracketFormatting)
@@ -62,6 +63,7 @@ namespace SmartStore.Services.Filter
 
 			return "@{0}".FormatWith(index++);
 		}
+
 		private object FilterValueToObject(string value, string type)
 		{
 			if (value == null)
@@ -82,6 +84,7 @@ namespace SmartStore.Services.Filter
 
 			return result;
 		}
+
 		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index)
 		{
 			if (itm.Entity == ShortcutPrice)
@@ -127,6 +130,7 @@ namespace SmartStore.Services.Filter
 			}
 			return true;
 		}
+
 		private void FilterParentheses(List<FilterCriteria> criteria)
 		{
 			// Logical or combine all criteria with same name.
@@ -154,6 +158,7 @@ namespace SmartStore.Services.Filter
 				}
 			}
 		}
+
 		private IQueryable<Product> AllProducts(List<int> categoryIds)
 		{
 			if (_products == null)
@@ -244,6 +249,7 @@ namespace SmartStore.Services.Filter
 			result.ForEach(c => c.IsInactive = true);
 			return result;
 		}
+
 		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
 		{
 			var query = ProductFilter(context);
@@ -281,6 +287,7 @@ namespace SmartStore.Services.Filter
 
 			return lst;
 		}
+
 		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null)
 		{
 			var query = ProductFilter(context);
@@ -339,6 +346,7 @@ namespace SmartStore.Services.Filter
 			}
 			return new List<FilterCriteria>();
 		}
+
 		public virtual string Serialize(List<FilterCriteria> criteria)
 		{
 			//criteria.FindAll(c => c.Type.IsNullOrEmpty()).ForEach(c => c.Type = _defaultType);
@@ -413,7 +421,7 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(FilterValueToObject(valueLeft, itm.Type));
 					context.Values.Add(FilterValueToObject(valueRight, itm.Type));
 				}
-				else if (itm.Value.IsNullOrEmpty())
+				else if (itm.Value.IsEmpty())
 				{
 					context.WhereClause.AppendFormat("ASCII({0}) Is Null", itm.SqlName);		// true if null or empty (string)
 				}
@@ -443,6 +451,7 @@ namespace SmartStore.Services.Filter
 			}
 			return (context.WhereClause.Length > 0);
 		}
+
 		public virtual bool ToWhereClause(FilterSql context, List<FilterCriteria> findIn, Predicate<FilterCriteria> match)
 		{
 			if (context.Criteria != null)
@@ -551,6 +560,7 @@ namespace SmartStore.Services.Filter
 
 			context.Criteria.AddRange(ProductFilterableSpecAttributes(context));
 		}
+
 		public virtual void ProductFilterableMultiSelect(FilterProductContext context, string filterMultiSelect)
 		{
 			var criteriaMultiSelect = Deserialize(filterMultiSelect).FirstOrDefault();
@@ -582,14 +592,6 @@ namespace SmartStore.Services.Filter
 				context.Criteria.AddRange(inactive);
 			}
 		}
-
-        public bool IsShowAllText(IEnumerable<FilterCriteria> criteriaGroup)
-        {
-            if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
-                return false;
-
-            return (criteriaGroup.Count() >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));
-        }
 	}
 }
 

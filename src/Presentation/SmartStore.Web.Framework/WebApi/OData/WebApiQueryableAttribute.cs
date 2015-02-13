@@ -25,7 +25,7 @@ namespace SmartStore.Web.Framework.WebApi.OData
 
 				var query = actionExecutedContext.Request.RequestUri.Query;
 
-				bool missingClientPaging = query.IsNullOrEmpty() || !query.Contains("$top=");
+				bool missingClientPaging = query.IsEmpty() || !query.Contains("$top=");
 
 				if (missingClientPaging)
 				{

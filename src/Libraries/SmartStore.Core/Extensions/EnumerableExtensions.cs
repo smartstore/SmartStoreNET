@@ -112,19 +112,9 @@ namespace SmartStore
             return source.Cast<object>().Where(o => o is T).Cast<T>();
         }
 
-		public static bool HasItems(this IEnumerable source)
-		{
-			return source != null && source.GetEnumerator().MoveNext();
-		}
-
-        public static bool IsNullOrEmpty(this IEnumerable source)
-        {
-            return !HasItems(source);
-        }
-
         public static ReadOnlyCollection<T> AsReadOnly<T>(this IEnumerable<T> source)
         {
-			if (source.IsNullOrEmpty())
+			if (source == null || !source.Any())
 				return DefaultReadOnlyCollection<T>.Empty;
 
 			var readOnly = source as ReadOnlyCollection<T>;

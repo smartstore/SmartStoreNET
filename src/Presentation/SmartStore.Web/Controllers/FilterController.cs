@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Filter;
@@ -6,7 +7,7 @@ using SmartStore.Web.Models.Filter;
 
 namespace SmartStore.Web.Controllers
 {
-	public partial class FilterController : Controller		// not BaseController cause of performance
+	public partial class FilterController : Controller // not BaseController cause of performance
     {
 		private readonly IFilterService _filterService;
         private readonly CatalogSettings _catalogSettings;
@@ -23,11 +24,12 @@ namespace SmartStore.Web.Controllers
 		
 			_filterService.ProductFilterable(context);
 
-            return PartialView(new ProductFilterModel { 
+            return PartialView(new ProductFilterModel 
+			{ 
                 Context = context, 
-                IsShowAllText = _filterService.IsShowAllText(context.Criteria),
+                IsShowAllText = IsShowAllText(context.Criteria),
                 MaxFilterItemsToDisplay = _catalogSettings.MaxFilterItemsToDisplay,
-                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriterias
+                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriteria
             });
 		}
 
@@ -74,10 +76,18 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(new ProductFilterModel { 
                 Context = context, 
-                IsShowAllText = _filterService.IsShowAllText(context.Criteria),
+                IsShowAllText = IsShowAllText(context.Criteria),
                 MaxFilterItemsToDisplay = _catalogSettings.MaxFilterItemsToDisplay,
-                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriterias
+                ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriteria
             });
+		}
+
+		private bool IsShowAllText(ICollection<FilterCriteria> criteriaGroup)
+		{
+			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
+				return false;
+
+			return (criteriaGroup.Count >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));
 		}
     }
 }

@@ -573,7 +573,7 @@ namespace SmartStore.Services.Localization
         {
             Guard.ArgumentNotNull(() => source);
 
-            if (!source.SelectNodes("//Children").HasItems())
+            if (source.SelectNodes("//Children").Count == 0)
             {
                 // the document contains absolutely NO nesting,
                 // so don't bother parsing.

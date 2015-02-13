@@ -203,7 +203,7 @@ namespace SmartStore.Services.Customers
 						var lastName = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastName);
 						var city = customer.GetAttribute<string>(SystemCustomerAttributeNames.City);
 
-						if (firstName.IsNullOrEmpty())
+						if (firstName.IsEmpty())
 						{
 							var address = customer.Addresses.FirstOrDefault();
 							if (address != null)

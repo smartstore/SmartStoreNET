@@ -394,10 +394,10 @@ namespace SmartStore.Admin.Controllers
 			{
 				var existingLicense = licenses.FirstOrDefault(x => x.Key == item.OldLicenseKey);
 
-				if (existingLicense != null && (item.LicenseKey.IsNullOrEmpty() || existingLicense.Key != item.LicenseKey))
+				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.Key != item.LicenseKey))
 					_licenseService.DeleteLicense(existingLicense);
 
-				if (item.LicenseKey.IsNullOrEmpty() || (existingLicense != null && existingLicense.Key == item.LicenseKey))
+				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.Key == item.LicenseKey))
 					continue;
 
 				// TODO: licensing component

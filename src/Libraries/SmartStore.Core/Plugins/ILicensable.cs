@@ -9,13 +9,13 @@ namespace SmartStore.Core.Plugins
 		/// <summary>
 		/// Whether one license (key) is valid for all stores.
 		/// </summary>
-		bool OneLicenseForAllStores();
+		bool HasSingleLicenseForAllStores { get; }
 	}
 
 
-	public enum LicenseStatus : int
+	public enum LicenseStatus
 	{
-		Active = 0,
+		Active,
 		Expired,
 		Inactive
 	}

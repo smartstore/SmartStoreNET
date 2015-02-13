@@ -345,15 +345,15 @@ namespace SmartStore.Admin.Controllers
 			var stores = _storeService.GetAllStores();
 			var licenses = _licenseService.GetAllLicenses().Where(x => x.SystemName == systemName);
 
-			var model = new LicensePluginModel()
+			var model = new LicensePluginModel
 			{
 				SystemName = systemName,
 				Licenses = new List<LicensePluginModel.LicenseModel>()
 			};
 
-			if (licensable.OneLicenseForAllStores())
+			if (licensable.HasSingleLicenseForAllStores)
 			{
-				model.Licenses.Add(new LicensePluginModel.LicenseModel()
+				model.Licenses.Add(new LicensePluginModel.LicenseModel
 				{
 					LicenseKey = licenses.Where(x => x.StoreId == 0).Select(x => x.Key).FirstOrDefault(),
 					StoreId = 0
@@ -402,7 +402,7 @@ namespace SmartStore.Admin.Controllers
 
 				// TODO: licensing component
 				
-				_licenseService.InsertLicense(new License()
+				_licenseService.InsertLicense(new License
 				{
 					Key = item.LicenseKey,
 					UsageId = "abc",

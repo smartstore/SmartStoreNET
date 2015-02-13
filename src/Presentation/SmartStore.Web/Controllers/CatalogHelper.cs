@@ -728,7 +728,7 @@ namespace SmartStore.Web.Controllers
 			model.IsShipEnabled = product.IsShipEnabled;
 			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
-			if (model.DeliveryTimeName.IsNullOrEmpty() && model.DisplayDeliveryTime)
+			if (model.DeliveryTimeName.IsEmpty() && model.DisplayDeliveryTime)
 			{
 				model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
 			}

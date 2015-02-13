@@ -134,7 +134,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			if (googleProduct != null)
 				productCategory = googleProduct.Taxonomy;
 
-			if (productCategory.IsNullOrEmpty())
+			if (productCategory.IsEmpty())
 				productCategory = Settings.DefaultGoogleCategory;
 
 			return productCategory;
@@ -144,7 +144,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			if (Settings.Condition.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
-			if (Settings.Condition.IsNullOrEmpty())
+			if (Settings.Condition.IsEmpty())
 				return "new";
 
 			return Settings.Condition;
@@ -154,7 +154,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			if (Settings.Availability.IsCaseInsensitiveEqual(PluginHelper.NotSpecified))
 				return "";
 
-			if (Settings.Availability.IsNullOrEmpty())
+			if (Settings.Availability.IsEmpty())
 			{
 				if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock && product.StockQuantity <= 0)
 				{
@@ -246,7 +246,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		{
 			const string defaultValue = "kg";
 
-			if (value.IsNullOrEmpty())
+			if (value.IsEmpty())
 				return defaultValue;
 
 			// TODO: Product.BasePriceMeasureUnit should be localized
@@ -310,7 +310,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				var googleProduct = GetGoogleProductRecord(product.Id);
 				var category = ProductCategory(googleProduct);
 
-				if (category.IsNullOrEmpty())
+				if (category.IsEmpty())
 					fileCreation.ErrorMessage = Helper.GetResource("MissingDefaultCategory");
 
 				string manuName = (manu != null ? manu.Manufacturer.GetLocalized(x => x.Name, Settings.LanguageId, true, false) : null);
@@ -331,7 +331,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 				var description = Helper.BuildProductDescription(productName, shortDescription, fullDescription, manuName, d =>
 				{
-					if (fullDescription.IsNullOrEmpty() && shortDescription.IsNullOrEmpty())
+					if (fullDescription.IsEmpty() && shortDescription.IsEmpty())
 					{
 						var rnd = new Random();
 
@@ -475,7 +475,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 		public void UpdateInsert(int pk, string name, string value)
 		{
-			if (pk == 0 || name.IsNullOrEmpty())
+			if (pk == 0 || name.IsEmpty())
 				return;
 
 			var product = GetGoogleProductRecord(pk);

@@ -61,7 +61,7 @@ namespace SmartStore.AmazonPay.Settings
 
 		public string GetWidgetUrl()
 		{
-			if (SellerId.IsNullOrEmpty())
+			if (SellerId.IsEmpty())
 				return null;
 
 			string url = (UseSandbox ? AmazonPayCore.UrlWidgetSandbox : AmazonPayCore.UrlWidgetProduction);
@@ -96,7 +96,7 @@ namespace SmartStore.AmazonPay.Settings
 		public bool CanSaveEmailAndPhone(string value)
 		{
 			return (
-				SaveEmailAndPhone == AmazonPaySaveDataType.Always || (SaveEmailAndPhone == AmazonPaySaveDataType.OnlyIfEmpty && value.IsNullOrEmpty())
+				SaveEmailAndPhone == AmazonPaySaveDataType.Always || (SaveEmailAndPhone == AmazonPaySaveDataType.OnlyIfEmpty && value.IsEmpty())
 			);
 		}
 	}

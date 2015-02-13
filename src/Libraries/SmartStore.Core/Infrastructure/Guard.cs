@@ -2,6 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
+using System.Linq;
 using System.Linq.Expressions;
 
 namespace SmartStore
@@ -128,16 +129,6 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-        public static void ArgumentNotEmpty(Func<IEnumerable> arg)
-        {
-            if (!arg().HasItems())
-            {
-                string argName = GetParamName(arg);
-                throw Error.Argument(argName, "List cannot be null and must have at least one item.");
-            }
-        }
-
-        [DebuggerStepThrough]
         public static void ArgumentNotEmpty(string arg, string argName)
         {
             if (arg.IsEmpty())
@@ -145,10 +136,10 @@ namespace SmartStore
         }
 
         [DebuggerStepThrough]
-        public static void ArgumentNotEmpty(IEnumerable arg, string argName)
+        public static void ArgumentNotEmpty<T>(ICollection<T> arg, string argName)
         {
-            if (!arg.HasItems())
-                throw Error.Argument(argName, "List cannot be null and must have at least one item.");
+			if (arg != null && !arg.Any())
+                throw Error.Argument(argName, "Collection cannot be null and must have at least one item.");
         }
 
         [DebuggerStepThrough]

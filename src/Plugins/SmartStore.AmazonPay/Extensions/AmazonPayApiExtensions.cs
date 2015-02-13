@@ -128,7 +128,7 @@ namespace SmartStore.AmazonPay.Api
 			}
 
 			// normalize
-			if (address.Address1.IsNullOrEmpty() && address.Address2.HasValue())
+			if (address.Address1.IsEmpty() && address.Address2.HasValue())
 			{
 				address.Address1 = address.Address2;
 				address.Address2 = null;

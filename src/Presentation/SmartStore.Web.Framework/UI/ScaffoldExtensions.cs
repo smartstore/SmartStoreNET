@@ -42,7 +42,7 @@ namespace SmartStore.Web.Framework.UI
 		}
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
-			if (id == 0 && name.IsNullOrEmpty())
+			if (id == 0 && name.IsEmpty())
 				return null;
 
 			string namePart = null;

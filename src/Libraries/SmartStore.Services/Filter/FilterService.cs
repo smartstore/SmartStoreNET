@@ -421,7 +421,7 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(FilterValueToObject(valueLeft, itm.Type));
 					context.Values.Add(FilterValueToObject(valueRight, itm.Type));
 				}
-				else if (itm.Value.IsNullOrEmpty())
+				else if (itm.Value.IsEmpty())
 				{
 					context.WhereClause.AppendFormat("ASCII({0}) Is Null", itm.SqlName);		// true if null or empty (string)
 				}

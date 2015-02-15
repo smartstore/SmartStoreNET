@@ -363,6 +363,7 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the customer order comment
         /// </summary>
+        [DataMember]
         public string CustomerOrderComment { get; set; }
 
         /// <summary>

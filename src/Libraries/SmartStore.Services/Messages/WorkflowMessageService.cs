@@ -954,7 +954,7 @@ namespace SmartStore.Services.Messages
             var toEmail = returnRequest.Customer.FindEmail();
             var toName = returnRequest.Customer.GetFullName();
 
-			if (toEmail.IsNullOrEmpty())
+			if (toEmail.IsEmpty())
 				return 0;
 
             return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);

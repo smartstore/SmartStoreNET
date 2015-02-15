@@ -27,7 +27,7 @@ namespace SmartStore.Services.Filter
 		{
 			var localize = EngineContext.Current.Resolve<ILocalizationService>();
 
-			if (criteria == null || criteria.Value.IsNullOrEmpty())
+			if (criteria == null || criteria.Value.IsEmpty())
 				return localize.GetResource("Common.Unspecified");
 
 			if (criteria.Operator == FilterOperator.RangeGreaterEqualLessEqual || criteria.Operator == FilterOperator.RangeGreaterEqualLess)

@@ -68,7 +68,7 @@ namespace SmartStore.PayPal
 
 			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(processPaymentRequest.StoreId);
 
-            if (settings.BusinessEmail.IsNullOrEmpty() || settings.PdtToken.IsNullOrEmpty())
+			if (settings.BusinessEmail.IsEmpty() || settings.PdtToken.IsEmpty())
 			{
 				result.AddError(T("Plugins.Payments.PayPalStandard.InvalidCredentials"));
 			}

@@ -210,7 +210,7 @@ namespace SmartStore.Services.Logging
         /// <returns>A log item</returns>
         public virtual Log InsertLog(LogContext context)
         {
-			if (context == null || (context.ShortMessage.IsNullOrEmpty() && context.FullMessage.IsNullOrEmpty()))
+			if (context == null || (context.ShortMessage.IsEmpty() && context.FullMessage.IsEmpty()))
 				return null;
 
 			Log log = null;

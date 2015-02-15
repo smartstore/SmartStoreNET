@@ -561,7 +561,7 @@ namespace SmartStore.Web.Framework
 
 		public static MvcHtmlString CollapsedText(this HtmlHelper helper, string text)
 		{
-			if (text.IsNullOrEmpty())
+			if (text.IsEmpty())
 				return MvcHtmlString.Empty;
 
 			var catalogSettings = EngineContext.Current.Resolve<CatalogSettings>();

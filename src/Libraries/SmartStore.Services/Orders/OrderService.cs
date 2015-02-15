@@ -152,7 +152,7 @@ namespace SmartStore.Services.Orders
 		/// <returns>Order entity</returns>
 		public virtual Order GetOrderByPaymentAuthorization(string paymentMethodSystemName, string authorizationTransactionId)
 		{
-			if (paymentMethodSystemName.IsNullOrEmpty() || authorizationTransactionId.IsNullOrEmpty())
+			if (paymentMethodSystemName.IsEmpty() || authorizationTransactionId.IsEmpty())
 				return null;
 
 			var query =
@@ -171,7 +171,7 @@ namespace SmartStore.Services.Orders
 		/// <returns>Order entity</returns>
 		public virtual Order GetOrderByPaymentCapture(string paymentMethodSystemName, string captureTransactionId)
 		{
-			if (paymentMethodSystemName.IsNullOrEmpty() || captureTransactionId.IsNullOrEmpty())
+			if (paymentMethodSystemName.IsEmpty() || captureTransactionId.IsEmpty())
 				return null;
 
 			var query =

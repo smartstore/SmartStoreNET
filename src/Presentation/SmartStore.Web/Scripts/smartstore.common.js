@@ -95,12 +95,12 @@
 
 		// global notification subscriber
 		if (window.EventBroker && window._ && $.pnotify) {
-			var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
-			//var stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 60 };
+			//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+			var stack_topcenter = { "dir1": "down", "dir2": "right", "firstpos1": 60, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
-				opts.stack = stack_bottomright;
-				opts.addclass = "stack-bottomright";
+				opts.stack = stack_topcenter;
+				opts.addclass = "stack-topcenter";
 				$.pnotify(opts);
 			});
 		}

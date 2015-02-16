@@ -1525,7 +1525,6 @@
     <Content Include="Content\bootstrap\custom\scrollbutton.less" />
     <Content Include="Content\smartstore.smartgallery.css" />
     <Content Include="Scripts\jquery.pnotify.js" />
-    <Content Include="Scripts\jquery.pnotify.min.js" />
     <Content Include="Scripts\public.product-detail.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.js" />
     <Content Include="Scripts\jquery.unobtrusive-ajax.min.js" />

@@ -166,13 +166,13 @@ namespace SmartStore.Web.Framework.Plugins
 
 			string description = "";
 
-			if (BaseSettings.BuildDescription.IsNullOrEmpty())
+			if (BaseSettings.BuildDescription.IsEmpty())
 			{
 				description = fullDescription;
 
-				if (description.IsNullOrEmpty())
+				if (description.IsEmpty())
 					description = shortDescription;
-				if (description.IsNullOrEmpty())
+				if (description.IsEmpty())
 					description = productName;
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("short"))
@@ -496,7 +496,7 @@ namespace SmartStore.Web.Framework.Plugins
 					{
 						string url = pictureService.GetPictureUrl(pic, BaseSettings.ProductPictureSize, storeLocation: store.Url);
 
-						if (url.HasValue() && (mainImageUrl.IsNullOrEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(url)))
+						if (url.HasValue() && (mainImageUrl.IsEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(url)))
 						{
 							urls.Add(url);
 							if (urls.Count >= maxImages)

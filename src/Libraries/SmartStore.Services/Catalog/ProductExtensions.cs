@@ -22,7 +22,7 @@ namespace SmartStore.Services.Catalog
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
-			if (selectedAttributes.IsNullOrEmpty())
+			if (selectedAttributes.IsEmpty())
 				return null;
 
             // let's find appropriate record

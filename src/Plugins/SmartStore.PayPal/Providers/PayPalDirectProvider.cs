@@ -74,7 +74,7 @@ namespace SmartStore.PayPal
             req.DoDirectPaymentRequest.DoDirectPaymentRequestDetails = details;
             details.IPAddress = CommonServices.WebHelper.GetCurrentIpAddress();
 
-            if (details.IPAddress.IsNullOrEmpty())
+			if (details.IPAddress.IsEmpty())
                 details.IPAddress = "127.0.0.1";
 
             if (settings.TransactMode == TransactMode.Authorize)

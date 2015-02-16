@@ -25,10 +25,7 @@ namespace SmartStore.Services.Directory
 
         private readonly IRepository<QuantityUnit> _quantityUnitRepository;
         private readonly IRepository<Product> _productRepository;
-        private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly ICacheManager _cacheManager;
-        private readonly ICustomerService _customerService;
-        private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
 		private readonly CatalogSettings _catalogSettings;
 
@@ -50,17 +47,13 @@ namespace SmartStore.Services.Directory
             IRepository<Product> productRepository,
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             ICustomerService customerService,
-            IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
 			CatalogSettings catalogSettings)
         {
             this._cacheManager = cacheManager;
             this._quantityUnitRepository = quantityUnitRepository;
-            this._customerService = customerService;
-            this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._productRepository = productRepository;
-            this._attributeCombinationRepository = attributeCombinationRepository;
 			this._catalogSettings = catalogSettings;
         }
 

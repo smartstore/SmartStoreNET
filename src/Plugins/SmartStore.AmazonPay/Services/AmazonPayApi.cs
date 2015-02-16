@@ -86,7 +86,7 @@ namespace SmartStore.AmazonPay.Api
 			if (isShippable && !countryAllowsShipping)
 				return false;
 
-			if (amazonAddress.Email.IsNullOrEmpty())
+			if (amazonAddress.Email.IsEmpty())
 				amazonAddress.Email = customer.Email;
 
 			if (forceToTakeAmazonAddress)
@@ -168,7 +168,7 @@ namespace SmartStore.AmazonPay.Api
 
 			order.BillingAddress.CreatedOnUtc = DateTime.UtcNow;
 
-			if (order.BillingAddress.Email.IsNullOrEmpty())
+			if (order.BillingAddress.Email.IsEmpty())
 				order.BillingAddress.Email = order.Customer.Email;
 
 			_orderService.UpdateOrder(order);

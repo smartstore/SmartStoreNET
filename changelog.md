@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.2
 
@@ -8,7 +8,7 @@
 * #258 Implement email validation in checkout
 * Quantity unit management
 * Option to determine the maximum amount of filter items
-* Option to determine whether all filter groups should be display expanded
+* Option to determine whether all filter groups should be displayed expanded
 
 ### Improvements
 * Feed plugins: product query now paged to reduce memory payload
@@ -25,6 +25,7 @@
 * Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes
 * Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
 * Print order as pdf redirected to login although the admin already was logged in 
+* #621 PDF Order: does not take overridden attribute combination price into account (in order line)
 
 
 ## SmartStore.NET 2.1.1

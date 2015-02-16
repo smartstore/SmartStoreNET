@@ -54,7 +54,7 @@ namespace SmartStore
 
         protected static void DisposeEnumerable(IEnumerable enumerable)
         {
-            if (!enumerable.IsNullOrEmpty())
+            if (enumerable != null)
             {
                 foreach (object obj2 in enumerable)
                 {

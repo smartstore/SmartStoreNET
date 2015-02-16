@@ -29,55 +29,55 @@
 					@T("Common.Export")
 					<span class="fa fa-caret-down"></span>
 				</a>
-				<ul class="dropdown-menu">
-					<li>
-						<a href="@Url.Action("ExportXmlAll")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.All")
-						</a>
-					</li>
-					<li>
-						<a href="@Url.Action("ExportExcelAll")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.All")
-						</a>
-					</li>
+                <ul class="dropdown-menu export-catalog">
+                    <li>
+                        <a href="@Url.Action("ExportXmlAll")">
+                            <i class="fa fa-fw fa-code"></i>
+                            @T("Admin.Common.ExportToXml.All")
+                        </a>
+                    </li>
+                    <li>
+                        <a href="@Url.Action("ExportExcelAll")">
+                            <i class="fa fa-fw fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.All")
+                        </a>
+                    </li>
 
-					@if (Model.DisplayPdfExport)
-					{
-						<li>
-							<a href="@Url.Action("ExportPdf", new { all = true })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>
-								@T("Admin.Common.ExportToPdf.All")
-							</a>
-						</li>
-					}
+                    @if (Model.DisplayPdfExport)
+                    {
+                        <li>
+                            <a href="@Url.Action("ExportPdf", new { all = true })">
+                                <i class="fa fa-fw fa-file-pdf-o"></i>
+                                @T("Admin.Common.ExportToPdf.All")
+                            </a>
+                        </li>
+                    }
 
-					<li class="divider"></li>
+                    <li class="divider"></li>
 
-					<li>
-						<a id="exportxml-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.Selected")
-						</a>
-					</li>
-					<li>
-						<a id="exportexcel-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.Selected")
-						</a>
-					</li>	
+                    <li>
+                        <a id="exportxml-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected")">
+                            <i class="fa fa-fw fa-code"></i>
+                            @T("Admin.Common.ExportToXml.Selected")
+                        </a>
+                    </li>
+                    <li>
+                        <a id="exportexcel-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected")">
+                            <i class="fa fa-fw fa-file-excel-o"></i>
+                            @T("Admin.Common.ExportToExcel.Selected")
+                        </a>
+                    </li>
 
-					@if (Model.DisplayPdfExport)
-					{
-						<li>
-							<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", new { all = false })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>
-								@T("Admin.Common.ExportToPdf.Selected")
-							</a>
-						</li>
-					}
-				</ul>
+                    @if (Model.DisplayPdfExport)
+                    {
+                        <li>
+                            <a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", new { all = false })">
+                                <i class="fa fa-fw fa-file-pdf-o"></i>
+                                @T("Admin.Common.ExportToPdf.Selected")
+                            </a>
+                        </li>
+                    }
+                </ul>
             </div>
 
             <a id="importexcel" href="#importexcel-window" class="btn" role="button">
@@ -472,6 +472,10 @@
     				setLocation('@Url.Action("ImportExcelCancel", "Product")');
     			}
     		}
+        });
+
+        $(".export-catalog a").click(function (e) {
+            displayNotification("@T("Admin.Common.Export.Wait")", 'danger');
         });
 
     });

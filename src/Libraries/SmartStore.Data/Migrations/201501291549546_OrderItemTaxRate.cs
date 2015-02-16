@@ -48,7 +48,10 @@ namespace SmartStore.Data.Migrations
 				"Alle Filtergruppen aufklappen",
                 "Determines whether all filter groups should be displayed expanded",
                 "Legt fest, ob alle Filtergruppen aufgeklappt angezeigt werden sollen");
-            
+
+            builder.AddOrUpdate("Admin.Common.Export.Wait",
+                "Please wait while the export is being executed",
+                "Bitte haben Sie einen Augenblick Geduld, während der Export durchgeführt wird");
 		}
     }
 }

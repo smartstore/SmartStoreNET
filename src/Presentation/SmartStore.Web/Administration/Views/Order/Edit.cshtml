@@ -1370,44 +1370,49 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData" style="padding:0;">
+            <td class="adminData t-widget t-grid" style="padding:0;">
 
-                <table id="OrderItemTable" class="table table-bordered table-striped table-hover" style="margin-bottom:0;">
-                    <thead>
-                        <tr style="background-color: #666; color: #fff">
-                            <th>
+                <table id="OrderItemTable" class="table">
+                    <thead class="t-grid-header">
+                        <tr>
+                            <th class="t-header">
                                 @T("Admin.Orders.Products.ProductName")
                             </th>
                             @if (Model.HasDownloadableProducts)
                             {
-                                <th>
+                                <th class="t-header">
                                     @T("Admin.Orders.Products.Download")
                                 </th>
                             }
-                            <th>
+                            <th class="t-header">
                                 @T("Admin.Orders.Products.Price")
                             </th>
-                            <th>
+                            <th class="t-header">
                                 @T("Admin.Orders.Products.Quantity")
                             </th>
-                            <th>
+                            <th class="t-header">
                                 @T("Admin.Orders.Products.Discount")
                             </th>
-                            <th>
+                            <th class="t-header">
                                 @T("Admin.Orders.Products.Total")
                             </th>
-                            <th>
+                            <th class="t-header">
                                 @T("Admin.Common.Edit")
                             </th>
                         </tr>
                     </thead>
                     <tbody>
+                        @{
+                            var j = 0;
+                        }
                         @foreach (var item in Model.Items)
                         {
-                            <tr>
-                                <td style="width: 25%;">
+                            j++;
+                            
+                            <tr class="@(j % 2 == 0 ? "t-alt": "")">
+                                <td style="width: 25%;vertical-align: top">
                                     <div>
-										@Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
+                                        @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 
                                         @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                         {
@@ -1425,26 +1430,27 @@
                                             <strong>@T("Admin.Orders.Products.SKU")</strong><text>:</text>
                                             @item.Sku
                                         }
-										@if (item.ProductType == ProductType.BundledProduct)
-										{
-											<br />
-											@BundleItemsInfo(item)
-										}
+                                        @if (item.ProductType == ProductType.BundledProduct)
+                                        {
+                                            <br />
+                                            @BundleItemsInfo(item)
+                                        }
                                         @if (item.ReturnRequests.Count > 0)
                                         {
                                             <br />
                                             <hr />
                                             for (int i = 0; i < item.ReturnRequests.Count; ++i)
                                             {
-												var returnRequest = item.ReturnRequests[i];
-												
-												<span class="label label-@(returnRequest.StatusLabel)" style="margin-right: 4px">@returnRequest.StatusString</span>
-											
+                                                var returnRequest = item.ReturnRequests[i];
+
+                                                <span class="label label-@(returnRequest.StatusLabel)" style="margin-right: 4px">@returnRequest.StatusString</span>
+
                                                 <a href="@Url.Action("Edit", "ReturnRequest", new { id = returnRequest.Id })">
-													@T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id</a><text>,</text>
-												
-												@T("Admin.ReturnRequests.Fields.Quantity")<text>&nbsp;</text>@returnRequest.Quantity                               
-												if (i != item.ReturnRequests.Count - 1)
+                                                    @T("Admin.Orders.Products.ReturnRequest") @returnRequest.Id
+                                                </a><text>,</text>
+
+                                                @T("Admin.ReturnRequests.Fields.Quantity")<text>&nbsp;</text>@returnRequest.Quantity
+                                                if (i != item.ReturnRequests.Count - 1)
                                                 {
                                                     <br />
                                                 }
@@ -1468,36 +1474,37 @@
                                 </td>
                                 @if (Model.HasDownloadableProducts)
                                 {
-                                    <td align="center" style="width: 10%;">
+                                    <td align="center" style="width: 10%; vertical-align: top">
                                         @if (item.IsDownload)
                                         {
                                             <div>
-                                                @string.Format(T("Admin.Orders.Products.Download.DownloadCount").Text, item.DownloadCount) 
+                                                @string.Format(T("Admin.Orders.Products.Download.DownloadCount").Text, item.DownloadCount)
                                                 <input type="submit" name="btnResetDownloadCount@(item.Id)" value="@T("Admin.Orders.Products.Download.ResetDownloadCount")" title="@T("Admin.Orders.Products.Download.ResetDownloadCount.Title")" id="btnResetDownloadCount@(item.Id)" class="btn" />
-                                                <hr />  
+                                                <hr style="margin:10px 0 8px 0" />
                                             </div>
                                             if (item.DownloadActivationType == DownloadActivationType.Manually)
                                             {
-                                            <div>
-                                                <input type="submit" name="btnPvActivateDownload@(item.Id)" @(item.IsDownloadActivated ? " value=" + T("Admin.Orders.Products.Download.Deactivate") : " value=" + T("Admin.Orders.Products.Download.Activate")) id="btnPvActivateDownload@(item.Id)" class="btn" />                                                
-                                                <hr />
-                                            </div>
+                                                <div>
+                                                    <input type="submit" name="btnPvActivateDownload@(item.Id)" @(item.IsDownloadActivated ? " value=" + T("Admin.Orders.Products.Download.Deactivate") : " value=" + T("Admin.Orders.Products.Download.Activate")) id="btnPvActivateDownload@(item.Id)" class="btn" />
+                                                    <hr style="margin:10px 0 8px 0" />
+                                                </div>
                                             }
                                             <div>
                                                 <b>
-                                                    @T("Admin.Orders.Products.License")</b>
-                                                <br />
+                                                    @T("Admin.Orders.Products.License")
+                                                </b>
+                                                
                                                 @if (item.LicenseDownloadId.HasValue && item.LicenseDownloadId.Value > 0)
                                                 {
                                                     <a href="@Url.Action("DownloadFile", "Download", new { downloadId = item.LicenseDownloadId.Value })">@T("Admin.Orders.Products.License.DownloadLicense")</a>
+                                                    <br />
                                                 }
-                                                <br />
                                                 <input type="submit" id="pvlicensefile" name="pvlicensefile" value="@T("Admin.Orders.Products.License.UploadFile")" onclick="javascript:OpenWindow('@(Url.Action("UploadLicenseFilePopup", "Order", new { id = Model.Id, orderItemId = item.Id, btnId = "btnRefreshPage", formId = "order-form" }))', 500, 300, true); return false;" class="btn" />
                                             </div>
                                         }
                                     </td>
                                 }
-                                <td align="center" style="width: 15%;">
+                                <td align="center" style="width: 15%; vertical-align: top">
                                     @if (Model.AllowCustomersToSelectTaxDisplayType)
                                     {
                                         @item.UnitPriceInclTax
@@ -1510,12 +1517,12 @@
                                         {
                                             case TaxDisplayType.ExcludingTax:
                                                 {
-                                        @item.UnitPriceExclTax
+                                                    @item.UnitPriceExclTax
                                                 }
                                                 break;
                                             case TaxDisplayType.IncludingTax:
                                                 {
-                                        @item.UnitPriceInclTax
+                                                    @item.UnitPriceInclTax
                                                 }
                                                 break;
                                             default:
@@ -1541,18 +1548,18 @@
                                                     <input name="pvUnitPriceExclTax@(item.Id)" type="text" value="@item.UnitPriceExclTaxValue" id="pvUnitPriceExclTax@(item.Id)" style="width:100px;" />
                                                 </td>
                                             </tr>
-											<tr>
-												<td>
-													@T("Admin.Orders.Products.AddNew.TaxRate")
-												</td>
-												<td>
-													<input name="pvTaxRate@(item.Id)" type="text" value="@item.TaxRate" id="pvTaxRate@(item.Id)" style="width:100px;" />
-												</td>
-											</tr>
+                                            <tr>
+                                                <td>
+                                                    @T("Admin.Orders.Products.AddNew.TaxRate")
+                                                </td>
+                                                <td>
+                                                    <input name="pvTaxRate@(item.Id)" type="text" value="@item.TaxRate" id="pvTaxRate@(item.Id)" style="width:100px;" />
+                                                </td>
+                                            </tr>
                                         </table>
                                     </div>
                                 </td>
-                                <td align="center" style="width: 10%;">
+                                <td align="center" style="width: 5%;vertical-align:top">
                                     @item.Quantity
 
                                     <div id="pnlEditQuantity@(item.Id)">
@@ -1565,7 +1572,7 @@
                                         </table>
                                     </div>
                                 </td>
-                                <td align="center" style="width: 14%;">
+                                <td align="center" style="width: 14%;; vertical-align: top">
                                     @if (Model.AllowCustomersToSelectTaxDisplayType)
                                     {
                                         @item.DiscountInclTax
@@ -1578,12 +1585,12 @@
                                         {
                                             case TaxDisplayType.ExcludingTax:
                                                 {
-                                        @item.DiscountExclTax
+                                                    @item.DiscountExclTax
                                                 }
                                                 break;
                                             case TaxDisplayType.IncludingTax:
                                                 {
-                                        @item.DiscountInclTax
+                                                    @item.DiscountInclTax
                                                 }
                                                 break;
                                             default:
@@ -1613,7 +1620,7 @@
                                         </table>
                                     </div>
                                 </td>
-                                <td align="center" style="width: 14%;">
+                                <td align="center" style="width: 14%;vertical-align: top">
                                     @if (Model.AllowCustomersToSelectTaxDisplayType)
                                     {
                                         @item.SubTotalInclTax
@@ -1626,12 +1633,12 @@
                                         {
                                             case TaxDisplayType.ExcludingTax:
                                                 {
-                                        @item.SubTotalExclTax
+                                                    @item.SubTotalExclTax
                                                 }
                                                 break;
                                             case TaxDisplayType.IncludingTax:
                                                 {
-                                        @item.SubTotalInclTax
+                                                    @item.SubTotalInclTax
                                                 }
                                                 break;
                                             default:
@@ -1661,24 +1668,27 @@
                                         </table>
                                     </div>
                                 </td>
-                                <td align="center" style="width: 22%;">
+                                <td align="center" style="width: 27%;">
+                                    
+                                    @if (item.IsReturnRequestPossible)
+                                    {
+                                        <input type="submit" name="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" id="btnAddReturnRequest@(item.Id)"
+                                               class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
+                                    }
+                                    
                                     <input type="submit" name="btnEditOrderItem@(item.Id)" value="@T("Admin.Common.Edit")" id="btnEditOrderItem@(item.Id)"
-										class="btn" onclick="toggleOrderItemEdit(@(item.Id), true);return false;" />
-                                    
-									<input type="button" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)" 
-										class="btn delete-order-item-button" data-id="@(item.Id)" data-url="@Url.Action("DeleteOrderItem")" />
-                                    
-									<input type="button" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)"
-										class="btn save-order-item-button" style="display: none;" data-id="@(item.Id)" data-url="@Url.Action("EditOrderItem")" />
+                                           class="btn" onclick="toggleOrderItemEdit(@(item.Id), true);return false;" />
+
+                                    <input type="button" name="btnDeleteOrderItem@(item.Id)" value="@T("Admin.Common.Delete")" id="btnDeleteOrderItem@(item.Id)"
+                                           class="btn delete-order-item-button" data-id="@(item.Id)" data-url="@Url.Action("DeleteOrderItem")" />
+
+
+                                    <input type="button" name="btnSaveOrderItem@(item.Id)" value="@T("Admin.Common.Save")" id="btnSaveOrderItem@(item.Id)"
+                                           class="btn save-order-item-button" style="display: none;" data-id="@(item.Id)" data-url="@Url.Action("EditOrderItem")" />
 
                                     <input type="submit" name="btnCancelOrderItem@(item.Id)" value="@T("Admin.Common.Cancel")" id="btnCancelOrderItem@(item.Id)"
-										class="btn" onclick="toggleOrderItemEdit(@(item.Id), false);return false;" style="display: none;" />
+                                           class="btn" onclick="toggleOrderItemEdit(@(item.Id), false);return false;" style="display: none;" />
 
-									@if(item.IsReturnRequestPossible)
-									{
-										<input type="submit" name="btnAddReturnRequest@(item.Id)" value="@T("Admin.Orders.Products.ReturnRequest.Create")" id="btnAddReturnRequest@(item.Id)"
-											class="btn" onclick="return confirm('@T("Admin.Common.AreYouSure")');" />
-									}
                                 </td>
                             </tr>
                         }
@@ -1712,31 +1722,31 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<OrderModel.OrderNote>().Name("ordernotes-grid")
-        .DataKeys(keys =>
-        {
-            keys.Add(x => x.Id).RouteKey("orderNoteId");
-            keys.Add(x => x.OrderId).RouteKey("orderId");
-        })
-        .DataBinding(binding =>
-        {
-            binding.Ajax().Select("OrderNotesSelect", "Order", new { orderId = Model.Id })
-                .Delete("OrderNoteDelete", "Order");
-        })
-        .Columns(columns =>
-        {
-            columns.Bound(x => x.CreatedOn).Width(140);
-            columns.Bound(x => x.Note).Encoded(false);
-            columns.Bound(x => x.DisplayToCustomer)
-                .Template(item => @Html.SymbolForBool(item.DisplayToCustomer))
-                .ClientTemplate(@Html.SymbolForBool("DisplayToCustomer"))
-				.Centered()
-                .Width(140);
-            columns.Command(commands =>
-            {
-                commands.Delete().Localize(T);
-            }).Width(140).Title(T("Admin.Common.Delete").Text);
-        })
-        .EnableCustomBinding(true))
+                    .DataKeys(keys =>
+                    {
+                        keys.Add(x => x.Id).RouteKey("orderNoteId");
+                        keys.Add(x => x.OrderId).RouteKey("orderId");
+                    })
+                    .DataBinding(binding =>
+                    {
+                        binding.Ajax().Select("OrderNotesSelect", "Order", new { orderId = Model.Id })
+                            .Delete("OrderNoteDelete", "Order");
+                    })
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.CreatedOn).Width(140);
+                        columns.Bound(x => x.Note).Encoded(false);
+                        columns.Bound(x => x.DisplayToCustomer)
+                            .Template(item => @Html.SymbolForBool(item.DisplayToCustomer))
+                            .ClientTemplate(@Html.SymbolForBool("DisplayToCustomer"))
+				            .Centered()
+                            .Width(140);
+                        columns.Command(commands =>
+                        {
+                            commands.Delete().Localize(T);
+                        }).Width(140).Title(T("Admin.Common.Delete").Text);
+                    })
+                    .EnableCustomBinding(true))
             </td>
         </tr>
     </table>  

@@ -114,7 +114,6 @@
 		 <!-- create required target folders -->
 		<MakeDir Directories="$(BuildFolder)" />
 		<MakeDir Directories="$(StageFolder)" />
-		<MakeDir Directories="$(StageFolder)\Plugins\bin\" />
 		<MakeDir Directories="$(StageFolder)\App_Data\Migrations\" />
 
 		<!-- publish SmartStore.Web -->
@@ -125,6 +124,9 @@
 
 		<!-- copy the plugins to the stage directory -->
 		<Copy SourceFiles="@(PluginFiles)" DestinationFolder="$(StageFolder)\Plugins\%(RecursiveDir)" />
+		<MakeDir Directories="$(StageFolder)\Plugins\bin\" />
+		<!-- Ensure that an initially empty folder gets successfully zipped -->
+		<Copy SourceFiles="$(StageFolder)\Media\Thumbs\placeholder.txt" DestinationFolder="$(StageFolder)\Plugins\bin\" />
 		
 		<!-- copy the migration sql scripts to the stage directory -->
 		<Copy SourceFiles="@(MigrationFiles)" DestinationFolder="$(StageFolder)\App_Data\Migrations\%(RecursiveDir)" />

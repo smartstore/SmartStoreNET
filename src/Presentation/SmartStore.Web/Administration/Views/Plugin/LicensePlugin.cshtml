@@ -24,6 +24,7 @@
 				</td>
 				<td class="adminData">
 					@Html.HiddenFor(model => model.Licenses[i].StoreId)
+					@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
 					@Html.HiddenFor(model => model.Licenses[i].OldLicenseKey)
 					@Html.EditorFor(model => model.Licenses[i].LicenseKey)
 				</td>

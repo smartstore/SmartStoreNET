@@ -11,12 +11,4 @@ namespace SmartStore.Core.Plugins
 		/// </summary>
 		bool HasSingleLicenseForAllStores { get; }
 	}
-
-
-	public enum LicenseStatus
-	{
-		Active,
-		Expired,
-		Inactive
-	}
 }

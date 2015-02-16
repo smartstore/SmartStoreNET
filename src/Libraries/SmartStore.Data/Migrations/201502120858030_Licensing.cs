@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
                 c => new
                     {
                         Id = c.Int(nullable: false, identity: true),
-                        Key = c.String(nullable: false, maxLength: 400),
+						LicenseKey = c.String(nullable: false, maxLength: 400),
                         UsageId = c.String(nullable: false, maxLength: 400),
                         SystemName = c.String(nullable: false, maxLength: 400),
                         ActivatedOnUtc = c.DateTime(nullable: false),

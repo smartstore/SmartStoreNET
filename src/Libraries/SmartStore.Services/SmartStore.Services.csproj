@@ -104,6 +104,9 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\NReco.PdfGenerator.1.1.3.0\lib\net20\NReco.PdfGenerator.dll</HintPath>
     </Reference>
+    <Reference Include="SmartStore.Licensing">
+      <HintPath>..\..\Presentation\SmartStore.Web\bin\SmartStore.Licensing.dll</HintPath>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.ComponentModel.DataAnnotations" />

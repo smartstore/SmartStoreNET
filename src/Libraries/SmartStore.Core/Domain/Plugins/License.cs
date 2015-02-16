@@ -7,7 +7,7 @@ namespace SmartStore.Core.Domain.Plugins
 		/// <summary>
 		/// The license key
 		/// </summary>
-		public string Key { get; set; }
+		public string LicenseKey { get; set; }
 
 		/// <summary>
 		/// Usage id of the license

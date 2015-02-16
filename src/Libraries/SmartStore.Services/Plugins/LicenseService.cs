@@ -1,11 +1,14 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Plugins;
 using SmartStore.Core.Events;
+using SmartStore.Licensing;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Plugins
 {
@@ -29,6 +32,10 @@ namespace SmartStore.Services.Plugins
 			_eventPublisher = eventPublisher;
 			_cacheManager = cacheManager;
 			_storeService = storeService;
+
+			// init licensing component
+			LicensingService.UseSandbox = true;
+			LicensingService.LocalFilePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), "Licensing.key");
 		}
 
 		/// <summary>
@@ -53,8 +60,12 @@ namespace SmartStore.Services.Plugins
 		/// <param name="license">License</param>
 		public void InsertLicense(License license)
 		{
-			if (license == null)
+			if (license == null || license.LicenseKey.IsEmpty())
 				throw new ArgumentNullException("license");
+
+			var licenses = GetAllLicenses();
+			if (licenses.FirstOrDefault(x => x.LicenseKey == license.LicenseKey) != null)
+				return;		// only one record per key
 
 			_licenseRepository.Insert(license);
 
@@ -102,8 +113,8 @@ namespace SmartStore.Services.Plugins
 			if (licenseId == 0)
 				return null;
 
-			var license = GetAllLicenses().FirstOrDefault(x => x.Id == licenseId);
-			return license;
+			var licenses = GetAllLicenses();
+			return licenses.FirstOrDefault(x => x.Id == licenseId);
 		}
 
 		/// <summary>
@@ -113,8 +124,8 @@ namespace SmartStore.Services.Plugins
 		/// <returns>Licenses</returns>
 		public IList<License> GetLicenses(string systemName)
 		{
-			var licenses = GetAllLicenses().Where(x => x.SystemName == systemName);
-			return licenses.ToList();
+			var licenses = GetAllLicenses();
+			return licenses.Where(x => x.SystemName == systemName).ToList();
 		}
 
 		/// <summary>
@@ -134,5 +145,40 @@ namespace SmartStore.Services.Plugins
 		//	}
 		//	return true;
 		//}
+
+		/// <summary>
+		/// Activates a license key
+		/// </summary>
+		/// <param name="systemName">Plugin system name</param>
+		/// <param name="key">License key</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <param name="storeUrl">Store url</param>
+		/// <param name="failureMessage">Failure message if any</param>
+		/// <returns>True: Succeeded or skiped, False: Failure</returns>
+		public bool Activate(string systemName, string key, int storeId, string storeUrl, out string failureMessage)
+		{
+			failureMessage = null;
+
+			var licensing = LicensingService.GetLicensing(key);
+			if (licensing != null && licensing.Status == LicensingStatus.Active)
+				return true;
+
+			var result = LicensingService.Activate(key, storeUrl);
+			if (result.Success)
+			{
+				InsertLicense(new License
+				{
+					LicenseKey = key,
+					UsageId = result.ResponseMembers["USAGE_ID"],
+					SystemName = systemName,
+					ActivatedOnUtc = DateTime.UtcNow,
+					StoreId = storeId
+				});
+				return true;
+			}
+
+			failureMessage = result.ToString();
+			return false;
+		}
 	}
 }

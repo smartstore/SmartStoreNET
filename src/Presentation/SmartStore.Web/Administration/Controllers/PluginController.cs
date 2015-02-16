@@ -355,7 +355,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Licenses.Add(new LicensePluginModel.LicenseModel
 				{
-					LicenseKey = licenses.Where(x => x.StoreId == 0).Select(x => x.Key).FirstOrDefault(),
+					LicenseKey = licenses.Where(x => x.StoreId == 0).Select(x => x.LicenseKey).FirstOrDefault(),
 					StoreId = 0
 				});
 			}
@@ -363,7 +363,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				foreach (var store in stores)
 				{
-					var key = licenses.Where(x => x.StoreId == store.Id).Select(x => x.Key).FirstOrDefault();
+					var key = licenses.Where(x => x.StoreId == store.Id).Select(x => x.LicenseKey).FirstOrDefault();
 					model.Licenses.Add(new LicensePluginModel.LicenseModel()
 					{
 						LicenseKey = key,
@@ -388,31 +388,26 @@ namespace SmartStore.Admin.Controllers
 			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
 				return HttpNotFound();
 
+			string failureMessage = null;
 			var licenses = _licenseService.GetLicenses(systemName);
 
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = licenses.FirstOrDefault(x => x.Key == item.OldLicenseKey);
+				var existingLicense = licenses.FirstOrDefault(x => x.LicenseKey == item.OldLicenseKey);
 
-				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.Key != item.LicenseKey))
+				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
 					_licenseService.DeleteLicense(existingLicense);
 
-				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.Key == item.LicenseKey))
+				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.LicenseKey == item.LicenseKey))
 					continue;
 
-				// TODO: licensing component
-				
-				_licenseService.InsertLicense(new License
+				if (!_licenseService.Activate(systemName, item.LicenseKey, item.StoreId, item.StoreUrl, out failureMessage))
 				{
-					Key = item.LicenseKey,
-					UsageId = "abc",
-					SystemName = systemName,
-					ActivatedOnUtc = DateTime.UtcNow,
-					StoreId = item.StoreId
-				});
-			}
+					NotifyError(failureMessage);
 
-			// TODO: delete\reset cache via licensing component
+					return RedirectToAction("List");
+				}				
+			}
 
 			NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
 

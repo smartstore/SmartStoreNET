@@ -10,7 +10,7 @@ namespace SmartStore.Data.Mapping.Plugins
 			this.ToTable("License");
 			this.HasKey(a => a.Id);
 
-			this.Property(x => x.Key).IsRequired().HasMaxLength(400);
+			this.Property(x => x.LicenseKey).IsRequired().HasMaxLength(400);
 			this.Property(x => x.UsageId).IsRequired().HasMaxLength(400);
 			this.Property(x => x.SystemName).IsRequired().HasMaxLength(400);
 		}

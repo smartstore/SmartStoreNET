@@ -33,16 +33,9 @@ namespace SmartStore.Services.Plugins
 		/// <summary>
 		/// Gets a license
 		/// </summary>
-		/// <param name="licenseId">License identifier</param>
+		/// <param name="key">License key</param>
 		/// <returns>License</returns>
-		License GetLicense(int licenseId);
-
-		/// <summary>
-		/// Gets licenses by system name
-		/// </summary>
-		/// <param name="systemName">Plugin system name</param>
-		/// <returns>Licenses</returns>
-		IList<License> GetLicenses(string systemName);
+		License GetLicense(string key);
 
 		/// <summary>
 		/// Activates a license key
@@ -54,5 +47,20 @@ namespace SmartStore.Services.Plugins
 		/// <param name="failureMessage">Failure message if any</param>
 		/// <returns>True: Succeeded or skiped, False: Failure</returns>
 		bool Activate(string systemName, string key, int storeId, string storeUrl, out string failureMessage);
+
+		/// <summary>
+		/// Checks for a license with active status
+		/// </summary>
+		/// <param name="systemName">Plugin system name</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <param name="failureMessage">Failure message if any</param>
+		bool HasActiveLicense(string systemName, int storeId, out string failureMessage);
+
+		/// <summary>
+		/// Checks for a license with active status
+		/// </summary>
+		/// <param name="systemName">Plugin system name</param>
+		/// <param name="storeId">Store identifier</param>
+		bool HasActiveLicense(string systemName, int storeId);
 	}
 }

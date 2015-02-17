@@ -254,6 +254,7 @@
     <Compile Include="Pdf\PdfReceiptHeaderFooterModel.cs" />
     <Compile Include="Pdf\PdfHeaderFooterVariables.cs" />
     <Compile Include="Pdf\PdfResult.cs" />
+    <Compile Include="Plugins\LicenseRequiredAttribute.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Seo\CanonicalHostNameAttribute.cs" />

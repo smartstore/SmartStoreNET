@@ -1927,6 +1927,7 @@
     <Content Include="Views\Order\Details.Print.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
+    <Content Include="Views\Shared\LicenseRequired.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

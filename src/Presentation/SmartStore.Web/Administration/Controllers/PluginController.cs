@@ -343,7 +343,7 @@ namespace SmartStore.Admin.Controllers
 
 			var licensable = descriptor.Instance() as ILicensable;
 			var stores = _storeService.GetAllStores();
-			var licenses = _licenseService.GetLicenses(systemName);
+			var licenses = _licenseService.GetAllLicenses();
 
 			var model = new LicensePluginModel
 			{
@@ -355,7 +355,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Licenses.Add(new LicensePluginModel.LicenseModel
 				{
-					LicenseKey = licenses.Where(x => x.StoreId == 0).Select(x => x.LicenseKey).FirstOrDefault(),
+					LicenseKey = licenses.Where(x => x.SystemName == systemName && x.StoreId == 0).Select(x => x.LicenseKey).FirstOrDefault(),
 					StoreId = 0
 				});
 			}
@@ -363,7 +363,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				foreach (var store in stores)
 				{
-					var key = licenses.Where(x => x.StoreId == store.Id).Select(x => x.LicenseKey).FirstOrDefault();
+					var key = licenses.Where(x => x.SystemName == systemName && x.StoreId == store.Id).Select(x => x.LicenseKey).FirstOrDefault();
 					model.Licenses.Add(new LicensePluginModel.LicenseModel()
 					{
 						LicenseKey = key,
@@ -389,11 +389,11 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 
 			string failureMessage = null;
-			var licenses = _licenseService.GetLicenses(systemName);
+			var licenses = _licenseService.GetAllLicenses();
 
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = licenses.FirstOrDefault(x => x.LicenseKey == item.OldLicenseKey);
+				var existingLicense = licenses.FirstOrDefault(x => x.SystemName == systemName && x.LicenseKey == item.OldLicenseKey);
 
 				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
 					_licenseService.DeleteLicense(existingLicense);

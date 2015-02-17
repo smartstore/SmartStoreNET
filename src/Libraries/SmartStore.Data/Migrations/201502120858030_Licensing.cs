@@ -60,6 +60,14 @@ namespace SmartStore.Data.Migrations
 				"Lizenzschlüssel",
 				"Please enter the license key for the plugin.",
 				"Bitte den Lizenzschlüssel für das Plugin eingeben.");
+
+			builder.AddOrUpdate("Admin.Plugins.AddOnLicensing",
+				"Add-on licensing",
+				"Add-on Lizenzierung");
+
+			builder.AddOrUpdate("Admin.Plugins.NoLicenseFound",
+				"No active license has been found for {0}. Please click 'License' in the plugin list and enter your license key.",
+				"Es wurde keine aktive Lizenz für {0} gefunden. Bitte klicken Sie in der Plugin-Liste auf 'Lizenzieren' und geben Sie Ihren Lizenzschlüssel ein.");
 		}
     }
 }

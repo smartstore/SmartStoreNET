@@ -6,8 +6,8 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Plugins;
 using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Licensing;
-using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Plugins
@@ -18,23 +18,23 @@ namespace SmartStore.Services.Plugins
 		private const string LICENSE_PATTERN_KEY = "SmartStore.license.";
 
 		private readonly IRepository<License> _licenseRepository;
-		private readonly IEventPublisher _eventPublisher;
 		private readonly ICacheManager _cacheManager;
-		private readonly IStoreService _storeService;
+		private readonly ICommonServices _commonService;
+		private readonly ILogger _logger;
 
 		public LicenseService(
 			IRepository<License> licenseRepository,
-			IEventPublisher eventPublisher,
 			ICacheManager cacheManager,
-			IStoreService storeService)
+			ICommonServices commonService,
+			ILogger logger)
 		{
 			_licenseRepository = licenseRepository;
-			_eventPublisher = eventPublisher;
 			_cacheManager = cacheManager;
-			_storeService = storeService;
+			_commonService = commonService;
+			_logger = logger;
 
 			// init licensing component
-			LicensingService.UseSandbox = true;
+			LicensingService.UseSandbox = true;		// TODO: remove!
 			LicensingService.LocalFilePath = Path.Combine(CommonHelper.MapPath("~/App_Data/"), "Licensing.key");
 		}
 
@@ -51,7 +51,7 @@ namespace SmartStore.Services.Plugins
 
 			_cacheManager.RemoveByPattern(LICENSE_PATTERN_KEY);
 
-			_eventPublisher.EntityDeleted(license);
+			_commonService.EventPublisher.EntityDeleted(license);
 		}
 
 		/// <summary>
@@ -71,7 +71,7 @@ namespace SmartStore.Services.Plugins
 
 			_cacheManager.RemoveByPattern(LICENSE_PATTERN_KEY);
 
-			_eventPublisher.EntityInserted(license);
+			_commonService.EventPublisher.EntityInserted(license);
 		}
 
 		/// <summary>
@@ -87,7 +87,7 @@ namespace SmartStore.Services.Plugins
 
 			_cacheManager.RemoveByPattern(LICENSE_PATTERN_KEY);
 
-			_eventPublisher.EntityUpdated(license);
+			_commonService.EventPublisher.EntityUpdated(license);
 		}
 
 		/// <summary>
@@ -106,45 +106,17 @@ namespace SmartStore.Services.Plugins
 		/// <summary>
 		/// Gets a license
 		/// </summary>
-		/// <param name="licenseId">License identifier</param>
+		/// <param name="key">License key</param>
 		/// <returns>License</returns>
-		public License GetLicense(int licenseId)
+		public License GetLicense(string key)
 		{
-			if (licenseId == 0)
-				return null;
-
-			var licenses = GetAllLicenses();
-			return licenses.FirstOrDefault(x => x.Id == licenseId);
+			if (key.HasValue())
+			{
+				var licenses = GetAllLicenses();
+				return licenses.FirstOrDefault(x => x.LicenseKey == key);
+			}
+			return null;
 		}
-
-		/// <summary>
-		/// Gets licenses by system name
-		/// </summary>
-		/// <param name="systemName">Plugin system name</param>
-		/// <returns>Licenses</returns>
-		public IList<License> GetLicenses(string systemName)
-		{
-			var licenses = GetAllLicenses();
-			return licenses.Where(x => x.SystemName == systemName).ToList();
-		}
-
-		/// <summary>
-		/// Determines whether a plugin has an active license for all stores
-		/// </summary>
-		//public bool IsLicensedForAllStores(string systemName)
-		//{
-		//	var licenses = GetAllLicenses();
-
-		//	if (licenses.FirstOrDefault(x => x.SystemName == systemName && x.StoreId == 0) != null)
-		//		return true;
-
-		//	foreach (var store in _storeService.GetAllStores())
-		//	{
-		//		if (licenses.FirstOrDefault(x => x.SystemName == systemName && x.StoreId == store.Id) == null)
-		//			return false;
-		//	}
-		//	return true;
-		//}
 
 		/// <summary>
 		/// Activates a license key
@@ -179,6 +151,55 @@ namespace SmartStore.Services.Plugins
 
 			failureMessage = result.ToString();
 			return false;
+		}
+
+		/// <summary>
+		/// Checks for a license with active status
+		/// </summary>
+		/// <param name="systemName">Plugin system name</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <param name="failureMessage">Failure message if any</param>
+		public bool HasActiveLicense(string systemName, int storeId, out string failureMessage)
+		{
+			failureMessage = null;
+
+			try
+			{
+				var licenses = GetAllLicenses();
+				var license = licenses.FirstOrDefault(x => x.SystemName == systemName && (x.StoreId == storeId || x.StoreId == 0));
+
+				if (license == null)
+				{
+					failureMessage = _commonService.Localization.GetResource("Admin.Plugins.NoLicenseFound").FormatWith(systemName);
+					return false;
+				}
+
+				var store = _commonService.StoreService.GetStoreById(storeId);
+				string storeUrl = (store == null ? null : store.Url);
+
+				var result = LicensingService.Check(license.LicenseKey, storeUrl, license.UsageId);
+
+				if (!result.Success)
+					failureMessage = result.ToString();
+
+				return (result.Status == LicensingStatus.Active);
+			}
+			catch (Exception exc)
+			{
+				_logger.Error(exc.Message, exc);
+			}
+			return true;	// do not bother merchant
+		}
+
+		/// <summary>
+		/// Checks for a license with active status
+		/// </summary>
+		/// <param name="systemName">Plugin system name</param>
+		/// <param name="storeId">Store identifier</param>
+		public bool HasActiveLicense(string systemName, int storeId)
+		{
+			string failureMessage;
+			return HasActiveLicense(systemName, storeId, out failureMessage);
 		}
 	}
 }

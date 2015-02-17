@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2
 
@@ -9,6 +9,7 @@
 * Quantity unit management
 * Option to determine the maximum amount of filter items
 * Option to determine whether all filter groups should be displayed expanded
+* #459 New field to determine tag for page titles on widget level
 
 ### Improvements
 * Feed plugins: product query now paged to reduce memory payload
@@ -26,6 +27,7 @@
 * Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
 * Print order as pdf redirected to login although the admin already was logged in 
 * #621 PDF Order: does not take overridden attribute combination price into account (in order line)
+* Hide additional shipping surcharge when display prices permission is not granted
 
 
 ## SmartStore.NET 2.1.1

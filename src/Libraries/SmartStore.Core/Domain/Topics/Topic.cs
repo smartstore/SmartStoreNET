@@ -92,6 +92,11 @@ namespace SmartStore.Core.Domain.Topics
         public int Priority { get; set; }
 
         /// <summary>
+        /// Gets or sets the title tag
+        /// </summary>
+        public string TitleTag { get; set; }
+
+        /// <summary>
         /// Helper function which gets the comma-separated <c>WidgetZone</c> property as list of strings
         /// </summary>
         /// <returns></returns>

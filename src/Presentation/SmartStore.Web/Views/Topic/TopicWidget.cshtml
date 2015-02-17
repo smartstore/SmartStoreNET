@@ -13,9 +13,9 @@
 
 <div class="block @(Model.IsBordered ? "block-bordered" : "") topic-widget topic-widget-@Model.SystemName">
     @if (Model.ShowTitle) {
-        <div class="block-title">
+        @Html.Raw("<" + Model.TitleTag + " class=\"block-title\">")
             @Html.Raw(Model.Title)
-        </div>
+        @Html.Raw("</" + Model.TitleTag + ">")
     }
     <div class="block-body">
         @Html.Raw(Html.CollapsedText(Model.Html))

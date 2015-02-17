@@ -11,6 +11,7 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.Order", "OrderShippingTaxRate", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.Order", "PaymentMethodAdditionalFeeTaxRate", c => c.Decimal(nullable: false, precision: 18, scale: 4));
             AddColumn("dbo.OrderItem", "TaxRate", c => c.Decimal(nullable: false, precision: 18, scale: 4));
+            AddColumn("dbo.Topic", "TitleTag", c => c.String(nullable: true));
         }
         
         public override void Down()
@@ -18,6 +19,7 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.OrderItem", "TaxRate");
             DropColumn("dbo.Order", "PaymentMethodAdditionalFeeTaxRate");
             DropColumn("dbo.Order", "OrderShippingTaxRate");
+            DropColumn("dbo.Topic", "TitleTag");
         }
 
         public bool RollbackOnFailure
@@ -52,6 +54,13 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Common.Export.Wait",
                 "Please wait while the export is being executed",
                 "Bitte haben Sie einen Augenblick Geduld, während der Export durchgeführt wird");
+
+            builder.AddOrUpdate("Admin.ContentManagement.Topics.Fields.TitleTag",
+				"Title tag",
+				"Titel-Tag",
+                "Determines the title tag of the topic",
+                "Legt das Tag fest, welches für die Überschrift des Topics ausgegeben wird");
+            
 		}
     }
 }

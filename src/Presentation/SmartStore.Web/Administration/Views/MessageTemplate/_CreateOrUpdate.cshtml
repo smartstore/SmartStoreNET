@@ -135,6 +135,15 @@
     ,
     @<table class="adminContent">
         <tr>
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.EmailAccountId)
+             </td>
+             <td class="adminData">
+                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
+                 @Html.ValidationMessageFor(model => model.EmailAccountId)
+             </td>
+        </tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BccEmailAddresses)
             </td>
@@ -151,15 +160,6 @@
                 @Html.TextBoxFor(model => model.Subject, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.Subject)
             </td>
-        </tr>
-        <tr>
-             <td class="adminTitle">
-                 @Html.SmartLabelFor(model => model.EmailAccountId)
-             </td>
-             <td class="adminData">
-                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
-                 @Html.ValidationMessageFor(model => model.EmailAccountId)
-             </td>
         </tr>
         <tr>
             <td class="adminTitle">

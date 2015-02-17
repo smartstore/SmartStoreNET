@@ -1,4 +1,5 @@
-﻿using SmartStore.Core.Domain.Catalog;
+﻿using System.Web.Http.OData.Builder;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
@@ -11,7 +12,6 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using System.Web.Http.OData.Builder;
 using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi
@@ -34,6 +34,7 @@ namespace SmartStore.WebApi
 			config.Action("Cancel")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
 		}
+
 		private void AddActionsToProduct(EntityTypeConfiguration<Product> config)
 		{
 			config.Action("FinalPrice")
@@ -83,6 +84,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<ProductVariantAttribute>(WebApiOdataEntitySet.ProductVariantAttributes);
 			m.EntitySet<ProductVariantAttributeValue>(WebApiOdataEntitySet.ProductVariantAttributeValues);
 			m.EntitySet<ProductVariantAttributeCombination>(WebApiOdataEntitySet.ProductVariantAttributeCombinations);
+			m.EntitySet<QuantityUnit>(WebApiOdataEntitySet.QuantityUnits);
 			m.EntitySet<RelatedProduct>(WebApiOdataEntitySet.RelatedProducts);
 			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
 			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
@@ -133,6 +135,7 @@ namespace SmartStore.WebApi
 		public static string ProductVariantAttributes { get { return "ProductVariantAttributes"; } }
 		public static string ProductVariantAttributeValues { get { return "ProductVariantAttributeValues"; } }
 		public static string ProductVariantAttributeCombinations { get { return "ProductVariantAttributeCombinations"; } }
+		public static string QuantityUnits { get { return "QuantityUnits"; } }
 		public static string RelatedProducts { get { return "RelatedProducts"; } }
 		public static string ReturnRequests { get { return "ReturnRequests"; } }
 		public static string Settings { get { return "Settings"; } }

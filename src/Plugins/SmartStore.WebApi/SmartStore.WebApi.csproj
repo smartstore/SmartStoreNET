@@ -197,6 +197,7 @@
     <Compile Include="Controllers\OData\ProductVariantAttributeCombinationsController.cs" />
     <Compile Include="Controllers\OData\ProductVariantAttributeValuesController.cs" />
     <Compile Include="Controllers\OData\ProductVariantAttributesController.cs" />
+    <Compile Include="Controllers\OData\QuantityUnitsController.cs" />
     <Compile Include="Controllers\OData\TierPricesController.cs" />
     <Compile Include="Controllers\OData\ProductAttributesController.cs" />
     <Compile Include="Controllers\OData\ProductsController.cs" />

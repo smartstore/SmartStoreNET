@@ -1,18 +1,18 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Http;
-using System.Collections.Generic;
+using System.Web.Http.OData;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
-using System.Web.Http.OData;
 using SmartStore.WebApi.Services;
 
 namespace SmartStore.WebApi.Controllers.OData
@@ -82,6 +82,11 @@ namespace SmartStore.WebApi.Controllers.OData
 		public DeliveryTime GetDeliveryTime(int key)
 		{
 			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+		}
+
+		public QuantityUnit GetQuantityUnit(int key)
+		{
+			return GetExpandedProperty<QuantityUnit>(key, x => x.QuantityUnit);
 		}
 
 		public Download GetSampleDownload(int key)

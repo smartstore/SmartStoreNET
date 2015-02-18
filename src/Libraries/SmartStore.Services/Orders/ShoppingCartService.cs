@@ -299,8 +299,7 @@ namespace SmartStore.Services.Orders
         /// <param name="quantity">Quantity</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetStandardWarnings(Customer customer, ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes, decimal customerEnteredPrice,
-            int quantity)
+            Product product, string selectedAttributes, decimal customerEnteredPrice, int quantity)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
@@ -424,18 +423,25 @@ namespace SmartStore.Services.Orders
                         break;
                     case ManageInventoryMethod.ManageStockByAttributes:
                         {
-                            var combination = product
-                                .ProductVariantAttributeCombinations
+                            var combination = product.ProductVariantAttributeCombinations
                                 .FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
-                            if (combination != null &&
-                                !combination.AllowOutOfStockOrders &&
-                                combination.StockQuantity < quantity)
+
+                            if (combination != null)
                             {
-                                int maximumQuantityCanBeAdded = combination.StockQuantity;
-                                if (maximumQuantityCanBeAdded <= 0)
-                                    warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
-                                else
-                                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+								if (!combination.AllowOutOfStockOrders && combination.StockQuantity < quantity)
+								{
+									int maximumQuantityCanBeAdded = combination.StockQuantity;
+
+									if (maximumQuantityCanBeAdded <= 0)
+										warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+									else
+										warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+								}
+
+								if (!combination.IsActive)
+								{
+									warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+								}
                             }
                         }
                         break;

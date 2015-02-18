@@ -16,6 +16,7 @@
 * Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)
 * #189 Allow deletion of multiple reviews
+* #622 UI: Redesign table in Sales > Orders > Order > Tab Products
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status

@@ -49,7 +49,7 @@ namespace SmartStore.Admin.Controllers
         private readonly WidgetSettings _widgetSettings;
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
-		private readonly ILicenseService _licenseService;
+		private readonly ILicenseStorageService _licenseService;
 
 	    #endregion
 
@@ -69,7 +69,7 @@ namespace SmartStore.Admin.Controllers
             WidgetSettings widgetSettings,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
-			ILicenseService licenseService)
+			ILicenseStorageService licenseService)
 		{
             this._pluginFinder = pluginFinder;
             this._localizationService = localizationService;
@@ -401,7 +401,7 @@ namespace SmartStore.Admin.Controllers
 				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.LicenseKey == item.LicenseKey))
 					continue;
 
-				if (!_licenseService.Activate(systemName, item.LicenseKey, item.StoreId, item.StoreUrl, out failureMessage))
+				if (!LicenseCheckerHelper.Activate(systemName, item.LicenseKey, item.StoreId, item.StoreUrl, out failureMessage))
 				{
 					NotifyError(failureMessage);
 

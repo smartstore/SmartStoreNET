@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Plugins;
 
@@ -12,11 +13,11 @@ namespace SmartStore.Web.Framework.Plugins
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
 	public class LicenseRequiredAttribute : ActionFilterAttribute
 	{
-		public Lazy<ILicenseService> LicenseService { get; set; }
 		public Lazy<ICommonServices> CommonService { get; set; }
+		public Lazy<IPluginFinder> PluginFinder { get; set; }
 
 		/// <summary>
-		/// The system name of the plugin (required).
+		/// The system name of the plugin.
 		/// </summary>
 		public string SystemName { get; set; }
 
@@ -33,11 +34,19 @@ namespace SmartStore.Web.Framework.Plugins
 				return;
 
 			if (SystemName.IsEmpty())
+			{
+				var assembly = filterContext.Controller.GetType().Assembly;
+				var descriptor = PluginFinder.Value.GetPluginDescriptorByAssembly(assembly);
+				if (descriptor != null)
+					SystemName = descriptor.SystemName;
+			}
+
+			if (SystemName.IsEmpty())
 				throw new SmartException("SystemName is required for LicenseRequiredAttribute.");
 
 			string failureMessage;
 
-			if (!LicenseService.Value.HasActiveLicense(SystemName, 0, out failureMessage))
+			if (!LicenseCheckerHelper.HasActiveLicense(SystemName, 0, out failureMessage))
 			{
 				string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
 				string actionName = filterContext.ActionDescriptor.ActionName;

@@ -12,6 +12,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Services.Plugins;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.Controllers;
@@ -96,6 +97,9 @@ namespace SmartStore.Web
 			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
 			DefaultModelBinder.ResourceClassKey = "MvcLocalization";
 			ErrorMessageProvider.SetResourceClassKey("MvcLocalization");
+
+			// init license checker component
+			LicenseCheckerHelper.Init();
 
 			if (installed)
 			{

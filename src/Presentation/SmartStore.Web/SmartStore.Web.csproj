@@ -2226,9 +2226,7 @@ if not exist "$(TargetDir)amd64" md "$(TargetDir)amd64"
     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\Native\amd64\*.*" "$(TargetDir)amd64"
 
 if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
-     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"
-
-xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"</PostBuildEvent>
+     xcopy /s /y "$(SolutionDir)..\lib\ClearScript.V8\lib\*.*" "$(TargetDir)ClearScript.V8"</PostBuildEvent>
   </PropertyGroup>
   <ProjectExtensions>
     <VisualStudio>
@@ -2240,4 +2238,7 @@ xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"
     </VisualStudio>
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

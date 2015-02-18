@@ -10,11 +10,6 @@ namespace SmartStore.Core.Domain.Plugins
 		public string LicenseKey { get; set; }
 
 		/// <summary>
-		/// Usage id of the license
-		/// </summary>
-		public string UsageId { get; set; }
-
-		/// <summary>
 		/// The system name
 		/// </summary>
 		public string SystemName { get; set; }

@@ -226,7 +226,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 
-			builder.RegisterType<LicenseService>().As<ILicenseService>().InstancePerRequest();
+			builder.RegisterType<LicenseStorageService>().As<ILicenseStorageService>().InstancePerRequest();
 
             builder.RegisterType<ExternalAuthorizer>().As<IExternalAuthorizer>().InstancePerRequest();
             builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();

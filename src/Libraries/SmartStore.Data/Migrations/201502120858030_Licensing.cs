@@ -14,7 +14,6 @@ namespace SmartStore.Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
 						LicenseKey = c.String(nullable: false, maxLength: 400),
-                        UsageId = c.String(nullable: false, maxLength: 400),
                         SystemName = c.String(nullable: false, maxLength: 400),
                         ActivatedOnUtc = c.DateTime(nullable: false),
                         StoreId = c.Int(nullable: false),

@@ -220,10 +220,6 @@
     <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.Designer.cs">
       <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201502191645363_BizQuantityUnitID.cs" />
-    <Compile Include="Migrations\201502191645363_BizQuantityUnitID.Designer.cs">
-      <DependentUpon>201502191645363_BizQuantityUnitID.cs</DependentUpon>
-    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -442,9 +438,6 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.resx">
       <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
-    </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201502191645363_BizQuantityUnitID.resx">
-      <DependentUpon>201502191645363_BizQuantityUnitID.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

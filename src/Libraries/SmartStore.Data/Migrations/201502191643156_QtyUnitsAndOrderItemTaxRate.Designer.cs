@@ -7,13 +7,13 @@ namespace SmartStore.Data.Migrations
     using System.Resources;
     
     [GeneratedCode("EntityFramework.Migrations", "6.1.0-30225")]
-    public sealed partial class QuantityUnits : IMigrationMetadata
+    public sealed partial class QtyUnitsAndOrderItemTaxRate : IMigrationMetadata
     {
-        private readonly ResourceManager Resources = new ResourceManager(typeof(QuantityUnits));
+        private readonly ResourceManager Resources = new ResourceManager(typeof(QtyUnitsAndOrderItemTaxRate));
         
         string IMigrationMetadata.Id
         {
-            get { return "201501291135374_QuantityUnits"; }
+            get { return "201502191643156_QtyUnitsAndOrderItemTaxRate"; }
         }
         
         string IMigrationMetadata.Source

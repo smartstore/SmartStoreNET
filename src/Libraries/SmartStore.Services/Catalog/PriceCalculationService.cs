@@ -556,6 +556,11 @@ namespace SmartStore.Services.Catalog
 				{
 					if (shoppingCartItem.ChildItems != null)
 					{
+						foreach (var bundleItem in shoppingCartItem.ChildItems)
+						{
+							bundleItem.Item.Product.MergeWithCombination(bundleItem.Item.AttributesXml);
+						}
+
 						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItemData.IsValid()).Select(x => x.BundleItemData).ToList();
 
 						finalPrice = GetFinalPrice(product, bundleItems, customer, decimal.Zero, includeDiscounts, shoppingCartItem.Item.Quantity);

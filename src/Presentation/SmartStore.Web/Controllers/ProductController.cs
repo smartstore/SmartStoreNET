@@ -238,11 +238,19 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
-			var addToCartWarnings = new List<string>();
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				AttributeForm = form,
+				CartType = cartType,
+				CustomerEnteredPrice = customerEnteredPrice,
+				Quantity = quantity,
+				AddRequiredProducts = true
+			};
 
-			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+			_shoppingCartService.AddToCart(addToCartContext);
 
-			if (addToCartWarnings.Count == 0)
+			if (addToCartContext.Warnings.Count == 0)
 			{
 				switch (cartType)
 				{
@@ -292,7 +300,7 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//Errors
-				foreach (string error in addToCartWarnings)
+				foreach (string error in addToCartContext.Warnings)
 					ModelState.AddModelError("", error);
 
 				//If we got this far, something failed, redisplay form

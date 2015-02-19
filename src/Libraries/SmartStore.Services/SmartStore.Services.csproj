@@ -154,6 +154,7 @@
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Orders\AddToCartContext.cs" />
     <Compile Include="Pdf\Content\PdfHtmlContent.cs" />
     <Compile Include="Pdf\Content\IPdfContent.cs" />
     <Compile Include="Pdf\Content\PdfUrlContent.cs" />

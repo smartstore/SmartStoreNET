@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.2
 
@@ -17,6 +17,7 @@
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)
 * #189 Allow deletion of multiple reviews
 * #622 UI: Redesign table in Sales > Orders > Order > Tab Products
+* #625 Bundles can be ordered if an attribute combination of a bundle item is not available
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status
@@ -29,6 +30,9 @@
 * Print order as pdf redirected to login although the admin already was logged in 
 * #621 PDF Order: does not take overridden attribute combination price into account (in order line)
 * Hide additional shipping surcharge when display prices permission is not granted
+* Fixed "Adding a relationship with an entity which is in the Deleted state is not allowed" when adding bundles to cart
+* Fixed price calculation of multiple bundles issue
+* Fixed auto add required products for bundle items
 
 
 ## SmartStore.NET 2.1.1

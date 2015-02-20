@@ -284,7 +284,7 @@ namespace SmartStore.Services.Seo
 				var urlRecord = urlRecordService.GetBySlug(tempSeName) ?? extraSlugLookup(tempSeName);
 				var reserved1 = urlRecord != null && !(urlRecord.EntityId == entity.Id && urlRecord.EntityName.Equals(entityName, StringComparison.InvariantCultureIgnoreCase));
 
-				if (!reserved1 && urlRecord != null && languageId.HasValue)	// codehint: sm-add
+				if (!reserved1 && urlRecord != null && languageId.HasValue)
 					reserved1 = (urlRecord.LanguageId != languageId.Value);
 
 				//and it's not in the list of reserved slugs

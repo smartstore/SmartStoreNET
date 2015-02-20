@@ -663,7 +663,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				{
 					fileCreation.Logger.Information("Log file - Google Merchant Center feed.");
 
-					var searchContext = new ProductSearchContext()
+					var searchContext = new ProductSearchContext
 					{
 						OrderBy = ProductSortingEnum.CreatedOn,
 						PageSize = Settings.PageSize,
@@ -702,7 +702,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 							}
 							else if (product.ProductType == ProductType.GroupedProduct)
 							{
-								var associatedSearchContext = new ProductSearchContext()
+								var associatedSearchContext = new ProductSearchContext
 								{
 									OrderBy = ProductSortingEnum.CreatedOn,
 									PageSize = int.MaxValue,

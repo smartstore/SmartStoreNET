@@ -8868,6 +8868,43 @@ namespace SmartStore.Data.Setup
 
 		#endregion Deliverytimes
 
+        #region QuantityUnits
+
+        public IList<QuantityUnit> QuantityUnits()
+        {
+            var entities = new List<QuantityUnit>()
+			{
+				new QuantityUnit
+					{
+						Name = "Piece",        
+                        Description = "Piece",
+                        IsDefault = true,
+						DisplayOrder = 0,
+					},
+				new QuantityUnit
+					{
+						Name = "Box",           
+                        Description = "Box",
+						DisplayOrder = 1,
+					},
+				new QuantityUnit
+					{
+						Name = "Parcel",        
+                        Description = "Parcel",
+						DisplayOrder = 2,
+					},
+                new QuantityUnit
+					{
+						Name = "Palette",       
+                        Description = "Palette",
+						DisplayOrder = 3,
+					},
+			};
+            this.Alter(entities);
+            return entities;
+        }
+
+        #endregion
 
 		#region BlogPost
 		public IList<BlogPost> BlogPosts()
@@ -9128,6 +9165,10 @@ namespace SmartStore.Data.Setup
 		protected virtual void Alter(IList<DeliveryTime> entities)
 		{
 		}
+
+        protected virtual void Alter(IList<QuantityUnit> entities)
+        {
+        }
 
 		protected virtual void Alter(IList<EmailAccount> entities)
 		{

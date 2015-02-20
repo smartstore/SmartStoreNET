@@ -143,7 +143,7 @@ namespace SmartStore.Web.Infrastructure
 										ShowTitle = widget.ShowTitle,
 										IsBordered = widget.Bordered,
 										Title = String.IsNullOrEmpty(widget.Title) ? "div" : widget.Title,
-                                        TitleTag = widget.TitleTag,
+                                        TitleTag = widget.TitleTag ?? "h3",
 										Html = widget.Body
 									} }
 								}

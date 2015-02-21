@@ -61,15 +61,12 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			// QtyUnits
-			builder.AddOrUpdate("Admin.Configuration.AddNew",
-				"Add new",
-				"Hinzufügen");
-			builder.AddOrUpdate("Admin.Configuration.BackToList",
-				"Back",
-				"Zurück");
+			builder.AddOrUpdate("Admin.Configuration.QuantityUnit.AddNew",
+				"Add new quantity unit",
+				"Verpackungseinheit hinzufügen");
 			builder.AddOrUpdate("Admin.Configuration.QuantityUnit.EditQuantityUnitDetails",
-				"Edit details",
-				"Details bearbeiten");
+				"Edit quantity unit",
+				"Verpackungseinheit bearbeiten");
 			builder.AddOrUpdate("Admin.Configuration.QuantityUnit",
 				"Quantity units",
 				"Verpackungseinheiten");

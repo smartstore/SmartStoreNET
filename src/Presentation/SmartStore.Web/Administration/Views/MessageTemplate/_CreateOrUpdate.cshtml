@@ -90,6 +90,15 @@
     </table>
 	@(Html.LocalizedEditor<MessageTemplateModel, MessageTemplateLocalizedModel>("messagetemplate-localized",
     @<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
+				@Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].BccEmailAddresses)
@@ -109,15 +118,6 @@
             </td>
         </tr>
         <tr>
-             <td class="adminTitle">
-                 @Html.SmartLabelFor(model => model.Locales[item].EmailAccountId)
-             </td>
-             <td class="adminData">
-                 @Html.DropDownListFor(model => Model.Locales[item].EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName", Model.Locales[item].EmailAccountId))
-                 @Html.ValidationMessageFor(model => model.Locales[item].EmailAccountId)
-             </td>
-         </tr>
-        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
             </td>
@@ -135,6 +135,15 @@
     ,
     @<table class="adminContent">
         <tr>
+             <td class="adminTitle">
+                 @Html.SmartLabelFor(model => model.EmailAccountId)
+             </td>
+             <td class="adminData">
+                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
+                 @Html.ValidationMessageFor(model => model.EmailAccountId)
+             </td>
+        </tr>
+        <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.BccEmailAddresses)
             </td>
@@ -151,15 +160,6 @@
                 @Html.TextBoxFor(model => model.Subject, new { @class = "input-large" })
                 @Html.ValidationMessageFor(model => model.Subject)
             </td>
-        </tr>
-        <tr>
-             <td class="adminTitle">
-                 @Html.SmartLabelFor(model => model.EmailAccountId)
-             </td>
-             <td class="adminData">
-                 @Html.DropDownListFor(model => model.EmailAccountId, new SelectList(Model.AvailableEmailAccounts, "Id", "DisplayName"))
-                 @Html.ValidationMessageFor(model => model.EmailAccountId)
-             </td>
         </tr>
         <tr>
             <td class="adminTitle">

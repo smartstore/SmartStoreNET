@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -143,42 +142,33 @@ namespace SmartStore.Services.Orders
             string selectedAttributes = "",
             decimal customerEnteredPrice = decimal.Zero);
 
-
-        /// <summary>
-		/// Add a product to shopping cart
-        /// </summary>
-        /// <param name="customer">Customer</param>
-		/// <param name="product">Product</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
+		/// <summary>
+		/// Add product to cart
+		/// </summary>
+		/// <param name="customer">The customer</param>
+		/// <param name="product">The product</param>
+		/// <param name="cartType">Cart type</param>
 		/// <param name="storeId">Store identifier</param>
-        /// <param name="selectedAttributes">Selected attributes</param>
-        /// <param name="customerEnteredPrice">The price enter by a customer</param>
-        /// <param name="quantity">Quantity</param>
-		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
-		/// <param name="shoppingCartItemId">Identifier fo the new shopping cart item</param>
-		/// <param name="parentItemId">Identifier of the parent shopping cart item</param>
-		/// <param name="bundleItem">Product bundle item</param>
-        /// <returns>Warnings</returns>
-        IList<string> AddToCart(Customer customer, Product product,
-			ShoppingCartType shoppingCartType, int storeId, string selectedAttributes,
-            decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,
-			out int shoppingCartItemId, int? parentItemId = null, ProductBundleItem bundleItem = null);
+		/// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="customerEnteredPrice">Price entered by customer</param>
+		/// <param name="quantity">Quantity</param>
+		/// <param name="automaticallyAddRequiredProductsIfEnabled">Whether to add required products</param>
+		/// <param name="ctx">Add to cart context</param>
+		/// <returns>List with warnings</returns>
+		List<string> AddToCart(Customer customer, Product product, ShoppingCartType cartType, int storeId, string selectedAttributes,
+			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled, AddToCartContext ctx = null);
 
 		/// <summary>
-		/// Adds a product to the shopping cart and also adds bundle items if the product is a bundle.
+		/// Add product to cart
 		/// </summary>
-		/// <param name="warnings">List with warnings</param>
-		/// <param name="product">Product</param>
-		/// <param name="form">Collection with selected attribute data</param>
-		/// <param name="cartType">Shopping cart type</param>
-		/// <param name="customerEnteredPrice">The price enter by a customer</param>
-		/// <param name="quantity">Quantity</param>
-		/// <param name="addRequiredProducts">Automatically add required products if enabled</param>
-		/// <param name="parentCartItemId">Parent cart item if it is a bundle item</param>
-		/// <param name="bundleItem">Bundle item object if it is a bundle item</param>
-		/// <returns>Identifier of inserted (parent) shopping cart item</returns>
-		int AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
-			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null);
+		/// <param name="ctx">Add to cart context</param>
+		void AddToCart(AddToCartContext ctx);
+
+		/// <summary>
+		/// Stores the shopping card items in the database
+		/// </summary>
+		/// <param name="ctx">Add to cart context</param>
+		void AddToCartStore(AddToCartContext ctx);
 
         /// <summary>
         /// Updates the shopping cart item

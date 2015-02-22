@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class OrderModel : EntityModelBase
+    public class OrderModel : TabbableModel
     {
         public OrderModel()
         {

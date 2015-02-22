@@ -217,13 +217,13 @@
     <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201501291135374_QuantityUnits.cs" />
-    <Compile Include="Migrations\201501291135374_QuantityUnits.Designer.cs">
-      <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.cs" />
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.Designer.cs">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.cs" />
-    <Compile Include="Migrations\201501291549546_OrderItemTaxRate.Designer.cs">
-      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.cs" />
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201502120858030_Licensing.cs" />
     <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
@@ -445,11 +445,11 @@
     <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
       <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501291549546_OrderItemTaxRate.resx">
-      <DependentUpon>201501291549546_OrderItemTaxRate.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.resx">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201501291135374_QuantityUnits.resx">
-      <DependentUpon>201501291135374_QuantityUnits.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
       <DependentUpon>201502120858030_Licensing.cs</DependentUpon>

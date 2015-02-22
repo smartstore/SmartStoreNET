@@ -1190,9 +1190,17 @@ namespace SmartStore.Web.Controllers
             }
 
             //now let's try adding product to the cart (now including product attribute validation, etc)
-			_shoppingCartService.AddToCart(addToCartWarnings, product, null, shoppingCartType, decimal.Zero, qtyToAdd, true);
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				CartType = shoppingCartType,
+				Quantity = qtyToAdd,
+				AddRequiredProducts = true
+			};
 
-            if (addToCartWarnings.Count > 0)
+			_shoppingCartService.AddToCart(addToCartContext);
+
+            if (addToCartContext.Warnings.Count > 0)
             {
                 //cannot be added to the cart
                 //but we do not display attribute and gift card warnings here. let's do it on the product details page
@@ -1270,20 +1278,29 @@ namespace SmartStore.Web.Controllers
 
             //save item
             var cartType = (ShoppingCartType)shoppingCartTypeId;
-			var addToCartWarnings = new List<string>();
 
-			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				AttributeForm = form,
+				CartType = cartType,
+				CustomerEnteredPrice = customerEnteredPriceConverted,
+				Quantity = quantity,
+				AddRequiredProducts = true
+			};
+
+			_shoppingCartService.AddToCart(addToCartContext);
 
             #region Return result
 
-            if (addToCartWarnings.Count > 0)
+            if (addToCartContext.Warnings.Count > 0)
             {
                 //cannot be added to the cart/wishlist
                 //let's display warnings
                 return Json(new
                 {
                     success = false,
-                    message = addToCartWarnings.ToArray()
+                    message = addToCartContext.Warnings.ToArray()
                 });
             }
 

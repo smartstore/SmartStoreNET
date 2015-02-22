@@ -3562,6 +3562,33 @@ namespace SmartStore.Web.Infrastructure.Installation
                 });
         }
 
+        protected override void Alter(IList<QuantityUnit> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.DisplayOrder)
+                .Alter(0, x =>
+                {
+                    x.Name = "Stück";
+                    x.Description = "Stück";
+                })
+                .Alter(1, x =>
+                {
+                    x.Name = "Schachtel";
+                    x.Description = "Schachtel";
+                })
+                .Alter(2, x =>
+                {
+                    x.Name = "Paket";
+                    x.Description = "Paket";
+                })
+                .Alter(3, x =>
+                {
+                    x.Name = "Palette";
+                    x.Description = "Palette";
+                });
+        }
+
 		protected override void Alter(IList<Store> entities)
 		{
 			base.Alter(entities);

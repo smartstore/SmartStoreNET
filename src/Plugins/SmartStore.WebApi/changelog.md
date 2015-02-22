@@ -1,12 +1,16 @@
 ﻿#Release Notes#
 
+##Web Api 1.32##
+###New Features###
+* #618 Add endpoint for quantity units
+
 ##Web Api 1.31##
 ###Bugfixes###
 * WebApiController requires more permission checks
 
 ##Web Api 1.23##
 ###New Features###
-* #431 Add support for localized properties (part 1)
+* #431 Add support for localized properties
 
 ##Web Api 1.22##
 ###New Features###

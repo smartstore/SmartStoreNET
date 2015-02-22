@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 
@@ -13,6 +14,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the product variant attribute mapping identifier
         /// </summary>
 		[DataMember]
+		[Index("IX_ProductVariantAttributeValue_ProductVariantAttributeId_DisplayOrder", 1)]
 		public int ProductVariantAttributeId { get; set; }
 
         /// <summary>
@@ -56,6 +58,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets the display order
         /// </summary>
 		[DataMember]
+		[Index("IX_ProductVariantAttributeValue_ProductVariantAttributeId_DisplayOrder", 2)]
 		public int DisplayOrder { get; set; }
 
 		/// <summary>

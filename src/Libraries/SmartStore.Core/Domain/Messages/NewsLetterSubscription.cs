@@ -1,4 +1,5 @@
 ﻿using System;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStore.Core.Domain.Messages
 {
@@ -15,6 +16,7 @@ namespace SmartStore.Core.Domain.Messages
         /// <summary>
         /// Gets or sets the subcriber email
         /// </summary>
+		[Index("IX_NewsletterSubscription_Email_StoreId", 1)]
         public string Email { get; set; }
 
         /// <summary>
@@ -30,6 +32,7 @@ namespace SmartStore.Core.Domain.Messages
 		/// <summary>
 		/// Gets or sets the store identifier
 		/// </summary>
+		[Index("IX_NewsletterSubscription_Email_StoreId", 2)]
 		public int StoreId { get; set; }
     }
 }

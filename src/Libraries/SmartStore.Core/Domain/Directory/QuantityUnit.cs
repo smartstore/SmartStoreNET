@@ -5,7 +5,7 @@ using System.Runtime.Serialization;
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
-    /// Represents a currency
+    /// Represents a quantity unit
     /// </summary>
 	[DataContract]
     public partial class QuantityUnit : BaseEntity, ILocalizedEntity
@@ -17,7 +17,7 @@ namespace SmartStore.Core.Domain.Directory
 		public string Name { get; set; }
 
         /// <summary>
-        /// Gets or sets the hex value
+        /// Gets or sets the description
         /// </summary>
 		[DataMember]
 		public string Description { get; set; }

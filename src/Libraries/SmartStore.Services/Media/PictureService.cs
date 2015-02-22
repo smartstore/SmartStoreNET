@@ -231,26 +231,15 @@ namespace SmartStore.Services.Media
                 return string.Empty;
             }
              
-            if (targetSize == 0)
-            {
-                string url = (!String.IsNullOrEmpty(storeLocation)
-                                 ? storeLocation
-                                 : _webHelper.GetStoreLocation())
-                                 + "Content/Images/" + defaultImageFileName;
-                return url;
-            }
-            else
-            {
-                var url = this.GetProcessedImageUrl(
-                    filePath, 
-                    0,
-                    Path.GetFileNameWithoutExtension(filePath),
-                    Path.GetExtension(filePath), 
-                    targetSize, 
-                    storeLocation);
+            var url = this.GetProcessedImageUrl(
+                filePath, 
+                0,
+                Path.GetFileNameWithoutExtension(filePath),
+                Path.GetExtension(filePath), 
+                targetSize, 
+                storeLocation);
 
-                return url;
-            }
+            return url;
         }
 
         protected internal virtual string GetProcessedImageUrl(object source, int? pictureId, string seoFileName, string extension, int targetSize = 0, string storeLocation = null)

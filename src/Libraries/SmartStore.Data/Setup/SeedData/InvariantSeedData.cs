@@ -6361,18 +6361,108 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000746_apple_125.jpeg"), "image/pjpeg", GetSeName("Apple")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000746_apple_125.png"), "image/png", GetSeName("Apple")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 1,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
 
 			#endregion Apple
 
-			#region Samsung
+            #region Android
 
-			var manufacturerSamsung = new Manufacturer
+            var manufacturerAndroid = new Manufacturer
+            {
+                Name = "Android",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                PageSize = 12,
+                AllowCustomersToSelectPageSize = true,
+                PageSizeOptions = "12,18,36,72,150",
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-android.png"), "image/png", GetSeName("Android")),
+                Published = true,
+                DisplayOrder = 2,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            #endregion Android
+
+            #region LG
+
+            var manufacturerLG = new Manufacturer
+            {
+                Name = "LG",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                PageSize = 12,
+                AllowCustomersToSelectPageSize = true,
+                PageSizeOptions = "12,18,36,72,150",
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-lg.png"), "image/png", GetSeName("LG")),
+                Published = true,
+                DisplayOrder = 3,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            #endregion LG
+
+            #region Dell
+
+            var manufacturerDell = new Manufacturer
+            {
+                Name = "Dell",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                PageSize = 12,
+                AllowCustomersToSelectPageSize = true,
+                PageSizeOptions = "12,18,36,72,150",
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Dell_Logo.png"), "image/pjpeg", GetSeName("Dell")),
+                Published = true,
+                DisplayOrder = 4,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            #endregion Dell
+
+            #region HP
+
+            var manufacturerHP = new Manufacturer
+            {
+                Name = "HP",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                PageSize = 12,
+                AllowCustomersToSelectPageSize = true,
+                PageSizeOptions = "12,18,36,72,150",
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "HP_Logo_2012.svg.png"), "image/png", GetSeName("HP")),
+                Published = true,
+                DisplayOrder = 5,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            #endregion HP
+
+            #region Microsoft
+
+            var manufacturerMicrosoft = new Manufacturer
+            {
+                Name = "Microsoft",
+                ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
+                PageSize = 12,
+                AllowCustomersToSelectPageSize = true,
+                PageSizeOptions = "12,18,36,72,150",
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-microsoft.png"), "image/png", GetSeName("Microsoft")),
+                Published = true,
+                DisplayOrder = 6,
+                CreatedOnUtc = DateTime.UtcNow,
+                UpdatedOnUtc = DateTime.UtcNow
+            };
+
+            #endregion Microsoft
+
+            #region Samsung
+
+            var manufacturerSamsung = new Manufacturer
 			{
 				Name = "Samsung",
 				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
@@ -6381,48 +6471,12 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000904_samsung_125.jpeg"), "image/pjpeg", GetSeName("Samsung")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 7,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
 
 			#endregion Samsung
-
-			#region LG
-
-			var manufacturerLG = new Manufacturer
-			{
-				Name = "LG",
-				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000900_lg.jpeg"), "image/pjpeg", GetSeName("LG")),
-				Published = true,
-				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
-
-			#endregion LG
-
-			#region HP
-
-			var manufacturerHP = new Manufacturer
-			{
-				Name = "HP",
-				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "HP_Logo_2012.svg.png"), "image/png", GetSeName("HP")),
-				Published = true,
-				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
-
-			#endregion HP
 
 			#region Acer
 
@@ -6435,13 +6489,12 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-logo.jpg"), "image/pjpeg", GetSeName("Acer")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 8,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
 
 			#endregion Acer
-
 
 			#region TrekStor
 
@@ -6454,7 +6507,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000993_trekstor.jpeg"), "image/pjpeg", GetSeName("TrekStor")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 9,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6472,30 +6525,12 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000994_western-digital.jpeg"), "image/pjpeg", GetSeName("Western Digital")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 10,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
 
 			#endregion Western Digital
-
-			#region Dell
-
-			var manufacturerDell = new Manufacturer
-			{
-				Name = "Dell",
-				ManufacturerTemplateId = manufacturerTemplateInGridAndLines.Id,
-				PageSize = 12,
-				AllowCustomersToSelectPageSize = true,
-				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Dell_Logo.png"), "image/pjpeg", GetSeName("Dell")),
-				Published = true,
-				DisplayOrder = 2,
-				CreatedOnUtc = DateTime.UtcNow,
-				UpdatedOnUtc = DateTime.UtcNow
-			};
-
-			#endregion Dell
 
 			#region MSI
 
@@ -6508,7 +6543,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "msi_logo1.jpg"), "image/pjpeg", GetSeName("MSI")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 11,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6526,7 +6561,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001085_canon.jpeg"), "image/pjpeg", GetSeName("Canon")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 12,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6544,7 +6579,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001086_casio.jpeg"), "image/pjpeg", GetSeName("Casio")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 13,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6562,7 +6597,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001087_panasonic.jpeg"), "image/pjpeg", GetSeName("Panasonic")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 14,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6580,7 +6615,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000898_blackberry.jpeg"), "image/pjpeg", GetSeName("BlackBerry")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 15,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6598,7 +6633,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000899_htc.png"), "image/pjpeg", GetSeName("HTC")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 16,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6616,7 +6651,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001591_festina.jpeg"), "image/pjpeg", GetSeName("Festina")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 17,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6634,7 +6669,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001328_certina_125.jpeg"), "image/pjpeg", GetSeName("Certina")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 18,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6652,7 +6687,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-logo.jpg"), "image/pjpeg", GetSeName("Sony")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 19,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -6670,7 +6705,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-logo.jpg"), "image/pjpeg", GetSeName("Ubisoft")),
 				Published = true,
-				DisplayOrder = 2,
+				DisplayOrder = 20,
 				CreatedOnUtc = DateTime.UtcNow,
 				UpdatedOnUtc = DateTime.UtcNow
 			};
@@ -8833,6 +8868,43 @@ namespace SmartStore.Data.Setup
 
 		#endregion Deliverytimes
 
+        #region QuantityUnits
+
+        public IList<QuantityUnit> QuantityUnits()
+        {
+            var entities = new List<QuantityUnit>()
+			{
+				new QuantityUnit
+					{
+						Name = "Piece",        
+                        Description = "Piece",
+                        IsDefault = true,
+						DisplayOrder = 0,
+					},
+				new QuantityUnit
+					{
+						Name = "Box",           
+                        Description = "Box",
+						DisplayOrder = 1,
+					},
+				new QuantityUnit
+					{
+						Name = "Parcel",        
+                        Description = "Parcel",
+						DisplayOrder = 2,
+					},
+                new QuantityUnit
+					{
+						Name = "Palette",       
+                        Description = "Palette",
+						DisplayOrder = 3,
+					},
+			};
+            this.Alter(entities);
+            return entities;
+        }
+
+        #endregion
 
 		#region BlogPost
 		public IList<BlogPost> BlogPosts()
@@ -9093,6 +9165,10 @@ namespace SmartStore.Data.Setup
 		protected virtual void Alter(IList<DeliveryTime> entities)
 		{
 		}
+
+        protected virtual void Alter(IList<QuantityUnit> entities)
+        {
+        }
 
 		protected virtual void Alter(IList<EmailAccount> entities)
 		{

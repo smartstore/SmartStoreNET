@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
@@ -35,6 +36,15 @@ namespace SmartStore.Admin.Models.Topics
 			Locales = new List<TopicLocalizedModel>();
 			AvailableStores = new List<StoreModel>();
             AvailableWidgetZones = s_widgetZones;
+            AvailableTitleTags = new List<SelectListItem>(); 
+            AvailableTitleTags.Add(new SelectListItem { Text = "h1", Value = "h1" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "h2", Value = "h2" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "h3", Value = "h3" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "h4", Value = "h4" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "h5", Value = "h5" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "h6", Value = "h6" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "div", Value = "div" });
+            AvailableTitleTags.Add(new SelectListItem { Text = "span", Value = "span" });
         }
 
         //Store mapping
@@ -101,7 +111,11 @@ namespace SmartStore.Admin.Models.Topics
         [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.Priority")]
         public int Priority { get; set; }
 
+        [SmartResourceDisplayName("Admin.ContentManagement.Topics.Fields.TitleTag")]
+        public string TitleTag { get; set; }
+
         public string[] AvailableWidgetZones { get; private set; }
+        public IList<SelectListItem> AvailableTitleTags { get; private set; }
 
         public IList<TopicLocalizedModel> Locales { get; set; }
     }

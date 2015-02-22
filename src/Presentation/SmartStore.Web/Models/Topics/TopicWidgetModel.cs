@@ -8,7 +8,8 @@ namespace SmartStore.Web.Models.Topics
         public string SystemName { get; set; }
         public string Title { get; set; }
         public string Html { get; set; }
-
+        public string TitleTag { get; set; }
+        
 		public bool WrapContent { get; set; }
         public bool ShowTitle { get; set; }
         public bool IsBordered { get; set; }

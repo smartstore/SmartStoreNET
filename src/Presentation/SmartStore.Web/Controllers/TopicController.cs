@@ -59,6 +59,7 @@ namespace SmartStore.Web.Controllers
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
+                TitleTag = topic.TitleTag ?? "h3",
             };
             return model;
         }

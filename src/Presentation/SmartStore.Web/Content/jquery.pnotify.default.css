@@ -90,29 +90,60 @@ margin: 0;
 
 /* codehint: sm-add */
 
+.ui-pnotify {
+	-webkit-box-shadow: 1px 1px 2px rgba(0,0,0, 0.15);
+	        box-shadow: 1px 1px 2px rgba(0,0,0, 0.15);
+	border: 1px solid rgba(0,0,0, .2);
+	width: 500px !important;
+}
+
 .ui-pnotify-container {
-    padding: 10px 6px 10px 10px !important;
+    padding: 10px 10px 10px 50px !important;
 	margin-bottom: 0 !important;
+	border: none !important;
 	position: relative;
 	overflow: hidden;
 }
 
-.ui-pnotify-icon {
-    position: absolute;
-    left: -10px;
-	top: -12px;
-	opacity: .12;
-	filter: alpha(opacity=12);
+.ui-pnotify .ui-pnotify-shadow {
+	-webkit-box-shadow: none;
+	        box-shadow: none; 
 }
 
-.ui-pnotify-icon span {
-    font-size: 80px;
+.ui-pnotify-icon {
+    position: absolute;
+    left: 0;
+	top: 0;
+	width: 40px;
+	height: 100%;
+	color: #fff;
+	background-color: #c09853; 
+	text-align: center;
+	display: block;
+}
+.ui-pnotify-container.alert-success .ui-pnotify-icon { background-color: #468847 }
+.ui-pnotify-container.alert-info .ui-pnotify-icon { background-color: #3a87ad }
+.ui-pnotify-container.alert-error .ui-pnotify-icon { background-color: #b94a48 }
+
+.ui-pnotify-icon > .fa {
+    font-size: 16px;
+	line-height: 16px;
+	margin: 0;
+	color: #fff;
+	opacity: 0.87;
 	float: none;
-	display: inline-block;
+	position: relative;
+	top: 50%;
+	margin-top: -8px;
 }
 
 .ui-pnotify-title {
-    margin-bottom: 5px !important;
+    margin-bottom: 0 !important;
+}
+
+.ui-pnotify .ui-pnotify-text {
+	padding-top: 10px;
+	padding-bottom: 10px;
 }
 
 .ui-pnotify-closer, 
@@ -122,6 +153,9 @@ margin: 0;
     filter: alpha(35);
 	margin: 0;
 	padding-left: 2px;
+	position: relative;
+	top: -5px;
+	left: 5px;
 }
 
 .ui-pnotify-closer:hover, 
@@ -130,10 +164,14 @@ margin: 0;
     filter: alpha(75);
 }
 
-.ui-pnotify.stack-bottomright {
-	/* These are just CSS default values to reset the pnotify CSS. */
+.ui-pnotify.stack-topcenter {
+	left: 50% !important;
+	margin-left: -250px !important;
+}
+
+/*.ui-pnotify.stack-bottomright {
 	right: auto;
 	top: auto;
 	left: auto;
 	bottom: auto;
-}
+}*/

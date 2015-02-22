@@ -1,17 +1,17 @@
 using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
+using System.Diagnostics;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Events;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
@@ -261,8 +261,8 @@ namespace SmartStore.Services.Orders
                             if (automaticallyAddRequiredProductsIfEnabled)
                             {
                                 //pass 'false' for 'automaticallyAddRequiredProducsIfEnabled' to prevent circular references
-								int shoppingCartItemId;
-								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false, out shoppingCartItemId);
+								var addToCartWarnings = AddToCart(customer, rp, shoppingCartType, storeId, "", decimal.Zero, 1, false, null);
+
                                 if (addToCartWarnings.Count > 0)
                                 {
                                     //a product wasn't atomatically added for some reasons
@@ -299,8 +299,7 @@ namespace SmartStore.Services.Orders
         /// <param name="quantity">Quantity</param>
         /// <returns>Warnings</returns>
         public virtual IList<string> GetStandardWarnings(Customer customer, ShoppingCartType shoppingCartType,
-            Product product, string selectedAttributes, decimal customerEnteredPrice,
-            int quantity)
+            Product product, string selectedAttributes, decimal customerEnteredPrice, int quantity)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
@@ -424,18 +423,25 @@ namespace SmartStore.Services.Orders
                         break;
                     case ManageInventoryMethod.ManageStockByAttributes:
                         {
-                            var combination = product
-                                .ProductVariantAttributeCombinations
+                            var combination = product.ProductVariantAttributeCombinations
                                 .FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
-                            if (combination != null &&
-                                !combination.AllowOutOfStockOrders &&
-                                combination.StockQuantity < quantity)
+
+                            if (combination != null)
                             {
-                                int maximumQuantityCanBeAdded = combination.StockQuantity;
-                                if (maximumQuantityCanBeAdded <= 0)
-                                    warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
-                                else
-                                    warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+								if (!combination.AllowOutOfStockOrders && combination.StockQuantity < quantity)
+								{
+									int maximumQuantityCanBeAdded = combination.StockQuantity;
+
+									if (maximumQuantityCanBeAdded <= 0)
+										warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+									else
+										warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
+								}
+
+								if (!combination.IsActive)
+								{
+									warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
+								}
                             }
                         }
                         break;
@@ -909,203 +915,239 @@ namespace SmartStore.Services.Orders
             return null;
         }
 
-        /// <summary>
-		/// Add a product to shopping cart
-        /// </summary>
-        /// <param name="customer">Customer</param>
-		/// <param name="product">Product</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
+		/// <summary>
+		/// Add product to cart
+		/// </summary>
+		/// <param name="customer">The customer</param>
+		/// <param name="product">The product</param>
+		/// <param name="cartType">Cart type</param>
 		/// <param name="storeId">Store identifier</param>
-        /// <param name="selectedAttributes">Selected attributes</param>
-        /// <param name="customerEnteredPrice">The price enter by a customer</param>
-        /// <param name="quantity">Quantity</param>
-		/// <param name="automaticallyAddRequiredProductsIfEnabled">Automatically add required products if enabled</param>
-		/// <param name="shoppingCartItemId">Identifier fo the new shopping cart item</param>
-		/// <param name="parentItemId">Identifier of the parent shopping cart item</param>
-		/// <param name="bundleItem">Product bundle item</param>
-        /// <returns>Warnings</returns>
-        public virtual IList<string> AddToCart(Customer customer, Product product,
-			ShoppingCartType shoppingCartType, int storeId, string selectedAttributes,
-			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,
-			out int shoppingCartItemId, int? parentItemId = null, ProductBundleItem bundleItem = null)
-        {
-			shoppingCartItemId = 0;
+		/// <param name="selectedAttributes">Selected attributes</param>
+		/// <param name="customerEnteredPrice">Price entered by customer</param>
+		/// <param name="quantity">Quantity</param>
+		/// <param name="automaticallyAddRequiredProductsIfEnabled">Whether to add required products</param>
+		/// <param name="ctx">Add to cart context</param>
+		/// <returns>List with warnings</returns>
+		public virtual List<string> AddToCart(Customer customer, Product product, ShoppingCartType cartType, int storeId, string selectedAttributes,
+			decimal customerEnteredPrice, int quantity, bool automaticallyAddRequiredProductsIfEnabled,	AddToCartContext ctx = null)
+		{
+			if (customer == null)
+				throw new ArgumentNullException("customer");
 
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			if (product == null)
+				throw new ArgumentNullException("product");
 
-            if (product == null)
-                throw new ArgumentNullException("product");
+			var warnings = new List<string>();
+			var bundleItem = (ctx == null ? null : ctx.BundleItem);
 
-            var warnings = new List<string>();
-            if (shoppingCartType == ShoppingCartType.ShoppingCart && !_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart, customer))
-            {
-                warnings.Add("Shopping cart is disabled");
-                return warnings;
-            }
-            if (shoppingCartType == ShoppingCartType.Wishlist && !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist, customer))
-            {
-                warnings.Add("Wishlist is disabled");
-                return warnings;
-            }
+			if (ctx != null && bundleItem != null && ctx.Warnings.Count > 0)
+				return ctx.Warnings;	// warnings while adding bundle items to cart -> no need for further processing
 
-            if (quantity <= 0)
-            {
-                warnings.Add(_localizationService.GetResource("ShoppingCart.QuantityShouldPositive"));
-                return warnings;
-            }
-
-			if (parentItemId.HasValue && (parentItemId.Value == 0 || bundleItem == null || bundleItem.Id == 0))
+			if (cartType == ShoppingCartType.ShoppingCart && !_permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart, customer))
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.BundleItemNotFound").FormatWith(bundleItem.GetLocalizedName()));
+				warnings.Add("Shopping cart is disabled");
+				return warnings;
+			}
+			if (cartType == ShoppingCartType.Wishlist && !_permissionService.Authorize(StandardPermissionProvider.EnableWishlist, customer))
+			{
+				warnings.Add("Wishlist is disabled");
 				return warnings;
 			}
 
-            //reset checkout info
+			if (quantity <= 0)
+			{
+				warnings.Add(_localizationService.GetResource("ShoppingCart.QuantityShouldPositive"));
+				return warnings;
+			}
+
+			//if (parentItemId.HasValue && (parentItemId.Value == 0 || bundleItem == null || bundleItem.Id == 0))
+			//{
+			//	warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.BundleItemNotFound").FormatWith(bundleItem.GetLocalizedName()));
+			//	return warnings;
+			//}
+
+			//reset checkout info
 			_customerService.ResetCheckoutData(customer, storeId);
 
-			var cart = customer.GetCartItems(shoppingCartType, storeId);
-			OrganizedShoppingCartItem shoppingCartItem = null;
+			var cart = customer.GetCartItems(cartType, storeId);
+			OrganizedShoppingCartItem existingCartItem = null;
 
 			if (bundleItem == null)
 			{
-				shoppingCartItem = FindShoppingCartItemInTheCart(cart, shoppingCartType, product, selectedAttributes, customerEnteredPrice);
+				existingCartItem = FindShoppingCartItemInTheCart(cart, cartType, product, selectedAttributes, customerEnteredPrice);
 			}
 
-            if (shoppingCartItem != null)
-            {
-                //update existing shopping cart item
-                int newQuantity = shoppingCartItem.Item.Quantity + quantity;
+			if (existingCartItem != null)
+			{
+				//update existing shopping cart item
+				int newQuantity = existingCartItem.Item.Quantity + quantity;
 
-                warnings.AddRange(
-					GetShoppingCartItemWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, newQuantity, 
+				warnings.AddRange(
+					GetShoppingCartItemWarnings(customer, cartType, product, storeId, selectedAttributes, customerEnteredPrice, newQuantity,
 						automaticallyAddRequiredProductsIfEnabled, bundleItem: bundleItem)
 				);
 
-                if (warnings.Count == 0)
-                {
-                    shoppingCartItem.Item.AttributesXml = selectedAttributes;
-                    shoppingCartItem.Item.Quantity = newQuantity;
-                    shoppingCartItem.Item.UpdatedOnUtc = DateTime.UtcNow;
-                    _customerService.UpdateCustomer(customer);
+				if (warnings.Count == 0)
+				{
+					existingCartItem.Item.AttributesXml = selectedAttributes;
+					existingCartItem.Item.Quantity = newQuantity;
+					existingCartItem.Item.UpdatedOnUtc = DateTime.UtcNow;
+					_customerService.UpdateCustomer(customer);
 
-                    //event notification
-                    _eventPublisher.EntityUpdated(shoppingCartItem.Item);
-                }
-            }
-            else
-            {
-                //new shopping cart item
-                warnings.AddRange(
-					GetShoppingCartItemWarnings(customer, shoppingCartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity,
+					//event notification
+					_eventPublisher.EntityUpdated(existingCartItem.Item);
+				}
+			}
+			else
+			{
+				//new shopping cart item
+				warnings.AddRange(
+					GetShoppingCartItemWarnings(customer, cartType, product, storeId, selectedAttributes, customerEnteredPrice, quantity,
 						automaticallyAddRequiredProductsIfEnabled, bundleItem: bundleItem)
 				);
 
-                if (warnings.Count == 0)
-                {
-                    //maximum items validation
-                    switch (shoppingCartType)
-                    {
-                        case ShoppingCartType.ShoppingCart:
-                            if (cart.Count >= _shoppingCartSettings.MaximumShoppingCartItems)
-                            {
-                                warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumShoppingCartItems"));
-                                return warnings;
-                            }
-                            break;
-                        case ShoppingCartType.Wishlist:
-                            if (cart.Count >= _shoppingCartSettings.MaximumWishlistItems)
-                            {
-                                warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumWishlistItems"));
-                                return warnings;
-                            }
-                            break;
-                        default:
-                            break;
-                    }
+				if (warnings.Count == 0)
+				{
+					//maximum items validation
+					if (cartType == ShoppingCartType.ShoppingCart && cart.Count >= _shoppingCartSettings.MaximumShoppingCartItems)
+					{
+						warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumShoppingCartItems"));
+						return warnings;
+					}
+					else if (cartType == ShoppingCartType.Wishlist && cart.Count >= _shoppingCartSettings.MaximumWishlistItems)
+					{
+						warnings.Add(_localizationService.GetResource("ShoppingCart.MaximumWishlistItems"));
+						return warnings;
+					}
 
-                    DateTime now = DateTime.UtcNow;
-                    var cartItem = new ShoppingCartItem()
-                    {
-                        ShoppingCartType = shoppingCartType,
+					var now = DateTime.UtcNow;
+					var cartItem = new ShoppingCartItem()
+					{
+						ShoppingCartType = cartType,
 						StoreId = storeId,
-                        Product = product,
-                        AttributesXml = selectedAttributes,
-                        CustomerEnteredPrice = customerEnteredPrice,
-                        Quantity = quantity,
-                        CreatedOnUtc = now,
-                        UpdatedOnUtc = now,
-						ParentItemId = parentItemId
-                    };
+						Product = product,
+						AttributesXml = selectedAttributes,
+						CustomerEnteredPrice = customerEnteredPrice,
+						Quantity = quantity,
+						CreatedOnUtc = now,
+						UpdatedOnUtc = now,
+						ParentItemId = null	//parentItemId
+					};
 
 					if (bundleItem != null)
 						cartItem.BundleItemId = bundleItem.Id;
 
-                    customer.ShoppingCartItems.Add(cartItem);
-                    _customerService.UpdateCustomer(customer);
 
-					shoppingCartItemId = cartItem.Id;
+					if (ctx == null)
+					{
+						customer.ShoppingCartItems.Add(cartItem);
+						_customerService.UpdateCustomer(customer);
+						_eventPublisher.EntityInserted(cartItem);
+					}
+					else
+					{
+						if (bundleItem == null)
+						{
+							Debug.Assert(ctx.Item == null, "Add to cart item already specified");
+							ctx.Item = cartItem;
+						}
+						else
+						{
+							ctx.ChildItems.Add(cartItem);
+						}
+					}
+				}
+			}
 
-                    //event notification
-                    _eventPublisher.EntityInserted(cartItem);
-                }
-            }
-
-            return warnings;
-        }
+			return warnings;
+		}
 
 		/// <summary>
-		/// Adds a product to the shopping cart and also adds bundle items if the product is a bundle.
+		/// Add product to cart
 		/// </summary>
-		/// <param name="warnings">List with warnings</param>
-		/// <param name="product">Product</param>
-		/// <param name="form">Collection with selected attribute data</param>
-		/// <param name="cartType">Shopping cart type</param>
-		/// <param name="customerEnteredPrice">The price enter by a customer</param>
-		/// <param name="quantity">Quantity</param>
-		/// <param name="addRequiredProducts">Automatically add required products if enabled</param>
-		/// <param name="parentCartItemId">Parent cart item if it is a bundle item</param>
-		/// <param name="bundleItem">Bundle item object if it is a bundle item</param>
-		/// <returns>Identifier of inserted (parent) shopping cart item</returns>
-		public virtual int AddToCart(List<string> warnings, Product product, NameValueCollection form, ShoppingCartType cartType, decimal customerEnteredPrice,
-			int quantity, bool addRequiredProducts, int? parentCartItemId = null, ProductBundleItem bundleItem = null)
+		/// <param name="ctx">Add to cart context</param>
+		public virtual void AddToCart(AddToCartContext ctx)
 		{
-			int newCartItemId;
-			string selectedAttributes = "";
-			int bundleItemId = (bundleItem == null ? 0 : bundleItem.Id);
+			var customer = ctx.Customer ?? _workContext.CurrentCustomer;
+			int storeId = ctx.StoreId ?? _storeContext.CurrentStore.Id;
+			var cart = customer.GetCartItems(ctx.CartType, storeId);
 
-			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
+			_customerService.ResetCheckoutData(customer, storeId);
 
-			selectedAttributes = form.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _localizationService, _downloadService,
-				_catalogSettings, null, warnings, true, bundleItemId);
-
-			if (product.ProductType == ProductType.BundledProduct && selectedAttributes.HasValue())
+			if (ctx.AttributeForm != null)
 			{
-				warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
-				return 0;
+				var attributes = _productAttributeService.GetProductVariantAttributesByProductId(ctx.Product.Id);
+
+				ctx.Attributes = ctx.AttributeForm.CreateSelectedAttributesXml(ctx.Product.Id, attributes, _productAttributeParser, _localizationService,
+					_downloadService, _catalogSettings, null, ctx.Warnings, true, ctx.BundleItemId);
+
+				if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Attributes.HasValue())
+					ctx.Warnings.Add(_localizationService.GetResource("ShoppingCart.Bundle.NoAttributes"));
+
+				if (ctx.Product.IsGiftCard)
+					ctx.Attributes = ctx.AttributeForm.AddGiftCardAttribute(ctx.Attributes, ctx.Product.Id, _productAttributeParser, ctx.BundleItemId);
 			}
 
-			if (product.IsGiftCard)
-			{
-				selectedAttributes = form.AddGiftCardAttribute(selectedAttributes, product.Id, _productAttributeParser, bundleItemId);
-			}
-
-			warnings.AddRange(
-				AddToCart(_workContext.CurrentCustomer, product, cartType, _storeContext.CurrentStore.Id,
-					selectedAttributes, customerEnteredPrice, quantity, addRequiredProducts, out newCartItemId, parentCartItemId, bundleItem)
+			ctx.Warnings.AddRange(
+				AddToCart(_workContext.CurrentCustomer, ctx.Product, ctx.CartType, storeId,	ctx.Attributes, ctx.CustomerEnteredPrice, ctx.Quantity, ctx.AddRequiredProducts, ctx)
 			);
 
-			if (product.ProductType == ProductType.BundledProduct && warnings.Count <= 0 && newCartItemId != 0 && bundleItem == null)
+			if (ctx.Product.ProductType == ProductType.BundledProduct && ctx.Warnings.Count <= 0 && ctx.BundleItem == null)
 			{
-				foreach (var item in _productService.GetBundleItems(product.Id).Select(x => x.Item))
+				foreach (var bundleItem in _productService.GetBundleItems(ctx.Product.Id).Select(x => x.Item))
 				{
-					AddToCart(warnings, item.Product, form, cartType, decimal.Zero, item.Quantity, false, newCartItemId, item);
-				}
+					AddToCart(new AddToCartContext
+					{
+						BundleItem = bundleItem,
+						Warnings = ctx.Warnings,
+						Item = ctx.Item,
+						ChildItems = ctx.ChildItems,
+						Product = bundleItem.Product,
+						Customer = customer,
+						AttributeForm = ctx.AttributeForm,
+						CartType = ctx.CartType,
+						Quantity = bundleItem.Quantity,
+						AddRequiredProducts = ctx.AddRequiredProducts,
+						StoreId = storeId
+					});
 
-				if (warnings.Count > 0)
-					DeleteShoppingCartItem(newCartItemId);
+					if (ctx.Warnings.Count > 0)
+					{
+						ctx.ChildItems.Clear();
+						break;
+					}
+				}
 			}
-			return newCartItemId;
+
+			if (ctx.BundleItem == null)
+			{
+				AddToCartStore(ctx);
+			}
+		}
+
+		/// <summary>
+		/// Stores the shopping card items in the database
+		/// </summary>
+		/// <param name="ctx">Add to cart context</param>
+		public virtual void AddToCartStore(AddToCartContext ctx)
+		{
+			if (ctx.Warnings.Count == 0 && ctx.Item != null)
+			{
+				var customer = ctx.Customer ?? _workContext.CurrentCustomer;
+
+				customer.ShoppingCartItems.Add(ctx.Item);
+				_customerService.UpdateCustomer(customer);
+				_eventPublisher.EntityInserted(ctx.Item);
+
+				foreach (var childItem in ctx.ChildItems)
+				{
+					childItem.ParentItemId = ctx.Item.Id;
+
+					customer.ShoppingCartItems.Add(childItem);
+					_customerService.UpdateCustomer(customer);
+					_eventPublisher.EntityInserted(childItem);
+				}
+			}
 		}
 
         /// <summary>
@@ -1116,8 +1158,7 @@ namespace SmartStore.Services.Orders
         /// <param name="newQuantity">New shopping cart item quantity</param>
         /// <param name="resetCheckoutData">A value indicating whether to reset checkout data</param>
         /// <returns>Warnings</returns>
-        public virtual IList<string> UpdateShoppingCartItem(Customer customer, int shoppingCartItemId, 
-            int newQuantity, bool resetCheckoutData)
+        public virtual IList<string> UpdateShoppingCartItem(Customer customer, int shoppingCartItemId, int newQuantity, bool resetCheckoutData)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
@@ -1214,20 +1255,25 @@ namespace SmartStore.Services.Orders
 			if (sci == null)
 				throw new ArgumentNullException("item");
 
-			int parentItemId, childItemId;
+			var addToCartContext = new AddToCartContext();
 
-			var warnings = AddToCart(customer, sci.Item.Product, cartType, storeId, sci.Item.AttributesXml, sci.Item.CustomerEnteredPrice,
-				sci.Item.Quantity, addRequiredProductsIfEnabled, out parentItemId);
+			addToCartContext.Warnings = AddToCart(customer, sci.Item.Product, cartType, storeId, sci.Item.AttributesXml, sci.Item.CustomerEnteredPrice,
+				sci.Item.Quantity, addRequiredProductsIfEnabled, addToCartContext);
 
-			if (warnings.Count == 0 && parentItemId != 0 && sci.ChildItems != null)
+			if (addToCartContext.Warnings.Count == 0 && sci.ChildItems != null)
 			{
 				foreach (var childItem in sci.ChildItems)
 				{
-					AddToCart(customer, childItem.Item.Product, cartType, storeId, childItem.Item.AttributesXml, childItem.Item.CustomerEnteredPrice,
-						childItem.Item.Quantity, false, out childItemId, parentItemId, childItem.Item.BundleItem);
+					addToCartContext.BundleItem = childItem.Item.BundleItem;
+
+					addToCartContext.Warnings = AddToCart(customer, childItem.Item.Product, cartType, storeId, childItem.Item.AttributesXml, childItem.Item.CustomerEnteredPrice,
+						childItem.Item.Quantity, false, addToCartContext);
 				}
 			}
-			return warnings;
+
+			AddToCartStore(addToCartContext);
+
+			return addToCartContext.Warnings;
 		}
 
         #endregion

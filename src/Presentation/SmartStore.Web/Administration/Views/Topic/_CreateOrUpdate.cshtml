@@ -160,6 +160,15 @@
                 @Html.ValidationMessageFor(model => model.WidgetShowTitle)
             </td>
         </tr>
+        <tr id="pnlWidgetZone">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.TitleTag)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.TitleTag, Model.AvailableTitleTags)
+                @Html.ValidationMessageFor(model => model.TitleTag)
+            </td>
+        </tr>
         <tr id="pnlWidgetBordered">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.WidgetBordered)

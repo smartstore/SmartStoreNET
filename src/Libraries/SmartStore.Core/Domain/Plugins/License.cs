@@ -10,18 +10,23 @@ namespace SmartStore.Core.Domain.Plugins
 		public string LicenseKey { get; set; }
 
 		/// <summary>
-		/// The system name
+		/// Plugin system name
 		/// </summary>
 		public string SystemName { get; set; }
 
 		/// <summary>
-		/// Activation date
+		/// Plugin major version
 		/// </summary>
-		public DateTime ActivatedOnUtc { get; set; }
+		public int MajorVersion { get; set; }
 
 		/// <summary>
 		/// The store id
 		/// </summary>
 		public int StoreId { get; set; }
+
+		/// <summary>
+		/// Activation date
+		/// </summary>
+		public DateTime? ActivatedOnUtc { get; set; }
 	}
 }

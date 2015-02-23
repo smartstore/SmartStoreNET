@@ -2238,6 +2238,7 @@ if not exist "$(TargetDir)ClearScript.V8" md "$(TargetDir)ClearScript.V8"
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\NuGet.targets" Condition="Exists('$(SolutionDir)\.nuget\NuGet.targets')" />
   <PropertyGroup>
-    <PreBuildEvent>xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"</PreBuildEvent>
+    <PreBuildEvent>
+    </PreBuildEvent>
   </PropertyGroup>
 </Project>

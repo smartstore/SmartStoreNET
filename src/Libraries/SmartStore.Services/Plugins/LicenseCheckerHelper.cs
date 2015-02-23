@@ -1,12 +1,13 @@
 ﻿using System;
 using System.IO;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Plugins;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Plugins;
 using SmartStore.Licensing.Checker;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Stores;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Plugins
@@ -18,42 +19,47 @@ namespace SmartStore.Services.Plugins
 		/// </summary>
 		public static void Init()
 		{
+			var languageSeoCode = EngineContext.Current.Resolve<IWorkContext>().GetDefaultLanguageSeoCode();
+
 			// TODO: remove use sandbox flag!
-			LicenseChecker.Init(Path.Combine(CommonHelper.MapPath("~/App_Data/"), "Licensing.key"), true);
+			LicenseChecker.Init(Path.Combine(CommonHelper.MapPath("~/App_Data/"), "Licensing.key"), true, languageSeoCode);
 		}
 
 		/// <summary>
 		/// Activates a license key
 		/// </summary>
-		/// <param name="systemName">Plugin system name</param>
+		/// <param name="descriptor">Plugin descriptor</param>
 		/// <param name="key">License key</param>
 		/// <param name="storeId">Store identifier</param>
 		/// <param name="storeUrl">Store url</param>
-		/// <param name="failureMessage">Failure message if any</param>
 		/// <returns>True: Succeeded or skiped, False: Failure</returns>
-		public static bool Activate(string systemName, string key, int storeId, string storeUrl, out string failureMessage)
+		public static bool Activate(PluginDescriptor descriptor, License license, string storeUrl, ICommonServices commonService)
 		{
-			failureMessage = null;
+			var licensable = descriptor.Instance() as ILicensable;
 
-			var result = LicenseChecker.Activate(key, storeUrl);
+			var data = new LicenseCheckerData
+			{
+				Key = license.LicenseKey,
+				SystemName = descriptor.SystemName,
+				Version = descriptor.Version.ToString(),
+				HasSingleLicenseForAllVersions = licensable.HasSingleLicenseForAllVersions
+			};
+
+			if (!licensable.HasSingleLicenseForAllStores)
+				data.Url = storeUrl;
+
+			var result = LicenseChecker.Activate(data);
 
 			if (result.Success)
 			{
-				var storageService = EngineContext.Current.Resolve<ILicenseStorageService>();
-
-				storageService.InsertLicense(new License
-				{
-					LicenseKey = key,
-					SystemName = systemName,
-					ActivatedOnUtc = DateTime.UtcNow,
-					StoreId = storeId
-				});
-
-				return true;
+				commonService.Notifier.Success(new LocalizedString(commonService.Localization.GetResource("Admin.Configuration.Plugins.LicenseActivated")));
+			}
+			else
+			{
+				commonService.Notifier.Add(result.IsFailureWarning ? NotifyType.Warning : NotifyType.Error, new LocalizedString(result.ToString()));
 			}
 
-			failureMessage = result.ToString();
-			return false;
+			return (result.Success || result.IsFailureWarning);
 		}
 
 		/// <summary>
@@ -62,50 +68,73 @@ namespace SmartStore.Services.Plugins
 		/// <param name="systemName">Plugin system name</param>
 		/// <param name="storeId">Store identifier</param>
 		/// <param name="failureMessage">Failure message if any</param>
-		public static bool HasActiveLicense(string systemName, int storeId, out string failureMessage)
+		public static bool HasActiveLicense(PluginDescriptor descriptor, int storeId, out string failureMessage,
+			ICommonServices commonService, ILicenseStorageService licenseStorageService, ILogger logger)
 		{
 			failureMessage = null;
-			var engine = EngineContext.Current;
 
 			try
 			{
-				var storageService = engine.Resolve<ILicenseStorageService>();
-				var licenses = storageService.GetAllLicenses();
-				var license = licenses.FirstOrDefault(x => x.SystemName == systemName && (x.StoreId == storeId || x.StoreId == 0));
-
-				if (license == null)
+				if (descriptor.IsLicensable)
 				{
-					failureMessage = engine.Resolve<ILocalizationService>().GetResource("Admin.Plugins.NoLicenseFound").FormatWith(systemName);
+					var licenses = licenseStorageService.GetAllLicenses();
+					var licensable = descriptor.Instance() as ILicensable;
+
+					var license = licenses.FirstOrDefault(x => 
+						x.SystemName == descriptor.SystemName &&
+						(x.StoreId == storeId || x.StoreId == 0)
+					);
+
+					if (license == null)
+					{
+						failureMessage = commonService.Localization.GetResource("Admin.Plugins.NoLicenseFound").FormatWith(descriptor.SystemName);
+						return false;
+					}
+
+					Version version = (licensable.HasSingleLicenseForAllVersions ? null : descriptor.Version);
+
+					var data = new LicenseCheckerData
+					{
+						Key = license.LicenseKey,
+						SystemName = descriptor.SystemName,
+						Version = descriptor.Version.ToString(),
+						HasSingleLicenseForAllVersions = licensable.HasSingleLicenseForAllVersions
+					};
+
+					if (!licensable.HasSingleLicenseForAllStores)
+					{
+						var store = commonService.StoreService.GetStoreById(storeId);
+
+						data.Url = (store == null ? null : store.Url);
+					}
+
+					var result = LicenseChecker.Check(data);
+
+					if (result.Success)
+						return (result.Status == LicenseCheckerStatus.Active);
+					
+					failureMessage = result.ToString();
 					return false;
 				}
-
-				var store = engine.Resolve<IStoreService>().GetStoreById(storeId);
-				string storeUrl = (store == null ? null : store.Url);
-
-				var result = LicenseChecker.Check(license.LicenseKey, storeUrl);
-
-				if (!result.Success)
-					failureMessage = result.ToString();
-
-				return (result.Status == LicenseCheckerStatus.Active);
 			}
 			catch (Exception exc)
 			{
-				engine.Resolve<ILogger>().Error(exc.Message, exc);
+				logger.Error(exc.Message, exc);
 			}
-
 			return true;	// do not bother merchant
 		}
 
 		/// <summary>
 		/// Checks for a license with active status against license checker component
 		/// </summary>
-		/// <param name="systemName">Plugin system name</param>
+		/// <param name="descriptor">Plugin descriptor</param>
 		/// <param name="storeId">Store identifier</param>
-		public static bool HasActiveLicense(string systemName, int storeId)
+		public static bool HasActiveLicense(PluginDescriptor descriptor, int storeId,
+			ICommonServices commonService, ILicenseStorageService licenseStorageService, ILogger logger)
 		{
 			string failureMessage;
-			return HasActiveLicense(systemName, storeId, out failureMessage);
+
+			return HasActiveLicense(descriptor, storeId, out failureMessage, commonService, licenseStorageService, logger);
 		}
 	}
 }

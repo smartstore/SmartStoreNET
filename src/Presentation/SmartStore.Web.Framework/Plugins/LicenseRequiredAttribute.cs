@@ -13,13 +13,10 @@ namespace SmartStore.Web.Framework.Plugins
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited = true, AllowMultiple = true)]
 	public class LicenseRequiredAttribute : ActionFilterAttribute
 	{
-		public Lazy<ICommonServices> CommonService { get; set; }
-		public Lazy<IPluginFinder> PluginFinder { get; set; }
-
-		/// <summary>
-		/// The system name of the plugin.
-		/// </summary>
-		public string SystemName { get; set; }
+		public ICommonServices CommonService { get; set; }
+		public IPluginFinder PluginFinder { get; set; }
+		public ILicenseStorageService LicenseStorageService { get; set; }
+		public ILogger Logger { get; set; }
 
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
@@ -33,27 +30,20 @@ namespace SmartStore.Web.Framework.Plugins
 			if (request == null)
 				return;
 
-			if (SystemName.IsEmpty())
-			{
-				var assembly = filterContext.Controller.GetType().Assembly;
-				var descriptor = PluginFinder.Value.GetPluginDescriptorByAssembly(assembly);
-				if (descriptor != null)
-					SystemName = descriptor.SystemName;
-			}
-
-			if (SystemName.IsEmpty())
-				throw new SmartException("SystemName is required for LicenseRequiredAttribute.");
+			var assembly = filterContext.Controller.GetType().Assembly;
+			var descriptor = PluginFinder.GetPluginDescriptorByAssembly(assembly);
+			var storeId = CommonService.StoreContext.CurrentStore.Id;
 
 			string failureMessage;
 
-			if (!LicenseCheckerHelper.HasActiveLicense(SystemName, 0, out failureMessage))
+			if (!LicenseCheckerHelper.HasActiveLicense(descriptor, storeId, out failureMessage, CommonService, LicenseStorageService, Logger))
 			{
 				string controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;
 				string actionName = filterContext.ActionDescriptor.ActionName;
 
 				if (request.IsAjaxRequest())
 				{
-					CommonService.Value.Notifier.Add(NotifyType.Error, new LocalizedString(failureMessage));
+					CommonService.Notifier.Add(NotifyType.Error, new LocalizedString(failureMessage));
 
 					filterContext.Result = new JsonResult
 					{
@@ -71,7 +61,7 @@ namespace SmartStore.Web.Framework.Plugins
 				{
 					var dic = new Dictionary<string, object>
 					{
-						{ "SystemName", SystemName },
+						{ "SystemName", descriptor.SystemName },
 						{ "ControllerName", controllerName },
 						{ "ActionName", actionName },
 						{ "IsChildAction", filterContext.IsChildAction },

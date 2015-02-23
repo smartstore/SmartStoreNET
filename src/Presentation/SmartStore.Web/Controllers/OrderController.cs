@@ -657,7 +657,14 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsNonExistentOrder(Order order)
 		{
-			return order == null || order.Deleted || (order.StoreId != 0 && order.StoreId != _services.StoreContext.CurrentStore.Id);
+			var flag = order == null || order.Deleted;
+
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
+			{
+				flag = flag || (order.StoreId != 0 && order.StoreId != _services.StoreContext.CurrentStore.Id);
+			}
+
+			return flag;
 		}
 
 		private bool IsUnauthorizedOrder(Order order)

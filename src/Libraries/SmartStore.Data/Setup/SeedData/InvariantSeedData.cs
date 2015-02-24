@@ -8274,7 +8274,7 @@ namespace SmartStore.Data.Setup
 
 			productBundlePs3AssassinCreed.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-PS3AssassinsCreedBundle.jpg"), "image/jpeg", GetSeName(productBundlePs3AssassinCreed.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-PS3AssassinsCreedBundle.png"), "image/png", GetSeName(productBundlePs3AssassinCreed.Name)),
 				DisplayOrder = 1
 			});
 

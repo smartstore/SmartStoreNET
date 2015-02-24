@@ -158,6 +158,9 @@ namespace SmartStore.Admin.Controllers
 			PrepareStoresMappingModel(model, null, false);
             //locales
             AddLocales(_languageService, model.Locales);
+
+            model.TitleTag = "h1";
+
             return View(model);
         }
 

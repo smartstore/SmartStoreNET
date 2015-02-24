@@ -48,6 +48,12 @@ namespace SmartStore.Web.Controllers
             if (topic == null)
                 return null;
 
+            var titleTag = "h3";
+            if(topic.TitleTag != null)
+                titleTag = topic.TitleTag;
+            else if (!topic.RenderAsWidget) 
+                 titleTag = "h1";
+
             var model = new TopicModel()
             {
                 Id = topic.Id,
@@ -59,7 +65,7 @@ namespace SmartStore.Web.Controllers
                 MetaKeywords = topic.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = topic.GetLocalized(x => x.MetaDescription),
                 MetaTitle = topic.GetLocalized(x => x.MetaTitle),
-                TitleTag = topic.TitleTag ?? "h3",
+                TitleTag = titleTag,
             };
             return model;
         }

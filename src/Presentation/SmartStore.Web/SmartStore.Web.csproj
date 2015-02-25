@@ -942,6 +942,9 @@
     <Content Include="Content\editors\ckeditor\plugins\scayt\README.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\LICENSE.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\README.md" />
+    <Content Include="Config\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />
@@ -1828,11 +1831,11 @@
     <Content Include="Views\Boards\_CreateUpdateTopic.Mobile.cshtml" />
     <Content Include="Views\Boards\_CreateUpdatePost.Mobile.cshtml" />
     <Content Include="Views\Common\ConfigButton.Mobile.cshtml" />
-    <Content Include="Views\Common\Config.Mobile.cshtml" />
+    <Content Include="Views\Common\Settings.Mobile.cshtml" />
     <Content Include="Views\Common\LanguageSelector.Mobile.cshtml" />
     <Content Include="Views\Common\TaxTypeSelector.Mobile.cshtml" />
     <Content Include="Views\Common\CurrencySelector.Mobile.cshtml" />
-    <Content Include="Views\Common\Config.cshtml" />
+    <Content Include="Views\Common\Settings.cshtml" />
     <Content Include="Views\Customer\MyAccount.cshtml" />
     <Content Include="Views\Shared\_Notifications.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />

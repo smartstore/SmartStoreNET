@@ -440,7 +440,8 @@ namespace SmartStore.Web.Controllers
             else
                 return Content("");
         }
-        public ActionResult Config()
+
+        public ActionResult Settings()
         {
             return View();
         }
@@ -845,7 +846,10 @@ namespace SmartStore.Web.Controllers
                 "/topic/authenticate",
                 "/wishlist",
                 "/product/askquestion",
-                "/product/emailafriend"
+                "/product/emailafriend",
+				"/search",
+				"/config",
+				"/settings"
             };
 
 

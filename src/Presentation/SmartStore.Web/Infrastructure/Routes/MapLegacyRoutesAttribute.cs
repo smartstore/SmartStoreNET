@@ -19,6 +19,7 @@ namespace SmartStore.Web.Infrastructure
 		{
 			AddLegacyRoute(@"/productreviews/(?<id>\d+)$", "/product/reviews/${id}", "GET");
 			AddLegacyRoute("/sitemapseo$", "/sitemap.xml", "GET");
+			AddLegacyRoute("/config$", "/settings", "GET");
 		}
 
 		private static void AddLegacyRoute(string path, string newPath, string verb = ".*")

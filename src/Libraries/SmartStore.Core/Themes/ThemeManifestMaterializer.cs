@@ -35,6 +35,7 @@ namespace SmartStore.Core.Themes
             _manifest.PreviewImageUrl = root.GetAttribute("previewImageUrl").NullEmpty() ?? "~/Themes/{0}/preview.png".FormatCurrent(_manifest.ThemeName);
             _manifest.PreviewText = root.GetAttribute("previewText").ToSafe();
             _manifest.Author = root.GetAttribute("author").ToSafe();
+			_manifest.Url = root.GetAttribute("url").ToSafe();
             _manifest.Version = root.GetAttribute("version").ToSafe().HasValue() ? root.GetAttribute("version") : "1.0";
 
             _manifest.Selects = MaterializeSelects();

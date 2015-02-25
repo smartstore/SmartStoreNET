@@ -161,6 +161,9 @@ namespace SmartStore.Core.Plugins
                     case "Author":
                         descriptor.Author = value;
                         break;
+					case "Url":
+						descriptor.Url = value;
+						break;
                     case "DisplayOrder":
                         {
                             int displayOrder;
@@ -219,6 +222,7 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("Version", plugin.Version.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("MinAppVersion", string.Join(",", plugin.MinAppVersion)));
             keyValues.Add(new KeyValuePair<string, string>("Author", plugin.Author));
+			keyValues.Add(new KeyValuePair<string, string>("Url", plugin.Url));
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));
 			keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));

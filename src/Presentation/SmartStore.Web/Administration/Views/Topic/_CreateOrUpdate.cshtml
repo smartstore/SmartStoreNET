@@ -13,7 +13,10 @@
     	toggleRenderAsWidget();
 
     	$("#@Html.FieldIdFor(model => model.WidgetWrapContent)").on('click', toggleWidgetWrapContent);
-    	toggleWidgetWrapContent();
+        toggleWidgetWrapContent();
+
+        $("#@Html.FieldIdFor(model => model.WidgetShowTitle)").on('click', toggleTitleTag);
+        toggleTitleTag();
     });
 
     function togglePassword() {
@@ -48,6 +51,15 @@
 			$('#pnlWidgetBordered').hide();
 		}
 	}
+
+    function toggleTitleTag() {
+        if ($('#@Html.FieldIdFor(model => model.WidgetShowTitle)').is(':checked')) {
+            $('#pnlTitleTag').show();
+        }
+        else {
+            $('#pnlTitleTag').hide();
+        }
+    }
 
 </script>
 @Html.HiddenFor(model => model.Id)
@@ -160,7 +172,7 @@
                 @Html.ValidationMessageFor(model => model.WidgetShowTitle)
             </td>
         </tr>
-        <tr id="pnlWidgetZone">
+        <tr id="pnlTitleTag">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.TitleTag)
             </td>

@@ -8,47 +8,53 @@ using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Seo
 {
-    /// <summary>
-    /// Represents a base sitemap generator
-    /// </summary>
-    public abstract partial class BaseSitemapGenerator : ISitemapGenerator
-    {
-        #region Fields
+	/// <summary>
+	/// Represents a base sitemap generator
+	/// </summary>
+	public abstract partial class BaseSitemapGenerator : ISitemapGenerator
+	{
+		#region Fields
 
-        private const string DateFormat = @"yyyy-MM-dd";
-        private XmlTextWriter _writer;
+		private const string DateFormat = @"yyyy-MM-dd";
+		private XmlTextWriter _writer;
 
-        #endregion
+		#endregion
 
-        #region Utilities
+		#region Utilities
 
 		protected abstract void GenerateUrlNodes(UrlHelper urlHelper);
 
-        protected void WriteUrlLocation(string url, UpdateFrequency updateFrequency, DateTime lastUpdated)
-        {
-            _writer.WriteStartElement("url");
-            string loc = XmlHelper.XmlEncode(url);
-            _writer.WriteElementString("loc", loc);
-            //_writer.WriteElementString("changefreq", updateFrequency.ToString().ToLowerInvariant());
-            _writer.WriteElementString("lastmod", lastUpdated.ToString(DateFormat));
-            _writer.WriteEndElement();
-        }
+		protected void WriteUrlLocation(string url, UpdateFrequency updateFrequency, DateTime lastUpdated)
+		{
+			if (url.IsEmpty())
+				return;
 
-        #endregion
+			string loc = XmlHelper.XmlEncode(url);
+			if (url.IsEmpty())
+				return;
 
-        #region Methods
+			_writer.WriteStartElement("url");
+			_writer.WriteElementString("loc", loc);
+			//_writer.WriteElementString("changefreq", updateFrequency.ToString().ToLowerInvariant());
+			_writer.WriteElementString("lastmod", lastUpdated.ToString(DateFormat));
+			_writer.WriteEndElement();
+		}
+
+		#endregion
+
+		#region Methods
 
 		public string Generate(UrlHelper urlHelper)
-        {
-            using (var stream = new MemoryStream())
-            {
+		{
+			using (var stream = new MemoryStream())
+			{
 				Generate(urlHelper, stream);
-                return Encoding.UTF8.GetString(stream.ToArray());
-            }
-        }
+				return Encoding.UTF8.GetString(stream.ToArray());
+			}
+		}
 
-        public void Generate(UrlHelper urlHelper, Stream stream)
-        {
+		public void Generate(UrlHelper urlHelper, Stream stream)
+		{
 			using (var scope = new DbContextScope(autoDetectChanges: false, forceNoTracking: true))
 			{
 				_writer = new XmlTextWriter(stream, Encoding.UTF8);
@@ -64,9 +70,9 @@ namespace SmartStore.Services.Seo
 				_writer.WriteEndElement();
 				_writer.Close();
 			}
-        }
+		}
 
-        #endregion
+		#endregion
 
-    }
+	}
 }

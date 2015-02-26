@@ -7,18 +7,17 @@ using SmartStore.Admin.Models.Plugins;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Plugins;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
+using SmartStore.Licensing.Checker;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Cms;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Plugins;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
@@ -43,7 +42,6 @@ namespace SmartStore.Admin.Controllers
         private readonly WidgetSettings _widgetSettings;
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
-		private readonly ILicenseStorageService _licenseStorageService;
 		private readonly ICommonServices _commonService;
 
 	    #endregion
@@ -60,7 +58,6 @@ namespace SmartStore.Admin.Controllers
             WidgetSettings widgetSettings,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
-			ILicenseStorageService licenseStorageService,
 			ICommonServices commonService)
 		{
             this._pluginFinder = pluginFinder;
@@ -73,7 +70,6 @@ namespace SmartStore.Admin.Controllers
             this._widgetSettings = widgetSettings;
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
-			this._licenseStorageService = licenseStorageService;
 			this._commonService = commonService;
 
 			T = NullLocalizer.Instance;
@@ -136,11 +132,11 @@ namespace SmartStore.Admin.Controllers
 
 				if (pluginDescriptor.IsLicensable)
 				{
-					var licenses = _licenseStorageService.GetAllLicenses();
+					var licenses = LicenseChecker.GetLicenseData();
 
 					// we always show license button to serve ability to delete a license
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
-					model.IsLicensed = (licenses.FirstOrDefault(x => x.SystemName == pluginDescriptor.SystemName) != null);
+					model.IsLicensed = (licenses.FirstOrDefault(x => x.Key.Item1 == pluginDescriptor.SystemName).Value != null);
 				}
             }
             return model;
@@ -335,7 +331,6 @@ namespace SmartStore.Admin.Controllers
 
 			var licensable = descriptor.Instance() as ILicensable;
 			var stores = _commonService.StoreService.GetAllStores();
-			var licenses = _licenseStorageService.GetAllLicenses();
 
 			var model = new LicensePluginModel
 			{
@@ -345,9 +340,11 @@ namespace SmartStore.Admin.Controllers
 
 			if (licensable.HasSingleLicenseForAllStores)
 			{
+				var license = LicenseChecker.GetLicenseData(systemName, "");
+
 				model.Licenses.Add(new LicensePluginModel.LicenseModel
 				{
-					LicenseKey = licenses.Where(x => x.SystemName == systemName && x.StoreId == 0).Select(x => x.LicenseKey).FirstOrDefault(),
+					LicenseKey = (license == null ? null : license.LicenseKey),
 					StoreId = 0
 				});
 			}
@@ -355,7 +352,9 @@ namespace SmartStore.Admin.Controllers
 			{
 				foreach (var store in stores)
 				{
-					var key = licenses.Where(x => x.SystemName == systemName && x.StoreId == store.Id).Select(x => x.LicenseKey).FirstOrDefault();
+					var license = LicenseChecker.GetLicenseData(systemName, store.Url);
+					string key = (license == null ? null : license.LicenseKey);
+
 					model.Licenses.Add(new LicensePluginModel.LicenseModel()
 					{
 						LicenseKey = key,
@@ -380,33 +379,31 @@ namespace SmartStore.Admin.Controllers
 			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
 				return HttpNotFound();
 
-			var licenses = _licenseStorageService.GetAllLicenses();
+			var licenses = LicenseChecker.GetLicenseData();
 
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = licenses.FirstOrDefault(x => x.SystemName == systemName && x.LicenseKey == item.OldLicenseKey);
+				var existingLicense = licenses.FirstOrDefault(x => x.Key.Item1 == systemName && x.Value != null && x.Value.LicenseKey == item.OldLicenseKey).Value;
 
 				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
-					_licenseStorageService.DeleteLicense(existingLicense);
+					LicenseChecker.RemoveLicense(existingLicense);
 
 				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.LicenseKey == item.LicenseKey))
 					continue;
 
-				var license = new License
-				{
-					LicenseKey = item.LicenseKey,
-					SystemName = descriptor.SystemName,
-					MajorVersion = descriptor.Version.Major,
-					StoreId = item.StoreId,
-					ActivatedOnUtc = DateTime.UtcNow
-				};
+				var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);
 
-				if (LicenseCheckerHelper.Activate(descriptor, license, item.StoreUrl, _commonService))
+				if (result.Success)
 				{
-					_licenseStorageService.InsertLicense(license);
+					NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
 				}
 				else
 				{
+					if (result.IsFailureWarning)
+						NotifyWarning(result.ToString());
+					else
+						NotifyError(result.ToString());
+
 					return RedirectToAction("List");
 				}
 			}

@@ -91,6 +91,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\bin\SmartStore.Licensing.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.ServiceModel" />
@@ -1272,4 +1276,7 @@
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>xcopy /D /y /s /r "$(SolutionDir)..\lib\SmartStore.Licensing\*.*" "$(TargetDir)"</PreBuildEvent>
+  </PropertyGroup>
 </Project>

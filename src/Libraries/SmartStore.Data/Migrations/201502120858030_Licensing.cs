@@ -8,23 +8,10 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.License",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-						LicenseKey = c.String(nullable: false, maxLength: 400),
-                        SystemName = c.String(nullable: false, maxLength: 400),
-						MajorVersion = c.Int(nullable: false),
-                        StoreId = c.Int(nullable: false),
-						ActivatedOnUtc = c.DateTime()
-                    })
-                .PrimaryKey(t => t.Id);            
         }
         
         public override void Down()
         {
-            DropTable("dbo.License");
         }
 
 		public bool RollbackOnFailure
@@ -64,10 +51,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.AddOnLicensing",
 				"Add-on licensing",
 				"Add-on Lizenzierung");
-
-			builder.AddOrUpdate("Admin.Plugins.NoLicenseFound",
-				"No active license has been found for {0}. Please click 'License' in the plugin list and enter your license key.",
-				"Es wurde keine aktive Lizenz für {0} gefunden. Bitte klicken Sie in der Plugin-Liste auf 'Lizenzieren' und geben Sie Ihren Lizenzschlüssel ein.");
 		}
     }
 }

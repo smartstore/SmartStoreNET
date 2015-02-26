@@ -1057,8 +1057,6 @@
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
     <Content Include="favicon.readme.txt" />
-    <Content Include="Media\default-avatar.jpg" />
-    <Content Include="Media\default-image.jpg" />
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Media\Uploaded\placeholder.txt" />
     <Content Include="Refresh.html" />

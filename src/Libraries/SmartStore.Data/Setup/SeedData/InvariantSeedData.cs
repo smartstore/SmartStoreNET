@@ -4745,7 +4745,7 @@ namespace SmartStore.Data.Setup
 		{
 			var entities = new List<ScheduleTask>
 			{
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Send emails",
 					Seconds = 60,
@@ -4753,7 +4753,7 @@ namespace SmartStore.Data.Setup
 					Enabled = true,
 					StopOnError = false,
 				},
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Keep alive",
 					Seconds = 300,
@@ -4761,7 +4761,7 @@ namespace SmartStore.Data.Setup
 					Enabled = true,
 					StopOnError = false,
 				},
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Delete guests",
 					Seconds = 600,
@@ -4769,7 +4769,7 @@ namespace SmartStore.Data.Setup
 					Enabled = true,
 					StopOnError = false,
 				},
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Delete logs",
 					Seconds = 86400, // 1 day
@@ -4777,7 +4777,7 @@ namespace SmartStore.Data.Setup
 					Enabled = true,
 					StopOnError = false,
 				},
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Clear cache",
 					Seconds = 600,
@@ -4785,7 +4785,7 @@ namespace SmartStore.Data.Setup
 					Enabled = false,
 					StopOnError = false,
 				},
-				new ScheduleTask()
+				new ScheduleTask
 				{
 					Name = "Update currency exchange rates",
 					Seconds = 900,

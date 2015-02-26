@@ -85,7 +85,7 @@ namespace SmartStore.Services.Logging
 			{
 				_dbContext.ExecuteSqlCommand("TRUNCATE TABLE [Log]");
 			}
-			catch (Exception)
+			catch
 			{
 				try
 				{
@@ -95,20 +95,29 @@ namespace SmartStore.Services.Logging
 							break;
 					}
 				}
-				catch (Exception) { }
+				catch { }
 
 				try
 				{
 					_dbContext.ExecuteSqlCommand("DBCC CHECKIDENT('Log', RESEED, 0)");
 				}
-				catch (Exception)
+				catch
 				{
 					try
 					{
 						_dbContext.ExecuteSqlCommand("Alter Table [Log] Alter Column [Id] Identity(1,1)");
 					}
-					catch (Exception) { }
+					catch{ }
 				}
+			}
+
+			if (DataSettings.Current.IsSqlServer)
+			{
+				try
+				{
+					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+				}
+				catch { }
 			}
         }
 
@@ -123,8 +132,13 @@ namespace SmartStore.Services.Logging
 					if (_dbContext.ExecuteSqlCommand(sqlDelete, false, null, _deleteNumberOfEntries, (int)logLevel, toUtc) < _deleteNumberOfEntries)
 						break;
 				}
+
+				if (DataSettings.Current.IsSqlServer)
+				{
+					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+				}
 			}
-			catch (Exception) { }
+			catch { }
 		}
 
         /// <summary>
@@ -137,8 +151,7 @@ namespace SmartStore.Services.Logging
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Log item collection</returns>
-        public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc,
-			string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
+        public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
         {
             var query = _logRepository.Table;
             

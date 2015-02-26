@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
 using System.Security;
@@ -11,6 +12,7 @@ namespace SmartStore.Core.IO
     
     public static class MimeTypes
     {
+		private static readonly ConcurrentDictionary<string, string> _mimeMap = new ConcurrentDictionary<string, string>(StringComparer.OrdinalIgnoreCase);
 
         public static string MapNameToMimeType(string fileNameOrExtension)
         {
@@ -18,7 +20,7 @@ namespace SmartStore.Core.IO
         }
 
         /// <summary>
-        /// Returns the (dotless) extensions for a mime type
+        /// Returns the (dotless) extension for a mime type
         /// </summary>
         /// <param name="mimeType">The mime type</param>
         /// <returns>The corresponding file extension (without dot)</returns>
@@ -27,35 +29,37 @@ namespace SmartStore.Core.IO
             if (mimeType.IsEmpty())
                 return null;
 
-            string result = null;
+			return _mimeMap.GetOrAdd(mimeType, k => {
+				string result = null;
 
-            try
-            {
-				using (var key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false))
+				try
 				{
-					object value = key != null ? key.GetValue("Extension", null) : null;
-					result = value != null ? value.ToString().Trim('.') : null;
+					using (var key = Registry.ClassesRoot.OpenSubKey(@"MIME\Database\Content Type\" + mimeType, false))
+					{
+						object value = key != null ? key.GetValue("Extension", null) : null;
+						result = value != null ? value.ToString().Trim('.') : null;
+					}
 				}
-            }
-            catch (SecurityException)
-            {
-                string[] parts = mimeType.Split('/');
-                result = parts[parts.Length - 1];
-                switch (result)
-                {
-                    case "pjpeg":
-                        result = "jpg";
-                        break;
-                    case "x-png":
-                        result = "png";
-                        break;
-                    case "x-icon":
-                        result = "ico";
-                        break;
-                }
-            }
+				catch (SecurityException)
+				{
+					string[] parts = mimeType.Split('/');
+					result = parts[parts.Length - 1];
+					switch (result)
+					{
+						case "pjpeg":
+							result = "jpg";
+							break;
+						case "x-png":
+							result = "png";
+							break;
+						case "x-icon":
+							result = "ico";
+							break;
+					}
+				}
 
-            return result;
+				return result;
+			});
         }
 
     }

@@ -17,6 +17,7 @@ using SmartStore.Services.Seo;
 using ImageResizer;
 using ImageResizer.Configuration;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Text;
 using SmartStore.Utilities;
 
@@ -46,6 +47,9 @@ namespace SmartStore.Services.Media
         private readonly MediaSettings _mediaSettings;
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
+
+		private string _mediaPath;
+		private string _imagesPath;
 
         #endregion
 
@@ -312,15 +316,23 @@ namespace SmartStore.Services.Media
         /// <returns>Picture binary</returns>
         protected virtual byte[] LoadPictureFromFile(int pictureId, string mimeType)
         {
-            string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
-            string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
-            var filePath = GetPictureLocalPath(fileName);
-            if (!File.Exists(filePath))
-            {
-                return new byte[0];
-            }
-            return File.ReadAllBytes(filePath);
+			string filePath;
+			return LoadPictureFromFile(pictureId, mimeType, out filePath);
         }
+
+		private byte[] LoadPictureFromFile(int pictureId, string mimeType, out string filePath)
+		{
+			filePath = null;
+			
+			string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
+			string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
+			filePath = GetPictureLocalPath(fileName);
+			if (!File.Exists(filePath))
+			{
+				return new byte[0];
+			}
+			return File.ReadAllBytes(filePath);
+		}
 
         /// <summary>
         /// Gets the loaded picture binary depending on picture storage settings
@@ -489,15 +501,15 @@ namespace SmartStore.Services.Media
         /// <returns>Local picture path</returns>
         protected virtual string GetPictureLocalPath(string fileName)
         {
-            var imagesDirectoryPath = _webHelper.MapPath("~/Media/");
-            var filePath = Path.Combine(imagesDirectoryPath, fileName);
+			var path = _mediaPath ?? (_mediaPath = _webHelper.MapPath("~/Media/"));
+            var filePath = Path.Combine(path, fileName);
             return filePath;
         }
 
         protected virtual string GetDefaultPictureLocalPath(string fileName)
         {
-            var dirPath = _webHelper.MapPath("~/Content/Images");
-            var filePath = Path.Combine(dirPath, fileName);
+            var path = _imagesPath ?? (_imagesPath = _webHelper.MapPath("~/Content/Images"));
+            var filePath = Path.Combine(path, fileName);
             return filePath;
         }
 
@@ -704,34 +716,135 @@ namespace SmartStore.Services.Media
             }
             set
             {
-                //check whether it's a new value
+                // check whether the value was changed
                 if (this.StoreInDb != value)
                 {
-                    //save the new setting value
+                    // save the new setting value
                     _settingService.SetSetting<bool>("Media.Images.StoreInDB", value);
 
-                    //update all picture objects
-                    var pictures = this.GetPictures(0, int.MaxValue);
-                    foreach (var picture in pictures)
-                    {
-                        var pictureBinary = LoadPictureBinary(picture, !value);
-
-                        //delete from file system
-                        if (value)
-                            DeletePictureOnFileSystem(picture);
-
-                        //just update a picture (all required logic is in UpdatePicture method)
-                        UpdatePicture(picture.Id,
-                                      pictureBinary,
-                                      picture.MimeType,
-                                      picture.SeoFilename,
-                                      true,
-                                      false);
-                        //we do not validate picture binary here to ensure that no exception ("Parameter is not valid") will be thrown when "moving" pictures
-                    }
+					// move them all
+					MovePictures(value);
                 }
             }
         }
+
+		protected int MovePictures(bool toDb)
+		{
+			// long running operation, therefore some code chunks are redundant here in order to boost performance
+			
+			int i = 0;
+			List<Task> fileDeleteTasks = new List<Task>();
+			var ctx = _pictureRepository.Context;
+
+			_pictureRepository.AutoCommitEnabled = false;
+
+			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			{
+				int pageIndex = 0;
+				IPagedList<Picture> pictures = null;
+
+				do
+				{
+					if (pictures != null)
+					{
+						// detach all entities from previous page to save memory
+						pictures.Each(x => ctx.Detach(x));
+
+						// breathe
+						pictures.Clear();
+						pictures = null;
+					}
+
+					// load max 500 picture entities at once
+					pictures = this.GetPictures(pageIndex, 500);
+					pageIndex++;
+
+					// keeps full paths to picture files that should later be deleted in the background
+					var filesToDelete = new List<string>(500);
+
+					foreach (var picture in pictures)
+					{
+						
+						if (!toDb)
+						{
+							if (picture.PictureBinary.Length > 0)
+							{
+								// save picture as file
+								SavePictureInFile(picture.Id, picture.PictureBinary, picture.MimeType);
+							}
+							// remove picture binary from DB
+							picture.PictureBinary = new byte[0];
+						}
+						else
+						{
+							string filePath = null;
+							// load picture binary from file and set in DB
+							picture.PictureBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
+
+							// delete picture from file system
+							if (filePath.HasValue())
+							{
+								filesToDelete.Add(filePath);
+							}
+						}
+
+						picture.IsNew = true;
+
+						// explicitly attach modified entity to context, because we disabled AutoCommit
+						_pictureRepository.Update(picture);
+
+						i++;
+					}
+
+					if (filesToDelete.Count > 0)
+					{
+						// run a background task for the deletion of files (only when FS > DB)
+						var t = Task.Factory.StartNew(state =>
+						{
+							var files = state as string[];
+							foreach (var path in files)
+							{
+								if (File.Exists(path))
+								{
+									File.Delete(path);
+								}
+							}
+						}, filesToDelete.ToArray());
+
+						fileDeleteTasks.Add(t);
+					}
+
+					// save the current batch to DB
+					ctx.SaveChanges();
+
+					// breathe
+					filesToDelete.Clear();
+					filesToDelete = null;
+
+				} while (pictures.HasNextPage);			
+			}
+
+			// shrink database (only when DB > FS)
+			if (!toDb && DataSettings.Current.IsSqlServer)
+			{
+				try
+				{
+					ctx.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+				}
+				catch { }
+			}
+
+			_pictureRepository.AutoCommitEnabled = true;
+
+			if (fileDeleteTasks.Count > 0)
+			{
+				// wait for all deletion tasks before returning.
+				Task.WaitAll(fileDeleteTasks.ToArray());
+			}
+
+			return i;
+		}
+
         #endregion
     }
 }

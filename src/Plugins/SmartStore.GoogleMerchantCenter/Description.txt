@@ -7,3 +7,4 @@ Author: SmartStore AG
 DisplayOrder: 1
 FileName: SmartStore.GoogleMerchantCenter.dll
 ResourceRootKey: Plugins.Feed.Froogle
+Url: http://community.smartstore.com/index.php?/files/file/37-google-merchant-center-gmc-feed/

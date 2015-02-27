@@ -31,6 +31,7 @@ using System.Data.Entity.Migrations;
 using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -491,6 +492,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
+					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
@@ -500,7 +503,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						this.SettingService,
 						locSettings,
 						NullEventPublisher.Instance,
-						storeMappingService);
+						storeMappingService,
+						storeService,
+						storeContext);
 
 					_locService = new LocalizationService(
 						NullCache.Instance,

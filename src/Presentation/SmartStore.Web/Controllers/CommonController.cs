@@ -164,7 +164,7 @@ namespace SmartStore.Web.Controllers
                 UseImages = _localizationSettings.UseImagesForLanguageSelection
             };
 
-			string defaultSeoCode = _services.WorkContext.GetDefaultLanguageSeoCode();
+			string defaultSeoCode = _languageService.GetDefaultLanguageSeoCode();
 
             foreach (var lang in model.AvailableLanguages)
             {

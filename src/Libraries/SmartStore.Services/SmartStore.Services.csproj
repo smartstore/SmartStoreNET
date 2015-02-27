@@ -412,6 +412,7 @@
     <Compile Include="Seo\SitemapGenerator.cs" />
     <Compile Include="Seo\UpdateFrequency.cs" />
     <Compile Include="Seo\UrlRecordService.cs" />
+    <Compile Include="ServiceCacheConsumer.cs" />
     <Compile Include="Shipping\IShipmentService.cs" />
     <Compile Include="Shipping\ShipmentService.cs" />
     <Compile Include="Shipping\ShippingExtentions.cs" />

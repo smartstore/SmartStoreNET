@@ -251,7 +251,7 @@ namespace SmartStore.Web.Framework
                     string seoCode;
                     if (helper.IsLocalizedUrl(out seoCode))
                     {
-                        if (this.IsPublishedLanguage(seoCode, storeId))
+                        if (_languageService.IsPublishedLanguage(seoCode, storeId))
                         {
                             // the language is found. now we need to save it
                             var langBySeoCode = _languageService.GetLanguageBySeoCode(seoCode);
@@ -267,7 +267,7 @@ namespace SmartStore.Web.Framework
                 }
                 #endregion
 
-                if (_localizationSettings.DetectBrowserUserLanguage && (customerLangId == 0 || !this.IsPublishedLanguage(customerLangId, storeId)))
+				if (_localizationSettings.DetectBrowserUserLanguage && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
                 {
                     #region Get Browser UserLanguage
 
@@ -282,7 +282,7 @@ namespace SmartStore.Web.Framework
                             foreach (var culture in userLangs)
                             {
                                 browserLanguage = _languageService.GetLanguageByCulture(culture);
-								if (browserLanguage != null && this.IsPublishedLanguage(browserLanguage.Id, storeId))
+								if (browserLanguage != null && _languageService.IsPublishedLanguage(browserLanguage.Id, storeId))
                                 {
                                     // the language is found. now we need to save it
                                     if (this.CurrentCustomer != null && customerLangId != browserLanguage.Id)
@@ -300,14 +300,14 @@ namespace SmartStore.Web.Framework
                     #endregion
                 }
 
-                if (customerLangId > 0 && this.IsPublishedLanguage(customerLangId, storeId))
+				if (customerLangId > 0 && _languageService.IsPublishedLanguage(customerLangId, storeId))
                 {
                     _cachedLanguage = _languageService.GetLanguageById(customerLangId);
                     return _cachedLanguage;
                 }
                 
                 // Fallback
-                customerLangId = this.GetDefaultLanguageId(storeId);
+				customerLangId = _languageService.GetDefaultLanguageId(storeId);
                 SetCustomerLanguage(customerLangId, storeId);
 
                 _cachedLanguage = _languageService.GetLanguageById(customerLangId);
@@ -523,102 +523,16 @@ namespace SmartStore.Web.Framework
 			}
 		}
 
-        public bool IsPublishedLanguage(string seoCode, int storeId = 0)
-        {
-            if (storeId <= 0)
-                storeId = _storeContext.CurrentStore.Id;
-            
-            var map = this.GetStoreLanguageMap();
-            if (map.ContainsKey(storeId)) 
-            {
-                return map[storeId].Any(x => x.Item2 == seoCode);
-            }
+		[Obsolete("Use ILanguageService.IsPublishedLanguage() instead")]
+		public bool IsPublishedLanguage(string seoCode, int storeId = 0)
+		{
+			return _languageService.IsPublishedLanguage(seoCode, storeId);
+		}
 
-            return false;
-        }
-
-        internal bool IsPublishedLanguage(int languageId, int storeId = 0)
-        {
-            if (languageId <= 0)
-                return false;
-
-            if (storeId <= 0)
-                storeId = _storeContext.CurrentStore.Id;
-
-            var map = this.GetStoreLanguageMap();
-            if (map.ContainsKey(storeId))
-            {
-                return map[storeId].Any(x => x.Item1 == languageId);
-            }
-
-            return false;
-        }
-
+		[Obsolete("Use ILanguageService.GetDefaultLanguageSeoCode() instead")]
         public string GetDefaultLanguageSeoCode(int storeId = 0)
         {
-            if (storeId <= 0)
-                storeId = _storeContext.CurrentStore.Id;
-
-            var map = this.GetStoreLanguageMap();
-            if (map.ContainsKey(storeId))
-            {
-                return map[storeId].FirstOrDefault().Item2;
-            }
-
-            return null;
-        }
-
-        internal int GetDefaultLanguageId(int storeId = 0)
-        {
-            if (storeId <= 0)
-                storeId = _storeContext.CurrentStore.Id;
-
-            var map = this.GetStoreLanguageMap();
-            if (map.ContainsKey(storeId))
-            {
-                return map[storeId].FirstOrDefault().Item1;
-            }
-
-            return 0;
-        }
-
-        /// <summary>
-        /// Gets a map of active/published store languages
-        /// </summary>
-        /// <returns>A map of store languages where key is the store id and values are tuples of lnguage ids and seo codes</returns>
-        protected virtual Multimap<int, Tuple<int, string>> GetStoreLanguageMap()
-        {
-            var result = _cacheManager.Get(FrameworkCacheConsumer.STORE_LANGUAGE_MAP_KEY, () => {
-                var map = new Multimap<int, Tuple<int, string>>();
-
-                var allStores = _storeService.GetAllStores();
-                foreach (var store in allStores)
-                {
-                    var languages = _languageService.GetAllLanguages(false, store.Id);
-                    if (!languages.Any())
-                    {
-                        // language-less stores aren't allowed but could exist accidentally. Correct this.
-                        var firstStoreLang = _languageService.GetAllLanguages(true, store.Id).FirstOrDefault();
-                        if (firstStoreLang == null)
-                        {
-                            // absolute fallback
-                            firstStoreLang = _languageService.GetAllLanguages(true).FirstOrDefault();
-                        }
-                        map.Add(store.Id, new Tuple<int, string>(firstStoreLang.Id, firstStoreLang.UniqueSeoCode));
-                    }
-                    else
-                    {
-                        foreach (var lang in languages)
-                        {
-                            map.Add(store.Id, new Tuple<int, string>(lang.Id, lang.UniqueSeoCode));
-                        }
-                    }
-                }
-
-                return map;
-            }, 1440 /* 24 hrs */);
-
-            return result;
+			return _languageService.GetDefaultLanguageSeoCode(storeId);
         }
 
     }

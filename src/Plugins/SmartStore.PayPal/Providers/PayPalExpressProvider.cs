@@ -119,6 +119,41 @@ namespace SmartStore.PayPal
 
         }
 
+        public override CapturePaymentResult Capture(CapturePaymentRequest capturePaymentRequest)
+        {
+            var result = new DoCaptureResponseType();
+            var settings = CommonServices.Settings.LoadSetting<PayPalExpressPaymentSettings>(capturePaymentRequest.Order.StoreId);
+
+            // build the request
+            var req = new DoCaptureReq
+            {
+                DoCaptureRequest = new DoCaptureRequestType()
+            };
+
+            //execute request
+            using (var service = new PayPalAPIAASoapBinding())
+            {
+                service.Url = PayPalHelper.GetPaypalServiceUrl(settings);
+                service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
+                result = service.DoCapture(req);
+            }
+
+            var capturePaymentResult = new CapturePaymentResult();
+
+            if (result.Ack == AckCodeType.Success)
+            {
+                capturePaymentResult.CaptureTransactionId = result.DoCaptureResponseDetails.PaymentInfo.TransactionID;
+                capturePaymentResult.CaptureTransactionResult = "Success";
+            }
+            else
+            {
+                capturePaymentResult.CaptureTransactionResult = "Error";
+                capturePaymentResult.Errors.Add(result.Errors.FirstOrDefault().LongMessage);
+            }
+
+            return capturePaymentResult;
+        }
+
         /// <summary>
         /// Process recurring payment
         /// </summary>
@@ -350,9 +385,9 @@ namespace SmartStore.PayPal
                 service.RequesterCredentials = PayPalHelper.GetPaypalApiCredentials(settings);
                 result = service.SetExpressCheckout(req);
             }
+
             
             _httpContext.GetCheckoutState().CustomProperties.Add("PayPalExpressButtonUsed", true);
-
             return result;
         }
 

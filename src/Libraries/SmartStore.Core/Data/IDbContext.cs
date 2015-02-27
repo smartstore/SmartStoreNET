@@ -1,4 +1,6 @@
 ﻿using System.Collections.Generic;
+using System.Data;
+using System.Data.Common;
 using System.Data.Entity;
 using System.Threading.Tasks;
 using SmartStore.Core;
@@ -111,5 +113,18 @@ namespace SmartStore.Core.Data
 		/// <param name="entity">The entity instance</param>
 		/// <returns>true on success, false on failure</returns>
 		bool SetToUnchanged<TEntity>(TEntity entity);
+
+		/// <summary>
+		/// Begins a transaction on the underlying store connection using the specified isolation level 
+		/// </summary>
+		/// <param name="isolationLevel">The database isolation level with which the underlying store transaction will be created</param>
+		/// <returns>A transaction object wrapping access to the underlying store's transaction object</returns>
+		ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified);
+
+		/// <summary>
+		/// Enables the user to pass in a database transaction created outside of the Database object if you want the Entity Framework to execute commands within that external transaction. Alternatively, pass in null to clear the framework's knowledge of that transaction.
+		/// </summary>
+		/// <param name="transaction">the external transaction</param>
+		void UseTransaction(DbTransaction transaction);
     }
 }

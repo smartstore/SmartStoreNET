@@ -154,6 +154,7 @@
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />

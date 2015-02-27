@@ -47,6 +47,7 @@ namespace SmartStore.Services.Media
         private readonly MediaSettings _mediaSettings;
         private readonly IImageResizerService _imageResizerService;
         private readonly IImageCache _imageCache;
+		private readonly INotifier _notifier;
 
 		private string _mediaPath;
 		private string _imagesPath;
@@ -74,7 +75,8 @@ namespace SmartStore.Services.Media
             IEventPublisher eventPublisher,
             MediaSettings mediaSettings,
             IImageResizerService imageResizerService,
-            IImageCache imageCache)
+            IImageCache imageCache,
+			INotifier notifier)
         {
             this._pictureRepository = pictureRepository;
             this._productPictureRepository = productPictureRepository;
@@ -85,6 +87,7 @@ namespace SmartStore.Services.Media
             this._mediaSettings = mediaSettings;
             this._imageResizerService = imageResizerService;
             this._imageCache = imageCache;
+			this._notifier = notifier;
         }
 
         #endregion
@@ -99,10 +102,18 @@ namespace SmartStore.Services.Media
         /// <param name="mimeType">MIME type</param>
         protected virtual void SavePictureInFile(int pictureId, byte[] pictureBinary, string mimeType)
         {
-            string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
-            string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
-            File.WriteAllBytes(GetPictureLocalPath(fileName), pictureBinary);
+			string filePath;
+			SavePictureInFile(pictureId, pictureBinary, mimeType, out filePath);
         }
+
+		private void SavePictureInFile(int pictureId, byte[] pictureBinary, string mimeType, out string filePath)
+		{
+			filePath = null;
+			string lastPart = MimeTypes.MapMimeTypeToExtension(mimeType);
+			string fileName = string.Format("{0}-0.{1}", pictureId.ToString("0000000"), lastPart);
+			filePath = GetPictureLocalPath(fileName);
+			File.WriteAllBytes(filePath, pictureBinary);
+		}
 
         /// <summary>
         /// Delete a picture on file system
@@ -291,7 +302,6 @@ namespace SmartStore.Services.Media
                                 using (var resultStream = _imageResizerService.ResizeImage(sourceStream, targetSize, targetSize, _mediaSettings.DefaultImageQuality))
                                 {
                                     _imageCache.AddImageToCache(cachedImage, resultStream.GetBuffer());
-                                    //File.WriteAllBytes(cachedImage.LocalPath, resultStream.GetBuffer());
                                 }
                             }
                         }
@@ -731,115 +741,124 @@ namespace SmartStore.Services.Media
 		protected int MovePictures(bool toDb)
 		{
 			// long running operation, therefore some code chunks are redundant here in order to boost performance
-			
-			int i = 0;
-			List<Task> fileDeleteTasks = new List<Task>();
+
+			// a list of ALL file paths that were either deleted or created
+			var affectedFiles = new List<string>(1000);
+
 			var ctx = _pictureRepository.Context;
 
 			_pictureRepository.AutoCommitEnabled = false;
 
+			var failed = false;
+
+			int i = 0;
+
 			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-				int pageIndex = 0;
-				IPagedList<Picture> pictures = null;
-
-				do
+				using (var tx = ctx.BeginTransaction())
 				{
-					if (pictures != null)
+					// we are about to process data in chunks but want to commit ALL at once when ALL chunks have been processed successfully.
+					try
 					{
-						// detach all entities from previous page to save memory
-						pictures.Each(x => ctx.Detach(x));
+						int pageIndex = 0;
+						IPagedList<Picture> pictures = null;
 
-						// breathe
-						pictures.Clear();
-						pictures = null;
-					}
-
-					// load max 500 picture entities at once
-					pictures = this.GetPictures(pageIndex, 500);
-					pageIndex++;
-
-					// keeps full paths to picture files that should later be deleted in the background
-					var filesToDelete = new List<string>(500);
-
-					foreach (var picture in pictures)
-					{
-						
-						if (!toDb)
+						do
 						{
-							if (picture.PictureBinary.Length > 0)
+							if (pictures != null)
 							{
-								// save picture as file
-								SavePictureInFile(picture.Id, picture.PictureBinary, picture.MimeType);
+								// detach all entities from previous page to save memory
+								pictures.Each(x => ctx.Detach(x));
+
+								// breathe
+								pictures.Clear();
+								pictures = null;
 							}
-							// remove picture binary from DB
-							picture.PictureBinary = new byte[0];
-						}
-						else
-						{
-							string filePath = null;
-							// load picture binary from file and set in DB
-							picture.PictureBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
 
-							// delete picture from file system
-							if (filePath.HasValue())
+							// load max 500 picture entities at once
+							pictures = this.GetPictures(pageIndex, 500);
+							pageIndex++;
+
+							foreach (var picture in pictures)
 							{
-								filesToDelete.Add(filePath);
-							}
-						}
+								string filePath = null;
 
-						picture.IsNew = true;
-
-						// explicitly attach modified entity to context, because we disabled AutoCommit
-						_pictureRepository.Update(picture);
-
-						i++;
-					}
-
-					if (filesToDelete.Count > 0)
-					{
-						// run a background task for the deletion of files (only when FS > DB)
-						var t = Task.Factory.StartNew(state =>
-						{
-							var files = state as string[];
-							foreach (var path in files)
-							{
-								if (File.Exists(path))
+								if (!toDb)
 								{
-									File.Delete(path);
+									if (picture.PictureBinary.Length > 0)
+									{
+										// save picture as file
+										SavePictureInFile(picture.Id, picture.PictureBinary, picture.MimeType, out filePath);
+									}
+									// remove picture binary from DB
+									picture.PictureBinary = new byte[0];
 								}
+								else
+								{
+									// load picture binary from file and set in DB
+									picture.PictureBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
+								}
+
+								// remember file path: we must be able to rollback IO operations on transaction failure
+								if (filePath.HasValue())
+								{
+									affectedFiles.Add(filePath);
+								}
+
+								picture.IsNew = true;
+
+								// explicitly attach modified entity to context, because we disabled AutoCommit
+								_pictureRepository.Update(picture);
+
+								i++;
 							}
-						}, filesToDelete.ToArray());
 
-						fileDeleteTasks.Add(t);
+							// save the current batch to DB
+							ctx.SaveChanges();
+
+						} while (pictures.HasNextPage);
+
+						// FIRE!
+						tx.Commit();
 					}
-
-					// save the current batch to DB
-					ctx.SaveChanges();
-
-					// breathe
-					filesToDelete.Clear();
-					filesToDelete = null;
-
-				} while (pictures.HasNextPage);			
-			}
-
-			// shrink database (only when DB > FS)
-			if (!toDb && DataSettings.Current.IsSqlServer)
-			{
-				try
-				{
-					ctx.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
-				}
-				catch { }
+					catch (Exception ex)
+					{
+						failed = true;
+						tx.Rollback();
+						_settingService.SetSetting<bool>("Media.Images.StoreInDB", !toDb);
+						_notifier.Error(ex.Message);
+					}
+				}		
 			}
 
 			_pictureRepository.AutoCommitEnabled = true;
 
-			if (fileDeleteTasks.Count > 0)
+			if (affectedFiles.Count > 0)
 			{
-				// wait for all deletion tasks before returning.
-				Task.WaitAll(fileDeleteTasks.ToArray());
+				if ((toDb && !failed) || (!toDb && failed))
+				{
+					// FS > DB sucessful OR DB > FS failed: delete all physical files
+					// run a background task for the deletion of files (fire & forget)
+					Task.Factory.StartNew(state =>
+					{
+						var files = state as string[];
+						foreach (var path in files)
+						{
+							if (File.Exists(path))
+								File.Delete(path);
+						}
+					}, affectedFiles.ToArray()).ConfigureAwait(false);
+				}
+
+				// shrink database (only when DB > FS and success)
+				if (!toDb && !failed && DataSettings.Current.IsSqlServer)
+				{
+					try
+					{
+						ctx.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+					}
+					catch { }
+				}
 			}
 
 			return i;

@@ -21,6 +21,11 @@ namespace SmartStore.Core.Data
         /// </summary>
         IQueryable<T> TableUntracked { get; }
 
+		/// <summary>
+		/// Provides access to the entities currently being tracked by the context and have not been marked as deleted
+		/// </summary>
+		ICollection<T> Local { get; }
+
         /// <summary>
         /// Creates a new instance of an entity of type {T}
         /// </summary>

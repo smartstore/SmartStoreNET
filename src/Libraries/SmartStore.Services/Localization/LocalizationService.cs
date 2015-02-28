@@ -43,6 +43,7 @@ namespace SmartStore.Services.Localization
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
+		private int _notFoundLogCount = 0;
 		private int? _defaultLanguageId;
 
         #endregion
@@ -338,8 +339,19 @@ namespace SmartStore.Services.Localization
 
             if (String.IsNullOrEmpty(result))
             {
-				//if (logIfNotFound)
-				//	_logger.Warning(string.Format("Resource string ({0}) does not exist. Language ID = {1}", resourceKey, languageId));
+				if (logIfNotFound)
+				{
+					if (_notFoundLogCount < 50)
+					{
+						_logger.Warning(string.Format("Resource string ({0}) does not exist. Language ID = {1}", resourceKey, languageId));
+					}
+					else if (_notFoundLogCount == 50)
+					{
+						_logger.Warning("Too many language resources do not exist (> 50). Stopped logging missing resources to prevent performance drop.");
+					}
+					
+					_notFoundLogCount++;
+				}
                 
                 if (!String.IsNullOrEmpty(defaultValue))
                 {

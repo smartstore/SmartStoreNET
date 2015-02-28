@@ -24,18 +24,12 @@ namespace SmartStore.Services.Logging
         private readonly IDbContext _dbContext;
         private readonly IDataProvider _dataProvider;
 
+		private readonly IList<LogContext> _entries = new List<LogContext>();
+
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="logRepository">Log repository</param>
-        /// <param name="webHelper">Web helper</param>>
-        /// <param name="dbContext">DB context</param>>
-        /// <param name="dataProvider">WeData provider</param>
-        /// <param name="commonSettings">Common settings</param>
         public DefaultLogger(IRepository<Log> logRepository, IWebHelper webHelper, IDbContext dbContext, IDataProvider dataProvider)
         {
             this._logRepository = logRepository;
@@ -48,11 +42,6 @@ namespace SmartStore.Services.Logging
 
         #region Methods
 
-        /// <summary>
-        /// Determines whether a log level is enabled
-        /// </summary>
-        /// <param name="level">Log level</param>
-        /// <returns>Result</returns>
         public virtual bool IsEnabled(LogLevel level)
         {
             switch (level)
@@ -64,10 +53,6 @@ namespace SmartStore.Services.Logging
             }
         }
 
-        /// <summary>
-        /// Deletes a log item
-        /// </summary>
-        /// <param name="log">Log item</param>
         public virtual void DeleteLog(Log log)
         {
             if (log == null)
@@ -76,9 +61,6 @@ namespace SmartStore.Services.Logging
             _logRepository.Delete(log);
         }
 
-        /// <summary>
-        /// Clears a log
-        /// </summary>
         public virtual void ClearLog()
         {
 			try
@@ -141,16 +123,6 @@ namespace SmartStore.Services.Logging
 			catch { }
 		}
 
-        /// <summary>
-        /// Gets all log items
-        /// </summary>
-        /// <param name="fromUtc">Log item creation from; null to load all records</param>
-        /// <param name="toUtc">Log item creation to; null to load all records</param>
-        /// <param name="message">Message</param>
-        /// <param name="logLevel">Log level; null to load all records</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Log item collection</returns>
         public virtual IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency)
         {
             var query = _logRepository.Table;
@@ -177,11 +149,6 @@ namespace SmartStore.Services.Logging
             return log;
         }
 
-        /// <summary>
-        /// Gets a log item
-        /// </summary>
-        /// <param name="logId">Log item identifier</param>
-        /// <returns>Log item</returns>
         public virtual Log GetLogById(int logId)
         {
             if (logId == 0)
@@ -191,11 +158,6 @@ namespace SmartStore.Services.Logging
             return log;
         }
 
-        /// <summary>
-        /// Get log items by identifiers
-        /// </summary>
-        /// <param name="logIds">Log item identifiers</param>
-        /// <returns>Log items</returns>
         public virtual IList<Log> GetLogByIds(int[] logIds)
         {
             if (logIds == null || logIds.Length == 0)
@@ -216,101 +178,9 @@ namespace SmartStore.Services.Logging
             return sortedLogItems;
         }
 
-        /// <summary>
-        /// Inserts a log item
-        /// </summary>
-        /// <param name="context">The log context</param>
-        /// <returns>A log item</returns>
-        public virtual Log InsertLog(LogContext context)
-        {
-			if (context == null || (context.ShortMessage.IsEmpty() && context.FullMessage.IsEmpty()))
-				return null;
-
-			Log log = null;
-
-			try
-			{
-				string shortMessage = context.ShortMessage.NaIfEmpty();
-				string fullMessage = context.FullMessage.EmptyNull();
-				string contentHash = null;
-				string ipAddress = "";
-				string pageUrl = "";
-				string referrerUrl = "";
-
-				try
-				{
-					ipAddress = _webHelper.GetCurrentIpAddress();
-					pageUrl = _webHelper.GetThisPageUrl(true);
-					referrerUrl = _webHelper.GetUrlReferrer();
-				}
-				catch { }
-
-				if (context.HashNotFullMessage || context.HashIpAddress)
-				{
-					contentHash = (shortMessage
-						+ (context.HashNotFullMessage ? "" : fullMessage)
-						+ (context.HashIpAddress ? ipAddress.EmptyNull() : "")
-					).Hash(Encoding.Unicode, true);
-				}
-				else
-				{
-					contentHash = (shortMessage + fullMessage).Hash(Encoding.Unicode, true);
-				}
-
-				log = _logRepository.Table.OrderByDescending(x => x.CreatedOnUtc).FirstOrDefault(x => x.ContentHash == contentHash);
-
-				if (log == null)
-				{
-					log = new Log()
-					{
-						Frequency = 1,
-						LogLevel = context.LogLevel,
-						ShortMessage = shortMessage,
-						FullMessage = fullMessage,
-						IpAddress = ipAddress,
-						Customer = context.Customer,
-						PageUrl = pageUrl,
-						ReferrerUrl = referrerUrl,
-						CreatedOnUtc = DateTime.UtcNow,
-						ContentHash = contentHash
-					};
-
-					_logRepository.Insert(log);
-				}
-				else
-				{
-					if (log.Frequency < 2147483647)
-						log.Frequency = log.Frequency + 1;
-
-					log.LogLevel = context.LogLevel;
-					log.IpAddress = ipAddress;
-					log.Customer = context.Customer;
-					log.PageUrl = pageUrl;
-					log.ReferrerUrl = referrerUrl;
-					log.UpdatedOnUtc = DateTime.UtcNow;
-
-					_logRepository.Update(log);
-				}
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
-			}
-
-			return log;
-        }
-
-		/// <summary>
-		/// Inserts a log item
-		/// </summary>
-		/// <param name="logLevel">Log level</param>
-		/// <param name="shortMessage">The short message</param>
-		/// <param name="fullMessage">The full message</param>
-		/// <param name="customer">The customer to associate log record with</param>
-		/// <returns>A log item</returns>
-		public virtual Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public virtual void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
-			var context = new LogContext()
+			var context = new LogContext
 			{
 				LogLevel = logLevel,
 				ShortMessage = shortMessage,
@@ -318,9 +188,119 @@ namespace SmartStore.Services.Logging
 				Customer = customer
 			};
 
-			return InsertLog(context);
+			InsertLog(context);
+		}
+
+		public virtual void InsertLog(LogContext context)
+        {
+			_entries.Add(context);
+			if (_entries.Count == 50)
+			{
+				Flush();
+			}
+        }
+
+		public void Flush()
+		{
+			if (_entries.Count == 0)
+				return;
+
+			string ipAddress = "";
+			string pageUrl = "";
+			string referrerUrl = "";
+
+			try
+			{
+				ipAddress = _webHelper.GetCurrentIpAddress();
+				pageUrl = _webHelper.GetThisPageUrl(true);
+				referrerUrl = _webHelper.GetUrlReferrer();
+			}
+			catch { }
+
+			_logRepository.AutoCommitEnabled = false;
+
+			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			{
+				foreach (var context in _entries)
+				{
+					if (context.ShortMessage.IsEmpty() && context.FullMessage.IsEmpty())
+						continue;
+
+					Log log = null;
+
+					try
+					{
+						string shortMessage = context.ShortMessage.NaIfEmpty();
+						string fullMessage = context.FullMessage.EmptyNull();
+						string contentHash = null;
+
+						if (context.HashNotFullMessage || context.HashIpAddress)
+						{
+							contentHash = (shortMessage
+								+ (context.HashNotFullMessage ? "" : fullMessage)
+								+ (context.HashIpAddress ? ipAddress.EmptyNull() : "")
+							).Hash(Encoding.Unicode, true);
+						}
+						else
+						{
+							contentHash = (shortMessage + fullMessage).Hash(Encoding.Unicode, true);
+						}
+
+						log = _logRepository.Table.OrderByDescending(x => x.CreatedOnUtc).FirstOrDefault(x => x.ContentHash == contentHash);
+
+						if (log == null)
+						{
+							log = new Log
+							{
+								Frequency = 1,
+								LogLevel = context.LogLevel,
+								ShortMessage = shortMessage,
+								FullMessage = fullMessage,
+								IpAddress = ipAddress,
+								Customer = context.Customer,
+								PageUrl = pageUrl,
+								ReferrerUrl = referrerUrl,
+								CreatedOnUtc = DateTime.UtcNow,
+								ContentHash = contentHash
+							};
+
+							_logRepository.Insert(log);
+						}
+						else
+						{
+							if (log.Frequency < 2147483647)
+								log.Frequency = log.Frequency + 1;
+
+							log.LogLevel = context.LogLevel;
+							log.IpAddress = ipAddress;
+							log.Customer = context.Customer;
+							log.PageUrl = pageUrl;
+							log.ReferrerUrl = referrerUrl;
+							log.UpdatedOnUtc = DateTime.UtcNow;
+
+							_logRepository.Update(log);
+						}
+					}
+					catch (Exception ex)
+					{
+						ex.Dump();
+					}
+				}
+
+				try
+				{
+					// FIRE!
+					_logRepository.Context.SaveChanges();
+				}
+				catch { }
+			}
+
+			_logRepository.AutoCommitEnabled = true;
+
+			_entries.Clear();
 		}
 
         #endregion
-    }
+
+	}
 }

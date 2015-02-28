@@ -3,6 +3,7 @@
 ## SmartStore.NET 2.2
 
 ### New Features
+* Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
 * #428 Implement category option to override global list view type
 * #485 Enable shop admin to change creation date of a blog entry
 * #258 Implement email validation in checkout
@@ -10,8 +11,10 @@
 * Option to determine the maximum amount of filter items
 * Option to determine whether all filter groups should be displayed expanded
 * #459 New field to determine tag for page titles on widget level
+* (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 
 ### Improvements
+* Moving pictures from DB to FS or vice versa is lightning fast now, consumes much lower memory and is encapsulated in a transaction which ensures reliable rollback after failure. Plus the database gets automatically shrinked after moving to FS.
 * Feed plugins: product query now paged to reduce memory payload
 * Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)

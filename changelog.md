@@ -36,6 +36,7 @@
 * Fixed "Adding a relationship with an entity which is in the Deleted state is not allowed" when adding bundles to cart
 * Fixed price calculation of multiple bundles issue
 * Fixed auto add required products for bundle items
+* Fixes #641: Protocol in sitemap should be HTTPS when _ForceSslForAllPages_ is true
 
 
 ## SmartStore.NET 2.1.1

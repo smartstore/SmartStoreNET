@@ -149,7 +149,7 @@ namespace SmartStore.Web.Controllers
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			var model = new ProductDetailsModel()
+			var model = new ProductDetailsModel
 			{
 				Id = product.Id,
 				Name = product.GetLocalized(x => x.Name),

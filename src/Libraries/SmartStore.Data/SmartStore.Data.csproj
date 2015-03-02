@@ -224,6 +224,10 @@
     <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
       <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.cs" />
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.Designer.cs">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -445,6 +449,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
       <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280342294_LocalizedPropertyIndex.resx">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

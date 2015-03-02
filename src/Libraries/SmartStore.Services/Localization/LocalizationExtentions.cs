@@ -25,8 +25,7 @@ namespace SmartStore.Services.Localization
         /// <param name="entity">Entity</param>
         /// <param name="keySelector">Key selector</param>
         /// <returns>Localized property</returns>
-        public static string GetLocalized<T>(this T entity,
-            Expression<Func<T, string>> keySelector)
+        public static string GetLocalized<T>(this T entity, Expression<Func<T, string>> keySelector)
             where T : BaseEntity, ILocalizedEntity
         {
             var workContext = EngineContext.Current.Resolve<IWorkContext>();
@@ -47,7 +46,7 @@ namespace SmartStore.Services.Localization
             bool returnDefaultValue = true, bool ensureTwoPublishedLanguages = true) 
             where T : BaseEntity, ILocalizedEntity
         {
-            return GetLocalized<T, string>(entity, keySelector, languageId, returnDefaultValue, ensureTwoPublishedLanguages);
+			return GetLocalized<T, string>(entity, keySelector, languageId, returnDefaultValue, ensureTwoPublishedLanguages);
         }
         /// <summary>
         /// Get localized property of an entity
@@ -98,7 +97,7 @@ namespace SmartStore.Services.Localization
                 if (ensureTwoPublishedLanguages)
                 {
                     var lService = EngineContext.Current.Resolve<ILanguageService>();
-                    var totalPublishedLanguages = lService.GetLanguagesCount(false); // codehint: sm-edit
+                    var totalPublishedLanguages = lService.GetLanguagesCount(false);
                     loadLocalizedValue = totalPublishedLanguages >= 2;
                 }
 

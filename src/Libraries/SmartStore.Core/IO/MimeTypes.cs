@@ -40,7 +40,7 @@ namespace SmartStore.Core.IO
 						result = value != null ? value.ToString().Trim('.') : null;
 					}
 				}
-				catch (SecurityException)
+				catch
 				{
 					string[] parts = mimeType.Split('/');
 					result = parts[parts.Length - 1];

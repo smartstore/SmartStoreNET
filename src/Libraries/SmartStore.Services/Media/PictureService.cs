@@ -339,6 +339,7 @@ namespace SmartStore.Services.Media
 			filePath = GetPictureLocalPath(fileName);
 			if (!File.Exists(filePath))
 			{
+				filePath = null;
 				return new byte[0];
 			}
 			return File.ReadAllBytes(filePath);
@@ -796,16 +797,19 @@ namespace SmartStore.Services.Media
 								else
 								{
 									// load picture binary from file and set in DB
-									picture.PictureBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
+									var picBinary = LoadPictureFromFile(picture.Id, picture.MimeType, out filePath);
+									if (picBinary.Length > 0)
+									{
+										picture.PictureBinary = picBinary;
+									}
 								}
 
 								// remember file path: we must be able to rollback IO operations on transaction failure
 								if (filePath.HasValue())
 								{
 									affectedFiles.Add(filePath);
-								}
-
-								picture.IsNew = true;
+									//picture.IsNew = true;
+								}		
 
 								// explicitly attach modified entity to context, because we disabled AutoCommit
 								_pictureRepository.Update(picture);

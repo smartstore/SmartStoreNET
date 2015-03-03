@@ -132,11 +132,17 @@ namespace SmartStore.Admin.Controllers
 
 				if (pluginDescriptor.IsLicensable)
 				{
-					var licenses = LicenseChecker.GetLicenseData();
-
-					// we always show license button to serve ability to delete a license
+					// we always show license button to serve ability to delete a key
+					model.IsLicensable = true;
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
-					model.IsLicensed = (licenses.FirstOrDefault(x => x.Key.Item1 == pluginDescriptor.SystemName).Value != null);
+
+					var license = LicenseChecker.GetLicenseData(pluginDescriptor.SystemName, null);
+
+					if (license != null)	// license\plugin has been used
+					{
+						model.IsLicensed = license.LicenseKey.HasValue();
+						model.RemainingDemoUsageDays = Math.Max(license.RemainingDemoDays ?? LicenseChecker.MaxDemoDays, 0);
+					}
 				}
             }
             return model;

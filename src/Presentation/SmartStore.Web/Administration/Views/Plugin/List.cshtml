@@ -32,9 +32,29 @@
 						{
 							<span class="label label-warning">@T("Admin.Configuration.Plugins.Fields.Installed")</span>
 						}
-						@if (plugin.IsLicensed)
+						@if (plugin.IsLicensable)
 						{
-							<span class="label label-success">@T("Admin.Common.Licensed")</span>
+							if (plugin.IsLicensed)
+							{
+								<span class="label label-success">@T("Admin.Common.Licensed")</span>
+							}
+							else
+							{
+								<span class="label @(plugin.RemainingDemoUsageDaysLabel)">
+									@if (!plugin.RemainingDemoUsageDays.HasValue)
+									{
+										@T("Admin.Plugins.LicensingDemoNotStarted")
+									}
+									else if (plugin.RemainingDemoUsageDays <= 0)
+									{
+										@T("Admin.Plugins.LicensingDemoExpired")
+									}
+									else
+									{
+										@T("Admin.Plugins.LicensingDemoRemainingDays", plugin.RemainingDemoUsageDays)
+									}
+								</span>
+							}
 						}
 					</div>
 					<div class="module-info">

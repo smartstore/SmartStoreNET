@@ -51,7 +51,25 @@ namespace SmartStore.Admin.Models.Plugins
         public bool Installed { get; set; }
 
 		public string LicenseUrl { get; set; }
+		public bool IsLicensable { get; set; }
 		public bool IsLicensed { get; set; }
+		public int? RemainingDemoUsageDays { get; set; }
+
+		public string RemainingDemoUsageDaysLabel
+		{
+			get
+			{
+				if (RemainingDemoUsageDays.HasValue)
+				{
+					if (RemainingDemoUsageDays <= 5)
+						return "label-important";
+
+					if (RemainingDemoUsageDays <= 10)
+						return "label-warning";
+				}
+				return "label-success";
+			}
+		}
 
 		public bool IsConfigurable { get; set; }
 

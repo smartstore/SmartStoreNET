@@ -51,6 +51,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.AddOnLicensing",
 				"Add-on licensing",
 				"Add-on Lizenzierung");
+
+			builder.AddOrUpdate("Admin.Plugins.LicensingDemoRemainingDays",
+				"Demo {0} day(s) remaining",
+				"Demo {0} Tag(e) verbleibend");
+
+			builder.AddOrUpdate("Admin.Plugins.LicensingDemoNotStarted",
+				"Demo",
+				"Demo");
+
+			builder.AddOrUpdate("Admin.Plugins.LicensingDemoExpired",
+				"Demo expired",
+				"Demo abgelaufen");
 		}
     }
 }

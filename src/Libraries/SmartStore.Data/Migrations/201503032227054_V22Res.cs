@@ -62,6 +62,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Settings.Media.MoveToFs",
 				"Move to file system",
 				"Ins Dateisystem verschieben");
+
+			builder.AddOrUpdate("Mobile.ViewFullSite",
+				"Desktop version",
+				"Desktop Version");
 		}
 	}
 }

@@ -22,6 +22,7 @@
 * #189 Allow deletion of multiple reviews
 * #622 UI: Redesign table in Sales > Orders > Order > Tab Products
 * #625 Bundles can be ordered if an attribute combination of a bundle item is not available
+* Minor UI tweaks in checkout process
 
 ### Bugfixes
 * Amazon payments: Declined authorization IPN did not void the payment status

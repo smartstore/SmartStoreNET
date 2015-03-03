@@ -324,7 +324,10 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				if (DataSettings.Current.IsValid())
+				{
 					model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
+					model.ShrinkDatabaseEnabled = DataSettings.Current.IsSqlServer;
+				}
 			}
 			catch (Exception) { }
 
@@ -548,6 +551,27 @@ namespace SmartStore.Admin.Controllers
             
             return View(model);
         }
+
+		public ActionResult ShrinkDatabase()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMaintenance))
+				return AccessDeniedView();
+
+			try
+			{
+				if (DataSettings.Current.IsSqlServer)
+				{
+					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+					NotifySuccess(_localizationService.GetResource("Common.ShrinkDatabaseSuccessful"));
+				}
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+
+			return RedirectToReferrer();
+		}
 
         public ActionResult Maintenance()
         {

@@ -12,6 +12,7 @@
 * Option to determine the maximum amount of filter items
 * Option to determine whether all filter groups should be displayed expanded
 * #459 New field to determine tag for page titles on widget level
+* Added _shrink database_ to backend UI
 * (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 
 ### Improvements

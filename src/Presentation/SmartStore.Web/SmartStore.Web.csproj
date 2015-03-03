@@ -1666,6 +1666,9 @@
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
     <Content Include="Themes\Alpha\preview.png" />
+    <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.css" />
+    <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.min.css" />
+    <Content Include="Themes\MobileLight\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
     <Content Include="Themes\Mobile\Content\images\ico-forum-post-high.gif" />
@@ -1929,6 +1932,8 @@
     <Content Include="Views\Order\Details.Print.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
+    <Content Include="Themes\MobileLight\theme.config" />
+    <Content Include="Themes\MobileLight\Views\Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

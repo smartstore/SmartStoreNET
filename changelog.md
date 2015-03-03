@@ -3,6 +3,7 @@
 ## SmartStore.NET 2.2
 
 ### New Features
+* New mobile theme: MobileLight (a light variant of the default mobile theme)
 * Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
 * #428 Implement category option to override global list view type
 * #485 Enable shop admin to change creation date of a blog entry

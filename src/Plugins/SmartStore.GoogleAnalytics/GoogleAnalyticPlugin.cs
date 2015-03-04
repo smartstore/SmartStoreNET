@@ -8,7 +8,7 @@ using SmartStore.Services.Localization;
 namespace SmartStore.GoogleAnalytics
 {
     /// <summary>
-    /// Live person provider
+    /// Google Analytics Plugin
     /// </summary>
 	public class GoogleAnalyticPlugin : BasePlugin, IWidget, IConfigurable
     {

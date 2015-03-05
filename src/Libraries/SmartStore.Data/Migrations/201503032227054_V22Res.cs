@@ -63,9 +63,23 @@ namespace SmartStore.Data.Migrations
 				"Move to file system",
 				"Ins Dateisystem verschieben");
 
+			// Misc
 			builder.AddOrUpdate("Mobile.ViewFullSite",
 				"Desktop version",
 				"Desktop Version");
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.FilterEnabled",
+				"Display filter sidebar widget",
+				"Filter Sidebar Widget anzeigen");
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.FilterEnabled.Hint",
+				"Displays the filter sidebar widget for products within categories",
+				"Aktiviert das Filter Sidebar Widget zum Filtern von Produkten in Warengruppen");
+			builder.AddOrUpdate("Admin.Catalog.Products.SpecificationAttributes.Fields.ShowOnProductPage.Hint")
+				.Value("en", "Check to display the attribute in the public product detail page");
+			builder.AddOrUpdate("Admin.Catalog.Products.SpecificationAttributes.AddNew",
+				"Assign a specification attribute",
+				"Spezifikationsattribut zuordnen");
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage")
+				.Value("en", "Don't show on product page");
 		}
 	}
 }

@@ -1265,6 +1265,7 @@ namespace SmartStore.Web.Controllers
 				model.TotalReviews = product.ApprovedTotalReviews;
 				model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
 				model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				model.InvisibleDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 
 				var deliveryTime = _deliveryTimeService.GetDeliveryTime(minPriceProduct);
 				if (deliveryTime != null)

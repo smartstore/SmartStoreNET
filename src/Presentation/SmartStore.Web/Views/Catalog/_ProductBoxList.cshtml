@@ -81,11 +81,10 @@
                     {
                         if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
                         {
-                            <tr class="delivery-time">
+                            <tr class="delivery-time@(Model.InvisibleDeliveryTime ? " hide" : "")">
                                 <td class="attr-label">
                                     <span><strong>@T("Products.DeliveryTime")</strong></span>
                                 </td>
-                                    
 
                                 @if(Model.DisplayDeliveryTimeAccordingToStock)
                                 {

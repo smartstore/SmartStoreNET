@@ -40,6 +40,7 @@
 * Fixed price calculation of multiple bundles issue
 * Fixed auto add required products for bundle items
 * Fixes #641: Protocol in sitemap should be HTTPS when _ForceSslForAllPages_ is true
+* #640 Do not display shipping infos for grouped products in product lists
 
 
 ## SmartStore.NET 2.1.1

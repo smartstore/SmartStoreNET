@@ -605,7 +605,7 @@ namespace SmartStore.Core
         /// <returns>Result</returns>
         public virtual bool IsSearchEngine(HttpContextBase context)
         {
-            if (context == null)
+            if (context == null || context.Request == null)
                 return false;
 
             bool result = false;
@@ -615,7 +615,7 @@ namespace SmartStore.Core
 					return false;
 
                 result = context.Request.Browser.Crawler;
-                if (!result)
+				if (!result && context.Request.UserAgent.HasValue())
                 {
 					result = s_crawlerPattern.IsMatch(context.Request.UserAgent);
                 }

@@ -3705,7 +3705,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
-            .Alter("smartstore.net new release!", x =>
+            .Alter("SmartStore.NET new release!", x =>
             {
                 x.Title = "SmartStore.NET - das clevere Shopsystem!";
                 x.Short = "SmartStore.NET ist die neue dynamische E-Commerce Lösung von SmartStore. SmartStore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";

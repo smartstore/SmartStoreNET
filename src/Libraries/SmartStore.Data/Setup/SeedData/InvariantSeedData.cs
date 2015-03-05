@@ -8947,11 +8947,11 @@ namespace SmartStore.Data.Setup
 			{
 				AllowComments = true,
 				Language = defaultLanguage,
-				Title = "smartstore.net new release!",
-				Short = "smartstore.net includes everything you need to begin your e-commerce online store.",
-				Full = "<p>SmartStore.net includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/>smartstore.net is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the smartstore.net community.</p>",
+				Title = "SmartStore.NET new release!",
+                Short = "SmartStore.NET includes everything you need to begin your e-commerce online store.",
+                Full = "<p>SmartStore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/>smartstore.net is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the SmartStore.NET community.</p>",
 				Published = true,
-				MetaTitle = "smartstore.net new release!",
+                MetaTitle = "SmartStore.NET new release!",
 				CreatedOnUtc = DateTime.Now
 			};
 			var news2 = new NewsItem()

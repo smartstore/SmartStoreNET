@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Plugins;
@@ -43,6 +44,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _commonService;
+		private readonly HttpContextBase _httpContext;
 
 	    #endregion
 
@@ -58,7 +60,8 @@ namespace SmartStore.Admin.Controllers
             WidgetSettings widgetSettings,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
-			ICommonServices commonService)
+			ICommonServices commonService,
+			HttpContextBase httpContext)
 		{
             this._pluginFinder = pluginFinder;
             this._permissionService = permissionService;
@@ -71,6 +74,7 @@ namespace SmartStore.Admin.Controllers
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
 			this._commonService = commonService;
+			this._httpContext = httpContext;
 
 			T = NullLocalizer.Instance;
 		}
@@ -136,7 +140,7 @@ namespace SmartStore.Admin.Controllers
 					model.IsLicensable = true;
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-					var license = LicenseChecker.GetLicenseData(pluginDescriptor.SystemName, null);
+					var license = LicenseChecker.GetLicenseData(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
 
 					if (license != null)	// license\plugin has been used
 					{
@@ -415,6 +419,19 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return RedirectToAction("List");
+		}
+
+		[HttpPost]
+		public ActionResult LicenseResetStatusCheck(string systemName)
+		{
+			var result = LicenseChecker.ResetStatusCheckDate(systemName);
+
+			if (result.Success)
+				NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+			else
+				NotifyError(result.ToString());
+
+			return Content("");
 		}
 
 		public ActionResult EditProviderPopup(string systemName)

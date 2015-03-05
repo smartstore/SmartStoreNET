@@ -63,6 +63,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.LicensingDemoExpired",
 				"Demo expired",
 				"Demo abgelaufen");
+
+			builder.AddOrUpdate("Admin.Plugins.LicensingResetStatusCheck",
+				"Renew check",
+				"Prüfung erneuern");
 		}
     }
 }

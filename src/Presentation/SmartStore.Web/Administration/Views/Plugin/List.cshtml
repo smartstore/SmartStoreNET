@@ -215,6 +215,7 @@
 		</div>
 		<div class="modal-body"></div>
 		<div class="modal-footer">
+			<button class="btn pull-left licensing-reset-status-check" data-dismiss="modal">@T("Admin.Plugins.LicensingResetStatusCheck")</button>
 			<button class="btn btn-primary" data-dismiss="modal">@T("Common.OK")</button>
 			<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 		</div>
@@ -443,6 +444,13 @@
 
     				dialog.find('.btn-primary').click(function() {
     					dialog.find('form:first').submit();
+    				});
+
+    				dialog.find('.licensing-reset-status-check').click(function() {
+    					$({}).doAjax({
+    						type: 'POST',
+    						url: dialog.find('form:first').attr('data-resetcheckurl')
+    					});
     				});
     			}
     		});

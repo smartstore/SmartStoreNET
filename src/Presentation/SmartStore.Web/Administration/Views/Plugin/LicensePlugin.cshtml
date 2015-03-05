@@ -4,7 +4,9 @@
 	Layout = null;
 }
 
-<form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })">
+<form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })"
+	   data-resetcheckurl="@Url.Action("LicenseResetStatusCheck", "Plugin", new { systemName = Model.SystemName })">
+
 	<table class="adminContent">
 		@for (int i = 0; i < Model.Licenses.Count; ++i)
 		{

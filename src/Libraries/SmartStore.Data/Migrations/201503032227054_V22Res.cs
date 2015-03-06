@@ -80,6 +80,16 @@ namespace SmartStore.Data.Migrations
 				"Spezifikationsattribut zuordnen");
 			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.Bundled.ShowNotOnProductPage")
 				.Value("en", "Don't show on product page");
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie",
+				"Save theme choice in cookie",
+				"Benutzer Theme in Cookie speichern");
+			builder.AddOrUpdate("Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie.Hint",
+				"If unchecked, user's theme choice is associated to the account, which may be undesirable when, for example, multiple users share a guest account.",
+				"Wenn nicht gewählt, wird das Benutzer Theme mit dem Kundenkonto verknüpft, was u.U. unerwünscht sein kann, wenn sich bspw. mehrere User einen Gastzugang teilen.");
+
+			/// When <c>false</c>, user's choice will be associated with his account, which may not
+			/// be desirable in cases where a single guest account is used by many users.
 		}
 	}
 }

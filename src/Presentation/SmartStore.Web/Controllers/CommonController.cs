@@ -590,7 +590,7 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
-            var model = new FooterModel()
+            var model = new FooterModel
             {
 				StoreName = store.Name,
 				LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoLink),

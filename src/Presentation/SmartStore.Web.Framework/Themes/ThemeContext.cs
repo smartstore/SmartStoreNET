@@ -60,15 +60,24 @@ namespace SmartStore.Web.Framework.Themes
                     return _cachedDesktopThemeName;
                 }
 
-                bool isCustomerSpecific = false;
+				var customer = _workContext.CurrentCustomer;
+                bool isUserSpecific = false;
                 string theme = "";
                 if (_themeSettings.AllowCustomerToSelectTheme)
                 {
-					if (_workContext.CurrentCustomer != null)
+					if (_themeSettings.SaveThemeChoiceInCookie)
 					{
-						theme = _workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);										
-						isCustomerSpecific = theme.HasValue();
+						theme = _httpContext.GetUserThemeChoiceFromCookie();
 					}
+					else
+					{
+						if (customer != null)
+						{
+							theme = customer.GetAttribute<string>(SystemCustomerAttributeNames.WorkingDesktopThemeName, _genericAttributeService, _storeContext.CurrentStore.Id);
+						}
+					}
+
+					isUserSpecific = theme.HasValue();
                 }
 
                 // default store theme
@@ -87,10 +96,14 @@ namespace SmartStore.Web.Framework.Themes
 						throw Error.Application("At least one desktop theme must be in active state, but the theme registry does not contain a valid theme package.");
 					}
 					theme = manifest.ThemeName;
-                    if (isCustomerSpecific)
+                    if (isUserSpecific)
                     {
-                        // the customer chosen theme does not exists (anymore). Invalidate it!
-                        _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty, _storeContext.CurrentStore.Id);
+						// the customer chosen theme does not exists (anymore). Invalidate it!
+						_httpContext.SetUserThemeChoiceInCookie(null);
+						if (customer != null)
+						{
+							_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.WorkingDesktopThemeName, string.Empty, _storeContext.CurrentStore.Id);
+						}
                     }
                 }
                 
@@ -104,12 +117,14 @@ namespace SmartStore.Web.Framework.Themes
                 if (!_themeSettings.AllowCustomerToSelectTheme)
                     return;
 
-                if (_workContext.CurrentCustomer == null)
-                    return;
+				_httpContext.SetUserThemeChoiceInCookie(value);
 
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value, _storeContext.CurrentStore.Id);
+				if (_workContext.CurrentCustomer != null)
+				{
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value, _storeContext.CurrentStore.Id);
+				}
 
-                //clear cache
+                // clear cache
                 this._desktopThemeIsCached = false;
             }
         }

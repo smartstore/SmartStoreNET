@@ -546,10 +546,15 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[NonAction]
-		private void UpdateDataOfExistingProduct(Product product, ProductModel model)
+		private void UpdateDataOfExistingProduct(Product product, ProductModel model, bool editMode)
 		{
 			var p = product;
 			var m = model;
+
+			var modifiedProperties = editMode ? _dbContext.GetModifiedProperties(p): new Dictionary<string, object>();
+
+			var nameChanged = modifiedProperties.ContainsKey("Name");
+			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
 			// SEO
 			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
@@ -562,13 +567,16 @@ namespace SmartStore.Admin.Controllers
 				_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 
 				// search engine name
-				var seName = product.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
-				_urlRecordService.SaveSlug(product, seName, localized.LanguageId);
+				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				_urlRecordService.SaveSlug(p, localizedSeName, localized.LanguageId);
 			}
 
 			// picture seo names
-			UpdatePictureSeoNames(product);
-
+			if (nameChanged)
+			{
+				UpdatePictureSeoNames(p);
+			}
+			
 			// product tags
 			UpdateProductTags(p, m.ProductTags);
 		}
@@ -1032,7 +1040,7 @@ namespace SmartStore.Admin.Controllers
 
                 _productService.InsertProduct(product);
 
-				UpdateDataOfExistingProduct(product, model);
+				UpdateDataOfExistingProduct(product, model, false);
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewProduct", _localizationService.GetResource("ActivityLog.AddNewProduct"), product.Name);
@@ -1110,7 +1118,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
 				MapModelToProduct(model, product, form);
-				UpdateDataOfExistingProduct(product, model);
+				UpdateDataOfExistingProduct(product, model, true);
 
                 // activity log
                 _customerActivityService.InsertActivity("EditProduct", _localizationService.GetResource("ActivityLog.EditProduct"), product.Name);

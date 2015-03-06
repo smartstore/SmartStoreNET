@@ -88,6 +88,14 @@ namespace SmartStore.Data.Migrations
 				"If unchecked, user's theme choice is associated to the account, which may be undesirable when, for example, multiple users share a guest account.",
 				"Wenn nicht gewählt, wird das Benutzer Theme mit dem Kundenkonto verknüpft, was u.U. unerwünscht sein kann, wenn sich bspw. mehrere User einen Gastzugang teilen.");
 
+			builder.AddOrUpdate("ShoppingCart.SelectAttribute",
+				"Please select '{0}'.",
+				"Bitte '{0}' auswählen.");
+
+			builder.AddOrUpdate("ShoppingCart.AttributeError",
+				"An unknown error has occurred in the examination of the selected attributes.",
+				"Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Attribute aufgetreten.");
+
 			/// When <c>false</c>, user's choice will be associated with his account, which may not
 			/// be desirable in cases where a single guest account is used by many users.
 		}

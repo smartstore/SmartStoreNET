@@ -492,6 +492,9 @@ namespace SmartStore.Services.Orders
 
             var warnings = new List<string>();
 
+			if (product.ProductType == ProductType.BundledProduct)
+				return warnings;	// customer cannot select anything cause bundles have no attributes
+
 			if (bundleItem != null && !bundleItem.BundleProduct.BundlePerItemPricing)
 				return warnings;	// customer cannot select anything... selectedAttribute is always empty
 
@@ -504,12 +507,12 @@ namespace SmartStore.Services.Orders
                 {
                     if (pv1.Id != product.Id)
                     {
-                        warnings.Add("Attribute error");
+						warnings.Add(_localizationService.GetResource("ShoppingCart.AttributeError"));
                     }
                 }
                 else
                 {
-                    warnings.Add("Attribute error");
+					warnings.Add(_localizationService.GetResource("ShoppingCart.AttributeError"));
                     return warnings;
                 }
             }
@@ -545,10 +548,8 @@ namespace SmartStore.Services.Orders
 
                     if (!found)
                     {
-                        if (pva2.TextPrompt.HasValue())
-                            warnings.Add(pva2.TextPrompt);
-                        else
-                            warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.SelectAttribute"), pva2.ProductAttribute.GetLocalized(a => a.Name)));
+						warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.SelectAttribute"),
+							pva2.TextPrompt.HasValue() ? pva2.TextPrompt : pva2.ProductAttribute.GetLocalized(a => a.Name)));
                     }
                 }
             }
@@ -1121,7 +1122,7 @@ namespace SmartStore.Services.Orders
 
 			if (ctx.BundleItem == null)
 			{
-				AddToCartStore(ctx);
+				AddToCartStoring(ctx);
 			}
 		}
 
@@ -1129,7 +1130,7 @@ namespace SmartStore.Services.Orders
 		/// Stores the shopping card items in the database
 		/// </summary>
 		/// <param name="ctx">Add to cart context</param>
-		public virtual void AddToCartStore(AddToCartContext ctx)
+		public virtual void AddToCartStoring(AddToCartContext ctx)
 		{
 			if (ctx.Warnings.Count == 0 && ctx.Item != null)
 			{
@@ -1271,7 +1272,7 @@ namespace SmartStore.Services.Orders
 				}
 			}
 
-			AddToCartStore(addToCartContext);
+			AddToCartStoring(addToCartContext);
 
 			return addToCartContext.Warnings;
 		}

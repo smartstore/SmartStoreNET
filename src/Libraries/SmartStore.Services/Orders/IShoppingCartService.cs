@@ -168,7 +168,7 @@ namespace SmartStore.Services.Orders
 		/// Stores the shopping card items in the database
 		/// </summary>
 		/// <param name="ctx">Add to cart context</param>
-		void AddToCartStore(AddToCartContext ctx);
+		void AddToCartStoring(AddToCartContext ctx);
 
         /// <summary>
         /// Updates the shopping cart item

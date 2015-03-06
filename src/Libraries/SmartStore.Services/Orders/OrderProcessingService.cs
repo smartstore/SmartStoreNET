@@ -2674,7 +2674,7 @@ namespace SmartStore.Services.Orders
 					}
 				}
 
-				_shoppingCartService.AddToCartStore(addToCartContext);
+				_shoppingCartService.AddToCartStoring(addToCartContext);
             }
         }
         

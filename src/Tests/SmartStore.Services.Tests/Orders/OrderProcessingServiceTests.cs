@@ -86,7 +86,6 @@ namespace SmartStore.Services.Tests.Orders
 		IAffiliateService _affiliateService;
 		ISettingService _settingService;
 		IGeoCountryLookup _geoCountryLookup;
-		IProductAttributeService _productAttributeService;
 
 		Store _store;
 

@@ -60,6 +60,7 @@ namespace SmartStore.Services.Tests.Orders
 		ISettingService _settingService;
 		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
+		IProductAttributeService _productAttributeService;
 
         [SetUp]
         public new void SetUp()
@@ -83,6 +84,8 @@ namespace SmartStore.Services.Tests.Orders
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
+
+			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
 				 _discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings, _productAttributeService);

@@ -703,33 +703,28 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        public ActionResult StoreThemeSelected(string themeName)
+		public ActionResult ChangeTheme(string themeName, string returnUrl = null)
         {
-            _themeContext.WorkingDesktopTheme = themeName;
+			if (!_themeSettings.AllowCustomerToSelectTheme || (themeName.HasValue() && !_themeRegistry.ThemeManifestExists(themeName)))
+			{
+				return HttpNotFound();
+			}
 
-            var model = new StoreThemeSelectorModel();
-            var currentTheme = _themeRegistry.GetThemeManifest(_themeContext.WorkingDesktopTheme);
-            model.CurrentStoreTheme = new StoreThemeModel()
-            {
-                Name = currentTheme.ThemeName,
-                Title = currentTheme.ThemeTitle
-            };
-            model.AvailableStoreThemes = _themeRegistry.GetThemeManifests()
-                //do not display themes for mobile devices
-                .Where(x => !x.MobileTheme)
-                .Select(x =>
-                {
-                    return new StoreThemeModel()
-                    {
-                        Name = x.ThemeName,
-                        Title = x.ThemeTitle
-                    };
-                })
-                .ToList();
-            return PartialView("StoreThemeSelector", model);
+			_themeContext.WorkingDesktopTheme = themeName;
+
+			if (HttpContext.Request.IsAjaxRequest())
+			{
+				return Json(new { Success = true });
+			}
+
+			if (returnUrl.IsEmpty())
+			{
+				return RedirectToRoute("HomePage");
+			}
+
+			return Redirect(returnUrl);
         }
 
-        //favicon
         [ChildActionOnly]
         [OutputCache(Duration=3600, VaryByCustom="Theme_Store")]
         public ActionResult Favicon()

@@ -95,9 +95,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("ShoppingCart.AttributeError",
 				"An unknown error has occurred in the examination of the selected attributes.",
 				"Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Attribute aufgetreten.");
-
-			/// When <c>false</c>, user's choice will be associated with his account, which may not
-			/// be desirable in cases where a single guest account is used by many users.
 		}
 	}
 }

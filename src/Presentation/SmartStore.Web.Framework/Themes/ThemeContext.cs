@@ -117,11 +117,14 @@ namespace SmartStore.Web.Framework.Themes
                 if (!_themeSettings.AllowCustomerToSelectTheme)
                     return;
 
-				_httpContext.SetUserThemeChoiceInCookie(value);
+				if (value.HasValue() && !_themeRegistry.ThemeManifestExists(value))
+					return;
+
+				_httpContext.SetUserThemeChoiceInCookie(value.NullEmpty());
 
 				if (_workContext.CurrentCustomer != null)
 				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value, _storeContext.CurrentStore.Id);
+					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.WorkingDesktopThemeName, value.EmptyNull(), _storeContext.CurrentStore.Id);
 				}
 
                 // clear cache

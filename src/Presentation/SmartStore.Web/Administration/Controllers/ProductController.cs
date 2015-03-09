@@ -1146,7 +1146,7 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var tab in model.LoadedTabs)
 			{
-				switch (tab.ToLower())
+                switch (tab.ToLowerInvariant())
 				{
 					case "info":
 						UpdateProductGeneralInfo(product, model);

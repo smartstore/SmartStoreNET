@@ -6112,7 +6112,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.jpeg"), "image/jpeg", GetSeName("Computers")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_computers.png"), "image/png", GetSeName("Computers")),
 				Published = true,
 				DisplayOrder = 2,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6128,7 +6128,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.jpg"), "image/jpeg", GetSeName("Gaming")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming.png"), "image/png", GetSeName("Gaming")),
 				Published = true,
 				DisplayOrder = 3,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6146,7 +6146,7 @@ namespace SmartStore.Data.Setup
 				PageSizeOptions = "12,18,36,72,150",
 
 				//ParentCategoryId = categoryElectronics.Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cell_phones.jpeg"), "image/jpeg", GetSeName("Cell phones")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_cellphone.png"), "image/png", GetSeName("Cell phones")),
 				Published = true,
 				DisplayOrder = 4,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6162,7 +6162,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digital_downloads.jpeg"), "image/jpeg", GetSeName("Digital downloads")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.png"), "image/png", GetSeName("Digital downloads")),
 				Published = true,
 				DisplayOrder = 6,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6194,7 +6194,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001514_uhren.jpeg"), "image/jpeg", GetSeName("Watches")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_watches.png"), "image/png", GetSeName("Watches")),
 				Published = true,
 				DisplayOrder = 10,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6268,7 +6268,7 @@ namespace SmartStore.Data.Setup
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.jpg"), "image/jpeg", GetSeName("Desktops")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_desktops.png"), "image/png", GetSeName("Desktops")),
 				PriceRanges = "-1000;1000-1200;1200-;",
 				Published = true,
 				DisplayOrder = 1,
@@ -6303,7 +6303,7 @@ namespace SmartStore.Data.Setup
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.jpg"), "image/jpeg", GetSeName("Gaming Accessories")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName("Gaming Accessories")),
 				Published = true,
 				DisplayOrder = 2,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6320,7 +6320,7 @@ namespace SmartStore.Data.Setup
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Gaming").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.jpg"), "image/jpeg", GetSeName("Games")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_games.png"), "image/png", GetSeName("Games")),
 				Published = true,
 				DisplayOrder = 3,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6469,7 +6469,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000904_samsung_125.jpeg"), "image/pjpeg", GetSeName("Samsung")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-samsung.png"), "image/png", GetSeName("Samsung")),
 				Published = true,
 				DisplayOrder = 7,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6505,7 +6505,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000993_trekstor.jpeg"), "image/pjpeg", GetSeName("TrekStor")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-trekstor.png"), "image/png", GetSeName("TrekStor")),
 				Published = true,
 				DisplayOrder = 9,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6523,7 +6523,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000994_western-digital.jpeg"), "image/pjpeg", GetSeName("Western Digital")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-westerndigital.png"), "image/png", GetSeName("Western Digital")),
 				Published = true,
 				DisplayOrder = 10,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6559,7 +6559,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001085_canon.jpeg"), "image/pjpeg", GetSeName("Canon")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-canon.png"), "image/png", GetSeName("Canon")),
 				Published = true,
 				DisplayOrder = 12,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6577,7 +6577,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001086_casio.jpeg"), "image/pjpeg", GetSeName("Casio")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-casio.png"), "image/png", GetSeName("Casio")),
 				Published = true,
 				DisplayOrder = 13,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6595,7 +6595,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001087_panasonic.jpeg"), "image/pjpeg", GetSeName("Panasonic")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-panasonic.png"), "image/png", GetSeName("Panasonic")),
 				Published = true,
 				DisplayOrder = 14,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6613,7 +6613,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000898_blackberry.jpeg"), "image/pjpeg", GetSeName("BlackBerry")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-blackberry.png"), "image/png", GetSeName("BlackBerry")),
 				Published = true,
 				DisplayOrder = 15,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6631,7 +6631,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000899_htc.png"), "image/pjpeg", GetSeName("HTC")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-htc.png"), "image/png", GetSeName("HTC")),
 				Published = true,
 				DisplayOrder = 16,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6649,7 +6649,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001591_festina.jpeg"), "image/pjpeg", GetSeName("Festina")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_festina.png"), "image/png", GetSeName("Festina")),
 				Published = true,
 				DisplayOrder = 17,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6667,7 +6667,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001328_certina_125.jpeg"), "image/pjpeg", GetSeName("Certina")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-certina.png"), "image/png", GetSeName("Certina")),
 				Published = true,
 				DisplayOrder = 18,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6782,7 +6782,7 @@ namespace SmartStore.Data.Setup
 
 			product5GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_5giftcart.jpeg"), "image/jpeg", GetSeName(product5GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product5GiftCard.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -6820,7 +6820,7 @@ namespace SmartStore.Data.Setup
 
 			product25GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_25giftcart.jpeg"), "image/jpeg", GetSeName(product25GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product25GiftCard.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -6858,7 +6858,7 @@ namespace SmartStore.Data.Setup
 
 			product50GiftCard.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_50giftcart.jpeg"), "image/jpeg", GetSeName(product50GiftCard.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_giftcart.png"), "image/png", GetSeName(product50GiftCard.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -7028,7 +7028,7 @@ namespace SmartStore.Data.Setup
 			//pictures
 			productBooksBestGrillingRecipes.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000937_best-grilling-recipes.jpeg"), "image/jpeg", GetSeName(productBooksBestGrillingRecipes.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_bestgrillingrecipes.jpg"), "image/jpeg", GetSeName(productBooksBestGrillingRecipes.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -7092,7 +7092,7 @@ namespace SmartStore.Data.Setup
 			//pictures
 			productBooksCookingForTwo.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000938_cooking-for-two.jpeg"), "image/jpeg", GetSeName(productBooksCookingForTwo.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_cookingfortwo.jpg"), "image/jpeg", GetSeName(productBooksCookingForTwo.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -7488,7 +7488,7 @@ namespace SmartStore.Data.Setup
 			//pictures
 			productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000953_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellInspiron23.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellInspiron23.Name)),
 				DisplayOrder = 1,
 			});
 			productComputerDellInspiron23.ProductPictures.Add(new ProductPicture()
@@ -7739,7 +7739,7 @@ namespace SmartStore.Data.Setup
 			#region pictures
 			productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "acer-aspire-one.jpg"), "image/jpeg", GetSeName(productComputerAcerAspireOne.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_aceraspiresl1500.png"), "image/png", GetSeName(productComputerAcerAspireOne.Name)),
 				DisplayOrder = 1,
 			});
 			productComputerAcerAspireOne.ProductPictures.Add(new ProductPicture()
@@ -8061,7 +8061,7 @@ namespace SmartStore.Data.Setup
 			//pictures
 			productWatchesCertinaDSPodiumBigSize.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0001424-certina-ds-podium-big-size-herrenchronograph.jpg"), "image/jpeg", GetSeName(productWatchesCertinaDSPodiumBigSize.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_certina_ds_podium_big.png"), "image/png", GetSeName(productWatchesCertinaDSPodiumBigSize.Name)),
 				DisplayOrder = 1,
 			});
 
@@ -8199,7 +8199,7 @@ namespace SmartStore.Data.Setup
 
 			productDualshock3Controller.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-Dualshock3WirelessCont.jpg"), "image/jpeg", GetSeName(productDualshock3Controller.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_playstation3dualshock3.png"), "image/png", GetSeName(productDualshock3Controller.Name)),
 				DisplayOrder = 1
 			});
 

@@ -140,7 +140,7 @@ namespace SmartStore.Admin.Controllers
 					model.IsLicensable = true;
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-					var license = LicenseChecker.GetLicenseData(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
+					var license = LicenseChecker.GetLicenseByUrl(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
 
 					if (license != null)	// license\plugin has been used
 					{
@@ -350,7 +350,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (licensable.HasSingleLicenseForAllStores)
 			{
-				var license = LicenseChecker.GetLicenseData(systemName, "");
+				var license = LicenseChecker.GetLicenseByUrl(systemName, "");
 
 				model.Licenses.Add(new LicensePluginModel.LicenseModel
 				{
@@ -362,7 +362,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				foreach (var store in stores)
 				{
-					var license = LicenseChecker.GetLicenseData(systemName, store.Url);
+					var license = LicenseChecker.GetLicenseByUrl(systemName, store.Url);
 					string key = (license == null ? null : license.LicenseKey);
 
 					model.Licenses.Add(new LicensePluginModel.LicenseModel()
@@ -389,11 +389,9 @@ namespace SmartStore.Admin.Controllers
 			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
 				return HttpNotFound();
 
-			var licenses = LicenseChecker.GetLicenseData();
-
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = licenses.FirstOrDefault(x => x.Key.Item1 == systemName && x.Value != null && x.Value.LicenseKey == item.OldLicenseKey).Value;
+				var existingLicense = LicenseChecker.GetLicenseByKey(systemName, item.OldLicenseKey);
 
 				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
 					LicenseChecker.RemoveLicense(existingLicense);

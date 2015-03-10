@@ -12,6 +12,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
 
@@ -27,7 +28,8 @@ namespace SmartStore.Core
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-		private static readonly Regex s_crawlerPattern = new Regex(@"Yandex|ichiro|NaverBot|Baiduspider|Yahoo|sogou|YoudaoBot|bitlybot", RegexOptions.Compiled | RegexOptions.IgnoreCase);
+		private static readonly Regex s_crawlerPattern = new Regex(@"Yandex|ichiro|NaverBot|Baiduspider|Yahoo|sogou|YoudaoBot|bitlybot", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
+		private static readonly Regex s_pdfConverterPattern = new Regex(@"wkhtmltopdf", RegexOptions.Compiled | RegexOptions.IgnoreCase | RegexOptions.CultureInvariant);
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -598,11 +600,6 @@ namespace SmartStore.Core
 			}
 		}
 
-        /// <summary>
-        /// Get a value indicating whether the request is made by search engine (web crawler)
-        /// </summary>
-        /// <param name="request">HTTP Request</param>
-        /// <returns>Result</returns>
         public virtual bool IsSearchEngine(HttpContextBase context)
         {
             if (context == null || context.Request == null)
@@ -611,7 +608,7 @@ namespace SmartStore.Core
             bool result = false;
             try
             {
-				if (context.Request.GetType().ToString().Contains("Fake"))
+				if (context.Request is FakeHttpRequest)
 					return false;
 
                 result = context.Request.Browser.Crawler;
@@ -620,13 +617,37 @@ namespace SmartStore.Core
 					result = s_crawlerPattern.IsMatch(context.Request.UserAgent);
                 }
             }
-            catch (Exception exc)
+            catch (Exception ex)
             {
-                Debug.WriteLine(exc);
+                Debug.WriteLine(ex);
             }
 
             return result;
         }
+
+		public virtual bool IsPdfConverter(HttpContextBase context)
+		{
+			if (context == null || context.Request == null)
+				return false;
+
+			bool result = false;
+			try
+			{
+				if (context.Request is FakeHttpRequest)
+					return false;
+				
+				if (context.Request.UserAgent.HasValue())
+				{
+					result = s_pdfConverterPattern.IsMatch(context.Request.UserAgent);
+				}
+			}
+			catch (Exception ex)
+			{
+				Debug.WriteLine(ex);
+			}
+
+			return result;
+		}
 
         /// <summary>
         /// Gets a value that indicates whether the client is being redirected to a new location

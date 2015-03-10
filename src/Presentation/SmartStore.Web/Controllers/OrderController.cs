@@ -145,7 +145,7 @@ namespace SmartStore.Web.Controllers
                 var shipments = order.Shipments.Where(x => x.ShippedDateUtc.HasValue).OrderBy(x => x.CreatedOnUtc).ToList();
                 foreach (var shipment in shipments)
                 {
-                    var shipmentModel = new OrderDetailsModel.ShipmentBriefModel()
+                    var shipmentModel = new OrderDetailsModel.ShipmentBriefModel
                     {
                         Id = shipment.Id,
                         TrackingNumber = shipment.TrackingNumber,
@@ -281,7 +281,7 @@ namespace SmartStore.Web.Controllers
             //gift cards
             foreach (var gcuh in order.GiftCardUsageHistory)
             {
-                model.GiftCards.Add(new OrderDetailsModel.GiftCard()
+                model.GiftCards.Add(new OrderDetailsModel.GiftCard
                 {
                     CouponCode = gcuh.GiftCard.GiftCardCouponCode,
 					Amount = _priceFormatter.FormatPrice(-(_currencyService.ConvertCurrency(gcuh.UsedValue, order.CurrencyRate)), true, order.CustomerCurrencyCode, false, _services.WorkContext.WorkingLanguage),
@@ -308,7 +308,7 @@ namespace SmartStore.Web.Controllers
                 .OrderByDescending(on => on.CreatedOnUtc)
                 .ToList())
             {
-                model.OrderNotes.Add(new OrderDetailsModel.OrderNote()
+                model.OrderNotes.Add(new OrderDetailsModel.OrderNote
                 {
                     Note = orderNote.FormatOrderNoteText(),
                     CreatedOn = _dateTimeHelper.ConvertToUserTime(orderNote.CreatedOnUtc, DateTimeKind.Utc)

@@ -46,14 +46,18 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entity);
 
-            if (entity.SystemName == "builtin@search-engine-record.com")
+			if (entity.SystemName == SystemCustomerNames.SearchEngine)
             {
-                entity.AdminComment = "System Gastkonto für Suchmaschinenanfragen.";
+                entity.AdminComment = "System-Gastkonto für Suchmaschinenanfragen.";
             }
-            else if (entity.SystemName == "builtin@background-task-record.com")
+			else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
             {
-                entity.AdminComment = "System Konto für geplante Aufgaben.";
+                entity.AdminComment = "Systemkonto für geplante Aufgaben.";
             }
+			else if (entity.SystemName == SystemCustomerNames.PdfConverter)
+			{
+				entity.AdminComment = "Systemkonto für den PDF-Konverter.";
+			}
         }
 
         protected override void Alter(IList<MeasureDimension> entities)

@@ -951,7 +951,6 @@ namespace SmartStore.Web.Controllers
 			return _services.Cache.Get("PdfReceiptHeaderFooterModel-{0}".FormatInvariant(storeId), () =>
 			{
 				var model = new PdfReceiptHeaderFooterModel { StoreId = storeId };
-
 				var store = _services.StoreService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
 
 				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);

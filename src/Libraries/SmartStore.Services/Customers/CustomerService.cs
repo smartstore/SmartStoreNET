@@ -431,7 +431,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Customer</returns>
         public virtual Customer InsertGuestCustomer()
         {
-            var customer = new Customer()
+            var customer = new Customer
             {
                 CustomerGuid = Guid.NewGuid(),
                 Active = true,

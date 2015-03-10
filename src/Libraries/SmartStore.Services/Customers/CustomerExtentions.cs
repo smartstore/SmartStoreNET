@@ -21,8 +21,7 @@ namespace SmartStore.Services.Customers
         /// <param name="customerRoleSystemName">Customer role system name</param>
         /// <param name="onlyActiveCustomerRoles">A value indicating whether we should look only in active customer roles</param>
         /// <returns>Result</returns>
-        public static bool IsInCustomerRole(this Customer customer,
-            string customerRoleSystemName, bool onlyActiveCustomerRoles = true)
+        public static bool IsInCustomerRole(this Customer customer, string customerRoleSystemName, bool onlyActiveCustomerRoles = true)
         {
             if (customer == null)
                 throw new ArgumentNullException("customer");
@@ -44,11 +43,10 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsBackgroundTaskAccount(this Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.ArgumentNotNull(() => customer);
 
-            if (!customer.IsSystemAccount || String.IsNullOrEmpty(customer.SystemName))
-                return false;
+			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
+				return false;
 
             var result = customer.SystemName.Equals(SystemCustomerNames.BackgroundTask, StringComparison.InvariantCultureIgnoreCase);
             return result;
@@ -61,15 +59,30 @@ namespace SmartStore.Services.Customers
         /// <returns>Result</returns>
         public static bool IsSearchEngineAccount(this Customer customer)
         {
-            if (customer == null)
-                throw new ArgumentNullException("customer");
+			Guard.ArgumentNotNull(() => customer);
 
-            if (!customer.IsSystemAccount || String.IsNullOrEmpty(customer.SystemName))
-                return false;
+			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
+				return false;
 
             var result = customer.SystemName.Equals(SystemCustomerNames.SearchEngine, StringComparison.InvariantCultureIgnoreCase);
             return result;
         }
+
+		/// <summary>
+		/// Gets a value indicating whether customer is the pdf converter
+		/// </summary>
+		/// <param name="customer">Customer</param>
+		/// <returns>Result</returns>
+		public static bool IsPdfConverter(this Customer customer)
+		{
+			Guard.ArgumentNotNull(() => customer);
+
+			if (!customer.IsSystemAccount || customer.SystemName.IsEmpty())
+				return false;
+
+			var result = customer.SystemName.Equals(SystemCustomerNames.PdfConverter, StringComparison.InvariantCultureIgnoreCase);
+			return result;
+		}
 
         /// <summary>
         /// Gets a value indicating whether customer is administrator

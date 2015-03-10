@@ -3768,7 +3768,7 @@ namespace SmartStore.Data.Setup
 
 		public Customer SearchEngineUser()
 		{
-			var entity = new Customer()
+			var entity = new Customer
 			{
 				Email = "builtin@search-engine-record.com",
 				CustomerGuid = Guid.NewGuid(),
@@ -3787,7 +3787,7 @@ namespace SmartStore.Data.Setup
 
 		public Customer BackgroundTaskUser()
 		{
-			var entity = new Customer()
+			var entity = new Customer
 			{
 				Email = "builtin@background-task-record.com",
 				CustomerGuid = Guid.NewGuid(),
@@ -3796,6 +3796,25 @@ namespace SmartStore.Data.Setup
 				Active = true,
 				IsSystemAccount = true,
 				SystemName = SystemCustomerNames.BackgroundTask,
+				CreatedOnUtc = DateTime.UtcNow,
+				LastActivityDateUtc = DateTime.UtcNow,
+			};
+
+			this.Alter(entity);
+			return entity;
+		}
+
+		public Customer PdfConverterUser()
+		{
+			var entity = new Customer
+			{
+				Email = "builtin@pdf-converter-record.com",
+				CustomerGuid = Guid.NewGuid(),
+				PasswordFormat = PasswordFormat.Clear,
+				AdminComment = "Built-in system record used for the PDF converter.",
+				Active = true,
+				IsSystemAccount = true,
+				SystemName = SystemCustomerNames.PdfConverter,
 				CreatedOnUtc = DateTime.UtcNow,
 				LastActivityDateUtc = DateTime.UtcNow,
 			};

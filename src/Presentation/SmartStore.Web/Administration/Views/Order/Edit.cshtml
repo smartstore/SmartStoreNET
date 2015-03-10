@@ -15,7 +15,8 @@
             @if (Model.DisplayPdfInvoice)
             {
                 <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
-					<i class="fa fa-file-pdf-o"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
+					<i class="fa fa-file-pdf-o"></i>
+					@T("Admin.Orders.PdfInvoice")
 				</a>
             }
             <button type="submit" id="order-delete" class="btn btn-danger">
@@ -885,7 +886,6 @@
                 {
                     <h4>@T("Admin.Order.CustomerComment.Heading")</h4>
                     <div class="alert alert-info fade in">
-                        <button class="close" data-dismiss="alert">&#215;</button>
                         @Html.Raw(Model.CustomerComment)
                     </div>
                 }

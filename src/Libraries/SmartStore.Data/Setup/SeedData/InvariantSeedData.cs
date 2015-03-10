@@ -6162,7 +6162,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.png"), "image/png", GetSeName("Digital downloads")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_digitaldownloads.jpg"), "image/jpeg", GetSeName("Digital downloads")),
 				Published = true,
 				DisplayOrder = 6,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6178,7 +6178,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gift_cards.jpeg"), "image/jpeg", GetSeName("Gift Cards")),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_giftcards.png"), "image/png", GetSeName("Gift Cards")),
 				Published = true,
 				DisplayOrder = 12,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6286,7 +6286,7 @@ namespace SmartStore.Data.Setup
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
 				ParentCategoryId = _ctx.Set<Category>().Where(x => x.MetaTitle == "Computers").First().Id,
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.jpg"), "image/pjpeg", GetSeName("Notebooks")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_notebooks.png"), "image/png", GetSeName("Notebooks")),
 				Published = true,
 				DisplayOrder = 2,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6361,7 +6361,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000746_apple_125.png"), "image/png", GetSeName("Apple")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_apple.png"), "image/png", GetSeName("Apple")),
 				Published = true,
 				DisplayOrder = 1,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6415,7 +6415,7 @@ namespace SmartStore.Data.Setup
                 PageSize = 12,
                 AllowCustomersToSelectPageSize = true,
                 PageSizeOptions = "12,18,36,72,150",
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "Dell_Logo.png"), "image/pjpeg", GetSeName("Dell")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-dell.png"), "image/png", GetSeName("Dell")),
                 Published = true,
                 DisplayOrder = 4,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -6433,7 +6433,7 @@ namespace SmartStore.Data.Setup
                 PageSize = 12,
                 AllowCustomersToSelectPageSize = true,
                 PageSizeOptions = "12,18,36,72,150",
-                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "HP_Logo_2012.svg.png"), "image/png", GetSeName("HP")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-hp.png"), "image/png", GetSeName("HP")),
                 Published = true,
                 DisplayOrder = 5,
                 CreatedOnUtc = DateTime.UtcNow,
@@ -6541,7 +6541,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "msi_logo1.jpg"), "image/pjpeg", GetSeName("MSI")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer-msi.png"), "image/png", GetSeName("MSI")),
 				Published = true,
 				DisplayOrder = 11,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6685,7 +6685,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-logo.jpg"), "image/pjpeg", GetSeName("Sony")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_sony.png"), "image/png", GetSeName("Sony")),
 				Published = true,
 				DisplayOrder = 19,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -6703,7 +6703,7 @@ namespace SmartStore.Data.Setup
 				PageSize = 12,
 				AllowCustomersToSelectPageSize = true,
 				PageSizeOptions = "12,18,36,72,150",
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "ubisoft-logo.jpg"), "image/pjpeg", GetSeName("Ubisoft")),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "manufacturer_ubisoft.png"), "image/png", GetSeName("Ubisoft")),
 				Published = true,
 				DisplayOrder = 20,
 				CreatedOnUtc = DateTime.UtcNow,
@@ -7596,7 +7596,7 @@ namespace SmartStore.Data.Setup
 			//pictures
 			productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "0000953_dell-inspiron-one-23.jpeg"), "image/jpeg", GetSeName(productComputerDellOptiplex3010.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_dellinspiron23.png"), "image/png", GetSeName(productComputerDellOptiplex3010.Name)),
 				DisplayOrder = 1,
 			});
 			productComputerDellOptiplex3010.ProductPictures.Add(new ProductPicture()
@@ -8159,7 +8159,7 @@ namespace SmartStore.Data.Setup
 
 			productPs3.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-black.jpg"), "image/jpeg", GetSeName(productPs3.Name) + "-black"),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_black.png"), "image/png", GetSeName(productPs3.Name) + "-black"),
 				DisplayOrder = 1
 			});
 			productPs3.ProductPictures.Add(new ProductPicture()
@@ -8312,7 +8312,7 @@ namespace SmartStore.Data.Setup
 
 			productPs4.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4.jpg"), "image/jpeg", GetSeName(productPs4.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4.png"), "image/png", GetSeName(productPs4.Name)),
 				DisplayOrder = 1
 			});
 
@@ -8347,7 +8347,7 @@ namespace SmartStore.Data.Setup
 
 			productDualshock4Controller.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-Dualshock4WirelessCont.jpg"), "image/jpeg", GetSeName(productDualshock4Controller.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_dualshock4_wirelesscontroller.png"), "image/png", GetSeName(productDualshock4Controller.Name)),
 				DisplayOrder = 1
 			});
 
@@ -8382,7 +8382,7 @@ namespace SmartStore.Data.Setup
 
 			productPs4Camera.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4-camera.jpg"), "image/jpeg", GetSeName(productPs4Camera.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4_camera.png"), "image/png", GetSeName(productPs4Camera.Name)),
 				DisplayOrder = 1
 			});
 
@@ -8420,7 +8420,7 @@ namespace SmartStore.Data.Setup
 
 			productBundlePs4.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps4-bundle.jpg"), "image/jpeg", GetSeName(productBundlePs4.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps4_bundle.png"), "image/png", GetSeName(productBundlePs4.Name)),
 				DisplayOrder = 1
 			});
 
@@ -8458,7 +8458,7 @@ namespace SmartStore.Data.Setup
 
 			productGroupAccessories.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.jpg"), "image/jpeg", GetSeName(productGroupAccessories.Name)),
+				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "category_gaming_accessories.png"), "image/png", GetSeName(productGroupAccessories.Name)),
 				DisplayOrder = 1
 			});
 
@@ -8599,7 +8599,7 @@ namespace SmartStore.Data.Setup
 
 			productPs3OneGame.ProductPictures.Add(new ProductPicture()
 			{
-				Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "sony-ps3-plus-game.jpg"), "image/jpeg", GetSeName(productPs3OneGame.Name)),
+                Picture = CreatePicture(File.ReadAllBytes(sampleImagesPath + "product_sony_ps3_plus_game.png"), "image/png", GetSeName(productPs3OneGame.Name)),
 				DisplayOrder = 1
 			});
 

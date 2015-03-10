@@ -2173,7 +2173,7 @@ namespace SmartStore.Admin.Controllers
 						Discount = x.Discount,
 						DisplayOrder = x.DisplayOrder,
 						Visible = x.Visible,
-						Published = x.Published && x.Product.Published
+						Published = x.Published
 					};
 				}).ToList();
 

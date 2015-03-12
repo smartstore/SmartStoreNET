@@ -642,16 +642,20 @@ namespace SmartStore.Web.Controllers
 			if (!_catalogSettings.ShowBestsellersOnHomepage || _catalogSettings.NumberOfBestsellersOnHomepage == 0)
 				return Content("");
 
-			//load and cache report
-			var report = _services.Cache.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _services.StoreContext.CurrentStore.Id), () =>
-				_orderReportService.BestSellersReport(_services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage));
+			// load and cache report
+			var report = _services.Cache.Get(string.Format(ModelCacheEventConsumer.HOMEPAGE_BESTSELLERS_IDS_KEY, _services.StoreContext.CurrentStore.Id), () => 
+			{
+				return _orderReportService.BestSellersReport(_services.StoreContext.CurrentStore.Id, null, null, null, null, null, 0, _catalogSettings.NumberOfBestsellersOnHomepage);
+			});
 
-			//load products
+			// load products
 			var products = _productService.GetProductsByIds(report.Select(x => x.ProductId).ToArray());
-			//ACL and store mapping
+
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
-			//prepare model
-			var model = new HomePageBestsellersModel()
+
+			// prepare model
+			var model = new HomePageBestsellersModel
 			{
 				UseSmallProductBox = _catalogSettings.UseSmallProductBoxOnHomePage,
 				Products = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList()

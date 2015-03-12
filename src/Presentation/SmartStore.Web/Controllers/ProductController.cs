@@ -450,21 +450,22 @@ namespace SmartStore.Web.Controllers
 			if (!_catalogSettings.ProductsAlsoPurchasedEnabled)
 				return Content("");
 
-			//load and cache report
-			var productIds = _services.Cache.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _services.StoreContext.CurrentStore.Id), () =>
-				_orderReportService
-				.GetAlsoPurchasedProductsIds(_services.StoreContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
-				);
+			// load and cache report
+			var productIds = _services.Cache.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _services.StoreContext.CurrentStore.Id), () => 
+			{
+				return _orderReportService.GetAlsoPurchasedProductsIds(_services.StoreContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber);
+			});
 
-			//load products
+			// load products
 			var products = _productService.GetProductsByIds(productIds);
-			//ACL and store mapping
+
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
 			if (products.Count == 0)
 				return Content("");
 
-			//prepare model
+			// prepare model
 			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
 
 			return PartialView(model);

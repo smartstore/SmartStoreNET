@@ -980,7 +980,7 @@ namespace SmartStore.Services.ExportImport
                 xlPackage.Save();
             }
 
-			// EPPLus has serious memory leak problems.
+			// EPPLus had serious memory leak problems in V3.
 			// We enforce the garbage collector to release unused memory,
  			// it's not perfect, but better than nothing.
 			GC.Collect();

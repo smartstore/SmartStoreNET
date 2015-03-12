@@ -1256,7 +1256,10 @@ namespace SmartStore.Services.Orders
 			if (sci == null)
 				throw new ArgumentNullException("item");
 
-			var addToCartContext = new AddToCartContext();
+			var addToCartContext = new AddToCartContext
+			{
+				Customer = customer
+			};
 
 			addToCartContext.Warnings = AddToCart(customer, sci.Item.Product, cartType, storeId, sci.Item.AttributesXml, sci.Item.CustomerEnteredPrice,
 				sci.Item.Quantity, addRequiredProductsIfEnabled, addToCartContext);

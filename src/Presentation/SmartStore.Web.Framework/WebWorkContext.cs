@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Web;
-using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Customers;
@@ -40,11 +37,11 @@ namespace SmartStore.Web.Framework
         private readonly TaxSettings _taxSettings;
         private readonly CurrencySettings _currencySettings;
         private readonly LocalizationSettings _localizationSettings;
-        private readonly IWebHelper _webHelper;
         private readonly ICacheManager _cacheManager;
         private readonly IStoreService _storeService;
         private readonly ISettingService _settingService;
 		private readonly Lazy<ITaxService> _taxService;
+		private readonly IUserAgent _userAgent;
 
         private TaxDisplayType? _cachedTaxDisplayType;
         private Language _cachedLanguage;
@@ -63,7 +60,8 @@ namespace SmartStore.Web.Framework
 			IGenericAttributeService attrService,
             TaxSettings taxSettings, CurrencySettings currencySettings,
             LocalizationSettings localizationSettings, Lazy<ITaxService> taxService,
-            IWebHelper webHelper, IStoreService storeService, ISettingService settingService)
+            IStoreService storeService, ISettingService settingService,
+			IUserAgent userAgent)
         {
 			this._cacheManager = cacheManager("static");
             this._httpContext = httpContext;
@@ -77,9 +75,9 @@ namespace SmartStore.Web.Framework
 			this._taxService = taxService;
             this._currencySettings = currencySettings;
             this._localizationSettings = localizationSettings;
-            this._webHelper = webHelper;
             this._storeService = storeService;
             this._settingService = settingService;
+			this._userAgent = userAgent;
         }
 
         protected HttpCookie GetCustomerCookie()
@@ -143,7 +141,7 @@ namespace SmartStore.Web.Framework
                 // in this case return built-in customer record for search engines 
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
-					if (_webHelper.IsSearchEngine(_httpContext))
+					if (_userAgent.Device.IsBot)
 					{
 						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
 					}
@@ -153,7 +151,7 @@ namespace SmartStore.Web.Framework
 				// in this case return built-in customer record for the converter
 				if (customer == null || customer.Deleted || !customer.Active)
 				{
-					if (_webHelper.IsPdfConverter(_httpContext))
+					if (_userAgent.Device.IsPdfConverter)
 					{
 						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
 					}

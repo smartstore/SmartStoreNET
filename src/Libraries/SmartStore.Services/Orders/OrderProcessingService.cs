@@ -1426,23 +1426,10 @@ namespace SmartStore.Services.Orders
                 result.AddError(exc.Message);
             }
 
-            #region Process errors
-
-            string error = "";
-            for (int i = 0; i < result.Errors.Count; i++)
-            {
-                error += string.Format("Error {0}: {1}", i + 1, result.Errors[i]);
-                if (i != result.Errors.Count - 1)
-                    error += ". ";
-            }
-            if (!String.IsNullOrEmpty(error))
-            {
-                //log it
-                string logError = string.Format("Error while placing order. {0}", error);
-                _logger.Error(logError);
-            }
-
-            #endregion
+			if (result.Errors.Count > 0)
+			{
+				_logger.Error(string.Join(" ", result.Errors));
+			}
 
             return result;
         }

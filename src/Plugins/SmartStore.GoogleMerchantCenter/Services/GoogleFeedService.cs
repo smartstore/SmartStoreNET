@@ -250,7 +250,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				return defaultValue;
 
 			// TODO: Product.BasePriceMeasureUnit should be localized
-			switch (value.ToLower())
+			switch (value.ToLowerInvariant())
 			{
 				case "mg":
 				case "milligramm":

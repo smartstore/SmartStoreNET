@@ -125,6 +125,13 @@ namespace SmartStore.Core
         /// <returns>Result</returns>
         bool IsSearchEngine(HttpContextBase context);
 
+		/// <summary>
+		/// Get a value indicating whether the request is made by the PDF converter (wkhtmltopdf)
+		/// </summary>
+		/// <param name="request">HTTP Request</param>
+		/// <returns>Result</returns>
+		bool IsPdfConverter(HttpContextBase context);
+
         /// <summary>
         /// Gets a value that indicates whether the client is being redirected to a new location
         /// </summary>

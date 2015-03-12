@@ -95,6 +95,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("ShoppingCart.AttributeError",
 				"An unknown error has occurred in the examination of the selected attributes.",
 				"Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Attribute aufgetreten.");
+
+			builder.AddOrUpdate("Common.Execution",
+				"Execution",
+				"Ausführung");
 		}
 	}
 }

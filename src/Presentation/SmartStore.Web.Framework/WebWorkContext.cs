@@ -131,29 +131,41 @@ namespace SmartStore.Web.Framework
                     return _cachedCustomer;
 
                 Customer customer = null;
+
+				// check whether request is made by a background task
+				// in this case return built-in customer record for background task
                 if (_httpContext == null || _httpContext.IsFakeContext())
                 {
-                    //check whether request is made by a background task
-                    //in this case return built-in customer record for background task
                     customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
                 }
 
-                //check whether request is made by a search engine
-                //in this case return built-in customer record for search engines 
-                //or comment the following two lines of code in order to disable this functionality
+                // check whether request is made by a search engine
+                // in this case return built-in customer record for search engines 
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
-                    if (_webHelper.IsSearchEngine(_httpContext))
-                        customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+					if (_webHelper.IsSearchEngine(_httpContext))
+					{
+						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
+					}
                 }
 
-                //registered user
+				// check whether request is made by the PDF converter
+				// in this case return built-in customer record for the converter
+				if (customer == null || customer.Deleted || !customer.Active)
+				{
+					if (_webHelper.IsPdfConverter(_httpContext))
+					{
+						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
+					}
+				}
+
+                // registered user?
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
                     customer = _authenticationService.GetAuthenticatedCustomer();
                 }
 
-                //impersonate user if required (currently used for 'phone order' support)
+                // impersonate user if required (currently used for 'phone order' support)
                 if (customer != null && !customer.Deleted && customer.Active)
                 {
                     int? impersonatedCustomerId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.ImpersonatedCustomerId);
@@ -169,7 +181,7 @@ namespace SmartStore.Web.Framework
                     }
                 }
 
-                //load guest customer
+                // load guest customer
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
                     var customerCookie = GetCustomerCookie();
@@ -189,14 +201,14 @@ namespace SmartStore.Web.Framework
                     }
                 }
 
-                //create guest if not exists
+                // create guest if not exists
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
                     customer = _customerService.InsertGuestCustomer();
                 }
 
 
-                //validation
+                // validation
                 if (!customer.Deleted && customer.Active)
                 {
                     SetCustomerCookie(customer.CustomerGuid);

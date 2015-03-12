@@ -1275,8 +1275,8 @@ table.payment-method-features td {
     display: block;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid #969696;
-    border-radius: 5px;
+    border: 1px solid #969696;
+    border-radius: 4px;
     height: 14px;
     padding: 0;
     margin: 0;
@@ -1285,7 +1285,6 @@ table.payment-method-features td {
 .onoffswitch-inner {
     width: 200%;
     margin-left: -100%;
-    .transition(all 0.3s ease-in 0s);
 }
 
 .onoffswitch-on, .onoffswitch-off {
@@ -1294,37 +1293,36 @@ table.payment-method-features td {
     height: 15px;
     line-height: 15px;
     padding: 0;
-    color: white; 
-    font-size: 11px; 
-    font-family: Trebuchet, Arial, sans-serif;
+    color: #fff; 
+    font-size: 10px; 
     font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
     .box-sizing(border-box);
 }
 
 .onoffswitch-on {
-    padding-left: 6px;
-    background-color: #6BB2ED;
-    color: #FFFFFF;
+    background-color: @orange;
+    color: #fff;
 }
 
 .onoffswitch-off {
-    padding-right: 3px;
-    background-color: #FFFFFF;
-    color: #969696;
-    text-align: right;
+    background-color: #fff;
+    color: #bbb;
 }
 
 .onoffswitch-switch {
-    width: 27px;
+    width: 30px;
+	box-sizing: border-box;
     margin: 0;
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 29px;
-    background: #FFFFFF;
-    border: 2px solid #969696;
-    .border-radius(5px);
-    .transition(all 0.3s ease-in 0s);
+    right: 30px;
+    background: #fff;
+    border: 1px solid #969696;
+    .border-radius(4px 0 0 4px);
+    .transition(all 0.05s ease-in);
     #gradient > .vertical(#dddddd, #ffffff);
 }
 
@@ -1334,6 +1332,7 @@ table.payment-method-features td {
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0; 
+	.border-radius(0 4px 4px 0);
 }
 #pnlAllFlags a.flag {
     min-width: 100px;

@@ -151,7 +151,7 @@ namespace SmartStore.Core.Themes
                 return ThemeVariableType.Select;
             }
 
-            switch (type.ToLower())
+            switch (type.ToLowerInvariant())
             {
                 case "string":
                     result = ThemeVariableType.String;

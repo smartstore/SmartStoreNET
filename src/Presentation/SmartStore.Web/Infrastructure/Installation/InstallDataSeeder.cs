@@ -184,7 +184,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
 			_ctx.SaveChanges();
 
-            // search engine (crawler) built-in user
+			// Built-in user for search engines (crawlers)
             var customer = _data.SearchEngineUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
@@ -193,6 +193,11 @@ namespace SmartStore.Web.Infrastructure.Installation
             customer = _data.BackgroundTaskUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
+
+			// Built-in user for the PDF converter
+			customer = _data.PdfConverterUser();
+			customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+			Save(customer);
         }
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)

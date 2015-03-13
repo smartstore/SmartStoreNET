@@ -162,6 +162,8 @@ namespace SmartStore.Admin.Controllers
 
             var model = new LocalPluginsModel();
 
+			model.IsLicensingSandbox = LicenseChecker.IsSandbox;
+
 			model.AvailableStores = _commonService.StoreService
 				.GetAllStores()
 				.Select(s => s.ToModel())

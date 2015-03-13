@@ -21,6 +21,8 @@ namespace SmartStore.Admin.Models.Plugins
 
         public Multimap<string, PluginModel> Groups { get; set; }
 
+		public bool IsLicensingSandbox { get; set; }
+
         public ICollection<PluginModel> AllPlugins
         {
             get

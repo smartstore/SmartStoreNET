@@ -12,9 +12,13 @@
             @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
         </div>
         <div class="options">
+            <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
+                <i class="fa fa-print"></i>
+                @T("Order.Print")
+            </a>
             @if (Model.DisplayPdfInvoice)
             {
-                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
+                <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = true })" class="btn">
 					<i class="fa fa-file-pdf-o"></i>
 					@T("Admin.Orders.PdfInvoice")
 				</a>

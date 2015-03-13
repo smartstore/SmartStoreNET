@@ -105,10 +105,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FiftyOne.Foundation, Version=3.1.10.2, Culture=neutral, PublicKeyToken=e967ae578dabd98e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\51Degrees.mobi.3.1.10.2\lib\NET40\FiftyOne.Foundation.dll</HintPath>
-    </Reference>
     <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
@@ -910,7 +906,6 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\fonts\Fontastic.svg" />
-    <Content Include="51Degrees.config" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>

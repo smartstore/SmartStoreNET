@@ -478,6 +478,7 @@
     <Content Include="Views\QuantityUnit\Create.cshtml" />
     <Content Include="Views\QuantityUnit\Edit.cshtml" />
     <Content Include="Views\QuantityUnit\List.cshtml" />
+    <Content Include="Views\Home\UaTester.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

@@ -141,7 +141,7 @@ namespace SmartStore.Web.Framework
                 // in this case return built-in customer record for search engines 
                 if (customer == null || customer.Deleted || !customer.Active)
                 {
-					if (_userAgent.Device.IsBot)
+					if (_userAgent.IsBot)
 					{
 						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.SearchEngine);
 					}
@@ -151,7 +151,7 @@ namespace SmartStore.Web.Framework
 				// in this case return built-in customer record for the converter
 				if (customer == null || customer.Deleted || !customer.Active)
 				{
-					if (_userAgent.Device.IsPdfConverter)
+					if (_userAgent.IsPdfConverter)
 					{
 						customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.PdfConverter);
 					}

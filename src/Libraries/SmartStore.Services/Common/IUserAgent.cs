@@ -9,18 +9,24 @@ namespace SmartStore.Services.Common
 	
 	public interface IUserAgent
 	{
+		string RawValue { get; set; }
+		
 		UserAgentInfo UserAgent { get; }
 		DeviceInfo Device { get; }
 		OSInfo OS { get; }
+
+		bool IsBot { get; }
+		bool IsMobileDevice { get; }
+		bool IsTablet { get; }
+		bool IsPdfConverter { get; }
 	}
 
 	public sealed class DeviceInfo
 	{
-		public DeviceInfo(string family, bool isBot, bool isPdfConverter)
+		public DeviceInfo(string family, bool isBot)
 		{
 			this.Family = family;
 			this.IsBot = isBot;
-			this.IsPdfConverter = isPdfConverter;
 		}
 		public override string ToString()
 		{
@@ -28,7 +34,6 @@ namespace SmartStore.Services.Common
 		}
 		public string Family { get; private set; }
 		public bool IsBot { get; private set; }
-		public bool IsPdfConverter { get; private set; }
 	}
 
 	public sealed class OSInfo

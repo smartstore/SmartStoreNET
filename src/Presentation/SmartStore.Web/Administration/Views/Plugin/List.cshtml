@@ -100,10 +100,10 @@
 								}
 								@if (plugin.LicenseUrl.HasValue())
 								{
-									<a class="btn btn-small plugin-licence" href="javascript:void(0)" data-url="@plugin.LicenseUrl">
+									<button class="btn btn-small plugin-licence" type="button" data-url="@plugin.LicenseUrl">
 										<i class="fa fa-key"></i>
 										@T("Admin.Common.License")
-									</a>
+									</button>
 								}
 							</div>
 						</div>	
@@ -432,7 +432,7 @@
         });
 
     	// licence plugin
-    	$(document).on('click', 'a.plugin-licence', function (e) {
+    	$(document).on('click', 'button.plugin-licence', function (e) {
     		var dialog = $('#plugin-licence-modal'),
 				url = $(this).attr('data-url');
 

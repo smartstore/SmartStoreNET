@@ -8,24 +8,22 @@
 		Html.AddTitleParts(T("Admin.Plugins.AddOnLicensing").Text);
 	}
 }
-<div class="page">
-	<div class="page-title">
-		<h2>@T("Admin.Plugins.AddOnLicensing")</h2>
-	</div>
-
-	<div class="clear"></div>
-
-	<div class="page-body">
-		<div class="alert alert-error fade in">
-			<p>
-				<strong>Systemname:</strong> @Model["SystemName"]
-				<br />
-				<strong>Controller:</strong> @Model["ControllerName"],
-				<strong>Action:</strong> @Model["ActionName"]
-			</p>
-			<p>
-				<span>@Html.Raw(Model["Message"])</span>
-			</p>
+@if (Model["Message"] != null && ((string)Model["Message"]).HasValue())
+{
+	<div class="page">
+		<div class="page-body">
+			<div class="alert alert-error fade in">
+				<h4>@T("Admin.Plugins.AddOnLicensing")</h4>
+				<p>
+					<strong>Systemname:</strong> @Model["SystemName"]
+					<br />
+					<strong>Controller:</strong> @Model["ControllerName"],
+					<strong>Action:</strong> @Model["ActionName"]
+				</p>
+				<p>
+					<span>@Html.Raw(Model["Message"])</span>
+				</p>
+			</div>
 		</div>
 	</div>
-</div>
+}

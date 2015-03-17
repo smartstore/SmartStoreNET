@@ -34,7 +34,7 @@
         <div class="login-wrapper clearfix">
             @if (Model.CheckoutAsGuest)
             {
-                <div class="login-block login-block-register">
+                <div class="login-block login-block-register equalized-column">
                     <div class="block login-block-inner checkout-as-guest-or-register-block">
                         <div class="block-title">
                             @T("Account.Login.CheckoutAsGuestOrRegister")
@@ -55,7 +55,7 @@
             }
             else
             {
-                <div class="login-block login-block-register">
+                <div class="login-block login-block-register equalized-column">
                     <div class="block login-block-inner">
                         <div class="block-title">
                             @T("Account.Login.NewCustomer")
@@ -71,7 +71,7 @@
                     </div>
                 </div>
             }
-            <div class="login-block login-block-login">
+            <div class="login-block login-block-login equalized-column">
 
                 <div class="block">
                     <div class="block-title">
@@ -80,17 +80,18 @@
                     <div class="block-body">
 
                         <form action="@ViewContext.HttpContext.Request.RawUrl" method="post" class="form-horizontal">
-                            @if (!ViewData.ModelState.IsValid) {
+                            @if (!ViewData.ModelState.IsValid)
+                            {
                                 @Html.ValidationSummary(true, T("Account.Login.Unsuccessful").Text)
                             }
-                    
+
                             @if (Model.UsernamesEnabled)
                             {
                                 <div class="control-group">
                                     @Html.LabelFor(model => model.Username, new { @class = "control-label", @for = "Username" })
                                     <div class="controls">
-										@Html.TextBoxFor(m => m.Username, new { @class = "username input-block-level" })
-										@Html.ValidationMessageFor(m => m.Username)
+                                        @Html.TextBoxFor(m => m.Username, new { @class = "username input-block-level" })
+                                        @Html.ValidationMessageFor(m => m.Username)
                                     </div>
                                 </div>
                             }
@@ -99,46 +100,46 @@
                                 <div class="control-group">
                                     @Html.LabelFor(model => model.Email, new { @class = "control-label", @for = "Email" })
                                     <div class="controls">
-										@Html.TextBoxFor(m => m.Email, new { @class = "email input-block-level" })
-										@Html.ValidationMessageFor(m => m.Email)
+                                        @Html.TextBoxFor(m => m.Email, new { @class = "email input-block-level" })
+                                        @Html.ValidationMessageFor(m => m.Email)
                                     </div>
                                 </div>
                             }
-                                        
+
                             <div class="control-group pwd">
                                 @Html.LabelFor(model => model.Password, new { @class = "control-label", @for = "Password" })
                                 <div class="controls">
-									<input type="password"
-										   class="password input-block-level"
-										   autocomplete="off"
-										   id="@Html.FieldIdFor(m => m.Password)"
-										   name="@Html.FieldNameFor(m => m.Password)"
-										   value="@(Model.Password.HasValue() ? Model.Password : null)" />
-									@Html.ValidationMessageFor(m => m.Password)
-									<div class="forgot-password">
-										@Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
-									</div>
+                                    <input type="password"
+                                           class="password input-block-level"
+                                           autocomplete="off"
+                                           id="@Html.FieldIdFor(m => m.Password)"
+                                           name="@Html.FieldNameFor(m => m.Password)"
+                                           value="@(Model.Password.HasValue() ? Model.Password : null)" />
+                                    @Html.ValidationMessageFor(m => m.Password)
+                                    <div class="forgot-password">
+                                        @Html.ActionLink(T("Account.Login.ForgotPassword").Text, "PasswordRecovery", "Customer")
+                                    </div>
                                 </div>
                             </div>
 
-							<div class="control-group signin">
-								<div class="controls clearfix">
-									<label class="checkbox inline">
-										@Html.CheckBoxFor(m => m.RememberMe)
-										@T("Account.Login.Fields.RememberMe")
-									</label>
-									<div class="pull-right">
-										<button type="submit" class="btn login-button">
-											<i class="fa fa-sign-in hide"></i>
-											@T("Account.Login.LoginButton")
-										</button>
-									</div>
-								</div>
-							</div>
-                            
+                            <div class="control-group signin">
+                                <div class="controls clearfix">
+                                    <label class="checkbox inline">
+                                        @Html.CheckBoxFor(m => m.RememberMe)
+                                        @T("Account.Login.Fields.RememberMe")
+                                    </label>
+                                    <div class="pull-right">
+                                        <button type="submit" class="btn login-button">
+                                            <i class="fa fa-sign-in hide"></i>
+                                            @T("Account.Login.LoginButton")
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
                             <div class="control-group">
                                 <div class="controls">
-                            
+
                                     @if (Model.DisplayCaptcha)
                                     {
                                         <div class="captcha-box">
@@ -146,10 +147,10 @@
                                         </div>
                                     }
 
-									<div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
+                                    <div class="externalauthentication clearfix">@Html.Action("ExternalMethods", "ExternalAuthentication")</div>
                                 </div>
-                            </div> 
-                        
+                            </div>
+
                         </form>
 
                     </div>
@@ -160,3 +161,9 @@
 
     </div>
 </div>
+
+<script type="text/javascript">
+    $(function () {
+        applyCommonPlugins($(".page.login-page"));
+    });
+</script>

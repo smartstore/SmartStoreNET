@@ -17,6 +17,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.Property(orderItem => orderItem.UnitPriceExclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.PriceInclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.PriceExclTax).HasPrecision(18, 4);
+			this.Property(orderItem => orderItem.TaxRate).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.DiscountAmountInclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.DiscountAmountExclTax).HasPrecision(18, 4);
             this.Property(orderItem => orderItem.ItemWeight).HasPrecision(18, 4);

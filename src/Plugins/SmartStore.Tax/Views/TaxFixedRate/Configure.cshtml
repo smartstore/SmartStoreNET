@@ -1,0 +1,41 @@
+﻿@{
+    Layout = "";
+}
+
+@model Telerik.Web.Mvc.GridModel<SmartStore.Tax.Models.FixedTaxRateModel>
+@using Telerik.Web.Mvc.UI;
+@using System.Linq;
+
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid(Model.Data)
+            .Name("Grid")
+            .DataKeys(keys => keys.Add(x => x.TaxCategoryId).RouteKey("TaxCategoryId"))
+            .Columns(columns =>
+            {
+                columns.Bound(x => x.TaxCategoryName)
+					.ReadOnly();
+                columns.Bound(x => x.Rate)
+					.Width(400)
+					.Format("{0:0.00}");
+                columns.Command(commands =>
+                {
+                    commands.Edit();
+                }).Width(120);
+
+            })
+            .Editable(x =>
+            {
+                x.Mode(GridEditMode.InLine);
+            })
+            .DataBinding(dataBinding =>
+            {
+				dataBinding.Ajax()
+					.Select("Configure", "TaxFixedRate", new RouteValueDictionary() { { "area", "SmartStore.Tax" } })
+					.Update("TaxRateUpdate", "TaxFixedRate", new RouteValueDictionary() { { "area", "SmartStore.Tax" } });
+            })
+            .EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

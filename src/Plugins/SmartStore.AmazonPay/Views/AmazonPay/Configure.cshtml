@@ -1,0 +1,327 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.Web.Framework.UI;
+@using SmartStore.AmazonPay.Models;
+@using SmartStore.AmazonPay.Extensions;
+@model ConfigurationModel
+@{
+    Layout = "";
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Scripts/smartstore.amazonpay.js"));
+}
+
+<table class="plugin-intro-table">
+	<tr>
+		<td>
+			<div class="alert alert-info">
+				<button class="close" data-dismiss="alert">×</button>
+				@Html.Raw(@T("Plugins.Payments.AmazonPay.AdminInstruction"))
+			</div>
+		</td>
+		<td>
+			<a href="https://sellercentral-europe.amazon.com" target="_blank">
+				<img src="@Url.Content("~/Plugins/SmartStore.AmazonPay/Content/images/logo.gif")" alt="amazon payments" class="config-logo" />
+			</a>
+		</td>
+	</tr>
+</table>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@using (Html.BeginForm())
+{
+	<table id="AmazonPayConfigTable" class="adminContent">
+	<tr>
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">
+					@Model.ConfigGroups.SafeGet(0)
+				</div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.UseSandbox)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.UseSandbox)
+            @Html.ValidationMessageFor(model => model.UseSandbox)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SellerId)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.SellerId)
+            @Html.ValidationMessageFor(model => model.SellerId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AccessKey)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AccessKey)
+            @Html.ValidationMessageFor(model => model.AccessKey)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SecretKey)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.SecretKey)
+            @Html.ValidationMessageFor(model => model.SecretKey)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.Marketplace)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.Marketplace)
+			@Html.DropDownListFor(model => model.Marketplace, new List<SelectListItem>()
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.De"), Value = "de" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.Marketplace.Uk"), Value = "uk" }
+			})
+            @Html.ValidationMessageFor(model => model.Marketplace)
+        </td>
+    </tr>
+
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">@Model.ConfigGroups.SafeGet(1)</div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TransactionType)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.TransactionType)
+			@Html.DropDownListFor(model => model.TransactionType, Model.TransactionTypes)
+            @Html.ValidationMessageFor(model => model.TransactionType)
+        </td>
+    </tr>
+	<tr id="TransactionTypeWarning" class="hide">
+		<td colspan="2">
+			<div class="alert alert-warning">
+				@T("Plugins.Payments.AmazonPay.TransactionType.Warning")
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.SaveEmailAndPhone)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.SaveEmailAndPhone)
+			@Html.DropDownListFor(model => model.SaveEmailAndPhone, Model.SaveEmailAndPhones)
+            @Html.ValidationMessageFor(model => model.SaveEmailAndPhone)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AddOrderNotes)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AddOrderNotes)
+            @Html.ValidationMessageFor(model => model.AddOrderNotes)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.InformCustomerAboutErrors)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.InformCustomerAboutErrors)
+            @Html.ValidationMessageFor(model => model.InformCustomerAboutErrors)
+        </td>
+    </tr>
+    <tr id="InformCustomerAddErrorsContainer">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.InformCustomerAddErrors)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.InformCustomerAddErrors)
+            @Html.ValidationMessageFor(model => model.InformCustomerAddErrors)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.DataFetching)
+        </td>
+        <td class="adminData">
+			@Html.DropDownListFor(model => model.DataFetching, Model.DataFetchings)
+            @Html.ValidationMessageFor(model => model.DataFetching)
+        </td>
+    </tr>
+    <tr class="data-fetching data-fetching-ipn">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.IpnUrl)
+        </td>
+        <td class="adminData">
+            @Html.DisplayFor(model => model.IpnUrl)
+        </td>
+    </tr>
+    <tr class="data-fetching data-fetching-polling">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PollingTaskMinutes)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(model => model.PollingTaskMinutes)
+			@Html.ValidationMessageFor(model => model.PollingTaskMinutes)
+        </td>
+    </tr>
+    <tr class="data-fetching data-fetching-polling">
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PollingMaxOrderCreationDays)
+        </td>
+        <td class="adminData">
+			@Html.EditorFor(model => model.PollingMaxOrderCreationDays)
+			@Html.ValidationMessageFor(model => model.PollingMaxOrderCreationDays)
+        </td>
+    </tr>
+	<tr id="DataFetchingWarning" class="hide">
+		<td colspan="2">
+			<div class="alert alert-warning">
+				@T("Plugins.Payments.AmazonPay.DataFetching.Warning")
+			</div>
+		</td>
+	</tr>
+
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">@Model.ConfigGroups.SafeGet(2)</div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AmazonButtonColor)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AmazonButtonColor)
+			@Html.DropDownListFor(model => model.AmazonButtonColor, new List<SelectListItem>()
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonColor.Orange"), Value = "orange" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonColor.Tan"), Value = "tan" }
+			})
+            @Html.ValidationMessageFor(model => model.AmazonButtonColor)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AmazonButtonSize)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.AmazonButtonSize)
+			@Html.DropDownListFor(model => model.AmazonButtonSize, new List<SelectListItem>()
+			{
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Medium"), Value = "medium" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Large"), Value = "large" },
+				new SelectListItem { Text = @T("Plugins.Payments.AmazonPay.AmazonButtonSize.Xlarge"), Value = "x-large" }
+			})
+            @Html.ValidationMessageFor(model => model.AmazonButtonSize)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AddressWidgetWidth)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AddressWidgetWidth)
+            @Html.ValidationMessageFor(model => model.AddressWidgetWidth)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AddressWidgetHeight)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AddressWidgetHeight)
+            @Html.ValidationMessageFor(model => model.AddressWidgetHeight)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PaymentWidgetWidth)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.PaymentWidgetWidth)
+            @Html.ValidationMessageFor(model => model.PaymentWidgetWidth)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.PaymentWidgetHeight)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.PaymentWidgetHeight)
+            @Html.ValidationMessageFor(model => model.PaymentWidgetHeight)
+        </td>
+    </tr>
+
+	<tr class="adminSeparator">
+		<td colspan="2">
+			<div class="admin-config-group">
+				<div class="title">@Model.ConfigGroups.SafeGet(3)</div>
+			</div>
+		</td>
+	</tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ShowButtonInMiniShoppingCart)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.ShowButtonInMiniShoppingCart)
+            @Html.ValidationMessageFor(model => model.ShowButtonInMiniShoppingCart)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AdditionalFee)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AdditionalFee)
+            @Html.ValidationMessageFor(model => model.AdditionalFee)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+            @Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+        </td>
+    </tr>
+	<tr id="AdditionalFeeWarning">
+		<td colspan="2">
+			<div class="alert alert-warning">
+				@T("Plugins.Payments.AmazonPay.AdditionalFee.Warning")
+			</div>
+		</td>
+	</tr>
+
+    <tr>
+        <td class="adminTitle">&nbsp;</td>
+        <td class="adminData">
+            <button type="submit" name="save" class="btn btn-primary" value="save">
+                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+            </button>
+        </td>
+    </tr>
+	</table>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		amazonpay.init();
+	});
+</script>

@@ -43,7 +43,10 @@
               </ul>
 			</div>
 
-            <button type="submit" name="specificationattribute-delete" value="specificationattribute-delete" id="specificationattribute-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+            <button type="submit" name="specificationattribute-delete" value="specificationattribute-delete" id="specificationattribute-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>
+				@T("Admin.Common.Delete")
+			</button>
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)
@@ -57,7 +60,7 @@
 				ask: '@T("Admin.Common.AskToProceed")',
 				curtainTitle: '@T("Admin.Common.WaitProcessingMessage")',
 				callbackSuccess: function (resp) {
-					alert(resp.message);
+					window.displayNotification(resp.message, resp.notificationType);
 				}
 			});
 		});

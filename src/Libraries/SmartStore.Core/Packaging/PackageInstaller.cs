@@ -118,9 +118,11 @@ namespace SmartStore.Core.Packaging
 
 			// check if the new package is compatible with current SmartStore version
 			var descriptor = package.GetExtensionDescriptor(packageInfo.Type);
-
+			
 			if (descriptor != null)
 			{
+				packageInfo.ExtensionDescriptor = descriptor;
+
 				if (!PluginManager.IsAssumedCompatible(descriptor.MinAppVersion))
 				{
 					if (previousInstalled)

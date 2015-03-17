@@ -175,6 +175,8 @@ namespace SmartStore.Services.Orders
 
 					if (parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
 					{
+						child.Product.MergeWithCombination(child.AttributesXml);
+
 						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
 						if (attributeValues != null)
 						{

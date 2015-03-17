@@ -87,29 +87,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(NewsItem newsItem, NewsItemModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(newsItem);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(newsItem, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
 		#endregion
 
         #region News items
@@ -196,7 +173,7 @@ namespace SmartStore.Admin.Controllers
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
 				//Stores
-				SaveStoreMappings(newsItem, model);
+				_storeMappingService.SaveStoreMappings<NewsItem>(newsItem, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
@@ -204,8 +181,10 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
 			//Stores
 			PrepareStoresMappingModel(model, null, true);
+
             return View(model);
         }
 
@@ -216,15 +195,17 @@ namespace SmartStore.Admin.Controllers
 
             var newsItem = _newsService.GetNewsById(id);
             if (newsItem == null)
-                //No news item found with the specified id
                 return RedirectToAction("List");
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
-            var model = newsItem.ToModel();
+
+			var model = newsItem.ToModel();
             model.StartDate = newsItem.StartDateUtc;
             model.EndDate = newsItem.EndDateUtc;
+			
 			//stores
 			PrepareStoresMappingModel(model, newsItem, false);
+
             return View(model);
         }
 
@@ -236,7 +217,6 @@ namespace SmartStore.Admin.Controllers
 
             var newsItem = _newsService.GetNewsById(model.Id);
             if (newsItem == null)
-                //No news item found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -251,7 +231,7 @@ namespace SmartStore.Admin.Controllers
                 _urlRecordService.SaveSlug(newsItem, seName, newsItem.LanguageId);
 
 				//Stores
-				SaveStoreMappings(newsItem, model);
+				_storeMappingService.SaveStoreMappings<NewsItem>(newsItem, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.News.NewsItems.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = newsItem.Id }) : RedirectToAction("List");
@@ -259,8 +239,10 @@ namespace SmartStore.Admin.Controllers
 
             //If we got this far, something failed, redisplay form
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
+
 			//stores
 			PrepareStoresMappingModel(model, newsItem, true);
+
             return View(model);
         }
 
@@ -272,7 +254,6 @@ namespace SmartStore.Admin.Controllers
 
             var newsItem = _newsService.GetNewsById(id);
             if (newsItem == null)
-                //No news item found with the specified id
                 return RedirectToAction("List");
 
             _newsService.DeleteNews(newsItem);

@@ -22,11 +22,11 @@
                 <div>
                     @T("PrivateMessages.Send.To")
                     @if (Model.AllowViewingToProfile)
-                    {
-                        <a href="@Url.RouteUrl("CustomerProfile", new { id = Model.ToCustomerId })">@(Model.CustomerToName)</a>
-                    }
-                    else
-                    {
+					{
+						<a href="@Url.RouteUrl("CustomerProfile", new { id = Model.ToCustomerId })" rel="nofollow">@(Model.CustomerToName)</a>
+					}
+					else
+					{
                         @Model.CustomerToName
                     }
                 </div>
@@ -42,7 +42,7 @@
                 </div>
                 <div class="options">
                     <input type="submit" value="@T("PrivateMessages.Send.SendButton")" data-inline="true" />
-                    <a href="@Url.RouteUrl("PrivateMessages")" data-role="button" data-inline="true">@T("PrivateMessages.Send.CancelButton")</a>
+					<a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" data-role="button" data-inline="true" rel="nofollow">@T("PrivateMessages.Send.CancelButton")</a>
                 </div>
             </div>
         </div>

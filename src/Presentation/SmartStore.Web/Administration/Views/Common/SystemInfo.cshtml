@@ -108,6 +108,10 @@
         </td>
         <td class="adminData">
 			@Model.DatabaseSizeString.NaIfEmpty()
+			@if (Model.ShrinkDatabaseEnabled)
+			{
+				<a href='@Url.Action("ShrinkDatabase")' style="margin-left: 10px">@T("Common.Shrink")</a>
+			}		
         </td>
     </tr>
     <tr>

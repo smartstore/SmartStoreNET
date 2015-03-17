@@ -1,0 +1,39 @@
+﻿@{
+    Layout = "";
+}
+@model Telerik.Web.Mvc.GridModel<SmartStore.Shipping.Models.FixedRateModel>
+@using Telerik.Web.Mvc.UI;
+@using System.Linq;
+
+<table class="adminContent">
+    <tr>
+        <td>
+			@(Html.Telerik().Grid(Model.Data)
+				.Name("Grid")
+				.DataKeys(keys => keys.Add(x => x.ShippingMethodId).RouteKey("ShippingMethodId"))
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.ShippingMethodName)
+						.ReadOnly();
+					columns.Bound(x => x.Rate)
+						.Format("{0:0.00}")
+						.Width(180);
+					columns.Command(commands =>
+					{
+						commands.Edit();
+					}).Width(180);
+				})
+				.Editable(x =>
+				{
+					x.Mode(GridEditMode.InLine);
+				})
+				.DataBinding(dataBinding =>
+				{
+                    dataBinding.Ajax()
+                        .Select("Configure", "FixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Shipping.Controllers" }, { "area", "SmartStore.Shipping" } })
+                        .Update("ShippingRateUpdate", "FixedRate", new RouteValueDictionary() { { "Namespaces", "SmartStore.Shipping.Controllers" }, { "area", "SmartStore.Shipping" } });
+				})
+				.EnableCustomBinding(true))
+        </td>
+    </tr>
+</table>

@@ -1,8 +1,0 @@
-﻿FriendlyName: Credit Card
-SystemName: Payments.Manual
-Group: Payment
-Version: 1.51
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Payments.Manual.dll
-ResourceRootKey: Plugins.Payments.Manual

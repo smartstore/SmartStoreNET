@@ -19,16 +19,17 @@ namespace SmartStore.Core.Plugins
         public PluginDescriptor()
         {
             this.Version = new Version("1.0");
-            this.MinAppVersion = SmartStoreVersion.FullVersion;
+            this.MinAppVersion = SmartStoreVersion.Version;
         }
 
-        public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
-            : this()
-        {
-            this.ReferencedAssembly = referencedAssembly;
-            this.OriginalAssemblyFile = originalAssemblyFile;
-            this.PluginType = pluginType;
-        }
+		// Unit tests
+		public PluginDescriptor(Assembly referencedAssembly, FileInfo originalAssemblyFile, Type pluginType)
+			: this()
+		{
+			this.ReferencedAssembly = referencedAssembly;
+			this.OriginalAssemblyFile = originalAssemblyFile;
+			this.PluginType = pluginType;
+		}
 
         /// <summary>
         /// Plugin file name
@@ -38,13 +39,7 @@ namespace SmartStore.Core.Plugins
         /// <summary>
         /// The physical path of the runtime plugin
         /// </summary>
-        public string PhysicalPath
-        {
-            get
-            {
-                return OriginalAssemblyFile.Directory.FullName;
-            }
-        }
+		public string PhysicalPath { get; set; }
 
         /// <summary>
         /// Gets the file name of the brand image (without path)
@@ -148,6 +143,12 @@ namespace SmartStore.Core.Plugins
 		[DataMember]
 		public string Author { get; set; }
 
+		/// <summary>
+		/// Gets or sets the project/marketplace url
+		/// </summary>
+		[DataMember]
+		public string Url { get; set; }
+
         /// <summary>
         /// Gets or sets the display order
         /// </summary>
@@ -159,6 +160,15 @@ namespace SmartStore.Core.Plugins
         /// </summary>
 		[DataMember]
 		public bool Installed { get; set; }
+
+		/// <summary>
+		/// Gets or sets the value indicating whether the plugin is configurable
+		/// </summary>
+		/// <remarks>
+		/// A plugin is configurable when it implements the <see cref="IConfigurable"/> interface
+		/// </remarks>
+		[DataMember]
+		public bool IsConfigurable { get; set; }
 
 		/// <summary>
 		/// Gets or sets the root key of string resources.
@@ -174,7 +184,7 @@ namespace SmartStore.Core.Plugins
 					try 
 					{
 						// try to get root-key from first entry of XML file
-						string localizationDir = Path.Combine(OriginalAssemblyFile.Directory.FullName, "Localization");
+						string localizationDir = Path.Combine(PhysicalPath, "Localization");
 
 						if (System.IO.Directory.Exists(localizationDir)) 
 						{
@@ -226,10 +236,11 @@ namespace SmartStore.Core.Plugins
 
         public int CompareTo(PluginDescriptor other)
         {
-            if (DisplayOrder != other.DisplayOrder)
-                return DisplayOrder.CompareTo(other.DisplayOrder);
-            else
-                return FriendlyName.CompareTo(other.FriendlyName);
+			if (DisplayOrder != other.DisplayOrder)
+				return DisplayOrder.CompareTo(other.DisplayOrder);
+			else if (FriendlyName != null)
+				return FriendlyName.CompareTo(other.FriendlyName);
+			return 0;
         }
 
 		public string GetSettingKey(string name)

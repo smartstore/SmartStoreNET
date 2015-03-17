@@ -1,0 +1,76 @@
+﻿@{
+    Layout = "";
+}
+@model SmartStore.GoogleAnalytics.Models.ConfigurationModel
+@using SmartStore.Web.Framework;
+
+<div class="alert alert-info">
+    @Html.Raw(@T("Plugins.Widgets.GoogleAnalytics.AdminInstruction"))
+</div>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@using (Html.BeginForm())
+{    
+<table class="adminContent">
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.ZoneId)
+        </td>
+        <td class="adminData">
+            @Html.DropDownListFor(model => model.ZoneId, Model.AvailableZones)
+            @Html.ValidationMessageFor(model => model.ZoneId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.GoogleId)
+        </td>
+        <td class="adminData">
+            @Html.SettingEditorFor(model => model.GoogleId)
+            @Html.ValidationMessageFor(model => model.GoogleId)
+        </td>
+    </tr>
+    <tr>
+        <td class="adminTitle">
+            @Html.SmartLabelFor(model => model.TrackingScript)
+        </td>
+        <td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.TrackingScript)
+            @Html.TextAreaFor(model => model.TrackingScript, new { style = "Width: 600px; Height: 200px;" })
+            @Html.ValidationMessageFor(model => model.TrackingScript)
+        </td>
+    </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EcommerceScript)
+		</td>
+		<td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.EcommerceScript)
+			@Html.TextAreaFor(model => model.EcommerceScript, new { style = "Width: 600px; Height: 50px;" })
+			@Html.ValidationMessageFor(model => model.EcommerceScript)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EcommerceDetailScript)
+		</td>
+		<td class="adminData">
+			@Html.SettingOverrideCheckbox(model => model.EcommerceDetailScript)
+			@Html.TextAreaFor(model => model.EcommerceDetailScript, new { style = "Width: 600px; Height: 50px;" })
+			@Html.ValidationMessageFor(model => model.EcommerceDetailScript)
+		</td>
+	</tr>
+    <tr>
+		<td class="adminTitle">
+			&nbsp;
+		</td>
+		<td class="adminData">
+            <button type="submit" name="save" value="save" class="btn btn-primary">
+                <i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+            </button>
+        </td>
+    </tr>
+</table>
+
+}

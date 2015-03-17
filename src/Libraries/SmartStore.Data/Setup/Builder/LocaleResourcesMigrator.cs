@@ -55,7 +55,7 @@ namespace SmartStore.Data.Setup
 						bool isLocal;
 						var db = GetResource(entry.Key, lang.Value.Id, toAdd, out isLocal);
 
-						if (db == null  && entry.Value.HasValue())
+						if (db == null && entry.Value.HasValue() && !entry.UpdateOnly)
 						{
 							// ADD action
 							toAdd.Add(new LocaleStringResource { LanguageId = lang.Value.Id, ResourceName = entry.Key, ResourceValue = entry.Value });

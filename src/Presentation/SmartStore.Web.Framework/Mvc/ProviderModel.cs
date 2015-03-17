@@ -35,6 +35,9 @@ namespace SmartStore.Web.Framework.Mvc
 
 		public PluginDescriptor PluginDescriptor { get; set; }
 
+		[SmartResourceDisplayName("Admin.Providers.ProvidingPlugin")]
+		public string ProvidingPluginFriendlyName { get; set; }
+
 		/// <summary>
 		/// Returns the absolute path of the provider's icon url. 
 		/// </summary>

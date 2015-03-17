@@ -72,6 +72,7 @@ using SmartStore.Core.IO.Media;
 using SmartStore.Core.IO.VirtualPath;
 using SmartStore.Core.IO.WebSite;
 using SmartStore.Utilities;
+using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework
 {
@@ -161,7 +162,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CurrencyService>().As<ICurrencyService>().InstancePerRequest();
 
 			builder.RegisterType<DeliveryTimeService>().As<IDeliveryTimeService>().InstancePerRequest();
-
+            builder.RegisterType<QuantityUnitService>().As<IQuantityUnitService>().InstancePerRequest();
 			builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerRequest();
 			builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerRequest();
 
@@ -222,7 +223,8 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
-            builder.RegisterType<PdfService>().As<IPdfService>().InstancePerRequest();
+			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();
+			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 
             builder.RegisterType<ExternalAuthorizer>().As<IExternalAuthorizer>().InstancePerRequest();
             builder.RegisterType<OpenAuthenticationService>().As<IOpenAuthenticationService>().InstancePerRequest();
@@ -311,10 +313,8 @@ namespace SmartStore.Web.Framework
 			{
 				var storeService = c.Resolve<IStoreService>();
 				var aclService = c.Resolve<IAclService>();
-				//return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
-				var x = !aclService.HasActiveAcl;
-				var y = storeService.IsSingleStoreMode();
-				return new DbQuerySettings(true, true);
+
+				return new DbQuerySettings(!aclService.HasActiveAcl, storeService.IsSingleStoreMode());
 			})
 			.InstancePerRequest();
 		}
@@ -347,7 +347,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
-			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest();
+			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest().OnRelease(x => x.Flush());
 			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
 		}
 
@@ -453,7 +453,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<StaticCache>().Keyed<ICache>(typeof(StaticCache)).SingleInstance();
-			builder.RegisterType<AspNetCache>().Keyed<ICache>(typeof(AspNetCache)).InstancePerRequest();
+			builder.RegisterType<AspNetCache>().Keyed<ICache>(typeof(AspNetCache)).SingleInstance();
 			builder.RegisterType<RequestCache>().Keyed<ICache>(typeof(RequestCache)).InstancePerRequest();
 
 			builder.RegisterType<CacheManager<RequestCache>>()
@@ -464,7 +464,7 @@ namespace SmartStore.Web.Framework
 				.SingleInstance();
 			builder.RegisterType<CacheManager<AspNetCache>>()
 				.Named<ICacheManager>("aspnet")
-				.InstancePerRequest();
+				.SingleInstance();
 			builder.RegisterType<NullCache>()
 				.Named<ICacheManager>("null")
 				.SingleInstance();
@@ -689,7 +689,9 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			// register theming services
-			builder.RegisterType<DefaultThemeRegistry>().As<IThemeRegistry>().SingleInstance();
+			builder.Register<DefaultThemeRegistry>(x => new DefaultThemeRegistry(x.Resolve<IEventPublisher>(), null, null, true)).As<IThemeRegistry>().SingleInstance();
+			builder.RegisterType<ThemeFileResolver>().As<IThemeFileResolver>().SingleInstance();
+
 			builder.RegisterType<ThemeContext>().As<IThemeContext>().InstancePerRequest();
 			builder.RegisterType<ThemeVariablesService>().As<IThemeVariablesService>().InstancePerRequest();
 
@@ -699,6 +701,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<WindowRenderer>().As<ComponentRenderer<Window>>();
 
 			builder.RegisterType<WidgetProvider>().As<IWidgetProvider>().InstancePerRequest();
+			builder.RegisterType<MenuPublisher>().As<IMenuPublisher>().InstancePerRequest();
 		}
 	}
 
@@ -750,12 +753,13 @@ namespace SmartStore.Web.Framework
 				var systemName = GetSystemName(type, pluginDescriptor);
 				var friendlyName = GetFriendlyName(type, pluginDescriptor);
 				var displayOrder = GetDisplayOrder(type, pluginDescriptor);
+				var dependentWidgets = GetDependentWidgets(type);
 				var resPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{1}.{0}"; // e.g. Plugins.FriendlyName.MySystemName
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
 
-				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest();
+				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
 				registration.WithMetadata<ProviderMetadata>(m =>
 				{
 					m.For(em => em.PluginDescriptor, pluginDescriptor);
@@ -766,6 +770,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.FriendlyName, friendlyName.Item1);
 					m.For(em => em.Description, friendlyName.Item2);
 					m.For(em => em.DisplayOrder, displayOrder);
+					m.For(em => em.DependentWidgets, dependentWidgets);
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
 				});
@@ -788,11 +793,15 @@ namespace SmartStore.Web.Framework
 		{
 			if (typeof(T).IsAssignableFrom(implType))
 			{
-				registration.As<T>().Named<T>(systemName);
-				registration.WithMetadata<ProviderMetadata>(m =>
+				try
 				{
-					m.For(em => em.ProviderType, typeof(T));
-				});
+					registration.As<T>().Named<T>(systemName);
+					registration.WithMetadata<ProviderMetadata>(m =>
+					{
+						m.For(em => em.ProviderType, typeof(T));
+					});
+				}
+				catch (Exception) { }
 			}
 		}
 
@@ -854,6 +863,20 @@ namespace SmartStore.Web.Framework
 			return new Tuple<string, string>(name, description);
 		}
 
+		private string[] GetDependentWidgets(Type type)
+		{
+			if (!typeof(IWidget).IsAssignableFrom(type))
+			{
+				// don't let widgets depend on other widgets
+				var attr = type.GetAttribute<DependentWidgetsAttribute>(false);
+				if (attr != null)
+				{
+					return attr.WidgetSystemNames;
+				}
+			}
+
+			return new string[] {};
+		}
 
 		private string ProviderTypeToKnownGroupName(Type implType)
 		{

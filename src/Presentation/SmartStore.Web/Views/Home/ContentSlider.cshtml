@@ -62,15 +62,15 @@
                         @if (slide.Button1.Published || slide.Button2.Published || slide.Button3.Published)
                         {
                             <div class="buttons">
-                                @if (slide.Button1.Published)
+                                @if (slide.Button1.Published && slide.Button1.Url.HasValue())
                                 {   
                                     <a class="btn @slide.Button1.Type" href="@slide.Button1.Url">@slide.Button1.Text</a>
                                 }
-                                @if (slide.Button2.Published)
+                                @if (slide.Button2.Published && slide.Button2.Url.HasValue())
                                 {   
                                     <a class="btn @slide.Button2.Type" href="@slide.Button2.Url">@slide.Button2.Text</a>
                                 }
-                                @if (slide.Button3.Published)
+                                @if (slide.Button3.Published && slide.Button3.Url.HasValue())
                                 {   
                                     <a class="btn @slide.Button3.Type" href="@slide.Button3.Url">@slide.Button3.Text</a>
                                 }

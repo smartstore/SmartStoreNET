@@ -29,11 +29,6 @@ namespace SmartStore.Core.Domain.Directory
 		public string DisplayLocale { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether the entity is published
-        /// </summary>
-        //public virtual bool Published { get; set; }
-
-        /// <summary>
         /// Gets or sets the display order
         /// </summary>
 		[DataMember]

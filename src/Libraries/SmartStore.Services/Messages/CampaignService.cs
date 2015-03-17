@@ -190,6 +190,9 @@ namespace SmartStore.Services.Messages
 
             var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, _storeContext.CurrentStore);
+            _messageTokenProvider.AddNewsLetterSubscriptionTokens(tokens, new NewsLetterSubscription() {
+                Email = email
+            });
 
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer != null)

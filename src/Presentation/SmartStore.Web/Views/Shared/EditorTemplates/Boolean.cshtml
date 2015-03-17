@@ -1,0 +1,37 @@
+﻿@functions{
+    
+    private bool? Value
+    {
+        get
+        {
+            bool? value = null;
+            if (ViewData.Model != null)
+            {
+                value = Convert.ToBoolean(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            return value;
+        }
+    }
+
+    private List<SelectListItem> TriStateValues
+    {
+        get
+        {
+            return new List<SelectListItem> {
+                new SelectListItem { Text = T("Common.Undefined").ToString(), Value = String.Empty, Selected = !Value.HasValue },
+                new SelectListItem { Text = T("Common.Yes").ToString(), Value = "true", Selected = Value.HasValue && Value.Value },
+                new SelectListItem { Text = T("Common.No").ToString(), Value = "false", Selected = Value.HasValue && !Value.Value },
+            };
+        }
+    }
+}
+
+
+@if (!ViewData.ModelMetadata.IsNullableValueType)
+{
+    @Html.CheckBox(string.Empty, Value ?? false, new { @class = "check-box" })
+}
+else
+{
+    @Html.DropDownList(string.Empty, TriStateValues, new { @class = "list-box tri-state" })
+}

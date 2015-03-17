@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
-using System.Web.Hosting;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
@@ -25,9 +20,15 @@ namespace SmartStore.Core
 		private static bool? s_optimizedCompilationsEnabled = null;
 		private static AspNetHostingPermissionLevel? s_trustLevel = null;
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
-		
+		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
+
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
+		private string _storeHost;
+		private string _storeHostSsl;
+		private bool? _appPathPossiblyAppended;
+		private bool? _appPathPossiblyAppendedSsl;
 
 		private Store _currentStore;
 
@@ -62,12 +63,15 @@ namespace SmartStore.Core
         /// <returns>URL referrer</returns>
         public virtual string GetCurrentIpAddress()
         {
-			if (_httpContext != null && _httpContext.Request != null)
-			{
-				return _httpContext.Request.UserHostAddress.EmptyNull();
-			}
+			string result = null;
 
-			return string.Empty;
+			if (_httpContext != null && _httpContext.Request != null)
+				result = _httpContext.Request.UserHostAddress;
+
+			if (result == "::1")
+				result = "127.0.0.1";
+
+			return result.EmptyNull();
         }
         
         /// <summary>
@@ -185,7 +189,14 @@ namespace SmartStore.Core
         /// <returns>Store host location</returns>
         private string GetStoreHost(bool useSsl, out bool appPathPossiblyAppended)
         {
-            appPathPossiblyAppended = false;
+			string cached = useSsl ? _storeHostSsl : _storeHost;
+			if (cached != null)
+			{
+				appPathPossiblyAppended = useSsl ? _appPathPossiblyAppendedSsl.Value : _appPathPossiblyAppended.Value;
+				return cached;
+			}
+
+			appPathPossiblyAppended = false;
             var result = "";
             var httpHost = ServerVariables("HTTP_HOST");
 
@@ -270,7 +281,20 @@ namespace SmartStore.Core
 				}
             }
 
-            return result.EnsureEndsWith("/").ToLowerInvariant();
+			// cache results for request
+			result = result.EnsureEndsWith("/").ToLowerInvariant();
+			if (useSsl)
+			{
+				_storeHostSsl = result;
+				_appPathPossiblyAppendedSsl = appPathPossiblyAppended;
+			}
+			else
+			{
+				_storeHost = result;
+				_appPathPossiblyAppended = appPathPossiblyAppended;
+			}
+
+            return result;
         }
         
         /// <summary>
@@ -372,13 +396,29 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
-			var parts = url.EmptyNull().Split(new[] { '?' });
+			// TODO: routine should not return a query string in lowercase (unless the caller is telling him to do so).
+			url = url.EmptyNull().ToLower();
+			queryStringModification = queryStringModification.EmptyNull().ToLower();
+
+			string curAnchor = null;
+
+			var hsIndex = url.LastIndexOf('#');
+			if (hsIndex >= 0)
+			{
+				curAnchor = url.Substring(hsIndex);
+				url = url.Substring(0, hsIndex);
+			}
+			
+			var parts = url.Split(new[] { '?' });
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
-			var modify = new QueryString(queryStringModification.EmptyNull());
+			var modify = new QueryString(queryStringModification);
 
-			current.AddRange(modify);
+			foreach (var nv in modify.AllKeys)
+			{
+				current.Add(nv, modify[nv], true);
+			}
 
-			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? "" : "#" + anchor);
+			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor.ToLower()) : "#" + anchor.ToLower());
 			return result;
         }
 
@@ -390,7 +430,7 @@ namespace SmartStore.Core
         /// <returns>New url</returns>
         public virtual string RemoveQueryString(string url, string queryString)
         {
-			var parts = url.EmptyNull().Split(new[] { '?' });
+			var parts = url.EmptyNull().ToLower().Split(new[] { '?' });
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
 
 			if (current.Count > 0 && queryString.HasValue())
@@ -553,39 +593,6 @@ namespace SmartStore.Core
 		}
 
         /// <summary>
-        /// Get a value indicating whether the request is made by search engine (web crawler)
-        /// </summary>
-        /// <param name="request">HTTP Request</param>
-        /// <returns>Result</returns>
-        public virtual bool IsSearchEngine(HttpContextBase context)
-        {
-            //we accept HttpContext instead of HttpRequest and put required logic in try-catch block
-            //more info: http://www.nopcommerce.com/boards/t/17711/unhandled-exception-request-is-not-available-in-this-context.aspx
-            if (context == null)
-                return false;
-
-            bool result = false;
-            try
-            {
-				if (context.Request.GetType().ToString().Contains("Fake"))	// codehint: sm-add
-					return false;
-
-                result = context.Request.Browser.Crawler;
-                if (!result)
-                {
-                    //put any additional known crawlers in the Regex below for some custom validation
-                    //var regEx = new Regex("Twiceler|twiceler|BaiDuSpider|baduspider|Slurp|slurp|ask|Ask|Teoma|teoma|Yahoo|yahoo");
-                    //result = regEx.Match(request.UserAgent).Success;
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.WriteLine(exc);
-            }
-            return result;
-        }
-
-        /// <summary>
         /// Gets a value that indicates whether the client is being redirected to a new location
         /// </summary>
         public virtual bool IsRequestBeingRedirected
@@ -648,6 +655,84 @@ namespace SmartStore.Core
 				}
 			}
 			return s_trustLevel.Value;
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to all (relative) urls in a html string
+		/// </summary>
+		/// <param name="html">The html string</param>
+		/// <param name="request">Request object</param>
+		/// <returns>The transformed result html</returns>
+		/// <remarks>
+		/// All html attributed named <c>src</c> and <c>href</c> are affected, also occurences of <c>url('path')</c> within embedded stylesheets.
+		/// </remarks>
+		public static string MakeAllUrlsAbsolute(string html, HttpRequestBase request)
+		{
+			Guard.ArgumentNotNull(() => request);
+
+			if (request.Url == null)
+			{
+				return html;
+			}
+
+			return MakeAllUrlsAbsolute(html, request.Url.Scheme, request.Url.Authority);
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to all (relative) urls in a html string
+		/// </summary>
+		/// <param name="html">The html string</param>
+		/// <param name="protocol">The protocol to prepend, e.g. <c>http</c></param>
+		/// <param name="host">The host name to prepend, e.g. <c>www.mysite.com</c></param>
+		/// <returns>The transformed result html</returns>
+		/// <remarks>
+		/// All html attributed named <c>src</c> and <c>href</c> are affected, also occurences of <c>url('path')</c> within embedded stylesheets.
+		/// </remarks>
+		public static string MakeAllUrlsAbsolute(string html, string protocol, string host)
+		{
+			Guard.ArgumentNotEmpty(() => html);
+			Guard.ArgumentNotEmpty(() => protocol);
+			Guard.ArgumentNotEmpty(() => host);
+
+			string baseUrl = string.Format("{0}://{1}", protocol, host.TrimEnd('/'));
+
+			MatchEvaluator evaluator = (match) =>
+			{
+				var url = match.Groups["url"].Value;
+				return "{0}{1}".FormatCurrent(baseUrl, url.EnsureStartsWith("/"));
+			};
+
+			html = s_htmlPathPattern.Replace(html, evaluator);
+			html = s_cssPathPattern.Replace(html, evaluator);
+
+			return html;
+		}
+
+		/// <summary>
+		/// Prepends protocol and host to the given (relative) url
+		/// </summary>
+		public static string GetAbsoluteUrl(string url, HttpRequestBase request)
+		{
+			Guard.ArgumentNotEmpty(() => url);
+			Guard.ArgumentNotNull(() => request);
+
+			if (request.Url == null)
+			{
+				return url;
+			}
+
+			if (url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) || url.StartsWith("https://", StringComparison.OrdinalIgnoreCase))
+			{
+				return url;
+			}
+
+			if (url.StartsWith("~"))
+			{
+				url = VirtualPathUtility.ToAbsolute(url);
+			}
+
+			url = String.Format("{0}://{1}{2}", request.Url.Scheme, request.Url.Authority, url);
+			return url;
 		}
 
         private class StoreHost

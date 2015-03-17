@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Services.Directory
@@ -27,19 +28,29 @@ namespace SmartStore.Services.Directory
         /// <returns>DeliveryTime</returns>
         DeliveryTime GetDeliveryTimeById(int deliveryTimeId);
 
+		/// <summary>
+		/// Gets the delivery time for a product
+		/// </summary>
+		/// <param name="product">The product</param>
+		/// <returns>Delivery time</returns>
+		DeliveryTime GetDeliveryTime(Product product);
+
         /// <summary>
         /// Gets all delivery times
         /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>delivery time collection</returns>
         IList<DeliveryTime> GetAllDeliveryTimes();
 
         /// <summary>
         /// Inserts a delivery time
         /// </summary>
-        /// <param name="currency">DeliveryTime</param>
+        /// <param name="deliveryTime">DeliveryTime</param>
         void InsertDeliveryTime(DeliveryTime deliveryTime);
 
+        /// <summary>
+        /// Updates a delivery time
+        /// </summary>
+        /// <param name="deliveryTime">DeliveryTime</param>
 		void UpdateDeliveryTime(DeliveryTime deliveryTime);
     }
 }

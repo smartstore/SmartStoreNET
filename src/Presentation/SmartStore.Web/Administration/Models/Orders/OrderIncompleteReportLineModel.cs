@@ -13,5 +13,7 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.SalesReport.Incomplete.Count")]
         public int Count { get; set; }
+
+		public string Url { get; set; }
     }
 }

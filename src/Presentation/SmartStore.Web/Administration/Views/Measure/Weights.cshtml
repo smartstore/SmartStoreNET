@@ -19,11 +19,6 @@
 <table class="adminContent">
     <tr>
         <td>
-            <div class="alert alert-warning">@T("Admin.Configuration.Measures.Weights.Description")</div>
-        </td>
-    </tr>
-    <tr>
-        <td>
             @(Html.Telerik().Grid(Model.Data)
                     .Name("measureweight-grid")
                     .DataKeys(x =>

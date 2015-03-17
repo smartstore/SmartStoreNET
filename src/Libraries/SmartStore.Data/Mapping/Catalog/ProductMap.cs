@@ -37,6 +37,11 @@ namespace SmartStore.Data.Mapping.Catalog
 				.HasForeignKey(p => p.DeliveryTimeId)
 				.WillCascadeOnDelete(false);
 
+            this.HasOptional(p => p.QuantityUnit)
+                .WithMany()
+                .HasForeignKey(p => p.QuantityUnitId)
+                .WillCascadeOnDelete(false);
+
 			this.HasOptional(p => p.SampleDownload)
 				.WithMany()
 				.HasForeignKey(p => p.SampleDownloadId)

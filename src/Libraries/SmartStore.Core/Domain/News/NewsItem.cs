@@ -98,7 +98,7 @@ namespace SmartStore.Core.Domain.News
         /// </summary>
         public virtual ICollection<NewsComment> NewsComments
         {
-            get { return _newsComments ?? (_newsComments = new List<NewsComment>()); }
+			get { return _newsComments ?? (_newsComments = new HashSet<NewsComment>()); }
             protected set { _newsComments = value; }
         }
         

@@ -40,8 +40,7 @@ namespace SmartStore.Core.Logging
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Log item collection</returns>
-        IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, 
-            string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency);
+        IPagedList<Log> GetAllLogs(DateTime? fromUtc, DateTime? toUtc, string message, LogLevel? logLevel, int pageIndex, int pageSize, int minFrequency);
 
         /// <summary>
         /// Gets a log item
@@ -61,8 +60,8 @@ namespace SmartStore.Core.Logging
 		/// Inserts a log item
 		/// </summary>
 		/// <param name="context">The log context</param>
-		/// <returns>A log item</returns>
-		Log InsertLog(LogContext context);
+		/// <returns>Always return <c>null</c></returns>
+		void InsertLog(LogContext context);
 
         /// <summary>
         /// Inserts a log item
@@ -71,7 +70,12 @@ namespace SmartStore.Core.Logging
         /// <param name="shortMessage">The short message</param>
         /// <param name="fullMessage">The full message</param>
         /// <param name="customer">The customer to associate log record with</param>
-        /// <returns>A log item</returns>
-        Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null);
+		/// <returns>Always return <c>null</c></returns>
+        void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null);
+
+		/// <summary>
+		/// Commits log entries to the data store
+		/// </summary>
+		void Flush();
     }
 }

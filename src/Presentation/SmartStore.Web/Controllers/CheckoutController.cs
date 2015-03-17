@@ -122,21 +122,15 @@ namespace SmartStore.Web.Controllers
         [NonAction]
 		protected bool IsPaymentWorkflowRequired(IList<OrganizedShoppingCartItem> cart, bool ignoreRewardPoints = false)
         {
-            bool result = true;
-
             //check whether order total equals zero
             decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart, ignoreRewardPoints);
             if (shoppingCartTotalBase.HasValue && shoppingCartTotalBase.Value == decimal.Zero)
-                result = false;
+                return false;
 
-            //Check whether paymethod needs workflow
-            var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-            if (processPaymentRequest != null)
-            {
-                result = processPaymentRequest.RequiresPaymentWorkflow;
-            }
+			if (_httpContext.GetCheckoutState().IsPaymentSelectionSkipped)
+				return false;
 
-            return result;
+            return true;
         }
 
         [NonAction]
@@ -229,6 +223,7 @@ namespace SmartStore.Web.Controllers
 
 					decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
 					decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
+					soModel.FeeRaw = rate;
 					soModel.Fee = _priceFormatter.FormatShippingPrice(rate, true);
 
 					model.ShippingMethods.Add(soModel);
@@ -283,8 +278,10 @@ namespace SmartStore.Web.Controllers
 
             var boundPaymentMethods = _paymentService
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection)
+				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection ||
+					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndRedirection)
                 .ToList();
+
             foreach (var pm in boundPaymentMethods)
             {
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
@@ -295,54 +292,45 @@ namespace SmartStore.Web.Controllers
 					Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
 					Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
                     PaymentMethodSystemName = pm.Metadata.SystemName,
+					PaymentInfoRoute = pm.Value.GetPaymentInfoRoute(),
+					RequiresInteraction = pm.Value.RequiresInteraction
                 };
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
-                //payment method additional fee
+                // payment method additional fee
 				decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, pm.Metadata.SystemName);
                 decimal rateBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
                 decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
-                if (rate > decimal.Zero)
-                    pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
+                
+				if (rate != decimal.Zero)
+					pmModel.Fee = _priceFormatter.FormatPaymentMethodAdditionalFee(rate, true);
 
                 model.PaymentMethods.Add(pmModel);
             }
             
-            //find a selected (previously) payment method
+            // find a selected (previously) payment method
 			var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				 SystemCustomerAttributeNames.SelectedPaymentMethod,
-				 _genericAttributeService, _storeContext.CurrentStore.Id);
-			if (!String.IsNullOrEmpty(selectedPaymentMethodSystemName))
+				 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
+
+			bool selected = false;
+			if (selectedPaymentMethodSystemName.HasValue())
             {
-                var paymentMethodToSelect = model.PaymentMethods.ToList()
-					.Find(pm => pm.PaymentMethodSystemName.Equals(selectedPaymentMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
-                if (paymentMethodToSelect != null)
-                    paymentMethodToSelect.Selected = true;
+                var paymentMethodToSelect = model.PaymentMethods.Find(pm => pm.PaymentMethodSystemName.IsCaseInsensitiveEqual(selectedPaymentMethodSystemName));
+				if (paymentMethodToSelect != null)
+				{
+					paymentMethodToSelect.Selected = true;
+					selected = true;
+				}
             }
-            //if no option has been selected, let's do it for the first one
-			if (model.PaymentMethods.FirstOrDefault(so => so.Selected) == null)
+
+            // if no option has been selected, let's do it for the first one
+			if (!selected)
             {
                 var paymentMethodToSelect = model.PaymentMethods.FirstOrDefault();
                 if (paymentMethodToSelect != null)
                     paymentMethodToSelect.Selected = true;
             }
-
-            return model;
-        }
-
-        [NonAction]
-        protected CheckoutPaymentInfoModel PreparePaymentInfoModel(IPaymentMethod paymentMethod)
-        {
-            var model = new CheckoutPaymentInfoModel();
-            string actionName;
-            string controllerName;
-            RouteValueDictionary routeValues;
-            paymentMethod.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
-            model.PaymentInfoActionName = actionName;
-            model.PaymentInfoControllerName = controllerName;
-            model.PaymentInfoRouteValues = routeValues;
-            model.DisplayOrderTotals = _orderSettings.OnePageCheckoutDisplayOrderTotalsOnPaymentInfoTab;
 
             return model;
         }
@@ -358,33 +346,11 @@ namespace SmartStore.Web.Controllers
                 decimal minOrderTotalAmount = _currencyService.ConvertFromPrimaryStoreCurrency(_orderSettings.MinOrderTotalAmount, _workContext.WorkingCurrency);
                 model.MinOrderTotalWarning = string.Format(_localizationService.GetResource("Checkout.MinOrderTotalAmount"), _priceFormatter.FormatPrice(minOrderTotalAmount, true, false));
             }
-            //codehint: sm-add
+
             model.TermsOfServiceEnabled = _orderSettings.TermsOfServiceEnabled;
             model.ShowConfirmOrderLegalHint = _shoppingCartSettings.ShowConfirmOrderLegalHint;
 			model.BypassPaymentMethodInfo = _paymentSettings.BypassPaymentMethodInfo;
             return model;
-        }
-
-        [NonAction]
-        protected bool UseOnePageCheckout()
-        {
-            bool useMobileDevice = _mobileDeviceHelper.IsMobileDevice()
-                && _mobileDeviceHelper.MobileDevicesSupported()
-                && !_mobileDeviceHelper.CustomerDontUseMobileVersion();
-
-            //mobile version doesn't support one-page checkout
-            if (useMobileDevice)
-                return false;
-
-			if (!_orderSettings.OnePageCheckoutEnabled)
-				return false;
-
-			var checkoutState = _httpContext.GetCheckoutState();
-
-			if (checkoutState != null && checkoutState.OnePageCheckoutDisabled)
-				return false;
-
-            return true;
         }
 
         [NonAction]
@@ -420,8 +386,11 @@ namespace SmartStore.Web.Controllers
 				var paymentInfo = paymentController.GetPaymentInfo(form);
 				_httpContext.Session["OrderPaymentInfo"] = paymentInfo;
 
+				_httpContext.GetCheckoutState().PaymentSummary = paymentController.GetPaymentSummary(form);
+
 				return true;
 			}
+
 			return false;
 		}
 
@@ -463,10 +432,7 @@ namespace SmartStore.Web.Controllers
                     return RedirectToRoute("ShoppingCart");
             }
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-            else
-                return RedirectToAction("BillingAddress");
+            return RedirectToAction("BillingAddress");
         }
 
 
@@ -477,9 +443,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -508,9 +471,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -544,9 +504,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -582,9 +539,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -627,9 +581,6 @@ namespace SmartStore.Web.Controllers
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
@@ -654,9 +605,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -715,74 +663,61 @@ namespace SmartStore.Web.Controllers
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
+                return new HttpUnauthorizedResult();	
 
-            //Check whether payment workflow is required
-            //we ignore reward points during cart total calculation
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
-            if (!isPaymentWorkflowRequired)
+			// Check whether payment workflow is required
+			// we ignore reward points during cart total calculation
+			bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
+
+			var model = PreparePaymentMethodModel(cart);
+			bool onlyOnePassiveMethod = model.PaymentMethods.Count == 1 && !model.PaymentMethods[0].RequiresInteraction;
+
+			if (!isPaymentWorkflowRequired || (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne && onlyOnePassiveMethod && !model.DisplayRewardPoints))
             {
-                //TODO: get all paymenthods, when there's only one set it to be the selected
-				//_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-                return RedirectToAction("PaymentInfo");
-            }
+                // If there's nothing to pay for OR if we have only one passive payment method and reward points are disabled
+				// or the current customer doesn't have any reward points so customer doesn't have to choose a payment method.
 
-            //model
-            var paymentMethodModel = PreparePaymentMethodModel(cart);
-
-            if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
-                paymentMethodModel.PaymentMethods.Count == 1 && !paymentMethodModel.DisplayRewardPoints)
-            {
-                //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
-                //so customer doesn't have to choose a payment method
-
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
+				_genericAttributeService.SaveAttribute<string>(
+					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName,
+					(!isPaymentWorkflowRequired || !model.PaymentMethods.Any()) ? null : model.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
-				return RedirectToAction("PaymentInfo");
+
+				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;
+
+				return RedirectToAction("Confirm");
             }
 
-            return View(paymentMethodModel);
+			_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = false;
+
+            return View(model);
         }
+
         [HttpPost, ActionName("PaymentMethod")]
         [FormValueRequired("nextstep")]
         [ValidateInput(false)]
-        public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model)
+        public ActionResult SelectPaymentMethod(string paymentmethod, CheckoutPaymentMethodModel model, FormCollection form)
         {
-            //validation
+            // validation
 			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-            //reward points
+            // reward points
 			if (_rewardPointsSettings.Enabled)
 			{
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
+				_genericAttributeService.SaveAttribute(
+					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
 					_storeContext.CurrentStore.Id);
 			}
 
-            //Check whether payment workflow is required
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-            if (!isPaymentWorkflowRequired)
-            {
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-					  SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-				return RedirectToAction("PaymentInfo");
-            }
-            //payment method 
+            // payment method 
             if (String.IsNullOrEmpty(paymentmethod))
                 return PaymentMethod();
 
@@ -790,101 +725,41 @@ namespace SmartStore.Web.Controllers
 			if (paymentMethodProvider == null)
                 return PaymentMethod();
 
-            //save
-			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-				 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
+            // save
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);
 
-			return RedirectToAction("PaymentInfo");
-        }
-
-
-        public ActionResult PaymentInfo()
-        {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
-
-            //Check whether payment workflow is required
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-            if (!isPaymentWorkflowRequired)
-            {
-                return RedirectToAction("Confirm");
-            }
-
-			//load payment method
-			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				SystemCustomerAttributeNames.SelectedPaymentMethod,
-				_genericAttributeService, _storeContext.CurrentStore.Id);
-			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
-            if (paymentMethod == null)
-				return RedirectToAction("PaymentMethod");
-
-            RouteInfo routeinfo = paymentMethod.Value.GetPaymentInfoHandlerRoute();
-            if (routeinfo != null)
-            {
-                return new RedirectToRouteResult(routeinfo.RouteValues);
-            }
-
-			if (_paymentSettings.BypassPaymentMethodInfo && IsValidPaymentForm(paymentMethod.Value, new FormCollection()))
+			// validate info
+			if (!IsValidPaymentForm(paymentMethodProvider.Value, form))
 			{
-				return RedirectToAction("Confirm");
+				return PaymentMethod();
 			}
 
-			var model = PreparePaymentInfoModel(paymentMethod.Value);
+			// save payment data for later use
+			Session["PaymentData"] = form;
 
-            return View(model);
+			return RedirectToAction("Confirm");
         }
-        [HttpPost, ActionName("PaymentInfo")]
-        [FormValueRequired("nextstep")]
-        [ValidateInput(false)]
-        public ActionResult EnterPaymentInfo(FormCollection form)
-        {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
 
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
+		[HttpPost]
+		public ActionResult PaymentInfoAjax(string paymentMethodSystemName)
+		{
+			if (_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed)
+				return Content("");
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
+			if (paymentMethodSystemName.IsEmpty())
+				return new HttpStatusCodeResult(404);
 
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
-
-            //Check whether payment workflow is required
-            bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-            if (!isPaymentWorkflowRequired)
-            {
-				return RedirectToAction("Confirm");
-            }
-
-			//load payment method
-			var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-				SystemCustomerAttributeNames.SelectedPaymentMethod,
-				_genericAttributeService, _storeContext.CurrentStore.Id);
 			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
-            if (paymentMethod == null)
-				return RedirectToAction("PaymentMethod");
+			if (paymentMethod == null)
+				return new HttpStatusCodeResult(404);
 
-			if (IsValidPaymentForm(paymentMethod.Value, form))
-			{
-				return RedirectToAction("Confirm");
-			}
+			var infoRoute = paymentMethod.Value.GetPaymentInfoRoute();
 
-            //If we got this far, something failed, redisplay form
-            //model
-            var model = PreparePaymentInfoModel(paymentMethod.Value);
-            return View(model);
-        }
-        
+			if (infoRoute == null)
+				return Content("");
+
+			return RedirectToAction(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues);
+		}
 
         public ActionResult Confirm()
         {
@@ -893,9 +768,6 @@ namespace SmartStore.Web.Controllers
 
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
-
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
 
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
@@ -917,9 +789,6 @@ namespace SmartStore.Web.Controllers
 			if (cart.Count == 0)
                 return RedirectToRoute("ShoppingCart");
 
-            if (UseOnePageCheckout())
-                return RedirectToRoute("CheckoutOnePage");
-
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
@@ -928,14 +797,16 @@ namespace SmartStore.Web.Controllers
             var model = new CheckoutConfirmModel();
             try
             {
+				bool isPaymentPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
+
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
                 {
                     //Check whether payment workflow is required
-                    if (IsPaymentWorkflowRequired(cart))
-						return RedirectToAction("PaymentInfo");
-                    else
-                        processPaymentRequest = new ProcessPaymentRequest();
+					if (isPaymentPaymentWorkflowRequired)
+						return RedirectToAction("PaymentMethod");
+
+					processPaymentRequest = new ProcessPaymentRequest();
                 }
                 
                 //prevent 2 orders being placed within an X seconds time frame
@@ -955,12 +826,16 @@ namespace SmartStore.Web.Controllers
 
                 if (placeOrderResult.Success)
                 {
-                    var postProcessPaymentRequest = new PostProcessPaymentRequest()
-                    {
-                        Order = placeOrderResult.PlacedOrder
-                    };
-                    _paymentService.PostProcessPayment(postProcessPaymentRequest);
+					if (isPaymentPaymentWorkflowRequired)
+					{
+						var postProcessPaymentRequest = new PostProcessPaymentRequest()
+						{
+							Order = placeOrderResult.PlacedOrder
+						};
+						_paymentService.PostProcessPayment(postProcessPaymentRequest);
+					}
 
+					_httpContext.Session["PaymentData"] = null;
 					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
@@ -1035,729 +910,5 @@ namespace SmartStore.Web.Controllers
         }
         #endregion
 
-        #region Methods (one page checkout)
-
-        public ActionResult OnePageCheckout()
-        {
-            //validation
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-			if (cart.Count == 0)
-                return RedirectToRoute("ShoppingCart");
-
-            if (!UseOnePageCheckout())
-                return RedirectToAction("Index");
-
-            if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                return new HttpUnauthorizedResult();
-
-            var model = new OnePageCheckoutModel()
-            {
-                ShippingRequired = cart.RequiresShipping()
-            };
-            return View(model);
-        }
-
-        [ChildActionOnly]
-        public ActionResult OpcBillingForm()
-        {
-            var billingAddressModel = PrepareBillingAddressModel();
-            return PartialView("OpcBillingAddress", billingAddressModel);
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcSaveBilling(FormCollection form)
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-
-                int billingAddressId = 0;
-                int.TryParse(form["billing_address_id"], out billingAddressId);
-
-                if (billingAddressId > 0)
-                {
-                    //existing address
-                    var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == billingAddressId).FirstOrDefault();
-                    if (address == null)
-                        throw new Exception("Address can't be loaded");
-
-                    _workContext.CurrentCustomer.BillingAddress = address;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                }
-                else
-                {
-                    //new address
-                    var model = new CheckoutBillingAddressModel();
-                    TryUpdateModel(model.NewAddress, "BillingNewAddress");
-                    //validate model
-                    TryValidateModel(model.NewAddress);
-                    if (!ModelState.IsValid)
-                    {
-                        //model is not valid. redisplay the form with errors
-                        var billingAddressModel = PrepareBillingAddressModel(model.NewAddress.CountryId);
-                        billingAddressModel.NewAddressPreselected = true;
-                        return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "billing",
-                                html = this.RenderPartialViewToString("OpcBillingAddress", billingAddressModel)
-                            }
-                        });
-                    }
-
-                    //try to find an address with the same values (don't duplicate records)
-                    var address = _workContext.CurrentCustomer.Addresses.ToList().FindAddress(
-                        model.NewAddress.FirstName, model.NewAddress.LastName, model.NewAddress.PhoneNumber,
-                        model.NewAddress.Email, model.NewAddress.FaxNumber, model.NewAddress.Company,
-                        model.NewAddress.Address1, model.NewAddress.Address2, model.NewAddress.City,
-                        model.NewAddress.StateProvinceId, model.NewAddress.ZipPostalCode, model.NewAddress.CountryId);
-                    if (address == null)
-                    {
-                        //address is not found. let's create a new one
-                        address = model.NewAddress.ToEntity();
-                        address.CreatedOnUtc = DateTime.UtcNow;
-                        //some validation
-                        if (address.CountryId == 0)
-                            address.CountryId = null;
-                        if (address.StateProvinceId == 0)
-                            address.StateProvinceId = null;
-						if (address.CountryId.HasValue && address.CountryId.Value > 0)
-						{
-							address.Country = _countryService.GetCountryById(address.CountryId.Value);
-						}
-                        _workContext.CurrentCustomer.Addresses.Add(address);
-                    }
-                    _workContext.CurrentCustomer.BillingAddress = address;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                }
-
-                if (cart.RequiresShipping())
-                {
-                    //shipping is required
-                    var shippingAddressModel = PrepareShippingAddressModel();
-                    return Json(new
-                    {
-                        update_section = new UpdateSectionJsonModel()
-                        {
-                            name = "shipping",
-                            html = this.RenderPartialViewToString("OpcShippingAddress", shippingAddressModel)
-                        },
-                        goto_section = "shipping"
-                    });
-                }
-                else
-                {
-                    //shipping is not required
-					_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
-
-
-                    //Check whether payment workflow is required
-                    //we ignore reward points during cart total calculation
-                    bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
-                    if (isPaymentWorkflowRequired)
-                    {
-                        //payment is required
-                        var paymentMethodModel = PreparePaymentMethodModel(cart);
-
-                        if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
-                            paymentMethodModel.PaymentMethods.Count == 1 && !paymentMethodModel.DisplayRewardPoints)
-                        {
-                            //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
-                            //so customer doesn't have to choose a payment method
-							var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-							_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-								SystemCustomerAttributeNames.SelectedPaymentMethod,
-								selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
-
-							var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName, true, _storeContext.CurrentStore.Id);
-							if (paymentMethodInst == null)
-                                throw new Exception("Selected payment method can't be parsed");
-
-                            var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
-                            return Json(new
-                            {
-                                update_section = new UpdateSectionJsonModel()
-                                {
-                                    name = "payment-info",
-                                    html = this.RenderPartialViewToString("OpcPaymentInfo", paymenInfoModel)
-                                },
-                                goto_section = "payment_info"
-                            });
-                        }
-                        else
-                        {
-                            //customer have to choose a payment method
-                            return Json(new
-                            {
-                                update_section = new UpdateSectionJsonModel()
-                                {
-                                    name = "payment-method",
-                                    html = this.RenderPartialViewToString("OpcPaymentMethods", paymentMethodModel)
-                                },
-                                goto_section = "payment_method"
-                            });
-                        }
-                    }
-                    else
-                    {
-                        //payment is not required
-						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-							 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-
-                        var confirmOrderModel = PrepareConfirmOrderModel(cart);
-                        return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "confirm-order",
-                                html = this.RenderPartialViewToString("OpcConfirmOrder", confirmOrderModel)
-                            },
-                            goto_section = "confirm_order"
-                        });
-                    }
-                }
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcSaveShipping(FormCollection form)
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-
-                if (!cart.RequiresShipping())
-                    throw new Exception("Shipping is not required");
-
-                int shippingAddressId = 0;
-                int.TryParse(form["shipping_address_id"], out shippingAddressId);
-
-                if (shippingAddressId > 0)
-                {
-                    //existing address
-                    var address = _workContext.CurrentCustomer.Addresses.Where(a => a.Id == shippingAddressId).FirstOrDefault();
-                    if (address == null)
-                        throw new Exception("Address can't be loaded");
-
-                    _workContext.CurrentCustomer.ShippingAddress = address;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                }
-                else
-                {
-                    //new address
-                    var model = new CheckoutShippingAddressModel();
-                    TryUpdateModel(model.NewAddress, "ShippingNewAddress");
-                    //validate model
-                    TryValidateModel(model.NewAddress);
-                    if (!ModelState.IsValid)
-                    {
-                        //model is not valid. redisplay the form with errors
-                        var shippingAddressModel = PrepareShippingAddressModel(model.NewAddress.CountryId);
-                        shippingAddressModel.NewAddressPreselected = true;
-                        return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "shipping",
-                                html = this.RenderPartialViewToString("OpcShippingAddress", shippingAddressModel)
-                            }
-                        });
-                    }
-
-                    //try to find an address with the same values (don't duplicate records)
-                    var address = _workContext.CurrentCustomer.Addresses.ToList().FindAddress(
-                        model.NewAddress.FirstName, model.NewAddress.LastName, model.NewAddress.PhoneNumber,
-                        model.NewAddress.Email, model.NewAddress.FaxNumber, model.NewAddress.Company,
-                        model.NewAddress.Address1, model.NewAddress.Address2, model.NewAddress.City,
-                        model.NewAddress.StateProvinceId, model.NewAddress.ZipPostalCode, model.NewAddress.CountryId);
-                    if (address == null)
-                    {
-                        address = model.NewAddress.ToEntity();
-                        address.CreatedOnUtc = DateTime.UtcNow;
-                        //some validation
-                        if (address.CountryId == 0)
-                            address.CountryId = null;
-                        if (address.StateProvinceId == 0)
-                            address.StateProvinceId = null;
-                        _workContext.CurrentCustomer.Addresses.Add(address);
-                    }
-                    _workContext.CurrentCustomer.ShippingAddress = address;
-                    _customerService.UpdateCustomer(_workContext.CurrentCustomer);
-                }
-
-                var shippingMethodModel = PrepareShippingMethodModel(cart);
-                return Json(new
-                {
-                    update_section = new UpdateSectionJsonModel()
-                    {
-                        name = "shipping-method",
-                        html = this.RenderPartialViewToString("OpcShippingMethods", shippingMethodModel)
-                    },
-                    goto_section = "shipping_method"
-                });
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcSaveShippingMethod(FormCollection form)
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-                
-                if (!cart.RequiresShipping())
-                    throw new Exception("Shipping is not required");
-
-                //parse selected method 
-                string shippingoption = form["shippingoption"];
-                if (String.IsNullOrEmpty(shippingoption))
-                    throw new Exception("Selected shipping method can't be parsed");
-                var splittedOption = shippingoption.Split(new string[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
-                if (splittedOption.Length != 2)
-                    throw new Exception("Selected shipping method can't be parsed");
-                string selectedName = splittedOption[0];
-                string shippingRateComputationMethodSystemName = splittedOption[1];
-                
-                //find it
-                //performance optimization. try cache first
-				var shippingOptions = _workContext.CurrentCustomer.GetAttribute<List<ShippingOption>>(SystemCustomerAttributeNames.OfferedShippingOptions, _storeContext.CurrentStore.Id);
-                if (shippingOptions == null || shippingOptions.Count == 0)
-                {
-                    //not found? let's load them using shipping service
-                    shippingOptions = _shippingService
-						.GetShippingOptions(cart, _workContext.CurrentCustomer.ShippingAddress, shippingRateComputationMethodSystemName, _storeContext.CurrentStore.Id)
-                        .ShippingOptions
-                        .ToList();
-                }
-                else
-                {
-                    //loaded cached results. let's filter result by a chosen shipping rate computation method
-                    shippingOptions = shippingOptions.Where(so => so.ShippingRateComputationMethodSystemName.Equals(shippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase))
-                        .ToList();
-                }
-                
-                var shippingOption = shippingOptions
-                    .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedName, StringComparison.InvariantCultureIgnoreCase));
-                if (shippingOption == null)
-                    throw new Exception("Selected shipping method can't be loaded");
-
-                //save
-				_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, shippingOption, _storeContext.CurrentStore.Id);
-
-
-                //Check whether payment workflow is required
-                //we ignore reward points during cart total calculation
-                bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart, true);
-                if (isPaymentWorkflowRequired)
-                {
-                    //payment is required
-                    var paymentMethodModel = PreparePaymentMethodModel(cart);
-
-                    if (_paymentSettings.BypassPaymentMethodSelectionIfOnlyOne &&
-                        paymentMethodModel.PaymentMethods.Count == 1 && !paymentMethodModel.DisplayRewardPoints)
-                    {
-                        //if we have only one payment method and reward points are disabled or the current customer doesn't have any reward points
-                        //so customer doesn't have to choose a payment method
-						var selectedPaymentMethodSystemName = paymentMethodModel.PaymentMethods[0].PaymentMethodSystemName;
-						_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-							SystemCustomerAttributeNames.SelectedPaymentMethod, selectedPaymentMethodSystemName, _storeContext.CurrentStore.Id);
-
-						var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName, true, _storeContext.CurrentStore.Id);
-						if (paymentMethodInst == null)
-                            throw new Exception("Selected payment method can't be parsed");
-
-                        var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
-                        return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "payment-info",
-                                html = this.RenderPartialViewToString("OpcPaymentInfo", paymenInfoModel)
-                            },
-                            goto_section = "payment_info"
-                        });
-                    }
-                    else
-                    {
-                        //customer have to choose a payment method
-                        return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "payment-method",
-                                html = this.RenderPartialViewToString("OpcPaymentMethods", paymentMethodModel)
-                            },
-                            goto_section = "payment_method"
-                        });
-                    }
-                }
-                else
-                {
-                    //payment is not required
-					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-						SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-
-                    var confirmOrderModel = PrepareConfirmOrderModel(cart);
-                    return Json(new
-                    {
-                        update_section = new UpdateSectionJsonModel()
-                        {
-                            name = "confirm-order",
-                            html = this.RenderPartialViewToString("OpcConfirmOrder", confirmOrderModel)
-                        },
-                        goto_section = "confirm_order"
-                    });
-                }
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcSavePaymentMethod(FormCollection form)
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-
-                string paymentmethod = form["paymentmethod"];
-                //payment method 
-                if (String.IsNullOrEmpty(paymentmethod))
-                    throw new Exception("Selected payment method can't be parsed");
-
-
-                var model = new CheckoutPaymentMethodModel();
-                TryUpdateModel(model);
-
-                //reward points
-				if (_rewardPointsSettings.Enabled)
-				{
-					_genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-						SystemCustomerAttributeNames.UseRewardPointsDuringCheckout, model.UseRewardPoints,
-						_storeContext.CurrentStore.Id);
-				}
-
-                //Check whether payment workflow is required
-                bool isPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-                if (!isPaymentWorkflowRequired)
-                {
-                    //payment is not required
-					_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-						 SystemCustomerAttributeNames.SelectedPaymentMethod, null, _storeContext.CurrentStore.Id);
-
-                    var confirmOrderModel = PrepareConfirmOrderModel(cart);
-                    return Json(new
-                    {
-                        update_section = new UpdateSectionJsonModel()
-                        {
-                            name = "confirm-order",
-                            html = this.RenderPartialViewToString("OpcConfirmOrder", confirmOrderModel)
-                        },
-                        goto_section = "confirm_order"
-                    });
-                }
-
-				var paymentMethodInst = _paymentService.LoadPaymentMethodBySystemName(paymentmethod, true, _storeContext.CurrentStore.Id);
-				if (paymentMethodInst == null)
-                    throw new Exception("Selected payment method can't be parsed");
-
-                //save
-				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer,
-					 SystemCustomerAttributeNames.SelectedPaymentMethod, paymentmethod, _storeContext.CurrentStore.Id);                
-
-                var paymenInfoModel = PreparePaymentInfoModel(paymentMethodInst.Value);
-                return Json(new
-                {
-                    update_section = new UpdateSectionJsonModel()
-                    {
-                        name = "payment-info",
-                        html = this.RenderPartialViewToString("OpcPaymentInfo", paymenInfoModel)
-                    },
-                    goto_section = "payment_info"
-                });
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcSavePaymentInfo(FormCollection form)
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-
-				var paymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					_genericAttributeService, _storeContext.CurrentStore.Id);
-				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(paymentMethodSystemName);
-				if (paymentMethod == null)
-                    throw new Exception("Payment method is not selected");
-
-                var paymentControllerType = paymentMethod.Value.GetControllerType();
-                var paymentController =
-                    DependencyResolver.Current.GetService(paymentControllerType) as PaymentControllerBase;
-                var warnings = paymentController.ValidatePaymentForm(form);
-                foreach (var warning in warnings)
-                    ModelState.AddModelError("", warning);
-                if (ModelState.IsValid)
-                {
-                    //get payment info
-                    var paymentInfo = paymentController.GetPaymentInfo(form);
-                    //session save
-                    _httpContext.Session["OrderPaymentInfo"] = paymentInfo;
-
-                    var confirmOrderModel = PrepareConfirmOrderModel(cart);
-                    return Json(new
-                    {
-                        update_section = new UpdateSectionJsonModel()
-                        {
-                            name = "confirm-order",
-                            html = this.RenderPartialViewToString("OpcConfirmOrder", confirmOrderModel)
-                        },
-                        goto_section = "confirm_order"
-                    });
-                }
-
-                //If we got this far, something failed, redisplay form
-                var paymenInfoModel = PreparePaymentInfoModel(paymentMethod.Value);
-                return Json(new
-                {
-                    update_section = new UpdateSectionJsonModel()
-                    {
-                        name = "payment-info",
-                        html = this.RenderPartialViewToString("OpcPaymentInfo", paymenInfoModel)
-                    }
-                });
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        [ValidateInput(false)]
-        public ActionResult OpcConfirmOrder()
-        {
-            try
-            {
-                //validation
-				var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
-
-				if (cart.Count == 0)
-                    throw new Exception("Your cart is empty");
-
-                if (!UseOnePageCheckout())
-                    throw new Exception("One page checkout is disabled");
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    throw new Exception("Anonymous checkout is not allowed");
-
-                //prevent 2 orders being placed within an X seconds time frame
-                if (!IsMinimumOrderPlacementIntervalValid(_workContext.CurrentCustomer))
-                    throw new Exception(_localizationService.GetResource("Checkout.MinOrderPlacementInterval"));
-
-                //place order
-                var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
-                if (processPaymentRequest == null)
-                {
-                    //Check whether payment workflow is required
-					if (IsPaymentWorkflowRequired(cart))
-						throw new Exception("Payment information is not entered");
-					else
-						processPaymentRequest = new ProcessPaymentRequest();
-                }
-
-				processPaymentRequest.StoreId = _storeContext.CurrentStore.Id;
-                processPaymentRequest.CustomerId = _workContext.CurrentCustomer.Id;
-
-				processPaymentRequest.PaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
-					 SystemCustomerAttributeNames.SelectedPaymentMethod, _genericAttributeService, _storeContext.CurrentStore.Id);
-
-                var placeOrderResult = _orderProcessingService.PlaceOrder(processPaymentRequest, new Dictionary<string,string>());
-                if (placeOrderResult.Success)
-                {
-                    var postProcessPaymentRequest = new PostProcessPaymentRequest()
-                    {
-                        Order = placeOrderResult.PlacedOrder
-                    };
-
-                    var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(placeOrderResult.PlacedOrder.PaymentMethodSystemName);
-                    if (paymentMethod != null)
-                    {
-                        if (paymentMethod.Value.PaymentMethodType == PaymentMethodType.Redirection)
-                        {
-							_httpContext.Session["OrderPaymentInfo"] = null;
-							_httpContext.RemoveCheckoutState();
-
-                            //Redirection will not work because it's AJAX request.
-                            //That's why we don't process it here (we redirect a user to another page where he'll be redirected)
-
-                            //redirect
-                            return Json(new { redirect = string.Format("{0}checkout/OpcCompleteRedirectionPayment", _webHelper.GetStoreLocation()) });
-                        }
-                        else
-                        {
-                            _paymentService.PostProcessPayment(postProcessPaymentRequest);
-                        }
-                    }
-
-					_httpContext.Session["OrderPaymentInfo"] = null;
-					_httpContext.RemoveCheckoutState();
-
-					return Json(new { success = 1 });
-                }
-                else
-                {
-                    //error
-                    var confirmOrderModel = new CheckoutConfirmModel();
-                    foreach (var error in placeOrderResult.Errors)
-                        confirmOrderModel.Warnings.Add(error); 
-                    
-                    return Json(new
-                        {
-                            update_section = new UpdateSectionJsonModel()
-                            {
-                                name = "confirm-order",
-                                html = this.RenderPartialViewToString("OpcConfirmOrder", confirmOrderModel)
-                            },
-                            goto_section = "confirm_order"
-                        });
-                }
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Json(new { error = 1, message = exc.Message });
-            }
-        }
-
-        public ActionResult OpcCompleteRedirectionPayment()
-        {
-            try
-            {
-                //validation
-                if (!UseOnePageCheckout())
-					return HttpNotFound();
-
-                if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
-                    return new HttpUnauthorizedResult();
-
-                //get the order
-				var order = _orderService.SearchOrders(_storeContext.CurrentStore.Id, _workContext.CurrentCustomer.Id,
-					null, null, null, null, null, null, null, null, 0, 1)
-					.FirstOrDefault();
-				if (order == null)
-					return HttpNotFound();
-
-                var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
-                if (paymentMethod == null)
-					return HttpNotFound();
-                if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection)
-					return HttpNotFound();
-
-                //ensure that order has been just placed
-                if ((DateTime.UtcNow - order.CreatedOnUtc).TotalMinutes > 3)
-					return HttpNotFound();
-
-
-                //Redirection will not work on one page checkout page because it's AJAX request.
-                //That's why we process it here
-                var postProcessPaymentRequest = new PostProcessPaymentRequest()
-                {
-                    Order = order
-                };
-
-                _paymentService.PostProcessPayment(postProcessPaymentRequest);
-
-                if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
-                {
-                    //redirection or POST has been done in PostProcessPayment
-                    return Content("Redirected");
-                }
-                else
-                {
-                    //if no redirection has been done (to a third-party payment page)
-                    //theoretically it's not possible
-					return RedirectToAction("Completed");
-                }
-            }
-            catch (Exception exc)
-            {
-				Logger.Warning(exc.Message, exc, _workContext.CurrentCustomer);
-                return Content(exc.Message);
-            }
-        }
-
-        #endregion
     }
 }

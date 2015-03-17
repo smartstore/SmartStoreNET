@@ -1,9 +1,0 @@
-﻿FriendlyName: Google Merchant Center (GMC)
-SystemName: PromotionFeed.Froogle
-Group: Marketing
-Version: 2.2
-MinAppVersion: 2.0.0
-Author: SmartStore AG
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Feed.Froogle.dll
-ResourceRootKey: Plugins.Feed.Froogle

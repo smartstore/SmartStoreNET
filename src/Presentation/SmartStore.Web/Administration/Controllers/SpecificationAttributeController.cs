@@ -3,14 +3,14 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -55,10 +55,7 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(specificationAttribute,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(specificationAttribute, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
 
@@ -67,20 +64,19 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(specificationAttributeOption,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(specificationAttributeOption, x => x.Name, localized.Name, localized.LanguageId);
             }
         }
 
-		// codehint: sm-add
-		private void AddMultipleOptionNames(SpecificationAttributeOptionModel model) {
+		private void AddMultipleOptionNames(SpecificationAttributeOptionModel model)
+		{
 			var values = model.Name.SplitSafe(";");
 			int order = model.DisplayOrder;
 
-			for (int i = 0; i < values.Length; ++i) {
-				var sao = new SpecificationAttributeOption() {
+			for (int i = 0; i < values.Length; ++i)
+			{
+				var sao = new SpecificationAttributeOption()
+				{
 					Name = values[i].Trim(),
 					DisplayOrder = order++,
 					SpecificationAttributeId = model.SpecificationAttributeId
@@ -88,7 +84,8 @@ namespace SmartStore.Admin.Controllers
 
 				_specificationAttributeService.InsertSpecificationAttributeOption(sao);
 
-				foreach (var localized in model.Locales.Where(l => l.Name.HasValue())) {
+				foreach (var localized in model.Locales.Where(l => l.Name.HasValue()))
+				{
 					var localizedValues = localized.Name.SplitSafe(";");
 					string value = (i < localizedValues.Length ? localizedValues[i].Trim() : sao.Name);
 
@@ -247,11 +244,14 @@ namespace SmartStore.Admin.Controllers
         }
 
 		[HttpPost]
-		public ActionResult ProductMappingEdit(int specificationAttributeId, string field, bool value) {
+		public ActionResult ProductMappingEdit(int specificationAttributeId, string field, bool value)
+		{
 			_specificationAttributeService.UpdateProductSpecificationMapping(specificationAttributeId, field, value);
 
-			return Json(new {
-				message = _localizationService.GetResource("Admin.Common.DataEditSuccess")
+			return Json(new
+			{
+				message = _localizationService.GetResource("Admin.Common.DataEditSuccess"),
+				notificationType = "success"
 			});
 		}
 
@@ -298,7 +298,6 @@ namespace SmartStore.Admin.Controllers
             //locales
             AddLocales(_languageService, model.Locales);
 
-			// codehint: sm-add
 			ViewBag.MultipleEnabled = true;
 
             return View(model);
@@ -312,16 +311,16 @@ namespace SmartStore.Admin.Controllers
 
             var specificationAttribute = _specificationAttributeService.GetSpecificationAttributeById(model.SpecificationAttributeId);
             if (specificationAttribute == null)
-                //No specification attribute found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
-				// codehint: sm-edit
-				if (model.Multiple) {
+				if (model.Multiple)
+				{
 					AddMultipleOptionNames(model);
 				}
-				else {
+				else
+				{
 					var sao = model.ToEntity();
 
 					_specificationAttributeService.InsertSpecificationAttributeOption(sao);

@@ -70,7 +70,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<CheckoutAttributeValue> CheckoutAttributeValues
         {
-            get { return _checkoutAttributeValues ?? (_checkoutAttributeValues = new List<CheckoutAttributeValue>()); }
+			get { return _checkoutAttributeValues ?? (_checkoutAttributeValues = new HashSet<CheckoutAttributeValue>()); }
             protected set { _checkoutAttributeValues = value; }
         }
     }

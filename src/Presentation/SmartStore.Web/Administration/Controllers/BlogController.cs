@@ -83,29 +83,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(BlogPost blogPost, BlogPostModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(blogPost);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Count(sm => sm.StoreId == store.Id) == 0)
-						_storeMappingService.InsertStoreMapping(blogPost, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.FirstOrDefault(sm => sm.StoreId == store.Id);
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
 		#endregion
 
 		#region Blog posts
@@ -159,10 +136,13 @@ namespace SmartStore.Admin.Controllers
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = new BlogPostModel();
+			
 			//Stores
 			PrepareStoresMappingModel(model, null, false);
-            //default values
+            
+			//default values
             model.AllowComments = true;
+
             return View(model);
         }
 
@@ -175,6 +155,7 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var blogPost = model.ToEntity();
+                blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 blogPost.CreatedOnUtc = DateTime.UtcNow;
@@ -185,7 +166,7 @@ namespace SmartStore.Admin.Controllers
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
 				//Stores
-				SaveStoreMappings(blogPost, model);
+				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -205,11 +186,11 @@ namespace SmartStore.Admin.Controllers
 
             var blogPost = _blogService.GetBlogPostById(id);
             if (blogPost == null)
-                //No blog post found with the specified id
                 return RedirectToAction("List");
 
             ViewBag.AllLanguages = _languageService.GetAllLanguages(true);
             var model = blogPost.ToModel();
+            model.CreatedOnUtc = blogPost.CreatedOnUtc;
             model.StartDate = blogPost.StartDateUtc;
             model.EndDate = blogPost.EndDateUtc;
 			//Store
@@ -225,12 +206,12 @@ namespace SmartStore.Admin.Controllers
 
             var blogPost = _blogService.GetBlogPostById(model.Id);
             if (blogPost == null)
-                //No blog post found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
                 blogPost = model.ToEntity(blogPost);
+                blogPost.CreatedOnUtc = model.CreatedOnUtc;
                 blogPost.StartDateUtc = model.StartDate;
                 blogPost.EndDateUtc = model.EndDate;
                 _blogService.UpdateBlogPost(blogPost);
@@ -240,7 +221,7 @@ namespace SmartStore.Admin.Controllers
                 _urlRecordService.SaveSlug(blogPost, seName, blogPost.LanguageId);
 
 				//Stores
-				SaveStoreMappings(blogPost, model);
+				_storeMappingService.SaveStoreMappings<BlogPost>(blogPost, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.Blog.BlogPosts.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = blogPost.Id }) : RedirectToAction("List");
@@ -261,7 +242,6 @@ namespace SmartStore.Admin.Controllers
 
             var blogPost = _blogService.GetBlogPostById(id);
             if (blogPost == null)
-                //No blog post found with the specified id
                 return RedirectToAction("List");
 
             _blogService.DeleteBlogPost(blogPost);

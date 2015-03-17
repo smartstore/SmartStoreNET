@@ -85,23 +85,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
-			if (pm.IsPaymentMethodActive(_paymentSettings))
+			bool dirty = pm.IsPaymentMethodActive(_paymentSettings) != activate;
+			if (dirty)
 			{
 				if (!activate)
-				{
-					// mark as disabled
 					_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.Metadata.SystemName);
-					_settingService.SaveSetting(_paymentSettings);
-				}
-			}
-			else
-			{
-				if (activate)
-				{
-					// mark as active
+				else
 					_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.Metadata.SystemName);
-					_settingService.SaveSetting(_paymentSettings);
-				}
+
+				_settingService.SaveSetting(_paymentSettings);
+				_pluginMediator.ActivateDependentWidgets(pm.Metadata, activate);
 			}
 
 			return RedirectToAction("Providers");

@@ -1,0 +1,178 @@
+﻿@model dynamic
+
+@{
+    Layout = null;
+}
+
+@{
+	string previewUrl = (string)ViewBag.PreviewUrl;
+	if (!previewUrl.HasValue())
+	{
+		previewUrl = Url.RouteUrl("HomePage");
+	}
+
+	var themes = (IList<SelectListItem>)ViewBag.Themes;
+	var stores = (IList<SelectListItem>)ViewBag.Stores;
+	var disableApply = (bool)ViewBag.DisableApply;
+	var toolOpen = (bool)ViewBag.ToolOpen;
+}
+
+<style type="text/css">
+
+	.previewmode-wrapper {
+		position: fixed;
+		left: -250px;
+		top: 150px;
+		width: 250px;
+		transition: left 0.25s ease-out;
+		transition-delay: 0.12s;
+		z-index: 1000;
+	}
+	.previewmode-wrapper.open {
+		left: 0;
+	}
+
+	#previewmode {
+		position: relative;
+		z-index: 100;
+		background: #fff;
+		color: #333;
+		opacity: 0;
+		box-shadow: 0px 0px 4px 0px rgba(51, 51, 51, 0.2);
+		transition: opacity 0.25s ease-out;
+		transition-delay: 0.12s;
+	}
+	.open #previewmode {
+		opacity: 1;
+	}
+
+	.previewmode-switcher {
+		position: absolute;
+		right: -40px;
+		z-index: 101;
+		top: 0;
+		box-sizing: border-box;
+		line-height: 38px;
+		vertical-align: middle;
+		text-align: center;
+		width: 40px;
+		height: 40px;
+		background: #f1da91;
+		color: #222 !important;
+		border: 1px solid rgba(0,0,0, 0.15);
+		border-bottom-right-radius: 5px;
+		border-top-right-radius: 5px;
+		opacity: 1;
+		transition: all 0.12s ease-in;
+		transition-delay: 0.25s;
+	}
+	.open .previewmode-switcher {
+		opacity: 0;
+		right: 0;
+		z-index: 99;
+		transition-delay: 0s;
+	}
+	
+	#previewmode form {
+		margin: 0;
+	}
+
+	.previewmode-title {
+		margin-top: 0;
+		text-transform: uppercase;
+		padding-bottom: 12px;
+		border-bottom: 1px solid #ddd;
+	}
+
+	#previewmode .close {
+		font-size: 28px;
+		font-weight: bold;
+		margin-top: -2px;
+	}
+
+	#previewmode select {
+		width: 100%;
+		border-radius: 0;
+	}
+
+	#previewmode .btn {
+		border-radius: 2px;
+		text-transform: uppercase;
+	}
+
+	#previewmode .btn-applytheme, 
+	#previewmode .btn-exitpreview {
+		border-radius: 0;
+		border: none !important;
+		padding-top: 12px;
+		padding-bottom: 12px;
+		margin: 0;
+		color: #fff;
+	}
+
+	#previewmode .btn-applytheme { 
+		background: #fbb450; 
+		margin-bottom: 1px; 
+	}
+	#previewmode .btn-applytheme:hover {
+		background: #fa9f1e;
+	}
+	#previewmode .btn-applytheme:active {
+		background: #f99406;
+	}
+	#previewmode .btn-exitpreview { 
+		background: #ee5f5b; 
+	}
+	#previewmode .btn-exitpreview:hover { 
+		background: #e9322d; 
+	}
+	#previewmode .btn-exitpreview:active { 
+		background: #e51d18; 
+	}
+</style>
+
+<div class="previewmode-wrapper@(toolOpen ? " open" : "")">
+	<div id="previewmode">
+		@using (Html.BeginForm("PreviewTool", "Theme", new { area = "admin" }, FormMethod.Post))
+		{
+			<div style="padding: 20px">
+				<button type="button" class="close toggle-preview">×</button>
+				<h4 class="previewmode-title">@T("Admin.Configuration.Themes.PreviewMode")</h4>
+
+				<label class="previewmode-label">@T("Admin.Configuration.Themes.Theme"):</label>
+				@Html.DropDownList("theme", themes, new { @class = "noskin" })
+
+				<label class="previewmode-label">@T("Admin.Common.Store"):</label>
+				@Html.DropDownList("storeId", stores, new { @class = "noskin" })
+
+				@Html.Hidden("returnUrl", Request.RawUrl)
+			</div>
+
+			<button type="submit" name="PreviewMode.Apply" value="@T("Common.Apply")" class="btn btn-warning btn-block btn-applytheme" @Html.Attr("disabled", "disabled", disableApply)>
+				@T("Common.Apply")
+			</button>
+
+			<button type="submit" name="PreviewMode.Exit" value="@T("Admin.Configuration.Themes.ExitPreviewMode")" class="btn btn-danger btn-block btn-exitpreview">
+				<i class="fa fa-fw fa-eye-slash"></i>
+				@T("Admin.Configuration.Themes.ExitPreviewMode")
+			</button>
+		}
+	</div>
+	<a class="previewmode-switcher toggle-preview" href="#" title="@T("Admin.Configuration.Themes.PreviewMode")">
+		<i class="fa fa-eye fa-fw fa-lg"></i>
+	</a>
+</div>
+
+<script>
+	$(function () {
+		$('.toggle-preview').on('click', function (e) {
+			e.preventDefault();
+			var wrapper = $('.previewmode-wrapper').toggleClass("open");
+			_.setCookie("sm:PreviewToolOpen", wrapper.hasClass("open") ? "True" : "False");
+			return false;
+		});
+
+		$('#theme').on('change', function () { this.form.submit(); });
+		$('#storeId').on('change', function () { this.form.submit(); });
+	});
+</script>

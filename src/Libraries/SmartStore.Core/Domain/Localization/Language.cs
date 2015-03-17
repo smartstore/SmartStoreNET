@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Stores;
 using System.Runtime.Serialization;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Domain.Localization
 {
@@ -8,6 +9,7 @@ namespace SmartStore.Core.Domain.Localization
     /// Represents a language
     /// </summary>
 	[DataContract]
+	[DebuggerDisplay("{LanguageCulture}")]
 	public partial class Language : BaseEntity, IStoreMappingSupported
     {
         private ICollection<LocaleStringResource> _localeStringResources;
@@ -65,14 +67,9 @@ namespace SmartStore.Core.Domain.Localization
         /// </summary>
         public virtual ICollection<LocaleStringResource> LocaleStringResources
         {
-            get { return _localeStringResources ?? (_localeStringResources = new List<LocaleStringResource>()); }
+			get { return _localeStringResources ?? (_localeStringResources = new HashSet<LocaleStringResource>()); }
             protected set { _localeStringResources = value; }
         }
 
-        // codehint: sm-add
-        public override string ToString()
-        {
-            return this.LanguageCulture;
-        }
     }
 }

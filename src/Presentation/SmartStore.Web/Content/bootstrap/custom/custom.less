@@ -133,8 +133,8 @@ span.field-validation-error {
 // WELL TWEAKS
 // ------------
 .well {
-	background-color: #fafafa;
 	border: 1px solid #e5e5e5;
+    border-color: rgba(0,0,0, 0.1);
 	border-radius: 3px;
 	.box-shadow(inset 0 0 10px rgba(0,0,0, 0.05));
 }
@@ -235,6 +235,7 @@ input[type="file"] {
     line-height: 30px;
 }
 
+
 // FORMS (PROMPTS)
 // ---------------
 
@@ -242,6 +243,34 @@ input[type="file"] {
 .input-prepend .add-on .fa {
 	font-size: 16px;
 }
+
+
+// FORMS (BLOCK LEVEL INPUT-APPEND/PREPEND)
+// ----------------------------------------
+
+.input-append.input-block-level,
+.input-prepend.input-block-level {
+	display: table;
+
+	.add-on, .btn {
+		display: table-cell;
+	}
+
+	> input {
+		.box-sizing(border-box);
+		display: table-cell; /* table-cell is not working well in Chrome for small widths */
+		min-height: inherit;
+		width: 100%;
+	}
+}
+
+.input-append.input-block-level > input {
+  border-right: 0;
+}
+.input-prepend.input-block-level > input {
+  border-left: 0;
+}
+
 
 // FORMS (CHECKBOX / RADIO)
 // ------------------------
@@ -270,12 +299,15 @@ th label {
 .nav > li > a > .fa {
 	vertical-align: baseline;
 	margin-right: 4px;
-    color: #727272;
+	color: lighten(@textColor, 18%);
+}
+.nav > li > a:hover > .fa,
+.nav > li.active > a > .fa {
+	color: @textColor
 }
 
-.nav > li > a:hover > .fa, 
-.nav > li.active > a > .fa {
-    color: @textColor;
+.nav > li > a > .chevron {
+	margin-left: 3px;
 }
 
 .tabs-left .nav > li > a > .fa {
@@ -365,6 +397,15 @@ th label {
 	vertical-align: middle;
 }
 
+
+// COLOR PICKER
+// ------------------------------
+.sm-colorbox {
+	display: inline-block;
+	vertical-align: middle;
+}
+
+
 // JQUERY UI STUFF
 // -------------------------
 
@@ -445,12 +486,15 @@ th label {
 	height: 100%;
 	width: 5px;
 	cursor: move;
-	display: none;
+	visibility: hidden;
+	.opacity(0);
+	.transition(opacity 0.1s ease-in-out);
 	background: transparent url('../../images/grippy.png') 0 0 repeat;
 }
 
 .sortable-item:hover .sortable-grip {
-	display: block;
+	visibility: visible;
+	.opacity(100);
 }
 
 .sortable-dragging {

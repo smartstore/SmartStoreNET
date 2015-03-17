@@ -74,7 +74,7 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
         public virtual ICollection<StateProvince> StateProvinces
         {
-            get { return _stateProvinces ?? (_stateProvinces = new List<StateProvince>()); }
+			get { return _stateProvinces ?? (_stateProvinces = new HashSet<StateProvince>()); }
             protected set { _stateProvinces = value; }
         }
 
@@ -83,7 +83,7 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
         public virtual ICollection<ShippingMethod> RestrictedShippingMethods
         {
-            get { return _restrictedShippingMethods ?? (_restrictedShippingMethods = new List<ShippingMethod>()); }
+			get { return _restrictedShippingMethods ?? (_restrictedShippingMethods = new HashSet<ShippingMethod>()); }
             protected set { _restrictedShippingMethods = value; }
         }
     }

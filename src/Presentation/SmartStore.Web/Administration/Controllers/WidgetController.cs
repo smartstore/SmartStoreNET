@@ -77,7 +77,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageWidgets))
 				return AccessDeniedView();
-
+			
 			var widget = _widgetService.LoadWidgetBySystemName(systemName);
 			if (widget.IsWidgetActive(_widgetSettings))
 			{

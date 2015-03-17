@@ -1,20 +1,18 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
+using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Catalog;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
-using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
-    public class OrderModel : EntityModelBase
+    public class OrderModel : TabbableModel
     {
         public OrderModel()
         {
@@ -39,13 +37,16 @@ namespace SmartStore.Admin.Models.Orders
         //customer info
         [SmartResourceDisplayName("Admin.Orders.Fields.Customer")]
         public int CustomerId { get; set; }
+		public string CustomerName { get; set; }
+
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerEmail")]
         public string CustomerEmail { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.CustomerIP")]
         public string CustomerIp { get; set; }
 
         [SmartResourceDisplayName("Admin.Orders.Fields.Affiliate")]
-        public int? AffiliateId { get; set; }
+        public int AffiliateId { get; set; }
+		public string AffiliateFullName { get; set; }
 
         //totals
         public bool AllowCustomersToSelectTaxDisplayType { get; set; }
@@ -121,6 +122,7 @@ namespace SmartStore.Admin.Models.Orders
         public string PaymentStatus { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.PaymentMethod")]
         public string PaymentMethod { get; set; }
+		public string PaymentMethodSystemName { get; set; }
 
         //credit card info
         public bool AllowStoringCreditCardNumber { get; set; }
@@ -182,7 +184,7 @@ namespace SmartStore.Admin.Models.Orders
         public string CaptureTransactionId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Fields.SubscriptionTransactionID")]
         public string SubscriptionTransactionId { get; set; }
-		// codehint: sm-add
+
 		[SmartResourceDisplayName("Admin.Orders.Fields.AuthorizationTransactionResult")]
 		public string AuthorizationTransactionResult { get; set; }
 		[SmartResourceDisplayName("Admin.Orders.Fields.CaptureTransactionResult")]
@@ -242,7 +244,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Orders.Fields.PartialRefund.AmountToRefund")]
         public decimal AmountToRefund { get; set; }
         public decimal MaxAmountToRefund { get; set; }
-        public string PrimaryStoreCurrencyCode { get; set; }
+		public string MaxAmountToRefundFormatted { get; set; }
 
         //workflow info
         public bool CanCancelOrder { get; set; }
@@ -285,6 +287,7 @@ namespace SmartStore.Admin.Models.Orders
             public string UnitPriceExclTax { get; set; }
             public decimal UnitPriceInclTaxValue { get; set; }
             public decimal UnitPriceExclTaxValue { get; set; }
+			public decimal TaxRate { get; set; }
 
             public int Quantity { get; set; }
 
@@ -460,6 +463,9 @@ namespace SmartStore.Admin.Models.Orders
                 public decimal UnitPriceInclTax { get; set; }
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.UnitPriceExclTax")]
                 public decimal UnitPriceExclTax { get; set; }
+
+				[SmartResourceDisplayName("Admin.Orders.Products.AddNew.TaxRate")]
+				public decimal TaxRate { get; set; }
 
                 [SmartResourceDisplayName("Admin.Orders.Products.AddNew.Quantity")]
                 public int Quantity { get; set; }

@@ -84,7 +84,7 @@ namespace SmartStore.Services.Shipping
 		public virtual IPagedList<Shipment> GetAllShipments(string trackingNumber, DateTime? createdFrom, DateTime? createdTo, 
             int pageIndex, int pageSize)
         {
-            var query = _shipmentRepository.Table;
+            var query = _shipmentRepository.Expand(_shipmentRepository.Table, x => x.Order);
 			if (!String.IsNullOrEmpty(trackingNumber))
 				query = query.Where(s => s.TrackingNumber.Contains(trackingNumber));
             if (createdFrom.HasValue)
@@ -108,7 +108,7 @@ namespace SmartStore.Services.Shipping
             if (shipmentIds == null || shipmentIds.Length == 0)
                 return new List<Shipment>();
 
-            var query = from o in _shipmentRepository.Table
+            var query = from o in _shipmentRepository.Expand(_shipmentRepository.Table, x => x.Order)
                         where shipmentIds.Contains(o.Id)
                         select o;
             var shipments = query.ToList();

@@ -104,11 +104,11 @@
                             <div class="comment-content">
                                 <div class="comment-info">
                                     @if (comment.AllowViewingProfiles)
-                                    {
-                                        <a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" class="username">@(comment.CustomerName)</a>
-                                    }
-                                    else
-                                    {
+									{
+										<a href="@Url.RouteUrl("CustomerProfile", new { id = comment.CustomerId })" class="username" rel="nofollow">@(comment.CustomerName)</a>
+									}
+									else
+									{
                                         <span class="username">@(comment.CustomerName)</span>
                                     }
                                     <span class="comment-time">

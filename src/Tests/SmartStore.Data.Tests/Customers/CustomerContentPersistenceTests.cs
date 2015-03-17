@@ -84,9 +84,12 @@ namespace SmartStore.Data.Tests.Customers
                 }
             };
 
-            context.Set<CustomerContent>().Add(productReview);
-            context.Set<CustomerContent>().Add(productReviewHelpfulness);
-            context.Set<CustomerContent>().Add(blogComment);
+			var table = context.Set<CustomerContent>();
+			table.RemoveRange(table.ToList());
+
+            table.Add(productReview);
+            table.Add(productReviewHelpfulness);
+            table.Add(blogComment);
 
             context.SaveChanges();
 
@@ -94,7 +97,7 @@ namespace SmartStore.Data.Tests.Customers
             context = new SmartObjectContext(GetTestDbName());
 
             var query = context.Set<CustomerContent>();
-            query.ToList().Count.ShouldEqual(3);
+			query.ToList().Count.ShouldEqual(3);
 
             var dbReviews = query.OfType<ProductReview>().ToList();
             dbReviews.Count().ShouldEqual(1);

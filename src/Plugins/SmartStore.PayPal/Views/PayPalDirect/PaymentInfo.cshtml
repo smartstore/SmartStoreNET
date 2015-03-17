@@ -1,0 +1,45 @@
+﻿@{
+    Layout = "";
+    Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
+}
+@model PayPalDirectPaymentInfoModel
+@using SmartStore.PayPal.Models;
+@using SmartStore.Web.Framework;
+
+<div class="form-horizontal paypal-direct">
+	<div class="control-group">
+		@Html.LabelFor(model => model.CreditCardTypes, new { @class="control-label required" })
+		<div class="controls">
+			@Html.DropDownListFor(model => model.CreditCardType, Model.CreditCardTypes, new { @class = "dropdownlists" })
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardholderName, new { @class="control-label required" })
+		<div class="controls">
+            @Html.TextBoxFor(model => model.CardholderName, new { autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.CardholderName)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardNumber, new { @class="control-label required" })
+		<div class="controls">
+            @Html.TextBoxFor(model => model.CardNumber, new { autocomplete = "off", maxlength = 22 })
+            @Html.ValidationMessageFor(model => model.CardNumber)
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.ExpireMonth, new { @class="control-label required" })
+		<div class="controls">
+            @Html.DropDownListFor(model => model.ExpireMonth, Model.ExpireMonths, new { @class = "dropdownlists" })
+            /
+            @Html.DropDownListFor(model => model.ExpireYear, Model.ExpireYears, new { @class = "dropdownlists" })
+		</div>
+	</div>
+	<div class="control-group">
+		@Html.LabelFor(model => model.CardCode, new { @class="control-label required" })
+		<div class="controls">
+            @Html.TextBoxFor(model => model.CardCode, new { autocomplete = "off", maxlength = 4 })
+            @Html.ValidationMessageFor(model => model.CardCode)
+		</div>
+	</div>
+</div>

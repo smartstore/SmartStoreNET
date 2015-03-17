@@ -1,0 +1,63 @@
+﻿<Language Name="Deutsch" IsDefault="false" IsRightToLeft="false">
+
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.Tax" AppendRootKey="false">
+    <Value>Standard Steuerberechnung</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Description.SmartStore.Tax" AppendRootKey="false">
+    <Value>Stellt Standard Steuerberechnungsmodule zur Verfügung - u.A. Fester Steuersatz, Steuersatz nach Region etc.</Value>
+  </LocaleResource>
+  
+  <!-- FixedRate -->
+  <LocaleResource Name="Plugins.FriendlyName.Tax.FixedRate" AppendRootKey="false">
+    <Value>Fester Steuersatz</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Tax.FixedRate" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.TaxCategoryName">
+        <Value>Steuerklasse</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Rate">
+        <Value>Steuersatz</Value>
+      </LocaleResource>  
+    </Children>
+  </LocaleResource>
+
+
+  <!-- ByRegion -->
+  <LocaleResource Name="Plugins.FriendlyName.Tax.CountryStateZip" AppendRootKey="false">
+    <Value>Steuer nach Region</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Tax.CountryStateZip" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="Fields.Country">
+        <Value>Land</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.StateProvince">
+        <Value>Bundesland/Region</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.StateProvince.Hint">
+        <Value>Bei Angabe des Asterisks (*) wird der Steuersatz ungeachtet der Region im gesamten Land angewandt.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Zip">
+        <Value>PLZ</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Zip.Hint">
+        <Value>Wenn leer, wird der Steuersatz ungeachtet des PLZ-Gebietes im gesamten Land bzw. in der gesamten Region angewandt.</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.TaxCategory">
+        <Value>Steuerklasse</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.Percentage">
+        <Value>Prozentsatz</Value>
+      </LocaleResource>
+      <LocaleResource Name="AddRecord">
+        <Value>Steuersatz anlegen</Value>
+      </LocaleResource>
+      <LocaleResource Name="AddRecord.Hint">
+        <Value>Neuen Steuersatz hinzufügen</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
+
+
+</Language>

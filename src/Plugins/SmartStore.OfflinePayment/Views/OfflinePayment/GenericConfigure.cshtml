@@ -1,0 +1,51 @@
+﻿@model SmartStore.OfflinePayment.Models.ConfigurationModelBase
+@using SmartStore.Web.Framework;
+
+@{
+	Layout = "";
+}
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@using (Html.BeginForm())
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DescriptionText)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.DescriptionText)
+				@Html.TextAreaFor(model => model.DescriptionText, new { style = "width: 550px; height: 100px;" })
+				@Html.ValidationMessageFor(model => model.DescriptionText)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFee)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFee)
+				@Html.ValidationMessageFor(model => model.AdditionalFee)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AdditionalFeePercentage)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.AdditionalFeePercentage)
+				@Html.ValidationMessageFor(model => model.AdditionalFeePercentage)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<button type="submit" name="save" class="btn btn-primary" value="save">
+					<i class="fa fa-check"></i>
+					@T("Admin.Common.Save")
+				</button>
+			</td>
+		</tr>
+	</table>
+}

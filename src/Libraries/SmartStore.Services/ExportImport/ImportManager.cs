@@ -291,6 +291,9 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
+				if (row.Count == 0)
+					continue;
+
 				Product product = null;
 
 				object key;
@@ -372,6 +375,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.IsShipEnabled, true);
 				row.SetProperty(result, product, (x) => x.IsFreeShipping);
 				row.SetProperty(result, product, (x) => x.AdditionalShippingCharge);
+				row.SetProperty(result, product, (x) => x.IsEsd);
 				row.SetProperty(result, product, (x) => x.IsTaxExempt);
 				row.SetProperty(result, product, (x) => x.TaxCategoryId, 1);
 				row.SetProperty(result, product, (x) => x.ManageInventoryMethodId);
@@ -404,6 +408,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.Width);
 				row.SetProperty(result, product, (x) => x.Height);
 				row.SetProperty(result, product, (x) => x.DeliveryTimeId);
+                row.SetProperty(result, product, (x) => x.QuantityUnitId);
 				row.SetProperty(result, product, (x) => x.BasePriceEnabled);
 				row.SetProperty(result, product, (x) => x.BasePriceMeasureUnit);
 				row.SetProperty(result, product, (x) => x.BasePriceAmount);

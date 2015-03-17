@@ -25,6 +25,7 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Directory;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -45,6 +46,7 @@ namespace SmartStore.Services.Tests.Orders
         ICategoryService _categoryService;
         IProductAttributeParser _productAttributeParser;
 		IProductService _productService;
+		IProductAttributeService _productAttributeService;
         IPriceCalculationService _priceCalcService;
         IOrderTotalCalculationService _orderTotalCalcService;
         IAddressService _addressService;
@@ -56,6 +58,7 @@ namespace SmartStore.Services.Tests.Orders
         CatalogSettings _catalogSettings;
         IEventPublisher _eventPublisher;
 		ISettingService _settingService;
+		IGeoCountryLookup _geoCountryLookup;
 		Store _store;
 
         [SetUp]
@@ -66,7 +69,7 @@ namespace SmartStore.Services.Tests.Orders
 			_store = new Store() { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
-
+			
             var pluginFinder = new PluginFinder();
             var cacheManager = new NullCache();
 
@@ -75,13 +78,14 @@ namespace SmartStore.Services.Tests.Orders
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productService = MockRepository.GenerateMock<IProductService>();
+			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
 			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
-				 _discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings);
+				 _discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings, _productAttributeService);
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
@@ -125,7 +129,8 @@ namespace SmartStore.Services.Tests.Orders
             _taxSettings.DefaultTaxAddressId = 10;
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, this.ProviderManager);
+			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
 
             _rewardPointsSettings = new RewardPointsSettings();
 

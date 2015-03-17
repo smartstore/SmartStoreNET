@@ -170,6 +170,7 @@ namespace SmartStore.Services.Catalog
 				IsShipEnabled = product.IsShipEnabled,
 				IsFreeShipping = product.IsFreeShipping,
 				AdditionalShippingCharge = product.AdditionalShippingCharge,
+				IsEsd = product.IsEsd,
 				IsTaxExempt = product.IsTaxExempt,
 				TaxCategoryId = product.TaxCategoryId,
 				ManageInventoryMethod = product.ManageInventoryMethod,
@@ -210,6 +211,7 @@ namespace SmartStore.Services.Catalog
 				CreatedOnUtc = utcNow,
 				UpdatedOnUtc = utcNow,
 				DeliveryTimeId = product.DeliveryTimeId,
+                QuantityUnitId = product.QuantityUnitId,
 				BasePriceEnabled = product.BasePriceEnabled,
 				BasePriceMeasureUnit = product.BasePriceMeasureUnit,
 				BasePriceAmount = product.BasePriceAmount,
@@ -466,6 +468,7 @@ namespace SmartStore.Services.Catalog
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
 					DeliveryTimeId = combination.DeliveryTimeId,
+                    QuantityUnitId = combination.QuantityUnitId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};
@@ -499,7 +502,7 @@ namespace SmartStore.Services.Catalog
 			_productService.UpdateHasDiscountsApplied(productCopy);
 
 			// associated products
-			if (copyAssociatedProducts)
+			if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 			{
 				var searchContext = new ProductSearchContext()
 				{

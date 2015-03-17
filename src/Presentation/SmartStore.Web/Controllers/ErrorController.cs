@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
+using SmartStore.Web.Infrastructure;
 
 namespace SmartStore.Web.Controllers
 {
@@ -10,12 +11,10 @@ namespace SmartStore.Web.Controllers
 	public class ErrorController : Controller
 	{
 
+		[MapLegacyRoutes]
 		public ActionResult NotFound()
 		{
-			this.Response.StatusCode = 404;
-			this.Response.TrySkipIisCustomErrors = true;
-
-			return View();
+			return HttpNotFound();
 		}
 
 		public ActionResult Index()
@@ -25,6 +24,11 @@ namespace SmartStore.Web.Controllers
 
 			return View("Error");
 		}
+
+		//public ActionResult DoThrow()
+		//{
+		//	throw Error.Application("This error was thrown on purpose for testing reasons.");
+		//}
 
 	}
 }

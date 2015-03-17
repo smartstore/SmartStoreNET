@@ -42,8 +42,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <param name="language">Language</param>
         /// <returns>Price</returns>
-        string FormatPrice(decimal price, bool showCurrency, 
-            string currencyCode, bool showTax, Language language);
+        string FormatPrice(decimal price, bool showCurrency, string currencyCode, bool showTax, Language language);
 
         /// <summary>
         /// Formats the price
@@ -54,8 +53,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatPrice(decimal price, bool showCurrency,
-            string currencyCode, Language language, bool priceIncludesTax);
+        string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax);
 
         /// <summary>
         /// Formats the price
@@ -66,8 +64,19 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax);
+        string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax);
+
+		/// <summary>
+		/// Formats the price
+		/// </summary>
+		/// <param name="price">Price</param>
+		/// <param name="showCurrency">A value indicating whether to show a currency</param>
+		/// <param name="targetCurrency">Target currency</param>
+		/// <param name="language">Language</param>
+		/// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
+		/// <param name="showTax">A value indicating whether to show tax suffix</param>
+		/// <returns>Price</returns>
+		string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax);
 
         /// <summary>
         /// Formats the price
@@ -79,8 +88,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <returns>Price</returns>
-        string FormatPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
+        string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
 
 
         /// <summary>
@@ -100,9 +108,21 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatShippingPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax);
-        /// <summary>
+        string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax);
+
+		/// <summary>
+		/// Formats the shipping price
+		/// </summary>
+		/// <param name="price">Price</param>
+		/// <param name="showCurrency">A value indicating whether to show a currency</param>
+		/// <param name="currencyCode">Target currency code</param>
+		/// <param name="language">Language</param>
+		/// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
+		/// <param name="showTax">A value indicating whether to show tax suffix</param>
+		/// <returns>Price</returns>
+		string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax);
+		
+		/// <summary>
         /// Formats the shipping price
         /// </summary>
         /// <param name="price">Price</param>
@@ -112,8 +132,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <returns>Price</returns>
-        string FormatShippingPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
+        string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
         
         /// <summary>
         /// Formats the shipping price
@@ -124,8 +143,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatShippingPrice(decimal price, bool showCurrency, 
-            string currencyCode, Language language, bool priceIncludesTax);
+        string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax);
 
 
 
@@ -146,8 +164,19 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency,
-            Currency targetCurrency, Language language, bool priceIncludesTax);
+        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax);
+
+		/// <summary>
+		/// Formats the payment method additional fee
+		/// </summary>
+		/// <param name="price">Price</param>
+		/// <param name="showCurrency">A value indicating whether to show a currency</param>
+		/// <param name="currencyCode">Target currency code</param>
+		/// <param name="language">Language</param>
+		/// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
+		/// <param name="showTax">A value indicating whether to show tax suffix</param>
+		/// <returns>Price</returns>
+		string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax);
 
         /// <summary>
         /// Formats the payment method additional fee
@@ -159,8 +188,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <param name="showTax">A value indicating whether to show tax suffix</param>
         /// <returns>Price</returns>
-        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
+        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax);
 
         /// <summary>
         /// Formats the payment method additional fee
@@ -171,8 +199,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="language">Language</param>
         /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
         /// <returns>Price</returns>
-        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, 
-            string currencyCode, Language language, bool priceIncludesTax);
+        string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax);
 
 
 

@@ -1,10 +1,12 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Localization;
 using SmartStore.Core;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
@@ -15,8 +17,6 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
-using System.Collections.Generic;
-using SmartStore.Core.Data;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -95,29 +95,6 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(Language language, LanguageModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(language);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(language, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
         #endregion
 
         #region Languages
@@ -165,11 +142,14 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new LanguageModel();
-            //flags
+            
+			//flags
             PrepareFlagsModel(model);
+			
 			//Stores
 			PrepareStoresMappingModel(model, null, false);
-            //default values
+            
+			//default values
             //model.Published = true;
             return View(model);
         }
@@ -186,7 +166,7 @@ namespace SmartStore.Admin.Controllers
                 _languageService.InsertLanguage(language);
 
 				//Stores
-				SaveStoreMappings(language, model);
+				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
 
 				var plugins = _pluginFinder.GetPluginDescriptors(true);
 				var filterLanguages = new List<Language>() { language };
@@ -202,6 +182,7 @@ namespace SmartStore.Admin.Controllers
 
             //flags
             PrepareFlagsModel(model);
+
 			//Stores
 			PrepareStoresMappingModel(model, null, true);
 
@@ -216,7 +197,6 @@ namespace SmartStore.Admin.Controllers
 
             var language = _languageService.GetLanguageById(id);
             if (language == null)
-                //No language found with the specified id
                 return RedirectToAction("List");
 
             //set page timeout to 5 minutes
@@ -226,6 +206,7 @@ namespace SmartStore.Admin.Controllers
 
             //flags
             PrepareFlagsModel(model);
+
 			//Stores
 			PrepareStoresMappingModel(model, language, false);
 
@@ -240,7 +221,6 @@ namespace SmartStore.Admin.Controllers
 
             var language = _languageService.GetLanguageById(model.Id);
             if (language == null)
-                //No language found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -259,19 +239,20 @@ namespace SmartStore.Admin.Controllers
                 _languageService.UpdateLanguage(language);
 
 				//Stores
-				SaveStoreMappings(language, model);
+				_storeMappingService.SaveStoreMappings<Language>(language, model.SelectedStoreIds);
 
                 //notification
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.Languages.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = language.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
             //flags
             PrepareFlagsModel(model);
+
 			//Stores
 			PrepareStoresMappingModel(model, language, true);
 
+			//If we got this far, something failed, redisplay form
             return View(model);
         }
 
@@ -283,7 +264,6 @@ namespace SmartStore.Admin.Controllers
 
             var language = _languageService.GetLanguageById(id);
             if (language == null)
-                //No language found with the specified id
                 return RedirectToAction("List");
 
             //ensure we have at least one published language
@@ -474,7 +454,6 @@ namespace SmartStore.Admin.Controllers
 
             var language = _languageService.GetLanguageById(id);
             if (language == null)
-                //No language found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -497,7 +476,6 @@ namespace SmartStore.Admin.Controllers
 
             var language = _languageService.GetLanguageById(id);
             if (language == null)
-                //No language found with the specified id
                 return RedirectToAction("List");
 
             //set page timeout to 5 minutes

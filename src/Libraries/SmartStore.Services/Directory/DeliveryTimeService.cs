@@ -1,14 +1,13 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
-using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Directory
 {
@@ -29,9 +28,9 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<ProductVariantAttributeCombination> _attributeCombinationRepository;
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerService _customerService;
-        //private readonly CurrencySettings _currencySettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
+		private readonly CatalogSettings _catalogSettings;
 
         #endregion
 
@@ -52,16 +51,17 @@ namespace SmartStore.Services.Directory
             IRepository<ProductVariantAttributeCombination> attributeCombinationRepository,
             ICustomerService customerService,
             IPluginFinder pluginFinder,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			CatalogSettings catalogSettings)
         {
             this._cacheManager = cacheManager;
             this._deliveryTimeRepository = deliveryTimeRepository;
             this._customerService = customerService;
-            //this._currencySettings = currencySettings;
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._productRepository = productRepository;
             this._attributeCombinationRepository = attributeCombinationRepository;
+			this._catalogSettings = catalogSettings;
         }
 
         #endregion
@@ -113,6 +113,25 @@ namespace SmartStore.Services.Directory
 
             return  _deliveryTimeRepository.GetById(deliveryTimeId);
         }
+
+		/// <summary>
+		/// Gets the delivery time for a product
+		/// </summary>
+		/// <param name="product">The product</param>
+		/// <returns>Delivery time</returns>
+		public virtual DeliveryTime GetDeliveryTime(Product product)
+		{
+			if (product == null)
+				return null;
+
+			if ((product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
+				&& _catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
+			{
+				return GetDeliveryTimeById(_catalogSettings.DeliveryTimeIdForEmptyStock.Value);
+			}
+
+			return GetDeliveryTimeById(product.DeliveryTimeId ?? 0);
+		}
 
         /// <summary>
         /// Gets all delivery times

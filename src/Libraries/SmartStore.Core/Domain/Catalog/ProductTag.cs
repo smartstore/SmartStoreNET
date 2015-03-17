@@ -23,7 +23,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		public virtual ICollection<Product> Products
 		{
-			get { return _products ?? (_products = new List<Product>()); }
+			get { return _products ?? (_products = new HashSet<Product>()); }
 			protected set { _products = value; }
 		}
     }

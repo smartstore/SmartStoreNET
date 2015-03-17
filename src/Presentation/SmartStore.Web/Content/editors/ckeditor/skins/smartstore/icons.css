@@ -1,0 +1,55 @@
+
+.cke_button_icon {
+	background-image: url('icons/sprite.png') !important;
+	background-repeat: no-repeat;
+	background-size: auto;
+}
+
+.cke_button__undo_icon				{ background-position: 0 -984px !important; }
+.cke_button__redo_icon				{ background-position: 0 -936px !important; }
+.cke_button__bold_icon				{ background-position: 0 0 !important; }
+.cke_button__italic_icon			{ background-position: 0 -24px !important; }
+.cke_button__underline_icon			{ background-position: 0 -120px !important; }
+.cke_button__strike_icon			{ background-position: 0 -48px !important; }
+.cke_button__subscript_icon			{ background-position: 0 -72px !important; }
+.cke_button__superscript_icon		{ background-position: 0 -96px !important; }
+.cke_button__removeformat_icon		{ background-position: 0 -768px !important; }
+.cke_button__link_icon				{ background-position: 0 -504px !important; }
+.cke_button__unlink_icon			{ background-position: 0 -528px !important; }
+.cke_button__anchor_icon			{ background-position: 0 -480px !important; }
+.cke_button__numberedlist_icon		{ background-position: 0 -624px !important; }
+.cke_button__bulletedlist_icon		{ background-position: 0 -576px !important; }
+.cke_button__outdent_icon			{ background-position: 0 -432px !important; }
+.cke_button__indent_icon			{ background-position: 0 -384px !important; }
+.cke_button__blockquote_icon		{ background-position: 0 -144px !important; }
+.cke_button__image_icon				{ background-position: 0 -336px !important; }
+.cke_button__table_icon				{ background-position: 0 -888px !important; }
+.cke_button__horizontalrule_icon	{ background-position: 0 -312px !important; }
+.cke_button__specialchar_icon		{ background-position: 0 -840px !important; }
+.cke_button__cut_icon				{ background-position: 0 -240px !important; }
+.cke_button__copy_icon				{ background-position: 0 -192px !important; }
+.cke_button__paste_icon				{ background-position: 0 -288px !important; }
+.cke_button__pastetext_icon			{ background-position: 0 -696px !important; }
+.cke_button__pastefromword_icon		{ background-position: 0 -744px !important; }
+.cke_button__scayt_icon				{ background-position: 0 -864px !important; }
+.cke_button__source_icon			{ background-position: 0 -816px !important; }
+.cke_button__maximize_icon			{ background-position: 0 -648px !important; }
+.cke_button___icon					{ background-position: 0 -px !important; }
+.cke_button___icon					{ background-position: 0 -px !important; }
+
+
+.cke_button__textcolor_icon			{ background-image: url('icons/textcolor.png') !important; background-position: 0 0 !important; }
+.cke_button__bgcolor_icon			{ background-image: url('icons/bgcolor.png') !important; background-position: 0 0 !important; }
+.cke_button__justifyleft_icon		{ background-image: url('icons/justifyleft.png') !important; background-position: 0 0 !important; }
+.cke_button__justifycenter_icon		{ background-image: url('icons/justifycenter.png') !important; background-position: 0 0 !important; }
+.cke_button__justifyright_icon		{ background-image: url('icons/justifyright.png') !important; background-position: 0 0 !important; }
+.cke_button__justifyblock_icon		{ background-image: url('icons/justifyblock.png') !important; background-position: 0 0 !important; }
+.cke_button__fontawesome_icon		{ background-image: url('icons/fontawesome.png') !important; background-position: 0 0 !important; }
+.cke_button__youtube_icon			{ background-image: url('icons/youtube.png') !important; background-position: 0 0 !important; }
+.cke_button__find_icon				{ background-image: url('icons/find.png') !important; background-position: 0 0 !important; }
+.cke_button__replace_icon			{ background-image: url('icons/replace.png') !important; background-position: 0 0 !important; }
+.cke_button__autoformat_icon		{ background-image: url('icons/codemirror/autoformat.png') !important; background-position: 0 0 !important; }
+.cke_button__commentselectedrange_icon		{ background-image: url('icons/codemirror/commentselectedrange.png') !important; background-position: 0 0 !important; }
+.cke_button__uncommentselectedrange_icon	{ background-image: url('icons/codemirror/uncommentselectedrange.png') !important; background-position: 0 0 !important; }
+.cke_button__autocomplete_icon		{ background-image: url('icons/codemirror/autocomplete.png') !important; background-position: 0 0 !important; }
+.cke_button__showblocks_icon		{ background-image: url('icons/showblocks.png') !important; background-position: 0 0 !important; }

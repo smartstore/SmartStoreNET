@@ -5,8 +5,8 @@
     <ul>
         @if (Model.IsAuthenticated)
         {
-            <li><a href="@Url.RouteUrl("MyAccount")" class="account" data-role="button">@Model.CustomerEmailUsername</a></li>
-            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout" data-role="button">@T("Account.Logout")</a></li>
+            <li><a href="@Url.RouteUrl("MyAccount")" class="account" data-role="button" rel="nofollow">@Model.CustomerEmailUsername</a></li>
+            <li><a href="@Url.RouteUrl("Logout")" class="ico-logout" data-role="button" rel="nofollow">@T("Account.Logout")</a></li>
         }
         else
         {

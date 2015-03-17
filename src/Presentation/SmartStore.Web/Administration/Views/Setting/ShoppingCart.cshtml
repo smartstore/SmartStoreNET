@@ -53,6 +53,7 @@
 	{
 		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.CartSettings").Text).Content(@TabCartSettings()).Selected(true);
 		x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.WishlistSettings").Text).Content(@TabWishlistSettings());
+        x.Add().Text(T("Admin.Configuration.Settings.ShoppingCart.Checkout").Text).Content(@TabCheckoutSettings());
     }))
 }
 
@@ -97,69 +98,6 @@
         </tr>
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowDiscountBox)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowDiscountBox)
-                @Html.ValidationMessageFor(model => model.ShowDiscountBox)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowGiftCardBox)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowGiftCardBox)
-                @Html.ValidationMessageFor(model => model.ShowGiftCardBox)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CrossSellsNumber)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CrossSellsNumber)
-                @Html.ValidationMessageFor(model => model.CrossSellsNumber)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MiniShoppingCartEnabled)
-                @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
-            </td>
-        </tr>
-        <tr id="pnlMiniShoppingCartProductNumber">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.MiniShoppingCartProductNumber)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.MiniShoppingCartProductNumber)
-                @Html.ValidationMessageFor(model => model.MiniShoppingCartProductNumber)
-            </td>
-        </tr>
-        <tr id="pnlShowProductImagesInMiniShoppingCart">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
-                @Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowConfirmOrderLegalHint)
-                @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowDeliveryTimes)
             </td>
             <td class="adminData">
@@ -167,7 +105,6 @@
                 @Html.ValidationMessageFor(model => model.ShowDeliveryTimes)
             </td>
         </tr>
-
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowShortDesc)
@@ -204,13 +141,72 @@
                 @Html.ValidationMessageFor(model => model.ShowLinkedAttributeValueQuantity)
             </td>
         </tr>
+
+        <tr class="adminSeparator">
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.ShowCommentBox)
+                @Html.SmartLabelFor(model => model.MiniShoppingCartEnabled)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.ShowCommentBox)
-                @Html.ValidationMessageFor(model => model.ShowCommentBox)
+                @Html.SettingEditorFor(model => model.MiniShoppingCartEnabled)
+                @Html.ValidationMessageFor(model => model.MiniShoppingCartEnabled)
+            </td>
+        </tr>
+        <tr id="pnlMiniShoppingCartProductNumber">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MiniShoppingCartProductNumber)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.MiniShoppingCartProductNumber)
+                @Html.ValidationMessageFor(model => model.MiniShoppingCartProductNumber)
+            </td>
+        </tr>
+        <tr id="pnlShowProductImagesInMiniShoppingCart">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductImagesInMiniShoppingCart)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductImagesInMiniShoppingCart)
+                @Html.ValidationMessageFor(model => model.ShowProductImagesInMiniShoppingCart)
+            </td>
+        </tr>
+
+        <tr class="adminSeparator">
+            <td colspan="2">
+                <hr />
+            </td>
+        </tr>
+
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDiscountBox)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDiscountBox)
+                @Html.ValidationMessageFor(model => model.ShowDiscountBox)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowGiftCardBox)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowGiftCardBox)
+                @Html.ValidationMessageFor(model => model.ShowGiftCardBox)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CrossSellsNumber)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CrossSellsNumber)
+                @Html.ValidationMessageFor(model => model.CrossSellsNumber)
             </td>
         </tr>
         <tr>
@@ -291,5 +287,29 @@
                 @Html.ValidationMessageFor(model => model.AllowAnonymousUsersToEmailWishlist)
             </td>
         </tr>        
+    </table>
+}
+
+@helper TabCheckoutSettings()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowConfirmOrderLegalHint)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowConfirmOrderLegalHint)
+                @Html.ValidationMessageFor(model => model.ShowConfirmOrderLegalHint)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowCommentBox)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowCommentBox)
+                @Html.ValidationMessageFor(model => model.ShowCommentBox)
+            </td>
+        </tr>
     </table>
 }

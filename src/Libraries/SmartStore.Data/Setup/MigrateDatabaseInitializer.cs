@@ -89,7 +89,7 @@ namespace SmartStore.Data.Setup
 					// prior integrating EF Migrations.
 					// Running the Migrator with initial DDL would crash in this case as
 					// the db objects exist already. Therefore we set a suppression flag
-					// which we read in the corresposnding InitialMigration to exit early.
+					// which we read in the corresponding InitialMigration to exit early.
 					DbMigrationContext.Current.SetSuppressInitialCreate<TContext>(true);
 				}
 			}

@@ -27,15 +27,15 @@ namespace SmartStore
             other.Each(x => initial.Add(x));
         }
 
-        //public static bool IsNullOrEmpty(this ICollection source)
-        //{
-        //    return (source == null || source.Count == 0);
-        //}
-
         public static bool IsNullOrEmpty<T>(this ICollection<T> source)
         {
             return (source == null || source.Count == 0);
         }
+
+		//public static bool HasItems(this IEnumerable source)
+		//{
+		//	return source != null && source.GetEnumerator().MoveNext();
+		//}
 
         public static bool EqualsAll<T>(this IList<T> a, IList<T> b)
         {

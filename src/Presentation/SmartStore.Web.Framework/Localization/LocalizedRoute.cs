@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Globalization;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -16,6 +17,7 @@ namespace SmartStore.Web.Framework.Localization
         #region Fields
 
         private bool? _seoFriendlyUrlsForLanguagesEnabled;
+		private string _leftPart;
 
         #endregion
 
@@ -90,6 +92,18 @@ namespace SmartStore.Web.Framework.Localization
                     httpContext.RewritePath("~/" + helper.RelativePath, true);
                 }
             }
+
+			if (_leftPart == null)
+			{
+				var url = this.Url;
+				int idx = url.IndexOf('{');
+				_leftPart = "~/" + (idx >= 0 ? url.Substring(0, idx) : url).TrimEnd('/');
+			}
+
+			// Perf
+			if (!httpContext.Request.AppRelativeCurrentExecutionFilePath.StartsWith(_leftPart, true, CultureInfo.InvariantCulture))
+				return null;
+
             RouteData data = base.GetRouteData(httpContext);
             return data;
         }

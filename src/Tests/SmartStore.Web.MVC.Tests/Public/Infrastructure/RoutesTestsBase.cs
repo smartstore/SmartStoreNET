@@ -16,7 +16,9 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
 
 			DataSettings.SetTestMode(true);
 
-            new SmartStore.Web.Infrastructure.StoreRoutes().RegisterRoutes(RouteTable.Routes);
+			new SmartStore.Web.Infrastructure.StoreRoutes().RegisterRoutes(RouteTable.Routes);
+			new SmartStore.Web.Infrastructure.GeneralRoutes().RegisterRoutes(RouteTable.Routes);
+			new SmartStore.Web.Infrastructure.SeoRoutes().RegisterRoutes(RouteTable.Routes);
         }
 
         [TearDown]

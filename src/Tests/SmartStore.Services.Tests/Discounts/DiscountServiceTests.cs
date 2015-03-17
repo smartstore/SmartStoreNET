@@ -15,6 +15,7 @@ using SmartStore.Core;
 using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Tests.Discounts
 {
@@ -65,6 +66,12 @@ namespace SmartStore.Services.Tests.Discounts
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
+			_storeContext.Expect(x => x.CurrentStore).Return(new Store 
+			{ 
+				Id = 1,
+				Name = "MyStore"
+			});
+
 			_settingService = MockRepository.GenerateMock<ISettingService>();
 
             var cacheManager = new NullCache();
@@ -72,9 +79,10 @@ namespace SmartStore.Services.Tests.Discounts
             _discountUsageHistoryRepo = MockRepository.GenerateMock<IRepository<DiscountUsageHistory>>();
             var pluginFinder = new PluginFinder();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
-			_discountService = null; /* TODO (pr) > new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
+
+			_discountService = new DiscountService(cacheManager, _discountRepo, _discountRequirementRepo,
 				_discountUsageHistoryRepo, _storeContext, _genericAttributeService, pluginFinder, _eventPublisher,
-				_settingService);*/
+				_settingService, base.ProviderManager);
         }
 
         [Test]
@@ -208,12 +216,12 @@ namespace SmartStore.Services.Tests.Discounts
                 LastActivityDateUtc = new DateTime(2010, 01, 02)
             };
 
-            var result1 = _discountService.IsDiscountValid(discount, customer);
-            result1.ShouldEqual(true);
+			var result1 = _discountService.IsDiscountValid(discount, customer);
+			result1.ShouldEqual(true);
 
-            discount.StartDateUtc = DateTime.UtcNow.AddDays(1);
-            var result2 = _discountService.IsDiscountValid(discount, customer);
-            result2.ShouldEqual(false);
+			discount.StartDateUtc = DateTime.UtcNow.AddDays(1);
+			var result2 = _discountService.IsDiscountValid(discount, customer);
+			result2.ShouldEqual(false);
         }
     }
 }

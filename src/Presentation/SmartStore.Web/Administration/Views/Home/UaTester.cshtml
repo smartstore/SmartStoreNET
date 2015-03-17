@@ -1,0 +1,40 @@
+﻿@model IUserAgent
+@using SmartStore.Services.Common
+@{
+    //page title
+    ViewBag.Title = "User Agent Tester";
+	var ua = Model;
+}
+
+<div class="section-header">
+    <div class="title">
+        <i class="fa fa-mobile"></i>
+        User Agent Tester
+    </div>
+</div>
+
+<div>
+	@using (Html.BeginForm(null, null, FormMethod.Get))
+	{
+		<div>
+			@Html.TextArea("ua", ua.RawValue, new { style = "width: 800px; display: block" })
+			<button type="submit" class="btn btn-default">Test</button>
+		</div>
+
+		<div style="margin-top: 20px">
+			OS: <strong>@ua.OS.Family</strong> (@ua.OS)<br />
+			User Agent: <strong>@ua.UserAgent.Family</strong>, (@ua.UserAgent)<br />
+			Device: <strong>@ua.Device.Family</strong>, (@ua.Device)<br />
+			<br />
+			IsBot: <span style='font-weight:@(ua.IsBot ? "bold" : "normal")'>@ua.IsBot</span><br />
+			IsMobileDevice: <span style='font-weight:@(ua.IsMobileDevice ? "bold" : "normal")'>@ua.IsMobileDevice</span><br />
+			IsTablet: <span style='font-weight:@(ua.IsTablet ? "bold" : "normal")'>@ua.IsTablet</span><br />
+			IsPdfConverter: <span style='font-weight:@(ua.IsPdfConverter ? "bold" : "normal")'>@ua.IsPdfConverter</span><br />
+		</div>
+	}
+</div>
+
+
+
+
+

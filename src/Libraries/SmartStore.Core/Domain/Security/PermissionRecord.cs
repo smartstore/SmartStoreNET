@@ -30,7 +30,7 @@ namespace SmartStore.Core.Domain.Security
         /// </summary>
         public virtual ICollection<CustomerRole> CustomerRoles
         {
-            get { return _customerRoles ?? (_customerRoles = new List<CustomerRole>()); }
+			get { return _customerRoles ?? (_customerRoles = new HashSet<CustomerRole>()); }
             protected set { _customerRoles = value; }
         }   
     }

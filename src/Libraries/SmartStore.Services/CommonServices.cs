@@ -9,6 +9,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Services
 		private readonly Lazy<INotifier> _notifier;
 		private readonly Lazy<IPermissionService> _permissions;
 		private readonly Lazy<ISettingService> _settings;
+		private readonly Lazy<IStoreService> _storeService;
 		
 		public CommonServices(
 			Func<string, Lazy<ICacheManager>> cache,
@@ -37,7 +39,8 @@ namespace SmartStore.Services
 			Lazy<ICustomerActivityService> customerActivity,
 			Lazy<INotifier> notifier,
 			Lazy<IPermissionService> permissions,
-			Lazy<ISettingService> settings)
+			Lazy<ISettingService> settings,
+			Lazy<IStoreService> storeService)
 		{
 			this._cache = cache("static");
 			this._dbContext = dbContext;
@@ -50,6 +53,7 @@ namespace SmartStore.Services
 			this._notifier = notifier;
 			this._permissions = permissions;
 			this._settings = settings;
+			this._storeService = storeService;
 		}
 		
 		public ICacheManager Cache
@@ -137,6 +141,15 @@ namespace SmartStore.Services
 			get
 			{
 				return _settings.Value;
+			}
+		}
+
+
+		public IStoreService StoreService
+		{
+			get
+			{
+				return _storeService.Value;
 			}
 		}
 	}

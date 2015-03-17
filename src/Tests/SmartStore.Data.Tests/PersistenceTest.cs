@@ -16,15 +16,11 @@ namespace SmartStore.Data.Tests
         public virtual void SetUp()
 		{
 			context = new SmartObjectContext(GetTestDbName());
-			context.Database.Delete();
-			Database.SetInitializer(new TestDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>(GetTestDbName()));
-			context.Database.Initialize(true);
         }
 
         protected string GetTestDbName()
         {
-            string testDbName = "Data Source=" + (System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)) + @"\\SmartStore.Data.Tests.Db.sdf;Persist Security Info=False";
-            return testDbName;
+			return GlobalSetup.GetTestDbName();
         }        
         
         /// <summary>

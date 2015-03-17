@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using Autofac;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Localization;
 using SmartStore.Services;
 
 namespace SmartStore.Web.Framework.Plugins
@@ -34,7 +32,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (storeId > 0)
 				{
 					var d = provider.Metadata.PluginDescriptor;
-					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false))
+					if (d != null && !IsActiveForStore(d, storeId))
 					{
 						return null;
 					}
@@ -55,7 +53,7 @@ namespace SmartStore.Web.Framework.Plugins
 				if (storeId > 0)
 				{
 					var d = provider.Metadata.PluginDescriptor;
-					if (d != null && _services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false))
+					if (d != null && !IsActiveForStore(d, storeId))
 					{
 						return null;
 					}
@@ -73,7 +71,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				providers = from p in providers
 							let d = p.Metadata.PluginDescriptor
-							where d == null || !_services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false)
+							where d == null || IsActiveForStore(d, storeId)
 							select p;
 			}
 			return SortProviders(providers.Select(x => new Provider<TProvider>(x)));
@@ -86,7 +84,7 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				providers = from p in providers
 							let d = p.Metadata.PluginDescriptor
-							where d == null || !_services.Settings.GetSettingByKey<string>(d.GetSettingKey("LimitedToStores")).ToIntArrayContains(storeId, false)
+							where d == null || IsActiveForStore(d, storeId)
 							select p;
 			}
 			return SortProviders(providers.Select(x => new Provider<IProvider>(x)));
@@ -125,6 +123,29 @@ namespace SmartStore.Web.Framework.Plugins
 			{
 				metadata.Description = description;
 			}
+		}
+
+		private bool IsActiveForStore(PluginDescriptor plugin, int storeId)
+		{
+			if (storeId == 0)
+			{
+				return true;
+			}
+
+			var limitedToStoresSetting = _services.Settings.GetSettingByKey<string>(plugin.GetSettingKey("LimitedToStores"));
+			if (limitedToStoresSetting.IsEmpty())
+			{
+				return true;
+			}
+
+			var limitedToStores = limitedToStoresSetting.ToIntArray();
+			if (limitedToStores.Length > 0)
+			{
+				var flag = limitedToStores.Contains(storeId);
+				return flag;
+			}
+
+			return true;
 		}
 
 	}

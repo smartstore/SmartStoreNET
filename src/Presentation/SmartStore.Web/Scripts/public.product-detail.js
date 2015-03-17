@@ -93,6 +93,7 @@
 		    var deliveryTime = priceBlock.find(".delivery-time");
 
 		    if (data.Delivery.DisplayAccordingToStock) {
+		    	deliveryTime.toggle(true);
 		    	deliveryTime.find(".delivery-time-value").html(data.Delivery.Name);
 		    	deliveryTime.find(".delivery-time-color")
 					.css("background-color", data.Delivery.Color)
@@ -102,6 +103,7 @@
 		    else {
 		    	deliveryTime.find(".delivery-time-value").html(data.Stock.Availability.Text);
 		    	deliveryTime.find(".delivery-time-color").toggle(false);
+		    	deliveryTime.toggle(data.Stock.Availability.Text.length > 0);
 		    }
 		     
 		    //attributes
@@ -151,10 +153,8 @@
 			var opts = this.options;
 
 			gallery = $('#pd-gallery').smartGallery({
-			    width: opts.galleryWidth,	
 			    height: opts.galleryHeight,
 				enableDescription: opts.showImageDescription,
-				thumbSize: opts.galleryThumbSize || 50,
 				startIndex: startIndex || 0,
 				zoom: {
 				    enabled: opts.enableZoom,

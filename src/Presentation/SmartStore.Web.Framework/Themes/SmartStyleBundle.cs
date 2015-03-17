@@ -52,7 +52,7 @@ namespace SmartStore.Web.Framework.Themes
 
             return response;
         }
-
+		
         public override void UpdateCache(BundleContext context, BundleResponse response)
         {
             if (_wasCached && _transformedBundleFiles != null && _transformedBundleFiles.Any())

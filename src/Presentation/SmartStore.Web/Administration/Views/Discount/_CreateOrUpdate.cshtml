@@ -21,10 +21,9 @@
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "discount-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
-    {
-        
-        
+{
     <script type="text/javascript">
             $(document).ready(function () {
                 $("#@Html.FieldIdFor(model => model.DiscountTypeId)").change(toggleDiscountType);
@@ -39,12 +38,13 @@
             });
             
             function toggleDiscountType() {
-                var selectedDiscountTypeId = $("#@Html.FieldIdFor(model => model.DiscountTypeId)").val();
-                if (selectedDiscountTypeId == @(((int)DiscountType.AssignedToCategories).ToString())) {
+            	var selectedDiscountTypeId = $("#@Html.FieldIdFor(model => model.DiscountTypeId)").val();
+
+                if (selectedDiscountTypeId == '@((int)DiscountType.AssignedToCategories)') {
                     $('#pnlAppliedToCategories').show();
                     $('#pnlAppliedToProducts').hide();
                 }
-                else if (selectedDiscountTypeId == @(((int)DiscountType.AssignedToSkus).ToString())) {
+                else if (selectedDiscountTypeId == '@((int)DiscountType.AssignedToSkus)') {
                     $('#pnlAppliedToCategories').hide();
                     $('#pnlAppliedToProducts').show();
                 }
@@ -55,8 +55,9 @@
             }
 
             function toggleLimitation() {
-                var selectedDiscountLimitationId = $("#@Html.FieldIdFor(model => model.DiscountLimitationId)").val();
-                if (selectedDiscountLimitationId == @(((int)DiscountLimitationType.NTimesOnly).ToString()) || selectedDiscountLimitationId == @(((int)DiscountLimitationType.NTimesPerCustomer).ToString())) {
+            	var selectedDiscountLimitationId = $("#@Html.FieldIdFor(model => model.DiscountLimitationId)").val();
+
+                if (selectedDiscountLimitationId == '@((int)DiscountLimitationType.NTimesOnly)' || selectedDiscountLimitationId == '@((int)DiscountLimitationType.NTimesPerCustomer)') {
                     //'N Times Only' or 'N Times Per Customer'
                     $('#pnlLimitationTimes').show();
                 }
@@ -85,10 +86,8 @@
                     $('#pnlCouponCode').hide();
                 }
             }
-            
     </script>
-    
-        
+
     <table class="adminContent">
         <tr>
             <td class="adminTitle">
@@ -239,8 +238,9 @@
         </tr>
     </table>
 }
+
 @helper TabRequirements()
-    {
+{
         if (Model.Id > 0)
         {
         
@@ -422,12 +422,16 @@
             </td>
         </tr>
     </table>
-        }
-        else
-        {
-    @T("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
-        }
+		}
+		else
+		{
+			<div class="alert alert-info">
+				<button class="close" data-dismiss="alert">×</button>
+				@T("Admin.Promotions.Discounts.Requirements.SaveBeforeEdit")
+			</div>	
+		}
 }
+
 @helper TabHistory()
     { 
     
@@ -459,5 +463,4 @@
                             .Delete("UsageHistoryDelete", "Discount");
                     })
                     .EnableCustomBinding(true))
-        
 }

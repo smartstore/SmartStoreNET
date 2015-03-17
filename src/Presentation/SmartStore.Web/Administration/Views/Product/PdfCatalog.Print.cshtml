@@ -1,0 +1,187 @@
+﻿@model PrintableProductsModel
+@using SmartStore.Core.Domain.Orders;
+@using SmartStore.Core.Domain.Catalog;
+@using SmartStore.Admin.Models.Shipping;
+@using SmartStore.Services.Localization;
+@using SmartStore.Core.Html;
+@{
+
+    Layout = "~/Views/Shared/_Print.cshtml";
+
+    //title
+    Html.AddTitleParts(Model.StoreName);
+}
+
+<div class="container">
+    @foreach (var product in Model.Products)
+    {
+        <div class="document">
+            @Html.Widget("pdfcatalog_productdetail_top")
+            <h1>@product.Name</h1>
+            <p>
+                @product.ShortDescription
+            </p>
+
+            <div>
+                <table>
+                    @if (!String.IsNullOrEmpty(product.Sku)) { 
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.SKU"):
+                            </td>
+                            <td>
+                                @product.Sku
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Price))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Price"):
+                            </td>
+                            <td>
+                                @product.Price
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Manufacturer))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Manufacturer"):
+                            </td>
+                            <td>
+                                @product.Manufacturer
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Weight))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Weight"):
+                            </td>
+                            <td>
+                                @product.Weight
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Length))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Length"):
+                            </td>
+                            <td>
+                                @product.Length
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Width))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Width"):
+                            </td>
+                            <td>
+                                @product.Width
+                            </td>
+                        </tr>
+                    }
+                    @if (!String.IsNullOrEmpty(product.Height))
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption">
+                                @T("PDFProductCatalog.Height"):
+                            </td>
+                            <td>
+                                @product.Height
+                            </td>
+                        </tr>
+                    }
+                </table>
+            </div>
+
+            @if (product.PictureUrl.HasValue())
+            {
+                <div class="text-center margin-top-50 detail-picture">
+                    <img src="@product.PictureUrl" />
+                </div>
+            }
+            
+            @Html.Widget("pdfcatalog_productdetail_fulldescription_before")
+
+            <p>
+                @Html.Raw(product.FullDescription)
+            </p>
+
+            @Html.Widget("pdfcatalog_productdetail_picture_before")
+            
+            @if(product.SpecificationAttributes.Count > 0)
+            {
+                @Html.Widget("pdfcatalog_productdetail_specificationattributes_before")
+                
+                <h3>@T("PDFProductCatalog.SpecificationAttributes")</h3>
+                <table class="margin-top-30 table">
+                    @foreach (var specattr in product.SpecificationAttributes)
+                    {
+                        <tr>
+                            <td width="25%" class="attr-caption ">
+                                @specattr.SpecificationAttributeName :
+                            </td>
+                            <td>
+                                @specattr.SpecificationAttributeOption
+                            </td>
+                        </tr>
+                    }
+                </table>    
+            }
+            
+            @if(product.BundledItems.Count > 0) 
+            {
+                <hr />
+                @Html.Widget("pdfcatalog_productdetail_bundleditems_before")
+                <h3>@T("PDFProductCatalog.BundledItems")</h3>
+                foreach (var bundleProduct in product.BundledItems)
+                {
+                    <div class="additional-products text-small">
+                        <div class="picture">
+                            <img src="@bundleProduct.PictureUrl" />
+                        </div>
+                        <div>
+                            @bundleProduct.Name
+                            <br />
+                            @bundleProduct.ShortDescription
+                        </div>
+
+                    </div>
+                }
+                
+                <div class="clearfix"></div>
+            }
+
+            @if (product.AssociatedProducts.Count > 0)
+            {
+                <hr />
+                @Html.Widget("pdfcatalog_productdetail_associatedproducts_before")
+                <h3>@T("PDFProductCatalog.AssociatedProducts")</h3>
+                foreach (var groupedProduct in product.AssociatedProducts)
+                {
+                    <div class="additional-products text-small">
+                        <div class="picture">
+                            <img src="@groupedProduct.PictureUrl" />
+                        </div>
+                        <div>
+                            @groupedProduct.Name
+                            <br />
+                            @groupedProduct.ShortDescription
+                        </div>
+                    </div>
+                }
+                <div class="clearfix"></div>
+            }
+
+        </div>
+    }
+</div>

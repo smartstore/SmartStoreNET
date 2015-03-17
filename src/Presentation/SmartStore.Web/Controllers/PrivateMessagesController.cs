@@ -102,7 +102,7 @@ namespace SmartStore.Web.Controllers
                     break;
             }
 
-            var model = new PrivateMessageIndexModel()
+            var model = new PrivateMessageIndexModel
             {
                 InboxPage = inboxPage,
                 SentItemsPage = sentItemsPage,

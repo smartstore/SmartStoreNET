@@ -44,21 +44,25 @@ namespace SmartStore.Core.Plugins
         };
         public readonly static IComparer<string> KnownGroupComparer = new GroupComparer();
 
+		public readonly static string InstalledPluginsFilePath = CommonHelper.MapPath("~/App_Data/InstalledPlugins.txt");
 
-        public static IList<string> ParseInstalledPluginsFile(string filePath)
+        public static HashSet<string> ParseInstalledPluginsFile(string filePath = null)
         {
-            //read and parse the file
+			filePath = filePath ?? InstalledPluginsFilePath;
+
+			var lines = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
+
+			// read and parse the file
             if (!File.Exists(filePath))
-                return new List<string>();
+				return lines;
 
             var text = File.ReadAllText(filePath);
             if (String.IsNullOrEmpty(text))
-                return new List<string>();
+				return lines;
             
             //Old way of file reading. This leads to unexpected behavior when a user's FTP program transfers these files as ASCII (\r\n becomes \n).
             //var lines = text.Split(new[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries);
             
-            var lines = new List<string>();
             using (var reader = new StringReader(text))
             {
                 string str;
@@ -72,10 +76,12 @@ namespace SmartStore.Core.Plugins
             return lines;
         }
 
-        public static void SaveInstalledPluginsFile(IList<String> pluginSystemNames, string filePath)
+        public static void SaveInstalledPluginsFile(ICollection<String> pluginSystemNames, string filePath = null)
         {
             if (pluginSystemNames == null || pluginSystemNames.Count == 0)
                 return;
+
+			filePath = filePath ?? InstalledPluginsFilePath;
 
             string result = "";
             foreach (var sn in pluginSystemNames)
@@ -92,7 +98,9 @@ namespace SmartStore.Core.Plugins
             if (String.IsNullOrEmpty(text))
                 return descriptor;
 
-			descriptor.FolderName = new DirectoryInfo(Path.GetDirectoryName(filePath)).Name;
+			string dirName = Path.GetDirectoryName(filePath);
+			descriptor.PhysicalPath = dirName;
+			descriptor.FolderName = new DirectoryInfo(dirName).Name;
 
             var settings = new List<string>();
             using (var reader = new StringReader(text))
@@ -153,6 +161,9 @@ namespace SmartStore.Core.Plugins
                     case "Author":
                         descriptor.Author = value;
                         break;
+					case "Url":
+						descriptor.Url = value;
+						break;
                     case "DisplayOrder":
                         {
                             int displayOrder;
@@ -194,9 +205,9 @@ namespace SmartStore.Core.Plugins
                 throw new ArgumentException("plugin");
 
             //get the Description.txt file path
-            if (plugin.OriginalAssemblyFile == null)
+            if (plugin.PhysicalPath.IsEmpty())
                 throw new Exception(string.Format("Cannot load original assembly path for {0} plugin.", plugin.SystemName));
-            var filePath = Path.Combine(plugin.OriginalAssemblyFile.Directory.FullName, "Description.txt");
+            var filePath = Path.Combine(plugin.PhysicalPath, "Description.txt");
             if (!File.Exists(filePath))
                 throw new Exception(string.Format("Description file for {0} plugin does not exist. {1}", plugin.SystemName, filePath));
 
@@ -211,6 +222,7 @@ namespace SmartStore.Core.Plugins
             keyValues.Add(new KeyValuePair<string, string>("Version", plugin.Version.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("MinAppVersion", string.Join(",", plugin.MinAppVersion)));
             keyValues.Add(new KeyValuePair<string, string>("Author", plugin.Author));
+			keyValues.Add(new KeyValuePair<string, string>("Url", plugin.Url));
             keyValues.Add(new KeyValuePair<string, string>("DisplayOrder", plugin.DisplayOrder.ToString()));
             keyValues.Add(new KeyValuePair<string, string>("FileName", plugin.PluginFileName));
 			keyValues.Add(new KeyValuePair<string, string>("ResourceRootKey", plugin.ResourceRootKey));

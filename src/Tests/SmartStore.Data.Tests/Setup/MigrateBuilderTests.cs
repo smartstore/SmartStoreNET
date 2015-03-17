@@ -16,17 +16,24 @@ namespace SmartStore.Data.Tests.Setup
 	public class MigrateBuilderTests : PersistenceTest
 	{
 
+		[SetUp]
 		public override void SetUp()
 		{
 			base.SetUp();
 
+			var settings = context.Set<Setting>();
+			settings.RemoveRange(settings.ToList());
+
+			var resources = context.Set<LocaleStringResource>();
+			resources.RemoveRange(resources.ToList());
+
 			var langs = context.Set<Language>();
-			if (!langs.Any())
-			{
-				langs.Add(new Language { UniqueSeoCode = "en", Name = "English", Published = true, LanguageCulture = "en-US" });
-				langs.Add(new Language { UniqueSeoCode = "de", Name = "Deutsch", Published = true, LanguageCulture = "de-DE" });
-				context.SaveChanges();
-			}
+			langs.RemoveRange(langs.ToList());
+
+			langs.Add(new Language { UniqueSeoCode = "en", Name = "English", Published = true, LanguageCulture = "en-US" });
+			langs.Add(new Language { UniqueSeoCode = "de", Name = "Deutsch", Published = true, LanguageCulture = "de-DE" });
+
+			context.SaveChanges();
 		}
 
 		[Test]
@@ -43,8 +50,6 @@ namespace SmartStore.Data.Tests.Setup
 			resources = context.Set<LocaleStringResource>();
 
 			resources.ToList().Count.ShouldEqual(6);
-			resources.RemoveRange(resources.ToList());
-			context.SaveChanges();
 		}
 
 		[Test]
@@ -68,9 +73,6 @@ namespace SmartStore.Data.Tests.Setup
 			builder.DeleteFor("en", "Res2");
 			migrator.Migrate(builder.Build());
 			resources.ToList().Count.ShouldEqual(1);
-
-			resources.RemoveRange(resources.ToList());
-			context.SaveChanges();
 		}
 
 		[Test]
@@ -92,9 +94,6 @@ namespace SmartStore.Data.Tests.Setup
 			var updated = resources.Where(x => x.ResourceName == "Res1").ToList();
 			updated.Count.ShouldEqual(2);
 			updated.Each(x => x.ResourceValue.ShouldEqual("NewValue1"));
-
-			resources.RemoveRange(resources.ToList());
-			context.SaveChanges();
 		}
 
 		[Test]
@@ -117,9 +116,6 @@ namespace SmartStore.Data.Tests.Setup
 			var updated = resources.Where(x => x.ResourceName == "Res1").ToList();
 			updated.Count.ShouldEqual(2);
 			updated.Each(x => x.ResourceValue.ShouldEqual("NewValue1"));
-
-			resources.RemoveRange(resources.ToList());
-			context.SaveChanges();
 		}
 
 		private IEnumerable<LocaleResourceEntry> GetDefaultResourceEntries()
@@ -151,8 +147,6 @@ namespace SmartStore.Data.Tests.Setup
 			settings = context.Set<Setting>();
 
 			settings.ToList().Count.ShouldEqual(8);
-			settings.RemoveRange(settings.ToList());
-			context.SaveChanges();
 		}
 
 		[Test]
@@ -185,9 +179,6 @@ namespace SmartStore.Data.Tests.Setup
 
 			var st = settings.Where(x => x.Name == "type3.Setting2").FirstOrDefault();
 			st.Value.ShouldEqual("20");
-
-			settings.RemoveRange(db);
-			context.SaveChanges();
 		}
 
 		private IEnumerable<SettingEntry> GetDefaultSettingEntries()

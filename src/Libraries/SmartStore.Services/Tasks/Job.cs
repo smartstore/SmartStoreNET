@@ -87,7 +87,7 @@ namespace SmartStore.Services.Tasks
 					}
 
 					//execute task
-					var ctx = new TaskExecutionContext()
+					var ctx = new TaskExecutionContext
 					{
 						LifetimeScope = scope,
 						CancellationToken = new CancellationTokenSource(TimeSpan.FromHours(6.0))	// TODO: make that somewhat configurable (AdminAreaSettings?)

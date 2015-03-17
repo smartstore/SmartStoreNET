@@ -104,6 +104,12 @@ namespace SmartStore.Core.Data
 
 		#region Instance members
 
+		public Version AppVersion
+		{
+			get;
+			set;
+		}
+
 		public string DataProvider 
 		{ 
 			get; 
@@ -174,6 +180,10 @@ namespace SmartStore.Core.Data
 					if (settings.Any())
 					{
 						this.RawDataSettings.AddRange(settings);
+						if (settings.ContainsKey("AppVersion"))
+						{
+							this.AppVersion = new Version(settings["AppVersion"]);
+						}
 						if (settings.ContainsKey("DataProvider"))
 						{
 							this.DataProvider = settings["DataProvider"];
@@ -196,6 +206,7 @@ namespace SmartStore.Core.Data
 			using (s_rwLock.GetWriteLock())
 			{
 				this.RawDataSettings.Clear();
+				this.AppVersion = null;
 				this.DataProvider = null;
 				this.DataConnectionString = null;
 				s_installed = null;
@@ -265,11 +276,11 @@ namespace SmartStore.Core.Data
 
 		protected virtual string SerializeSettings()
 		{
-			return string.Format("DataProvider: {0}{2}DataConnectionString: {1}{2}",
-								 this.DataProvider,
-								 this.DataConnectionString,
-								 Environment.NewLine
-				);
+			return string.Format("AppVersion: {0}{3}DataProvider: {1}{3}DataConnectionString: {2}{3}",
+				this.AppVersion.ToString(), 
+				this.DataProvider,
+				this.DataConnectionString,
+				Environment.NewLine);
 		}
 
 		#endregion

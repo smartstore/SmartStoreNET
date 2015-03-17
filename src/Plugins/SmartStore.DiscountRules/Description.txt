@@ -3,7 +3,7 @@ Description: Contains common discount requirement rule providers like "Billing c
 Group: Marketing
 SystemName: SmartStore.DiscountRules
 Version: 1.0
-MinAppVersion: 2.0.0
+MinAppVersion: 2.1.0
 DisplayOrder: 0
 FileName: SmartStore.DiscountRules.dll
 ResourceRootKey: Plugins.SmartStore.DiscountRules

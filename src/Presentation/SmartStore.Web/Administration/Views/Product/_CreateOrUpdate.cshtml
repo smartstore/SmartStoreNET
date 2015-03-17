@@ -4,6 +4,11 @@
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Web.Framework.UI;
 
+@{
+    Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+    Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
+}
+
 @Html.ValidationSummary(false)
 @Html.HiddenFor(model => model.Id)
 
@@ -23,7 +28,7 @@
 	
 	x.Add().Text(T("Admin.Catalog.Products.Inventory").Text)
 		.Name("tab-inventory")
-		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct)
+		.Visible(Model.ProductTypeId == (int)ProductType.SimpleProduct || (Model.ProductTypeId == (int)ProductType.BundledProduct && !Model.BundlePerItemShoppingCart))
 		.Icon("fa fa-archive fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Inventory" })
 		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "Inventory" })
@@ -104,8 +109,12 @@
 	x.Add().Text(T("Admin.Common.SEO").Text)
 		.Icon("fa fa-search fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "SEO" })
-		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
-		.Ajax();
+		.Content(Html.Partial("_CreateOrUpdate.SEO", Model).ToHtmlString());	
+	//x.Add().Text(T("Admin.Common.SEO").Text)
+	//	.Icon("fa fa-search fa-lg fa-fw")
+	//	.LinkHtmlAttributes(new { data_tab_name = "SEO" })
+	//	.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
+	//	.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
 		.Icon("fa fa-users fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Acl" })

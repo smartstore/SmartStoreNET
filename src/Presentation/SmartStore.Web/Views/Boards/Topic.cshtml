@@ -34,26 +34,26 @@
     <div class="clearfix">
         <div class="manage btn-group pull-left">
             @if (Model.IsCustomerAllowedToEditTopic)
-            {
-				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn">
+			{
+				<a href='@Url.Action("TopicEdit", new { id = Model.Id })' class="btn" rel="nofollow">
 					<i class="fa fa-pencil-square-o"></i>
 					@T("Forum.EditTopic")
-				</a>    
-            }
+				</a>
+			}
             @if (Model.IsCustomerAllowedToDeleteTopic)
-            {                
-				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
+			{
+				<a href='@Url.Action("TopicDelete", new { id = Model.Id })' class="btn" rel="nofollow" onclick='@(String.Format("return confirm('{0}');", T("Common.AreYouSure").Text))'>
 					<i class="fa fa-trash-o"></i>
 					@T("Forum.DeleteTopic").Text
-				</a>     
+				</a>
 			}
             @if (Model.IsCustomerAllowedToMoveTopic)
-            {
-				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn">
+			{
+				<a href='@Url.Action("TopicMove", new { id = Model.Id })' class="btn" rel="nofollow">
 					<i class="fa fa-arrows"></i>
 					@T("Forum.MoveTopic")
-				</a>   
-            }
+				</a>
+			}
         </div>
     </div>
     }

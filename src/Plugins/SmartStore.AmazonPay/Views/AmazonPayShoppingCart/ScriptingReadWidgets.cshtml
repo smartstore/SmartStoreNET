@@ -1,0 +1,41 @@
+﻿@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		try {
+			new OffAmazonPayments.Widgets.AddressBook({
+				sellerId: '@Model.SellerId',
+				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				displayMode: 'Read',
+				design: {
+					size: { width: '400px', height: '185px' }
+				},
+				onError: function (e) {
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+				}
+			}).bind('@(Model.GetWidgetId)Address');
+		}
+		catch (e) {
+			if (e.description) alert(e.description);
+		}
+
+		try {
+			new OffAmazonPayments.Widgets.Wallet({
+				sellerId: '@Model.SellerId',
+				amazonOrderReferenceId: '@Model.OrderReferenceId',
+				displayMode: 'Read',
+				design: {
+					size: { width: '400px', height: '185px' }
+				},
+				onError: function (e) {
+					alert(e.getErrorMessage() + ' (' + e.getErrorCode() + ')');
+				}
+			}).bind('@(Model.GetWidgetId)Wallet');
+		}
+		catch (e) {
+			if (e.description) alert(e.description);
+		}
+
+	});
+</script>

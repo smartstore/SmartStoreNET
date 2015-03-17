@@ -39,7 +39,7 @@ namespace SmartStore.Core.Domain.Polls
         /// </summary>
         public virtual ICollection<PollVotingRecord> PollVotingRecords
         {
-            get { return _pollVotingRecords ?? (_pollVotingRecords = new List<PollVotingRecord>()); }
+			get { return _pollVotingRecords ?? (_pollVotingRecords = new HashSet<PollVotingRecord>()); }
             protected set { _pollVotingRecords = value; }
         }
     }

@@ -71,6 +71,11 @@ namespace SmartStore.Core.Domain.Topics
         /// </summary>
         public string WidgetZone { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether the content should be surrounded by a topic block wrapper
+		/// </summary>
+		public bool? WidgetWrapContent { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether the title should be displayed in the widget block
         /// </summary>
@@ -85,6 +90,11 @@ namespace SmartStore.Core.Domain.Topics
         /// Gets or sets the sort order (relevant for widgets)
         /// </summary>
         public int Priority { get; set; }
+
+        /// <summary>
+        /// Gets or sets the title tag
+        /// </summary>
+        public string TitleTag { get; set; }
 
         /// <summary>
         /// Helper function which gets the comma-separated <c>WidgetZone</c> property as list of strings

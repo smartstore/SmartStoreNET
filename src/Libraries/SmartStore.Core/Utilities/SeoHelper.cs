@@ -22,7 +22,7 @@ namespace SmartStore.Utilities
 		{
 			if (String.IsNullOrEmpty(name))
 				return name;
-			string okChars = "abcdefghijklmnopqrstuvwxyz1234567890 _-";
+			string okChars = "abcdefghijklmnopqrstuvwxyz1234567890 _-/";
 			name = name.Trim().ToLowerInvariant();
 
 			if (convertNonWesternChars)
@@ -108,7 +108,8 @@ namespace SmartStore.Utilities
 				name2 = name2.Replace("--", "-");
 			while (name2.Contains("__"))
 				name2 = name2.Replace("__", "_");
-			return name2;
+
+			return name2.Trim('/');
 		}
 
 		/// <summary>

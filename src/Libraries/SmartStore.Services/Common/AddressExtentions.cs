@@ -1,6 +1,6 @@
 using System;
 using System.Collections.Generic;
-using SmartStore.Core;
+using System.Text;
 using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Services.Common
@@ -44,5 +44,46 @@ namespace SmartStore.Services.Common
                 ((a.CountryId.IsNullOrDefault() && countryId.IsNullOrDefault()) || a.CountryId == countryId));
         }
 
+		/// <summary>Returns the full name of the address.</summary>
+		public static string GetFullName(this Address address)
+		{
+			if (address != null)
+			{
+				var sb = new StringBuilder(address.FirstName);
+
+				sb.Grow(address.LastName, " ");		
+
+				if (address.Company.HasValue())
+				{
+					sb.Grow("({0})".FormatWith(address.Company), " ");
+				}
+				return sb.ToString();
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Checks whether the postal data of two addresses are equal.
+		/// </summary>
+		public static bool IsPostalDataEqual(this Address address, Address other)
+		{
+			if (address != null && other != null)
+			{
+				if (address.FirstName.IsCaseInsensitiveEqual(other.FirstName) && 
+					address.LastName.IsCaseInsensitiveEqual(other.LastName) && 
+					address.Company.IsCaseInsensitiveEqual(other.Company) &&
+					address.Address1.IsCaseInsensitiveEqual(other.Address1) && 
+					address.Address2.IsCaseInsensitiveEqual(other.Address2) &&
+					address.ZipPostalCode.IsCaseInsensitiveEqual(other.ZipPostalCode) && 
+					address.City.IsCaseInsensitiveEqual(other.City) && 
+					address.StateProvinceId == other.StateProvinceId && 
+					address.CountryId == other.CountryId)
+				{
+					return true;
+				}
+			}
+
+			return false;
+		}
     }
 }

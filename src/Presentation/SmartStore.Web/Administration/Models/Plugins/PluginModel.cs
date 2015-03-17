@@ -49,20 +49,14 @@ namespace SmartStore.Admin.Models.Plugins
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Installed")]
         public bool Installed { get; set; }
 
+		public bool IsConfigurable { get; set; }
+
+		public RouteInfo ConfigurationRoute { get; set; }
+
         public string IconUrl { get; set; }
-
-        public bool CanChangeEnabled { get; set; }
-
-        [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.IsEnabled")]
-        public bool IsEnabled { get; set; }
 
         public IList<PluginLocalizedModel> Locales { get; set; }
 
-		//Store mapping
-		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
-		public bool LimitedToStores { get; set; }
-		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
-		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
     }
 

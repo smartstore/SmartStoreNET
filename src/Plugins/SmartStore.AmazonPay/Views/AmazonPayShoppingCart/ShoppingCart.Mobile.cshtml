@@ -1,0 +1,14 @@
+﻿@using SmartStore.Web.Framework;
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+@{
+	Layout = "";
+}
+
+<div class="form-horizontal">
+	<div id="@Model.GetWidgetId">
+		<img src="@Model.ButtonUrl" style="cursor: pointer;" />
+	</div>
+</div>
+
+@Html.Partial("ScriptingLoginButton", Model)

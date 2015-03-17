@@ -22,7 +22,7 @@ namespace SmartStore.Services.Catalog
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
-			if (selectedAttributes.IsNullOrEmpty())
+			if (selectedAttributes.IsEmpty())
 				return null;
 
             // let's find appropriate record
@@ -35,6 +35,7 @@ namespace SmartStore.Services.Catalog
             {
 				product.MergeWithCombination(combination);
             }
+
 			return combination;
         }
 
@@ -69,6 +70,9 @@ namespace SmartStore.Services.Catalog
 
 			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
 				product.MergedDataValues.Add("DeliveryTimeId", combination.DeliveryTimeId);
+
+			if (combination.QuantityUnitId.HasValue && combination.QuantityUnitId.Value > 0)
+				product.MergedDataValues.Add("QuantityUnitId", combination.QuantityUnitId);
 
 			if (combination.Length.HasValue)
 				product.MergedDataValues.Add("Length", combination.Length.Value);
@@ -215,24 +219,23 @@ namespace SmartStore.Services.Catalog
         /// <param name="product">Product</param>
         /// <param name="localizationService">Localization service</param>
         /// <returns>The stock message</returns>
-        public static bool DisplayDeliveryTimeAccordingToStock(this Product product)
+        public static bool DisplayDeliveryTimeAccordingToStock(this Product product, CatalogSettings catalogSettings)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
 
-            bool displayDeliveryTime = true;
-
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock || product.ManageInventoryMethod == ManageInventoryMethod.ManageStockByAttributes)
 			{
+				if (catalogSettings.DeliveryTimeIdForEmptyStock.HasValue && product.StockQuantity <= 0)
+					return true;
+
 				return (product.StockQuantity > 0);
 			}
-
-            return displayDeliveryTime;
+            return true;
         }
 
 
-        public static bool ProductTagExists(this Product product,
-            int productTagId)
+        public static bool ProductTagExists(this Product product, int productTagId)
         {
             if (product == null)
                 throw new ArgumentNullException("product");

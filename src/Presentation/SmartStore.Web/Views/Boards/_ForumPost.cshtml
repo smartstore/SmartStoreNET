@@ -93,12 +93,12 @@
                     </div>
                 }
                 @if (Model.AllowPrivateMessages && !Model.IsCustomerGuest)
-                {
-                    <a class="btn button-pm" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
-                        <i class="fa fa-user"></i>
-                        @T("Forum.PrivateMessages.PM")
-                    </a>
-                }
+				{
+					<a class="btn button-pm" rel="nofollow" href='@Url.Action("Send", "PrivateMessages", new { id = Model.CustomerId })'>
+						<i class="fa fa-user"></i>
+						@T("Forum.PrivateMessages.PM")
+					</a>
+				}
             </div>
         </div>
     </div>

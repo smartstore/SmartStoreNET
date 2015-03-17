@@ -194,17 +194,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool IsEmpty(this string value)
         {
-
-            if (value == null || value.Length == 0)
-                return true;
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (!char.IsWhiteSpace(value[i]))
-                    return false;
-            }
-
-            return true;
+			return string.IsNullOrWhiteSpace(value);
         }
 
         /// <summary>
@@ -234,23 +224,19 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static bool HasValue(this string value)
         {
-            return !string.IsNullOrEmpty(value);
+            return !string.IsNullOrWhiteSpace(value);
         }
 
-		/// <remarks>codehint: sm-edit</remarks>
-		/// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", false, false).</remarks>
+		/// <remarks>to get equivalent result to PHPs md5 function call Hash("my value", Encoding.ASCII, false).</remarks>
         [DebuggerStepThrough]
-        public static string Hash(this string value, bool toBase64 = false, bool unicode = false)
+		public static string Hash(this string value, Encoding encoding, bool toBase64 = false)
         {
-            Guard.ArgumentNotEmpty(value, "value");
+			if (value.IsEmpty())
+				return value;
 
-            using (MD5 md5 = MD5.Create())
+            using (var md5 = MD5.Create())
             {
-				byte[] data = null;
-				if (unicode)
-					data = Encoding.Unicode.GetBytes(value);
-				else
-					data = Encoding.ASCII.GetBytes(value);
+				byte[] data = encoding.GetBytes(value);
 
 				if (toBase64) 
                 {
@@ -263,6 +249,20 @@ namespace SmartStore
 				}
             }
         }
+
+		/// <summary>
+		/// Mask by replacing characters with asterisks.
+		/// </summary>
+		/// <param name="value">The string</param>
+		/// <param name="length">Number of characters to leave untouched.</param>
+		/// <returns>The mask string</returns>
+		[DebuggerStepThrough]
+		public static string Mask(this string value, int length)
+		{
+			if (value.HasValue())
+				return value.Substring(0, length) + new String('*', value.Length - length);
+			return value;
+		}
 
         [DebuggerStepThrough]
         public static bool IsWebUrl(this string value)
@@ -506,7 +506,7 @@ namespace SmartStore
 
             return sb.ToString();
         }
-		/// <remarks>codehint: sm-add</remarks>
+
         [DebuggerStepThrough]
 		public static string[] SplitSafe(this string value, string separator) 
         {
@@ -516,12 +516,12 @@ namespace SmartStore
 		}
 
 		/// <summary>Splits a string into two strings</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <returns>true: success, false: failure</returns>
         [DebuggerStepThrough]
 		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter) {
 			int idx = -1;
-			if (value.IsNullOrEmpty() || delimiter.IsNullOrEmpty() || (idx = value.IndexOf(delimiter)) == -1) {
+			if (value.IsEmpty() || delimiter.IsEmpty() || (idx = value.IndexOf(delimiter)) == -1)
+			{
 				strLeft = value;
 				strRight = "";
 				return false;
@@ -714,19 +714,18 @@ namespace SmartStore
         }
 
 		/// <summary>Debug.WriteLine</summary>
-		/// <remarks>codehint: sm-add</remarks>
         [DebuggerStepThrough]
-		public static void Dump(this string value) 
+		public static void Dump(this string value, bool appendMarks = false) 
         {
 			Debug.WriteLine(value);
+			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
 		}
 		
 		/// <summary>Smart way to create a HTML attribute with a leading space.</summary>
-		/// <remarks>codehint: sm-add</remarks>
 		/// <param name="name">Name of the attribute.</param>
 		public static string ToAttribute(this string value, string name, bool htmlEncode = true) 
         {
-			if (value == null || name.IsNullOrEmpty())
+			if (name.IsEmpty())
 				return "";
 
 			if (value == "" && name != "value" && !name.StartsWith("data"))
@@ -911,15 +910,16 @@ namespace SmartStore
             }
         }
 
-		public static string Sha(this string value) 
+		public static string Sha(this string value, Encoding encoding) 
         {
-			if (value.HasValue()) 
+			if (value.HasValue())
             {
-				using (SHA1CryptoServiceProvider sha1 = new SHA1CryptoServiceProvider()) 
+				using (var sha1 = new SHA1CryptoServiceProvider()) 
                 {
-					byte[] data = Encoding.ASCII.GetBytes(value);
+					byte[] data = encoding.GetBytes(value);
 
 					return sha1.ComputeHash(data).ToHexString();
+					//return BitConverter.ToString(sha1.ComputeHash(data)).Replace("-", "");
 				}
 			}
 			return "";
@@ -977,10 +977,10 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static int[] ToIntArray(this string s)
 		{
-			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v));
+			return Array.ConvertAll(s.SplitSafe(","), v => int.Parse(v.Trim()));
 		}
 
-		//[DebuggerStepThrough]
+		[DebuggerStepThrough]
 		public static bool ToIntArrayContains(this string s, int value, bool defaultValue)
 		{
 			if (s == null)
@@ -994,7 +994,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string RemoveInvalidXmlChars(this string s)
 		{
-			if (s.IsNullOrEmpty())
+			if (s.IsEmpty())
 				return s;
 
 			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);

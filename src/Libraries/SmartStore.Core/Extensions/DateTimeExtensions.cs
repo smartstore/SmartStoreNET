@@ -10,7 +10,7 @@ namespace SmartStore
     {
         private static readonly DateTime MinDate = new DateTime(1900, 1, 1);
         private static readonly DateTime MaxDate = new DateTime(9999, 12, 31, 23, 59, 59, 999);
-        public static long InitialJavaScriptDateTicks = (new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc)).Ticks;
+		public static readonly DateTime BeginOfEpoch = new DateTime(1970, 1, 1, 0, 0, 0, DateTimeKind.Utc);
 
         public static bool IsValid(this DateTime value)
         {
@@ -400,7 +400,7 @@ namespace SmartStore
         public static long ToJavaScriptTicks(this DateTime dateTime)
         {
             DateTimeOffset utcDateTime = dateTime.ToUniversalTime();
-            long javaScriptTicks = (utcDateTime.Ticks - InitialJavaScriptDateTicks) / (long)10000;
+			long javaScriptTicks = (utcDateTime.Ticks - BeginOfEpoch.Ticks) / (long)10000;
             return javaScriptTicks;
         }
 
@@ -463,6 +463,18 @@ namespace SmartStore
 		public static DateTime? ToEndOfTheDay(this DateTime? dt)
 		{
 			return (dt.HasValue ? dt.Value.ToEndOfTheDay() : dt);
+		}
+
+		/// <summary>Epoch time. Number of seconds since midnight (UTC) on 1st January 1970.</summary>
+		public static long ToUnixTime(this DateTime date)
+		{
+			return Convert.ToInt64((date.ToUniversalTime() - BeginOfEpoch).TotalSeconds);
+		}
+
+		/// <summary>UTC date based on number of seconds since midnight (UTC) on 1st January 1970.</summary>
+		public static DateTime FromUnixTime(this long unixTime)
+		{
+			return BeginOfEpoch.AddSeconds(unixTime);
 		}
     }
 

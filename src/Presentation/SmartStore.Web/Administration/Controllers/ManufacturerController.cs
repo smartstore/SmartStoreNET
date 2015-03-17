@@ -1,17 +1,15 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
-using SmartStore.Admin.Models.Stores;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
@@ -116,7 +114,6 @@ namespace SmartStore.Admin.Controllers
                                                            localized.LanguageId);
 
                 //search engine name
-				// codehint: sm-edit
                 var seName = manufacturer.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
                 _urlRecordService.SaveSlug(manufacturer, seName, localized.LanguageId);
             }
@@ -177,35 +174,11 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		[NonAction]
-		protected void SaveStoreMappings(Manufacturer manufacturer, ManufacturerModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(manufacturer);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(manufacturer, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
-				}
-			}
-		}
-
         #endregion
         
         #region List
 
         //ajax
-        // codehint: sm-add
         public ActionResult AllManufacturers(string label, int selectedId)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(true);
@@ -274,17 +247,19 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ManufacturerModel();
-            //locales
+            
+			//locales
             AddLocales(_languageService, model.Locales);
-            //templates
+            
+			//templates
             PrepareTemplatesModel(model);
 			PrepareManufacturerModel(model, null, false);
-            //default values
-            model.PageSize = 12; // codehint: sm-edit > 4;
+            
+			//default values
+            model.PageSize = 12;
             model.Published = true;
 
             model.AllowCustomersToSelectPageSize = true;
-            //model.PageSizeOptions = _catalogSettings.DefaultPageSizeOptions; // codehint: sm-edit > _catalogSettings.DefaultManufacturerPageSizeOptions;
             
             return View(model);
         }
@@ -300,16 +275,21 @@ namespace SmartStore.Admin.Controllers
                 var manufacturer = model.ToEntity();
                 manufacturer.CreatedOnUtc = DateTime.UtcNow;
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
-                _manufacturerService.InsertManufacturer(manufacturer);
-                //search engine name
+                
+				_manufacturerService.InsertManufacturer(manufacturer);
+                
+				//search engine name
                 model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
                 _urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
-                //locales
+                
+				//locales
                 UpdateLocales(manufacturer, model);
-                //update picture seo file name
+                
+				//update picture seo file name
                 UpdatePictureSeoNames(manufacturer);
+				
 				//Stores
-				SaveStoreMappings(manufacturer, model);
+				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
 
                 //activity log
                 _customerActivityService.InsertActivity("AddNewManufacturer", _localizationService.GetResource("ActivityLog.AddNewManufacturer"), manufacturer.Name);
@@ -333,7 +313,6 @@ namespace SmartStore.Admin.Controllers
 
             var manufacturer = _manufacturerService.GetManufacturerById(id);
             if (manufacturer == null || manufacturer.Deleted)
-                //No manufacturer found with the specified id
                 return RedirectToAction("List");
 
             var model = manufacturer.ToModel();
@@ -362,7 +341,6 @@ namespace SmartStore.Admin.Controllers
 
             var manufacturer = _manufacturerService.GetManufacturerById(model.Id);
             if (manufacturer == null || manufacturer.Deleted)
-                //No manufacturer found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -370,23 +348,29 @@ namespace SmartStore.Admin.Controllers
 				int prevPictureId = manufacturer.PictureId.GetValueOrDefault();
                 manufacturer = model.ToEntity(manufacturer);
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
+
                 _manufacturerService.UpdateManufacturer(manufacturer);
-                //search engine name
+                
+				//search engine name
                 model.SeName = manufacturer.ValidateSeName(model.SeName, manufacturer.Name, true);
                 _urlRecordService.SaveSlug(manufacturer, model.SeName, 0);
-                //locales
+                
+				//locales
                 UpdateLocales(manufacturer, model);
-                //delete an old picture (if deleted or updated)
+                
+				//delete an old picture (if deleted or updated)
 				if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId.GetValueOrDefault())
                 {
                     var prevPicture = _pictureService.GetPictureById(prevPictureId);
                     if (prevPicture != null)
                         _pictureService.DeletePicture(prevPicture);
                 }
-                //update picture seo file name
+                
+				//update picture seo file name
                 UpdatePictureSeoNames(manufacturer);
+				
 				//Stores
-				SaveStoreMappings(manufacturer, model);
+				_storeMappingService.SaveStoreMappings<Manufacturer>(manufacturer, model.SelectedStoreIds);
 
                 //activity log
                 _customerActivityService.InsertActivity("EditManufacturer", _localizationService.GetResource("ActivityLog.EditManufacturer"), manufacturer.Name);
@@ -412,7 +396,6 @@ namespace SmartStore.Admin.Controllers
 
             var manufacturer = _manufacturerService.GetManufacturerById(id);
             if (manufacturer == null)
-                //No manufacturer found with the specified id
                 return RedirectToAction("List");
 
             _manufacturerService.DeleteManufacturer(manufacturer);
@@ -527,7 +510,6 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            // codehint: sm-edit
             var ctx = new ProductSearchContext();
             ctx.LanguageId = _workContext.WorkingLanguage.Id;
             ctx.OrderBy = ProductSortingEnum.Position;

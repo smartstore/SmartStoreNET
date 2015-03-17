@@ -111,7 +111,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		public virtual ICollection<ProductBundleItemAttributeFilter> AttributeFilters
 		{
-			get { return _attributeFilters ?? (_attributeFilters = new List<ProductBundleItemAttributeFilter>()); }
+			get { return _attributeFilters ?? (_attributeFilters = new HashSet<ProductBundleItemAttributeFilter>()); }
 			protected set { _attributeFilters = value; }
 		}
 

@@ -10,10 +10,14 @@ namespace SmartStore.Web.Framework.Security
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]
     public class RequireHttpsByConfigAttribute : FilterAttribute, IAuthorizationFilter
     {
-        public RequireHttpsByConfigAttribute(SslRequirement sslRequirement)
+		public RequireHttpsByConfigAttribute(SslRequirement sslRequirement)
         {
             this.SslRequirement = sslRequirement;
         }
+
+		public Lazy<SecuritySettings> SecuritySettings { get; set; }
+		public Lazy<IStoreContext> StoreContext { get; set; }
+		public Lazy<IWebHelper> WebHelper { get; set; }
 
         public virtual void OnAuthorization(AuthorizationContext filterContext)
         {
@@ -34,7 +38,7 @@ namespace SmartStore.Web.Framework.Security
 
             var currentConnectionSecured = filterContext.HttpContext.Request.IsSecureConnection();
 
-            var securitySettings = EngineContext.Current.Resolve<SecuritySettings>();
+			var securitySettings = SecuritySettings.Value;
             if (securitySettings.ForceSslForAllPages)
             {
                 // all pages are forced to be SSL no matter of the specified value
@@ -47,16 +51,16 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (!currentConnectionSecured)
                         {
-							var storeContext = EngineContext.Current.Resolve<IStoreContext>();
+							var storeContext = StoreContext.Value;
 							var currentStore = storeContext.CurrentStore;
 
 							if (currentStore != null && currentStore.GetSecurityMode() > HttpSecurityMode.Unsecured)
                             {
                                 // redirect to HTTPS version of page
                                 // string url = "https://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
-								var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+								var webHelper = WebHelper.Value;
                                 string url = webHelper.GetThisPageUrl(true, true);
-                                filterContext.Result = new RedirectResult(url);
+                                filterContext.Result = new RedirectResult(url, true);
                             }
                         }
                     }
@@ -65,12 +69,12 @@ namespace SmartStore.Web.Framework.Security
                     {
                         if (currentConnectionSecured)
                         {
-                            var webHelper = EngineContext.Current.Resolve<IWebHelper>();
+                            var webHelper = WebHelper.Value;
 
                             // redirect to HTTP version of page
                             // string url = "http://" + filterContext.HttpContext.Request.Url.Host + filterContext.HttpContext.Request.RawUrl;
                             string url = webHelper.GetThisPageUrl(true, false);
-                            filterContext.Result = new RedirectResult(url);
+                            filterContext.Result = new RedirectResult(url, true);
                         }
                     }
                     break;
@@ -80,7 +84,7 @@ namespace SmartStore.Web.Framework.Security
                     }
                     break;
                 default:
-                    throw new SmartException("Not supported SslProtected parameter");
+					throw new SmartException("Unsupported SslRequirement parameter");
             }
         }
 

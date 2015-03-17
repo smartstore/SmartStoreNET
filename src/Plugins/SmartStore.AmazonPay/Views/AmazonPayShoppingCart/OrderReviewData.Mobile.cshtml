@@ -1,0 +1,42 @@
+﻿@using SmartStore.Web.Framework;
+
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+<div class="order-review-data-box">
+	@if (Model.IsShippable)
+	{
+		<div class="amazon-pay-address-widget shippinginfo">
+			@if (Model.ShippingMethod.HasValue())
+			{
+				<div class="shipping-method">
+					<div class="shipping-method-label">
+						<strong>@T("Order.ShippingMethod")</strong>
+					</div>
+					<div class="shipping-method-value">
+						@Model.ShippingMethod
+					</div>
+				</div>
+			}
+
+			<div class="title">
+				<strong>@T("Order.ShippingAddress")</strong>
+			</div>
+			<div class="name">
+				<div id="@(Model.GetWidgetId)Address"></div>
+			</div>
+		</div>
+	}
+		
+	<div class="amazon-pay-wallet-widget payment-method" style="margin-top:4px;">
+		<div class="title">
+			<strong>@T("Order.PaymentMethod")</strong>
+		</div>
+		<div class="name">
+			<div id="@(Model.GetWidgetId)Wallet"></div>
+		</div>
+	</div>
+</div>
+
+<div class="clear"></div>
+
+@Html.Partial("ScriptingReadWidgets", Model)

@@ -1,27 +1,26 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Globalization;
 using System.IO;
-using System.Web;
-using System.Web.Mvc;
+using System.Linq;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
+using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Async;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Media;
-using SmartStore.Services.Tasks;
-using SmartStore.Services.Stores;
-using SmartStore.Services.Seo;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 
 namespace SmartStore.Web.Framework.Plugins
@@ -34,8 +33,8 @@ namespace SmartStore.Web.Framework.Plugins
 		private IDictionary<int, string> _cachedPathes;
 		private Func<PromotionFeedSettings> _settingsFunc;
 
-		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings) :
-			base(componentContext, systemName)
+		public FeedPluginHelper(IComponentContext componentContext, string systemName, string rootNamespace, Func<PromotionFeedSettings> settings, string providerResRootKey = null /* Legacy */) :
+			base(componentContext, systemName, providerResRootKey)
 		{
 			_namespace = rootNamespace;
 			_settingsFunc = settings;
@@ -167,13 +166,13 @@ namespace SmartStore.Web.Framework.Plugins
 
 			string description = "";
 
-			if (BaseSettings.BuildDescription.IsNullOrEmpty())
+			if (BaseSettings.BuildDescription.IsEmpty())
 			{
 				description = fullDescription;
 
-				if (description.IsNullOrEmpty())
+				if (description.IsEmpty())
 					description = shortDescription;
-				if (description.IsNullOrEmpty())
+				if (description.IsEmpty())
 					description = productName;
 			}
 			else if (BaseSettings.BuildDescription.IsCaseInsensitiveEqual("short"))
@@ -497,7 +496,7 @@ namespace SmartStore.Web.Framework.Plugins
 					{
 						string url = pictureService.GetPictureUrl(pic, BaseSettings.ProductPictureSize, storeLocation: store.Url);
 
-						if (url.HasValue() && (mainImageUrl.IsNullOrEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(url)))
+						if (url.HasValue() && (mainImageUrl.IsEmpty() || !mainImageUrl.IsCaseInsensitiveEqual(url)))
 						{
 							urls.Add(url);
 							if (urls.Count >= maxImages)
@@ -507,31 +506,6 @@ namespace SmartStore.Web.Framework.Plugins
 				}
 			}
 			return urls;
-		}
-
-		public void GetQualifiedProductsByProduct(Product product, Store store, List<Product> result)
-		{
-			result.Clear();
-
-			if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
-			{
-				result.Add(product);
-			}
-			else if (product.ProductType == ProductType.GroupedProduct)
-			{
-				var associatedSearchContext = new ProductSearchContext()
-				{
-					OrderBy = ProductSortingEnum.CreatedOn,
-					PageSize = int.MaxValue,
-					StoreId = store.Id,
-					VisibleIndividuallyOnly = false,
-					ParentGroupedProductId = product.Id
-				};
-
-				var productService = ProductService;
-
-				result.AddRange(productService.SearchProducts(associatedSearchContext));
-			}
 		}
 
 		internal string LookupCategoryPath(int id)
@@ -706,7 +680,7 @@ namespace SmartStore.Web.Framework.Plugins
 			var stores = storeService.GetAllStores().ToList();
 
 			var urlHelper = new UrlHelper(HttpContext.Current.Request.RequestContext);
-			var routeValues = new { Namespaces = _namespace + ".Controllers"/*, area = ""*/ };
+			var routeValues = new { /*Namespaces = _namespace + ".Controllers",*/ area = _namespace };
 
 			model.GenerateFeedUrl = urlHelper.Action("GenerateFeed", controller, routeValues);
 			model.GenerateFeedProgressUrl = urlHelper.Action("GenerateFeedProgress", controller, routeValues);

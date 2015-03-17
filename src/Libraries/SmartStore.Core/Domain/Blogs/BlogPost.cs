@@ -93,7 +93,7 @@ namespace SmartStore.Core.Domain.Blogs
         /// </summary>
         public virtual ICollection<BlogComment> BlogComments
         {
-            get { return _blogComments ?? (_blogComments = new List<BlogComment>()); }
+			get { return _blogComments ?? (_blogComments = new HashSet<BlogComment>()); }
             protected set { _blogComments = value; }
         }
         

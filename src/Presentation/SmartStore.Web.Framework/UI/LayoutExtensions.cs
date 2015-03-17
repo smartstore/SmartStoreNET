@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Web.Mvc;
+using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
@@ -166,27 +167,69 @@ namespace SmartStore.Web.Framework.UI
         }
         #endregion
 
-        #region CanonicalUrlParts
-        public static void AddCanonicalUrlParts(this HtmlHelper html, params string[] parts)
+        #region CustomHeadParts
+        public static void AddCustomHeadParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            pageAssetsBuilder.AddCanonicalUrlParts(parts);
+            pageAssetsBuilder.AddCustomHeadParts(parts);
         }
-        public static void AppendCanonicalUrlParts(this HtmlHelper html, params string[] parts)
+        public static void AppendCustomHeadParts(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            pageAssetsBuilder.AppendCanonicalUrlParts(parts);
+			pageAssetsBuilder.AppendCustomHeadParts(parts);
         }
-        public static MvcHtmlString CanonicalUrls(this HtmlHelper html, params string[] parts)
+        public static MvcHtmlString CustomHead(this HtmlHelper html, params string[] parts)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
-            html.AppendCanonicalUrlParts(parts);
-            return MvcHtmlString.Create(pageAssetsBuilder.GenerateCanonicalUrls());
+			html.AppendCustomHeadParts(parts);
+            return MvcHtmlString.Create(pageAssetsBuilder.GenerateCustomHead());
         }
         #endregion
 
-        #region Body
-        public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
+		#region CanonicalUrlParts
+		public static void AddCanonicalUrlParts(this HtmlHelper html, params string[] parts)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddCanonicalUrlParts(parts);
+		}
+		public static void AppendCanonicalUrlParts(this HtmlHelper html, params string[] parts)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AppendCanonicalUrlParts(parts);
+		}
+		public static MvcHtmlString CanonicalUrls(this HtmlHelper html, params string[] parts)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			html.AppendCanonicalUrlParts(parts);
+			return MvcHtmlString.Create(pageAssetsBuilder.GenerateCanonicalUrls());
+		}
+		#endregion
+
+		#region LinkParts
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, string type = null, string media = null, string sizes = null, string hreflang = null)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, type, media, sizes, hreflang);
+		}
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, object htmlAttributes)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
+		}
+		public static void AddLinkPart(this HtmlHelper html, string rel, string href, RouteValueDictionary htmlAttributes)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			pageAssetsBuilder.AddLinkPart(rel, href, htmlAttributes);
+		}
+		public static MvcHtmlString LinkRels(this HtmlHelper html)
+		{
+			var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
+			return MvcHtmlString.Create(pageAssetsBuilder.GenerateLinkRels());
+		}
+		#endregion
+
+		#region Body
+		public static void AddBodyCssClass(this HtmlHelper html, string cssClassName)
         {
             var pageAssetsBuilder = EngineContext.Current.Resolve<IPageAssetsBuilder>();
             pageAssetsBuilder.AddBodyCssClass(cssClassName);

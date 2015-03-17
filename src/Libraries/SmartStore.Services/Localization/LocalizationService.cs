@@ -43,6 +43,9 @@ namespace SmartStore.Services.Localization
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
+		private int _notFoundLogCount = 0;
+		private int? _defaultLanguageId;
+
         #endregion
 
         #region Ctor
@@ -126,21 +129,6 @@ namespace SmartStore.Services.Localization
 				}
 			}
 			return result;
-		}
-
-		/// <summary>
-		/// Deletes all string resources of a plugin
-		/// </summary>
-		/// <param name="pluginDescriptor">Plugin descriptor</param>
-		public virtual void DeletePluginStringResources(PluginDescriptor pluginDescriptor)
-		{
-			if (pluginDescriptor != null && pluginDescriptor.ResourceRootKey.HasValue() && pluginDescriptor.SystemName.HasValue())
-			{
-				DeleteLocaleStringResources(pluginDescriptor.ResourceRootKey);
-
-				DeleteLocaleStringResources("Plugins.FriendlyName." + pluginDescriptor.SystemName, false);
-				DeleteLocaleStringResources("Plugins.Description." + pluginDescriptor.SystemName, false);
-			}
 		}
 
         /// <summary>
@@ -268,19 +256,15 @@ namespace SmartStore.Services.Localization
 							orderby l.ResourceName
 							where l.LanguageId == languageId
 							select l;
-				var locales = query.ToList();
+				var resources = query.ToList();
 
-                foreach (var locale in locales)
+                foreach (var res in resources)
                 {
-                    var resourceName = locale.ResourceName.ToLowerInvariant();
-                    //if (!d.ContainsKey(resourceName))
-                    //{
-                        //d.TryAdd(resourceName, new Tuple<int, string>(locale.Id, locale.ResourceValue));
-                        d.AddOrUpdate(
-                            resourceName, 
-                            (k) => new Tuple<int, string>(locale.Id, locale.ResourceValue), 
-                            (k, v) => { d[k] = v; return v; });
-                    //}
+                    var resourceName = res.ResourceName.ToLowerInvariant();
+                    d.AddOrUpdate(
+                        resourceName, 
+                        (k) => new Tuple<int, string>(res.Id, res.ResourceValue), 
+                        (k, v) => { d[k] = v; return v; });
                 }
 
                 // perf: add a dummy item indicating that data is fully loaded
@@ -315,11 +299,10 @@ namespace SmartStore.Services.Localization
         /// <param name="languageId">Language identifier</param>
         /// <param name="logIfNotFound">A value indicating whether to log error if locale string resource is not found</param>
         /// <param name="defaultValue">Default value</param>
-        /// <param name="returnEmptyIfNotFound">A value indicating whether to empty string will be returned if a resource is not found and default value is set to empty string</param>
+        /// <param name="returnEmptyIfNotFound">A value indicating whether an empty string will be returned if a resource is not found and default value is set to empty string</param>
         /// <returns>A string representing the requested resource string.</returns>
         public virtual string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
         {
-            // codehint: sm-edit
             if (languageId <= 0)
             {
                 if (_workContext.WorkingLanguage == null)
@@ -344,7 +327,7 @@ namespace SmartStore.Services.Localization
                                 where l.ResourceName == resourceKey && l.LanguageId == languageId
                                 select l;
                     var res = query.FirstOrDefault();
-					if (res != null)	// codehint: sm-edit (null case)
+					if (res != null)
 						return new Tuple<int, string>(res.Id, res.ResourceValue);
 					return null;
                 });
@@ -356,8 +339,19 @@ namespace SmartStore.Services.Localization
 
             if (String.IsNullOrEmpty(result))
             {
-                if (logIfNotFound)
-                    _logger.Warning(string.Format("Resource string ({0}) is not found. Language ID = {1}", resourceKey, languageId));
+				if (logIfNotFound)
+				{
+					if (_notFoundLogCount < 50)
+					{
+						_logger.Warning(string.Format("Resource string ({0}) does not exist. Language ID = {1}", resourceKey, languageId));
+					}
+					else if (_notFoundLogCount == 50)
+					{
+						_logger.Warning("Too many language resources do not exist (> 50). Stopped logging missing resources to prevent performance drop.");
+					}
+					
+					_notFoundLogCount++;
+				}
                 
                 if (!String.IsNullOrEmpty(defaultValue))
                 {
@@ -365,10 +359,28 @@ namespace SmartStore.Services.Localization
                 }
                 else
                 {
-                    if (!returnEmptyIfNotFound)
-                        result = resourceKey;
+					// try fallback to default language
+					if (!_defaultLanguageId.HasValue)
+					{
+						_defaultLanguageId = _languageService.GetDefaultLanguageId();
+					}
+					var defaultLangId = _defaultLanguageId.Value;
+					if (defaultLangId > 0 && defaultLangId != languageId)
+					{
+						var fallbackResult = GetResource(resourceKey, defaultLangId, false, resourceKey);
+						if (fallbackResult != resourceKey)
+						{
+							result = fallbackResult;
+						}
+					}
+
+					if (!returnEmptyIfNotFound && result.IsEmpty())
+					{
+						result = resourceKey;
+					}
                 }
             }
+
             return result;
         }
 
@@ -549,7 +561,7 @@ namespace SmartStore.Services.Localization
 
 				if (languageCode.HasValue() && language != null)
 				{
-					if (filterLanguages != null && !filterLanguages.Exists(x => x.Id == language.Id))
+					if (filterLanguages != null && !filterLanguages.Any(x => x.Id == language.Id))
 					{
 						continue;
 					}
@@ -585,9 +597,9 @@ namespace SmartStore.Services.Localization
 
         public virtual XmlDocument FlattenResourceFile(XmlDocument source)
         {
-            Guard.NotNull(() => source);
+            Guard.ArgumentNotNull(() => source);
 
-            if (!source.SelectNodes("//Children").HasItems())
+            if (source.SelectNodes("//Children").Count == 0)
             {
                 // the document contains absolutely NO nesting,
                 // so don't bother parsing.

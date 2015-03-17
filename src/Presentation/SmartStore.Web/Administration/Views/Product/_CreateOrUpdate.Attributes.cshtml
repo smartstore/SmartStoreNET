@@ -11,8 +11,12 @@
         {
             <script>
                 function onProductVariantAttributeEdit(e) {
-                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+                	$(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
+                	$(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
+
+                	if (parseInt(e.dataItem['Id']) === 0) {
+                		$(e.form).find('#IsRequired').prop('checked', true);
+                	}
                 }
             </script>
 			
@@ -63,17 +67,6 @@
             .ToolBar(commands => commands.Insert())
             .ClientEvents(events => events.OnEdit("onProductVariantAttributeEdit"))
             .EnableCustomBinding(true))
-
-            <script type="text/javascript">
-                function onProductVariantAttributeEdit(e) {
-                    $(e.form).find('#ProductAttribute').select2('val', e.dataItem['ProductAttributeId']);
-                    $(e.form).find('#AttributeControlType').select2('val', e.dataItem['AttributeControlTypeId']);
-
-                    if (parseInt(e.dataItem['Id']) === 0) {
-                    	$(e.form).find('#IsRequired').prop('checked', true);
-                    }
-                }
-            </script>
         }
         else
         {
@@ -101,8 +94,8 @@
                 @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Description")
             </div>
 
-            <div style="margin: 10px 0">
-                <button class="btn btn-warning add-new-combination">
+            <div>
+                <button class="btn btn-warning btn-above add-new-combination">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>
@@ -175,7 +168,7 @@
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.AttributesXml)
-                            .ClientTemplate("<#= AttributesXml #><br /><span style=\"color: red\"><#= Warnings #></span>")
+                            .ClientTemplate("<a href=\"#\" onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\"><#= AttributesXml #></a><br /><span style=\"color: red\"><#= Warnings #></span>")
                             .Width(460)
                             .Encoded(false)
                             .ReadOnly();
@@ -196,27 +189,28 @@
                             .Width(160)
                             .Centered();
                         columns.Bound(x => x.AllowOutOfStockOrders)
-                            .Width(260)
+                            .Width(60)
+                            .HeaderTemplate("<i class=\"fa fa-sort-numeric-desc\" title=\"" + @T("admin.catalog.products.productvariantattributes.attributecombinations.fields.allowoutofstockorders").Text + "\"></i>")
                             .Template(item => @Html.SymbolForBool(item.AllowOutOfStockOrders))
                             .ClientTemplate(@Html.SymbolForBool("AllowOutOfStockOrders"))
                             .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(90)
-                            .Centered()
-                            .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
-                            .Title("");
+                        //columns.Bound(x => x.Id)
+                        //    .Width(90)
+                        //    .Centered()
+                        //    .ClientTemplate("<button onclick=\"" + "OpenWindow('" + @Url.Content("~/Admin/Product/AttributeCombinationEditPopup/") + "<#= Id #>?btnId=btnRefreshCombinations&formId=product-form', 1000, 800, true); return false;\" class='btn'>" + @T("Admin.Common.Edit").Text + "</button>")
+                        //    .Title("");
                         columns.Command(commands =>
-                            {
-                                commands.Delete().Localize(T);
-                            })
-                            .Width(90);
+                        {
+                            commands.Delete().Localize(T);
+                        })
+                        .Width(90);
                     })
                     .ClientEvents(events => events.OnRowDataBound("onRowDataBound_Combinations"))
                     .EnableCustomBinding(true))
             </div>
 
-            <div style="margin-top:12px;">
-                <button class="btn btn-warning add-new-combination">
+            <div>
+                <button class="btn btn-warning btn-below add-new-combination">
                     <i class="fa fa-plus"></i>
                     @T("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.AddNew")
                 </button>

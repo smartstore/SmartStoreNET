@@ -1,30 +1,26 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
-using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Configuration;
-using SmartStore.Core.Themes;
-using SmartStore.Services.Security;
-using SmartStore.Admin.Models.Themes;
-using SmartStore.Core.Domain.Themes;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Themes;
-using SmartStore.Web.Framework.Mvc;
 using System.IO;
-using System.Text;
-using SmartStore.Core.Events;
-using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
-using SmartStore.Core.Packaging;
-using System.Threading.Tasks;
+using System.Linq;
 using System.Net;
+using System.Text;
+using System.Web;
 using System.Web.Hosting;
-using SmartStore.Services;
+using System.Web.Mvc;
+using SmartStore.Admin.Models.Themes;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Localization;
-using System.Diagnostics;
+using SmartStore.Core.Packaging;
+using SmartStore.Core.Themes;
+using SmartStore.Services;
+using SmartStore.Services.Configuration;
+using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
+using SmartStore.Services.Themes;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Themes;
 
 namespace SmartStore.Admin.Controllers
@@ -40,6 +36,8 @@ namespace SmartStore.Admin.Controllers
 		private readonly IStoreService _storeService;
 		private readonly IPackageManager _packageManager;
 		private readonly ICommonServices _services;
+		private readonly IThemeContext _themeContext;
+		private readonly Lazy<IThemeFileResolver> _themeFileResolver;
 
 	    #endregion
 
@@ -51,7 +49,9 @@ namespace SmartStore.Admin.Controllers
             IThemeVariablesService themeVarService,
 			IStoreService storeService,
 			IPackageManager packageManager,
-			ICommonServices services)
+			ICommonServices services,
+			IThemeContext themeContext,
+			Lazy<IThemeFileResolver> themeFileResolver)
 		{
             this._settingService = settingService;
             this._themeVarService = themeVarService;
@@ -59,13 +59,15 @@ namespace SmartStore.Admin.Controllers
 			this._storeService = storeService;
 			this._packageManager = packageManager;
 			this._services = services;
+			this._themeContext = themeContext;
+			this._themeFileResolver = themeFileResolver;
 
 			this.T = NullLocalizer.Instance;
 		}
 
-		#endregion 
-
 		public Localizer T { get; set; }
+
+		#endregion 
 
         #region Methods
 
@@ -103,12 +105,15 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        private IList<ThemeManifestModel> GetThemes(bool mobile, ThemeSettings themeSettings)
+        private IList<ThemeManifestModel> GetThemes(bool mobile, ThemeSettings themeSettings, bool includeHidden = true)
         {
-            var themes = from m in _themeRegistry.GetThemeManifests()
+			var themes = from m in _themeRegistry.GetThemeManifests(includeHidden)
                                 where m.MobileTheme == mobile
                                 select PrepareThemeManifestModel(m, themeSettings);
-            return themes.OrderByDescending(x => x.IsActive).ThenBy(x => x.Name).ToList();
+
+			var sortedThemes = themes.ToArray().SortTopological(StringComparer.OrdinalIgnoreCase).Cast<ThemeManifestModel>();
+
+			return sortedThemes.OrderByDescending(x => x.IsActive).ToList();
         }
 
 		protected virtual ThemeManifestModel PrepareThemeManifestModel(ThemeManifest manifest, ThemeSettings themeSettings)
@@ -116,26 +121,28 @@ namespace SmartStore.Admin.Controllers
             var model = new ThemeManifestModel
                 {
                     Name = manifest.ThemeName,
+					BaseTheme = manifest.BaseThemeName,
                     Title = manifest.ThemeTitle,
                     Description = manifest.PreviewText,
                     Author = manifest.Author,
+					Url = manifest.Url,
                     Version = manifest.Version,
                     IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,
                     PreviewImageUrl = manifest.PreviewImageUrl.HasValue() ? manifest.PreviewImageUrl : "{0}/{1}/preview.png".FormatInvariant(manifest.Location, manifest.ThemeName),
-                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName
+                    IsActive = manifest.MobileTheme ? themeSettings.DefaultMobileTheme == manifest.ThemeName : themeSettings.DefaultDesktopTheme == manifest.ThemeName,
+					State = manifest.State
                 };
 
-            if (System.IO.File.Exists(System.IO.Path.Combine(manifest.Path, "Views\\Shared\\ConfigureTheme.cshtml")))
-            {
-                model.IsConfigurable = true;
-            }
+			if (HostingEnvironment.VirtualPathProvider.FileExists("{0}/{1}/Views/Shared/ConfigureTheme.cshtml".FormatInvariant(manifest.Location, manifest.ThemeName)))
+			{
+				model.IsConfigurable = true;
+			}
             
             return model;
         }
 
-        [HttpPost]
-        [ActionName("List")]
+		[HttpPost, ActionName("List")]
         public ActionResult ListPost(ThemeListModel model)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
@@ -155,7 +162,7 @@ namespace SmartStore.Admin.Controllers
 
             if (themeSwitched)
             {
-                _services.EventPublisher.Publish<ThemeSwitchedMessage>(new ThemeSwitchedMessage { 
+                _services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent { 
                     IsMobile = mobileThemeSwitched,
                     OldTheme = mobileThemeSwitched ? themeSettings.DefaultMobileTheme : themeSettings.DefaultDesktopTheme,
                     NewTheme = mobileThemeSwitched ? model.DefaultMobileTheme : model.DefaultDesktopTheme
@@ -200,7 +207,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public async Task<ActionResult> Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
+		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
                 return AccessDeniedView();
@@ -219,7 +226,7 @@ namespace SmartStore.Admin.Controllers
 
 			// check for parsing error
 			var manifest = _themeRegistry.GetThemeManifest(theme);
-			string error = await ValidateLess(manifest, storeId);
+			string error = ValidateLess(manifest, storeId);
 			if (error.HasValue())
 			{
 				// restore previous vars
@@ -281,20 +288,31 @@ namespace SmartStore.Admin.Controllers
 		/// <param name="theme">Theme name</param>
 		/// <param name="storeId">Stored Id</param>
 		/// <returns>The error message when a parsing error occured, <c>null</c> otherwise</returns>
-		private async Task<string> ValidateLess(ThemeManifest manifest, int storeId)
+		private string ValidateLess(ThemeManifest manifest, int storeId)
 		{
+			
 			string error = string.Empty;
-			var url = "{0}Themes/{1}/Content/theme.less?storeId={2}&theme={1}".FormatInvariant(
+
+			var virtualPath = "~/Themes/{0}/Content/theme.less".FormatCurrent(manifest.ThemeName);
+			var resolver = this._themeFileResolver.Value;
+			var file = resolver.Resolve(virtualPath);
+			if (file != null)
+			{
+				virtualPath = file.ResultVirtualPath;
+			}
+
+			var url = "{0}{1}?storeId={2}&theme={3}".FormatInvariant(
 				_services.WebHelper.GetStoreLocation().EnsureEndsWith("/"), 
-				manifest.ThemeName,
-				storeId);
+				VirtualPathUtility.ToAbsolute(virtualPath).TrimStart('/'),
+				storeId,
+				manifest.ThemeName);
 
 			HttpWebRequest request = WebRequest.CreateHttp(url);
 			WebResponse response = null;
 
 			try
 			{
-				response = await request.GetResponseAsync();
+				response = request.GetResponse();
 			}
 			catch (WebException ex)
 			{
@@ -319,6 +337,10 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 			}
+			catch (Exception ex)
+			{
+				var x = ex.Message;
+			}
 			finally
 			{
 				if (response != null)
@@ -326,6 +348,16 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return error;
+		}
+
+		public ActionResult ReloadThemes(int? storeId)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))
+			{
+				_themeRegistry.ReloadThemes();
+			}
+	
+			return RedirectToAction("List", new { storeId = storeId });
 		}
 
         public ActionResult Reset(string theme, int storeId)
@@ -434,6 +466,138 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("Configure", new { theme = theme, storeId = storeId });
         }
 
-        #endregion
-    }
+		#endregion
+
+		#region Preview
+
+		public ActionResult Preview(string theme, int? storeId, string returnUrl)
+		{
+			// Initializes the preview mode
+
+			if (!storeId.HasValue)
+			{
+				storeId = _services.StoreContext.CurrentStore.Id;
+			}
+
+			if (theme.IsEmpty())
+			{
+				theme = _settingService.LoadSetting<ThemeSettings>(storeId.Value).DefaultDesktopTheme;
+			}
+
+			if (!_themeRegistry.ThemeManifestExists(theme) || _themeRegistry.GetThemeManifest(theme).MobileTheme)
+				return HttpNotFound();
+
+			using (HttpContext.PreviewModeCookie())
+			{
+				_themeContext.SetPreviewTheme(theme);
+				_services.StoreContext.SetPreviewStore(storeId);
+			}
+
+			if (returnUrl.IsEmpty() && Request.UrlReferrer != null && Request.UrlReferrer.ToString().Length > 0)
+			{
+				returnUrl = Request.UrlReferrer.ToString();
+			}
+
+			TempData["PreviewModeReturnUrl"] = returnUrl;
+
+			return RedirectToAction("Index", "Home", new { area = (string)null });
+		}
+
+		public ActionResult PreviewTool()
+		{
+			// Prepares data for the preview mode (flyout) tool
+
+			var currentTheme = _themeContext.CurrentTheme;
+			ViewBag.Themes = (from m in _themeRegistry.GetThemeManifests(false)
+						 where !m.MobileTheme
+						 select new SelectListItem
+						 {
+							 Value = m.ThemeName,
+							 Text = m.ThemeTitle,
+							 Selected = m == currentTheme
+						 }).ToList();
+
+			var currentStore = _services.StoreContext.CurrentStore;
+			ViewBag.Stores = (_storeService.GetAllStores().Select(x => new SelectListItem
+						 {
+							 Value = x.Id.ToString(),
+							 Text = x.Name,
+							 Selected = x.Id == currentStore.Id
+						 })).ToList();
+
+			var themeSettings = _settingService.LoadSetting<ThemeSettings>(currentStore.Id);
+			ViewBag.DisableApply = themeSettings.DefaultDesktopTheme.IsCaseInsensitiveEqual(currentTheme.ThemeName);
+			var cookie = Request.Cookies["sm:PreviewToolOpen"];
+			ViewBag.ToolOpen = cookie != null ? cookie.Value.ToBool() : false;
+
+			return PartialView();
+		}
+
+		[HttpPost,  ActionName("PreviewTool")]
+		[FormValueRequired(FormValueRequirementRule.MatchAll, "theme", "storeId")]
+		[FormValueAbsent(FormValueRequirement.StartsWith, "PreviewMode.")]
+		public ActionResult PreviewToolPost(string theme, int storeId, string returnUrl)
+		{
+			// Refreshes the preview mode (after a select change)
+
+			using (HttpContext.PreviewModeCookie())
+			{
+				_themeContext.SetPreviewTheme(theme);
+				_services.StoreContext.SetPreviewStore(storeId);
+			}
+
+			return Redirect(returnUrl);
+		}
+
+		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Exit")]
+		public ActionResult ExitPreview()
+		{
+			// Exits the preview mode
+
+			using (HttpContext.PreviewModeCookie())
+			{
+				_themeContext.SetPreviewTheme(null);
+				_services.StoreContext.SetPreviewStore(null);
+			}
+
+			var returnUrl = (string)TempData["PreviewModeReturnUrl"];
+			if (returnUrl.IsEmpty())
+			{
+				returnUrl = Url.Action("Index", "Home", new { area = (string)null });
+			}
+
+			return Redirect(returnUrl);
+		}
+
+		[HttpPost, ActionName("PreviewTool"), FormValueRequired("PreviewMode.Apply")]
+		public ActionResult ApplyPreviewTheme(string theme, int storeId)
+		{
+			// Applies the current previewed theme and exits the preview mode
+
+			var themeSettings = _settingService.LoadSetting<ThemeSettings>(storeId);
+			var oldTheme = themeSettings.DefaultDesktopTheme;
+			themeSettings.DefaultDesktopTheme = theme;
+			var themeSwitched = oldTheme.IsCaseInsensitiveEqual(theme);
+
+			if (themeSwitched)
+			{
+				_services.EventPublisher.Publish<ThemeSwitchedEvent>(new ThemeSwitchedEvent
+				{
+					IsMobile = false,
+					OldTheme = oldTheme,
+					NewTheme = theme
+				});
+			}
+
+			_settingService.SaveSetting(themeSettings, storeId);
+
+			_services.CustomerActivity.InsertActivity("EditSettings", T("ActivityLog.EditSettings"));
+			NotifySuccess(T("Admin.Configuration.Updated"));
+
+			return ExitPreview();
+		}
+
+		#endregion
+
+	}
 }

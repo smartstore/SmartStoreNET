@@ -37,6 +37,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private string _manufacturerPartNumber;
 		private decimal _price;
 		private int? _deliveryTimeId;
+        private int? _quantityUnitId;
 		private decimal _length;
 		private decimal _width;
 		private decimal _height;
@@ -356,6 +357,13 @@ namespace SmartStore.Core.Domain.Catalog
 		/// </summary>
 		[DataMember]
 		public bool IsTaxExempt { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the product is an electronic service
+		/// bound to EU VAT regulations for digital goods.
+		/// </summary>
+		[DataMember]
+		public bool IsEsd { get; set; }
 
 		/// <summary>
 		/// Gets or sets the tax category identifier
@@ -690,6 +698,27 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual DeliveryTime DeliveryTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the quantity unit identifier
+        /// </summary>
+        [DataMember]
+        public int? QuantityUnitId
+        {
+            [DebuggerStepThrough]
+            get
+            {
+                return this.GetMergedDataValue<int?>("QuantityUnitId", _quantityUnitId);
+            }
+            set
+            {
+                _quantityUnitId = value;
+            }
+        }
+
+        [DataMember]
+        public virtual QuantityUnit QuantityUnit { get; set; }
+
+
 		/// <summary>
 		/// Gets or sets if base price quotation (PAnGV) is enabled
 		/// </summary>
@@ -704,7 +733,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		/// <summary>
 		/// Amount of product per packing unit in the given measure unit 
-		/// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
+        /// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
 		/// </summary>
 		[DataMember]
 		public decimal? BasePriceAmount
@@ -907,7 +936,7 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public virtual ICollection<ProductCategory> ProductCategories
         {
-            get { return _productCategories ?? (_productCategories = new List<ProductCategory>()); }
+			get { return _productCategories ?? (_productCategories = new HashSet<ProductCategory>()); }
             protected set { _productCategories = value; }
         }
 
@@ -917,7 +946,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductManufacturer> ProductManufacturers
         {
-            get { return _productManufacturers ?? (_productManufacturers = new List<ProductManufacturer>()); }
+			get { return _productManufacturers ?? (_productManufacturers = new HashSet<ProductManufacturer>()); }
             protected set { _productManufacturers = value; }
         }
 
@@ -936,7 +965,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public virtual ICollection<ProductReview> ProductReviews
         {
-            get { return _productReviews ?? (_productReviews = new List<ProductReview>()); }
+			get { return _productReviews ?? (_productReviews = new HashSet<ProductReview>()); }
             protected set { _productReviews = value; }
         }
 
@@ -946,7 +975,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductSpecificationAttribute> ProductSpecificationAttributes
         {
-            get { return _productSpecificationAttributes ?? (_productSpecificationAttributes = new List<ProductSpecificationAttribute>()); }
+			get { return _productSpecificationAttributes ?? (_productSpecificationAttributes = new HashSet<ProductSpecificationAttribute>()); }
             protected set { _productSpecificationAttributes = value; }
         }
 
@@ -956,7 +985,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductTag> ProductTags
         {
-            get { return _productTags ?? (_productTags = new List<ProductTag>()); }
+			get { return _productTags ?? (_productTags = new HashSet<ProductTag>()); }
             protected set { _productTags = value; }
         }
 
@@ -966,7 +995,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductVariantAttribute> ProductVariantAttributes
 		{
-			get { return _productVariantAttributes ?? (_productVariantAttributes = new List<ProductVariantAttribute>()); }
+			get { return _productVariantAttributes ?? (_productVariantAttributes = new HashSet<ProductVariantAttribute>()); }
 			protected set { _productVariantAttributes = value; }
 		}
 
@@ -986,7 +1015,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<TierPrice> TierPrices
 		{
-			get { return _tierPrices ?? (_tierPrices = new List<TierPrice>()); }
+			get { return _tierPrices ?? (_tierPrices = new HashSet<TierPrice>()); }
 			protected set { _tierPrices = value; }
 		}
 
@@ -996,7 +1025,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<Discount> AppliedDiscounts
 		{
-			get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }
+			get { return _appliedDiscounts ?? (_appliedDiscounts = new HashSet<Discount>()); }
 			protected set { _appliedDiscounts = value; }
 		}
 
@@ -1006,7 +1035,7 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual ICollection<ProductBundleItem> ProductBundleItems
 		{
-			get { return _productBundleItems ?? (_productBundleItems = new List<ProductBundleItem>()); }
+			get { return _productBundleItems ?? (_productBundleItems = new HashSet<ProductBundleItem>()); }
 			protected set { _productBundleItems = value; }
 		}
     }

@@ -1,0 +1,11 @@
+﻿@using SmartStore.Web.Framework.UI
+@{
+	Layout = ""; 
+	Html.AddCssFileParts(true, "~/Plugins/SmartStore.FacebookAuth/Content/facebookstyles.css");
+}
+
+<a class="btn btn-primary btn-extauth btn-facebook btn-block" href="@Url.RouteUrl("SmartStore.FacebookAuth", new { ReturnUrl = HttpContext.Current.Request.QueryString["ReturnUrl"], action = "Login" })">
+	<i class="fa fa-fw fa-lg fa-facebook-square"></i>
+	@T("Plugins.ExternalAuth.Facebook.Login")
+</a>
+ 

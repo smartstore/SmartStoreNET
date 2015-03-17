@@ -1,0 +1,195 @@
+//
+// Common CSS & mixins
+// --------------------------------------------------
+
+
+/* Mixins
+================================================ */
+
+.hr() {
+	border-top: 1px solid #ddd; 
+	&:first-child {
+		border-top: none;
+	}
+}
+
+
+/* General
+================================================ */
+
+body {
+    background-attachment: fixed;
+	@bodyBgColor: @var_SiteBackground;
+    #gradient > .vertical(@bodyBgColor, lighten(@bodyBgColor, 4%));
+}
+
+body.popup {
+	background: @bodyBackground;
+}
+
+
+#content {
+    background-color: @bodyBackground;
+    .box-shadow(~'0 0 15px rgba(0,0,0, .15), 0 10px 6px -10px rgba(0,0,0, .4)');
+    padding: 0;
+    z-index: 2;
+}
+
+select {
+	min-width: initial;
+}
+
+legend {
+	color: #acacac;
+}
+
+.checkbox input[type="checkbox"] {
+    margin-top: 4px;
+}
+
+// required for placeholder plugin (< IE10)
+input.placeholder {
+	color: @grayLight !important;
+}
+
+.control-group.buttons {
+	padding-top: 20px;
+	border-top: 1px solid #ddd;
+}
+
+body.popup {
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+nav ul, nav li {
+    margin: 0;
+    padding: 0;
+    list-style-type: none; 
+}
+
+// Hide only visually, but have it available for screenreaders: by Jon Neal.
+.hidden-accessible { 
+    border: 0; 
+    clip: rect(0,0,0,0); 
+    height: 1px; 
+    margin: -1px; 
+    overflow: hidden; 
+    padding: 0; 
+    position: absolute; 
+    width: 1px 
+}
+
+.nobr {
+	white-space: nowrap !important;
+}
+.wrap { 
+	white-space: normal !important;
+}
+
+.clear {
+    border: medium none;
+    clear: both; 
+    float: none; 
+    font-size: 0;
+    height: 0;
+    line-height: 0;
+}
+
+.first-col  { margin-left: 10px }
+.last-col   { margin-right: 10px }
+
+.date-part {
+	margin-right: 5px;
+}
+
+
+/* Validation & Errors
+================================================ */
+
+.message-error { 
+	.small();  
+	color: @red; 
+}
+.message-error ul {
+	padding: 0px;
+}
+.message-error ul li {
+	list-style: none;
+}
+
+.message-error,
+.validation-summary-errors,
+.field-validation-error,
+.required {
+	.small();
+	color: @red;
+}
+
+/* Misc
+================================================ */
+
+.ajax-loader-small {
+    display: inline-block;
+    position: relative;
+    width: 16px;
+    height: 16px;
+    padding: 0;
+    margin: 0;
+    background: transparent url('images/ajax_loader_small.gif') 50% 50% no-repeat;
+}
+
+#popup-content {
+    margin: 20px;
+}
+
+.captcha-box {
+    margin-bottom: 12px;
+}
+
+.simple-link-list-prepend > div {
+    padding-bottom: 5px;
+}
+.simple-link-list-append > div {
+    margin-top: 5px;
+}
+.simple-link-list h5 {
+    margin: 0;
+}
+.simple-link-list ul {
+    list-style-type: none;
+    margin: 0 0 10px 1px;
+}
+.simple-link-list li {
+    line-height: 26px;
+    vertical-align: middle;
+}
+
+.addon-buttons {
+    clear: both;
+}
+
+.glimpse-nowrap {
+	z-index: 100;
+}
+
+.mini-button-icon {
+	font-size: 10px;
+	padding-right: 5px;
+}
+
+p.continued {
+	margin-bottom: 2px;
+}
+
+#switch-to-mobile {
+    text-align: center;
+    margin: 0 0 10px 0;
+    display: none;
+}
+
+
+
+
+

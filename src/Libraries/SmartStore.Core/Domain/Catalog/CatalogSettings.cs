@@ -25,6 +25,8 @@ namespace SmartStore.Core.Domain.Catalog
 			RecentlyAddedProductsEnabled = true;
 			CompareProductsEnabled = true;
             FilterEnabled = true;
+            MaxFilterItemsToDisplay = 4;
+            ShowSubcategoriesAboveProductLists = true;
 			ProductSearchAutoCompleteEnabled = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
@@ -42,13 +44,15 @@ namespace SmartStore.Core.Domain.Catalog
 			MaximumBackInStockSubscriptions = 200;
 			FileUploadMaximumSizeBytes = 1024 * 200; //200KB
 			ManufacturersBlockItemsToDisplay = 5;
-			DisplayAllImagesNumber = 6;	// codehint: sm-add
+			DisplayAllImagesNumber = 6;
 			ShowColorSquaresInLists = true;
 			ShowDiscountSign = true;
 			ShowVariantCombinationPriceAdjustment = true;
 			ShowLinkedAttributeValueImage = true;
 			EnableDynamicPriceUpdate = true;
+            ShowProductReviewsInProductDetail = true;
 			HtmlTextCollapsedHeight = 260;
+			MostRecentlyUsedCategoriesMaxSize = 6;
         }
 
         /// <summary>
@@ -147,6 +151,21 @@ namespace SmartStore.Core.Domain.Catalog
         public bool FilterEnabled { get; set; }
         
         /// <summary>
+        /// Gets or sets a value which determines the maximum number of displayed filter items
+        /// </summary>
+        public int MaxFilterItemsToDisplay { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether all filter criterias should be expanded
+        /// </summary>
+        public bool ExpandAllFilterCriteria { get; set; }
+        
+        /// <summary>
+        /// Gets or sets a value indicating whether sub categories above product lists are enabled
+        /// </summary>
+        public bool ShowSubcategoriesAboveProductLists { get; set; }
+        
+        /// <summary>
         /// Gets or sets a value indicating whether a 'Share button' is enabled
         /// </summary>
         public bool ShowShareButton { get; set; }
@@ -156,11 +175,15 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public string PageShareCode { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to display reviews in product lists
         /// </summary>
         public bool ShowProductReviewsInProductLists { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to display reviews in product detail
+        /// </summary>
+        public bool ShowProductReviewsInProductDetail { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating product reviews must be approved
@@ -297,18 +320,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public string ProductsByTagPageSizeOptions { get; set; }
 
-        //codehint: sm-add begin
         public int ProductSearchPageSize { get; set; }
 
         public bool ProductSearchAllowCustomersToSelectPageSize { get; set; }
 
         public string ProductSearchPageSizeOptions { get; set; }
-
-        public int RecentlyAddedProductsPageSize { get; set; }
-
-        public bool RecentlyAddedProductsAllowCustomersToSelectPageSize { get; set; }
-
-        public string RecentlyAddedProductsPageSizeOptions { get; set; }
 		
 		public int DisplayAllImagesNumber { get; set; }
 
@@ -318,11 +334,11 @@ namespace SmartStore.Core.Domain.Catalog
 
         public int? LabelAsNewForMaxDays { get; set; }
 
+        public bool ShowDefaultQuantityUnit { get; set; }
+
         public bool ShowDiscountSign { get; set; }
 
 		public bool SuppressSkuSearch { get; set; }
-
-        //codehint: sm-add end
 
         /// <summary>
         /// Gets or sets the available customer selectable default page size options
@@ -405,5 +421,15 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets the height of collapsed text
 		/// </summary>
 		public int HtmlTextCollapsedHeight { get; set; }
+
+		/// <summary>
+		/// Gets or sets an identifier for a delivery time dislayed when stock is empty
+		/// </summary>
+		public int? DeliveryTimeIdForEmptyStock { get; set; }
+
+		/// <summary>
+		/// Gets or sets how many items to display maximally in the most recently used category list
+		/// </summary>
+		public int MostRecentlyUsedCategoriesMaxSize { get; set; }
     }
 }

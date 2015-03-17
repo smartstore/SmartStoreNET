@@ -86,9 +86,8 @@ namespace SmartStore.Core.Logging
             return new List<Log>();
         }
 
-		public Log InsertLog(LogContext context)
+		public void InsertLog(LogContext context)
 		{
-			return null;
 		}
 
         /// <summary>
@@ -99,9 +98,12 @@ namespace SmartStore.Core.Logging
         /// <param name="fullMessage">The full message</param>
         /// <param name="customer">The customer to associate log record with</param>
         /// <returns>A log item</returns>
-        public Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+        public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
         {
-            return null;
         }
-    }
+
+		public void Flush()
+		{
+		}
+	}
 }

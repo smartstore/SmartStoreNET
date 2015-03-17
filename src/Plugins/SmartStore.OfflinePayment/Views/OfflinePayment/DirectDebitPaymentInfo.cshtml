@@ -1,0 +1,98 @@
+﻿@model SmartStore.OfflinePayment.Models.DirectDebitPaymentInfoModel
+@using SmartStore.Web.Framework;
+
+@{
+    Layout = "";
+}
+
+<p class="muted">
+    @Html.Raw(Model.DescriptionText)
+</p>
+
+@Html.Hidden("OfflinePaymentMethodType", "DirectDebit")
+
+<div class="form-horizontal">
+	<div class="control-group">
+		@Html.LabelFor(model => model.EnterIBAN, new { @class = "control-label" })
+		<div class="controls">
+			<label class="radio inline">
+				<input type="radio" id="EnterIBAN_1" name="EnterIBAN" value="no-iban" @(Model.EnterIBAN == "no-iban" ? "checked=\"checked\"" : "") />
+				@T("Plugins.Payments.DirectDebit.NoEnterIBAN")
+			</label>
+			<label class="radio inline">
+				<input type="radio" id="EnterIBAN_2" name="EnterIBAN" value="iban" @(Model.EnterIBAN == "iban" ? "checked=\"checked\"" : "") />
+				@T("Plugins.Payments.DirectDebit.YesEnterIBAN")
+			</label>
+		</div>
+	</div>
+
+	<div class="control-group">
+		@Html.LabelFor(model => model.DirectDebitAccountHolder, new { @class="control-label required" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.DirectDebitAccountHolder, new { autocomplete = "off" })
+			@Html.ValidationMessageFor(model => model.DirectDebitAccountHolder)
+		</div>
+	</div>
+
+	<div class="ipayment-no-iban">
+		<div class="control-group">
+			@Html.LabelFor(model => model.DirectDebitAccountNumber, new { @class="control-label required" })
+			<div class="controls">
+				@Html.TextBoxFor(model => model.DirectDebitAccountNumber, new { autocomplete = "off" })
+				@Html.ValidationMessageFor(model => model.DirectDebitAccountNumber)
+			</div>
+		</div>
+		<div class="control-group">
+			@Html.LabelFor(model => model.DirectDebitBankCode, new { @class="control-label required" })
+			<div class="controls">
+				@Html.TextBoxFor(model => model.DirectDebitBankCode, new { autocomplete = "off" })
+				@Html.ValidationMessageFor(model => model.DirectDebitBankCode)
+			</div>
+		</div>
+		<div class="control-group">
+			@Html.LabelFor(model => model.DirectDebitCountry, new { @class="control-label required" })
+			<div class="controls">
+				@Html.TextBoxFor(model => model.DirectDebitCountry, new { autocomplete = "off" })
+				@Html.ValidationMessageFor(model => model.DirectDebitCountry)
+			</div>
+		</div>
+	</div>
+
+	<div class="ipayment-iban">
+		<div class="control-group">
+			@Html.LabelFor(model => model.DirectDebitIban, new { @class="control-label required" })
+			<div class="controls">
+				@Html.TextBoxFor(model => model.DirectDebitIban, new { autocomplete = "off" })
+				@Html.ValidationMessageFor(model => model.DirectDebitIban)
+			</div>
+		</div>
+		<div class="control-group">
+			@Html.LabelFor(model => model.DirectDebitBic, new { @class="control-label required" })
+			<div class="controls">
+				@Html.TextBoxFor(model => model.DirectDebitBic, new { autocomplete = "off" })
+				@Html.ValidationMessageFor(model => model.DirectDebitBic)
+			</div>
+		</div>
+	</div>
+
+	<div class="control-group">
+		@Html.LabelFor(model => model.DirectDebitBankName, new { @class = "control-label" })
+		<div class="controls">
+			@Html.TextBoxFor(model => model.DirectDebitBankName, new { autocomplete = "off" })
+			@Html.ValidationMessageFor(model => model.DirectDebitBankName)
+		</div>
+	</div>
+</div>
+
+<script type="text/javascript">
+    $(document).ready(function () {
+        $('input[name=EnterIBAN]').on('change', function () {
+            SwitchEnterIban($(this).filter(':checked').val());
+        }).trigger('change');
+    });
+
+    function SwitchEnterIban(newType) {
+        $('.ipayment-' + newType).slideDown('fast');
+        $('.ipayment-' + (newType === 'iban' ? 'no-iban' : 'iban')).slideUp('fast');
+    }
+</script>

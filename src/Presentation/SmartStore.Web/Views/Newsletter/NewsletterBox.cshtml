@@ -6,7 +6,6 @@
     </div>
     <div class="block-body listbox">
         <div id="newsletter-subscribe-block">
-            @*codehint: sm-edit (begin)*@
             @T("Newsletter.Email"):
             @Html.TextBoxFor(x => x.NewsletterEmail, new { id = "newsletter-email" , @class="span4", placeholder = @T("Newsletter.Email") })
             @Html.ValidationMessageFor(x => x.NewsletterEmail)
@@ -20,13 +19,10 @@
               <input type="radio" id="newsletter-unsubscribe" value="newsletter-unsubscribe" name="optionsRadios"> 
                 @T("Newsletter.Unsubscribe")
             </label>
-            @*codehint: sm-edit (end)*@
 
             <div class="clear">
             </div>
             <div class="buttons">
-
-                @*codehint: sm-add*@
                 <button id="newsletter-subscribe-button" class="btn btn-info">@T("Newsletter.Button")</button>
 
                 <span id="subscribe-loading-progress" style="display: none;">@T("Common.Wait...")

@@ -256,22 +256,6 @@ header {
 
 /* SM additions
 -------------------------------------------------------------- */
-#ajax-busy {
-    position: absolute;
-    width: 150px;
-    height: 14px;
-    padding: 0;
-    background: transparent url('images/ajax-progress-2.gif') 50% 50% no-repeat;
-    top: 52px;
-    left: 30px;
-    visibility: hidden;
-    .opacity(0);
-    .transition(opacity 0.15s linear);
-}
-#ajax-busy.busy {
-    visibility: visible;
-    .opacity(100);
-}
 
 .ajax-loader-small {
     display: inline-block;
@@ -281,6 +265,58 @@ header {
     padding: 0;
     margin: 0;
     background: transparent url('images/ajax_loader_small.gif') 50% 50% no-repeat;
+}
+
+#ajax-busy {
+	position: fixed;
+	opacity: 0;
+	left: 0;
+	right: 0;
+	top: 0;
+	width: 100%;
+	height: 3px;
+	z-index: 20;
+	background-color: #ffab40;
+	        transition: opacity .05s ease-in;
+	     -o-transition: opacity .05s ease-in;
+	-webkit-transition: opacity .05s ease-in;
+}
+#ajax-busy.busy {
+	opacity: 1;
+}
+#ajax-busy.busy > .bar {
+	content: "";
+	display: inline;
+	position: absolute;
+	width: 0;
+	height: 100%;
+	left: 50%;
+	text-align: center;
+		    animation: loading 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+	-webkit-animation: loading 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+}
+#ajax-busy > .bar:nth-child(1) {
+	background-color: #fff;
+}
+#ajax-busy > .bar:nth-child(2) {
+	background-color: #3F51B5;
+	        animation-delay: 0.5s;
+	-webkit-animation-delay: 0.5s;
+}
+#ajax-busy > .bar:nth-child(3) {
+	background-color: #ffab40;
+	        animation-delay: 1s;
+	-webkit-animation-delay: 1s;
+}
+@keyframes loading {
+    from {left: 50%; width: 0; z-index:100;}
+    50% {left: 0; width: 100%; z-index: 10;}
+    to {left: 0; width: 100%;}
+}
+@-webkit-keyframes loading {
+    from {left: 50%; width: 0; z-index:100;}
+    50% {left: 0; width: 100%; z-index: 10;}
+    to {left: 0; width: 100%;}
 }
 
 #content {

@@ -19,8 +19,6 @@
     <a class="brand" href="@Url.Action("Index", "Home", new { area = "Admin" })">
         <img src="~/Administration/Content/images/smnet.png" alt="smartstore.NET" />
     </a>
-    
-    <div id="ajax-busy"></div>
 
     @Html.Widget("admin_menu_before")
     @Html.Action("Menu", "Common", new { area = "Admin" })

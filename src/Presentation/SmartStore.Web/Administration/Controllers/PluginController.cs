@@ -145,7 +145,7 @@ namespace SmartStore.Admin.Controllers
 					if (license != null)	// license\plugin has been used
 					{
 						model.IsLicensed = license.LicenseKey.HasValue();
-						model.RemainingDemoUsageDays = Math.Max(license.RemainingDemoDays ?? LicenseChecker.MaxDemoDays, 0);
+						model.RemainingDemoUsageDays = license.RemainingDemoDays;
 					}
 				}
             }
@@ -396,7 +396,7 @@ namespace SmartStore.Admin.Controllers
 				var existingLicense = LicenseChecker.GetLicenseByKey(systemName, item.OldLicenseKey);
 
 				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
-					LicenseChecker.RemoveLicense(existingLicense);
+					LicenseChecker.RemoveLicense(systemName, item.OldLicenseKey);
 
 				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.LicenseKey == item.LicenseKey))
 					continue;

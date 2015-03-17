@@ -30,7 +30,8 @@
 					<span class="fa fa-caret-down"></span>
 				</a>
                 <ul class="dropdown-menu export-catalog">
-                    <li>
+                    @Html.Widget("admin_menu_exportcatalog_top")
+					<li>
                         <a href="@Url.Action("ExportXmlAll")">
                             <i class="fa fa-fw fa-code"></i>
                             @T("Admin.Common.ExportToXml.All")
@@ -77,6 +78,7 @@
                             </a>
                         </li>
                     }
+					@Html.Widget("admin_menu_exportcatalog_bottom")
                 </ul>
             </div>
 
@@ -248,7 +250,7 @@
         		e.preventDefault();
         		var form = $('#ProductExportForm');
         		form.find('[name=selectedIds]').val(selectedIds.join(','));
-        		form.attr('action', $(this).attr('data-url'));
+        		form.attr('action', $(this).data('url'));
         		form.submit();
         		return false;
         	});

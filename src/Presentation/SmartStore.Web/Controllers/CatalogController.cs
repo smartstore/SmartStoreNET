@@ -1055,7 +1055,7 @@ namespace SmartStore.Web.Controllers
 			if (model == null)
 				model = new SearchModel();
 
-			//'Continue shopping' URL
+			// 'Continue shopping' URL
 			_genericAttributeService.SaveAttribute(_services.WorkContext.CurrentCustomer,
 				SystemCustomerAttributeNames.LastContinueShoppingPage,
 				_services.WebHelper.GetThisPageUrl(false),
@@ -1079,7 +1079,7 @@ namespace SmartStore.Web.Controllers
 
 			// Build AvailableCategories
 			// first empty entry
-			model.AvailableCategories.Add(new SelectListItem()
+			model.AvailableCategories.Add(new SelectListItem
 			{
 				Value = "0",
 				Text = T("Common.All")
@@ -1095,7 +1095,7 @@ namespace SmartStore.Web.Controllers
 				int id = node.Value.EntityId;
 				var breadcrumb = node.GetBreadcrumb().Select(x => x.Text).ToArray();
 
-				model.AvailableCategories.Add(new SelectListItem()
+				model.AvailableCategories.Add(new SelectListItem
 				{
 					Value = id.ToString(),
 					Text = String.Join(" > ", breadcrumb),
@@ -1137,29 +1137,28 @@ namespace SmartStore.Web.Controllers
 					bool searchInDescriptions = false;
 					if (model.As)
 					{
-						//advanced search
+						// advanced search
 						var categoryId = model.Cid;
 						if (categoryId > 0)
 						{
 							categoryIds.Add(categoryId);
 							if (model.Isc)
 							{
-								//include subcategories
+								// include subcategories
 								categoryIds.AddRange(_helper.GetChildCategoryIds(categoryId));
 							}
 						}
 
-
 						manufacturerId = model.Mid;
 
-						//min price
+						// min price
 						if (!string.IsNullOrEmpty(model.Pf))
 						{
 							decimal minPrice = decimal.Zero;
 							if (decimal.TryParse(model.Pf, out minPrice))
 								minPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(minPrice, _services.WorkContext.WorkingCurrency);
 						}
-						//max price
+						// max price
 						if (!string.IsNullOrEmpty(model.Pt))
 						{
 							decimal maxPrice = decimal.Zero;

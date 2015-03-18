@@ -140,11 +140,11 @@ namespace SmartStore.Admin.Controllers
 					model.IsLicensable = true;
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-					var license = LicenseChecker.GetLicenseByUrl(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
+					var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
 
 					if (license != null)	// license\plugin has been used
 					{
-						model.IsLicensed = license.LicenseKey.HasValue();
+						model.IsLicensed = license.TruncatedLicenseKey.HasValue();
 						model.RemainingDemoUsageDays = license.RemainingDemoDays;
 					}
 				}
@@ -352,29 +352,31 @@ namespace SmartStore.Admin.Controllers
 
 			if (licensable.HasSingleLicenseForAllStores)
 			{
-				var license = LicenseChecker.GetLicenseByUrl(systemName, "");
+				var licenseModel = new LicensePluginModel.LicenseModel();
+				var license = LicenseChecker.GetLicense(systemName, "");
 
-				model.Licenses.Add(new LicensePluginModel.LicenseModel
-				{
-					LicenseKey = (license == null ? null : license.LicenseKey),
-					StoreId = 0
-				});
+				if (license != null)
+					licenseModel.LicenseKey = license.TruncatedLicenseKey;
+
+				model.Licenses.Add(licenseModel);
 			}
 			else
 			{
 				foreach (var store in stores)
 				{
-					var license = LicenseChecker.GetLicenseByUrl(systemName, store.Url);
-					string key = (license == null ? null : license.LicenseKey);
-
-					model.Licenses.Add(new LicensePluginModel.LicenseModel()
+					var licenseModel = new LicensePluginModel.LicenseModel
 					{
-						LicenseKey = key,
-						OldLicenseKey = key,
 						StoreId = store.Id,
 						StoreName = store.Name,
 						StoreUrl = store.Url
-					});
+					};
+
+					var license = LicenseChecker.GetLicense(systemName, store.Url);
+
+					if (license != null)
+						licenseModel.LicenseKey = license.TruncatedLicenseKey;
+
+					model.Licenses.Add(licenseModel);
 				}
 			}
 
@@ -393,12 +395,14 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = LicenseChecker.GetLicenseByKey(systemName, item.OldLicenseKey);
+				var existingLicense = LicenseChecker.GetLicense(systemName, item.StoreUrl);
 
-				if (existingLicense != null && (item.LicenseKey.IsEmpty() || existingLicense.LicenseKey != item.LicenseKey))
-					LicenseChecker.RemoveLicense(systemName, item.OldLicenseKey);
+				// user emptied or changed the key
+				if (existingLicense != null && (item.LicenseKey.IsEmpty() || item.LicenseKey != existingLicense.TruncatedLicenseKey))
+					LicenseChecker.RemoveLicense(systemName, item.StoreUrl);
 
-				if (item.LicenseKey.IsEmpty() || (existingLicense != null && existingLicense.LicenseKey == item.LicenseKey))
+				// cases where nothing to do anymore
+				if (item.LicenseKey.IsEmpty() || (existingLicense != null && item.LicenseKey == existingLicense.TruncatedLicenseKey))
 					continue;
 
 				var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);

@@ -15,7 +15,6 @@ namespace SmartStore.Admin.Models.Plugins
 			[SmartResourceDisplayName("Admin.Configuration.Plugins.LicenseKey")]
 			public string LicenseKey { get; set; }
 
-			public string OldLicenseKey { get; set; }
 			public int StoreId { get; set; }
 			public string StoreName { get; set; }
 			public string StoreUrl { get; set; }

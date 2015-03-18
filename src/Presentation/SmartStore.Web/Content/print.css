@@ -1,0 +1,304 @@
+﻿body { 
+	width: 100% !important;
+	margin: 0;
+	padding: 0;
+	color: #000; 
+	background: none; 
+	font-size: 13pt;
+	line-height: 1.45em; 
+	font-family: Arial, sans-serif; 
+}
+body.screen {
+	font-size: 14px;
+}
+
+/* Headings */
+h1, h2, h3, h4, h5, h6 { 
+	page-break-after: avoid; 
+}
+h1	{ font-size: 1.5em; }
+h2	{ font-size: 1.3em; }
+h3	{ font-size: 1.2em; }
+h4, 
+h5, 
+h6	{ font-size: 1.1em; }
+
+
+p, h2, h3 { orphans: 3; widows: 3; }
+
+code { font: 0.9em Courier, monospace; } 
+blockquote { margin: 1.2em; padding: 1em;  font-size: 0.9em; }
+hr { 
+	box-sizing: content-box; 
+	border: 0;
+	border-top: 1px solid #aaa;
+	margin: 10px 0;
+}
+
+img { 
+	max-width: 100% !important; 
+}
+a img { border: none; }
+
+a:link, 
+a:visited { 
+	background: transparent; 
+	font-weight: 700; 
+	text-decoration: underline; 
+	color: #333; 
+}
+
+a:link[href^="http://"]:after, 
+a[href^="http://"]:visited:after { 
+	content: " (" attr(href) ") "; 
+	font-size: 0.9; 
+}
+
+abbr[title]:after { 
+	content: " (" attr(title) ")"; 
+}
+
+/* Don't show linked images  */
+a[href^="http://"] {
+	color: #000; 
+}
+a[href$=".jpg"]:after, 
+a[href$=".jpeg"]:after, 
+a[href$=".gif"]:after, 
+a[href$=".png"]:after { 
+	content: " (" attr(href) ") "; 
+	display: none; 
+}
+
+/* Don't show links that are fragment identifiers, or use the `javascript:` pseudo protocol .. taken from html5boilerplate */
+a[href^="#"]:after, 
+a[href^="javascript:"]:after {
+	content: "";
+}
+
+img,
+tr {
+	page-break-inside: avoid;
+} 
+
+
+/* -------------------------------------------------------------- 
+ 	Layout
+-------------------------------------------------------------- */
+
+.screen .container {
+	box-sizing: border-box;
+	width: 100%;
+	max-width: 1170px;
+	padding: 15px;
+	margin: 0 auto;
+}
+
+.document:not(:last-child) {
+	page-break-after: always;
+}
+
+
+/* -------------------------------------------------------------- 
+ 	Utils
+-------------------------------------------------------------- */
+
+.margin-top-10		{ margin-top: 10px !important;  }
+.margin-top-20		{ margin-top: 20px !important;  }
+.margin-top-30		{ margin-top: 30px !important;  }
+.margin-top-40		{ margin-top: 40px !important;  }
+.margin-top-50		{ margin-top: 50px !important;  }
+.margin-top-60		{ margin-top: 60px !important;  }
+
+.margin-bottom-10	{ margin-bottom: 10px !important;  }
+.margin-bottom-20	{ margin-bottom: 20px !important;  }
+.margin-bottom-30	{ margin-bottom: 30px !important;  }
+.margin-bottom-40	{ margin-bottom: 40px !important;  }
+.margin-bottom-50	{ margin-bottom: 50px !important;  }
+.margin-bottom-60	{ margin-bottom: 60px !important;  }
+
+.text-muted		{ color: #777 }
+.text-left		{ text-align: left }
+.text-center	{ text-align: center }
+.text-right		{ text-align: right }
+
+.text-small		{ font-size: 0.85em; }
+.text-smaller	{ font-size: 0.77em; }
+.text-smallest	{ font-size: 0.69em; }
+
+.pull-left		{ float: left }
+.pull-right		{ float: right }
+
+.nobr			{ white-space: nowrap !important }
+
+.clearfix:before, 
+.clearfix:after {
+    display: table;
+    content: " ";
+}
+.clearfix:after {
+	clear: both;
+}
+
+/* -------------------------------------------------------------- 
+ 	Tables
+-------------------------------------------------------------- */
+
+table { 
+	width: 100%;
+	max-width: 100%;
+	border-spacing: 0;
+	border-collapse: collapse;
+}
+
+caption {
+	padding-top: 8px;
+	padding-bottom: 8px;
+	text-align: left;
+}
+
+thead {
+	display: table-header-group;
+}
+
+
+th, td { 
+	vertical-align: top;
+	text-align: left;
+	line-height: 1.45em;
+}
+
+
+.table {
+	margin-bottom: 20px;
+}
+
+.table tr {
+	border-top: 1px solid #999;
+}
+
+.table > thead > tr {
+	border-bottom: 2px solid #999;
+}
+
+.table th,
+.table td {
+	padding: 8px;
+	background-color: #fff;
+}
+
+.table > thead > tr > th {
+	vertical-align: bottom;
+}
+
+.table-bordered {
+	border: 1px solid #999;
+}
+.table-bordered th,
+.table-bordered td {
+	border-left: 1px solid #999;
+	border-right: 1px solid #999;
+}
+
+
+/* -------------------------------------------------------------- 
+ 	Order Summary (receipts like invoice, packaging slip etc.)
+-------------------------------------------------------------- */
+
+.order-summary tbody td,
+.order-summary tbody th {
+	padding-top: 12px;
+	padding-bottom: 12px;
+}
+
+.order-summary > tbody > tr,
+.order-summary > tfoot > tr {
+	border-top: none;
+}
+
+.order-summary > tbody {
+	border-top: 1px solid #999;
+	page-break-inside: avoid;
+}
+
+.order-summary td .attributes {
+	margin-left: 30px;
+}
+
+.order-summary tr.child-row > td {
+	padding-top: 0;
+}
+
+.order-summary tr.child-row > td > .associated-product {
+	margin-left: 30px;
+}
+
+/* -------------------------------------------------------------- 
+ 	Order address & info
+-------------------------------------------------------------- */
+
+.order-address {
+	width: 55%;
+	box-sizing: border-box;
+}
+
+.order-address .header {
+	display: inline-block; 
+	border-bottom: 1px solid #777; 
+	padding-bottom: 5px;
+}
+
+.order-info {
+	width: 40%;
+	box-sizing: border-box;
+	border: 1px solid #777; 
+	padding: 10px;
+}
+
+.order-info td {
+	width: 50%;
+}
+.order-info td.label {
+	font-weight: bold;
+}
+
+/* -------------------------------------------------------------- 
+ 	Order totals
+-------------------------------------------------------------- */
+
+.attr-caption {
+	font-weight: bold;
+}
+
+.order-totals td.label {
+	font-weight: bold;
+	padding-left: 0;
+}
+
+.order-totals td.value {
+	text-align: right;
+}
+
+/* -------------------------------------------------------------- 
+ 	catalog
+-------------------------------------------------------------- */
+
+.additional-products {
+    width: 45%;
+    float: left;
+    margin-top: 20px;
+    margin-right: 20px;
+    min-height: 100px;
+    page-break-inside: avoid;
+}
+.additional-products .picture {
+    float: left;
+    margin-right: 20px;
+    min-width: 80px;
+    text-align: center;
+}
+
+.detail-picture img {
+    max-width: 500px !important;
+    /*max-height: 500px !important;*/
+}

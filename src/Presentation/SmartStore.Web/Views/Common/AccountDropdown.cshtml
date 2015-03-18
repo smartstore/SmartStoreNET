@@ -18,10 +18,10 @@
 {
     <ul class="dropdown-menu shopbar-flyout-container">
         <li>
-            <a href="@Url.Action("Info", "Customer")">
-                <i class="fa fa-user"></i> 
-                @T("Account.MyAccount")
-            </a>
+			<a href="@Url.Action("Info", "Customer")" rel="nofollow">
+				<i class="fa fa-user"></i>
+				@T("Account.MyAccount")
+			</a>
         </li>
         @if (Model.DisplayAdminLink)
         {
@@ -36,14 +36,15 @@
         @if (Model.AllowPrivateMessages)
         {
         <li>
-            <a href="@Url.RouteUrl("PrivateMessages", new { tab = "" })">
-                <i class="fa fa-envelope"></i>
-                @T("PrivateMessages.Inbox")  
-                @if (Model.UnreadPrivateMessages != "")
-                {
-                    <span class="badge badge-success">@Model.UnreadPrivateMessages</span>
-                }
-                </a>
+			<a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" rel="nofollow">
+				<i class="fa fa-envelope"></i>
+				@T("PrivateMessages.Inbox")
+				@if (Model.UnreadPrivateMessages != "")
+				{
+					<span class="badge badge-success">@Model.UnreadPrivateMessages</span>
+				}
+			</a>
+
         </li>
         if (!string.IsNullOrEmpty(Model.AlertMessage))
             {

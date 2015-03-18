@@ -61,7 +61,7 @@ namespace SmartStore.Core.Domain.Shipping
         /// </summary>
         public virtual ICollection<ShipmentItem> ShipmentItems
         {
-            get { return _shipmentItems ?? (_shipmentItems = new List<ShipmentItem>()); }
+			get { return _shipmentItems ?? (_shipmentItems = new HashSet<ShipmentItem>()); }
             protected set { _shipmentItems = value; }
         }
     }

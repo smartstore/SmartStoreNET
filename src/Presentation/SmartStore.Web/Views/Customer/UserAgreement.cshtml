@@ -13,25 +13,30 @@
 
     function toggleContinueButton() {
         if ($('#agreement-agree').is(':checked')) {
-            $('#continue-downloading').removeAttr('disabled');
+            $('#continue-downloading').removeAttr('disabled').addClass("btn-info");
         } else {
-            $('#continue-downloading').attr('disabled', 'disabled');
+            $('#continue-downloading').attr('disabled', 'disabled').removeClass("btn-info");
         }
     }
 </script>
+
 <div class="page user-agreement-page">
     <div class="page-title">
         <h1>@T("DownloadableProducts.UserAgreement")</h1>
     </div>
-    <div class="clear">
-    </div>
     <div class="page-body">
-        @Html.Raw(Model.UserAgreementText)
+        <p class="well">
+            @Html.Raw(Model.UserAgreementText)
+        </p>
         <div>
-            <input id="agreement-agree" type="checkbox" value="@T("DownloadableProducts.IAgree")" />
+            <label for="agreement-agree" class="checkbox">
+                <input id="agreement-agree" type="checkbox" value="@T("DownloadableProducts.IAgree")" />
+                @T("DownloadableProducts.IAgree")
+            </label>
         </div>
         <div>
-            <input type="submit" id="continue-downloading" class="button-1 user-agreement-button" value="@T("Common.Continue")" onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')" />
+            <input type="submit" id="continue-downloading" class="btn" value="@T("Common.Continue")"
+                   onclick="setLocation('@Url.Action("GetDownload", "Download", new { id = Model.OrderItemGuid, agree = true })')" />
         </div>
     </div>
 </div>

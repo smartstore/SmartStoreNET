@@ -14,7 +14,7 @@
             {
                 <li @Html.Attr("class", "selected", Model.CurrentLanguageId == lang.Id)>
                     <a title="@lang.NativeName" rel="tooltip nofollow" class='language @(Model.UseImages ? "flag" : "regional-label")'
-                        href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Model.ReturnUrls[lang.SeoCode], null)">
+                        href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)">
                         @if (Model.UseImages) 
                         {
                             <img title='@lang.Name' alt='@lang.Name' @(lang.Id == Model.CurrentLanguageId ? " class=selected" : null)
@@ -29,13 +29,5 @@
             }
         </ul>
     </div>
-    
-    if (Model.UseImages)
-    {
-
-    }
-    else
-    {
-
-    }
+   
 }

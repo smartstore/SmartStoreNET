@@ -44,6 +44,7 @@ namespace SmartStore.Web.Controllers
 		private readonly IPriceCalculationService _priceCalculationService;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly ICustomerContentService _customerContentService;
+		private readonly ICustomerService _customerService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IRecentlyViewedProductsService _recentlyViewedProductsService;
 		private readonly IWorkflowMessageService _workflowMessageService;
@@ -75,6 +76,7 @@ namespace SmartStore.Web.Controllers
 			IPriceCalculationService priceCalculationService, 
 			IPriceFormatter priceFormatter,
 			ICustomerContentService customerContentService, 
+			ICustomerService customerService,
 			IShoppingCartService shoppingCartService,
 			IRecentlyViewedProductsService recentlyViewedProductsService, 
 			IWorkflowMessageService workflowMessageService, 
@@ -101,6 +103,7 @@ namespace SmartStore.Web.Controllers
 			this._priceCalculationService = priceCalculationService;
 			this._priceFormatter = priceFormatter;
 			this._customerContentService = customerContentService;
+			this._customerService = customerService;
 			this._shoppingCartService = shoppingCartService;
 			this._recentlyViewedProductsService = recentlyViewedProductsService;
 			this._workflowMessageService = workflowMessageService;
@@ -181,24 +184,32 @@ namespace SmartStore.Web.Controllers
 		//currently we use this method only for mobile device version
 		//desktop version uses AJAX version of this method (see ShoppingCartController)
 		// TODO: This should be handled by ShoppingCartController
-		[HttpPost, ActionName("Product")]
+		[HttpPost, ActionName("ProductDetails")]
 		[ValidateInput(false)]
 		public ActionResult AddProductToCart(int productId, FormCollection form)
 		{
-			var product = _productService.GetProductById(productId);
-			if (product == null || product.Deleted || !product.Published)
-				return HttpNotFound();
-
-			//manually process form
-			ShoppingCartType cartType = ShoppingCartType.ShoppingCart;
+			var parentProductId = productId;
+			var cartType = ShoppingCartType.ShoppingCart;
 
 			foreach (string formKey in form.AllKeys)
 			{
 				if (formKey.StartsWith("addtocartbutton-"))
+				{
 					cartType = ShoppingCartType.ShoppingCart;
+					int.TryParse(formKey.Replace("addtocartbutton-", ""), out productId);
+				}
 				else if (formKey.StartsWith("addtowishlistbutton-"))
+				{
 					cartType = ShoppingCartType.Wishlist;
+					int.TryParse(formKey.Replace("addtowishlistbutton-", ""), out productId);
+				}
 			}
+
+			var product = _productService.GetProductById(productId);
+			if (product == null || product.Deleted || !product.Published)
+				return RedirectToRoute("HomePage");
+
+			var parentProduct = (parentProductId == productId ? product : _productService.GetProductById(parentProductId));
 
 			decimal customerEnteredPrice = decimal.Zero;
 			decimal customerEnteredPriceConverted = decimal.Zero;
@@ -220,18 +231,26 @@ namespace SmartStore.Web.Controllers
 
 			foreach (string formKey in form.AllKeys)
 			{
-				if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+				if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					int.TryParse(form[formKey], out quantity);
 					break;
 				}
 			}
 
-			var addToCartWarnings = new List<string>();
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				AttributeForm = form,
+				CartType = cartType,
+				CustomerEnteredPrice = customerEnteredPrice,
+				Quantity = quantity,
+				AddRequiredProducts = true
+			};
 
-			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+			_shoppingCartService.AddToCart(addToCartContext);
 
-			if (addToCartWarnings.Count == 0)
+			if (addToCartContext.Warnings.Count == 0)
 			{
 				switch (cartType)
 				{
@@ -245,7 +264,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the wishlist" notification message
-								var model = _helper.PrepareProductDetailsPageModel(product);
+								var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(T("Products.ProductHasBeenAddedToTheWishlist"), false);
 
 								//activity log
@@ -266,7 +285,7 @@ namespace SmartStore.Web.Controllers
 							else
 							{
 								//redisplay the page with "Product has been added to the cart" notification message
-								var model = _helper.PrepareProductDetailsPageModel(product);
+								var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 								this.NotifySuccess(T("Products.ProductHasBeenAddedToTheCart"), false);
 
 								//activity log
@@ -281,11 +300,11 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//Errors
-				foreach (string error in addToCartWarnings)
+				foreach (string error in addToCartContext.Warnings)
 					ModelState.AddModelError("", error);
 
 				//If we got this far, something failed, redisplay form
-				var model = _helper.PrepareProductDetailsPageModel(product);
+				var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 
 				return View(model.ProductTemplateViewPath, model);
 			}
@@ -397,7 +416,7 @@ namespace SmartStore.Web.Controllers
 					decimal taxRate = decimal.Zero;
 					decimal priceBase = _taxService.GetProductPrice(product, _priceCalculationService.GetFinalPrice(product, _services.WorkContext.CurrentCustomer, decimal.Zero, _catalogSettings.DisplayTierPricesWithDiscounts, tierPrice.Quantity), out taxRate);
 					decimal price = _currencyService.ConvertFromPrimaryStoreCurrency(priceBase, _services.WorkContext.WorkingCurrency);
-					m.Price = _priceFormatter.FormatPrice(price, false, false);
+					m.Price = _priceFormatter.FormatPrice(price, true, false);
 					return m;
 				})
 				.ToList();
@@ -431,21 +450,22 @@ namespace SmartStore.Web.Controllers
 			if (!_catalogSettings.ProductsAlsoPurchasedEnabled)
 				return Content("");
 
-			//load and cache report
-			var productIds = _services.Cache.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _services.StoreContext.CurrentStore.Id), () =>
-				_orderReportService
-				.GetAlsoPurchasedProductsIds(_services.StoreContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber)
-				);
+			// load and cache report
+			var productIds = _services.Cache.Get(string.Format(ModelCacheEventConsumer.PRODUCTS_ALSO_PURCHASED_IDS_KEY, productId, _services.StoreContext.CurrentStore.Id), () => 
+			{
+				return _orderReportService.GetAlsoPurchasedProductsIds(_services.StoreContext.CurrentStore.Id, productId, _catalogSettings.ProductsAlsoPurchasedNumber);
+			});
 
-			//load products
+			// load products
 			var products = _productService.GetProductsByIds(productIds);
-			//ACL and store mapping
+
+			// ACL and store mapping
 			products = products.Where(p => _aclService.Authorize(p) && _storeMappingService.Authorize(p)).ToList();
 
 			if (products.Count == 0)
 				return Content("");
 
-			//prepare model
+			// prepare model
 			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
 
 			return PartialView(model);
@@ -649,7 +669,8 @@ namespace SmartStore.Web.Controllers
 				{
 					Id = 0,
 					Name = m.DeliveryTimeName,
-					Color = m.DeliveryTimeHexValue
+					Color = m.DeliveryTimeHexValue,
+					DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
 				},
 				Measure = new
 				{
@@ -787,12 +808,14 @@ namespace SmartStore.Web.Controllers
 				int rating = model.AddProductReview.Rating;
 				if (rating < 1 || rating > 5)
 					rating = _catalogSettings.DefaultProductRatingValue;
+
 				bool isApproved = !_catalogSettings.ProductReviewsMustBeApproved;
+				var customer = _services.WorkContext.CurrentCustomer;
 
 				var productReview = new ProductReview()
 				{
 					ProductId = product.Id,
-					CustomerId = _services.WorkContext.CurrentCustomer.Id,
+					CustomerId = customer.Id,
 					IpAddress = _services.WebHelper.GetCurrentIpAddress(),
 					Title = model.AddProductReview.Title,
 					ReviewText = model.AddProductReview.ReviewText,
@@ -815,6 +838,8 @@ namespace SmartStore.Web.Controllers
 				//activity log
 				_services.CustomerActivity.InsertActivity("PublicStore.AddProductReview", T("ActivityLog.PublicStore.AddProductReview"), product.Name);
 
+				if (isApproved)
+					_customerService.RewardPointsForProductReview(customer, product, true);
 
 				_helper.PrepareProductReviewsModel(model, product);
 				model.AddProductReview.Title = null;
@@ -845,7 +870,7 @@ namespace SmartStore.Web.Controllers
 			{
 				return Json(new
 				{
-					Success = false, // codehint: sm-add
+					Success = false,
 					Result = T("Reviews.Helpfulness.OnlyRegistered").Text,
 					TotalYes = productReview.HelpfulYesTotal,
 					TotalNo = productReview.HelpfulNoTotal
@@ -857,7 +882,7 @@ namespace SmartStore.Web.Controllers
 			{
 				return Json(new
 				{
-					Success = false, // codehint: sm-add
+					Success = false,
 					Result = T("Reviews.Helpfulness.YourOwnReview").Text,
 					TotalYes = productReview.HelpfulYesTotal,
 					TotalNo = productReview.HelpfulNoTotal
@@ -898,7 +923,7 @@ namespace SmartStore.Web.Controllers
 
 			return Json(new
 			{
-				Success = true, // codehint: sm-add
+				Success = true,
 				Result = T("Reviews.Helpfulness.SuccessfullyVoted").Text,
 				TotalYes = productReview.HelpfulYesTotal,
 				TotalNo = productReview.HelpfulNoTotal
@@ -917,7 +942,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 			var model = new ProductAskQuestionModel()
 			{
-				ProductId = id
+				Id = id
 			};
 
 			return PartialView(model);
@@ -933,7 +958,7 @@ namespace SmartStore.Web.Controllers
 			var customer = _services.WorkContext.CurrentCustomer;
 
 			var model = new ProductAskQuestionModel();
-			model.ProductId = product.Id;
+			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.SenderEmail = customer.Email;
@@ -949,7 +974,7 @@ namespace SmartStore.Web.Controllers
 		[CaptchaValidator]
 		public ActionResult AskQuestionSend(ProductAskQuestionModel model, bool captchaValid)
 		{
-			var product = _productService.GetProductById(model.ProductId);
+			var product = _productService.GetProductById(model.Id);
 			if (product == null || product.Deleted || !product.Published || !_catalogSettings.AskQuestionEnabled)
 				return HttpNotFound();
 
@@ -984,7 +1009,7 @@ namespace SmartStore.Web.Controllers
 
 			// If we got this far, something failed, redisplay form
 			var customer = _services.WorkContext.CurrentCustomer;
-			model.ProductId = product.Id;
+			model.Id = product.Id;
 			model.ProductName = product.GetLocalized(x => x.Name);
 			model.ProductSeName = product.GetSeName();
 			model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnAskQuestionPage;
@@ -1027,9 +1052,9 @@ namespace SmartStore.Web.Controllers
 
 		[HttpPost, ActionName("EmailAFriend")]
 		[CaptchaValidator]
-		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, bool captchaValid)
+		public ActionResult EmailAFriendSend(ProductEmailAFriendModel model, int id, bool captchaValid)
 		{
-			var product = _productService.GetProductById(model.ProductId);
+			var product = _productService.GetProductById(id);
 			if (product == null || product.Deleted || !product.Published || !_catalogSettings.EmailAFriendEnabled)
 				return HttpNotFound();
 
@@ -1057,10 +1082,14 @@ namespace SmartStore.Web.Controllers
 				model.ProductName = product.GetLocalized(x => x.Name);
 				model.ProductSeName = product.GetSeName();
 
-				model.SuccessfullySent = true;
-				model.Result = T("Products.EmailAFriend.SuccessfullySent");
+				//model.SuccessfullySent = true;
+				//model.Result = T("Products.EmailAFriend.SuccessfullySent");
 
-				return View(model);
+				//return View(model);
+
+				NotifySuccess(T("Products.EmailAFriend.SuccessfullySent"));
+
+				return RedirectToRoute("Product", new { SeName = model.ProductSeName });
 			}
 
 			//If we got this far, something failed, redisplay form

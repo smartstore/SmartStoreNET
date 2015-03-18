@@ -12,10 +12,11 @@ namespace SmartStore.Web.Infrastructure
         {
             //generic URLs
             routes.MapGenericPathRoute("GenericUrl",
-                "{generic_se_name}",
+                "{*generic_se_name}",
                 new { controller = "Common", action = "GenericUrl" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			// Routes solely needed for URL creation, NOT for route matching.
             routes.MapLocalizedRoute("Product",
                 "{SeName}",
                 new { controller = "Product", action = "Product" },
@@ -37,6 +38,8 @@ namespace SmartStore.Web.Infrastructure
                 new { controller = "Blog", action = "BlogPost" },
                 new[] { "SmartStore.Web.Controllers" });
 
+			// TODO: actually this one's never reached, because the "GenericUrl" route
+			// at the top handles this.
 			routes.MapLocalizedRoute("PageNotFound",
 				"{*path}",
 				new { controller = "Error", action = "NotFound" },

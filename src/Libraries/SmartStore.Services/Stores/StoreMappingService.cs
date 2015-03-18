@@ -4,10 +4,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Security;
 
 namespace SmartStore.Services.Stores
 {
@@ -108,6 +105,25 @@ namespace SmartStore.Services.Stores
 						select sm;
 			var storeMappings = query.ToList();
 			return storeMappings;
+		}
+
+		/// <summary>
+		/// Gets store mapping records
+		/// </summary>
+		/// <param name="entityName">Could be null</param>
+		/// <param name="entityId">Could be 0</param>
+		/// <returns>Store mapping record query</returns>
+		public virtual IQueryable<StoreMapping> GetStoreMappingsFor(string entityName, int entityId)
+		{
+			var query = _storeMappingRepository.Table;
+
+			if (entityName.HasValue())
+				query = query.Where(x => x.EntityName == entityName);
+
+			if (entityId != 0)
+				query = query.Where(x => x.EntityId == entityId);
+
+			return query;
 		}
 
 		/// <summary>

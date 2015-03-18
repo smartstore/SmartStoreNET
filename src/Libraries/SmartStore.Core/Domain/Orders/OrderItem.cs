@@ -61,6 +61,12 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public decimal PriceExclTax { get; set; }
 
+		/// <summary>
+		/// Gets or sets the tax rate
+		/// </summary>
+		[DataMember]
+		public decimal TaxRate { get; set; }
+
         /// <summary>
         /// Gets or sets the discount amount (incl tax)
         /// </summary>
@@ -139,7 +145,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<GiftCard> AssociatedGiftCards
         {
-            get { return _associatedGiftCards ?? (_associatedGiftCards = new List<GiftCard>()); }
+			get { return _associatedGiftCards ?? (_associatedGiftCards = new HashSet<GiftCard>()); }
             protected set { _associatedGiftCards = value; }
         }
     }

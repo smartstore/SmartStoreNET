@@ -138,6 +138,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.SystemName").Value("System name").Value("de", "Systemname");
 			builder.AddOrUpdate("Common.DisplayOrder").Value("Display order").Value("de", "Reihenfolge");
 			builder.AddOrUpdate("Admin.Common.Deactivate").Value("Deactivate").Value("de", "Deaktivieren");
+			builder.Delete("Admin.Configuration.Plugins.Fields.IsEnabled");
 
 			// Tax providers
 			string prefix = "Admin.Configuration.Tax.Providers.";

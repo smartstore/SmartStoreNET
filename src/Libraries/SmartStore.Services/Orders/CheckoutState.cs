@@ -1,24 +1,39 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
+using System.Web.Routing;
 
 namespace SmartStore.Services.Orders
 {
+	[Serializable]
 	public partial class CheckoutState
 	{
 		public CheckoutState()
 		{
-			CustomProperties = new Dictionary<string, object>();
+			CustomProperties = new RouteValueDictionary();
 		}
 
 		public static string CheckoutStateSessionKey { get { return "SmCheckoutState"; } }
 
-		/// <summary>
-		/// Whether the one page checkout is disabled for a particular session
-		/// </summary>
-		public bool OnePageCheckoutDisabled { get; set; }
+		public string PaymentSummary
+		{
+			get
+			{
+				return CustomProperties["_PaymentSummary"] as string;
+			}
+			set
+			{
+				CustomProperties["_PaymentSummary"] = value;
+			}
+		}
 
 		/// <summary>
-		/// Use that dictionary for any custom data required along checkout flow
+		/// Indicated whether the page with the payment method selection was skipped during checkout.
 		/// </summary>
-		public Dictionary<string, object> CustomProperties { get; set; }
+		public bool IsPaymentSelectionSkipped { get; set; }
+
+		/// <summary>
+		/// Use this dictionary for any custom data required along checkout flow.
+		/// </summary>
+		public IDictionary<string, object> CustomProperties { get; set; }
 	}
 }

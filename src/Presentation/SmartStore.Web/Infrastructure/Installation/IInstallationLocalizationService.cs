@@ -18,7 +18,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
         IList<InstallationLanguage> GetAvailableLanguages();
 
-        // codehint: sm-add
         IEnumerable<InstallationAppLanguageMetadata> GetAvailableAppLanguages();
         Lazy<InvariantSeedData, InstallationAppLanguageMetadata> GetAppLanguage(string culture);
     }

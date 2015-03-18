@@ -81,7 +81,7 @@
 			@Html.SmartLabelFor(model => model.Hosts)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(model => model.Hosts)
+			@Html.TextBoxFor(model => model.Hosts, new { @class = "input-large" })
 			@Html.ValidationMessageFor(model => model.Hosts)
 		</td>
 	</tr>

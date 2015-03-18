@@ -49,11 +49,11 @@
                 <div class="tracking-number">
                     @T("Order.Shipments.TrackingNumber"):
                     @if (!string.IsNullOrEmpty(Model.TrackingNumberUrl))
-                    {
-                        <a href="@Model.TrackingNumberUrl" class="tracking-url">@Model.TrackingNumber</a>
-                    }
-                    else
-                    {
+					{
+						<a href="@Model.TrackingNumberUrl" class="tracking-url" rel="nofollow">@Model.TrackingNumber</a>
+					}
+					else
+					{
                         @Model.TrackingNumber
                     }
                 </div>

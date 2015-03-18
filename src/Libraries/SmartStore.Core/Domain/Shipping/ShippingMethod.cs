@@ -40,7 +40,7 @@ namespace SmartStore.Core.Domain.Shipping
 		[DataMember]
 		public virtual ICollection<Country> RestrictedCountries
         {
-            get { return _restrictedCountries ?? (_restrictedCountries = new List<Country>()); }
+			get { return _restrictedCountries ?? (_restrictedCountries = new HashSet<Country>()); }
             protected set { _restrictedCountries = value; }
         }
     }

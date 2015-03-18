@@ -22,6 +22,8 @@
                     .Name("affiliates-grid")
                     .Columns(columns =>
                     {
+						columns.Bound(x => x.Address.Email)
+							.Width(200);
                         columns.Bound(x => x.Address.FirstName)
                             .Width(200);
                         columns.Bound(x => x.Address.LastName)

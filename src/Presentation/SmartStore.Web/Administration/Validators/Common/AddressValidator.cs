@@ -60,6 +60,14 @@ namespace SmartStore.Admin.Validators.Common
                 .NotNull()
                 .WithMessage(localizationService.GetResource("Admin.Address.Fields.FaxNumber.Required"))
                 .When(x => x.FaxEnabled && x.FaxRequired);
+
+            RuleFor(x => x.EmailMatch)
+                .NotNull()
+                .WithMessage(localizationService.GetResource("Admin.Address.Fields.EmailMatch.Required"))
+                .Equal(x => x.Email)
+                .WithMessage(localizationService.GetResource("Admin.Address.Fields.EmailMatch.MustMatchEmail"))
+                .When(x => x.ValidateEmailAddress);
+
         }
     }
 }

@@ -1,14 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
-using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Filter
 {
-	/// <remarks>codehint: sm-add</remarks>
 	[JsonObject(MemberSerialization.OptIn)]
 	public class FilterCriteria : IComparable
 	{
@@ -41,26 +36,35 @@ namespace SmartStore.Services.Filter
 		// Metadata
 		public int MatchCount { get; set; }
 		public bool IsInactive { get; set; }
+		public int ParentId { get; set; }
+		public string NameLocalized { get; set; }
+		public string ValueLocalized { get; set; }
 
-		public string SqlName {
-			get {
+		public string SqlName
+		{
+			get
+			{
 				if (Entity == "Manufacturer" && !Name.Contains('.'))
 					return "{0}.{1}".FormatWith(Entity, Name);
 				return Name;
 			}
 		}
-		public bool IsRange {
-			get {
+		public bool IsRange
+		{
+			get
+			{
 				return (Value.HasValue() && Value.Contains('~') && (Operator == FilterOperator.RangeGreaterEqualLessEqual || Operator == FilterOperator.RangeGreaterEqualLess));
 			}
 		}
 
-		int IComparable.CompareTo(object obj) {
+		int IComparable.CompareTo(object obj)
+		{
 			FilterCriteria filter = (FilterCriteria)obj;
 
 			int compare = string.Compare(this.Entity, filter.Entity, true);
 
-			if (compare == 0) {
+			if (compare == 0)
+			{
 				compare = string.Compare(this.Name, filter.Name, true);
 
 				if (compare == 0)
@@ -82,14 +86,17 @@ namespace SmartStore.Services.Filter
 
 			//return string.Compare(this.Value, filter.Value, true);
 		}
-		public override string ToString() {
-			try {
+		public override string ToString()
+		{
+			try
+			{
 				return JsonConvert.SerializeObject(this);
 			}
-			catch (Exception exc) {
+			catch (Exception exc)
+			{
 				exc.Dump();
 			}
 			return "";
 		}
-	}	// class
+	}
 }

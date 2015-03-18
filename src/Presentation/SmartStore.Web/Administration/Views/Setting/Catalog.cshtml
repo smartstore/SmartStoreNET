@@ -28,6 +28,8 @@
             $("#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)").click(toggleSearchPageSize);
             $("#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)").click(toggleProductSearchAutoComplete);
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
+        	$("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
+        	$("#@Html.FieldIdFor(model => model.FilterEnabled)").click(toggleFilterEnabled);
 
             toggleShowCategoryProductNumberIncludingSubcategories();
             toggleEmailAFriend();
@@ -39,6 +41,8 @@
             toggleSearchPageSize();
             toggleProductSearchAutoComplete();
             toggleCompareProducts();
+            toggleHtmlTextCollapsedHeight();
+            toggleFilterEnabled();
         });
 
         function toggleShowCategoryProductNumberIncludingSubcategories() {
@@ -130,6 +134,24 @@
             }
         }
         
+        function toggleHtmlTextCollapsedHeight() {
+            if ($('#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)').is(':checked')) {
+                $('#pnlHtmlTextCollapsedHeight').show();
+            }
+            else {
+                $('#pnlHtmlTextCollapsedHeight').hide();
+            }
+        }
+
+		function toggleFilterEnabled() {
+			if ($('#@Html.FieldIdFor(model => model.FilterEnabled)').is(':checked')) {
+				$('#pnlMaxFilterItemsToDisplay').show();
+				$('#pnlExpandAllFilterCriteria').show();
+			} else {
+				$('#pnlMaxFilterItemsToDisplay').hide();
+				$('#pnlExpandAllFilterCriteria').hide();
+			}
+		}
     </script>
 	
 	@Html.Action("StoreScopeConfiguration", "Setting")
@@ -275,13 +297,22 @@
                 @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
             </td>
         </tr>
-        <tr>
+        <tr id="pnlHtmlTextCollapsedHeight">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight)
                 @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDefaultQuantityUnit)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDefaultQuantityUnit)
+                @Html.ValidationMessageFor(model => model.ShowDefaultQuantityUnit)
             </td>
         </tr>
     </table>
@@ -301,6 +332,15 @@
                     @Html.ValidationMessageFor(model => model.ShowProductsFromSubcategories)
                 </td>
             </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.IncludeFeaturedProductsInNormalLists)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.IncludeFeaturedProductsInNormalLists)
+					@Html.ValidationMessageFor(model => model.IncludeFeaturedProductsInNormalLists)
+				</td>
+			</tr>
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.ShowCategoryProductNumber)
@@ -328,6 +368,7 @@
                     @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
                 </td>
             </tr>
+
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.FilterEnabled)
@@ -335,6 +376,34 @@
                 <td class="adminData">
                     @Html.SettingEditorFor(model => model.FilterEnabled)
                     @Html.ValidationMessageFor(model => model.FilterEnabled)
+                </td>
+            </tr>
+			<tr id="pnlMaxFilterItemsToDisplay">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaxFilterItemsToDisplay)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.MaxFilterItemsToDisplay)
+					@Html.ValidationMessageFor(model => model.MaxFilterItemsToDisplay)
+				</td>
+			</tr>
+			<tr id="pnlExpandAllFilterCriteria">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExpandAllFilterCriteria)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.ExpandAllFilterCriteria)
+					@Html.ValidationMessageFor(model => model.ExpandAllFilterCriteria)
+				</td>
+			</tr>
+
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowSubcategoriesAboveProductLists)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ShowSubcategoriesAboveProductLists)
+                    @Html.ValidationMessageFor(model => model.ShowSubcategoriesAboveProductLists)
                 </td>
             </tr>
 
@@ -492,6 +561,15 @@
         </tr>
         <tr>
             <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductReviewsInProductDetail)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductReviewsInProductDetail)
+                @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductDetail)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductReviewsMustBeApproved)
             </td>
             <td class="adminData">
@@ -613,7 +691,6 @@
                 @Html.ValidationMessageFor(model => model.ProductsAlsoPurchasedNumber)
             </td>
         </tr>
-		@*codehint: sm-add*@
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.DisplayAllImagesNumber)
@@ -632,6 +709,16 @@
                 @Html.ValidationMessageFor(model => model.ShowDeliveryTimesInProductDetail)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+			<td class="adminData">
+				@Html.SettingOverrideCheckbox(model => model.DeliveryTimeIdForEmptyStock)
+				@Html.DropDownListFor(model => model.DeliveryTimeIdForEmptyStock, Model.AvailableDeliveryTimes, T("Common.Unspecified"))
+				@Html.ValidationMessageFor(model => model.DeliveryTimeIdForEmptyStock)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableDynamicPriceUpdate)
@@ -739,37 +826,4 @@
         </tr>
     </table>
 } 
-    <table>
-
-        @* codehint: Änderungen wurden auskommentiert, wegen Schwierigekeiten beim Pagen in der View *@
-@*        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsPageSize)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSize">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsAllowCustomersToSelectPageSize)
-            </td>
-        </tr>
-        <tr id="pnlPageSizeOptions">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.RecentlyAddedProductsPageSizeOptions)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.RecentlyAddedProductsPageSizeOptions)
-                @Html.ValidationMessageFor(model => model.RecentlyAddedProductsPageSizeOptions)
-            </td>
-        </tr>*@
-        @*codehint: sm-add end*@
-
-    </table>
 }

@@ -1125,6 +1125,13 @@
     HH: {property: 'Hours12', getPattern: function() {return '(0?[1-9]|1[0-2])\\b';}},
     PP: {property: 'Period12', getPattern: function() {return '(AM|PM|am|pm|Am|aM|Pm|pM)\\b';}}
   };
+  
+  // codehint: sm-add (start)
+  dateFormatComponents['d'] = dateFormatComponents['dd'];
+  dateFormatComponents['M'] = dateFormatComponents['MM'];
+  dateFormatComponents['h'] = dateFormatComponents['hh'];
+  dateFormatComponents['tt'] = dateFormatComponents['PP'];
+  // codehint: sm-add (end)
 
   var keys = [];
   for (var k in dateFormatComponents) keys.push(k);

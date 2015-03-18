@@ -16,11 +16,11 @@
                         <div>
                             @T("PrivateMessages.Inbox.ToColumn"): 
                             @if (pm.AllowViewingToProfile)
-                           {
-                                <a href="@Url.RouteUrl("CustomerProfile", new { id = pm.ToCustomerId })">@(pm.CustomerToName)</a>
-                           }
-                           else
-                           {
+							{
+								<a href="@Url.RouteUrl("CustomerProfile", new { id = pm.ToCustomerId })" rel="nofollow">@(pm.CustomerToName)</a>
+							}
+							else
+							{
                                @pm.CustomerToName
                            }
                         </div>

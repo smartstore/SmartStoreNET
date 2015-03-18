@@ -1,16 +1,20 @@
 ﻿using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Order
 {
-    public partial class OrderDetailsModel : EntityModelBase
+	
+	public partial class OrderDetailsModel : EntityModelBase
     {
         public OrderDetailsModel()
         {
-            TaxRates = new List<TaxRate>();
+			MerchantCompanyInfo = new CompanyInformationSettings();
+			
+			TaxRates = new List<TaxRate>();
             GiftCards = new List<GiftCard>();
             Items = new List<OrderItemModel>();
             OrderNotes = new List<OrderNote>();
@@ -20,9 +24,13 @@ namespace SmartStore.Web.Models.Order
             ShippingAddress = new AddressModel();
         }
 
+		public int StoreId { get; set; }
+
+		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+
         public string OrderNumber { get; set; }
-        public bool PrintMode { get; set; }
         public bool DisplayPdfInvoice { get; set; }
+		public bool RenderOrderNotes { get; set; }
 
         public DateTime CreatedOn { get; set; }
 
@@ -85,8 +93,8 @@ namespace SmartStore.Web.Models.Order
             public string UnitPrice { get; set; }
             public string SubTotal { get; set; }
             public int Quantity { get; set; }
+            public string QuantityUnit { get; set; }
             public string AttributeInfo { get; set; }
-
 			public bool BundlePerItemPricing { get; set; }
 			public bool BundlePerItemShoppingCart { get; set; }
 
@@ -109,6 +117,7 @@ namespace SmartStore.Web.Models.Order
         {
             public string Rate { get; set; }
             public string Value { get; set; }
+			public string Label { get; set; }
         }
 
         public partial class GiftCard : ModelBase

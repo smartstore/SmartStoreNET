@@ -29,12 +29,15 @@ namespace SmartStore.Web.Framework.UI
     {
         private readonly IStoreContext _storeContext;
         private readonly IWorkContext _workContext;
+		private readonly IThemeContext _themeContext;
+
         private static readonly object s_lock = new object();
 
-        public BundleBuilder(IStoreContext storeContext, IWorkContext workContext)
+        public BundleBuilder(IStoreContext storeContext, IWorkContext workContext, IThemeContext themeContext)
         {
             this._storeContext = storeContext;
             this._workContext = workContext;
+			this._themeContext = themeContext;
         }
 
         public string Build(BundleType type, IEnumerable<string> files)
@@ -84,6 +87,9 @@ namespace SmartStore.Web.Framework.UI
                 postfix = ".css";
             }
 
+			// TBD: routing fix
+			postfix = "";
+
             // compute hash
             var hash = "";
             using (SHA256 sha = new SHA256Managed())
@@ -98,10 +104,11 @@ namespace SmartStore.Web.Framework.UI
                 byte[] input = sha.ComputeHash(Encoding.Unicode.GetBytes(hashInput));
                 hash = HttpServerUtility.UrlTokenEncode(input);
 
-                // append StoreId to hash in order to vary cache by store
+                // append StoreId & ThemeName to hash in order to vary cache by store/theme combination
                 if (type == BundleType.Stylesheet && !_workContext.IsAdmin && files.Any(x => x.EndsWith(".less", StringComparison.OrdinalIgnoreCase)))
                 {
                     hash += "-s" + _storeContext.CurrentStore.Id;
+					hash += "-t" + _themeContext.CurrentTheme.ThemeName;
                 }
             }
 
@@ -110,7 +117,7 @@ namespace SmartStore.Web.Framework.UI
 
             var sb = new StringBuilder(prefix);
             sb.Append(hash);
-            sb.Append(postfix);
+			sb.Append(postfix); 
             return sb.ToString();
         }
 

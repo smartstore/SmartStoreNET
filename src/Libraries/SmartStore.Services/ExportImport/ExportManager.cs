@@ -5,8 +5,9 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Xml;
+using OfficeOpenXml;
+using OfficeOpenXml.Style;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
@@ -17,8 +18,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
-using OfficeOpenXml;
-using OfficeOpenXml.Style;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -265,6 +264,7 @@ namespace SmartStore.Services.ExportImport
 				xmlWriter.WriteElementString("IsShipEnabled", null, product.IsShipEnabled.ToString());
 				xmlWriter.WriteElementString("IsFreeShipping", null, product.IsFreeShipping.ToString());
 				xmlWriter.WriteElementString("AdditionalShippingCharge", null, product.AdditionalShippingCharge.ToString());
+				xmlWriter.WriteElementString("IsEsd", null, product.IsEsd.ToString());
 				xmlWriter.WriteElementString("IsTaxExempt", null, product.IsTaxExempt.ToString());
 				xmlWriter.WriteElementString("TaxCategoryId", null, product.TaxCategoryId.ToString());
 				xmlWriter.WriteElementString("ManageInventoryMethodId", null, product.ManageInventoryMethodId.ToString());
@@ -303,8 +303,11 @@ namespace SmartStore.Services.ExportImport
 
 				if (product.DeliveryTimeId.HasValue)
 					xmlWriter.WriteElementString("DeliveryTimeId", null, product.DeliveryTimeId.Value.ToString());
+                if (product.QuantityUnitId.HasValue)
+                    xmlWriter.WriteElementString("QuantityUnitId", null, product.QuantityUnitId.Value.ToString());
+
 				xmlWriter.WriteElementString("BasePriceEnabled", null, product.BasePriceEnabled.ToString());
-				xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
+                xmlWriter.WriteElementString("BasePriceMeasureUnit", null, product.BasePriceMeasureUnit);
 				if (product.BasePriceAmount.HasValue)
 					xmlWriter.WriteElementString("BasePriceAmount", null, product.BasePriceAmount.Value.ToString());
 				if (product.BasePriceBaseAmount.HasValue)
@@ -394,6 +397,8 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("BasePriceBaseAmount", null, combination.BasePriceBaseAmount.Value.ToString());
 					if (combination.DeliveryTimeId.HasValue)
 						xmlWriter.WriteElementString("DeliveryTimeId", null, combination.DeliveryTimeId.Value.ToString());
+                    if (combination.QuantityUnitId.HasValue)
+                        xmlWriter.WriteElementString("QuantityUnitId", null, combination.QuantityUnitId.Value.ToString());
 					if (combination.Length.HasValue)
 						xmlWriter.WriteElementString("Length", null, combination.Length.Value.ToString());
 					if (combination.Width.HasValue)
@@ -573,6 +578,7 @@ namespace SmartStore.Services.ExportImport
                     "IsShipEnabled",
                     "IsFreeShipping",
                     "AdditionalShippingCharge",
+					"IsEsd",
                     "IsTaxExempt",
                     "TaxCategoryId",
                     "ManageInventoryMethodId",
@@ -611,6 +617,7 @@ namespace SmartStore.Services.ExportImport
                     "Picture2",
                     "Picture3",
 					"DeliveryTimeId",
+                    "QuantityUnitId",
 					"BasePriceEnabled",
 					"BasePriceMeasureUnit",
 					"BasePriceAmount",
@@ -641,8 +648,7 @@ namespace SmartStore.Services.ExportImport
 
                 for (int i = 0; i < headlines.Length; i++)
                 {
-                    worksheet.Cells[1, i + 1].Value = headlines[i];
-                    cells[1, i + 1].Value = properties[i];
+                    cells[1, i + 1].Value = headlines[i];
                     cells[1, i + 1].Style.Fill.PatternType = ExcelFillStyle.Solid;
                     cells[1, i + 1].Style.Fill.BackgroundColor.SetColor(Color.FromArgb(184, 204, 228));
                     cells[1, i + 1].Style.Font.Bold = true;
@@ -766,6 +772,9 @@ namespace SmartStore.Services.ExportImport
 					col++;
 
 					cells[row, col].Value = p.AdditionalShippingCharge;
+					col++;
+
+					cells[row, col].Value = p.IsEsd;
 					col++;
 
 					cells[row, col].Value = p.IsTaxExempt;
@@ -901,6 +910,8 @@ namespace SmartStore.Services.ExportImport
 
 					cells[row, col].Value = p.DeliveryTimeId;
 					col++;
+                    cells[row, col].Value = p.QuantityUnitId;
+                    col++;
 					cells[row, col].Value = p.BasePriceEnabled;
 					col++;
 					cells[row, col].Value = p.BasePriceMeasureUnit;
@@ -941,7 +952,7 @@ namespace SmartStore.Services.ExportImport
                         worksheet.Cells[row, col].Value = p.GetLocalized(x => x.ShortDescription, lang.Id, false, false);
                         col++;
 
-                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.FullDescription, lang.Id, false, false); ;
+                        worksheet.Cells[row, col].Value = p.GetLocalized(x => x.FullDescription, lang.Id, false, false);
                         col++;
                     }
                     //END: export localized values
@@ -969,7 +980,7 @@ namespace SmartStore.Services.ExportImport
                 xlPackage.Save();
             }
 
-			// EPPLus has serious memory leak problems.
+			// EPPLus had serious memory leak problems in V3.
 			// We enforce the garbage collector to release unused memory,
  			// it's not perfect, but better than nothing.
 			GC.Collect();

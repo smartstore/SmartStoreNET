@@ -33,9 +33,6 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Order.TermsOfServiceEnabled")]
         public bool TermsOfServiceEnabled { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Order.OnePageCheckoutEnabled")]
-        public bool OnePageCheckoutEnabled { get; set; }
-
 		[SmartResourceDisplayName("Admin.Configuration.Settings.Order.DisableOrderCompletedPage")]
 		public bool DisableOrderCompletedPage { get; set; }
 

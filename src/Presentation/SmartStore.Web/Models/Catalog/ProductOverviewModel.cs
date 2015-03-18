@@ -42,6 +42,7 @@ namespace SmartStore.Web.Models.Catalog
         public int TotalReviews { get; set; }
         public bool ShowReviews { get; set; }
         public bool ShowDeliveryTimes { get; set; }
+		public bool InvisibleDeliveryTime { get; set; }
         public string DeliveryTimeName { get; set; }
         public string DeliveryTimeHexValue { get; set; }
 
@@ -83,6 +84,8 @@ namespace SmartStore.Web.Models.Catalog
             public bool AvailableForPreOrder { get; set; }
 
             public bool ForceRedirectionAfterAddingToCart { get; set; }
+
+            public bool CallForPrice { get; set; }
         }
 
         public partial class ColorAttributeModel : ModelBase

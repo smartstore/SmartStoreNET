@@ -46,7 +46,7 @@ namespace SmartStore.Data.Tests.Catalog
 				DownloadExpirationDays = 4,
 				DownloadActivationTypeId = 5,
 				HasSampleDownload = true,
-				SampleDownloadId = 6,
+				//SampleDownloadId = 6,
 				HasUserAgreement = true,
 				UserAgreementText = "userAgreementText",
 				IsRecurring = true,
@@ -134,7 +134,7 @@ namespace SmartStore.Data.Tests.Catalog
 			fromDb.DownloadExpirationDays.ShouldEqual(4);
 			fromDb.DownloadActivationTypeId.ShouldEqual(5);
 			fromDb.HasSampleDownload.ShouldEqual(true);
-			fromDb.SampleDownloadId.ShouldEqual(6);
+			//fromDb.SampleDownloadId.ShouldEqual(6);
 			fromDb.HasUserAgreement.ShouldEqual(true);
 			fromDb.UserAgreementText.ShouldEqual("userAgreementText");
 			fromDb.IsRecurring.ShouldEqual(true);
@@ -214,7 +214,7 @@ namespace SmartStore.Data.Tests.Catalog
                             MetaDescription = "Meta description",
                             MetaTitle = "Meta title",
                             ParentCategoryId = 2,
-                            PictureId = 3,
+                            //PictureId = 3,
                             PageSize = 4,
                             PriceRanges = "1-3;",
                             ShowOnHomePage = false,
@@ -262,7 +262,7 @@ namespace SmartStore.Data.Tests.Catalog
                             MetaKeywords = "Meta keywords",
                             MetaDescription = "Meta description",
                             MetaTitle = "Meta title",
-                            PictureId = 3,
+                            //PictureId = 3,
                             PageSize = 4,
                             PriceRanges = "1-3;",
                             Published = true,

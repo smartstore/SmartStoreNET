@@ -20,7 +20,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
+using SmartStore.Services.Media; 
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
@@ -61,9 +61,11 @@ namespace SmartStore.Web.Controllers
 		private readonly CurrencySettings _currencySettings;
 		private readonly TaxSettings _taxSettings;
 		private readonly IMeasureService _measureService;
+        private readonly IQuantityUnitService _quantityUnitService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly ISettingService _settingService;
+		private readonly Lazy<IMenuPublisher> _menuPublisher;
 
 		private readonly HttpRequestBase _httpRequest;
 		private readonly UrlHelper _urlHelper;
@@ -92,10 +94,12 @@ namespace SmartStore.Web.Controllers
 			CurrencySettings currencySettings,
 			CaptchaSettings captchaSettings,
 			IMeasureService measureService,
+            IQuantityUnitService quantityUnitService,
 			MeasureSettings measureSettings,
 			TaxSettings taxSettings,
 			IDeliveryTimeService deliveryTimeService,
 			ISettingService settingService,
+			Lazy<IMenuPublisher> _menuPublisher,
 			HttpRequestBase httpRequest,
 			UrlHelper urlHelper)
 		{
@@ -118,6 +122,7 @@ namespace SmartStore.Web.Controllers
 			this._backInStockSubscriptionService = backInStockSubscriptionService;
 			this._downloadService = downloadService;
 			this._measureService = measureService;
+            this._quantityUnitService = quantityUnitService;
 			this._measureSettings = measureSettings;
 			this._taxSettings = taxSettings;
 			this._deliveryTimeService = deliveryTimeService;
@@ -127,7 +132,7 @@ namespace SmartStore.Web.Controllers
 			this._customerSettings = customerSettings;
 			this._captchaSettings = captchaSettings;
 			this._currencySettings = currencySettings;
-
+			this._menuPublisher = _menuPublisher;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
 
@@ -144,7 +149,7 @@ namespace SmartStore.Web.Controllers
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			var model = new ProductDetailsModel()
+			var model = new ProductDetailsModel
 			{
 				Id = product.Id,
 				Name = product.GetLocalized(x => x.Name),
@@ -156,15 +161,16 @@ namespace SmartStore.Web.Controllers
 				SeName = product.GetSeName(),
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually,
-				//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),  /* codehint: sm-edit */
+				//Manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id),
 				Manufacturers = PrepareManufacturersOverviewModel(_manufacturerService.GetProductManufacturersByProductId(product.Id)),
-				ReviewCount = product.ApprovedTotalReviews,                     /* codehint: sm-add */
+				ReviewCount = product.ApprovedTotalReviews,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				//EnableHtmlTextCollapser = Convert.ToBoolean(_settingService.GetSettingByKey<string>("CatalogSettings.EnableHtmlTextCollapser")),
 				//HtmlTextCollapsedHeight = Convert.ToString(_settingService.GetSettingByKey<string>("CatalogSettings.HtmlTextCollapsedHeight")),
 				ShowSku = _catalogSettings.ShowProductSku,
 				Sku = product.Sku,
 				ShowManufacturerPartNumber = _catalogSettings.ShowManufacturerPartNumber,
+                DisplayProductReviews = _catalogSettings.ShowProductReviewsInProductDetail,
 				ManufacturerPartNumber = product.ManufacturerPartNumber,
 				ShowGtin = _catalogSettings.ShowGtin,
 				Gtin = product.Gtin,
@@ -505,9 +511,9 @@ namespace SmartStore.Web.Controllers
 								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
 
 								if (priceAdjustmentBase > decimal.Zero)
-									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, false, false);
+									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
 								else if (priceAdjustmentBase < decimal.Zero)
-									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, false, false);
+									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
 
 								if (pvaValueModel.IsPreSelected)
 								{
@@ -676,7 +682,7 @@ namespace SmartStore.Web.Controllers
 			string additionalShippingCosts = "";
 			if (addShippingPrice > 0)
 			{
-				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, false, false)) + ", ";
+				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false)) + ", ";
 			}
 
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
@@ -710,7 +716,7 @@ namespace SmartStore.Web.Controllers
 
 			if (model.IsAvailable)
 			{
-				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(product);
 				if (deliveryTime != null)
 				{
 					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -720,12 +726,18 @@ namespace SmartStore.Web.Controllers
 
 			model.DisplayDeliveryTime = _catalogSettings.ShowDeliveryTimesInProductDetail;
 			model.IsShipEnabled = product.IsShipEnabled;
-			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock();
+			model.DisplayDeliveryTimeAccordingToStock = product.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 
-			if (model.DeliveryTimeName.IsNullOrEmpty() && model.DisplayDeliveryTime)
+			if (model.DeliveryTimeName.IsEmpty() && model.DisplayDeliveryTime)
 			{
 				model.DeliveryTimeName = T("ShoppingCart.NotAvailable");
 			}
+
+            var quantityUnit = _quantityUnitService.GetQuantityUnit(product);
+            if (quantityUnit != null)
+            {
+                model.QuantityUnitName = quantityUnit.GetLocalized(x => x.Name);
+            }
 
 			//back in stock subscriptions)
 			if (product.ManageInventoryMethod == ManageInventoryMethod.ManageStock &&
@@ -868,8 +880,8 @@ namespace SmartStore.Web.Controllers
 
 				model.AddToCart.CustomerEnteredPrice = minimumCustomerEnteredPrice;
 				model.AddToCart.CustomerEnteredPriceRange = string.Format(T("Products.EnterProductPrice.Range"),
-					_priceFormatter.FormatPrice(minimumCustomerEnteredPrice, false, false),
-					_priceFormatter.FormatPrice(maximumCustomerEnteredPrice, false, false));
+					_priceFormatter.FormatPrice(minimumCustomerEnteredPrice, true, false),
+					_priceFormatter.FormatPrice(maximumCustomerEnteredPrice, true, false));
 			}
 			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();
@@ -923,7 +935,7 @@ namespace SmartStore.Web.Controllers
 
 		public IList<MenuItem> GetCategoryBreadCrumb(int currentCategoryId, int currentProductId)
 		{
-			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>(); // _cacheFactory("request").Value;
+			var requestCache = SmartStore.Core.Infrastructure.EngineContext.Current.Resolve<ICacheManager>();
 			string cacheKey = "sm.temp.category.path.{0}-{1}".FormatInvariant(currentCategoryId, currentProductId);
 
 			var breadcrumb = requestCache.Get(cacheKey, () =>
@@ -935,6 +947,7 @@ namespace SmartStore.Web.Controllers
 				{
 					node = root.SelectNode(x => x.Value.EntityId == currentCategoryId);
 				}
+
 				if (node == null && currentProductId > 0)
 				{
 					var productCategories = _categoryService.GetProductCategoriesByProductId(currentProductId);
@@ -1159,6 +1172,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					model.ProductPrice = priceModel;
+                    model.ProductPrice.CallForPrice = product.CallForPrice;
 
 					#endregion
 				}
@@ -1178,7 +1192,7 @@ namespace SmartStore.Web.Controllers
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
 						var picture = product.GetDefaultProductPicture(_pictureService);
-						var pictureModel = new PictureModel()
+						var pictureModel = new PictureModel
 						{
 							ImageUrl = _pictureService.GetPictureUrl(picture, pictureSize),
 							FullSizeImageUrl = _pictureService.GetPictureUrl(picture),
@@ -1243,7 +1257,7 @@ namespace SmartStore.Web.Controllers
 					minPriceProduct.Height.ToString("F2"),
 					minPriceProduct.Length.ToString("F2")
 				);
-				model.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
+                model.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 				model.ThumbDimension = _mediaSettings.ProductThumbPictureSize;
 				model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductList;
 				model.LegalInfo = T("Tax.LegalInfoFooter").Text.FormatWith(taxInfo, shippingInfoLink);
@@ -1251,7 +1265,9 @@ namespace SmartStore.Web.Controllers
 				model.TotalReviews = product.ApprovedTotalReviews;
 				model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
 				model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
-				var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(minPriceProduct.DeliveryTimeId.GetValueOrDefault());
+				model.InvisibleDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
+
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(minPriceProduct);
 				if (deliveryTime != null)
 				{
 					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -1259,7 +1275,7 @@ namespace SmartStore.Web.Controllers
 				}
 
 				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
-				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock();
+				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
 				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
 
 				model.DisplayBasePrice = _catalogSettings.ShowBasePriceInProductLists;
@@ -1270,9 +1286,9 @@ namespace SmartStore.Web.Controllers
 				var addShippingPrice = _currencyService.ConvertCurrency(minPriceProduct.AdditionalShippingCharge,
 					_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId), _services.WorkContext.WorkingCurrency);
 
-				if (addShippingPrice > 0)
+				if (addShippingPrice > 0 && _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices))
 				{
-					model.TransportSurcharge = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, false, false));
+					model.TransportSurcharge = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
 				}
 
 				if (minPriceProduct.Weight > 0)
@@ -1444,6 +1460,9 @@ namespace SmartStore.Web.Controllers
 
 				var root = curParent.Root;
 
+				// menu publisher
+				_menuPublisher.Value.RegisterMenus(root, "catalog");
+
 				// event
 				_services.EventPublisher.Publish(new NavigationModelBuiltEvent(root));
 
@@ -1493,7 +1512,7 @@ namespace SmartStore.Web.Controllers
 							? command.ViewMode
 							: _catalogSettings.DefaultViewMode;
 
-			model.ViewMode = viewMode; // codehint: sm-add
+			model.ViewMode = viewMode;
 
 			if (model.AllowProductViewModeChanging)
 			{
@@ -1544,17 +1563,13 @@ namespace SmartStore.Web.Controllers
 					}
 
 					var currentPageUrl = _services.WebHelper.GetThisPageUrl(true);
-					var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize={0}", null);
+					var sortUrl = _services.WebHelper.ModifyQueryString(currentPageUrl, "pagesize=__pagesize__", null);
 					sortUrl = _services.WebHelper.RemoveQueryString(sortUrl, "pagenumber");
 
 					foreach (var pageSize in pageSizes)
 					{
 						int temp = 0;
-						if (!int.TryParse(pageSize, out temp))
-						{
-							continue;
-						}
-						if (temp <= 0)
+						if (!int.TryParse(pageSize, out temp) || temp <= 0)
 						{
 							continue;
 						}
@@ -1562,7 +1577,7 @@ namespace SmartStore.Web.Controllers
 						model.PageSizeOptions.Add(new ListOptionItem()
 						{
 							Text = pageSize,
-							Url = String.Format(sortUrl, pageSize),
+							Url = sortUrl.Replace("__pagesize__", pageSize),
 							Selected = pageSize.Equals(command.PageSize.ToString(), StringComparison.InvariantCultureIgnoreCase)
 						});
 					}
@@ -1591,30 +1606,29 @@ namespace SmartStore.Web.Controllers
 
 		public List<ManufacturerOverviewModel> PrepareManufacturersOverviewModel(ICollection<ProductManufacturer> manufacturers)
 		{
-			//var manufacturers = _manufacturerService.GetProductManufacturersByProductId(productId);
-
 			var model = new List<ManufacturerOverviewModel>();
 
-			foreach (var manufacturer in manufacturers)
+			foreach (var pm in manufacturers)
 			{
+				var manufacturer = pm.Manufacturer;
 				var item = new ManufacturerOverviewModel
 				{
-					Id = manufacturer.Manufacturer.Id,
-					Name = manufacturer.Manufacturer.Name,
-					Description = manufacturer.Manufacturer.Description,
-					SeName = manufacturer.Manufacturer.GetSeName()
+					Id = manufacturer.Id,
+					Name = manufacturer.Name,
+					Description = manufacturer.Description,
+					SeName = manufacturer.GetSeName()
 
 				};
 
-				var pic = _pictureService.GetPictureById(manufacturer.Manufacturer.PictureId.GetValueOrDefault());
+				Picture pic = manufacturer.Picture;
 				if (pic != null)
 				{
-					item.PictureModel = new PictureModel()
+					item.PictureModel = new PictureModel
 					{
-						PictureId = pic.Id, // codehint: sm-add
-						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Manufacturer.Name),
-						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Manufacturer.Name),
-						ImageUrl = _pictureService.GetPictureUrl(manufacturer.Manufacturer.PictureId.GetValueOrDefault()),
+						PictureId = pic.Id,
+						Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Name),
+						AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Name),
+						ImageUrl = _pictureService.GetPictureUrl(pic),
 					};
 				}
 

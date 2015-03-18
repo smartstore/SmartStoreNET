@@ -60,6 +60,9 @@
                 </label>
             }
         }
+
+		@Html.Widget("mobile_checkout_confirm_before_summary")
+
         <div class="order-summary-body">
             @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
         </div>
@@ -89,8 +92,17 @@
                                         }
                                     </text>
                                 }
-                                if (termOfServiceOk) {
-                                    $('#confirm-order-form').submit();
+								
+                            	if (termOfServiceOk) {
+                            		var submitOrderEvent = jQuery.Event('submitOrder');
+                            		submitOrderEvent.isOrderValid = true;
+                            		submitOrderEvent.isMobile = true;
+
+                            		$(this).trigger(submitOrderEvent);
+
+                            		if (true === submitOrderEvent.isOrderValid) {
+                            			$('#confirm-order-form').submit();
+                            		}
                                 }
                             });
                         });
@@ -101,8 +113,8 @@
                     </button>
                 }
             </div>
-        </div>  
-        @Html.Widget("mobile_checkout_confirm_bottom")
+        </div>
+		@Html.Widget("mobile_checkout_confirm_bottom")
 
     </div>
 </div>

@@ -141,6 +141,11 @@ namespace SmartStore.Web.Framework.UI
             private set;
         }
 
+		public bool HasRoute()
+		{
+			return _actionName != null || _routeName != null || _url != null;
+		}
+
         public override string ToString()
         {
             if (this.Text.HasValue())

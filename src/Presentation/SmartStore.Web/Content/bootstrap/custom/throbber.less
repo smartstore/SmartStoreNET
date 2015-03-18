@@ -5,11 +5,14 @@ Version: 1, Timestamp: 18.08.2012
 
 .throbber {
     display: none;
+	.opacity(0);
     
     & .throbber-overlay {
         position: absolute;
         left: 0;
         top: 0;
+		right: 0;
+		bottom: 0;
         background-color: #000;
         .opacity(70);
         z-index: 2147483640;
@@ -32,8 +35,8 @@ Version: 1, Timestamp: 18.08.2012
         line-height: 32px;
         max-width: 400px;
         font-size: 24px;
-        font-family: 'Segoe UI Light', 'Segoe UI', Tahoma, 'Helvetica Neue', Helvetica, Arial, 'sans-serif'; //@pageTitleFontFamily;
-        font-weight: 100; //@pageTitleFontWeight;
+        font-family: 'Segoe UI Light', 'Segoe UI', Tahoma, 'Helvetica Neue', Helvetica, Arial, 'sans-serif';
+        font-weight: 100;
         padding-left: 44px;
     }
     &.small .throbber-content {

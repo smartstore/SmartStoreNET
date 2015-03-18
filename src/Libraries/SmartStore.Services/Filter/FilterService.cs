@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
+using System.Linq.Dynamic;
 using System.Text;
 using Newtonsoft.Json;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
-using System.Linq.Dynamic;
-using SmartStore.Core.Data;
-using System.Globalization;
-using SmartStore.Core;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.Filter
@@ -20,37 +20,33 @@ namespace SmartStore.Services.Filter
 
 		private readonly IProductService _productService;
 		private readonly ICategoryService _categoryService;
-		private readonly IStoreContext _storeContext;
 		private readonly CatalogSettings _catalogSettings;
+		private readonly IRepository<Product> _productRepository;
+		private readonly IRepository<ProductCategory> _productCategoryRepository;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly ICommonServices _commonServices;
 
 		private IQueryable<Product> _products;
-		private bool? _includeFeatured;
 
 		public FilterService(IProductService productService,
 			ICategoryService categoryService,
-			IStoreContext storeContext,
-			CatalogSettings catalogSettings)
+			CatalogSettings catalogSettings,
+			IRepository<Product> productRepository,
+			IRepository<ProductCategory> productCategoryRepository,
+			ILocalizedEntityService localizedEntityService,
+			ICommonServices commonServices)
 		{
 			_productService = productService;
 			_categoryService = categoryService;
-			_storeContext = storeContext;
 			_catalogSettings = catalogSettings;
+			_productRepository = productRepository;
+			_productCategoryRepository = productCategoryRepository;
+			_localizedEntityService = localizedEntityService;
+			_commonServices = commonServices;
 		}
-
-		public static int MaxDisplayCriteria { get { return 4; } }
 
 		public static string ShortcutPrice { get { return "_Price"; } }
 		public static string ShortcutSpecAttribute { get { return "_SpecId"; } }
-
-		public bool IncludeFeatured
-		{
-			get
-			{
-				if (_includeFeatured == null)
-					_includeFeatured = EngineContext.Current.Resolve<CatalogSettings>().IncludeFeaturedProductsInNormalLists;
-				return _includeFeatured ?? false;
-			}
-		}
 
 		// helper
 		private string ValidateValue(string value, string alternativeValue)
@@ -59,6 +55,7 @@ namespace SmartStore.Services.Filter
 				return value;
 			return alternativeValue;
 		}
+
 		private string FormatParameterIndex(ref int index)
 		{
 			//if (curlyBracketFormatting)
@@ -66,6 +63,7 @@ namespace SmartStore.Services.Filter
 
 			return "@{0}".FormatWith(index++);
 		}
+
 		private object FilterValueToObject(string value, string type)
 		{
 			if (value == null)
@@ -86,6 +84,7 @@ namespace SmartStore.Services.Filter
 
 			return result;
 		}
+
 		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index)
 		{
 			if (itm.Entity == ShortcutPrice)
@@ -131,6 +130,7 @@ namespace SmartStore.Services.Filter
 			}
 			return true;
 		}
+
 		private void FilterParentheses(List<FilterCriteria> criteria)
 		{
 			// Logical or combine all criteria with same name.
@@ -158,19 +158,50 @@ namespace SmartStore.Services.Filter
 				}
 			}
 		}
+
 		private IQueryable<Product> AllProducts(List<int> categoryIds)
 		{
 			if (_products == null)
 			{
 				var searchContext = new ProductSearchContext()
 				{
-					CategoryIds = categoryIds,
-					FeaturedProducts = IncludeFeatured,
-					StoreId = _storeContext.CurrentStoreIdIfMultiStoreMode,
+					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
+					StoreId = _commonServices.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
 				};
 
-				_products = _productService.PrepareProductSearchQuery(searchContext);
+				if (categoryIds != null && categoryIds.Count > 1)
+				{
+					_products = _productService.PrepareProductSearchQuery(searchContext);
+
+					var distinctIds = (
+						from p in _productRepository.TableUntracked
+						join pc in _productCategoryRepository.TableUntracked on p.Id equals pc.ProductId
+						where categoryIds.Contains(pc.CategoryId)
+						select p.Id).Distinct();
+
+					_products =
+						from p in _products
+						join x in distinctIds on p.Id equals x
+						select p;
+				}
+				else
+				{
+					searchContext.CategoryIds = categoryIds;
+
+					_products = _productService.PrepareProductSearchQuery(searchContext);
+				}
+
+				//string.Join(", ", distinctIds.ToList()).Dump();
+
+				//_products
+				//	.Select(x => new { x.Id, x.Name })
+				//	.ToList()
+				//	.ForEach(x => {
+				//		"{0} {1}".FormatWith(x.Id, x.Name).Dump();
+				//	});
+
+				//_products.ToString().Dump(true);
 			}
 			return _products;
 		}
@@ -218,15 +249,15 @@ namespace SmartStore.Services.Filter
 			result.ForEach(c => c.IsInactive = true);
 			return result;
 		}
+
 		private List<FilterCriteria> ProductFilterableManufacturer(FilterProductContext context, bool getAll = false)
 		{
-			bool includeFeatured = IncludeFeatured;
 			var query = ProductFilter(context);
 
 			var manus =
 				from p in query
 				from pm in p.ProductManufacturers
-				where pm.IsFeaturedProduct == includeFeatured && !pm.Manufacturer.Deleted
+				where !pm.Manufacturer.Deleted
 				select pm.Manufacturer;
 
 			var grouped =
@@ -243,7 +274,7 @@ namespace SmartStore.Services.Filter
 			grouped = grouped.OrderByDescending(m => m.MatchCount);
 
 			if (!getAll)
-				grouped = grouped.Take(MaxDisplayCriteria);
+				grouped = grouped.Take(_catalogSettings.MaxFilterItemsToDisplay);
 
 			var lst = grouped.ToList();
 
@@ -256,6 +287,7 @@ namespace SmartStore.Services.Filter
 
 			return lst;
 		}
+
 		private List<FilterCriteria> ProductFilterableSpecAttributes(FilterProductContext context, string attributeName = null)
 		{
 			var query = ProductFilter(context);
@@ -278,16 +310,24 @@ namespace SmartStore.Services.Filter
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
 					ID = g.Key.Id,
+					ParentId = g.FirstOrDefault().SpecificationAttribute.Id,
 					MatchCount = g.Count()
 				};
 
 
 			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
+			int languageId = _commonServices.WorkContext.WorkingLanguage.Id;
 
 			lst.ForEach(c =>
 			{
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
+
+				if (c.ParentId != 0)
+					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ParentId, "SpecificationAttribute", "Name");
+
+				if (c.ID.HasValue)
+					c.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ID.Value, "SpecificationAttributeOption", "Name");
 			});
 
 			return lst;
@@ -306,6 +346,7 @@ namespace SmartStore.Services.Filter
 			}
 			return new List<FilterCriteria>();
 		}
+
 		public virtual string Serialize(List<FilterCriteria> criteria)
 		{
 			//criteria.FindAll(c => c.Type.IsNullOrEmpty()).ForEach(c => c.Type = _defaultType);
@@ -380,7 +421,7 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(FilterValueToObject(valueLeft, itm.Type));
 					context.Values.Add(FilterValueToObject(valueRight, itm.Type));
 				}
-				else if (itm.Value.IsNullOrEmpty())
+				else if (itm.Value.IsEmpty())
 				{
 					context.WhereClause.AppendFormat("ASCII({0}) Is Null", itm.SqlName);		// true if null or empty (string)
 				}
@@ -410,6 +451,7 @@ namespace SmartStore.Services.Filter
 			}
 			return (context.WhereClause.Length > 0);
 		}
+
 		public virtual bool ToWhereClause(FilterSql context, List<FilterCriteria> findIn, Predicate<FilterCriteria> match)
 		{
 			if (context.Criteria != null)
@@ -433,15 +475,15 @@ namespace SmartStore.Services.Filter
 			// manufacturer
 			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
 			{
-				bool includeFeatured = IncludeFeatured;
-
-				var pmq = (
+				var pmq =
 					from p in query
 					from pm in p.ProductManufacturers
-					where (!includeFeatured || includeFeatured == pm.IsFeaturedProduct) && !pm.Manufacturer.Deleted
-					select pm).Where(sql.WhereClause.ToString(), sql.Values.ToArray());
+					where !pm.Manufacturer.Deleted
+					select pm;
 
-				query = pmq.Select(pm => pm.Product);
+				query = pmq
+					.Where(sql.WhereClause.ToString(), sql.Values.ToArray())
+					.Select(pm => pm.Product);
 			}
 
 			// specification attribute
@@ -461,7 +503,7 @@ namespace SmartStore.Services.Filter
 
 				var specRepository = EngineContext.Current.Resolve<IRepository<ProductSpecificationAttribute>>();
 
-				var saq = specRepository.Table
+				var saq = specRepository.TableUntracked
 					.Where(a => a.AllowFiltering)
 					.Where(sql.WhereClause.ToString(), sql.Values.ToArray())
 					.GroupBy(a => a.ProductId)
@@ -497,8 +539,7 @@ namespace SmartStore.Services.Filter
 					break;
 			}
 
-
-			// distinct (required?)
+			// distinct cause same products can be mapped to sub-categories... too slow
 			//query =
 			//	from p in query
 			//	group p by p.Id into grp
@@ -519,6 +560,7 @@ namespace SmartStore.Services.Filter
 
 			context.Criteria.AddRange(ProductFilterableSpecAttributes(context));
 		}
+
 		public virtual void ProductFilterableMultiSelect(FilterProductContext context, string filterMultiSelect)
 		{
 			var criteriaMultiSelect = Deserialize(filterMultiSelect).FirstOrDefault();

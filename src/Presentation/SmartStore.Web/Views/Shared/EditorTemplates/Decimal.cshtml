@@ -1,0 +1,33 @@
+@using Telerik.Web.Mvc.UI
+
+@functions{
+    private decimal? Value
+    {
+        get
+        {
+            decimal? value = null;
+            if (ViewData.Model != null)
+            {
+                value = Convert.ToDecimal(ViewData.Model, System.Globalization.CultureInfo.InvariantCulture);
+            }
+            return value;
+        }
+    }
+}
+
+
+@{
+    string additionalClass = string.Empty;
+    if (ViewData.ContainsKey("small")) {
+        additionalClass = ViewData["small"].Convert<bool>() ? "small" : "";   
+    }
+}
+
+@(Html.Telerik().NumericTextBox<decimal>()
+        .Name(ViewData.TemplateInfo.GetFullHtmlFieldName(string.Empty))
+        .EmptyMessage(T("Common.EnterValue"))
+        .Value(Value)
+        .HtmlAttributes(new { @class = additionalClass })
+        .DecimalDigits(4)   //always display 4 digits
+)
+

@@ -140,9 +140,6 @@
 		@bg: ~'top, @{c1} 0%, @{c2} @{stop1}, @{c3} @{stop}, @{c4} 100%';
 		background-color: mix(@c2, @c3, 50%);
 		background-image: -webkit-linear-gradient(@bg);
-		background-image:        -webkit-gradient(~'linear, 0 0, 0 100%, color-stop(0%, @{c1}), color-stop(@{stop1}, @{c2}), color-stop(@{stop}, @{c3}), color-stop(100%, @{c4})'); // Safari 4+, Chrome 2+
-		background-image:    -moz-linear-gradient(@bg);
-		background-image:     -ms-linear-gradient(@bg);
 		background-image:      -o-linear-gradient(@bg);
 		background-image:         linear-gradient(@bg);
 		background-repeat: repeat-x;
@@ -156,13 +153,11 @@
 
 .box-shadow(@shadow1, @shadow2) {
 	-webkit-box-shadow: @shadow1, @shadow2;
-	   -moz-box-shadow: @shadow1, @shadow2;
 	        box-shadow: @shadow1, @shadow2;
 }
 
 .box-shadow(@shadow1, @shadow2, @shadow3) {
 	-webkit-box-shadow: @shadow1, @shadow2, @shadow3;
-	   -moz-box-shadow: @shadow1, @shadow2, @shadow3;
 	        box-shadow: @shadow1, @shadow2, @shadow3;
 }
 
@@ -171,24 +166,17 @@
 
 .transition-duration(@duration) {
   -webkit-transition-duration: @duration;
-     -moz-transition-duration: @duration;
-	  -ms-transition-duration: @duration;
-       -o-transition-duration: @duration;
           transition-duration: @duration;
 }
 
 .transition(@transition1, @transition2) {
 	-webkit-transition: @transition1, @transition2;
-	   -moz-transition: @transition1, @transition2;
-	    -ms-transition: @transition1, @transition2;
 	     -o-transition: @transition1, @transition2;
 	        transition: @transition1, @transition2;
 }
 
 .transition(@transition1, @transition2, @transition3) {
 	-webkit-transition: @transition1, @transition2, @transition3;
-	   -moz-transition: @transition1, @transition2, @transition3;
-	    -ms-transition: @transition1, @transition2, @transition3;
 	     -o-transition: @transition1, @transition2, @transition3;
 	        transition: @transition1, @transition2, @transition3;
 }
@@ -198,8 +186,6 @@
 
 .animation(@animation) {
 	-webkit-animation: @animation;
-	   -moz-animation: @animation;
-	    -ms-animation: @animation;
 	     -o-animation: @animation;
 	        animation: @animation;
 }
@@ -210,6 +196,5 @@
   -webkit-transform: @expr;
      -moz-transform: @expr;
       -ms-transform: @expr;
-       -o-transform: @expr;
           transform: @expr;
 }

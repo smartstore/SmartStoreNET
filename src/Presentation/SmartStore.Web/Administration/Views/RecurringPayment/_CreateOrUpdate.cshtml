@@ -97,23 +97,29 @@
 }
 @helper TabHistory()
     { 
+    
     <table class="adminContent">
         <tr>
-            <td>
+            <td style="padding-bottom:10px">
                 @if (!String.IsNullOrEmpty(Model.NextPaymentDate))
-                        {
+                {
                     @T("Admin.RecurringPayments.History.NextPaymentDate")
-                    <text>:</text> @Model.NextPaymentDate
-                    <button type="submit" name="processnextpayment" value="processnextpayment" class="btn">@T("Admin.RecurringPayments.History.ProcessNextPayment")</button>
-                        }
+                    
+                    <text>:</text> <strong>@Model.NextPaymentDate</strong>
+                    
+                    <button type="submit" name="processnextpayment" value="processnextpayment" class="btn pull-right">
+                        @T("Admin.RecurringPayments.History.ProcessNextPayment")
+                    </button>
+                }
                 @if (Model.CanCancelRecurringPayment)
-                        {
-                    <button type="submit" name="cancelpayment" value="cancelpayment" class="btn">@T("Admin.RecurringPayments.History.CancelPayment")</button>
-                        }
+                {
+                    <button type="submit" name="cancelpayment" value="cancelpayment" class="btn pull-right" style="margin-right:3px">
+                        @T("Admin.RecurringPayments.History.CancelPayment")
+                    </button>
+                }
             </td>
         </tr>
-    </table>
-    <table class="adminContent">
+
         <tr>
             <td>
                 @(Html.Telerik().Grid<RecurringPaymentModel.RecurringPaymentHistoryModel>(Model.History)

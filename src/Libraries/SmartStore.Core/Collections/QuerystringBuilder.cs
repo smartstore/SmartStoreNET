@@ -28,7 +28,7 @@ namespace SmartStore.Collections
         /// </summary>
         /// <param name="s">the string to extract the querystring from</param>
         /// <returns>a string representing only the querystring</returns>
-        public string ExtractQuerystring(string s)
+        public static string ExtractQuerystring(string s)
         {
             if (!string.IsNullOrEmpty(s))
             {

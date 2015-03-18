@@ -22,7 +22,6 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
-
 			context.MigrateSettings(x =>
 			{
 				x.Add("ShoppingCartSettings.ShowDeliveryTimes", true);

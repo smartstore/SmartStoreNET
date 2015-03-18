@@ -1,0 +1,301 @@
+﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
+    <Value>Google Merchant Center (GMC) Feed</Value>
+  </LocaleResource>
+	<LocaleResource Name="AdminInstruction">
+		<Value>
+			<![CDATA[<ul>
+<li>Für die Produktidentifizierung muss entweder die GTIN (z.B. als UPC, EAN etc.) oder der Hersteller samt Hersteller-Artikelnummer (MPN) hinterlegt sein. Google empfiehlt die Angabe aller drei Informationen.</li>
+<li>Standard Steuer- und Versanddaten sind in den Einstellungen Ihres Google-Merchant-Center-Kontos zu hinterlegen.</li>
+<li>Mehr Informationen zu benötigten Feldern finden Sie im Artikel <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=188494" target="_blank">Produkt-Feed-Spezifikationen</a>.</li>
+</ul>]]>
+		</Value>
+	</LocaleResource>
+	<LocaleResource Name="GridEditNote">
+		<Value>
+			<![CDATA[Eine Liste mit allen gültigen Google-Produkt-Kategorie finden Sie <a href="http://support.google.com/merchants/bin/answer.py?hl=de&answer=160081" target="_blank">hier</a>.]]>
+		</Value>
+	</LocaleResource>	
+	<LocaleResource Name="MissingDefaultCategory">
+		<Value>Standard-Google-Kategorie fehlt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Currency">
+		<Value>Währung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Currency.Hint">
+		<Value>Standardwährung fürs Erstellen des Feeds.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DefaultGoogleCategory">
+		<Value>Standard-Google-Kategorie</Value>
+	</LocaleResource>
+	<LocaleResource Name="DefaultGoogleCategory.Hint">
+		<Value>Wird verwendet, falls auf Produktebene keine Kategorie angegeben ist.</Value>
+	</LocaleResource>
+	<LocaleResource Name="General">
+		<Value>Allgemein</Value>
+	</LocaleResource>
+	<LocaleResource Name="ProductData">
+		<Value>Produktspezifische Daten</Value>
+	</LocaleResource>	
+	<LocaleResource Name="Generate">
+		<Value>Feed erstellen</Value>
+	</LocaleResource>
+	<LocaleResource Name="ProductPictureSize">
+		<Value>Thumbnail-Größe Produktbild</Value>
+	</LocaleResource>
+	<LocaleResource Name="ProductPictureSize.Hint">
+		<Value>Die Standardgröße (in Pixel) für das Produkt-Thumbnail.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.ProductName">
+		<Value>Produkt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.GoogleCategory">
+		<Value>Google-Kategorie</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Gender">
+		<Value>Geschlecht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.AgeGroup">
+		<Value>Altersgruppe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Color">
+		<Value>Farbe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Size">
+		<Value>Größe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Material">
+		<Value>Material</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Pattern">
+		<Value>Muster</Value>
+	</LocaleResource>
+	<LocaleResource Name="TaskEnabled">
+		<Value>Feed automatisch erstellen</Value>
+	</LocaleResource>
+	<LocaleResource Name="TaskEnabled.Hint">
+		<Value>Aktivieren Sie diese Option, falls die Feed-Datei automatisch erstellt werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="GenerateStaticFileEachMinutes">
+		<Value>Zeitspanne (in Minuten)</Value>
+	</LocaleResource>
+	<LocaleResource Name="GenerateStaticFileEachMinutes.Hint">
+		<Value>Die Zeitspanne nach der die Feed-Datei automatisch erstellt werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConfigSaveNote">
+		<Value>Einstellungen wurden erfolgreich gespeichert. Starten Sie die Anwendung bitte neu, falls "Feed automatisch erstellen" geändert wurde.</Value>
+	</LocaleResource>
+	<LocaleResource Name="BuildDescription">
+		<Value>Artikelbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="BuildDescription.Hint">
+		<Value>Legen Sie fest, welche Informationen zur Beschreibung des Artikel wie verwendet werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Automatic">
+		<Value>Automatisch</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescShort">
+		<Value>Kurzbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescLong">
+		<Value>Detailbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescTitleAndShort">
+		<Value>Produktname + Kurzbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescTitleAndLong">
+		<Value>Produktname + Detailbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescManuAndTitleAndShort">
+		<Value>Hersteller + Produktname + Kurzbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescManuAndTitleAndLong">
+		<Value>Hersteller + Produktname + Detailbeschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="AppendDescriptionText">
+		<Value>Anzuhängender Text 1 - 5</Value>
+	</LocaleResource>
+	<LocaleResource Name="AppendDescriptionText.Hint">
+		<Value>Einer der fünf Textbausteine wird an die Artikelbeschreibung angehängt, falls Kurz- und Langbeschreibung leer sind.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalImages">
+		<Value>Zusätzliche Bilder</Value>
+	</LocaleResource>
+	<LocaleResource Name="AdditionalImages.Hint">
+		<Value>Aktivieren Sie diese Option, falls Sie mehr als ein Produktbild exportieren möchten. Bis zu 10 sind möglich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Condition">
+		<Value>Zustand</Value>
+	</LocaleResource>
+	<LocaleResource Name="Condition.Hint">
+		<Value>Zustand des Artikels.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConditionNew">
+		<Value>Neu</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConditionUsed">
+		<Value>Gebraucht</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConditionRefurbished">
+		<Value>Erneuert</Value>
+	</LocaleResource>
+	<LocaleResource Name="Availability">
+		<Value>Verfügbarkeit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Availability.Hint">
+		<Value>Verfügbarkeit des Artikels.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AvailabilityInStock">
+		<Value>Vorrätig</Value>
+	</LocaleResource>
+	<LocaleResource Name="AvailabilityAvailableForOrder">
+		<Value>Bestellbar</Value>
+	</LocaleResource>
+	<LocaleResource Name="AvailabilityOutOfStock">
+		<Value>Vergriffen</Value>
+	</LocaleResource>
+	<LocaleResource Name="AvailabilityPreorder">
+		<Value>Vorbestellt</Value>
+	</LocaleResource>
+	<LocaleResource Name="SpecialPrice">
+		<Value>Aktionspreis exportieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="SpecialPrice.Hint">
+		<Value>Aktivieren Sie diese Option, falls Sie den Aktionspreis inkl. Aktionszeitraum exportieren möchten.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Brand">
+		<Value>Hersteller\Marke</Value>
+	</LocaleResource>
+	<LocaleResource Name="Brand.Hint">
+		<Value>Dieser Wert wird verwendet, wenn für ein Produkt kein Hersteller bzw. Marke hinterlegt ist.</Value>
+	</LocaleResource>
+	<LocaleResource Name="UseOwnProductNo">
+		<Value>Eigene Artikelnummer</Value>
+	</LocaleResource>
+	<LocaleResource Name="UseOwnProductNo.Hint">
+		<Value>Aktivieren Sie diese Option, falls die eigene Artikelnummer als Hersteller-Artikelnummer (MPN) exportiert werden soll, sofern diese fehlt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gender">
+		<Value>Geschlecht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Gender.Hint">
+		<Value>Angabe ist für bestimmte Artikel z.B. Bekleidung erforderlich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="GenderMale">
+		<Value>Herren</Value>
+	</LocaleResource>
+	<LocaleResource Name="GenderFemale">
+		<Value>Damen</Value>
+	</LocaleResource>
+	<LocaleResource Name="GenderUnisex">
+		<Value>Unisex</Value>
+	</LocaleResource>
+	<LocaleResource Name="AgeGroup">
+		<Value>Altersgruppe</Value>
+	</LocaleResource>
+	<LocaleResource Name="AgeGroup.Hint">
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="AgeGroupAdult">
+		<Value>Erwachsene</Value>
+	</LocaleResource>
+	<LocaleResource Name="AgeGroupKids">
+		<Value>Kinder</Value>
+	</LocaleResource>
+	<LocaleResource Name="Color">
+		<Value>Farbe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Color.Hint">
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Size">
+		<Value>Größe</Value>
+	</LocaleResource>
+	<LocaleResource Name="Size.Hint">
+		<Value>Angabe ist für bestimmte Artikel, z.B. Bekleidung erforderlich.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Material">
+		<Value>Material</Value>
+	</LocaleResource>
+	<LocaleResource Name="Material.Hint">
+		<Value>Material, aus dem das Produkt besteht. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Pattern">
+		<Value>Muster</Value>
+	</LocaleResource>
+	<LocaleResource Name="Pattern.Hint">
+		<Value>Muster oder grafisches Druckdesign eines Produktes. Angabe ist z.B. bei Bekleidung sinnvoll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="OnlineOnly">
+		<Value>Nur online zu kaufen</Value>
+	</LocaleResource>
+	<LocaleResource Name="OnlineOnly.Hint">
+		<Value>Aktivieren Sie diese Option, wenn Produkte nur online erworben werden können. Aktivieren Sie diese Option nicht, falls Produkte auch in Ihrem Ladengeschäft erhältlich sind.</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescriptionToPlainText">
+		<Value>HTML entfernen</Value>
+	</LocaleResource>
+	<LocaleResource Name="DescriptionToPlainText.Hint">
+		<Value>Aktivieren Sie diese Option, falls für den Export alle HTML-Auszeichnungen aus der Artikelbeschreibung entfernt werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="EmptyGridCell">
+		<Value>Leer</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchProductName">
+		<Value>Produktname</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchProductName.Hint">
+		<Value>Produktnamen durchsuchen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched">
+		<Value>Bearbeitet</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Hint">
+		<Value>Sucht nach Datensätzen, die bearbeitet oder noch nicht bearbeitet wurden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Touched">
+		<Value>Bearbeitet</Value>
+	</LocaleResource>
+	<LocaleResource Name="SearchIsTouched.Untouched">
+		<Value>Noch nicht bearbeitet</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store">
+		<Value>Shop</Value>
+	</LocaleResource>
+	<LocaleResource Name="Store.Hint">
+		<Value>Wählen Sie den Shop, für den der Feed erstellt werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExpirationDays">
+		<Value>Verfällt in Tagen</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExpirationDays.Hint">
+		<Value>Anzahl der Tage, nach dem die Artikel verfallen bzw. nicht mehr angezeigt werden sollen. Der Wert 0 bewirkt, dass kein Verfallsdatum exportiert wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExpirationDays.Validate">
+		<Value>Der Wert muss zwischen 0 und 29 Tagen liegen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportShipping">
+		<Value>Versanddaten exportieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportShipping.Hint">
+		<Value>Aktivieren Sie diese Option, wenn Sie z.B. das Gewicht des Produkt exportieren möchten.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice">
+		<Value>Grundpreis exportieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="ExportBasePrice.Hint">
+		<Value>Aktivieren Sie diese Option, wenn Sie denGrundpreis des Produkt exportieren möchten.</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices">
+		<Value>Netto- in Bruttopreise umrechnen</Value>
+	</LocaleResource>
+	<LocaleResource Name="ConvertNetToGrossPrices.Hint">
+		<Value>Legt fest, dass Netto- in Bruttopreise umgerechnet werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId">
+		<Value>Sprache</Value>
+	</LocaleResource>
+	<LocaleResource Name="LanguageId.Hint">
+		<Value>Legt die Sprache fest, in der sprachabhängige Werte (z.B. der Produktname) exportiert werden sollen.</Value>
+	</LocaleResource>
+</Language>

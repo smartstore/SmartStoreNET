@@ -34,6 +34,7 @@ using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
 using SmartStore.Core.Logging;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Controllers
 {
@@ -1210,14 +1211,14 @@ namespace SmartStore.Web.Controllers
         }
 
         [HttpPost]
-        public ActionResult AddressEdit(CustomerAddressEditModel model, int addressId)
+        public ActionResult AddressEdit(CustomerAddressEditModel model, int id)
         {
             if (!IsCurrentUserRegistered())
                 return new HttpUnauthorizedResult();
 
             var customer = _workContext.CurrentCustomer;
             //find address (ensure that it belongs to the current customer)
-            var address = customer.Addresses.Where(a => a.Id == addressId).FirstOrDefault();
+            var address = customer.Addresses.Where(a => a.Id == id).FirstOrDefault();
             if (address == null)
                 //address is not found
 				return RedirectToAction("Addresses");
@@ -1497,6 +1498,7 @@ namespace SmartStore.Web.Controllers
             var customer = _workContext.CurrentCustomer;
 
             var model = new CustomerAvatarModel();
+			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
             model.AvatarUrl = _pictureService.GetPictureUrl(
@@ -1518,9 +1520,9 @@ namespace SmartStore.Web.Controllers
 
             var customer = _workContext.CurrentCustomer;
 
+			model.MaxFileSize = Prettifier.BytesToString(_customerSettings.AvatarMaximumSizeBytes);
             model.NavigationModel = GetCustomerNavigationModel(customer);
             model.NavigationModel.SelectedTab = CustomerNavigationEnum.Avatar;
-
 
             if (ModelState.IsValid)
             {
@@ -1531,7 +1533,7 @@ namespace SmartStore.Web.Controllers
                     {
                         int avatarMaxSize = _customerSettings.AvatarMaximumSizeBytes;
                         if (uploadedFile.ContentLength > avatarMaxSize)
-                            throw new SmartException(string.Format(_localizationService.GetResource("Account.Avatar.MaximumUploadedFileSize"), avatarMaxSize));
+                            throw new SmartException(string.Format(_localizationService.GetResource("Account.Avatar.MaximumUploadedFileSize"), Prettifier.BytesToString(avatarMaxSize)));
 
                         byte[] customerPictureBinary = uploadedFile.GetPictureBits();
                         if (customerAvatar != null)
@@ -1564,6 +1566,7 @@ namespace SmartStore.Web.Controllers
                 customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId), 
                 _mediaSettings.AvatarPictureSize, 
                 false);
+
             return View(model);
         }
 

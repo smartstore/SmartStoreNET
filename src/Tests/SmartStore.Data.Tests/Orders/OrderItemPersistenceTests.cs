@@ -25,6 +25,7 @@ namespace SmartStore.Data.Tests.Orders
                 UnitPriceExclTax = 2.1M,
                 PriceInclTax = 3.1M,
                 PriceExclTax = 4.1M,
+				TaxRate = 19.0M,
                 DiscountAmountInclTax = 5.1M,
                 DiscountAmountExclTax = 6.1M,
 				ProductCost = 7.1M,
@@ -124,7 +125,8 @@ namespace SmartStore.Data.Tests.Orders
                     CreatedOnUtc = new DateTime(2010, 01, 01),
                 },
                 Deleted = true,
-                CreatedOnUtc = new DateTime(2010, 01, 01)
+				CreatedOnUtc = new DateTime(2010, 01, 01),
+				UpdatedOnUtc = new DateTime(2010, 01, 01)
             };
         }
     }

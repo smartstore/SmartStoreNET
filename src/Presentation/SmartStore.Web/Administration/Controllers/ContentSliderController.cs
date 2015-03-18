@@ -81,7 +81,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					var seoCode = _workContext.GetDefaultLanguageSeoCode();
+					var seoCode = _languageService.GetDefaultLanguageSeoCode();
 					slide.LanguageName = _languageService.GetLanguageBySeoCode(seoCode).Name;
 				}
 			}

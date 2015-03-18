@@ -1,0 +1,29 @@
+﻿@model PluginModel
+
+@{
+	ViewBag.Title = T("Admin.Common.Configure").Text + " - " + Model.FriendlyName;
+}
+
+<div class="section-header">
+	<div class="title">
+		<img src="@Url.Content(Model.IconUrl)" alt="@Model.FriendlyName" />
+		@ViewBag.Title <span class="subtitle muted">(@(Model.SystemName))</span>
+		<a href='@Url.Action("List")'>(@T("Admin.Common.BackToList"))</a>
+	</div>
+	<div class="options">
+		<a class="btn" href='@Url.Action("UpdateStringResources", new { systemName = Model.SystemName, returnUrl = Request.RawUrl })'>
+			<i class="fa fa-refresh"></i>
+			@T("Admin.Configuration.Plugins.Resources.Update")
+		</a>
+	</div>
+</div>
+
+@if (Model.ConfigurationRoute != null && Model.ConfigurationRoute.Action.HasValue())
+{
+	@Html.Action(Model.ConfigurationRoute.Action, Model.ConfigurationRoute.Controller, Model.ConfigurationRoute.RouteValues);
+}
+else
+{
+	@T("Admin.Common.ConfigurationNotRequired")
+}
+

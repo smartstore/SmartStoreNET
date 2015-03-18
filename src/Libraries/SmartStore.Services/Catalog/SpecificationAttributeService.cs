@@ -339,7 +339,7 @@ namespace SmartStore.Services.Catalog
 
 		/// <remarks>codehint: sm-add</remarks>
 		public virtual void UpdateProductSpecificationMapping(int specificationAttributeId, string field, bool value) {
-			if (specificationAttributeId == 0 || field.IsNullOrEmpty())
+			if (specificationAttributeId == 0 || field.IsEmpty())
 				return;
 
 			bool isAllowFiltering = field.IsCaseInsensitiveEqual("AllowFiltering");

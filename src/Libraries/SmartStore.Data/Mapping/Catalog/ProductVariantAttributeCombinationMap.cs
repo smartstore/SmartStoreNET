@@ -28,6 +28,11 @@ namespace SmartStore.Data.Mapping.Catalog
                 .WithMany()
                 .HasForeignKey(pvac => pvac.DeliveryTimeId)
                 .WillCascadeOnDelete(false);
+            this.HasOptional(pvac => pvac.QuantityUnit)
+                .WithMany()
+                .HasForeignKey(pvac => pvac.QuantityUnitId)
+                .WillCascadeOnDelete(false);
+
         }
     }
 }

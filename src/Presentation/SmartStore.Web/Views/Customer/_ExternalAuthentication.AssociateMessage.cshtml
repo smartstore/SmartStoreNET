@@ -6,8 +6,8 @@
 {
     <div class="alert alert-warning external-auth-association">
         @T("Account.AssociatedExternalAuth.YourAccountWillBeLinkedTo") <span class="identifier">@openAuthParameters.ExternalIdentifier</span>
-            <a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove">
-                (@T("Common.Remove"))
-            </a>            
+		<a href="@Url.Action("RemoveParameterAssociation", "ExternalAuthentication", new { ReturnUrl = Request.Url.ToString() })" class="remove" rel="nofollow">
+			(@T("Common.Remove"))
+		</a>            
     </div>
 }

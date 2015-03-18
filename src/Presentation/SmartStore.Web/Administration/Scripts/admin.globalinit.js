@@ -123,6 +123,9 @@
             var fitContentToWindow = function (initial) {
                 var content = $('#content');
 
+                if (!content.length)
+                	return;
+
                 var height = initialHeight = content.height(),
                              outerHeight,
                              winHeight = $(document).height(),

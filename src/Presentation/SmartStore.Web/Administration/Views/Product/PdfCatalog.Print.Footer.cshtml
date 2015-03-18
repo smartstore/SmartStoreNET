@@ -1,0 +1,19 @@
+﻿@model PrintableProductsModel
+@using SmartStore.Web.Framework.Pdf;
+@{
+	Layout = null;
+}
+
+<link rel="stylesheet" type="text/css" href="~/Content/print.css" />
+
+<hr />
+
+<div class="clearfix">
+	<div class="pull-right">
+		<span class="page"></span> von <span class="topage"></span>
+	</div>
+	<div class="title" style="text-align:center">
+        @Model.StoreName
+    </div>
+</div>
+

@@ -82,14 +82,13 @@ namespace SmartStore.Core.Logging
 			return null;
 		}
 
-		public Log InsertLog(LogContext context)
+		public void InsertLog(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
 			_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), context.ShortMessage));
-			return null;
 		}
 
-		public Log InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
+		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)
 		{
 			var context = new LogContext()
 			{
@@ -99,7 +98,7 @@ namespace SmartStore.Core.Logging
 				Customer = customer
 			};
 
-			return InsertLog(context);
+			InsertLog(context);
 		}
 
 		private TraceEventType LogLevelToEventType(LogLevel level)
@@ -117,6 +116,10 @@ namespace SmartStore.Core.Logging
 				default:
 					return TraceEventType.Information;
 			}
+		}
+
+		public void Flush()
+		{
 		}
 
 		protected override void OnDispose(bool disposing)

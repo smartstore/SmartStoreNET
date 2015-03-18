@@ -1,8 +1,0 @@
-﻿FriendlyName: Direct Debit
-SystemName: Payments.DirectDebit
-Group: Payment
-Version: 1.5
-MinAppVersion: 2.0.0
-DisplayOrder: 1
-FileName: SmartStore.Plugin.Payments.DirectDebit.dll
-ResourceRootKey: Plugins.Payments.DirectDebit

@@ -6,7 +6,7 @@ namespace SmartStore.Web.Framework.Seo
 {
     public static class GenericPathRouteExtensions
     {
-        //Override for localized route
+        //Override for generic route
         public static Route MapGenericPathRoute(this RouteCollection routes, string name, string url)
         {
             return MapGenericPathRoute(routes, name, url, null /* defaults */, (object)null /* constraints */);

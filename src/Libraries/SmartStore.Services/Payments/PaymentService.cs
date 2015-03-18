@@ -1,9 +1,9 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -79,7 +79,8 @@ namespace SmartStore.Services.Payments
 				}
 				else
 				{
-					throw Error.Application("At least one payment method provider is required to be active.");
+					if (DataSettings.DatabaseIsInstalled())
+						throw Error.Application("At least one payment method provider is required to be active.");
 				}
 			}
 
@@ -203,7 +204,7 @@ namespace SmartStore.Services.Payments
             if (paymentMethod == null)
                 return false; //Payment method couldn't be loaded (for example, was uninstalled)
 
-			if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection)
+			if (paymentMethod.Value.PaymentMethodType != PaymentMethodType.Redirection && paymentMethod.Value.PaymentMethodType != PaymentMethodType.StandardAndRedirection)
                 return false;   //this option is available only for redirection payment methods
 
             if (order.Deleted)
@@ -233,10 +234,10 @@ namespace SmartStore.Services.Payments
                 return decimal.Zero;
 
 			decimal result = paymentMethod.Value.GetAdditionalHandlingFee(cart);
-            if (result < decimal.Zero)
-                result = decimal.Zero;
+
             if (_shoppingCartSettings.RoundPricesDuringCalculation)
                 result = Math.Round(result, 2);
+
             return result;
         }
 

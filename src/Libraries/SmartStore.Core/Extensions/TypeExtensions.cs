@@ -353,8 +353,10 @@ namespace SmartStore
         public static object CreateGeneric(this Type genericTypeDefinition, Type[] innerTypes, Func<Type, object[], object> instanceCreator, params object[] args)
         {
             Guard.ArgumentNotNull(() => genericTypeDefinition);
-            Guard.ArgumentNotEmpty(() => innerTypes);
+            Guard.ArgumentNotNull(() => innerTypes);
             Guard.ArgumentNotNull(() => instanceCreator);
+			if (innerTypes.Length == 0)
+				throw Error.Argument("innerTypes", "The sequence must contain at least one entry.");
 
             Type specificType = genericTypeDefinition.MakeGenericType(innerTypes);
 

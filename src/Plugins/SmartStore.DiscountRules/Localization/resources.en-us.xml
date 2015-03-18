@@ -111,12 +111,6 @@
       <LocaleResource Name="Fields.LimitToCurrentBasketSubTotal.Hint">
         <Value>Specifies whether the amount refers to the current basket subtotal or - when unselected - to the sum of all previously incurred orders.</Value>
       </LocaleResource>
-      <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts">
-        <Value>Include discounts</Value>
-      </LocaleResource>
-      <LocaleResource Name="Fields.BasketSubTotalIncludesDiscounts.Hint">
-        <Value>When selected the specified amount is compared with the basket subtotal excluding all cart item discounts.</Value>
-      </LocaleResource>
     </Children>
   </LocaleResource>
 

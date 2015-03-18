@@ -9,8 +9,9 @@
         <ul data-role="listview" data-inset="true" data-filter="false">
             @foreach (var currency in Model.AvailableCurrencies)
             {
-                <li @(currency.Id == Model.CurrentCurrencyId ? " data-icon=false" : null)><a href="@Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id })" data-ajax="false">
-                    @currency.Name</a></li>
+                <li @(currency.Id == Model.CurrentCurrencyId ? " data-icon=false" : null)><a href="@Url.RouteUrl("ChangeCurrency", new { customercurrency = currency.Id })" data-ajax="false" rel="nofollow">
+	@currency.Name
+</a></li>
             }
         </ul>
     </div>

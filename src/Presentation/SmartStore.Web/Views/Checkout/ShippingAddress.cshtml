@@ -29,9 +29,9 @@
                         @<div class="item-box">
                             <div class="address-item">
                                 <div class="select-button">
-                                    <button class="btn btn-mini select-shipping-address-button"  onclick="setLocation('@Url.Action("SelectShippingAddress", new { addressId = item.Id })    ')">
-                                        @T("Checkout.ShipToThisAddress")
-                                    </button>
+									<button class="btn btn-block select-shipping-address-button" onclick="setLocation('@Url.Action("SelectShippingAddress", new { addressId = item.Id })    ')">
+										@T("Checkout.ShipToThisAddress")
+									</button>
                                 </div>
                                 <div class="address-box" data-equalized-part="address-box">
                                     <div class="name">

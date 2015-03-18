@@ -84,6 +84,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ComponentModel\ExpandoTests.cs" />
+    <Compile Include="TopologicSortTests.cs" />
     <Compile Include="WildcardTests.cs" />
     <Compile Include="Domain\Shipping\ShippingOptionListTypeConverterTests.cs" />
     <Compile Include="Domain\Stores\StoreExtensionsTests.cs" />

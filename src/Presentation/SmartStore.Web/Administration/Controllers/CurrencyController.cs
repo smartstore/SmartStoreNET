@@ -3,8 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
-using SmartStore.Admin.Models.Stores;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
@@ -96,29 +94,6 @@ namespace SmartStore.Admin.Controllers
 				else
 				{
 					model.SelectedStoreIds = new int[0];
-				}
-			}
-		}
-
-		[NonAction]
-		protected void SaveStoreMappings(Currency currency, CurrencyModel model)
-		{
-			var existingStoreMappings = _storeMappingService.GetStoreMappings(currency);
-			var allStores = _storeService.GetAllStores();
-			foreach (var store in allStores)
-			{
-				if (model.SelectedStoreIds != null && model.SelectedStoreIds.Contains(store.Id))
-				{
-					//new role
-					if (existingStoreMappings.Where(sm => sm.StoreId == store.Id).Count() == 0)
-						_storeMappingService.InsertStoreMapping(currency, store.Id);
-				}
-				else
-				{
-					//removed role
-					var storeMappingToDelete = existingStoreMappings.Where(sm => sm.StoreId == store.Id).FirstOrDefault();
-					if (storeMappingToDelete != null)
-						_storeMappingService.DeleteStoreMapping(storeMappingToDelete);
 				}
 			}
 		}
@@ -272,11 +247,14 @@ namespace SmartStore.Admin.Controllers
                 var currency = model.ToEntity();
                 currency.CreatedOnUtc = DateTime.UtcNow;
                 currency.UpdatedOnUtc = DateTime.UtcNow;
-                _currencyService.InsertCurrency(currency);
-                //locales
+                
+				_currencyService.InsertCurrency(currency);
+                
+				//locales
                 UpdateLocales(currency, model);
+				
 				//Stores
-				SaveStoreMappings(currency, model);
+				_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
@@ -331,18 +309,20 @@ namespace SmartStore.Admin.Controllers
 
             var currency = _currencyService.GetCurrencyById(model.Id);
             if (currency == null)
-                //No currency found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
                 currency = model.ToEntity(currency);
                 currency.UpdatedOnUtc = DateTime.UtcNow;
-                _currencyService.UpdateCurrency(currency);
-                //locales
+    
+				_currencyService.UpdateCurrency(currency);
+                
+				//locales
                 UpdateLocales(currency, model);
+				
 				//Stores
-				SaveStoreMappings(currency, model);
+				_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
@@ -365,7 +345,6 @@ namespace SmartStore.Admin.Controllers
 
             var currency = _currencyService.GetCurrencyById(id);
             if (currency == null)
-                //No currency found with the specified id
                 return RedirectToAction("List");
             
             try

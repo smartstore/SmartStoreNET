@@ -33,28 +33,8 @@
     </script>
 	@Html.Action("StoreScopeConfiguration", "Setting")
 	@Html.ValidationSummary(false)
-
+	
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.PicturesStoredIntoDatabase)
-            </td>
-            <td class="adminData">
-                @if (Model.PicturesStoredIntoDatabase)
-                {
-                    @T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database")
-                }
-                else
-                {
-                    @T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
-                }
-                
-            <button type="submit" name="change-picture-storage" value="change-picture-storage" class="btn">
-				<i class="fa fa-pencil"></i>&nbsp;@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Change")
-			</button>
-            NOTE: Do not forget to backup your database before changing this option.
-            </td>
-        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AvatarPictureSize)
@@ -183,4 +163,37 @@
             </td>
         </tr>
     </table>
+
+	<fieldset style="margin-top: 20px">
+		<legend>@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase")</legend>
+		<div>
+			<div class="alert alert-warning">
+				@T("Admin.Configuration.Settings.Media.MovePicturesNote")
+			</div>
+
+			<strong style="text-transform: capitalize">
+				@if (Model.PicturesStoredIntoDatabase)
+				{
+					@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Database")
+				}
+				else
+				{
+					@T("Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem")
+				}
+			</strong>
+
+			<button type="submit" name="change-picture-storage" value="change-picture-storage" class="btn" style="margin-left: 10px">
+				@if (Model.PicturesStoredIntoDatabase)
+				{
+					<i class="fa fa-fw fa-hdd-o"></i>
+					@T("Admin.Configuration.Settings.Media.MoveToFs")
+				}
+				else
+				{
+					<i class="fa fa-fw fa-database"></i>
+					@T("Admin.Configuration.Settings.Media.MoveToDb")
+				}
+			</button>
+		</div>
+	</fieldset>
 }

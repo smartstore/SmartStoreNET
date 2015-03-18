@@ -19,7 +19,7 @@
         <div class="options">
             @if (Model.DisplayPdfPackagingSlip)
             {
-                <a href="@Url.Action("PdfPackagingSlipAll")" class="btn">
+                <a href="@Url.Action("PdfPackagingSlips", new { all = true })" class="btn">
 					<i class="fa fa-print"></i>&nbsp;@T("Admin.Orders.Shipments.PrintPackagingSlip.All")
 				</a>
                 <button type="submit" id="exportpackagingslips-selected" class="btn">
@@ -28,7 +28,7 @@
             }
         </div>
     </div>
-    <table width="100%">
+    <table style="width: 100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.StartDate)
@@ -62,8 +62,9 @@
             </td>
         </tr>
     </table>
-     <p>
-    </p>
+	
+	<p></p>
+	
     <table class="adminContent">
         <tr>
             <td>
@@ -81,7 +82,11 @@
                             .HtmlAttributes(new { style = "text-align:center" })
                             .HeaderHtmlAttributes(new { style = "text-align:center" });
                             columns.Bound(x => x.Id);
-                            columns.Bound(x => x.OrderId);
+							columns.Bound(x => x.OrderId)
+								.Width(80)
+								.Centered()
+								.Template(x => Html.ActionLink(T("Admin.Common.View").Text, "Edit", "Order", new { id = x.OrderId }, new { }))
+								.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/Edit/") + "<#= OrderId #>\"><#= OrderId #></a>");
                             columns.Bound(x => x.TrackingNumber);
                             columns.Bound(x => x.TotalWeight);
                             columns.Bound(x => x.ShippedDate);
@@ -123,7 +128,7 @@
             $('#exportpackagingslips-selected').click(function (e) {
                 e.preventDefault();
                 //redirect to required URL
-                setLocation('@(Url.Action("PdfPackagingSlipSelected", "Order"))?selectedIds=' + selectedIds.join(","));
+                setLocation('@(Url.Action("PdfPackagingSlips"))?all=false&selectedIds=' + selectedIds.join(","));
                 return false;
             });
 

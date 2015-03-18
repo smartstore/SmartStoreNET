@@ -10,7 +10,7 @@ namespace SmartStore.Web.Models.Checkout
             PaymentMethods = new List<PaymentMethodModel>();
         }
 
-        public IList<PaymentMethodModel> PaymentMethods { get; set; }
+        public List<PaymentMethodModel> PaymentMethods { get; set; }
 
         public bool DisplayRewardPoints { get; set; }
         public int RewardPointsBalance { get; set; }
@@ -27,6 +27,8 @@ namespace SmartStore.Web.Models.Checkout
             public string BrandUrl { get; set; }
             public string Fee { get; set; }
             public bool Selected { get; set; }
+			public RouteInfo PaymentInfoRoute { get; set; }
+			public bool RequiresInteraction { get; set; }
         }
         #endregion
     }

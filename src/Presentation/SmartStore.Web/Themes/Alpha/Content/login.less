@@ -1,0 +1,112 @@
+//
+// Login & Registration Styles
+// --------------------------------------------------
+
+/* Login
+================================================ */
+
+.login-wrapper {
+	position: relative;
+	overflow: hidden;
+	margin: 20px 0;
+	.border-radius(4px);
+	border: 1px solid #ddd;
+	background-color: #fafafa;
+}
+
+.login-block .block {
+	margin: 0;
+}
+
+.login-block .block-body {
+	padding-bottom: 0;
+}
+
+.login-block-login form,
+.login-block .control-group:last-child {
+	margin-bottom: 0;
+}
+
+.login-block-register {
+	position: absolute;
+	padding: 0;
+	width: 50%;
+}
+
+.login-block-register .login-block-inner {
+	padding: 20px;
+}
+
+.login-block-login {	
+	position: relative;	
+	padding: 20px;
+	margin-left: 50%;
+	background-color: #fff;
+	.border-radius(0 3px 3px 0);
+	border-left: 1px solid #ccc;
+	.box-shadow(0 0 10px rgba(0,0,0, .2));
+		
+	.control-label {
+		width: 90px;
+		text-align: left;
+	}
+	
+	.controls {
+		margin-left: 100px;
+	}
+
+	.control-group.pwd {
+		margin-bottom: 10px;
+	}
+
+	.control-group.signin {
+		margin-bottom: 0;
+	}
+
+	.forgot-password {
+		margin-top: 4px;
+		font-size: 13px;
+	}
+
+	.captcha-box {
+		margin-top: 12px;
+		margin-bottom: 0;
+	}
+
+	.externalauthentication {
+		> * { margin-top: 10px }
+		> *:first-child { margin-top: 30px }
+	}
+
+	.login-credentials-bottom {
+		> * { margin-top: 10px }
+		> *:first-child { margin-top: 30px }
+	}
+}
+
+.btn-extauth {
+	text-align: left;
+	padding-left: 10px;
+}
+
+@media (max-width: 1200px) {
+	.login-block-login .signin .pull-right {
+		float: left;
+		margin-top: 8px;
+	}
+}
+
+
+/* Registration
+================================================ */
+
+.registration-page .buttons,
+.registration-result-page .buttons {
+	margin: 20px 0;
+	text-align: center;
+	padding-top: 20px;
+	border-top: 1px solid #ddd;
+	clear: both;
+}
+
+

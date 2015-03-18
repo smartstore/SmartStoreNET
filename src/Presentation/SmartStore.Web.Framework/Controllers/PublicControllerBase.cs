@@ -1,5 +1,6 @@
 ﻿using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Seo;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -12,6 +13,7 @@ namespace SmartStore.Web.Framework.Controllers
     [PublicStoreAllowNavigation]
     [LanguageSeoCodeAttribute]
     [RequireHttpsByConfigAttribute(SslRequirement.Retain)]
+	[CanonicalHostName]
     public abstract partial class PublicControllerBase : SmartController
     {
     }

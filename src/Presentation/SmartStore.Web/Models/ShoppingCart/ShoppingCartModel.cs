@@ -96,6 +96,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public bool IsShipEnabled { get; set; }
 
+            public string QuantityUnit { get; set; }
+
             public string DeliveryTimeName { get; set; }
             
             public string DeliveryTimeHexValue { get; set; }
@@ -188,6 +190,9 @@ namespace SmartStore.Web.Models.ShoppingCart
             public string ShippingMethod { get; set; }
 
             public string PaymentMethod { get; set; }
+			public string PaymentSummary { get; set; }
+
+			public bool IsPaymentSelectionSkipped { get; set; }
         }
 		#endregion
     }

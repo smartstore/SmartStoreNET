@@ -106,8 +106,9 @@
 			{
 				<span>@item.Quantity</span>
 			}
+            <span class="measure-unit">@item.QuantityUnit</span>
 		</td>
-		<td class="nobr text-success omega">
+		<td class="nobr omega">
 			<span class="product-subtotal">@item.SubTotal</span>
 			@if (!String.IsNullOrEmpty(item.Discount))
 			{
@@ -126,7 +127,7 @@
         
         <tr class="product-bundle-row">
             <td colspan="2">&nbsp;</td>
-            <td colspan="4" class="bundle-headline">
+            <td colspan="5" class="bundle-headline">
                 @T("Basket.Bundle.BundleIncludes")
             </td>
         </tr>
@@ -230,6 +231,11 @@
 <div class="order-summary-content">
 	@Html.Widget("order_summary_content_before")
 	@Html.Partial("_OrderReviewData", Model.OrderReviewData)
+   
+    @if (Model.DisplayCommentBox && !Model.IsEditable)
+    {
+        @Html.Partial("_CommentBox", Model)
+    }
 
     @if (!String.IsNullOrEmpty(Model.CheckoutAttributeInfo))
     {
@@ -315,12 +321,12 @@
 		if (Model.IsEditable)
 		{
 			<div class="common-buttons clearfix">
-				<button type="submit" name="continueshopping" value="continueshopping" class="btn pull-left continue-shopping-button">
-					<i class="fa fa-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
-				</button>
 				<button type="submit" name="updatecart" value="updatecart" class="btn pull-right update-cart-button">
 					<i class="fa fa-refresh"></i>&nbsp;@T("ShoppingCart.UpdateCart")
 				</button>
+                <button type="submit" name="continueshopping" value="continueshopping" class="btn pull-left continue-shopping-button">
+                    <i class="fa fa-caret-left"></i>&nbsp;@T("ShoppingCart.ContinueShopping")
+                </button>
 				<input type="submit" name="startcheckout" value="startcheckout" id="startcheckout" style="display: none;" />
 			</div>
 		}
@@ -345,13 +351,6 @@
 						@Html.Partial("EstimateShipping", Model.EstimateShipping)
 					</div>
 				}
-				else
-				{
-					if (Model.DisplayCommentBox)
-					{
-						@Html.Partial("_CommentBox", Model)
-					}
-				}
 			</div>
 
 			<!-- Totals -->
@@ -369,27 +368,29 @@
 
 				@if (Model.IsEditable)
 				{
-					<div class="checkout-buttons">
-						@if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
-						{
-							<button type="button" 
-									class="btn btn-primary btn-large pull-right checkout-button" 
-									id="checkout" 
-									name="checkout"
-									onclick="$('#startcheckout').trigger('click'); return false;">
-								@T("Checkout.Button")&nbsp;
-								<i class="fa fa-arrow-right" style="font-size: 18px"></i>
-							</button>
-						}
-					</div>
+                    if (String.IsNullOrEmpty(Model.MinOrderSubtotalWarning))
+					{
+					    <div class="checkout-buttons">
+						
+							    <button type="button" 
+									    class="btn btn-primary btn-large pull-right checkout-button" 
+									    id="checkout" 
+									    name="checkout"
+									    onclick="$('#startcheckout').trigger('click'); return false;">
+								    @T("Checkout.Button")&nbsp;
+								    <i class="fa fa-arrow-right" style="font-size: 18px"></i>
+							    </button>
+						
+					    </div>
                     
-					<div class="addon-buttons">
-						@*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
-						@foreach(var item in Model.ButtonPaymentMethods.Items)
-						{
-							@Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
-						}
-					</div>
+					    <div class="addon-buttons">
+						    @*Payment method buttons (e.g. GoogleCheckoutButton, Paypal Express, Pay with Amazon)*@
+						    @foreach(var item in Model.ButtonPaymentMethods.Items)
+						    {
+							    @Html.Action(item.ActionName, item.ControllerName, item.RouteValues)
+						    }
+					    </div>
+                    }
 				}
 			</div>
 		</div>

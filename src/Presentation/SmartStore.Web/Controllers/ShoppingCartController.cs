@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Html;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -33,13 +34,12 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Media;
 using SmartStore.Web.Models.ShoppingCart;
-using SmartStore.Core.Logging;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Web.Controllers
 {
@@ -81,7 +81,6 @@ namespace SmartStore.Web.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IDeliveryTimeService _deliveryTimeService;
 		private readonly HttpContextBase _httpContext;
-
         private readonly MediaSettings _mediaSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
@@ -91,6 +90,7 @@ namespace SmartStore.Web.Controllers
         private readonly CaptchaSettings _captchaSettings;
         private readonly AddressSettings _addressSettings;
 		private readonly PluginMediator _pluginMediator;
+        private readonly IQuantityUnitService _quantityUnitService;
 
         #endregion
 
@@ -120,8 +120,8 @@ namespace SmartStore.Web.Controllers
             CatalogSettings catalogSettings, OrderSettings orderSettings,
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
-			HttpContextBase httpContext,
-			PluginMediator pluginMediator)
+			HttpContextBase httpContext, PluginMediator pluginMediator,
+            IQuantityUnitService quantityUnitService)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -157,7 +157,6 @@ namespace SmartStore.Web.Controllers
 			this._genericAttributeService = genericAttributeService;
             this._deliveryTimeService = deliveryTimeService;
 			this._httpContext = httpContext;
-            
             this._mediaSettings = mediaSettings;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
@@ -167,6 +166,7 @@ namespace SmartStore.Web.Controllers
             this._captchaSettings = captchaSettings;
             this._addressSettings = addressSettings;
 			this._pluginMediator = pluginMediator;
+            this._quantityUnitService = quantityUnitService;
         }
 
         #endregion
@@ -273,13 +273,23 @@ namespace SmartStore.Web.Controllers
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml);
 			}
 
-			var deliveryTime = _deliveryTimeService.GetDeliveryTimeById(product.DeliveryTimeId.GetValueOrDefault());
-			if (deliveryTime != null)
+			if (product.DisplayDeliveryTimeAccordingToStock(_catalogSettings))
 			{
-				model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
-				model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				var deliveryTime = _deliveryTimeService.GetDeliveryTime(product);
+				if (deliveryTime != null)
+				{
+					model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
+					model.DeliveryTimeHexValue = deliveryTime.ColorHexValue;
+				}
 			}
 
+            //if show measure Unit
+            if (product.QuantityUnitId != null)
+            { 
+                var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+                if(quantityUnit != null)
+                    model.QuantityUnit = quantityUnit.GetLocalized(x => x.Name);
+            }
 
 			//allowed quantities
 			var allowedQuantities = product.ParseAllowedQuatities();
@@ -815,11 +825,17 @@ namespace SmartStore.Web.Controllers
 					if (shippingOption != null)
 						model.OrderReviewData.ShippingMethod = shippingOption.Name;
 				}
+
 				//payment info
 				var selectedPaymentMethodSystemName = _workContext.CurrentCustomer.GetAttribute<string>(
 					 SystemCustomerAttributeNames.SelectedPaymentMethod, _storeContext.CurrentStore.Id);
+
+				var checkoutState = _httpContext.GetCheckoutState();
 				var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(selectedPaymentMethodSystemName);
+
 				model.OrderReviewData.PaymentMethod = paymentMethod != null ? _pluginMediator.GetLocalizedFriendlyName(paymentMethod.Metadata) : "";
+				model.OrderReviewData.PaymentSummary = checkoutState.PaymentSummary;
+				model.OrderReviewData.IsPaymentSelectionSkipped = checkoutState.IsPaymentSelectionSkipped;
 			}
 			#endregion
 
@@ -967,9 +983,12 @@ namespace SmartStore.Web.Controllers
                     }
                     else
                     {
+						sci.Item.Product.MergeWithCombination(sci.Item.AttributesXml);
+
                         decimal taxRate = decimal.Zero;
                         decimal shoppingCartUnitPriceWithDiscountBase = _taxService.GetProductPrice(sci.Item.Product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate);
                         decimal shoppingCartUnitPriceWithDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartUnitPriceWithDiscountBase, _workContext.WorkingCurrency);
+
                         cartItemModel.UnitPrice = _priceFormatter.FormatPrice(shoppingCartUnitPriceWithDiscount);
                     }
 
@@ -1171,9 +1190,17 @@ namespace SmartStore.Web.Controllers
             }
 
             //now let's try adding product to the cart (now including product attribute validation, etc)
-			_shoppingCartService.AddToCart(addToCartWarnings, product, null, shoppingCartType, decimal.Zero, qtyToAdd, true);
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				CartType = shoppingCartType,
+				Quantity = qtyToAdd,
+				AddRequiredProducts = true
+			};
 
-            if (addToCartWarnings.Count > 0)
+			_shoppingCartService.AddToCart(addToCartContext);
+
+            if (addToCartContext.Warnings.Count > 0)
             {
                 //cannot be added to the cart
                 //but we do not display attribute and gift card warnings here. let's do it on the product details page
@@ -1238,7 +1265,6 @@ namespace SmartStore.Web.Controllers
 
             #region Quantity
 
-			// codehint: sm-edit
 			int quantity = 1;
 			string key1 = "addtocart_{0}.EnteredQuantity".FormatWith(productId);
 			string key2 = "addtocart_{0}.AddToCart.EnteredQuantity".FormatWith(productId);
@@ -1252,20 +1278,29 @@ namespace SmartStore.Web.Controllers
 
             //save item
             var cartType = (ShoppingCartType)shoppingCartTypeId;
-			var addToCartWarnings = new List<string>();
 
-			_shoppingCartService.AddToCart(addToCartWarnings, product, form, cartType, customerEnteredPriceConverted, quantity, true);
+			var addToCartContext = new AddToCartContext
+			{
+				Product = product,
+				AttributeForm = form,
+				CartType = cartType,
+				CustomerEnteredPrice = customerEnteredPriceConverted,
+				Quantity = quantity,
+				AddRequiredProducts = true
+			};
+
+			_shoppingCartService.AddToCart(addToCartContext);
 
             #region Return result
 
-            if (addToCartWarnings.Count > 0)
+            if (addToCartContext.Warnings.Count > 0)
             {
                 //cannot be added to the cart/wishlist
                 //let's display warnings
                 return Json(new
                 {
                     success = false,
-                    message = addToCartWarnings.ToArray()
+                    message = addToCartContext.Warnings.ToArray()
                 });
             }
 
@@ -1901,7 +1936,7 @@ namespace SmartStore.Web.Controllers
                 decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
                 decimal paymentMethodAdditionalFeeWithTaxBase = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, _workContext.CurrentCustomer);
 
-                if (paymentMethodAdditionalFeeWithTaxBase > decimal.Zero)
+                if (paymentMethodAdditionalFeeWithTaxBase != decimal.Zero)
                 {
                     decimal paymentMethodAdditionalFeeWithTax = _currencyService.ConvertFromPrimaryStoreCurrency(paymentMethodAdditionalFeeWithTaxBase, _workContext.WorkingCurrency);
                     model.PaymentMethodAdditionalFee = _priceFormatter.FormatPaymentMethodAdditionalFee(paymentMethodAdditionalFeeWithTax, true);
@@ -1930,14 +1965,17 @@ namespace SmartStore.Web.Controllers
                         {
                             displayTaxRates = _taxSettings.DisplayTaxRates && taxRates.Count > 0;
                             displayTax = !displayTaxRates;
-
+							
                             model.Tax = _priceFormatter.FormatPrice(shoppingCartTax, true, false);
                             foreach (var tr in taxRates)
                             {
-                                model.TaxRates.Add(new OrderTotalsModel.TaxRate()
+								var rate = _priceFormatter.FormatTaxRate(tr.Key);
+								var labelKey = "ShoppingCart.Totals.TaxRateLine" + (_workContext.TaxDisplayType == TaxDisplayType.IncludingTax ? "Incl" : "Excl");
+								model.TaxRates.Add(new OrderTotalsModel.TaxRate()
                                     {
-                                        Rate = _priceFormatter.FormatTaxRate(tr.Key),
+										Rate = rate,
                                         Value = _priceFormatter.FormatPrice(_currencyService.ConvertFromPrimaryStoreCurrency(tr.Value, _workContext.WorkingCurrency), true, false),
+										Label = _localizationService.GetResource(labelKey).FormatCurrent(rate)
                                     });
                             }
                         }
@@ -2518,10 +2556,6 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-        /// <summary>
-        /// <remarks>codehint: sm-add</remarks>
-        /// </summary>
-        /// <returns></returns>
         public ActionResult FlyoutWishlist()
         {
             Customer customer = _workContext.CurrentCustomer;
@@ -2552,7 +2586,7 @@ namespace SmartStore.Web.Controllers
                 }
             });
 
-            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber); // codehint: sm-add;
+            model.IgnoredProductsCount = Math.Max(0, cart.Count - _shoppingCartSettings.MiniShoppingCartProductNumber);
             model.ThumbSize = _mediaSettings.MiniCartThumbPictureSize;
 
             return PartialView(model);

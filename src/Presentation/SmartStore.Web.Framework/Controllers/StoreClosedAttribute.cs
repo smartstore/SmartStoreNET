@@ -16,7 +16,7 @@ namespace SmartStore.Web.Framework.Controllers
 		{
  			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Login"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CustomerController", "Logout"),
-			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "StoreClosed"),
+			new Tuple<string, string>("SmartStore.Web.Controllers.HomeController", "StoreClosed"),
 			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
 		};
 

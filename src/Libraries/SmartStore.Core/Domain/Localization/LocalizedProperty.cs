@@ -1,3 +1,4 @@
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Runtime.Serialization;
 
 namespace SmartStore.Core.Domain.Localization
@@ -12,24 +13,28 @@ namespace SmartStore.Core.Domain.Localization
         /// Gets or sets the entity identifier
         /// </summary>
 		[DataMember]
+		[Index("IX_LocalizedProperty_Compound", 1)]
 		public int EntityId { get; set; }
 
         /// <summary>
         /// Gets or sets the language identifier
         /// </summary>
 		[DataMember]
+		[Index("IX_LocalizedProperty_Compound", 4)]
 		public int LanguageId { get; set; }
 
         /// <summary>
         /// Gets or sets the locale key group
         /// </summary>
 		[DataMember]
+		[Index("IX_LocalizedProperty_Compound", 3)]
 		public string LocaleKeyGroup { get; set; }
 
         /// <summary>
         /// Gets or sets the locale key
         /// </summary>
 		[DataMember]
+		[Index("IX_LocalizedProperty_Compound", 2)]
 		public string LocaleKey { get; set; }
 
         /// <summary>

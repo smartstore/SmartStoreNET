@@ -89,6 +89,7 @@
 <head>
     <title>@Html.SmartTitle(true)</title>
     <meta http-equiv="Content-type" content="text/html;charset=UTF-8" />
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="description" content="@(Html.SmartMetaDescription())" />
     <meta name="keywords" content="@(Html.SmartMetaKeywords())" />
     <meta name="generator" content="SmartStore.NET @SmartStoreVersion.CurrentFullVersion" />
@@ -96,6 +97,7 @@
     @*This is used so that themes can inject content into the header*@
     @Html.Partial("Head")
 
+	@Html.MetaAcceptLanguage()
     @Html.Partial("_ClientRes")
 
     @Html.SmartCssFiles(this.Url, ResourceLocation.Head)
@@ -104,10 +106,12 @@
     @Html.Widget("head_html_tag")
 
     @Html.CanonicalUrls()
+	@Html.LinkRels()
     @Html.Action("RssHeaderLink", "News", new { area = "" })
     @Html.Action("RssHeaderLink", "Blog", new { area = "" })
     @*Favicon - upload favicon.ico or favicon-[StoreId].ico file either to the root web or your theme directory*@
     @Html.Action("Favicon", "Common", new { area = "" })
+	@Html.CustomHead()
     <!--Powered by SmartStore.net - http://www.smartstore.com-->
 </head>
 <body class="@Html.BodyCssClass()"@(Html.BodyId())>

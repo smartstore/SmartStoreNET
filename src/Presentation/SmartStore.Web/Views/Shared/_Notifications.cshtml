@@ -5,18 +5,12 @@
 	<script type="text/javascript">
         $(function () {
         	var items = $("#notification-list").find("> .msg");
-        	var titles = {
-        		info: undefined,
-        		success: undefined,
-        		warning: '@T("Common.Warning").Text',
-        		error: '@T("Common.Error").Text'
-        	};
             items.each(function (i, el) {
                 el = $(el);
                 var type = el.data("type");
                 var sticky = type != "success" && type != "info";
                 var notify = function () {
-                	EventBroker.publish("message", { title: titles[type], text: el.html(), type: type, hide: !sticky });
+                	EventBroker.publish("message", { text: el.html(), type: type, hide: !sticky });
                 };
                 _.delay(notify, 100 * i);
             });

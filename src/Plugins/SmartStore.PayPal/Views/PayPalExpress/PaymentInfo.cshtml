@@ -1,0 +1,22 @@
+﻿@{
+    Layout = "";
+    Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css"));
+}
+@model SmartStore.PayPal.Models.PayPalExpressPaymentInfoModel
+@using SmartStore.Web.Framework;
+
+@if (Model.CurrentPageIsBasket)
+{
+    <div id="paypal-checkout">
+        <div class="selection-text">
+            @T("Plugins.Payments.PayPalExpress.SelectionText")
+        </div>
+
+        <div class="form-horizontal">
+            <a href='@Url.Action("SubmitButton", "PayPalExpress", new { area = "SmartStore.PayPal" })'>
+                <img id="paypal-express-button" alt="" src="@Model.SubmitButtonImageUrl" />
+            </a>
+
+        </div>
+    </div>
+}

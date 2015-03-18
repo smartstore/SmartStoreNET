@@ -16,6 +16,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
+using System.Web;
 
 namespace SmartStore.Services.Messages
 {
@@ -31,10 +32,10 @@ namespace SmartStore.Services.Messages
         private readonly IMessageTokenProvider _messageTokenProvider;
 		private readonly IStoreService _storeService;
 		private readonly IStoreContext _storeContext;
-
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly IEventPublisher _eventPublisher;
         private readonly IWorkContext _workContext;
+        private readonly HttpRequestBase _httpRequest;
 
         #endregion
 
@@ -48,7 +49,8 @@ namespace SmartStore.Services.Messages
 			IStoreContext storeContext,
             EmailAccountSettings emailAccountSettings,
             IEventPublisher eventPublisher,
-            IWorkContext workContext)
+            IWorkContext workContext,
+            HttpRequestBase httpRequest)
         {
             this._messageTemplateService = messageTemplateService;
             this._queuedEmailService = queuedEmailService;
@@ -58,10 +60,10 @@ namespace SmartStore.Services.Messages
             this._messageTokenProvider = messageTokenProvider;
 			this._storeService = storeService;
 			this._storeContext = storeContext;
-
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
             this._workContext = workContext;
+            _httpRequest = httpRequest;
         }
 
         #endregion
@@ -82,10 +84,12 @@ namespace SmartStore.Services.Messages
             var bcc = messageTemplate.GetLocalized((mt) => mt.BccEmailAddresses, languageId);
             var subject = messageTemplate.GetLocalized((mt) => mt.Subject, languageId);
             var body = messageTemplate.GetLocalized((mt) => mt.Body, languageId);
-
+			
             // Replace subject and body tokens 
             var subjectReplaced = _tokenizer.Replace(subject, tokens, false);
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
+			
+            bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
 
             var email = new QueuedEmail()
             {
@@ -950,7 +954,7 @@ namespace SmartStore.Services.Messages
             var toEmail = returnRequest.Customer.FindEmail();
             var toName = returnRequest.Customer.GetFullName();
 
-			if (toEmail.IsNullOrEmpty())
+			if (toEmail.IsEmpty())
 				return 0;
 
             return SendNotification(messageTemplate, emailAccount, languageId, tokens, toEmail, toName);

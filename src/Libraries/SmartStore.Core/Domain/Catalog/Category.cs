@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
@@ -14,6 +15,7 @@ namespace SmartStore.Core.Domain.Catalog
     /// Represents a category
     /// </summary>
     [DataContract]
+	[DebuggerDisplay("{Id}: {Name} (Parent: {ParentCategoryId})")]
 	public partial class Category : BaseEntity, ISoftDeletable, ILocalizedEntity, ISlugSupported, IAclSupported, IStoreMappingSupported
     {
         private ICollection<Discount> _appliedDiscounts;
@@ -162,18 +164,19 @@ namespace SmartStore.Core.Domain.Catalog
         public DateTime UpdatedOnUtc { get; set; }
 
         /// <summary>
+        /// Gets or sets the date and time of instance update
+        /// </summary>
+        [DataMember]
+        public string DefaultViewMode { get; set; }
+
+        /// <summary>
         /// Gets or sets the collection of applied discounts
         /// </summary>
 		[DataMember]
 		public virtual ICollection<Discount> AppliedDiscounts
         {
-            get { return _appliedDiscounts ?? (_appliedDiscounts = new List<Discount>()); }
+            get { return _appliedDiscounts ?? (_appliedDiscounts = new HashSet<Discount>()); }
             protected set { _appliedDiscounts = value; }
-        }
-
-        public override string ToString()
-        {
-            return string.Format( "{0}: {1} (Parent: {2})", this.Id, this.Name, this.ParentCategoryId);
         }
     }
 }

@@ -26,6 +26,7 @@ namespace SmartStore.Admin.Models.Catalog
             }
             Locales = new List<CategoryLocalizedModel>();
             AvailableCategoryTemplates = new List<SelectListItem>();
+            AvailableDefaultViewModes = new List<SelectListItem>();
         }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Name")]
@@ -117,14 +118,15 @@ namespace SmartStore.Admin.Models.Catalog
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }
 
-        // codehint: sm-edit
         public string ParentCategoryBreadcrumb { get; set; }
-
 
         //discounts
         public List<Discount> AvailableDiscounts { get; set; }
         public int[] SelectedDiscountIds { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
+        public string DefaultViewMode { get; set; }
+        public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
 
         #region Nested classes
 
@@ -217,4 +219,5 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string SeName { get; set; }
     }
+
 }

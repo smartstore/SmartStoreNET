@@ -76,7 +76,7 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public virtual ICollection<GiftCardUsageHistory> GiftCardUsageHistory
         {
-            get { return _giftCardUsageHistory ?? (_giftCardUsageHistory = new List<GiftCardUsageHistory>()); }
+			get { return _giftCardUsageHistory ?? (_giftCardUsageHistory = new HashSet<GiftCardUsageHistory>()); }
             protected set { _giftCardUsageHistory = value; }
         }
         

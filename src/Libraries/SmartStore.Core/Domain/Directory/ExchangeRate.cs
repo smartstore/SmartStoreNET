@@ -1,10 +1,12 @@
 using System;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Domain.Directory
 {
     /// <summary>
     /// Represents an exchange rate
     /// </summary>
+	[DebuggerDisplay("{CurrencyCode} {Rate}")]
     public partial class ExchangeRate
     {
         /// <summary>
@@ -31,15 +33,6 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
         public DateTime UpdatedOn { get; set; }
 
-        
-        /// <summary>
-        /// Format the rate into a string with the currency code, e.g. "USD 0.72543"
-        /// </summary>
-        /// <returns></returns>
-        public override string ToString()
-        {
-            return string.Format("{0} {1}", this.CurrencyCode, this.Rate);
-        }
     }
 
 }

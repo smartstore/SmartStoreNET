@@ -1,0 +1,59 @@
+﻿@using SmartStore.Web.Framework;
+
+@model SmartStore.AmazonPay.Models.AmazonPayViewModel
+
+@{
+	Html.AddCssFileParts(true, Url.Content("~/Plugins/SmartStore.AmazonPay/Content/smartstore.amazonpay.css"));
+}
+
+<div class="order-review-data-box">
+	<div class="row-fluid">
+
+		@if (Model.IsShippable)
+		{
+			<div class="amazon-pay-address-widget span12">
+				<div class="block block-bordered">
+					<div class="block-title">
+						<span>@T("Order.ShippingAddress")</span>
+						<a class="change-checkout-data pull-right" href='@Url.Action("ShippingAddress", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+					</div>
+					<div class="block-body">
+						<div id="@(Model.GetWidgetId)Address"></div>
+					</div>
+				</div>
+			</div>
+		}
+		
+		<div class="amazon-pay-wallet-widget span12">
+			<div class="block block-bordered">
+				<div class="block-title">
+					<span>@T("Order.PaymentMethod")</span>
+					<a class="change-checkout-data pull-right" href='@Url.Action("PaymentMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+				</div>
+				<div class="block-body">
+					<div id="@(Model.GetWidgetId)Wallet"></div>
+				</div>
+			</div>
+		</div>
+
+	</div>
+
+    @if (Model.ShippingMethod.HasValue())
+    {
+        <div class="shipping-method">
+            <div class="block block-bordered">
+                <div class="block-title">
+                    <span>@T("Order.ShippingMethod")</span>
+                    <a class="change-checkout-data pull-right" href='@Url.Action("ShippingMethod", "Checkout", new { area = "" })'>@T("Common.Change")</a>
+                </div>
+                <div class="block-body">
+                    @Model.ShippingMethod
+                </div>
+            </div>
+        </div>
+    }
+</div>
+
+<div class="clear"></div>
+
+@Html.Partial("ScriptingReadWidgets", Model)

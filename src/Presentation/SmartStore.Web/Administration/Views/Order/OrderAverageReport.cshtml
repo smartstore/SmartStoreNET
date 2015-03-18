@@ -47,7 +47,16 @@
                 @foreach (var x in Model)
                 {
                     <tr>
-                        <td>@x.OrderStatus</td>
+                        <td>
+							@if (x.Url.HasValue())
+							{
+								<a href="@x.Url">@x.OrderStatus</a>
+							}
+							else
+							{
+								@x.OrderStatus
+							}
+						</td>
                         <td>@x.SumThisWeekOrders</td>
                         <td>@x.SumThisMonthOrders</td>
                         <td>@x.SumThisYearOrders</td>

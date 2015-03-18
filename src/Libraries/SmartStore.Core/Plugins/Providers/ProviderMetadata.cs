@@ -68,6 +68,14 @@ namespace SmartStore.Core.Plugins
 		public bool IsEditable { get; set; }
 
 		/// <summary>
+		/// Gets or sets an array of widget system names, which depend on the current provider
+		/// </summary>
+		/// <remarks>
+		/// Dependent widgets get automatically (de)activated when their parent providers get (de)activated
+		/// </remarks>
+		public string[] DependentWidgets { get; set; }
+
+		/// <summary>
 		/// Gets or sets the <see cref="PluginDescriptor"/> instance in which the provider is implemented
 		/// </summary>
 		/// <remarks>The value is <c>null</c>, if the provider is part of the application core</remarks>

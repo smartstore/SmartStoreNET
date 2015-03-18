@@ -40,7 +40,7 @@ namespace SmartStore
             {
 				if (node != null) 
                 {
-					if (xpath.IsNullOrEmpty())
+					if (xpath.IsEmpty())
 						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(node.InnerText);
 
 					XmlNode n = node.SelectSingleNode(xpath);

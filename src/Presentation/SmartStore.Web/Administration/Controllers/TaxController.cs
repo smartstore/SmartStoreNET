@@ -68,6 +68,7 @@ namespace SmartStore.Admin.Controllers
                 {
                     _taxSettings.ActiveTaxProviderSystemName = systemName;
                     _settingService.SaveSetting(_taxSettings);
+					_pluginMediator.ActivateDependentWidgets(taxProvider.Metadata, true);
                 }
             }
 			
@@ -75,14 +76,18 @@ namespace SmartStore.Admin.Controllers
 				.Select(x => 
 				{
 					var model = _pluginMediator.ToProviderModel<ITaxProvider, TaxProviderModel>(x);
+					if (x.Metadata.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase))
+					{
+						model.IsPrimaryTaxProvider = true;
+					}
+					else
+					{
+						_pluginMediator.ActivateDependentWidgets(x.Metadata, false);
+					}
+
 					return model; 
 				})
 				.ToList();
-
-			foreach (var tpm in taxProviderModels)
-			{
-				tpm.IsPrimaryTaxProvider = tpm.SystemName.Equals(_taxSettings.ActiveTaxProviderSystemName, StringComparison.InvariantCultureIgnoreCase);
-			}
 
 			return View(taxProviderModels);
         }

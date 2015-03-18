@@ -14,7 +14,8 @@ namespace SmartStore.Core.Domain.Seo
 			DefaultMetaKeywords = "";
 			DefaultMetaDescription = "";
 			AllowUnicodeCharsInUrls = true;
-			ReservedUrlRecordSlugs = new List<string>() { "admin", "install", "recentlyviewedproducts", "newproducts", "compareproducts", "clearcomparelist", "setproductreviewhelpfulness", "login", "register", "logout", "cart", "wishlist", "emailwishlist", "checkout", "onepagecheckout", "contactus", "passwordrecovery", "subscribenewsletter", "blog", "boards", "inboxupdate", "sentupdate", "news", "sitemap", "sitemapseo", "search", "config", "api", "odata" };
+			CanonicalHostNameRule = Seo.CanonicalHostNameRule.NoRule;
+			ReservedUrlRecordSlugs = new List<string>() { "admin", "install", "recentlyviewedproducts", "newproducts", "compareproducts", "clearcomparelist", "setproductreviewhelpfulness", "login", "register", "logout", "cart", "wishlist", "emailwishlist", "checkout", "contactus", "passwordrecovery", "subscribenewsletter", "blog", "boards", "inboxupdate", "sentupdate", "news", "sitemap", "sitemapseo", "search", "config", "api", "odata" };
 			ExtraRobotsDisallows = new List<string>();
 		}
 		
@@ -28,6 +29,7 @@ namespace SmartStore.Core.Domain.Seo
         public bool AllowUnicodeCharsInUrls { get; set; }
 
         public bool CanonicalUrlsEnabled { get; set; }
+		public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
 
         /// <summary>
         /// Slugs (sename) reserved for some other needs

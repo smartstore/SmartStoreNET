@@ -1,4 +1,6 @@
 ﻿@{
-    Html.AppendCssFileParts(Url.Content("~/Themes/Mobile/Content/jquery.mobile-1.3.2.min.css"));
-    Html.AppendCssFileParts(Url.Content("~/Themes/Mobile/Content/styles.css"));
+	Html.AppendCssFileParts(
+		"~/Themes/Mobile/Content/jquery.mobile.structure-1.3.2.css", 
+		"~/Themes/Mobile/Content/jquery.mobile.theme-1.3.2.css");
+    Html.AppendCssFileParts("~/Themes/Mobile/Content/styles.css");
 }

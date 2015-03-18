@@ -12,6 +12,7 @@ using Log = SmartStore.Core.Logging;
 using NuGet;
 using NuGetPackageManager = NuGet.PackageManager;
 using SmartStore.Core.Data;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Packaging
 {
@@ -23,7 +24,9 @@ namespace SmartStore.Core.Packaging
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 		private TraceLogger _logger;
 
-		public bool TryUpdate()
+		#region Package update
+
+		public bool TryUpdateFromPackage()
 		{
 			// NEVER EVER (!!!) make an attempt to auto-update in a dev environment!!!!!!!
 			if (CommonHelper.IsDevEnvironment)
@@ -115,7 +118,7 @@ namespace SmartStore.Core.Packaging
 			if (package.Id != "SmartStore")
 				return false;
 			
-			var currentVersion = new SemanticVersion(SmartStoreVersion.FullVersion);
+			var currentVersion = new SemanticVersion(SmartStoreVersion.Version);
 			return package.Version > currentVersion;
 		}
 
@@ -189,6 +192,130 @@ namespace SmartStore.Core.Packaging
 
 			return info;
 		}
+
+		#endregion
+
+
+		#region Migrations
+
+		public void ExecuteMigrations()
+		{
+			if (!DataSettings.DatabaseIsInstalled())
+				return;
+
+			var currentVersion = SmartStoreVersion.Version;
+			var prevVersion = DataSettings.Current.AppVersion ?? new Version(1, 0);
+
+			if (prevVersion >= currentVersion)
+				return;
+
+			if (prevVersion < new Version(2, 1))
+			{
+				// we introduced app migrations in V2.1. So any version prior 2.1
+				// has to perform the initial migration
+				MigrateInitial();
+			}
+
+			DataSettings.Current.AppVersion = currentVersion;
+			DataSettings.Current.Save();
+		}
+
+		private void MigrateInitial()
+		{
+			var installedPlugins = PluginFileParser.ParseInstalledPluginsFile();
+			if (installedPlugins.Count == 0)
+				return;
+
+			var renamedPlugins = new List<string>();
+			
+			var pluginRenameMap = new Dictionary<string, string>
+			{
+				{ "CurrencyExchange.ECB", null /* null means: remove it */ },	
+				{ "CurrencyExchange.MoneyConverter", null },
+				{ "ExternalAuth.OpenId", null },
+				{ "Tax.Free", null },
+				{ "Api.WebApi", "SmartStore.WebApi" },	
+				{ "DiscountRequirement.MustBeAssignedToCustomerRole", "SmartStore.DiscountRules" },
+				{ "DiscountRequirement.HadSpentAmount", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.HasAllProducts", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.HasOneProduct", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.Store", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.BillingCountryIs", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.ShippingCountryIs", "SmartStore.DiscountRules" },	
+				{ "DiscountRequirement.HasPaymentMethod", "SmartStore.DiscountRules.HasPaymentMethod" },	
+				{ "DiscountRequirement.HasShippingOption", "SmartStore.DiscountRules.HasShippingOption" },	
+				{ "DiscountRequirement.PurchasedAllProducts", "SmartStore.DiscountRules.PurchasedProducts" },
+				{ "DiscountRequirement.PurchasedOneProduct", "SmartStore.DiscountRules.PurchasedProducts" },
+				{ "PromotionFeed.Froogle", "SmartStore.GoogleMerchantCenter" },
+				{ "PromotionFeed.Billiger", "SmartStore.Billiger" },
+				{ "PromotionFeed.ElmarShopinfo", "SmartStore.ElmarShopinfo" },
+				{ "PromotionFeed.Guenstiger", "SmartStore.Guenstiger" },
+				{ "Payments.AccardaKar", "SmartStore.AccardaKar" },
+				{ "Payments.AmazonPay", "SmartStore.AmazonPay" },
+				{ "Developer.DevTools", "SmartStore.DevTools" },
+				{ "ExternalAuth.Facebook", "SmartStore.FacebookAuth" },
+				{ "ExternalAuth.Twitter", "SmartStore.TwitterAuth" },
+				{ "SMS.Clickatell", "SmartStore.Clickatell" },
+				{ "Widgets.GoogleAnalytics", "SmartStore.GoogleAnalytics" },
+				{ "Misc.DemoShop", "SmartStore.DemoShopControlling" },
+				{ "Admin.OrderNumberFormatter", "SmartStore.OrderNumberFormatter" },
+				{ "Admin.Debitoor", "SmartStore.Debitoor" },
+                { "Widgets.ETracker", "SmartStore.ETracker" },
+                { "Payments.PayPalDirect", "SmartStore.PayPal" },
+                { "Payments.PayPalStandard", "SmartStore.PayPal" },
+                { "Payments.PayPalExpress", "SmartStore.PayPal" },
+				{ "Developer.Glimpse", "SmartStore.Glimpse" },
+				{ "Import.Biz", "SmartStore.BizImporter" },
+				{ "Payments.Sofortueberweisung", "SmartStore.Sofortueberweisung" },
+				{ "Payments.PostFinanceECommerce", "SmartStore.PostFinanceECommerce" },
+				{ "Misc.MailChimp", "SmartStore.MailChimp" },
+				{ "Mobile.SMS.Verizon", "SmartStore.Verizon" },
+				{ "Widgets.LivePersonChat", "SmartStore.LivePersonChat" },
+				{ "Payments.CashOnDelivery", "SmartStore.OfflinePayment" },
+				{ "Payments.Invoice", "SmartStore.OfflinePayment" },
+				{ "Payments.PayInStore", "SmartStore.OfflinePayment" },
+				{ "Payments.Prepayment", "SmartStore.OfflinePayment" },
+                { "Payments.IPaymentCreditCard", "SmartStore.IPayment" },
+                { "Payments.IPaymentDirectDebit", "SmartStore.IPayment" },
+                { "Payments.AuthorizeNet", "SmartStore.AuthorizeNet" },
+                { "Shipping.AustraliaPost", "SmartStore.AustraliaPost" },
+                { "Shipping.CanadaPost", "SmartStore.CanadaPost" },
+                { "Shipping.Fedex", "SmartStore.Fedex" },
+                { "Shipping.UPS", "SmartStore.UPS" },
+				{ "Payments.Manual", "SmartStore.OfflinePayment" },
+                { "Shipping.USPS", "SmartStore.USPS" },
+                { "Widgets.TrustedShopsSeal", "SmartStore.TrustedShops" },
+                { "Widgets.TrustedShopsCustomerReviews", "SmartStore.TrustedShops" },
+                { "Widgets.TrustedShopsCustomerProtection", "SmartStore.TrustedShops" },
+                { "Shipping.ByWeight", "SmartStore.ShippingByWeight" },
+				{ "Payments.DirectDebit", "SmartStore.OfflinePayment" },
+				{ "Tax.FixedRate", "SmartStore.Tax" },
+				{ "Tax.CountryStateZip", "SmartStore.Tax" },
+                { "Shipping.ByTotal", "SmartStore.Shipping" },
+                { "Shipping.FixedRate", "SmartStore.Shipping" }
+			};
+
+			foreach (var name in installedPlugins)
+			{
+				if (pluginRenameMap.ContainsKey(name))
+				{
+					string newName = pluginRenameMap[name];
+					if (newName != null && !renamedPlugins.Contains(newName))
+					{
+						renamedPlugins.Add(newName);
+					}
+				}
+				else
+				{
+					renamedPlugins.Add(name);
+				}
+			}
+
+			PluginFileParser.SaveInstalledPluginsFile(renamedPlugins);
+		}
+
+		#endregion
+
 
 		protected override void OnDispose(bool disposing)
 		{

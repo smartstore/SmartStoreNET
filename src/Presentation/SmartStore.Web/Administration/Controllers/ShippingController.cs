@@ -106,23 +106,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
-			if (srcm.IsShippingRateComputationMethodActive(_shippingSettings))
+			bool dirty = srcm.IsShippingRateComputationMethodActive(_shippingSettings) != activate;
+			if (dirty)
 			{
 				if (!activate)
-				{
-					// mark as disabled
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Remove(srcm.Metadata.SystemName);
-					_settingService.SaveSetting(_shippingSettings);
-				}
-			}
-			else
-			{
-				if (activate)
-				{
-					// mark as active
+				else
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
-					_settingService.SaveSetting(_shippingSettings);
-				}
+
+				_settingService.SaveSetting(_shippingSettings);
+				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
 			}
 
 			return RedirectToAction("Providers");

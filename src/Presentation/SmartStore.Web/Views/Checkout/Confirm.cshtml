@@ -20,7 +20,7 @@
         <h1>@T("Checkout.ConfirmYourOrder")</h1>
     </div>
     <div class="page-body checkout-data">
-        @using (Html.BeginForm(new { id = "confirm-order-form" }))
+        @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "confirm-order-form" }))
         {
             @Html.Widget("checkout_confirm_top")
             <div class="page-intro">
@@ -35,10 +35,10 @@
                 <script type="text/javascript">
                     $(document).ready(function () {
                         $("#terms-of-service-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" scrolling="yes" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "conditionsofUse" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                         $("#disclaimer-trigger").click(function () {
-                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" frameBorder="0" />');
+                            $("#terms-of-service-modal .modal-body").html('<iframe id="iframe-terms-of-service" src="@Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" })" width="800" scrolling="yes" style="min-height:400px" frameBorder="0" />');
                         });
                     });
                 </script>
@@ -48,8 +48,8 @@
                 </label>
 
                 <!-- Terms of service -->
-                <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1">
-                    <div class="modal-body"></div>
+                <div id="terms-of-service-modal" class="modal hide fade" tabindex="-1" style="width: 650px">
+                    <div class="modal-body" style="min-height: 300px;overflow:hidden"></div>
                     <div class="modal-footer">
                         <button class="btn" data-dismiss="modal">@T("Common.Confirm")</button>
                     </div>
@@ -83,7 +83,7 @@
             </div>  
         }
         
-        @Html.Widget("checkout_confirm_bottom")
+        @Html.Widget("checkout_confirm_before_summary")
 
         <div class="order-summary-body">
             @Html.Action("OrderSummary", "ShoppingCart", new { prepareAndDisplayOrderReviewData = true })
@@ -107,7 +107,8 @@
                 {
                     <script type="text/javascript">
                         $(function () {
-                            $('.confirm-order-next-step-button').click(function () {
+                            var checkoutButton = $(".confirm-order-next-step-button");
+                            checkoutButton.click(function () {
 
                                 $("#customercommenthidden").val($("#CustomerComment").val());
 
@@ -116,35 +117,50 @@
                                 @if (Model.TermsOfServiceEnabled)
                                 {
                                         <text>
-                                if (!$('#termsofservice').is(':checked')) {
-                                    displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
-                                    termOfServiceOk = false;
-                                    $.scrollTo($('#termsofservice'), 800, { offset: -70 });
-                                }
-                                else {
-                                    termOfServiceOk = true;
-                                }
+                                    if (!$('#termsofservice').is(':checked')) {
+                                        displayNotification('@T("Checkout.TermsOfService.PleaseAccept").ToString().EncodeJsString()', "error");
+                                        termOfServiceOk = false;
+                                        $.scrollTo($('#termsofservice'), 800, { offset: -70 });
+                                    }
+                                    else {
+                                        termOfServiceOk = true;
+                                    }
                                         </text>
                                 }
-                                if (termOfServiceOk) {
-                                    //$('#startcheckout').trigger("click");
-                                    $('#confirm-order-form').submit();
+								
+                            	if (termOfServiceOk) {
+                            		var submitOrderEvent = jQuery.Event('submitOrder');
+                            		submitOrderEvent.isOrderValid = true;
+                            		submitOrderEvent.isMobile = false;
+
+                            		$(this).trigger(submitOrderEvent);
+
+                            		if (true === submitOrderEvent.isOrderValid) {
+                            			checkoutButton.attr("disabled", "disabled");
+                            			checkoutButton.find(".fa-caret-right")
+											.removeClass("fa-caret-right")
+											.addClass("fa-spinner fa-spin");
+
+                            			$('#confirm-order-form').submit();
+                            		}
                                 }
                             });
                         });
                     </script>
                     
-                    <a class="btn pull-left" href="@Url.Action(Model.BypassPaymentMethodInfo ? "PaymentMethod" : "PaymentInfo")">
+                    <a class="btn pull-left" href="@Url.Action("PaymentMethod")">
                         <i class="fa fa-caret-left"></i>&nbsp;
                         @T("Common.Back")
                     </a>
                     
                     <button class="btn btn-danger btn-large pull-right confirm-order-next-step-button" onclick="return false;" >
                         @T("Checkout.ConfirmButton")
-                        &nbsp;<i class="fa fa-caret-right"></i> 
+                        &nbsp;<i class="fa fa-fw fa-caret-right"></i> 
                     </button>
                 }
             </div>
         </div>
+
+		@Html.Widget("checkout_confirm_bottom")
     </div>
 </div>

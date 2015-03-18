@@ -31,6 +31,7 @@ using System.Data.Entity.Migrations;
 using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -84,7 +85,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             foreach (var id in taxIds)
             {
                 decimal rate = 0;
-                if (_data.FixedTaxRates.HasItems() && _data.FixedTaxRates.Length > i)
+                if (_data.FixedTaxRates.Any() && _data.FixedTaxRates.Length > i)
                 {
                     rate = _data.FixedTaxRates[i];
                 }
@@ -131,72 +132,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 				// already without AutoDetectChanges(), so it's fast.
 			}
 
-			ExecutePendingResourceMigrations(locPath);
+			MigratorUtils.ExecutePendingResourceMigrations(locPath, _ctx);
         }
-
-		private void ExecutePendingResourceMigrations(string resPath)
-		{
-			string headPath = Path.Combine(resPath, "head.txt");
-			if (!File.Exists(headPath))
-				return;
-
-			string resHead = File.ReadAllText(headPath);
-			if (!MigratorUtils.IsValidMigrationId(resHead))
-				return;
-			
-			var migrator = new DbMigrator(new MigrationsConfiguration());
-			var migrations = GetPendingResourceMigrations(migrator, resHead);
-
-			foreach (var id in migrations)
-			{
-				if (MigratorUtils.IsAutomaticMigration(id))
-					continue;
-
-				if (!MigratorUtils.IsValidMigrationId(id))
-					continue;
-
-				// Resolve and instantiate the DbMigration instance from the assembly
-				var migration = MigratorUtils.CreateMigrationInstanceByMigrationId(id, migrator.Configuration);
-
-				var provider = migration as ILocaleResourcesProvider;
-				if (provider == null)
-					continue;
-
-				var builder = new LocaleResourcesBuilder();
-				provider.MigrateLocaleResources(builder);
-				
-				var resEntries = builder.Build();
-				var resMigrator = new LocaleResourcesMigrator(_ctx);
-				resMigrator.Migrate(resEntries);
-			}
-		}
-
-		private IEnumerable<string> GetPendingResourceMigrations(DbMigrator migrator, string resHead)
-		{
-			var local = migrator.GetLocalMigrations();
-			var atHead = false;
-
-			if (local.Last().IsCaseInsensitiveEqual(resHead))
-				yield break;
-
-			foreach (var id in local)
-			{
-				if (!atHead)
-				{
-					if (!id.IsCaseInsensitiveEqual(resHead))
-					{
-						continue;
-					}
-					else
-					{
-						atHead = true;
-						continue;
-					}
-				}
-
-				yield return id;
-			}
-		}
 
 		private void PopulateCurrencies()
         {
@@ -232,9 +169,11 @@ namespace SmartStore.Web.Infrastructure.Installation
                 LastActivityDateUtc = DateTime.UtcNow,
             };
 
-            adminUser.Addresses.Add(_data.AdminAddress());
-            adminUser.BillingAddress = _data.AdminAddress();
-            adminUser.ShippingAddress = _data.AdminAddress();
+            var adminAddress = _data.AdminAddress();
+
+            adminUser.Addresses.Add(adminAddress);
+            adminUser.BillingAddress = adminAddress;
+            adminUser.ShippingAddress = adminAddress;
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Administrators));
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.ForumModerators));
             adminUser.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Registered));
@@ -245,7 +184,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
 			_ctx.SaveChanges();
 
-            // search engine (crawler) built-in user
+			// Built-in user for search engines (crawlers)
             var customer = _data.SearchEngineUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
@@ -254,6 +193,11 @@ namespace SmartStore.Web.Infrastructure.Installation
             customer = _data.BackgroundTaskUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
+
+			// Built-in user for the PDF converter
+			customer = _data.PdfConverterUser();
+			customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+			Save(customer);
         }
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)
@@ -532,7 +476,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullEventPublisher.Instance,
 						mediaSettings,
 						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper, null, null));
+						new ImageCache(mediaSettings, webHelper, null, null),
+						new Notifier());
 				}
 
 				return _pictureService;
@@ -552,6 +497,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
+					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
@@ -561,7 +508,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						this.SettingService,
 						locSettings,
 						NullEventPublisher.Instance,
-						storeMappingService);
+						storeMappingService,
+						storeService,
+						storeContext);
 
 					_locService = new LocalizationService(
 						NullCache.Instance,

@@ -18,7 +18,7 @@ namespace SmartStore.Data.Tests.Catalog
                 MetaKeywords = "Meta keywords",
                 MetaDescription = "Meta description",
                 MetaTitle = "Meta title",
-                PictureId = 3,
+                //PictureId = 3,
                 PageSize = 4,
                 AllowCustomersToSelectPageSize = true,
                 PageSizeOptions = "4, 2, 8, 12",
@@ -37,7 +37,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.Description.ShouldEqual("Description 1");
             fromDb.MetaKeywords.ShouldEqual("Meta keywords");
             fromDb.MetaDescription.ShouldEqual("Meta description");
-            fromDb.PictureId.ShouldEqual(3);
+            //fromDb.PictureId.ShouldEqual(3);
             fromDb.PageSize.ShouldEqual(4);
             fromDb.AllowCustomersToSelectPageSize.ShouldEqual(true);
             fromDb.PageSizeOptions.ShouldEqual("4, 2, 8, 12");

@@ -65,8 +65,9 @@
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac.Integration.Mvc">
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.0\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+    <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -89,7 +90,7 @@
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Newtonsoft.Json.6.0.1\lib\net45\Newtonsoft.Json.dll</HintPath>
+      <HintPath>..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
     <Reference Include="NuGet.Core, Version=2.8.50126.400, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -106,30 +107,31 @@
     </Reference>
     <Reference Include="System.Runtime.Caching" />
     <Reference Include="System.Runtime.Serialization" />
+    <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.1.2\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.1.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.1.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -151,8 +153,16 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Data\ITransaction.cs" />
+    <Compile Include="Domain\Directory\QuantityUnit.cs" />
+    <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
+    <Compile Include="Extensions\IOExtensions.cs" />
+    <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="IActivatable.cs" />
+    <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
+    <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IUserEditable.cs" />
     <Compile Include="Plugins\Providers\IProvider.cs" />
@@ -269,7 +279,6 @@
     <Compile Include="Packaging\PackagingUtils.cs" />
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
-    <Compile Include="Collections\ThreadSafeList.cs" />
     <Compile Include="Collections\TreeNode.cs" />
     <Compile Include="ComponentModel\Expando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />
@@ -337,6 +346,9 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="Themes\DefaultThemeRegistry.cs" />
+    <Compile Include="Themes\ThemeFolderData.cs" />
+    <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
     <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
@@ -417,7 +429,6 @@
     <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
     <Compile Include="Infrastructure\ValueObject.cs" />
-    <Compile Include="Collections\IPersistentCollection.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -482,7 +493,6 @@
     <Compile Include="IPageable.cs" />
     <Compile Include="Linq\LinqContainsPredicateBuilder.cs" />
     <Compile Include="Linq\PredicateBuilder.cs" />
-    <Compile Include="Collections\PersistentCollection.cs" />
     <Compile Include="Plugins\BasePlugin.cs" />
     <Compile Include="Plugins\IPreApplicationStart.cs" />
     <Compile Include="Plugins\PluginFileParser.cs" />
@@ -529,7 +539,7 @@
     <Compile Include="Themes\IThemeRegistry.cs" />
     <Compile Include="Themes\ThemeManifest.cs" />
     <Compile Include="Themes\ThemeManifestMaterializer.cs" />
-    <Compile Include="Themes\ThemeSwitchedMessage.cs" />
+    <Compile Include="Themes\ThemeSwitchedEvent.cs" />
     <Compile Include="Themes\ThemeVariableInfo.cs" />
     <Compile Include="Themes\ThemeVariableType.cs" />
     <Compile Include="Utilities\ActionDisposable.cs" />

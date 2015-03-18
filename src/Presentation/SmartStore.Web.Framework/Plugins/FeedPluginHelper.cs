@@ -472,7 +472,7 @@ namespace SmartStore.Web.Framework.Plugins
 			var pictureService = PictureService;
 			var picture = product.GetDefaultProductPicture(pictureService);
 
-			//always use HTTP when getting image URL
+			// always use HTTP when getting image URL
 			if (picture != null)
 				url = pictureService.GetPictureUrl(picture, BaseSettings.ProductPictureSize, storeLocation: store.Url);
 			else

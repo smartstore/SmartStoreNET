@@ -27,6 +27,7 @@
 * Minor UI tweaks in checkout process
 
 ### Bugfixes
+* Instant search box did not display all results when SQL Fulltext Search was enabled
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
 * #598 Wrong input parameter name for ReturnRequestSubmit

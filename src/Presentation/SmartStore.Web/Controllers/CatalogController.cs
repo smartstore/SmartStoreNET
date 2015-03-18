@@ -1221,7 +1221,7 @@ namespace SmartStore.Web.Controllers
 
 			//products
 			var productNumber = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ?
-				_catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10;
+				_catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 16;
 
 			var ctx = new ProductSearchContext();
 			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;

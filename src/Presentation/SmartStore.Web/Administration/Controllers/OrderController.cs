@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Orders;

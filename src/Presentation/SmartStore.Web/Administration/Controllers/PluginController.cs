@@ -395,19 +395,13 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var item in model.Licenses)
 			{
-				var existingLicense = LicenseChecker.GetLicense(systemName, item.StoreUrl);
-
-				// user emptied or changed the key
-				if (existingLicense != null && (item.LicenseKey.IsEmpty() || item.LicenseKey != existingLicense.TruncatedLicenseKey))
-					LicenseChecker.RemoveLicense(systemName, item.StoreUrl);
-
-				// cases where nothing to do anymore
-				if (item.LicenseKey.IsEmpty() || (existingLicense != null && item.LicenseKey == existingLicense.TruncatedLicenseKey))
-					continue;
-
 				var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);
 
-				if (result.Success)
+				if (result == null)
+				{
+					// do nothing, skiped
+				}
+				else if (result.Success)
 				{
 					NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
 				}

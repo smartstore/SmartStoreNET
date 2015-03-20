@@ -16,6 +16,8 @@
 * (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 
 ### Improvements
+* The data grid in the backend now preserves client state between requests (page, pageSize, sorting, filtering etc.)
+* Some important edit screens (product, order etc.) now link back to the referrer page instead of the list
 * Excel Import & Export: much lower memory consumption and increased performance
 * Moving pictures from DB to FS or vice versa is lightning fast now, consumes much lower memory and is encapsulated in a transaction which ensures reliable rollback after failure. Plus the database gets automatically shrinked after moving to FS.
 * Feed plugins: product query now paged to reduce memory payload

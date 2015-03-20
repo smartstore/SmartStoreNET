@@ -17,5 +17,16 @@ namespace SmartStore.Web.Framework
                 return urlHelper.Action("Logout", "Customer", new { ReturnUrl = returnUrl, area = "" });
 			return urlHelper.Action("Logout", "Customer", new { area = "" });
         }
+
+		public static string Referrer(this UrlHelper urlHelper, string fallbackUrl = "")
+		{
+			var request = urlHelper.RequestContext.HttpContext.Request;
+			if (request.UrlReferrer != null && request.UrlReferrer.ToString().HasValue())
+			{
+				return request.UrlReferrer.ToString();
+			}
+
+			return fallbackUrl;
+		}
     }
 }

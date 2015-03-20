@@ -7,7 +7,8 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Catalog.Manufacturers.EditManufacturerDetails") - @Model.Name @Html.ActionLink("(" + T("Admin.Catalog.Manufacturers.BackToList") + ")", "List")
+            @T("Admin.Catalog.Manufacturers.EditManufacturerDetails") - @Model.Name 
+			<a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Catalog.Manufacturers.BackToList"))</a>
         </div>
         <div class="options">
             <button type="button" onclick="OpenWindow('@Url.RouteUrl("Manufacturer", new { SeName = Model.SeName })', 800, 600, true); return false;" class="btn">

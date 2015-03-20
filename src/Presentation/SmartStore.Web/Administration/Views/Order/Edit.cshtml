@@ -9,7 +9,8 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
+            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber 
+			<a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
             <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">

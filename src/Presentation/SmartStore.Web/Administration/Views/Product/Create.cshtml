@@ -7,7 +7,7 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Catalog.Products.AddNew") @Html.ActionLink("(" + T("Admin.Catalog.Products.BackToList") + ")", "List")
+            @T("Admin.Catalog.Products.AddNew") <a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Catalog.Products.BackToList"))</a>
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary entity-commit-trigger" data-commit-type="product" data-commit-action="insert" data-commit-id="@Model.Id">

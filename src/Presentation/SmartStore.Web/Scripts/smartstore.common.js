@@ -132,8 +132,6 @@
 				href = $(this).data("statepreserver-href"),
 				gridId = $(this).data("statepreserver-key");
 
-			console.log("Grid_dataBound", gridId);
-
 			if (href) {
 				$.ajax({
 					type: "POST",

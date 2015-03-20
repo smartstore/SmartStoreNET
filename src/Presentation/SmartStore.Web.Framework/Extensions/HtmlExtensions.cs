@@ -126,6 +126,25 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(script + window);
         }
 
+		public static MvcHtmlString SmartLabel(this HtmlHelper helper, string expression, string labelText, string hint = null, object htmlAttributes = null)
+		{
+			var result = new StringBuilder();
+
+			var label = helper.Label(expression, labelText, htmlAttributes);
+
+			result.Append("<div class='ctl-label'>");
+			{
+				result.Append(label);
+				if (hint.HasValue())
+				{
+					result.Append(helper.Hint(hint).ToHtmlString());
+				}
+			}
+			result.Append("</div>");
+
+			return MvcHtmlString.Create(result.ToString());
+		}
+
         public static MvcHtmlString SmartLabelFor<TModel, TValue>(this HtmlHelper<TModel> helper, Expression<Func<TModel, TValue>> expression, bool displayHint = true, object htmlAttributes = null)
         {
             var result = new StringBuilder();
@@ -183,11 +202,6 @@ namespace SmartStore.Web.Framework
 			}
 
             return MvcHtmlString.Create(result.ToString());
-        }
-
-        public static MvcHtmlString SmartLabel<TModel>(this HtmlHelper<TModel> helper, string resourceKey, bool displayHint = true)
-        {
-            return null;
         }
 
         public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)

@@ -1,18 +1,13 @@
 ﻿using System.Collections.Generic;
-using System.Linq;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Admin.Models.Payments;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
+using SmartStore.Services;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
-using SmartStore.Services.Localization;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
@@ -22,12 +17,10 @@ namespace SmartStore.Admin.Controllers
 	{
 		#region Fields
 
+		private readonly ICommonServices _commonServices;
         private readonly IPaymentService _paymentService;
         private readonly PaymentSettings _paymentSettings;
-        private readonly ISettingService _settingService;
-        private readonly IPermissionService _permissionService;
         private readonly IPluginFinder _pluginFinder;
-        private readonly ILocalizationService _localizationService;
 		private readonly PluginMediator _pluginMediator;
 
 		#endregion
@@ -35,20 +28,16 @@ namespace SmartStore.Admin.Controllers
 		#region Constructors
 
         public PaymentController(
+			ICommonServices commonServices,
 			IPaymentService paymentService, 
 			PaymentSettings paymentSettings,
-            ISettingService settingService, 
-			IPermissionService permissionService,
             IPluginFinder pluginFinder, 
-			ILocalizationService localizationService,
 			PluginMediator pluginMediator)
 		{
+			this._commonServices = commonServices;
             this._paymentService = paymentService;
             this._paymentSettings = paymentSettings;
-            this._settingService = settingService;
-            this._permissionService = permissionService;
             this._pluginFinder = pluginFinder;
-            this._localizationService = localizationService;
 			this._pluginMediator = pluginMediator;
 		}
 
@@ -58,7 +47,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Providers()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
                 return AccessDeniedView();
 
             var paymentMethodsModel = new List<PaymentMethodModel>();
@@ -72,7 +61,7 @@ namespace SmartStore.Admin.Controllers
 				model.SupportPartiallyRefund = instance.SupportPartiallyRefund;
 				model.SupportRefund = instance.SupportRefund;
 				model.SupportVoid = instance.SupportVoid;
-				model.RecurringPaymentType = instance.RecurringPaymentType.GetLocalizedEnum(_localizationService);
+				model.RecurringPaymentType = instance.RecurringPaymentType.GetLocalizedEnum(_commonServices.Localization);
                 paymentMethodsModel.Add(model);
             }
 
@@ -81,19 +70,23 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ActivateProvider(string systemName, bool activate)
 		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
 
 			var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
-			bool dirty = pm.IsPaymentMethodActive(_paymentSettings) != activate;
-			if (dirty)
+
+			if (activate && !pm.Value.IsActive)
+			{
+				NotifyWarning(_commonServices.Localization.GetResource("Admin.Configuration.Payment.CannotActivatePaymentMethod"));
+			}
+			else
 			{
 				if (!activate)
 					_paymentSettings.ActivePaymentMethodSystemNames.Remove(pm.Metadata.SystemName);
 				else
 					_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.Metadata.SystemName);
 
-				_settingService.SaveSetting(_paymentSettings);
+				_commonServices.Settings.SaveSetting(_paymentSettings);
 				_pluginMediator.ActivateDependentWidgets(pm.Metadata, activate);
 			}
 

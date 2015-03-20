@@ -67,6 +67,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Plugins.LicensingResetStatusCheck",
 				"Renew check",
 				"Prüfung erneuern");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.CannotActivatePaymentMethod",
+				"Activating this payment method is forbidden by the plugin.",
+				"Das Plugin erlaubt keine Aktivierung dieser Zahlungsmethode.");
 		}
     }
 }

@@ -61,10 +61,10 @@ namespace SmartStore.Admin.Models.Plugins
 			{
 				if (RemainingDemoUsageDays.HasValue)
 				{
-					if (RemainingDemoUsageDays <= 5)
+					if (RemainingDemoUsageDays <= 3)
 						return "label-important";
 
-					if (RemainingDemoUsageDays <= 10)
+					if (RemainingDemoUsageDays <= 6)
 						return "label-warning";
 				}
 				return "label-success";

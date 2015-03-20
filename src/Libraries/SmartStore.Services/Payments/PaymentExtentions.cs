@@ -28,6 +28,9 @@ namespace SmartStore.Services.Payments
             if (paymentSettings.ActivePaymentMethodSystemNames == null)
                 return false;
 
+			if (!paymentMethod.Value.IsActive)
+				return false;
+
 			return paymentSettings.ActivePaymentMethodSystemNames.Contains(paymentMethod.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
 

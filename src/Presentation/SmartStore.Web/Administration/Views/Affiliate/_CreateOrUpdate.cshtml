@@ -76,6 +76,7 @@
                     {
                         dataBinding.Ajax().Select("AffiliatedCustomerList", "Affiliate", new { affiliateId = Model.Id });
                     })
+					.PreserveGridState()
                     .EnableCustomBinding(true))
 }
 
@@ -101,5 +102,6 @@
                     {
                         dataBinding.Ajax().Select("AffiliatedOrderList", "Affiliate", new { affiliateId = Model.Id });
                     })
+					.PreserveGridState()
                     .EnableCustomBinding(true))
 }

@@ -50,6 +50,7 @@
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("LowStockReportList", "Product"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
             </td>
         </tr>

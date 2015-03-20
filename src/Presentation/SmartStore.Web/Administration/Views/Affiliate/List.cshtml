@@ -42,6 +42,7 @@
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Affiliate"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

@@ -217,6 +217,7 @@
                     })
                     .Pageable(settings => settings.Total(Model.Customers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("CustomerList", "Customer"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
             </td>
         </tr>

@@ -42,71 +42,75 @@ namespace SmartStore.Web.Framework
 
 			var urlHelper = new UrlHelper(grid.ViewContext.RequestContext);
 
+			var gridId = "GridState." + grid.Id + "__" + grid.ViewContext.RouteData.GenerateRouteIdentifier();
+
 			grid.AppendCssClass("grid-preservestate");
 			grid.HtmlAttributes.Add("data-statepreserver-href", urlHelper.Action("SetGridState", "Common", new { area = "admin" }));
+			grid.HtmlAttributes.Add("data-statepreserver-key", gridId);
 			
 			// Try restore state from a previous request
-			var info = (GridStateInfo)grid.ViewContext.TempData["GridState." + grid.Id];
-			if (info != null && info.Path.Equals(grid.ViewContext.HttpContext.Request.Path, StringComparison.OrdinalIgnoreCase))
-			{
-				//// persist again for the next request
-				//grid.ViewContext.TempData["GridState." + grid.Id] = info;
-				
-				var state = info.State;
-				var command = GridCommand.Parse(state.Page, state.Size, state.OrderBy, state.GroupBy, state.Filter);
+			var info = (GridStateInfo)grid.ViewContext.TempData[gridId];
 
-				if (grid.Paging.Enabled)
+			if (info == null)
+				return builder;
+				
+			var state = info.State;
+			var command = GridCommand.Parse(state.Page, state.Size, state.OrderBy, state.GroupBy, state.Filter);
+
+			if (grid.Paging.Enabled)
+			{
+				var pathChanged = !info.Path.Equals(grid.ViewContext.HttpContext.Request.RawUrl, StringComparison.OrdinalIgnoreCase);
+				if (!pathChanged)
 				{
 					if (command.PageSize > 0)
-					{
 						grid.Paging.PageSize = command.PageSize;
-					}
 					if (command.Page > 0)
-					{
 						grid.Paging.CurrentPage = command.Page;
-					}
-				}
-
-				if (grid.Sorting.Enabled)
-				{
-					foreach (var sort in command.SortDescriptors)
-					{
-						var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
-						if (existingSort != null)
-						{
-							grid.Sorting.OrderBy.Remove(existingSort);
-						}
-						grid.Sorting.OrderBy.Add(sort);
-					}
-				}
-
-				if (grid.Grouping.Enabled)
-				{
-					foreach (var group in command.GroupDescriptors)
-					{
-						var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
-						if (existingGroup != null)
-						{
-							grid.Grouping.Groups.Remove(existingGroup);
-						}
-						grid.Grouping.Groups.Add(group);
-					}
-				}
-
-				if (grid.Filtering.Enabled)
-				{
-					foreach (var filter in command.FilterDescriptors)
-					{
-						var compositeFilter = filter as CompositeFilterDescriptor;
-						if (compositeFilter == null)
-						{
-							compositeFilter = new CompositeFilterDescriptor { LogicalOperator = FilterCompositionLogicalOperator.And };
-							compositeFilter.FilterDescriptors.Add(filter);
-						}
-						grid.Filtering.Filters.Add(compositeFilter);
-					}
 				}
 			}
+
+			if (grid.Sorting.Enabled)
+			{
+				foreach (var sort in command.SortDescriptors)
+				{
+					var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
+					if (existingSort != null)
+					{
+						grid.Sorting.OrderBy.Remove(existingSort);
+					}
+					grid.Sorting.OrderBy.Add(sort);
+				}
+			}
+
+			if (grid.Grouping.Enabled)
+			{
+				foreach (var group in command.GroupDescriptors)
+				{
+					var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
+					if (existingGroup != null)
+					{
+						grid.Grouping.Groups.Remove(existingGroup);
+					}
+					grid.Grouping.Groups.Add(group);
+				}
+			}
+
+			if (grid.Filtering.Enabled)
+			{
+				foreach (var filter in command.FilterDescriptors)
+				{
+					var compositeFilter = filter as CompositeFilterDescriptor;
+					if (compositeFilter == null)
+					{
+						compositeFilter = new CompositeFilterDescriptor { LogicalOperator = FilterCompositionLogicalOperator.And };
+						compositeFilter.FilterDescriptors.Add(filter);
+					}
+					grid.Filtering.Filters.Add(compositeFilter);
+				}
+			}
+
+			// persist again for the next request
+			grid.ViewContext.TempData[gridId] = info;
 
 			return builder;
 		}

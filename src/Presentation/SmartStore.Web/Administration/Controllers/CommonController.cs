@@ -294,7 +294,7 @@ namespace SmartStore.Admin.Controllers
 			if (gridId.HasValue() && state != null && path.HasValue())
 			{
 				var info = new GridStateInfo { State = state, Path = path };
-				TempData["GridState." + gridId] = info;
+				TempData[gridId] = info;
 			}
 			return Json(new { Success = true });
 		}

@@ -37,5 +37,17 @@ namespace SmartStore
 			return null;
 		}
 
+		/// <summary>
+		/// Generates an identifier for the given route in the form "[{area}.]{controller}.{action}"
+		/// </summary>
+		public static string GenerateRouteIdentifier(this RouteData routeData)
+		{	
+			string area = routeData.GetAreaName();
+			string controller = routeData.GetRequiredString("controller");
+			string action = routeData.GetRequiredString("action");
+
+			return "{0}{1}.{2}".FormatInvariant(area.HasValue() ? area + "." : "", controller, action);
+		}
+
 	}
 }

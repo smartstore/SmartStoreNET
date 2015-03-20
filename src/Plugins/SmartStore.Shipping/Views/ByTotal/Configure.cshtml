@@ -56,6 +56,7 @@
                     })
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .Editable(x => x.Mode(GridEditMode.InLine))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

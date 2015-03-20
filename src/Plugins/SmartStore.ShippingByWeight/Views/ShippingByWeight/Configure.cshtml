@@ -53,6 +53,7 @@
                             .Delete("RateDelete", "ShippingByWeight", new RouteValueDictionary() { { "area", "SmartStore.ShippingByWeight" } });
                     })
 					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

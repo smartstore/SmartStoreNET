@@ -1374,46 +1374,41 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData t-widget t-grid" style="padding:0;">
+            <td class="adminData" style="padding:0;">
 
-                <table id="OrderItemTable" class="table">
-                    <thead class="t-grid-header">
+                <table id="OrderItemTable" class="table table-bordered table-striped">
+                    <thead>
                         <tr>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.ProductName")
                             </th>
                             @if (Model.HasDownloadableProducts)
                             {
-                                <th class="t-header">
+                                <th>
                                     @T("Admin.Orders.Products.Download")
                                 </th>
                             }
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Price")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Quantity")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Discount")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Total")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Common.Edit")
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            var j = 0;
-                        }
                         @foreach (var item in Model.Items)
                         {
-                            j++;
-                            
-                            <tr class="@(j % 2 == 0 ? "t-alt": "")">
+                            <tr>
                                 <td style="width: 25%;vertical-align: top">
                                     <div>
                                         @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)

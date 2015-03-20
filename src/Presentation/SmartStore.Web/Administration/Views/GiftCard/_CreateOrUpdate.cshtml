@@ -213,6 +213,7 @@
                     {
                         dataBinding.Ajax().Select("UsageHistoryList", "GiftCard", new { giftCardId = Model.Id });
                     })
+					.PreserveGridState()
                     .EnableCustomBinding(true))
     
 }

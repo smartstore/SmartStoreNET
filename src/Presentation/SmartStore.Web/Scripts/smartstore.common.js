@@ -129,9 +129,10 @@
 		// Telerik grid smart AJAX state preserving
 		$('.t-grid.grid-preservestate').on('dataBound', function (e) {
 			var grid = $(this).data("tGrid"),
-				href = $(this).data("statepreserver-href");
+				href = $(this).data("statepreserver-href"),
+				gridId = $(this).data("statepreserver-key");
 
-			console.log("GridLoad", grid);
+			console.log("Grid_dataBound", gridId);
 
 			if (href) {
 				$.ajax({
@@ -139,8 +140,8 @@
 					url: href,
 					async: true,
 					data: {
-						gridId: $(this).attr('id'),
-						path: location.pathname,
+						gridId: gridId,
+						path: location.pathname + location.search,
 						page: grid.currentPage,
 						size: grid.pageSize,
 						orderBy: grid.orderBy,

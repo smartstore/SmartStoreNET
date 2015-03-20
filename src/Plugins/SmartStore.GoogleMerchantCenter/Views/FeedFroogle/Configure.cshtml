@@ -524,6 +524,7 @@
 						.Select("GoogleProductList", "FeedFroogle");
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+				.PreserveGridState()
 				.EnableCustomBinding(true)
 			)
         </td>

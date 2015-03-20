@@ -49,54 +49,62 @@ namespace SmartStore.Web.Framework
 			var info = (GridStateInfo)grid.ViewContext.TempData["GridState." + grid.Id];
 			if (info != null && info.Path.Equals(grid.ViewContext.HttpContext.Request.Path, StringComparison.OrdinalIgnoreCase))
 			{
-				// persist again for the next request
-				grid.ViewContext.TempData["GridState." + grid.Id] = info;
+				//// persist again for the next request
+				//grid.ViewContext.TempData["GridState." + grid.Id] = info;
 				
 				var state = info.State;
 				var command = GridCommand.Parse(state.Page, state.Size, state.OrderBy, state.GroupBy, state.Filter);
-				if (command.PageSize > 0)
-				{
-					grid.Paging.PageSize = command.PageSize;
-				}
-				if (command.Page > 0)
-				{
-					grid.Paging.CurrentPage = command.Page;
-				}
 
-				foreach (var sort in command.SortDescriptors)
+				if (grid.Paging.Enabled)
 				{
-					var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
-					if (existingSort != null)
+					if (command.PageSize > 0)
 					{
-						grid.Sorting.OrderBy.Remove(existingSort);
+						grid.Paging.PageSize = command.PageSize;
 					}
-					grid.Sorting.OrderBy.Add(sort);
-				}
-
-				if (command.GroupDescriptors.Any())
-				{
-					grid.Grouping.Groups.AddRange(command.GroupDescriptors);
-				}
-
-				foreach (var group in command.GroupDescriptors)
-				{
-					var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
-					if (existingGroup != null)
+					if (command.Page > 0)
 					{
-						grid.Grouping.Groups.Remove(existingGroup);
+						grid.Paging.CurrentPage = command.Page;
 					}
-					grid.Grouping.Groups.Add(group);
 				}
 
-				foreach (var filter in command.FilterDescriptors) 
+				if (grid.Sorting.Enabled)
 				{
-					var compositeFilter = filter as CompositeFilterDescriptor;
-					if (compositeFilter == null)
+					foreach (var sort in command.SortDescriptors)
 					{
-						compositeFilter = new CompositeFilterDescriptor { LogicalOperator = FilterCompositionLogicalOperator.And };
-						compositeFilter.FilterDescriptors.Add(filter);
+						var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
+						if (existingSort != null)
+						{
+							grid.Sorting.OrderBy.Remove(existingSort);
+						}
+						grid.Sorting.OrderBy.Add(sort);
 					}
-					grid.Filtering.Filters.Add(compositeFilter);
+				}
+
+				if (grid.Grouping.Enabled)
+				{
+					foreach (var group in command.GroupDescriptors)
+					{
+						var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
+						if (existingGroup != null)
+						{
+							grid.Grouping.Groups.Remove(existingGroup);
+						}
+						grid.Grouping.Groups.Add(group);
+					}
+				}
+
+				if (grid.Filtering.Enabled)
+				{
+					foreach (var filter in command.FilterDescriptors)
+					{
+						var compositeFilter = filter as CompositeFilterDescriptor;
+						if (compositeFilter == null)
+						{
+							compositeFilter = new CompositeFilterDescriptor { LogicalOperator = FilterCompositionLogicalOperator.And };
+							compositeFilter.FilterDescriptors.Add(filter);
+						}
+						grid.Filtering.Filters.Add(compositeFilter);
+					}
 				}
 			}
 

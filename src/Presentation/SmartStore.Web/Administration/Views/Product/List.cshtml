@@ -207,7 +207,8 @@
                     .Pageable(settings => settings.Total(Model.Products.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
                     .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-                    .EnableCustomBinding(true))
+                    .EnableCustomBinding(true)
+					.PreserveGridState())
             </td>
         </tr>
     </table>

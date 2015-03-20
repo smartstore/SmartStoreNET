@@ -33,6 +33,7 @@ using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
 using System.Reflection;
 using Autofac;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -283,6 +284,17 @@ namespace SmartStore.Admin.Controllers
 			{
 				var info = new SelectedTabInfo { TabId = tabId, Path = path };
 				TempData["SelectedTab." + navId] = info;
+			}
+			return Json(new { Success = true });
+		}
+
+		[HttpPost]
+		public JsonResult SetGridState(string gridId, GridState state, string path)
+		{
+			if (gridId.HasValue() && state != null && path.HasValue())
+			{
+				var info = new GridStateInfo { State = state, Path = path };
+				TempData["GridState." + gridId] = info;
 			}
 			return Json(new { Success = true });
 		}

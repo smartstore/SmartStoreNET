@@ -423,7 +423,12 @@ td.adminData > input[type="checkbox"] {
 }
 
 .t-grid-filter {
-	margin-top: -1.6em;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	margin-top: -8px;
 }
 
 .t-link:hover {
@@ -434,12 +439,13 @@ td.adminData > input[type="checkbox"] {
 	font-size: 12px;
 	text-transform: uppercase;
 	font-weight: bold !important;
-	padding-top: 0.6em !important;
-	padding-bottom: 0.6em !important;
+	padding: 0 !important;
+	position: relative;
 }
 
 .t-grid-header .t-header .t-link {
-    width: 100%;
+	margin: 0;
+	padding: 0.6em;
 }
 
 .t-grid-pager,
@@ -502,10 +508,6 @@ hr {
 label.forcheckbox {
     margin: 0 0 0 .4em;
     display: inline;
-}
-
-a:hover {
-    font-weight: normal;
 }
 
 /* SECTION HEADERS */

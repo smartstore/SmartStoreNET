@@ -126,6 +126,32 @@
 			}		
 		});
 
+		// Telerik grid smart AJAX state preserving
+		$('.t-grid.grid-preservestate').on('dataBound', function (e) {
+			var grid = $(this).data("tGrid"),
+				href = $(this).data("statepreserver-href");
+
+			console.log("GridLoad", grid);
+
+			if (href) {
+				$.ajax({
+					type: "POST",
+					url: href,
+					async: true,
+					data: {
+						gridId: $(this).attr('id'),
+						path: location.pathname,
+						page: grid.currentPage,
+						size: grid.pageSize,
+						orderBy: grid.orderBy,
+						groupBy: grid.groupBy,
+						filter: grid.filterBy
+					},
+					global: false
+				});
+			}
+		});
+
 		// AJAX tabs
 		$('.nav a[data-ajax-url]').on('show', function (e) {
 			var newTab = $(e.target),

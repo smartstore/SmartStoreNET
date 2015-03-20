@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
+using System.Web.Routing;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -17,9 +18,92 @@ using Telerik.Web.Mvc.UI.Fluent;
 
 namespace SmartStore.Web.Framework
 {
-    public static class Extensions
+
+	[Serializable]
+	public class GridStateInfo
+	{
+		public GridState State { get; set; }
+		public string Path { get; set; }
+	}
+
+	
+	public static class Extensions
     {
-        public static IEnumerable<T> ForCommand<T>(this IEnumerable<T> current, GridCommand command)
+
+		public static GridBuilder<T> PreserveGridState<T>(this GridBuilder<T> builder) where T : class
+		{			
+			var grid = builder.ToComponent();
+
+			if (!grid.DataBinding.Ajax.Enabled)
+				return builder;
+
+			if (grid.Id.IsEmpty())
+				throw new SmartException("A grid with preservable state must have a valid Id or Name");
+
+			var urlHelper = new UrlHelper(grid.ViewContext.RequestContext);
+
+			grid.AppendCssClass("grid-preservestate");
+			grid.HtmlAttributes.Add("data-statepreserver-href", urlHelper.Action("SetGridState", "Common", new { area = "admin" }));
+			
+			// Try restore state from a previous request
+			var info = (GridStateInfo)grid.ViewContext.TempData["GridState." + grid.Id];
+			if (info != null && info.Path.Equals(grid.ViewContext.HttpContext.Request.Path, StringComparison.OrdinalIgnoreCase))
+			{
+				// persist again for the next request
+				grid.ViewContext.TempData["GridState." + grid.Id] = info;
+				
+				var state = info.State;
+				var command = GridCommand.Parse(state.Page, state.Size, state.OrderBy, state.GroupBy, state.Filter);
+				if (command.PageSize > 0)
+				{
+					grid.Paging.PageSize = command.PageSize;
+				}
+				if (command.Page > 0)
+				{
+					grid.Paging.CurrentPage = command.Page;
+				}
+
+				foreach (var sort in command.SortDescriptors)
+				{
+					var existingSort = grid.Sorting.OrderBy.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(sort.Member));
+					if (existingSort != null)
+					{
+						grid.Sorting.OrderBy.Remove(existingSort);
+					}
+					grid.Sorting.OrderBy.Add(sort);
+				}
+
+				if (command.GroupDescriptors.Any())
+				{
+					grid.Grouping.Groups.AddRange(command.GroupDescriptors);
+				}
+
+				foreach (var group in command.GroupDescriptors)
+				{
+					var existingGroup = grid.Grouping.Groups.FirstOrDefault(x => x.Member.IsCaseInsensitiveEqual(group.Member));
+					if (existingGroup != null)
+					{
+						grid.Grouping.Groups.Remove(existingGroup);
+					}
+					grid.Grouping.Groups.Add(group);
+				}
+
+				foreach (var filter in command.FilterDescriptors) 
+				{
+					var compositeFilter = filter as CompositeFilterDescriptor;
+					if (compositeFilter == null)
+					{
+						compositeFilter = new CompositeFilterDescriptor { LogicalOperator = FilterCompositionLogicalOperator.And };
+						compositeFilter.FilterDescriptors.Add(filter);
+					}
+					grid.Filtering.Filters.Add(compositeFilter);
+				}
+			}
+
+			return builder;
+		}
+		
+		public static IEnumerable<T> ForCommand<T>(this IEnumerable<T> current, GridCommand command)
         {
             var queryable = current.AsQueryable() as IQueryable;
             if (command.FilterDescriptors.Any())
@@ -40,20 +124,20 @@ namespace SmartStore.Web.Framework
                 temporarySortDescriptors.Add(sortDescriptor);
             }
 
-            if (command.GroupDescriptors.Any())
-            {
-                command.GroupDescriptors.Reverse().Each(groupDescriptor =>
-                {
-                    SortDescriptor sortDescriptor = new SortDescriptor
-                    {
-                        Member = groupDescriptor.Member,
-                        SortDirection = groupDescriptor.SortDirection
-                    };
+			if (command.GroupDescriptors.Any())
+			{
+				command.GroupDescriptors.Reverse().Each(groupDescriptor =>
+				{
+					SortDescriptor sortDescriptor = new SortDescriptor
+					{
+						Member = groupDescriptor.Member,
+						SortDirection = groupDescriptor.SortDirection
+					};
 
-                    command.SortDescriptors.Insert(0, sortDescriptor);
-                    temporarySortDescriptors.Add(sortDescriptor);
-                });
-            }
+					command.SortDescriptors.Insert(0, sortDescriptor);
+					temporarySortDescriptors.Add(sortDescriptor);
+				});
+			}
 
             if (command.SortDescriptors.Any())
             {

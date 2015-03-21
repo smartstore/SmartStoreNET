@@ -185,30 +185,6 @@ namespace SmartStore.Web.Framework
             return MvcHtmlString.Create(result.ToString());
         }
 
-        public static MvcHtmlString SmartLabel<TModel>(this HtmlHelper<TModel> helper, string property, string resourceKey, bool displayHint = true)
-        {
-			var localize = EngineContext.Current.Resolve<ILocalizationService>();
-			var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
-			var labelText = localize.GetResource(resourceKey, langId, false, "", true);
-
-			if (labelText == null)
-				labelText = labelText.SplitPascalCase();
-
-			var label = helper.Label(property, labelText);
-
-			if (displayHint)
-			{
-				var hint = localize.GetResource(resourceKey + ".Hint", langId, false, "", true);
-
-				var result = "<div class='ctl-label'>{0}{1}</div>".FormatWith(label,
-					hint.HasValue() ? helper.Hint(hint).ToHtmlString() : "");
-
-				return MvcHtmlString.Create(result);
-			}
-
-			return label;
-        }
-
         public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)
         {
             // Create tag builder

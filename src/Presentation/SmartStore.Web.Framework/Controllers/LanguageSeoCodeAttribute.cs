@@ -7,6 +7,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Controllers
@@ -18,6 +19,7 @@ namespace SmartStore.Web.Framework.Controllers
     {
 
 		public Lazy<IWorkContext> WorkContext { get; set; }
+		public Lazy<ILanguageService> LanguageService { get; set; }
 		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }
 
         public override void OnActionExecuting(ActionExecutingContext filterContext)
@@ -49,15 +51,16 @@ namespace SmartStore.Web.Framework.Controllers
                 return;
             
             // process current URL
-            var workContext = WorkContext.Value;
+			var workContext = WorkContext.Value;
+			var languageService = LanguageService.Value;
             var workingLanguage = workContext.WorkingLanguage;
             var helper = new LocalizedUrlHelper(filterContext.HttpContext.Request, true);
-            string defaultSeoCode = workContext.GetDefaultLanguageSeoCode();
-
+			string defaultSeoCode = languageService.GetDefaultLanguageSeoCode();
+			
             string seoCode;
             if (helper.IsLocalizedUrl(out seoCode)) 
             {
-                if (!workContext.IsPublishedLanguage(seoCode))
+				if (!languageService.IsPublishedLanguage(seoCode))
                 {
 					var descriptor = filterContext.ActionDescriptor;
 					

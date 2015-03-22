@@ -50,6 +50,7 @@
 							.Select("ProductTags", "Product")
                             .Delete("ProductTagDelete", "Product");
                     })
+					.PreserveGridState()
                     .EnableCustomBinding(true))
             </td>
         </tr>

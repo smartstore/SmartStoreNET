@@ -48,6 +48,7 @@
 			dataBinding.Ajax().Select("GridUserData", "WebApi", new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", WebApiGlobal.PluginSystemName } });
         })
         .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+		.PreserveGridState()
         .EnableCustomBinding(true)
     )
 

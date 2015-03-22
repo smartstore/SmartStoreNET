@@ -51,7 +51,7 @@
 											"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='muted'><#= LastSuccessUtc #></span></div><# } #>" +
 											"<# if (!IsRunning) {#><a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a><# } #>" +
 											"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='fa fa-refresh fa-spin'></i> " + @T("Admin.System.ScheduleTasks.RunNow.IsRunning") + "</div><# } #>")
-							.Title("Ausführung")
+							.Title(T("Common.Execution").Text)
 							.ReadOnly();
                         columns.Command(commands =>
                         {

@@ -23,6 +23,7 @@
 					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
+					@Html.Widget("admin_menu_exportorders_top")
 					<li>
 						<a href="@Url.Action("ExportXmlAll")">
 							<i class="fa fa-fw fa-code"></i>
@@ -60,6 +61,7 @@
 							@T("Admin.Common.ExportToPdf.Selected")
 						</a>
 					</li>
+					@Html.Widget("admin_menu_exportorders_bottom")
 				</ul>
 			</div>
         </div>
@@ -219,6 +221,7 @@
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("OrderList", "Order"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

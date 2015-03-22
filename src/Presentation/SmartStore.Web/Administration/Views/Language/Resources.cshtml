@@ -79,6 +79,7 @@
                             .Insert("ResourceAdd", "Language", new { id = ViewBag.LanguageId });
                     })
                     .EnableCustomBinding(true)
+					.PreserveGridState()
                     .ClientEvents(x => x.OnEdit("onResourceEdit"))
                     .ClientEvents(x => x.OnError("Grid_onError")))
         </td>

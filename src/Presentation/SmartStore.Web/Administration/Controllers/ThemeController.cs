@@ -125,6 +125,7 @@ namespace SmartStore.Admin.Controllers
                     Title = manifest.ThemeTitle,
                     Description = manifest.PreviewText,
                     Author = manifest.Author,
+					Url = manifest.Url,
                     Version = manifest.Version,
                     IsMobileTheme = manifest.MobileTheme,
                     SupportsRtl = manifest.SupportRtl,

@@ -135,7 +135,7 @@ namespace SmartStore.Web
             
             if (DataSettings.DatabaseIsInstalled())
             {
-                custom = custom.ToLower();
+                custom = custom.ToLowerInvariant();
                 
                 switch (custom) 
                 {

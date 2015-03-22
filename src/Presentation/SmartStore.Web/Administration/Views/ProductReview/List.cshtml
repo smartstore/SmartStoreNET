@@ -71,6 +71,7 @@
 						columns.Bound(x => x.Title);
                         columns.Bound(x => x.ReviewText)
                             .Width(500)
+							.ClientTemplate("<#= _.str.truncate(ReviewText, 400, ' [...]') #>")
                             .Encoded(false);
                         columns.Bound(x => x.Rating)
                             .Width(50)
@@ -92,13 +93,14 @@
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductReview"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
 
     <script type="text/javascript">
-
+		
         var selectedIds = [];
 
         $(document).ready(function () {

@@ -30,6 +30,7 @@
 				.Filterable()
 				.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
 				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "SpecificationAttribute"))
+				.PreserveGridState()
 				.EnableCustomBinding(true))
         </td>
     </tr>

@@ -38,6 +38,10 @@
                         {
                             <text>class="product-price current text-success"</text>
                         }
+                        else
+                        {
+                            <text>class="line-through"</text>
+                        }
                         >
                             <span class="product-price-without-discount" itemprop="price">
                             @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))

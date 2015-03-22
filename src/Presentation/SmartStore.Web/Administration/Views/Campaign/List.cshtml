@@ -33,6 +33,7 @@
                             .Width(180);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Orders;
@@ -1323,12 +1322,12 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult PdfInvoice(int orderId)
+        public ActionResult Print(int orderId, bool pdf = false)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			return RedirectToAction("Print", "Order", new { id = orderId, pdf = true, area = "" });
+            return RedirectToAction("Print", "Order", new { id = orderId, pdf = pdf, area = "" });
         }
 
         [HttpPost, ActionName("Edit")]

@@ -46,14 +46,18 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entity);
 
-            if (entity.SystemName == "builtin@search-engine-record.com")
+			if (entity.SystemName == SystemCustomerNames.SearchEngine)
             {
-                entity.AdminComment = "System Gastkonto für Suchmaschinenanfragen.";
+                entity.AdminComment = "System-Gastkonto für Suchmaschinenanfragen.";
             }
-            else if (entity.SystemName == "builtin@background-task-record.com")
+			else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
             {
-                entity.AdminComment = "System Konto für geplante Aufgaben.";
+                entity.AdminComment = "Systemkonto für geplante Aufgaben.";
             }
+			else if (entity.SystemName == SystemCustomerNames.PdfConverter)
+			{
+				entity.AdminComment = "Systemkonto für den PDF-Konverter.";
+			}
         }
 
         protected override void Alter(IList<MeasureDimension> entities)
@@ -3705,7 +3709,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
-            .Alter("smartstore.net new release!", x =>
+            .Alter("SmartStore.NET new release!", x =>
             {
                 x.Title = "SmartStore.NET - das clevere Shopsystem!";
                 x.Short = "SmartStore.NET ist die neue dynamische E-Commerce Lösung von SmartStore. SmartStore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";

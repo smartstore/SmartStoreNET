@@ -8,11 +8,11 @@
     var random = CommonHelper.GenerateRandomInteger();
     var clientId = "picture" + random;
     var pictureService = EngineContext.Current.Resolve<SmartStore.Services.Media.IPictureService>();
-    int pictureId = Model.HasValue ? Model.Value : 0; // codehint: sm-add
-	var picture = pictureService.GetPictureById(pictureId); // codehint: sm-edit
+    int pictureId = Model.HasValue ? Model.Value : 0;
+	var picture = pictureService.GetPictureById(pictureId);
 
-	Html.AddScriptParts("~/bundles/fileupload");
-	Html.AddCssFileParts("~/css/fileupload");
+    Html.AddScriptParts("~/bundles/fileupload");
+    Html.AddCssFileParts("~/css/fileupload");
 }
 
 <div id="@clientId" class="fileupload" style="display: inline-block;">

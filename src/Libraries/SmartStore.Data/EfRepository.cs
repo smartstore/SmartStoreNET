@@ -48,6 +48,14 @@ namespace SmartStore.Data
             }
         }
 
+		public virtual ICollection<T> Local
+		{
+			get
+			{
+				return this.Entities.Local;
+			}
+		}
+
         public T Create()
         {
             return this.Entities.Create();
@@ -64,7 +72,7 @@ namespace SmartStore.Data
                 throw new ArgumentNullException("entity");
 
             this.Entities.Add(entity);
-
+			
             if (this.AutoCommitEnabled)
                 _context.SaveChanges();
         }

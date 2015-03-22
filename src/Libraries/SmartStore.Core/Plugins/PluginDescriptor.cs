@@ -143,6 +143,12 @@ namespace SmartStore.Core.Plugins
 		[DataMember]
 		public string Author { get; set; }
 
+		/// <summary>
+		/// Gets or sets the project/marketplace url
+		/// </summary>
+		[DataMember]
+		public string Url { get; set; }
+
         /// <summary>
         /// Gets or sets the display order
         /// </summary>

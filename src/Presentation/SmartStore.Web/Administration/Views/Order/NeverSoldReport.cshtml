@@ -60,6 +60,7 @@
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("NeverSoldReportList", "Order"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

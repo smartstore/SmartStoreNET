@@ -9,6 +9,7 @@ using SmartStore.Admin.Models.Common;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services;
+using SmartStore.Services.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 
@@ -21,15 +22,17 @@ namespace SmartStore.Admin.Controllers
 
 		private readonly ICommonServices _services;
 		private readonly CommonSettings _commonSettings;
+		private readonly Lazy<IUserAgent> _userAgent;
 
         #endregion
 
         #region Ctor
 
-		public HomeController(ICommonServices services, CommonSettings commonSettings)
+		public HomeController(ICommonServices services, CommonSettings commonSettings, Lazy<IUserAgent> userAgent)
         {
             this._commonSettings = commonSettings;
 			this._services = services;
+			this._userAgent = userAgent;
         }
 
         #endregion
@@ -44,6 +47,15 @@ namespace SmartStore.Admin.Controllers
 		public ActionResult About()
 		{
 			return View();
+		}
+
+		public ActionResult UaTester(string ua = null)
+		{
+			if (ua.HasValue())
+			{
+				_userAgent.Value.RawValue = ua;
+			}
+			return View(_userAgent.Value);
 		}
 
         [ChildActionOnly]

@@ -6,3 +6,4 @@ MinAppVersion: 2.1.0
 DisplayOrder: 1
 FileName: SmartStore.GoogleAnalytics.dll
 ResourceRootKey: Plugins.Widgets.GoogleAnalytics
+Url: http://community.smartstore.com/index.php?/files/file/25-google-analytics/

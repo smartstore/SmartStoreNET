@@ -473,8 +473,8 @@ namespace SmartStore.PayPal.Controllers
 					_logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _services.WorkContext.CurrentCustomer);
                     
                     NotifyError(error.ToString(), false);
-                
-					return RedirectToAction("Cart");
+
+                    return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
 				}
 			}
 			catch (Exception ex)
@@ -483,7 +483,7 @@ namespace SmartStore.PayPal.Controllers
 
                 NotifyError(ex.Message, false);
 
-                return RedirectToAction("Cart");
+                return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
 
 			}
 		}
@@ -535,7 +535,7 @@ namespace SmartStore.PayPal.Controllers
 
                 NotifyError(error.ToString(), false);
 
-                return RedirectToAction("Cart");
+                return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
             }
 		}
 

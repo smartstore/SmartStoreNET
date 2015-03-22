@@ -7,3 +7,4 @@ MinAppVersion: 2.1.0
 DisplayOrder: 1
 FileName: SmartStore.PayPal.dll
 ResourceRootKey: Plugins.SmartStore.PayPal
+Url: http://community.smartstore.com/index.php?/files/file/29-paypal-payment-plugins/

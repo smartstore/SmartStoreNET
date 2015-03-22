@@ -35,6 +35,9 @@ namespace SmartStore.Admin.Models.Themes
         [SmartResourceDisplayName("Admin.Configuration.Themes.Option.AllowCustomerToSelectTheme")]
         public bool AllowCustomerToSelectTheme { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie")]
+		public bool SaveThemeChoiceInCookie { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Themes.Option.MobileDevicesSupported")]
         public bool MobileDevicesSupported { get; set; }
 

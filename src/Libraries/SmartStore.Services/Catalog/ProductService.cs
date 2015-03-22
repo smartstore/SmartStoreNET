@@ -204,17 +204,13 @@ namespace SmartStore.Services.Catalog
                         where productIds.Contains(p.Id)
                         select p;
             var products = query.ToList();
-            
-            //sort by passed identifiers
-            var sortedProducts = new List<Product>();
 
-            foreach (int id in productIds)
-            {
-                var product = products.Find(x => x.Id == id);
-                if (product != null)
-                    sortedProducts.Add(product);
-            }
-            return sortedProducts;
+			// sort by passed identifier sequence
+			var sortQuery = from i in productIds
+							join p in products on i equals p.Id
+							select p;
+
+			return sortQuery.ToList();
         }
 
         /// <summary>

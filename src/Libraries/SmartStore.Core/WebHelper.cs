@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
-using System.Web.Hosting;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
@@ -27,7 +22,6 @@ namespace SmartStore.Core
 		private static readonly Regex s_staticExts = new Regex(@"(.*?)\.(css|js|png|jpg|jpeg|gif|bmp|html|htm|xml|pdf|doc|xls|rar|zip|ico|eot|svg|ttf|woff|otf|axd|ashx|less)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private static readonly Regex s_htmlPathPattern = new Regex(@"(?<=(?:href|src)=(?:""|'))(?!https?://)(?<url>[^(?:""|')]+)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
 		private static readonly Regex s_cssPathPattern = new Regex(@"url\('(?<url>.+)'\)", RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Multiline);
-		private static readonly Regex s_crawlerPattern = new Regex(@"Yandex|ichiro|NaverBot|Baiduspider|Yahoo|sogou|YoudaoBot|bitlybot", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 
 		private readonly HttpContextBase _httpContext;
         private bool? _isCurrentConnectionSecured;
@@ -597,36 +591,6 @@ namespace SmartStore.Core
 				return s_optimizedCompilationsEnabled.Value;
 			}
 		}
-
-        /// <summary>
-        /// Get a value indicating whether the request is made by search engine (web crawler)
-        /// </summary>
-        /// <param name="request">HTTP Request</param>
-        /// <returns>Result</returns>
-        public virtual bool IsSearchEngine(HttpContextBase context)
-        {
-            if (context == null)
-                return false;
-
-            bool result = false;
-            try
-            {
-				if (context.Request.GetType().ToString().Contains("Fake"))
-					return false;
-
-                result = context.Request.Browser.Crawler;
-                if (!result)
-                {
-					result = s_crawlerPattern.IsMatch(context.Request.UserAgent);
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.WriteLine(exc);
-            }
-
-            return result;
-        }
 
         /// <summary>
         /// Gets a value that indicates whether the client is being redirected to a new location

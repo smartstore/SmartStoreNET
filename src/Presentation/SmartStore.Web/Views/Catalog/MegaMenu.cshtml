@@ -47,6 +47,9 @@
         <div class="navbar-inner">
             <div class="container">
                 <ul class="nav nav-smart shrinkable" style="margin-right: 0;">
+                    
+                    @Html.Widget("megamenu_before_first_item")
+
                     @foreach (var node in Model.Root.Children)
                     {
                         var item = node.Value;
@@ -62,28 +65,30 @@
                         <li class='@(GetCssClassForNode(node, itemState))'>
                             <a href="@itemUrl" @Html.Attr("class", "dropdown-toggle", node.HasChildren) data-target="#">
                                 @item.Text
-                            @if (item.ElementsCount.GetValueOrDefault() > 0)
-                            {
-                                <text> (@(item.ElementsCount))</text>
-                            }
+                                @if (item.ElementsCount.GetValueOrDefault() > 0)
+                                {
+                                    <text> (@(item.ElementsCount))</text>
+                                }
+
+                                @if (node.HasChildren)
+                                {
+                                    <i class="fa fa-caret-down chevron"></i>
+                                }
+                            </a>
 
                             @if (node.HasChildren)
                             {
-                                <i class="fa fa-caret-down chevron"></i>
+                                @CreateDrilldownMenu(node.Children, true)
                             }
-                        </a>
 
-                        @if (node.HasChildren)
-                        {
-                            @CreateDrilldownMenu(node.Children, true)
-                        }
-
-                    </li>
+                        </li>
                         if (node.Next != null)
                         {
                             <li class="divider-vertical"></li>
                         }
                     }
+
+                    @Html.Widget("megamenu_after_last_item")
 
                 </ul>
 

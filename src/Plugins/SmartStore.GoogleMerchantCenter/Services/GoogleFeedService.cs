@@ -250,7 +250,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				return defaultValue;
 
 			// TODO: Product.BasePriceMeasureUnit should be localized
-			switch (value.ToLower())
+			switch (value.ToLowerInvariant())
 			{
 				case "mg":
 				case "milligramm":
@@ -540,7 +540,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
 			// there's no way to share a context instance across repositories which makes GoogleProductObjectContext pretty useless here.
-			// so let's fallback to good ole sql... by the way, fastest possible paged data query ever.
+			// so let's fallback to good old sql... by the way, fastest possible paged data query ever.
 
 			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
 

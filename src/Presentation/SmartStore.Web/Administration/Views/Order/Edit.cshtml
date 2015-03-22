@@ -9,13 +9,19 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
+            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber 
+			<a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
+            <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
+                <i class="fa fa-print"></i>
+                @T("Order.Print")
+            </a>
             @if (Model.DisplayPdfInvoice)
             {
-                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
-					<i class="fa fa-file-pdf-o"></i>&nbsp;@T("Admin.Orders.PdfInvoice")
+                <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = true })" class="btn">
+					<i class="fa fa-file-pdf-o"></i>
+					@T("Admin.Orders.PdfInvoice")
 				</a>
             }
             <button type="submit" id="order-delete" class="btn btn-danger">
@@ -885,7 +891,6 @@
                 {
                     <h4>@T("Admin.Order.CustomerComment.Heading")</h4>
                     <div class="alert alert-info fade in">
-                        <button class="close" data-dismiss="alert">&#215;</button>
                         @Html.Raw(Model.CustomerComment)
                     </div>
                 }
@@ -1370,46 +1375,41 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData t-widget t-grid" style="padding:0;">
+            <td class="adminData" style="padding:0;">
 
-                <table id="OrderItemTable" class="table">
-                    <thead class="t-grid-header">
+                <table id="OrderItemTable" class="table table-bordered table-striped">
+                    <thead>
                         <tr>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.ProductName")
                             </th>
                             @if (Model.HasDownloadableProducts)
                             {
-                                <th class="t-header">
+                                <th>
                                     @T("Admin.Orders.Products.Download")
                                 </th>
                             }
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Price")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Quantity")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Discount")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Total")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Common.Edit")
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            var j = 0;
-                        }
                         @foreach (var item in Model.Items)
                         {
-                            j++;
-                            
-                            <tr class="@(j % 2 == 0 ? "t-alt": "")">
+                            <tr>
                                 <td style="width: 25%;vertical-align: top">
                                     <div>
                                         @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)

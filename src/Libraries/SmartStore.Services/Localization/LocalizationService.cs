@@ -43,6 +43,9 @@ namespace SmartStore.Services.Localization
         private readonly LocalizationSettings _localizationSettings;
         private readonly IEventPublisher _eventPublisher;
 
+		private int _notFoundLogCount = 0;
+		private int? _defaultLanguageId;
+
         #endregion
 
         #region Ctor
@@ -253,19 +256,15 @@ namespace SmartStore.Services.Localization
 							orderby l.ResourceName
 							where l.LanguageId == languageId
 							select l;
-				var locales = query.ToList();
+				var resources = query.ToList();
 
-                foreach (var locale in locales)
+                foreach (var res in resources)
                 {
-                    var resourceName = locale.ResourceName.ToLowerInvariant();
-                    //if (!d.ContainsKey(resourceName))
-                    //{
-                        //d.TryAdd(resourceName, new Tuple<int, string>(locale.Id, locale.ResourceValue));
-                        d.AddOrUpdate(
-                            resourceName, 
-                            (k) => new Tuple<int, string>(locale.Id, locale.ResourceValue), 
-                            (k, v) => { d[k] = v; return v; });
-                    //}
+                    var resourceName = res.ResourceName.ToLowerInvariant();
+                    d.AddOrUpdate(
+                        resourceName, 
+                        (k) => new Tuple<int, string>(res.Id, res.ResourceValue), 
+                        (k, v) => { d[k] = v; return v; });
                 }
 
                 // perf: add a dummy item indicating that data is fully loaded
@@ -304,7 +303,6 @@ namespace SmartStore.Services.Localization
         /// <returns>A string representing the requested resource string.</returns>
         public virtual string GetResource(string resourceKey, int languageId = 0, bool logIfNotFound = true, string defaultValue = "", bool returnEmptyIfNotFound = false)
         {
-            // codehint: sm-edit
             if (languageId <= 0)
             {
                 if (_workContext.WorkingLanguage == null)
@@ -329,7 +327,7 @@ namespace SmartStore.Services.Localization
                                 where l.ResourceName == resourceKey && l.LanguageId == languageId
                                 select l;
                     var res = query.FirstOrDefault();
-					if (res != null)	// codehint: sm-edit (null case)
+					if (res != null)
 						return new Tuple<int, string>(res.Id, res.ResourceValue);
 					return null;
                 });
@@ -341,8 +339,19 @@ namespace SmartStore.Services.Localization
 
             if (String.IsNullOrEmpty(result))
             {
-                if (logIfNotFound)
-                    _logger.Warning(string.Format("Resource string ({0}) is not found. Language ID = {1}", resourceKey, languageId));
+				if (logIfNotFound)
+				{
+					if (_notFoundLogCount < 50)
+					{
+						_logger.Warning(string.Format("Resource string ({0}) does not exist. Language ID = {1}", resourceKey, languageId));
+					}
+					else if (_notFoundLogCount == 50)
+					{
+						_logger.Warning("Too many language resources do not exist (> 50). Stopped logging missing resources to prevent performance drop.");
+					}
+					
+					_notFoundLogCount++;
+				}
                 
                 if (!String.IsNullOrEmpty(defaultValue))
                 {
@@ -350,8 +359,25 @@ namespace SmartStore.Services.Localization
                 }
                 else
                 {
-                    if (!returnEmptyIfNotFound)
-                        result = resourceKey;
+					// try fallback to default language
+					if (!_defaultLanguageId.HasValue)
+					{
+						_defaultLanguageId = _languageService.GetDefaultLanguageId();
+					}
+					var defaultLangId = _defaultLanguageId.Value;
+					if (defaultLangId > 0 && defaultLangId != languageId)
+					{
+						var fallbackResult = GetResource(resourceKey, defaultLangId, false, resourceKey);
+						if (fallbackResult != resourceKey)
+						{
+							result = fallbackResult;
+						}
+					}
+
+					if (!returnEmptyIfNotFound && result.IsEmpty())
+					{
+						result = resourceKey;
+					}
                 }
             }
 

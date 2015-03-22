@@ -74,6 +74,7 @@
                     })
                     .Pageable(settings => settings.Total(Model.Manufacturers.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Manufacturer"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

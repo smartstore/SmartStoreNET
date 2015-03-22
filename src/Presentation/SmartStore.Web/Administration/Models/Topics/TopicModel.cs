@@ -12,7 +12,7 @@ using SmartStore.Web.Framework.Mvc;
 namespace SmartStore.Admin.Models.Topics
 {
     [Validator(typeof(TopicValidator))]
-    public class TopicModel : EntityModelBase, ILocalizedModel<TopicLocalizedModel>
+    public class TopicModel : TabbableModel, ILocalizedModel<TopicLocalizedModel>
     {
         #region widget zone names
         private readonly static string[] s_widgetZones = new string[] { 

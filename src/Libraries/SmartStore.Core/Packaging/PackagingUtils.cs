@@ -81,7 +81,7 @@ namespace SmartStore.Core.Packaging
 				Version = pluginDescriptor.Version,
 				Name = pluginDescriptor.FriendlyName,
 				Description = pluginDescriptor.Description,
-				WebSite = string.Empty, // TODO: (pkg) Add author url to plugin manifests,
+				WebSite = pluginDescriptor.Url, // TODO: (pkg) Add author url to plugin manifests,
 				Tags = string.Empty // TODO: (pkg) Add tags to plugin manifests,
 			};
 
@@ -101,7 +101,7 @@ namespace SmartStore.Core.Packaging
 				Version = new Version(themeManifest.Version),
 				Name = themeManifest.ThemeTitle,
 				Description = string.Empty, // TODO: (pkg) Add description to theme manifests
-				WebSite = string.Empty, // TODO: (pkg) Add author url to theme manifests,
+				WebSite = themeManifest.Url,
 				Tags = string.Empty // TODO: (pkg) Add tags to theme manifests,
 			};
 

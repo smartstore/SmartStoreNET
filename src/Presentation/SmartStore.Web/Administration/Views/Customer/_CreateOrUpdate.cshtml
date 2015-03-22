@@ -459,6 +459,7 @@
                     {
                         dataBinding.Ajax().Select("OrderList", "Customer", new { customerId = Model.Id });
                     })
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         
 }

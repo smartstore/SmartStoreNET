@@ -22,7 +22,6 @@
 
   "use strict"; // jshint ;_;
 
-
  /* TYPEAHEAD PUBLIC CLASS DEFINITION
   * ================================= */
 
@@ -37,6 +36,9 @@
     this.source = this.options.source
     this.shown = false
     this.listen()
+
+  	// codehint: sm-add (throttled keypress)
+    this.timer = null;
   }
 
   Typeahead.prototype = {
@@ -131,7 +133,13 @@
     }
 
   , highlighter: function (item) {
-      var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+  	  // codehint: sm-edit
+	  // Original:
+  	  //     var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+	  
+  	  // codehint: the above query transforms the whole query to a regex pattern, thus only highlighting 'exact' matches.
+	  // But we also want to highlight 'far' words. So we create a pattern like "word1|word2|wordn..." (instead of "word1\ word2\ wordn...")
+  	  var query = _.map(_.str.words(this.query), function (val, i) { return val.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&') }).join("|");
       return item.replace(new RegExp('(' + query + ')', 'ig'), function ($1, match) {
         return '<strong>' + match + '</strong>'
       })
@@ -254,8 +262,12 @@
           this.hide()
           break
 
-        default:
-          this.lookup()
+      	default:
+      		// codehint: sm-edit (throttled keypress)
+      		// Original: this.lookup()
+      		var self = this;
+      		clearTimeout(self.timer);
+      		self.timer = setTimeout(function () { self.lookup() }, self.options.keyUpDelay);
       }
 
       e.stopPropagation()
@@ -316,6 +328,8 @@
   , menu: '<ul class="typeahead dropdown-menu"></ul>'
   , item: '<li><a href="#"></a></li>'
   , minLength: 1
+  // codehint: sm-add (throttled KeyPress)
+  , keyUpDelay: 0
   }
 
   $.fn.typeahead.Constructor = Typeahead

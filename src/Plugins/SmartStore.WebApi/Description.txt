@@ -7,3 +7,4 @@ Author: SmartStore AG
 DisplayOrder: 1
 FileName: SmartStore.WebApi.dll
 ResourceRootKey: Plugins.Api.WebApi
+Url: http://community.smartstore.com/index.php?/files/file/27-smartstorenet-web-api/

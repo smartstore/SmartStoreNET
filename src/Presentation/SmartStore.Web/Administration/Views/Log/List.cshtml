@@ -101,6 +101,7 @@
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("LogList", "Log"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

@@ -50,6 +50,7 @@
                     })
                     .Pageable(settings => settings.Total(Model.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Poll"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

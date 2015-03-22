@@ -86,6 +86,7 @@
                             .Delete("SubscriptionDelete", "NewsLetterSubscription"))
                             .ClientEvents(events => events.OnDataBinding("onDataBinding"))
                             .ClientEvents(x => x.OnError("grid_onError"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
         </td>
     </tr>

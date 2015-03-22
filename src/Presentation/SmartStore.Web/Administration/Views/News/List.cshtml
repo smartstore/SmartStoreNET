@@ -75,6 +75,7 @@
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
 					.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

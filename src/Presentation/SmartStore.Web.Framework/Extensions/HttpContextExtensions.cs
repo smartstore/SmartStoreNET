@@ -138,13 +138,58 @@ namespace SmartStore
 			httpContext.Session.SafeRemove(CheckoutState.CheckoutStateSessionKey);
 		}
 
+		internal static string GetUserThemeChoiceFromCookie(this HttpContextBase context)
+		{
+			if (context == null)
+				return null;
+
+			var cookie = context.Request.Cookies.Get("sm.UserThemeChoice");
+			if (cookie != null)
+			{
+				return cookie.Value.NullEmpty();
+			}
+
+			return null;
+		}
+
+		internal static void SetUserThemeChoiceInCookie(this HttpContextBase context, string value)
+		{
+			if (context == null)
+				return;
+
+			var cookie = context.Request.Cookies.Get("sm.UserThemeChoice");
+
+			if (value.HasValue() && cookie == null)
+			{
+				cookie = new HttpCookie("sm.UserThemeChoice");
+				cookie.HttpOnly = true;
+				cookie.Expires = DateTime.UtcNow.AddYears(1);					
+			}
+
+			if (value.HasValue())
+			{
+				cookie.Value = value;
+				context.Request.Cookies.Set(cookie);
+			}
+
+			if (value.IsEmpty() && cookie != null)
+			{
+				cookie.Expires = DateTime.UtcNow.AddYears(-10);
+			}
+
+			if (cookie != null)
+			{
+				context.Response.SetCookie(cookie);
+			}
+		}
+
 		internal static HttpCookie GetPreviewModeCookie(this HttpContextBase context, bool createIfMissing)
 		{
 			if (context == null)
 				return null;
 
 			var cookie = context.Request.Cookies.Get("sm.PreviewModeOverrides");
-
+			
 			if (cookie == null && createIfMissing)
 			{
 				cookie = new HttpCookie("sm.PreviewModeOverrides");

@@ -3,6 +3,8 @@
 ## SmartStore.NET 2.2
 
 ### New Features
+* New mobile theme: MobileLight (a light variant of the default mobile theme)
+* Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
 * #428 Implement category option to override global list view type
 * #485 Enable shop admin to change creation date of a blog entry
 * #258 Implement email validation in checkout
@@ -10,16 +12,24 @@
 * Option to determine the maximum amount of filter items
 * Option to determine whether all filter groups should be displayed expanded
 * #459 New field to determine tag for page titles on widget level
+* Added _shrink database_ to backend UI
+* (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 
 ### Improvements
+* The data grid in the backend now preserves client state between requests (page, pageSize, sorting, filtering etc.)
+* Some important edit screens (product, order etc.) now link back to the referrer page instead of the list
+* Excel Import & Export: much lower memory consumption and increased performance
+* Moving pictures from DB to FS or vice versa is lightning fast now, consumes much lower memory and is encapsulated in a transaction which ensures reliable rollback after failure. Plus the database gets automatically shrinked after moving to FS.
 * Feed plugins: product query now paged to reduce memory payload
 * Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)
 * #189 Allow deletion of multiple reviews
 * #622 UI: Redesign table in Sales > Orders > Order > Tab Products
 * #625 Bundles can be ordered if an attribute combination of a bundle item is not available
+* Minor UI tweaks in checkout process
 
 ### Bugfixes
+* Instant search box did not display all results when SQL Fulltext Search was enabled
 * Amazon payments: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
 * #598 Wrong input parameter name for ReturnRequestSubmit
@@ -33,6 +43,10 @@
 * Fixed "Adding a relationship with an entity which is in the Deleted state is not allowed" when adding bundles to cart
 * Fixed price calculation of multiple bundles issue
 * Fixed auto add required products for bundle items
+* Fixes #641: Protocol in sitemap should be HTTPS when _ForceSslForAllPages_ is true
+* #640 Do not display shipping infos for grouped products in product lists
+* #634 Bundle price in list should not differ from price in details if there is only one bundle item with one attribute
+* Do not copy associated product when copying a bundle product
 
 
 ## SmartStore.NET 2.1.1

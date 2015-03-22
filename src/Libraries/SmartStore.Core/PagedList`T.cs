@@ -18,7 +18,6 @@ namespace SmartStore.Core
         /// <param name="pageSize">Page size</param>
         public PagedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
-            // codehint: sm-edit
             Guard.ArgumentNotNull(source, "source");
             Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count());
         }
@@ -31,7 +30,6 @@ namespace SmartStore.Core
         /// <param name="pageSize">Page size</param>
         public PagedList(IList<T> source, int pageIndex, int pageSize)
         {
-            // codehint: sm-edit
             Guard.ArgumentNotNull(source, "source");
             Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count);
         }

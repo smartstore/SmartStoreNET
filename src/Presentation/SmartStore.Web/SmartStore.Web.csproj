@@ -105,10 +105,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FiftyOne.Foundation, Version=3.1.4.5, Culture=neutral, PublicKeyToken=e967ae578dabd98e, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\51Degrees.mobi.3.1.4.5\lib\NET40\FiftyOne.Foundation.dll</HintPath>
-    </Reference>
     <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
@@ -910,7 +906,6 @@
     <Content Include="Content\font-awesome.css" />
     <Content Include="Content\font-awesome.min.css" />
     <Content Include="Content\fonts\Fontastic.svg" />
-    <Content Include="51Degrees.config" />
     <Content Include="App_GlobalResources\MvcLocalization.de.resx">
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>MvcLocalization.de.Designer.cs</LastGenOutput>
@@ -942,6 +937,9 @@
     <Content Include="Content\editors\ckeditor\plugins\scayt\README.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\LICENSE.md" />
     <Content Include="Content\editors\ckeditor\plugins\wsc\README.md" />
+    <Content Include="Config\Web.config">
+      <SubType>Designer</SubType>
+    </Content>
     <None Include="Content\fonts\raw\fonts\Fontastic.svg" />
     <None Include="Content\fonts\raw\index.html" />
     <None Include="Content\fonts\raw\license.txt" />
@@ -972,72 +970,81 @@
     <Content Include="Content\Images\smartstore.net-200-white.png" />
     <Content Include="Content\install\images\bg.png" />
     <Content Include="Content\print.css" />
-    <Content Include="Content\samples\0000730-apple-iphone-4s-weis.jpg" />
     <Content Include="Content\samples\0000740-antonio-vivaldi-der-fruhling-100.jpg" />
-    <Content Include="Content\samples\0000746_apple_125.jpeg" />
     <Content Include="Content\samples\0000785-apple-iphone.png" />
     <Content Include="Content\samples\0000786-apple-iphone.png" />
     <Content Include="Content\samples\0000787-apple-iphone.jpg" />
     <Content Include="Content\samples\0000788-apple-iphone.png" />
     <Content Include="Content\samples\0000789-apple-iphone.jpg" />
-    <Content Include="Content\samples\0000898_blackberry.jpeg" />
-    <Content Include="Content\samples\0000899_htc.png" />
-    <Content Include="Content\samples\0000900_lg.jpeg" />
     <Content Include="Content\samples\0000904_samsung_125.jpeg" />
     <Content Include="Content\samples\0000930_spiegel-bestseller.png" />
     <Content Include="Content\samples\0000932_uberman-der-roman.jpeg" />
     <Content Include="Content\samples\0000935_der-gefangene-des-himmels-roman_300.jpeg" />
     <Content Include="Content\samples\0000936_kochen-geniesen.jpeg" />
-    <Content Include="Content\samples\0000937_best-grilling-recipes.jpeg" />
-    <Content Include="Content\samples\0000938_cooking-for-two.jpeg" />
     <Content Include="Content\samples\0000942_bildatlas-motorrader-mit-mehr-als-350-brillanten-abbildungen.jpeg" />
     <Content Include="Content\samples\0000943_motorrad-abenteuer-fahrtechnik-fur-reise-enduros.jpeg" />
     <Content Include="Content\samples\0000944_autos-der-superlative-die-starksten-die-ersten-die-schonsten-die-schnellsten.jpeg" />
     <Content Include="Content\samples\0000946_fast-cars-bildkalender-2013_300.jpeg" />
     <Content Include="Content\samples\0000947_das-auto-buch-die-grose-chronik-mit-uber-1200-modellen_300.jpeg" />
-    <Content Include="Content\samples\0000953_dell-inspiron-one-23.jpeg" />
     <Content Include="Content\samples\0000954_dell-inspiron-one-23.jpeg" />
     <Content Include="Content\samples\0000956_dell-inspiron-one-23.jpeg" />
-    <Content Include="Content\samples\0000993_trekstor.jpeg" />
-    <Content Include="Content\samples\0000994_western-digital.jpeg" />
-    <Content Include="Content\samples\0001085_canon.jpeg" />
-    <Content Include="Content\samples\0001086_casio.jpeg" />
-    <Content Include="Content\samples\0001087_panasonic.jpeg" />
-    <Content Include="Content\samples\0001328_certina_125.jpeg" />
-    <Content Include="Content\samples\0001338_samsung.jpeg" />
-    <Content Include="Content\samples\0001424-certina-ds-podium-big-size-herrenchronograph.jpg" />
-    <Content Include="Content\samples\0001514_uhren.jpeg" />
-    <Content Include="Content\samples\0001591_festina.jpeg" />
     <Content Include="Content\samples\01-12Hand_Aspire1.jpg" />
     <Content Include="Content\samples\58_00007561.jpg" />
-    <Content Include="Content\samples\acer-aspire-one.jpg" />
     <Content Include="Content\samples\acer-logo.jpg" />
     <Content Include="Content\samples\beethoven-fur-elise.mp3" />
     <Content Include="Content\samples\Beethoven.jpg" />
-    <Content Include="Content\samples\category_gaming.jpg" />
-    <Content Include="Content\samples\category_gaming_accessories.jpg" />
+    <Content Include="Content\samples\category_cellphone.png" />
+    <Content Include="Content\samples\category_computers.png" />
+    <Content Include="Content\samples\category_desktops.png" />
+    <Content Include="Content\samples\category_digitaldownloads.jpg" />
+    <Content Include="Content\samples\category_games.png" />
+    <Content Include="Content\samples\category_gaming.png" />
+    <Content Include="Content\samples\category_gaming_accessories.png" />
+    <Content Include="Content\samples\category_giftcards.png" />
+    <Content Include="Content\samples\category_notebooks.png" />
+    <Content Include="Content\samples\category_watches.png" />
     <Content Include="Content\samples\clouds.png" />
     <Content Include="Content\samples\company_logo.png" />
-    <Content Include="Content\samples\Dell_Logo.png" />
     <Content Include="Content\samples\emblem_library.png" />
-    <Content Include="Content\samples\HP_Logo_2012.svg.png" />
     <Content Include="Content\samples\iphone.png" />
-    <Content Include="Content\samples\msi_logo1.jpg" />
+    <Content Include="Content\samples\manufacturer-android.png" />
+    <Content Include="Content\samples\manufacturer-blackberry.png" />
+    <Content Include="Content\samples\manufacturer-canon.png" />
+    <Content Include="Content\samples\manufacturer-casio.png" />
+    <Content Include="Content\samples\manufacturer-certina.png" />
+    <Content Include="Content\samples\manufacturer-dell.png" />
+    <Content Include="Content\samples\manufacturer-hp.png" />
+    <Content Include="Content\samples\manufacturer-htc.png" />
+    <Content Include="Content\samples\manufacturer-lg.png" />
+    <Content Include="Content\samples\manufacturer-microsoft.png" />
+    <Content Include="Content\samples\manufacturer-msi.png" />
+    <Content Include="Content\samples\manufacturer-panasonic.png" />
+    <Content Include="Content\samples\manufacturer-samsung.png" />
+    <Content Include="Content\samples\manufacturer-trekstor.png" />
+    <Content Include="Content\samples\manufacturer-westerndigital.png" />
+    <Content Include="Content\samples\manufacturer_apple.png" />
+    <Content Include="Content\samples\manufacturer_festina.png" />
+    <Content Include="Content\samples\manufacturer_sony.png" />
+    <Content Include="Content\samples\manufacturer_ubisoft.png" />
     <Content Include="Content\samples\music.png" />
     <Content Include="Content\samples\packshot-net.png" />
-    <Content Include="Content\samples\sony-Dualshock3WirelessCont.jpg" />
-    <Content Include="Content\samples\sony-Dualshock4WirelessCont.jpg" />
-    <Content Include="Content\samples\sony-logo.jpg" />
-    <Content Include="Content\samples\sony-ps3-black.jpg" />
-    <Content Include="Content\samples\sony-ps3-plus-game.jpg" />
+    <Content Include="Content\samples\product_aceraspiresl1500.png" />
+    <Content Include="Content\samples\product_bestgrillingrecipes.jpg" />
+    <Content Include="Content\samples\product_certina_ds_podium_big.png" />
+    <Content Include="Content\samples\product_cookingfortwo.jpg" />
+    <Content Include="Content\samples\product_dellinspiron23.png" />
+    <Content Include="Content\samples\product_giftcart.png" />
+    <Content Include="Content\samples\product_playstation3dualshock3.png" />
+    <Content Include="Content\samples\product_sony_dualshock4_wirelesscontroller.png" />
+    <Content Include="Content\samples\product_sony_ps3_black.png" />
+    <Content Include="Content\samples\product_sony_ps3_plus_game.png" />
+    <Content Include="Content\samples\product_sony_ps4.png" />
+    <Content Include="Content\samples\product_sony_ps4_bundle.png" />
+    <Content Include="Content\samples\product_sony_ps4_camera.png" />
     <Content Include="Content\samples\sony-ps3-white.jpg" />
-    <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.jpg" />
-    <Content Include="Content\samples\sony-ps4-bundle.jpg" />
-    <Content Include="Content\samples\sony-ps4-camera.jpg" />
-    <Content Include="Content\samples\sony-ps4.jpg" />
+    <Content Include="Content\samples\sony-PS3AssassinsCreedBundle.png" />
     <Content Include="Content\samples\ubisoft-assassins-creed-3.jpg" />
     <Content Include="Content\samples\ubisoft-driver-san-francisco.jpg" />
-    <Content Include="Content\samples\ubisoft-logo.jpg" />
     <Content Include="Content\samples\ubisoft-prince-of-persia.jpg" />
     <Content Include="Content\samples\ubisoft-watchdogs.jpg" />
     <Content Include="Content\samples\vivaldi-four-seasons-spring.mp3" />
@@ -1052,8 +1059,6 @@
     <Content Include="Content\install\variables.less" />
     <Content Include="Content\bootstrap\custom\colorpicker.less" />
     <Content Include="favicon.readme.txt" />
-    <Content Include="Media\default-avatar.jpg" />
-    <Content Include="Media\default-image.jpg" />
     <Content Include="Media\Thumbs\placeholder.txt" />
     <Content Include="Media\Uploaded\placeholder.txt" />
     <Content Include="Refresh.html" />
@@ -1188,6 +1193,7 @@
     <Content Include="Scripts\jquery.validate.unobtrusive.min.js" />
     <Content Include="Scripts\modernizr-2.7.2.js" />
     <Content Include="Scripts\public.product-detail.mobile.js" />
+    <Content Include="Scripts\smartstore.instantsearch.js" />
     <Content Include="Scripts\smartstore.common.js" />
     <Content Include="Scripts\smartstore.globalize.adapter.js" />
     <Content Include="Scripts\jquery.backgroundpos.js" />
@@ -1554,86 +1560,10 @@
     <Content Include="Content\samples\category_apparel_shoes.jpeg" />
     <Content Include="Content\samples\category_book.jpeg" />
     <Content Include="Content\samples\category_camera_photo.jpeg" />
-    <Content Include="Content\samples\category_cell_phones.jpeg" />
-    <Content Include="Content\samples\category_computers.jpeg" />
-    <Content Include="Content\samples\category_desktops.jpg" />
-    <Content Include="Content\samples\category_digital_downloads.jpeg" />
     <Content Include="Content\samples\category_electronics.jpeg" />
-    <Content Include="Content\samples\category_games.jpg" />
-    <Content Include="Content\samples\category_gift_cards.jpeg" />
-    <Content Include="Content\samples\category_jeans.jpg" />
-    <Content Include="Content\samples\category_jewelry.jpeg" />
-    <Content Include="Content\samples\category_notebooks.jpg" />
-    <Content Include="Content\samples\category_shirts.jpg" />
-    <Content Include="Content\samples\category_shoes.jpg" />
-    <Content Include="Content\samples\category_software.jpg" />
-    <Content Include="Content\samples\product_AdobePhotoshop.jpeg" />
-    <Content Include="Content\samples\product_5giftcart.jpeg" />
-    <Content Include="Content\samples\product_25giftcart.jpeg" />
-    <Content Include="Content\samples\product_50giftcart.jpeg" />
-    <Content Include="Content\samples\product_100giftcart.jpeg" />
     <Content Include="Content\samples\product_AcerAspireOne_1.jpeg" />
     <Content Include="Content\samples\product_AcerAspireOne_2.jpeg" />
-    <Content Include="Content\samples\product_AdidasShoe_1.jpg" />
-    <Content Include="Content\samples\product_AdidasShoe_2.jpg" />
-    <Content Include="Content\samples\product_ApcUps.jpeg" />
-    <Content Include="Content\samples\product_arrow.jpg" />
-    <Content Include="Content\samples\product_asuspc1000.jpeg" />
-    <Content Include="Content\samples\product_asuspc900.jpeg" />
-    <Content Include="Content\samples\product_Baseball.jpeg" />
-    <Content Include="Content\samples\product_BattleOfLA.jpeg" />
-    <Content Include="Content\samples\product_BestGrillingRecipes.jpeg" />
-    <Content Include="Content\samples\product_BestSkilletRecipes.jpeg" />
-    <Content Include="Content\samples\product_BlackBerry.jpeg" />
-    <Content Include="Content\samples\product_CanonCamcoder.jpeg" />
-    <Content Include="Content\samples\product_CanonCamera_1.jpeg" />
-    <Content Include="Content\samples\product_CanonCamera_2.jpeg" />
-    <Content Include="Content\samples\product_CanonCamera_black.jpeg" />
-    <Content Include="Content\samples\product_CanonCamera_silver.jpeg" />
-    <Content Include="Content\samples\product_Compaq.jpeg" />
-    <Content Include="Content\samples\product_CookingForTwo.jpeg" />
-    <Content Include="Content\samples\product_Corel.jpeg" />
-    <Content Include="Content\samples\product_CustomTShirt.jpeg" />
-    <Content Include="Content\samples\product_DenimShort.jpg" />
-    <Content Include="Content\samples\product_Desktops_1.jpeg" />
-    <Content Include="Content\samples\product_Desktops_2.jpeg" />
-    <Content Include="Content\samples\product_Desktops_3.jpeg" />
-    <Content Include="Content\samples\product_DiamondBracelet_1.jpg" />
-    <Content Include="Content\samples\product_DiamondBracelet_2.jpg" />
-    <Content Include="Content\samples\product_DiamondEarrings.jpg" />
-    <Content Include="Content\samples\product_DiamondHeart.jpg" />
-    <Content Include="Content\samples\product_EatingWell.jpeg" />
-    <Content Include="Content\samples\product_EngagementRing_1.jpg" />
-    <Content Include="Content\samples\product_EngagementRing_2.jpg" />
-    <Content Include="Content\samples\product_Etnies.jpg" />
-    <Content Include="Content\samples\product_GolfBelt.jpeg" />
-    <Content Include="Content\samples\product_hat.jpg" />
-    <Content Include="Content\samples\product_Hp506.jpeg" />
-    <Content Include="Content\samples\product_HpPavilion1.jpeg" />
-    <Content Include="Content\samples\product_HpPavilion2_1.jpeg" />
-    <Content Include="Content\samples\product_HpPavilion2_2.jpeg" />
-    <Content Include="Content\samples\product_HpPavilion3.jpeg" />
-    <Content Include="Content\samples\product_Kensington.jpeg" />
-    <Content Include="Content\samples\product_LeatherHandbag_1.jpg" />
-    <Content Include="Content\samples\product_LeatherHandbag_2.jpg" />
-    <Content Include="Content\samples\product_LeviJeans_1.jpg" />
-    <Content Include="Content\samples\product_LeviJeans_2.jpg" />
-    <Content Include="Content\samples\product_MedalOfHonor.jpeg" />
-    <Content Include="Content\samples\product_Mouse.jpeg" />
-    <Content Include="Content\samples\product_Notebooks.jpeg" />
-    <Content Include="Content\samples\product_PokerFace.jpeg" />
-    <Content Include="Content\samples\product_PokerFace_2.txt" />
-    <Content Include="Content\samples\product_productPanasonic.jpeg" />
-    <Content Include="Content\samples\product_RockabillyPolka.jpg" />
     <Content Include="Content\Images\Thumbs\placeholder.txt" />
-    <Content Include="Content\samples\product_SamsungPhone_1.jpeg" />
-    <Content Include="Content\samples\product_SamsungPhone_2.jpeg" />
-    <Content Include="Content\samples\product_SingleLadies.jpeg" />
-    <Content Include="Content\samples\product_SingleLadies_2.txt" />
-    <Content Include="Content\samples\product_Soccer.jpeg" />
-    <Content Include="Content\samples\product_SonyCamcoder.jpeg" />
-    <Content Include="Content\samples\product_Sunglasses.jpg" />
-    <Content Include="Content\samples\product_wow.jpeg" />
     <Content Include="Content\bootstrap\custom\select2.less" />
     <Content Include="Content\bootstrap\custom\images\select2.png" />
     <Content Include="Global.asax" />
@@ -1663,6 +1593,9 @@
     <Content Include="Themes\Alpha\Content\images\ico-move-topic.gif" />
     <Content Include="Themes\Alpha\Content\images\loading.gif" />
     <Content Include="Themes\Alpha\preview.png" />
+    <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.css" />
+    <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.min.css" />
+    <Content Include="Themes\MobileLight\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />
     <Content Include="Themes\Mobile\Content\images\ico-forum-post-high.gif" />
@@ -1826,11 +1759,11 @@
     <Content Include="Views\Boards\_CreateUpdateTopic.Mobile.cshtml" />
     <Content Include="Views\Boards\_CreateUpdatePost.Mobile.cshtml" />
     <Content Include="Views\Common\ConfigButton.Mobile.cshtml" />
-    <Content Include="Views\Common\Config.Mobile.cshtml" />
+    <Content Include="Views\Common\Settings.Mobile.cshtml" />
     <Content Include="Views\Common\LanguageSelector.Mobile.cshtml" />
     <Content Include="Views\Common\TaxTypeSelector.Mobile.cshtml" />
     <Content Include="Views\Common\CurrencySelector.Mobile.cshtml" />
-    <Content Include="Views\Common\Config.cshtml" />
+    <Content Include="Views\Common\Settings.cshtml" />
     <Content Include="Views\Customer\MyAccount.cshtml" />
     <Content Include="Views\Shared\_Notifications.cshtml" />
     <Content Include="Views\Catalog\ProductTagsAll.cshtml" />
@@ -1926,6 +1859,8 @@
     <Content Include="Views\Order\Details.Print.cshtml" />
     <Content Include="Views\Common\PdfReceiptFooter.cshtml" />
     <Content Include="Views\Common\PdfReceiptHeader.cshtml" />
+    <Content Include="Themes\MobileLight\theme.config" />
+    <Content Include="Themes\MobileLight\Views\Web.config" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
   </ItemGroup>
   <ItemGroup>
@@ -1979,9 +1914,6 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Content\samples\product_BattleOfLa_1.zip" />
-    <Content Include="Content\samples\product_PokerFace_1.zip" />
-    <Content Include="Content\samples\product_SingleLadies_1.zip" />
     <Content Include="App_Data\GeoIP.dat" />
     <Content Include="Views\Customer\Login.cshtml" />
     <Content Include="Views\Customer\Register.cshtml" />

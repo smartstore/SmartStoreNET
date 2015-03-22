@@ -23,6 +23,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IProductService _productService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
+		private readonly IProductAttributeService _productAttributeService;
 
         public PriceCalculationService(IWorkContext workContext,
 			IStoreContext storeContext,
@@ -31,7 +32,8 @@ namespace SmartStore.Services.Catalog
             IProductAttributeParser productAttributeParser,
 			IProductService productService,
 			ShoppingCartSettings shoppingCartSettings, 
-            CatalogSettings catalogSettings)
+            CatalogSettings catalogSettings,
+			IProductAttributeService productAttributeService)
         {
             this._workContext = workContext;
 			this._storeContext = storeContext;
@@ -41,6 +43,7 @@ namespace SmartStore.Services.Catalog
 			this._productService = productService;
             this._shoppingCartSettings = shoppingCartSettings;
             this._catalogSettings = catalogSettings;
+			this._productAttributeService = productAttributeService;
         }
         
         #region Utilities
@@ -314,7 +317,30 @@ namespace SmartStore.Services.Catalog
 			bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
 			if (isBundlePerItemPricing)
+			{
 				bundleItems = _productService.GetBundleItems(product.Id);
+
+				// sepcial case: one bundle item with one attribute and one attribute value and one attribute combination
+				if (bundleItems.Count == 1)
+				{
+					var firstBundleItem = bundleItems.First();
+					if (firstBundleItem.Item.Product.ProductVariantAttributes.Count == 1)
+					{
+						var firstAttribute = firstBundleItem.Item.Product.ProductVariantAttributes.First();
+						if (firstAttribute.ProductVariantAttributeValues.Count == 1)
+						{
+							var firstAttributeValue = firstAttribute.ProductVariantAttributeValues.First();
+							firstBundleItem.AdditionalCharge = firstAttributeValue.PriceAdjustment;
+
+							var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(firstBundleItem.Item.ProductId);
+							if (combinations.Count == 1)
+							{
+								firstBundleItem.Item.Product.MergeWithCombination(combinations.First());
+							}
+						}
+					}
+				}
+			}
 
 			decimal lowestPrice = GetFinalPrice(product, bundleItems, _workContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 

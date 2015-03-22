@@ -44,7 +44,7 @@
 		var address = order.BillingAddress;
 		
 		<div class="document">
-			@Html.Widget("invoice_top")
+			@Html.Widget("invoice_top", order)
 
 			<!-- Address & Info -->
 			<div class="clearfix" style="margin-bottom: 100px">
@@ -83,7 +83,7 @@
 					</div>
 				</div>
 
-				@Html.Widget("invoice_orderinfo_top")
+				@Html.Widget("invoice_orderinfo_top", order)
 
 				<div class="order-info text-small pull-right">
 					<table>
@@ -104,14 +104,14 @@
 							<td class="value">@order.ShippingMethod</td>
 						</tr>
 					</table>
-					@Html.Widget("invoice_orderinfotable_after")
+					@Html.Widget("invoice_orderinfotable_after", order)
 				</div>
 
-				@Html.Widget("invoice_orderinfo_bottom")
+				@Html.Widget("invoice_orderinfo_bottom", order)
 			</div>
 			
 			<!-- Order lines -->
-			@Html.Widget("invoice_lines_before")
+			@Html.Widget("invoice_lines_before", order)
 			<h3>@T("PDFInvoice.Product(s)")</h3>
 
 			<table class="table order-summary">
@@ -141,7 +141,7 @@
 			</table>
 
 			<!-- Checkout attributes -->
-			@Html.Widget("invoice_checkoutattributes_before")
+			@Html.Widget("invoice_checkoutattributes_before", order)
 			@if (order.CheckoutAttributeInfo.HasValue())
 			{
 				<div class="checkout-attributes margin-bottom-30">
@@ -150,7 +150,7 @@
 			}
 
 			<!-- Order totals -->
-			@Html.Widget("invoice_ordertotals_before")
+			@Html.Widget("invoice_ordertotals_before", order)
 			<div class="order-totals clearfix">
 				<div class="pull-right" style="width: 40%; page-break-inside: avoid">
 					<table class="table order-totals">
@@ -229,7 +229,7 @@
 			</div>
 
 			<!-- Order notes -->
-			@Html.Widget("invoice_ordernotes_before")
+			@Html.Widget("invoice_ordernotes_before", order)
 			@if (order.RenderOrderNotes && order.OrderNotes.Count > 0)
 			{
 				<h3>@T("PDFInvoice.OrderNotes")</h3>
@@ -263,7 +263,7 @@
 				</div>
 			}
 			
-			@Html.Widget("invoice_bottom")
+			@Html.Widget("invoice_bottom", order)
 		</div>
 	}
 </div>

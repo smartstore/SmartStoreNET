@@ -1,74 +1,26 @@
 ﻿@model SearchBoxModel
 @using SmartStore.Web.Models.Catalog;
 
-    @using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { onsubmit = "return check_small_search_form()", @class = "form-search pull-right" }))
-    {
-        <div class="input-append" style="position: relative">    
-			<input type="text" 
-				   id="quicksearch" 
-				   placeholder="@T("Search.SearchBox.Tooltip")"
-				   @(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
-            <button type="submit" class="btn btn-warning" title="@T("Search")">
-				<i class="fa fa-search"></i>
-			</button>
-			<span id="quicksearch-progress" class="ajax-loader-small hide"></span>
-        </div>
-        <script type="text/javascript">
+@{
+	if (Model.AutoCompleteEnabled)
+	{
+		Html.AddScriptParts("~/Scripts/smartstore.instantsearch.js");
+	}
+}
 
-            function check_small_search_form() {
-                var search_terms = $("#quicksearch");
-                if (search_terms.val() == "") {
-                    var frm = search_terms.closest("form");
-                    var shakeOpts = { direction: "right", distance: 4, times: 3, easing: "easeInOutCubic" };
-                    frm.stop(true, true)
-                       .effect("shake", shakeOpts, 100, function() { search_terms.trigger("focus").removeClass("placeholder") } );
-                    return false;
-                }
-
-                return true;
-            }
-			@if (Model.AutoCompleteEnabled)
-            {
-                <text>
-				$(function () {
-					var searchResult;
-
-					$('#quicksearch').typeahead({
-						items: 16,
-						minLength: @(Model.SearchTermMinimumLength.ToString()),
-						source: function (query, process) {
-							$('#quicksearch-progress').removeClass('hide');
-							return $.ajax({
-								dataType: "json",
-								url: '@Url.RouteUrl("ProductSearchAutoComplete")',
-								data: { term: query },
-								type: 'GET',
-								success: function (json) {
-									searchResult = json;
-									var items = $.map(json, function(val, i) {
-										return val.label;
-									});
-									process(items);
-								},
-								error: function() {
-									searchResult = null;
-								},
-								complete: function() {
-									$('#quicksearch-progress').addClass('hide');
-								}
-							});
-						},
-						updater: function(label) {
-							if (!searchResult)
-								return;
-
-							var item = _.find(searchResult, function(x) { return x.label == label }); 
-							setLocation(item.producturl);
-						}
-					})
-				});
-                </text>
-            }
-        </script>
-        @Html.Widget("searchbox")
-    }
+@using (Html.BeginRouteForm("ProductSearch", FormMethod.Get, new { @class = "form-search pull-right" }))
+{
+    <div class="input-append" style="position: relative">    
+		<input type="text"
+				id="instantsearch"
+				placeholder="@T("Search.SearchBox.Tooltip")"
+				data-minlength="@(Model.SearchTermMinimumLength.ToString())"
+				data-url="@Url.RouteUrl("ProductSearchAutoComplete")"
+				@(Model.AutoCompleteEnabled ? Html.Raw(" autocomplete=\"off\"") : null) name="q" />
+        <button type="submit" class="btn btn-warning" title="@T("Search")">
+			<i class="fa fa-search"></i>
+		</button>
+		<span id="instantsearch-progress" class="ajax-loader-small hide"></span>
+    </div>
+    @Html.Widget("searchbox")
+}

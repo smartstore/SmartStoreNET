@@ -53,6 +53,7 @@
                             .Insert("SettingAdd", "Setting");
                     })
                     .ClientEvents(x => x.OnError("grid_onError").OnEdit("grid_onStoreEdit"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
             <script type="text/javascript">
                 function grid_onError(e) {

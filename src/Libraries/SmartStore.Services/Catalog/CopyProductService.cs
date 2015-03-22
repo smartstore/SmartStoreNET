@@ -502,7 +502,7 @@ namespace SmartStore.Services.Catalog
 			_productService.UpdateHasDiscountsApplied(productCopy);
 
 			// associated products
-			if (copyAssociatedProducts)
+			if (copyAssociatedProducts && product.ProductType != ProductType.BundledProduct)
 			{
 				var searchContext = new ProductSearchContext()
 				{

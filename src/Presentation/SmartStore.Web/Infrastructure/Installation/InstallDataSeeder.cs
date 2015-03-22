@@ -31,6 +31,7 @@ using System.Data.Entity.Migrations;
 using SmartStore.Data.Migrations;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Web.Infrastructure.Installation
 {
@@ -183,7 +184,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			this.GenericAttributeService.SaveAttribute(adminUser, SystemCustomerAttributeNames.LastName, adminUser.Addresses.FirstOrDefault().LastName);
 			_ctx.SaveChanges();
 
-            // search engine (crawler) built-in user
+			// Built-in user for search engines (crawlers)
             var customer = _data.SearchEngineUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
@@ -192,6 +193,11 @@ namespace SmartStore.Web.Infrastructure.Installation
             customer = _data.BackgroundTaskUser();
             customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
             Save(customer);
+
+			// Built-in user for the PDF converter
+			customer = _data.PdfConverterUser();
+			customer.CustomerRoles.Add(customerRoles.SingleOrDefault(x => x.SystemName == SystemCustomerRoleNames.Guests));
+			Save(customer);
         }
 
 		private void HashDefaultCustomerPassword(string defaultUserEmail, string defaultUserPassword)
@@ -470,7 +476,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 						NullEventPublisher.Instance,
 						mediaSettings,
 						new ImageResizerService(),
-						new ImageCache(mediaSettings, webHelper, null, null));
+						new ImageCache(mediaSettings, webHelper, null, null),
+						new Notifier());
 				}
 
 				return _pictureService;
@@ -490,6 +497,8 @@ namespace SmartStore.Web.Infrastructure.Installation
 					rsResources.AutoCommitEnabled = false;
 
 					var storeMappingService = new StoreMappingService(NullCache.Instance, null, null, null);
+					var storeService = new StoreService(NullCache.Instance, new EfRepository<Store>(_ctx), NullEventPublisher.Instance);
+					var storeContext = new WebStoreContext(storeService, new WebHelper(null), null);
 
 					var locSettings = new LocalizationSettings();
 
@@ -499,7 +508,9 @@ namespace SmartStore.Web.Infrastructure.Installation
 						this.SettingService,
 						locSettings,
 						NullEventPublisher.Instance,
-						storeMappingService);
+						storeMappingService,
+						storeService,
+						storeContext);
 
 					_locService = new LocalizationService(
 						NullCache.Instance,

@@ -26,8 +26,7 @@ namespace SmartStore.Web.Framework
             {
                 string value = null;
                 var langId = EngineContext.Current.Resolve<IWorkContext>().WorkingLanguage.Id;
-                value = EngineContext.Current.Resolve<ILocalizationService>()
-                        .GetResource(ResourceKey, langId, true, "" /* ResourceKey */, true);
+                value = EngineContext.Current.Resolve<ILocalizationService>().GetResource(ResourceKey, langId, true, "" /* ResourceKey */, true);
 
                 if (value.IsEmpty() && _callerPropertyName.HasValue())
                 {

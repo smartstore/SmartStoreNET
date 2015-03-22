@@ -149,7 +149,7 @@ namespace SmartStore.Web.Controllers
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-			var model = new ProductDetailsModel()
+			var model = new ProductDetailsModel
 			{
 				Id = product.Id,
 				Name = product.GetLocalized(x => x.Name),
@@ -1265,6 +1265,7 @@ namespace SmartStore.Web.Controllers
 				model.TotalReviews = product.ApprovedTotalReviews;
 				model.ShowReviews = _catalogSettings.ShowProductReviewsInProductLists;
 				model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
+				model.InvisibleDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 
 				var deliveryTime = _deliveryTimeService.GetDeliveryTime(minPriceProduct);
 				if (deliveryTime != null)

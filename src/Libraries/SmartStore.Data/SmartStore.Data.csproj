@@ -224,6 +224,18 @@
     <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
       <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.cs" />
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.Designer.cs">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503032227054_V22Res.cs" />
+    <Compile Include="Migrations\201503032227054_V22Res.Designer.cs">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.cs" />
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.Designer.cs">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201502120858030_Licensing.cs" />
     <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
       <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
@@ -449,6 +461,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
       <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280342294_LocalizedPropertyIndex.resx">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503032227054_V22Res.resx">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503101851123_PdfConverterUser.resx">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
       <DependentUpon>201502120858030_Licensing.cs</DependentUpon>

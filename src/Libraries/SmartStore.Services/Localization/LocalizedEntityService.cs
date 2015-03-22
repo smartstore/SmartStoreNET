@@ -91,38 +91,16 @@ namespace SmartStore.Services.Localization
             return _cacheManager.Get(key, () =>
             {
                 var query = from lp in _localizedPropertyRepository.Table
-                            where lp.LanguageId == languageId &&
-                            lp.EntityId == entityId &&
-                            lp.LocaleKeyGroup == localeKeyGroup &&
-                            lp.LocaleKey == localeKey
+                            where lp.EntityId == entityId &&
+                            lp.LocaleKey == localeKey &&
+							lp.LocaleKeyGroup == localeKeyGroup &&
+							lp.LanguageId == languageId
                             select lp.LocaleValue;
                 var localeValue = query.FirstOrDefault();
                 //little hack here. nulls aren't cacheable so set it to ""
                 if (localeValue == null)
                     localeValue = "";
                 return localeValue;
-            });
-        }
-
-        /// <summary>
-        /// Find localized values
-        /// </summary>
-        /// <param name="localeKeyGroup">Locale key group</param>
-        /// <param name="localeKey">Locale key</param>
-        /// <param name="localeValue">Locale key</param>
-        /// <returns>Found localized values</returns>
-        public virtual int GetEntityIdByLocalizedValue(string localeKeyGroup, string localeKey, string localeValue)
-        {
-            string key = string.Format(LOCALIZEDPROPERTY_ENTITYID_KEY, localeKeyGroup, localeKey, localeValue);
-            return _cacheManager.Get(key, () =>
-            {
-                var query = from lp in _localizedPropertyRepository.Table
-                            where lp.LocaleKeyGroup == localeKeyGroup &&
-                            lp.LocaleKey == localeKey &&
-                            lp.LocaleValue == localeValue
-                            select lp.EntityId;
-                var result = query.FirstOrDefault();
-                return result;
             });
         }
 

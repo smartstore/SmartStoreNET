@@ -79,7 +79,7 @@
 
                         @if (!String.IsNullOrEmpty(@slide.PictureUrl))
                         {
-                            <div class="picture"><img src="@Url.Content(slide.PictureUrl)" /></div>
+                            <div class="picture"><img src="@Url.Content(slide.PictureUrl)" alt="@slide.Title" /></div>
                         }
 		            </li>
                 }

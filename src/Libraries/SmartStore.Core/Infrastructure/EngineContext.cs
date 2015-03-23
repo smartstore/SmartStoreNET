@@ -13,14 +13,16 @@ namespace SmartStore.Core.Infrastructure
     public class EngineContext
     {
         #region Initialization Methods
+
         /// <summary>Initializes a static instance of the SmartStore factory.</summary>
         /// <param name="forceRecreate">Creates a new factory instance even though the factory has been previously initialized.</param>
+		/// <param name="engine">A custom implementation of <see cref="IEngine"/> to use instead of the built-in engine</param>
         [MethodImpl(MethodImplOptions.Synchronized)]
-        public static IEngine Initialize(bool forceRecreate)
+        public static IEngine Initialize(bool forceRecreate, IEngine engine = null)
         {
             if (Singleton<IEngine>.Instance == null || forceRecreate)
             {
-                Singleton<IEngine>.Instance = CreateEngineInstance();
+                Singleton<IEngine>.Instance = engine ?? CreateEngineInstance();
                 Singleton<IEngine>.Instance.Initialize();
             }
             return Singleton<IEngine>.Instance;

@@ -63,7 +63,6 @@ namespace SmartStore.Core.Infrastructure
             }
         }
 
-
 		public override IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
             if (this.EnsureBinFolderAssembliesLoaded && !_binFolderAssembliesLoaded)

@@ -13,7 +13,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
-using SmartStore.Licensing.Checker;
+using SmartStore.Licensing;
 using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Cms;

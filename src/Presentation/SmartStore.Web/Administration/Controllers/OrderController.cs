@@ -1759,7 +1759,7 @@ namespace SmartStore.Admin.Controllers
             var products = _productService.SearchProducts(searchContext);
             gridModel.Data = products.Select(x =>
             {
-                var productModel = new OrderModel.AddOrderProductModel.ProductModel()
+                var productModel = new OrderModel.AddOrderProductModel.ProductModel
                 {
                     Id = x.Id,
                     Name =  x.Name,

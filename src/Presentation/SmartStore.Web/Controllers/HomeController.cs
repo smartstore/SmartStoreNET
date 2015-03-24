@@ -168,7 +168,7 @@ namespace SmartStore.Web.Controllers
 					from = email;
 					fromName = fullName;
 				}
-				_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail()
+				_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
 				{
 					From = from,
 					FromName = fromName,

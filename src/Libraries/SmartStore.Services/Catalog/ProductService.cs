@@ -269,10 +269,6 @@ namespace SmartStore.Services.Catalog
             return query.Distinct().Count();
         }
 
-        /// <summary>
-        /// Search products
-        /// <remarks>codehint: sm-edit (changed input parameter)</remarks>
-        /// </summary>
         public virtual IPagedList<Product> SearchProducts(ProductSearchContext ctx)
         {
             // codehint: sm-edit (turn off nc filtering, we have our own)
@@ -518,17 +514,17 @@ namespace SmartStore.Services.Catalog
                     pLoadFilterableSpecificationAttributeOptionIds,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
-                //get filterable specification attribute option identifier
+
+                // get filterable specification attribute option identifier
                 string filterableSpecificationAttributeOptionIdsStr = (pFilterableSpecificationAttributeOptionIds.Value != DBNull.Value) ? (string)pFilterableSpecificationAttributeOptionIds.Value : "";
-                if (ctx.LoadFilterableSpecificationAttributeOptionIds &&
-                    !string.IsNullOrWhiteSpace(filterableSpecificationAttributeOptionIdsStr))
+                if (ctx.LoadFilterableSpecificationAttributeOptionIds && !string.IsNullOrWhiteSpace(filterableSpecificationAttributeOptionIdsStr))
                 {
-                    // codehint: sm-edit
                     ctx.FilterableSpecificationAttributeOptionIds.AddRange(filterableSpecificationAttributeOptionIdsStr
                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                        .Select(x => Convert.ToInt32(x.Trim())));
                 }
-                //return products
+
+                // return products
                 int totalRecords = (pTotalRecords.Value != DBNull.Value) ? Convert.ToInt32(pTotalRecords.Value) : 0;
                 return new PagedList<Product>(products, ctx.PageIndex, ctx.PageSize, totalRecords);
 

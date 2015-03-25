@@ -11,7 +11,7 @@
                 <img src="@Url.Content(Model.PictureThumbnailUrl)" />
 			}
             @T("Admin.Catalog.Products.EditProductDetails") - <span title="@Model.Name">@Model.Name.Truncate(45, "...")</span> 
-			<a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Catalog.Products.BackToList"))</a>
+			<a href='@Url.Action("List")'>(@T("Admin.Catalog.Products.BackToList"))</a>
         </div>
         <div class="options">
 			<button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Url.RouteUrl("Product", new { SeName = Model.SeName })', 1000, 600, true); return false;" class="btn">

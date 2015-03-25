@@ -9,7 +9,7 @@
     <div class="section-header">
         <div class="title">
             @T("Admin.Customers.Customers.EditCustomerDetails") - @Model.LastName @Model.FirstName
-			<a href='@Url.Referrer(Url.Action("List"))'>(@T("Admin.Customers.Customers.BackToList"))</a>			
+			<a href='@Url.Action("List")'>(@T("Admin.Customers.Customers.BackToList"))</a>			
         </div>
         <div class="options">
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>

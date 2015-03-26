@@ -32,5 +32,10 @@ namespace SmartStore.Services.Shipping
         /// Gets a shipment tracker
         /// </summary>
         IShipmentTracker ShipmentTracker { get; }
+
+		/// <summary>
+		/// Gets a value indicating whether the shipping rate computation method is active and should be offered to customers
+		/// </summary>
+		bool IsActive { get; }
     }
 }

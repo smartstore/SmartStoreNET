@@ -231,6 +231,11 @@ namespace SmartStore.Shipping
             }
         }
 
+		public bool IsActive
+		{
+			get { return true; }
+		}
+
         /// <summary>
         /// Gets a route for provider configuration
         /// </summary>

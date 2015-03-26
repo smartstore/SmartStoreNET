@@ -3,19 +3,19 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
-using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
 {
@@ -104,7 +104,7 @@ namespace SmartStore.Services.Shipping
         {
 			var allMethods = LoadAllShippingRateComputationMethods(storeId);
 			var activeMethods = allMethods
-                   .Where(p => _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+				.Where(p => p.Value.IsActive && _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
 
 			if (!activeMethods.Any())
 			{
@@ -366,11 +366,13 @@ namespace SmartStore.Services.Shipping
             
             //create a package
             var getShippingOptionRequest = CreateShippingOptionRequest(cart, shippingAddress);
+
             var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods(storeId)
                 .Where(srcm => 
                     String.IsNullOrWhiteSpace(allowedShippingRateComputationMethodSystemName) || 
                     allowedShippingRateComputationMethodSystemName.Equals(srcm.Metadata.SystemName, StringComparison.InvariantCultureIgnoreCase))
                 .ToList();
+
             if (shippingRateComputationMethods.Count == 0)
                 throw new SmartException("Shipping rate computation method could not be loaded");
 
@@ -382,9 +384,11 @@ namespace SmartStore.Services.Shipping
                 {
                     //system name
                     so2.ShippingRateComputationMethodSystemName = srcm.Metadata.SystemName;
+
                     //round
                     if (_shoppingCartSettings.RoundPricesDuringCalculation)
                         so2.Rate = Math.Round(so2.Rate, 2);
+
                     result.ShippingOptions.Add(so2);
                 }
 

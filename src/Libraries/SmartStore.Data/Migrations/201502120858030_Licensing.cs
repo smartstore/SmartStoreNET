@@ -68,9 +68,14 @@ namespace SmartStore.Data.Migrations
 				"Renew check",
 				"Prüfung erneuern");
 
+
 			builder.AddOrUpdate("Admin.Configuration.Payment.CannotActivatePaymentMethod",
 				"Activating this payment method is forbidden by the plugin.",
 				"Das Plugin erlaubt keine Aktivierung dieser Zahlungsmethode.");
+
+			builder.AddOrUpdate("Admin.Configuration.Shipping.CannotActivateShippingRateComputationMethod",
+				"Activating this shipping rate computation method is forbidden by the plugin.",
+				"Das Plugin erlaubt keine Aktivierung dieser Berechnungsmethode für Versandkosten.");
 		}
     }
 }

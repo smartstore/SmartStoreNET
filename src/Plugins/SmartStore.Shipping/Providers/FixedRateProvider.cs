@@ -133,5 +133,10 @@ namespace SmartStore.Shipping
                 return null;
             }
         }
+
+		public bool IsActive
+		{
+			get { return true; }
+		}
     }
 }

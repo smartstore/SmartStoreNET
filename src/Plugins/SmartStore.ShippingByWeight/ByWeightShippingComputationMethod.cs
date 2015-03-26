@@ -248,6 +248,11 @@ namespace SmartStore.ShippingByWeight
             }
         }
 
+		public bool IsActive
+		{
+			get { return true; }
+		}
+
         #endregion
     }
 }

@@ -89,6 +89,12 @@ namespace SmartStore.Services.Tests.Shipping
         {
             get { return null; }
         }
+
+		public bool IsActive
+		{
+			get { return true; }
+		}
+
         #endregion
     }
 }

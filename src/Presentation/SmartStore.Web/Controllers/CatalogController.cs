@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics;
 using System.Linq;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
@@ -264,7 +265,9 @@ namespace SmartStore.Web.Controllers
 
 				if (featuredProducts != null)
 				{
-					model.FeaturedProducts = _helper.PrepareProductOverviewModels(featuredProducts, prepareColorAttributes: true).ToList();
+					model.FeaturedProducts = _helper.PrepareProductOverviewModels(
+						featuredProducts, 
+						prepareColorAttributes: true).ToList();
 				}
             }
 
@@ -285,7 +288,10 @@ namespace SmartStore.Web.Controllers
                 var filterQuery = _filterService.ProductFilter(context);
                 var products = new PagedList<Product>(filterQuery, command.PageIndex, command.PageSize);
 
-				model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
+				model.Products = _helper.PrepareProductOverviewModels(
+					products, 
+					prepareColorAttributes: true,
+					prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
                 model.PagingFilteringContext.LoadPagedList(products);
             }
             else
@@ -317,7 +323,10 @@ namespace SmartStore.Web.Controllers
 
                 var products = _productService.SearchProducts(ctx2);
 
-				model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
+				model.Products = _helper.PrepareProductOverviewModels(
+					products, 
+					prepareColorAttributes: true,
+					prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
                 model.PagingFilteringContext.LoadPagedList(products);
                 //model.PagingFilteringContext.ViewMode = viewMode;
@@ -527,7 +536,10 @@ namespace SmartStore.Web.Controllers
 
             var products = _productService.SearchProducts(ctx2);
 
-			model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
+			model.Products = _helper.PrepareProductOverviewModels(
+				products, 
+				prepareColorAttributes: false,
+				prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
             model.PagingFilteringContext.LoadPagedList(products);
             //model.PagingFilteringContext.ViewMode = viewMode;
@@ -764,7 +776,10 @@ namespace SmartStore.Web.Controllers
 
 			var products = _productService.SearchProducts(ctx);
 
-			model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
+			model.Products = _helper.PrepareProductOverviewModels(
+				products, 
+				prepareColorAttributes: true,
+				prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
 			model.PagingFilteringContext.LoadPagedList(products);
 			//model.PagingFilteringContext.ViewMode = viewMode;
@@ -783,7 +798,7 @@ namespace SmartStore.Web.Controllers
 				.OrderBy(x => x.GetLocalized(y => y.Name))
 				.Select(x =>
 				{
-					var ptModel = new ProductTagModel()
+					var ptModel = new ProductTagModel
 					{
 						Id = x.Id,
 						Name = x.GetLocalized(y => y.Name),
@@ -1031,7 +1046,7 @@ namespace SmartStore.Web.Controllers
 
 		public ActionResult FlyoutCompare()
 		{
-			var model = new CompareProductsModel()
+			var model = new CompareProductsModel
 			{
 				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
 				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
@@ -1062,7 +1077,7 @@ namespace SmartStore.Web.Controllers
 				_services.StoreContext.CurrentStore.Id);
 
 			if (command.PageSize <= 0)
-				command.PageSize = _catalogSettings.SearchPageProductsPerPage; //_catalogSettings.SearchPageProductsPerPage;
+				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
 
@@ -1106,13 +1121,13 @@ namespace SmartStore.Web.Controllers
 			var manufacturers = _manufacturerService.GetAllManufacturers();
 			if (manufacturers.Count > 0)
 			{
-				model.AvailableManufacturers.Add(new SelectListItem()
+				model.AvailableManufacturers.Add(new SelectListItem
 				{
 					Value = "0",
 					Text = T("Common.All")
 				});
 				foreach (var m in manufacturers)
-					model.AvailableManufacturers.Add(new SelectListItem()
+					model.AvailableManufacturers.Add(new SelectListItem
 					{
 						Value = m.Id.ToString(),
 						Text = m.GetLocalized(x => x.Name),
@@ -1192,7 +1207,10 @@ namespace SmartStore.Web.Controllers
 
 					products = _productService.SearchProducts(ctx);
 
-					model.Products = _helper.PrepareProductOverviewModels(products, prepareColorAttributes: true).ToList();
+					model.Products = _helper.PrepareProductOverviewModels(
+						products, 
+						prepareColorAttributes: true, 
+						prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
 
 					model.NoResults = !model.Products.Any();
 				}
@@ -1234,7 +1252,12 @@ namespace SmartStore.Web.Controllers
 
 			var products = _productService.SearchProducts(ctx);
 
-			var models = _helper.PrepareProductOverviewModels(products, false, _catalogSettings.ShowProductImagesInSearchAutoComplete, _mediaSettings.AutoCompleteSearchThumbPictureSize).ToList();
+			var models = _helper.PrepareProductOverviewModels(
+				products, 
+				false, 
+				_catalogSettings.ShowProductImagesInSearchAutoComplete, 
+				_mediaSettings.AutoCompleteSearchThumbPictureSize).ToList();
+			
 			var result = (from p in models
 						  select new
 						  {

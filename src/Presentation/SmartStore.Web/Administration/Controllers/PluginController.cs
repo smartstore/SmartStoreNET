@@ -341,8 +341,18 @@ namespace SmartStore.Admin.Controllers
 			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
 				return Content(T("Admin.Common.ResourceNotFound"));
 
-			var licensable = descriptor.Instance() as ILicensable;
 			var stores = _commonService.StoreService.GetAllStores();
+			var hasSingleLicenseForAllStores = false;
+
+			var licensableType = descriptor.ReferencedAssembly.ExportedTypes.FirstOrDefault(
+				x => !x.IsInterface && x.IsClass && !x.IsAbstract && typeof(IPlugin).IsAssignableFrom(x) && typeof(ILicensable).IsAssignableFrom(x)
+			);
+
+			var configAttr = licensableType.GetAttribute<LicenseConfigurationAttribute>(false);
+			if (configAttr != null)
+			{
+				hasSingleLicenseForAllStores = configAttr.HasSingleLicenseForAllStores;
+			}
 
 			var model = new LicensePluginModel
 			{
@@ -350,7 +360,7 @@ namespace SmartStore.Admin.Controllers
 				Licenses = new List<LicensePluginModel.LicenseModel>()
 			};
 
-			if (licensable.HasSingleLicenseForAllStores)
+			if (hasSingleLicenseForAllStores)
 			{
 				var licenseModel = new LicensePluginModel.LicenseModel();
 				var license = LicenseChecker.GetLicense(systemName, "");

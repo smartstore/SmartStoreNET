@@ -7,9 +7,5 @@ namespace SmartStore.Core.Plugins
 	/// </summary>
 	public interface ILicensable
 	{
-		/// <summary>
-		/// Whether one license (key) is valid for all stores. Otherwise a new key is required for each store.
-		/// </summary>
-		bool HasSingleLicenseForAllStores { get; }
 	}
 }

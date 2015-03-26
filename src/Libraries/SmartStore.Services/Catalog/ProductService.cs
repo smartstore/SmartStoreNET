@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -625,27 +626,36 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-		/// <summary>
-		/// Builds a product query based on the options in ProductSearchContext parameter.
-		/// </summary>
-		/// <param name="ctx">Parameters to build the query.</param>
-		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
-		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
-        public virtual IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false)
-        {
-            if (allowedCustomerRolesIds == null)
-            {
-                allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-            }
-            
-            // products
-            var query = ctx.Query ?? _productRepository.Table;
-            query = query.Where(p => !p.Deleted);
+		public virtual IQueryable<Product> PrepareProductSearchQuery(
+			ProductSearchContext ctx,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false)
+		{
+			return PrepareProductSearchQuery<Product>(ctx, x => x, allowedCustomerRolesIds, searchLocalizedValue);
+		}
 
-            if (!ctx.ShowHidden)
-            {
-                query = query.Where(p => p.Published);
-            }
+		public virtual IQueryable<TResult> PrepareProductSearchQuery<TResult>(
+			ProductSearchContext ctx,
+			Expression<Func<Product, TResult>> selector,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false)
+		{
+			Guard.ArgumentNotNull(() => ctx);
+			Guard.ArgumentNotNull(() => selector);
+
+			if (allowedCustomerRolesIds == null)
+			{
+				allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+			}
+
+			// products
+			var query = ctx.Query ?? _productRepository.Table;
+			query = query.Where(p => !p.Deleted);
+
+			if (!ctx.ShowHidden)
+			{
+				query = query.Where(p => p.Published);
+			}
 
 			if (ctx.ParentGroupedProductId > 0)
 			{
@@ -720,39 +730,39 @@ namespace SmartStore.Services.Catalog
 					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > nowUtc));
 			}
 
-            // searching by keyword
-            if (!String.IsNullOrWhiteSpace(ctx.Keywords))
-            {
-                query = from p in query
-                        join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
-                        from lp in p_lp.DefaultIfEmpty()
-                        from pt in p.ProductTags.DefaultIfEmpty()
-                        where (p.Name.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
+			// searching by keyword
+			if (!String.IsNullOrWhiteSpace(ctx.Keywords))
+			{
+				query = from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
+						from lp in p_lp.DefaultIfEmpty()
+						from pt in p.ProductTags.DefaultIfEmpty()
+						where (p.Name.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
 							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
-                              (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
+							  (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
 							//localized values
-                              (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
-                        //UNDONE search localized values in associated product tags
-                        select p;
-            }
+							  (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
+						//UNDONE search localized values in associated product tags
+						select p;
+			}
 
-            if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
-            {
-				query = 
+			if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
+			{
+				query =
 					from p in query
 					join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
 					from acl in pacl.DefaultIfEmpty()
 					where !p.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
 					select p;
-            }
+			}
 
 			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
-				query = 
+				query =
 					from p in query
 					join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
 					from sm in psm.DefaultIfEmpty()
@@ -760,10 +770,10 @@ namespace SmartStore.Services.Catalog
 					select p;
 			}
 
-            // search by specs
-            if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
-            {
-                query = 
+			// search by specs
+			if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
+			{
+				query =
 					from p in query
 					where !ctx.FilteredSpecs.Except
 					(
@@ -772,57 +782,57 @@ namespace SmartStore.Services.Catalog
 							.Select(psa => psa.SpecificationAttributeOptionId)
 					).Any()
 					select p;
-            }
+			}
 
-            // category filtering
-            if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
-            {
-                //search in subcategories
-                if (ctx.MatchAllcategories)
-                {
-                    query = from p in query
-                            where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
-                            from pc in p.ProductCategories
-                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                            select p;
-                }
-                else
-                {
-                    query = from p in query
-                            from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                            select p;
-                }
-            }
+			// category filtering
+			if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
+			{
+				//search in subcategories
+				if (ctx.MatchAllcategories)
+				{
+					query = from p in query
+							where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+							from pc in p.ProductCategories
+							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+							select p;
+				}
+				else
+				{
+					query = from p in query
+							from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
+							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+							select p;
+				}
+			}
 
-            // manufacturer filtering
-            if (ctx.ManufacturerId > 0)
-            {
-                query = from p in query
-                        from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
-                        where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pm.IsFeaturedProduct)
-                        select p;
-            }
+			// manufacturer filtering
+			if (ctx.ManufacturerId > 0)
+			{
+				query = from p in query
+						from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
+						where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pm.IsFeaturedProduct)
+						select p;
+			}
 
-            // related products filtering
-            //if (relatedToProductId > 0)
-            //{
-            //    query = from p in query
-            //            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
-            //            where (relatedToProductId == rp.ProductId1)
-            //            select p;
-            //}
+			// related products filtering
+			//if (relatedToProductId > 0)
+			//{
+			//    query = from p in query
+			//            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
+			//            where (relatedToProductId == rp.ProductId1)
+			//            select p;
+			//}
 
-            // tag filtering
-            if (ctx.ProductTagId > 0)
-            {
-                query = from p in query
-                        from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
-                        select p;
-            }
+			// tag filtering
+			if (ctx.ProductTagId > 0)
+			{
+				query = from p in query
+						from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
+						select p;
+			}
 
-            return query;
-        }
+			return query.Select(selector);
+		}
 
         /// <summary>
         /// Update product review totals

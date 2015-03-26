@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -69,6 +70,15 @@ namespace SmartStore.Services.Catalog
 		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
 		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
 		IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
+
+		/// <summary>
+		/// Builds a product query based on the options in ProductSearchContext parameter.
+		/// </summary>
+		/// <param name="ctx">Parameters to build the query.</param>
+		/// <param name="selector">Data projector</param>
+		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
+		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
+		IQueryable<TResult> PrepareProductSearchQuery<TResult>(ProductSearchContext ctx, Expression<Func<Product, TResult>> selector, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
 
         /// <summary>
         /// Update product review totals

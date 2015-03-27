@@ -79,28 +79,26 @@ namespace SmartStore.Web.Controllers
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()
         {
-            return View();
+			return View();
         }
 
 
         [ChildActionOnly]
         public ActionResult ContentSlider()
         {
-            var workContext = EngineContext.Current.Resolve<IWorkContext>();
-			var storeContext = EngineContext.Current.Resolve<IStoreContext>();
-            var pictureService = EngineContext.Current.Resolve<IPictureService>();
-            var model = EngineContext.Current.Resolve<ContentSliderSettings>();
+			var pictureService = EngineContext.Current.Resolve<IPictureService>();
+			var settings = _services.Settings.LoadSetting<ContentSliderSettings>();
 
-            model.BackgroundPictureUrl = pictureService.GetPictureUrl(model.BackgroundPictureId, 0, false);
+            settings.BackgroundPictureUrl = pictureService.GetPictureUrl(settings.BackgroundPictureId, 0, false);
 
-            var slides = model.Slides
+            var slides = settings.Slides
 				.Where(s => 
-					s.LanguageCulture == workContext.WorkingLanguage.LanguageCulture && 
-					(!s.LimitedToStores || (s.SelectedStoreIds != null && s.SelectedStoreIds.Contains(storeContext.CurrentStore.Id)))
+					s.LanguageCulture == _services.WorkContext.WorkingLanguage.LanguageCulture && 
+					(!s.LimitedToStores || (s.SelectedStoreIds != null && s.SelectedStoreIds.Contains(_services.StoreContext.CurrentStore.Id)))
 				)
 				.OrderBy(s => s.DisplayOrder);
             
-            foreach (ContentSliderSlideSettings slide in slides)
+            foreach (var slide in slides)
             {
                 slide.PictureUrl = pictureService.GetPictureUrl(slide.PictureId, 0, false);
                 slide.Button1.Url = CheckButtonUrl(slide.Button1.Url);
@@ -108,9 +106,9 @@ namespace SmartStore.Web.Controllers
                 slide.Button3.Url = CheckButtonUrl(slide.Button3.Url);
             }
 
-            model.Slides = slides.ToList();
+            settings.Slides = slides.ToList();
 
-            return PartialView(model);
+            return PartialView(settings);
         }
 
 		public ActionResult StoreClosed()

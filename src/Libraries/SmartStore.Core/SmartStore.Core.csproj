@@ -162,7 +162,6 @@
     <Compile Include="IActivatable.cs" />
     <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
-    <Compile Include="Plugins\ILicensable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
     <Compile Include="Plugins\Providers\IUserEditable.cs" />

@@ -134,7 +134,7 @@ namespace SmartStore.Admin.Controllers
 					}
 				}
 
-				if (pluginDescriptor.IsLicensable)
+				if (LicenseChecker.IsLicensablePlugin(pluginDescriptor))
 				{
 					// we always show license button to serve ability to delete a key
 					model.IsLicensable = true;
@@ -338,12 +338,17 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedPartialView();
 
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);
-			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
+
+			if (descriptor == null || !descriptor.Installed)
+				return Content(T("Admin.Common.ResourceNotFound"));
+
+			bool singleLicenseForAllStores = false;
+			bool isLicensable = LicenseChecker.IsLicensablePlugin(descriptor, out singleLicenseForAllStores);
+
+			if (!isLicensable)
 				return Content(T("Admin.Common.ResourceNotFound"));
 
 			var stores = _commonService.StoreService.GetAllStores();
-			var hasSingleLicenseForAllStores = false;
-
 			var licensableType = descriptor.ReferencedAssembly.ExportedTypes.FirstOrDefault(
 				x => !x.IsInterface && x.IsClass && !x.IsAbstract && typeof(IPlugin).IsAssignableFrom(x) && typeof(ILicensable).IsAssignableFrom(x)
 			);
@@ -360,7 +365,7 @@ namespace SmartStore.Admin.Controllers
 				Licenses = new List<LicensePluginModel.LicenseModel>()
 			};
 
-			if (hasSingleLicenseForAllStores)
+			if (singleLicenseForAllStores)
 			{
 				var licenseModel = new LicensePluginModel.LicenseModel();
 				var license = LicenseChecker.GetLicense(systemName, "");
@@ -400,7 +405,11 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var descriptor = _pluginFinder.GetPluginDescriptorBySystemName(systemName);
-			if (descriptor == null || !descriptor.Installed || !descriptor.IsLicensable)
+			if (descriptor == null || !descriptor.Installed)
+				return HttpNotFound();
+
+			var isLicensable = LicenseChecker.IsLicensablePlugin(descriptor);
+			if (!isLicensable)
 				return HttpNotFound();
 
 			foreach (var item in model.Licenses)

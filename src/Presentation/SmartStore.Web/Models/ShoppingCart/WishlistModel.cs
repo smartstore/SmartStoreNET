@@ -32,12 +32,12 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public IList<string> Warnings { get; set; }
 
-        // codehint: sm-add
         public int ThumbSize { get; set; }
 		public int BundleThumbSize { get; set; }
         public int IgnoredProductsCount { get; set; }
 		public bool DisplayShortDesc { get; set; }
 		public bool ShowProductBundleImages { get; set; }
+		public bool ShowItemsFromWishlistToCartButton { get; set; }
         
 		#region Nested Classes
 

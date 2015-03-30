@@ -213,9 +213,13 @@
 			<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
 			<h4 class="caption">
 				@T("Admin.Common.License")
-				@if (Model.IsLicensingSandbox)
+				@if (Model.IsSandbox)
 				{
-					<span class="label label-warning">Sandbox!</span>
+					<span class="label label-warning">Sandbox</span>
+				}
+				@if (Model.IsLocalhost)
+				{
+					<span class="label label-success">Localhost</span>
 				}
 			</h4>
 		</div>

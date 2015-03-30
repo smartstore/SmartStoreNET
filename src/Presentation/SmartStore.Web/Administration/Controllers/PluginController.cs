@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Admin.Models.Plugins;
@@ -44,7 +43,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IProviderManager _providerManager;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _commonService;
-		private readonly HttpContextBase _httpContext;
 
 	    #endregion
 
@@ -60,8 +58,7 @@ namespace SmartStore.Admin.Controllers
             WidgetSettings widgetSettings,
 			IProviderManager providerManager,
 			PluginMediator pluginMediator,
-			ICommonServices commonService,
-			HttpContextBase httpContext)
+			ICommonServices commonService)
 		{
             this._pluginFinder = pluginFinder;
             this._permissionService = permissionService;
@@ -74,7 +71,6 @@ namespace SmartStore.Admin.Controllers
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
 			this._commonService = commonService;
-			this._httpContext = httpContext;
 
 			T = NullLocalizer.Instance;
 		}
@@ -140,7 +136,7 @@ namespace SmartStore.Admin.Controllers
 					model.IsLicensable = true;
 					model.LicenseUrl = Url.Action("LicensePlugin", new { systemName = pluginDescriptor.SystemName });
 
-					var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName, _httpContext.Request.Url.AbsoluteUri);
+					var license = LicenseChecker.GetLicense(pluginDescriptor.SystemName);
 
 					if (license != null)	// license\plugin has been used
 					{
@@ -160,9 +156,11 @@ namespace SmartStore.Admin.Controllers
                 .ThenBy(p => p.DisplayOrder)
                 .Select(x => PreparePluginModel(x));
 
-            var model = new LocalPluginsModel();
-
-			model.IsLicensingSandbox = LicenseChecker.IsSandbox;
+			var model = new LocalPluginsModel
+			{
+				IsSandbox = LicenseChecker.IsSandbox,
+				IsLocalhost = LicenseChecker.IsLocalhost
+			};
 
 			model.AvailableStores = _commonService.StoreService
 				.GetAllStores()

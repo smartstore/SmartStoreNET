@@ -93,8 +93,8 @@ namespace SmartStore.Data.Migrations
 				"Bitte '{0}' auswählen.");
 
 			builder.AddOrUpdate("ShoppingCart.AttributeError",
-				"An unknown error has occurred in the examination of the selected attributes.",
-				"Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Attribute aufgetreten.");
+				"An unknown error has occurred in the examination of the selected product variant.",
+				"Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Produktvariante aufgetreten.");
 
 			builder.AddOrUpdate("Common.Execution",
 				"Execution",

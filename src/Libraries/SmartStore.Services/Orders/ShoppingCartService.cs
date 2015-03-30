@@ -437,11 +437,6 @@ namespace SmartStore.Services.Orders
 									else
 										warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.QuantityExceedsStock"), maximumQuantityCanBeAdded));
 								}
-
-								if (!combination.IsActive)
-								{
-									warnings.Add(_localizationService.GetResource("ShoppingCart.OutOfStock"));
-								}
                             }
                         }
                         break;
@@ -503,18 +498,12 @@ namespace SmartStore.Services.Orders
             foreach (var pva1 in pva1Collection)
             {
                 var pv1 = pva1.Product;
-                if (pv1 != null)
-                {
-                    if (pv1.Id != product.Id)
-                    {
-						warnings.Add(_localizationService.GetResource("ShoppingCart.AttributeError"));
-                    }
-                }
-                else
-                {
+
+				if (pv1 == null || pv1.Id != product.Id)
+				{
 					warnings.Add(_localizationService.GetResource("ShoppingCart.AttributeError"));
-                    return warnings;
-                }
+					return warnings;
+				}
             }
 
             //existing product attributes
@@ -553,6 +542,19 @@ namespace SmartStore.Services.Orders
                     }
                 }
             }
+
+			// check if there is a selected attribute combination and if it is active
+			if (warnings.Count == 0 && selectedAttributes.HasValue())
+			{
+				var combination = product
+					.ProductVariantAttributeCombinations
+					.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
+
+				if (combination != null && !combination.IsActive)
+				{
+					warnings.Add(_localizationService.GetResource("ShoppingCart.NotAvailable"));
+				}
+			}
 
 			if (warnings.Count == 0)
 			{

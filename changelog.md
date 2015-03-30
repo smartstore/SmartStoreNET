@@ -49,6 +49,7 @@
 * #640 Do not display shipping infos for grouped products in product lists
 * #634 Bundle price in list should not differ from price in details if there is only one bundle item with one attribute
 * Do not copy associated product when copying a bundle product
+* Fixed: Product with inactive attribute combination could be moved onto wishlist, copied to cart and be ordered
 
 
 ## SmartStore.NET 2.1.1

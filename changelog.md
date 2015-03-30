@@ -27,6 +27,7 @@
 * #622 UI: Redesign table in Sales > Orders > Order > Tab Products
 * #625 Bundles can be ordered if an attribute combination of a bundle item is not available
 * Minor UI tweaks in checkout process
+* #666 Export addresses in customer export
 
 ### Bugfixes
 * Instant search box did not display all results when SQL Fulltext Search was enabled

@@ -14,8 +14,9 @@
         @T("Admin.Catalog.ProductReviews")
     </div>
     <div class="options">
-    <button type="submit" id="approve-selected" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Catalog.ProductReviews.ApproveSelected")</button>
-    <button type="submit" id="disapprove-selected" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.ProductReviews.DisapproveSelected")</button>
+        <button type="submit" id="approve-selected" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Catalog.ProductReviews.ApproveSelected")</button>
+        <button type="submit" id="disapprove-selected" class="btn btn-danger"><i class="fa fa-times"></i>&nbsp;@T("Admin.Catalog.ProductReviews.DisapproveSelected")</button>
+        <button type="submit" id="delete-selected" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")</button>
     </div>
 </div>
     <table width="100%">
@@ -70,6 +71,7 @@
 						columns.Bound(x => x.Title);
                         columns.Bound(x => x.ReviewText)
                             .Width(500)
+							.ClientTemplate("<#= _.str.truncate(ReviewText, 400, ' [...]') #>")
                             .Encoded(false);
                         columns.Bound(x => x.Rating)
                             .Width(50)
@@ -91,13 +93,14 @@
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "ProductReview"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>
 </table>
 
     <script type="text/javascript">
-
+		
         var selectedIds = [];
 
         $(document).ready(function () {
@@ -114,35 +117,19 @@
                 return false;
             });
             
-            //"approve selected" button
             $('#approve-selected').click(function (e) {
-                e.preventDefault();
-
-                var postData = {
-                    selectedIds: selectedIds
-                };
-
-                $.ajax({
-                    cache:false,
-                    type: "POST",
-                    url: "@(Url.Action("ApproveSelected", "ProductReview"))",
-                    data: postData,
-                    complete: function (data) {
-                        //reload grid
-                        var grid = $('#productreviews-grid').data('tGrid');
-                        //grid.currentPage = 1; //new search. Set page size to 1
-                        grid.ajaxRequest();
-                    },
-                    error:function (xhr, ajaxOptions, thrownError){
-                        alert(thrownError);
-                    },
-                    traditional: true
-                });
-                return false;
+                processMany(e, "@(Url.Action("ApproveSelected", "ProductReview"))")
             });
-            
-            //"disapprove selected" button
+
             $('#disapprove-selected').click(function (e) {
+                processMany(e, "@(Url.Action("DisapproveSelected", "ProductReview"))")
+            });
+
+            $('#delete-selected').click(function (e) {
+                processMany(e, "@(Url.Action("DeleteSelected", "ProductReview"))")
+            });
+
+            function processMany(e, action) {
                 e.preventDefault();
 
                 var postData = {
@@ -152,12 +139,11 @@
                 $.ajax({
                     cache:false,
                     type: "POST",
-                    url: "@(Url.Action("DisapproveSelected", "ProductReview"))",
+                    url: action,
                     data: postData,
                     complete: function (data) {
                         //reload grid
                         var grid = $('#productreviews-grid').data('tGrid');
-                        //grid.currentPage = 1; //new search. Set page size to 1
                         grid.ajaxRequest();
                     },
                     error:function (xhr, ajaxOptions, thrownError){
@@ -166,9 +152,8 @@
                     traditional: true
                 });
                 return false;
-            });
+            }
 
-            
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
             });

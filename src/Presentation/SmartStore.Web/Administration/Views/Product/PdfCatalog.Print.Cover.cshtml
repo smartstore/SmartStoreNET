@@ -1,0 +1,35 @@
+﻿@model PrintableProductsModel
+@using SmartStore.Core.Html;
+@{
+    Layout = "~/Views/Shared/_Print.cshtml";
+}
+
+<style type="text/css">
+	html, body {
+		height: 100% !important;
+	}
+</style>
+
+<div class="container" style="height:95%">
+    
+    @Html.Widget("pdfcatalog_cover_top")
+
+    @if (Model.PrintLogoUrl.HasValue())
+    {
+        <div class="text-center margin-bottom-50">
+            <img src="@Model.PrintLogoUrl" />
+            <br />
+        </div>
+    }
+    
+    @Html.Widget("pdfcatalog_cover_logo_after")
+
+    <h1 class="text-center" style="font-size: 80px; font-weight: 400; padding-top: 200px">@Model.StoreName</h1>
+
+	@Html.Widget("pdfcatalog_cover_storename_after")
+
+	<div style="position: fixed; bottom: 0; width: 100%">
+		@Html.Action("PdfReceiptFooter", "Common", new { area = "", isPartial = true })
+	</div>
+
+</div>

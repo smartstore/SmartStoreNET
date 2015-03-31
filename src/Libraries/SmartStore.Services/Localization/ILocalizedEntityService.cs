@@ -25,15 +25,6 @@ namespace SmartStore.Services.Localization
         LocalizedProperty GetLocalizedPropertyById(int localizedPropertyId);
 
         /// <summary>
-        /// Find localized values
-        /// </summary>
-        /// <param name="localeKeyGroup">Locale key group</param>
-        /// <param name="localeKey">Locale key</param>
-        /// <param name="localeValue">Locale key</param>
-        /// <returns>Found localized values</returns>
-        int GetEntityIdByLocalizedValue(string localeKeyGroup, string localeKey, string localeValue);
-
-        /// <summary>
         /// Find localized value
         /// </summary>
         /// <param name="languageId">Language identifier</param>

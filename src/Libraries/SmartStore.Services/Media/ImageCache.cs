@@ -76,18 +76,23 @@ namespace SmartStore.Services.Media
 
         public virtual string GetImageUrl(string imagePath, string storeLocation = null)
         {
-            if (imagePath.IsEmpty())
+			if (imagePath.IsEmpty())
                 return null;
 
-			var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
-			if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+			var root = storeLocation;
+
+			if (root.IsEmpty())
 			{
-				storeLocation = cdnUrl;
+				var cdnUrl = _storeContext.CurrentStore.ContentDeliveryNetwork;
+				if (cdnUrl.HasValue() && !_httpContext.IsDebuggingEnabled && !_httpContext.Request.IsLocal)
+				{
+					root = cdnUrl;
+				}
 			}
 
-			storeLocation = storeLocation.NullEmpty() ?? _webHelper.GetStoreLocation();
-            storeLocation = storeLocation.TrimEnd('/', '\\');
-            var url = storeLocation + "/Media/Thumbs/";
+			root = root.NullEmpty() ?? _httpContext.Request.ApplicationPath;
+			root = root.TrimEnd('/', '\\');
+			var url = root + "/Media/Thumbs/";
 
             url = url + imagePath;
             return url;

@@ -37,6 +37,7 @@ namespace SmartStore.Core.Domain.Catalog
 		private string _manufacturerPartNumber;
 		private decimal _price;
 		private int? _deliveryTimeId;
+        private int? _quantityUnitId;
 		private decimal _length;
 		private decimal _width;
 		private decimal _height;
@@ -697,6 +698,27 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public virtual DeliveryTime DeliveryTime { get; set; }
 
+        /// <summary>
+        /// Gets or sets the quantity unit identifier
+        /// </summary>
+        [DataMember]
+        public int? QuantityUnitId
+        {
+            [DebuggerStepThrough]
+            get
+            {
+                return this.GetMergedDataValue<int?>("QuantityUnitId", _quantityUnitId);
+            }
+            set
+            {
+                _quantityUnitId = value;
+            }
+        }
+
+        [DataMember]
+        public virtual QuantityUnit QuantityUnit { get; set; }
+
+
 		/// <summary>
 		/// Gets or sets if base price quotation (PAnGV) is enabled
 		/// </summary>
@@ -711,7 +733,7 @@ namespace SmartStore.Core.Domain.Catalog
 
 		/// <summary>
 		/// Amount of product per packing unit in the given measure unit 
-		/// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
+        /// (e.g. 250 ml shower gel: "0.25" if MeasureUnit = "liter" and BaseAmount = 1)
 		/// </summary>
 		[DataMember]
 		public decimal? BasePriceAmount

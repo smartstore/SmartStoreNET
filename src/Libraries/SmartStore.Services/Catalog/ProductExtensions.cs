@@ -22,7 +22,7 @@ namespace SmartStore.Services.Catalog
         {
             Guard.ArgumentNotNull(productAttributeParser, "productAttributeParser");
 
-			if (selectedAttributes.IsNullOrEmpty())
+			if (selectedAttributes.IsEmpty())
 				return null;
 
             // let's find appropriate record
@@ -35,6 +35,7 @@ namespace SmartStore.Services.Catalog
             {
 				product.MergeWithCombination(combination);
             }
+
 			return combination;
         }
 
@@ -69,6 +70,9 @@ namespace SmartStore.Services.Catalog
 
 			if (combination.DeliveryTimeId.HasValue && combination.DeliveryTimeId.Value > 0)
 				product.MergedDataValues.Add("DeliveryTimeId", combination.DeliveryTimeId);
+
+			if (combination.QuantityUnitId.HasValue && combination.QuantityUnitId.Value > 0)
+				product.MergedDataValues.Add("QuantityUnitId", combination.QuantityUnitId);
 
 			if (combination.Length.HasValue)
 				product.MergedDataValues.Add("Length", combination.Length.Value);

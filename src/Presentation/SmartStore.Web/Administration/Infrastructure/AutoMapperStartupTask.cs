@@ -85,6 +85,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.LastNameRequired, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailRequired, mo => mo.Ignore())
+                .ForMember(dest => dest.ValidateEmailAddress, mo => mo.Ignore())
                 .ForMember(dest => dest.CompanyEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.CompanyRequired, mo => mo.Ignore())
                 .ForMember(dest => dest.CountryEnabled, mo => mo.Ignore())
@@ -165,6 +166,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
             //topcis
 			Mapper.CreateMap<Topic, TopicModel>()
+				.ForMember(dest => dest.WidgetWrapContent, mo => mo.MapFrom(x => x.WidgetWrapContent.HasValue ? x.WidgetWrapContent.Value : true))
 				.ForMember(dest => dest.Url, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
@@ -241,8 +243,9 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDiscounts, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedDiscountIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableMeasureWeights, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+                .ForMember(dest => dest.AvailableQuantityUnits, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductSelectCheckboxClass, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductUrl, mo => mo.Ignore());
 			Mapper.CreateMap<ProductModel, Product>()
@@ -279,6 +282,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.UpdatedOnUtc, mo => mo.Ignore())
 				.ForMember(dest => dest.Deleted, mo => mo.Ignore())
 				.ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
+                .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataIgnore, mo => mo.Ignore())
 				.ForMember(dest => dest.MergedDataValues, mo => mo.Ignore())
 				.ForMember(dest => dest.ProductBundleItems, mo => mo.Ignore())
@@ -320,6 +324,11 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
             Mapper.CreateMap<DeliveryTimeModel, DeliveryTime>();
 
+            // Measure unit
+            Mapper.CreateMap<QuantityUnit, QuantityUnitModel>()
+                .ForMember(dest => dest.Locales, mo => mo.Ignore());
+            Mapper.CreateMap<QuantityUnitModel, QuantityUnit>();
+
             // ContentSlider slides
             Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
                 .ForMember(dest => dest.Id, mo => mo.Ignore())
@@ -346,9 +355,11 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ProductUrl, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductUrlTitle, mo => mo.Ignore())
                 .ForMember(dest => dest.Warnings, mo => mo.Ignore())
+				.ForMember(dest => dest.DisplayOrder, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.AssignedPictureIds = src.GetAssignedPictureIds());
             Mapper.CreateMap<ProductVariantAttributeCombinationModel, ProductVariantAttributeCombination>()
                 .ForMember(dest => dest.DeliveryTime, mo => mo.Ignore())
+                .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
                 .ForMember(dest => dest.Product, mo => mo.Ignore())
                 .ForMember(dest => dest.AssignedPictureIds, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));
@@ -584,7 +595,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.FileUploadAllowedExtensions, mo => mo.Ignore())
                 .ForMember(dest => dest.ShowProductImagesInSearchAutoComplete, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSearchPageSize, mo => mo.Ignore())
-                .ForMember(dest => dest.ManufacturersBlockItemsToDisplay, mo => mo.Ignore());
+                .ForMember(dest => dest.ManufacturersBlockItemsToDisplay, mo => mo.Ignore())
+				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
 				.ForMember(dest => dest.PointsForPurchases_OverrideForStore, mo => mo.Ignore());

@@ -64,6 +64,14 @@
 				    @Html.EditorFor(model => model.UnitPriceExclTax)
 			    </td>
 		    </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.TaxRate)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.TaxRate)
+				</td>
+			</tr>
 		    <tr>
 			    <td class="adminTitle">
 				    @Html.SmartLabelFor(model => model.Quantity)

@@ -1,18 +1,26 @@
 ﻿using System.Collections.Generic;
+using SmartStore.Admin.Models.Common;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Orders
 {
+
     public class ShipmentModel : EntityModelBase
     {
         public ShipmentModel()
         {
             this.Items = new List<ShipmentItemModel>();
+			MerchantCompanyInfo = new CompanyInformationSettings();
         }
-        [SmartResourceDisplayName("Admin.Orders.Shipments.ID")]
-        public override int Id { get; set; }
-        [SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
+
+		public int StoreId { get; set; }
+		public string ShippingMethod { get; set; }
+		public Address ShippingAddress { get; set; }
+		public CompanyInformationSettings MerchantCompanyInfo { get; set; }
+		
+		[SmartResourceDisplayName("Admin.Orders.Shipments.OrderID")]
         public int OrderId { get; set; }
         [SmartResourceDisplayName("Admin.Orders.Shipments.TotalWeight")]
         public string TotalWeight { get; set; }

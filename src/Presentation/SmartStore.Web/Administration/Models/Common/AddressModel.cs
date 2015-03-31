@@ -28,6 +28,10 @@ namespace SmartStore.Admin.Models.Common
         [AllowHtml]
         public string Email { get; set; }
 
+        [SmartResourceDisplayName("Admin.Address.Fields.EmailMatch")]
+        [AllowHtml]
+        public string EmailMatch { get; set; }
+
         [SmartResourceDisplayName("Admin.Address.Fields.Company")]
         [AllowHtml]
         public string Company { get; set; }
@@ -86,6 +90,7 @@ namespace SmartStore.Admin.Models.Common
         public bool LastNameRequired { get; set; }
         public bool EmailEnabled { get; set; }
         public bool EmailRequired { get; set; }
+        public bool ValidateEmailAddress { get; set; }
         public bool CompanyEnabled { get; set; }
         public bool CompanyRequired { get; set; }
         public bool CountryEnabled { get; set; }

@@ -175,20 +175,13 @@ namespace SmartStore.Services.Orders
 
 					if (parent.Product != null && parent.Product.BundlePerItemPricing && child.AttributesXml != null && child.BundleItem != null)
 					{
-						var combination = productAttributeParser.FindProductVariantAttributeCombination(child.Product, child.AttributesXml);
+						child.Product.MergeWithCombination(child.AttributesXml);
 
-						if (combination != null && combination.Price.HasValue)
+						var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
+						if (attributeValues != null)
 						{
-							childItem.BundleItemData.PriceOverride = combination.Price.Value;
-						}
-						else
-						{
-							var attributeValues = productAttributeParser.ParseProductVariantAttributeValues(child.AttributesXml);
-							if (attributeValues != null)
-							{
-								childItem.BundleItemData.AdditionalCharge = decimal.Zero;
-								attributeValues.Each(x => childItem.BundleItemData.AdditionalCharge += x.PriceAdjustment);
-							}
+							childItem.BundleItemData.AdditionalCharge = decimal.Zero;
+							attributeValues.Each(x => childItem.BundleItemData.AdditionalCharge += x.PriceAdjustment);
 						}
 					}
 

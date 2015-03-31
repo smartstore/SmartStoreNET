@@ -18,7 +18,6 @@
         $("#@Html.FieldIdFor(model => model.ProductTypeId)").change(toggleProductType);
         $("#@Html.FieldIdFor(model => model.RequireOtherProducts)").click(toggleRequireOtherProducts);
         $("#@Html.FieldIdFor(model => model.IsGiftCard)").click(toggleGiftCard);
-        $("#@Html.FieldIdFor(model => model.CustomerEntersPrice)").click(toggleCustomerEntersPrice);
         $("#@Html.FieldIdFor(model => model.IsDownload)").click(toggleDownloadableProduct);
         $("#@Html.FieldIdFor(model => model.UnlimitedDownloads)").click(toggleDownloadableProduct);
         $("#@Html.FieldIdFor(model => model.HasSampleDownload)").click(toggleDownloadableProduct);
@@ -30,7 +29,6 @@
     	toggleProductType();
         toggleRequireOtherProducts();
         toggleGiftCard();
-        toggleCustomerEntersPrice();
         toggleDownloadableProduct();
         toggleRecurring();
         toggleShipping();
@@ -143,7 +141,7 @@
 
     function toggleShipping() {
         if ($('#@Html.FieldIdFor(model => model.IsShipEnabled)').is(':checked')) {
-            $('#pnlDeliveryTime').show();   //codehint: sm-add
+            $('#pnlDeliveryTime').show();
             $('#pnlFreeShipping').show();
             $('#pnlAdditionalShippingCharge').show();
             $('#pnlWeight').show();
@@ -651,8 +649,6 @@
 				@Html.ValidationMessageFor(model => model.IsShipEnabled)
 			</td>
 		</tr>
-
-		@*codehint: sm-add*@
 		<tr id="pnlDeliveryTime">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DeliveryTimeId)
@@ -680,6 +676,15 @@
 				@Html.ValidationMessageFor(model => model.AdditionalShippingCharge)
 			</td>
 		</tr>
+        <tr id="pnlQuantityUnit">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.QuantityUnitId)
+            </td>
+            <td class="adminData">
+                @Html.DropDownListFor(model => model.QuantityUnitId, Model.AvailableQuantityUnits, T("Common.Unspecified"))
+                @Html.ValidationMessageFor(model => model.QuantityUnitId)
+            </td>
+        </tr>
 		<tr id="pnlWeight">
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Weight)

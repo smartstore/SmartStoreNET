@@ -7,9 +7,7 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
-    /// <summary>
-    /// <remarks>codehint: sm-add</remarks>
-    /// </summary>
+
     public static class ScaffoldExtensions
     {
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)
@@ -42,7 +40,7 @@ namespace SmartStore.Web.Framework.UI
 		}
 		public static HelperResult LabeledProductName<T>(this HtmlHelper<T> helper, int id, string name, string typeName, string typeLabelHint)
 		{
-			if (id == 0 && name.IsNullOrEmpty())
+			if (id == 0 && name.IsEmpty())
 				return null;
 
 			string namePart = null;

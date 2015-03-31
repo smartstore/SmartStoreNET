@@ -111,7 +111,7 @@ namespace SmartStore.Data.Migrations
 				"Bitte bestätigen Sie Ihren Auftrag.");
 
 			builder.AddOrUpdate("Checkout.ConfirmHint",
-				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything's as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
+				"Please verify the order total and the specifics regarding the billing address and, if required, the shipping address. You can make corrections to your entry anytime by clicking on <strong>back</strong>. If everything is as it should be, deliver your order to us by clicking <strong>confirm</strong>.",
 				"Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf <strong>zurück</strong> vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf <strong>kaufen</strong> Ihre Bestellung.");
 
 			// new setting
@@ -123,15 +123,134 @@ namespace SmartStore.Data.Migrations
 
 			// old setting now with ui
 			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists",
-				"Show featured product in lists",
+				"Show featured products in lists",
 				"Top-Produkte in Listen anzeigen",
-				"Determines to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
-				"Legt fest, dass Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
+				"Specifies whether to display featured products in product and filter lists. Otherwise they only appear in the top featured product list.",
+				"Legt fest, ob Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.");
 
 			// new notification
 			builder.AddOrUpdate("Admin.Order.NotFound",
 				"An order with this number was not found.",
 				"Ein Auftrag mit dieser Nummer wurde nicht gefunden.");
+
+			// PDF
+			builder.AddOrUpdate("Common.Date",
+				"Date",
+				"Datum");
+
+			builder.Delete(
+				"PDFInvoice.Address", 
+				"PDFInvoice.Address2",
+				"PDFInvoice.BillingInformation",
+				"PDFInvoice.Company",
+				"PDFInvoice.CreatedOn",
+				"PDFInvoice.Discount",
+				"PDFInvoice.Fax",
+				"PDFInvoice.GiftCardInfo",
+				"PDFInvoice.Name",
+				"PDFInvoice.Note",
+				"PDFInvoice.OrderDate",
+				"PDFInvoice.OrderTotal",
+				"PDFInvoice.PaymentMethod",
+				"PDFInvoice.PaymentMethodAdditionalFee",
+				"PDFInvoice.Phone",
+				"PDFInvoice.PurchaseOrderNumber",
+				"PDFInvoice.RewardPoints",
+				"PDFInvoice.ShippingInformation",
+				"PDFInvoice.ShippingMethod",
+				"PDFInvoice.Sub-Total",
+				"PDFInvoice.Shipping",
+				"PDFInvoice.Tax",
+				"PDFInvoice.TaxRate",
+				"PDFInvoice.VATNumber");
+
+			builder.AddOrUpdate("PDFInvoice.Footer.Bankcode").Value("de", "BLZ: {0}");
+			builder.AddOrUpdate("PDFInvoice.TaxNumber").Value("en", "Tax Number: {0}");
+			builder.AddOrUpdate("PDFInvoice.Order#",
+				"Order#",
+				"Auftrag#");
+			builder.AddOrUpdate("PDFInvoice.SKU",
+				"SKU",
+				"Artikelnr.");
+
+            builder.AddOrUpdate("PDFPackagingSlip.DeliveryDate",
+                "Delivery date",
+				"Lieferdatum");
+            builder.AddOrUpdate("PDFPackagingSlip.Weight",
+                "Weight",
+				"Gewicht");
+            builder.AddOrUpdate("PDFPackagingSlip.DeliveryDate",
+                "Delivery date",
+                "Lieferdatum");
+            builder.AddOrUpdate("PDFPackagingSlip.TrackingNumber",
+                "Tracking number",
+                "Trackingnummer");
+            builder.AddOrUpdate("PDFPackagingSlip.ShippingMethod",
+                "Shipping method",
+                "Versandart");
+            builder.AddOrUpdate("PDFPackagingSlip.ProductListHeadline",
+                "Shipped products",
+                "Gelieferte Produkte");
+
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.TooManyItems",
+				"Too many items! The PDF conversion is limited to 500 items. Please reduce the amount of selected records.",
+				"Zu viele Objekte! Mehr als 500 Objekte können nicht konvertiert werden. Bitte reduzieren Sie die Anzahl ausgewählter Datensätze.");
+			builder.AddOrUpdate("Admin.Common.ExportToPdf.TocTitle",
+				"Table of contents",
+				"Inhaltsverzeichnis");
+
+            builder.AddOrUpdate("PDFProductCatalog.Manufacturer",
+                "Manufacturer",
+                "Hersteller");
+            builder.AddOrUpdate("PDFProductCatalog.Length",
+				"Legth",
+				"Länge");
+            builder.AddOrUpdate("PDFProductCatalog.Width",
+                "Width",
+				"Breite");
+            builder.AddOrUpdate("PDFProductCatalog.Height",
+                "Height",
+				"Höhe");
+
+            builder.AddOrUpdate("PDFProductCatalog.SpecificationAttributes",
+                "Specification attributes",
+                "Spezifikation");
+            builder.AddOrUpdate("PDFProductCatalog.BundledItems",
+                "Bundled items",
+                "Produktset besteht aus");
+            builder.AddOrUpdate("PDFProductCatalog.AssociatedProducts",
+                "Associated products",
+                "Gruppierte Produkte");
+
+
+            builder.AddOrUpdate("PDFProductCatalog.CompanyEmailAddress",
+                "Mail",
+                "E-Mail");
+            builder.AddOrUpdate("PDFProductCatalog.CompanyTelephoneNumber",
+                "Phone",
+                "Telefon");
+            builder.AddOrUpdate("PDFProductCatalog.CompanyFaxNumber",
+                "Fax",
+                "Fax");
+            builder.AddOrUpdate("PDFProductCatalog.Cover.Address",
+                "Address",
+                "Anschrift");
+            builder.AddOrUpdate("PDFProductCatalog.Cover.ContactData",
+                "Contact data",
+                "Kontaktdaten");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount").Value("de", "Mindestbestellwert Zwischensumme");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Zwischensumme fest.");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount").Value("de", "Mindestbestellwert Gesamtsumme");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint").Value("de", "Legt den Mindestbestellwert der Gesamtsumme fest.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail",
+                "Show product reviews in product detail view",
+                "Zeige Produktbewertungen in der Produktdetailansicht");
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail.Hint",
+                "Determines whether product reviews are shown in product detail view.",
+                "Legt fest, ob Produktbewertungen in der Produktdetailansicht angezeigt werden.");
+
 		}
     }
 }

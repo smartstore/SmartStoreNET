@@ -101,9 +101,11 @@ namespace SmartStore.Services.Authentication
 
             if (String.IsNullOrWhiteSpace(usernameOrEmail))
                 return null;
+
             var customer = _customerSettings.UsernamesEnabled
                 ? _customerService.GetCustomerByUsername(usernameOrEmail)
                 : _customerService.GetCustomerByEmail(usernameOrEmail);
+
             return customer;
         }
     }

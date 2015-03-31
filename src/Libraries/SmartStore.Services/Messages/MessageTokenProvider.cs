@@ -54,22 +54,20 @@ namespace SmartStore.Services.Messages
         private readonly IOrderService _orderService;
         private readonly IPaymentService _paymentService;
         private readonly IProductAttributeParser _productAttributeParser;
-
         private readonly StoreInformationSettings _storeSettings;
         private readonly MessageTemplatesSettings _templatesSettings;
         private readonly EmailAccountSettings _emailAccountSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly TaxSettings _taxSettings;
-
         private readonly IEventPublisher _eventPublisher;
-
         private readonly CompanyInformationSettings _companyInfoSettings;
         private readonly BankConnectionSettings _bankConnectionSettings;
         private readonly ContactDataSettings _contactDataSettings;
         private readonly ITopicService _topicService;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
-
+        private readonly IQuantityUnitService _quantityUnitService;
+        
         #endregion
 
         #region Ctor
@@ -87,7 +85,7 @@ namespace SmartStore.Services.Messages
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
             ContactDataSettings contactDataSettings, ITopicService topicService,
-			IDeliveryTimeService deliveryTimeService)
+            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -102,20 +100,19 @@ namespace SmartStore.Services.Messages
             this._orderService = orderService;
             this._paymentService = paymentService;
             this._productAttributeParser = productAttributeParser;
-
             this._storeSettings = storeSettings;
             this._templatesSettings = templatesSettings;
             this._emailAccountSettings = emailAccountSettings;
             this._catalogSettings = catalogSettings;
             this._taxSettings = taxSettings;
             this._eventPublisher = eventPublisher;
-            
             this._companyInfoSettings = companyInfoSettings;
             this._bankConnectionSettings = bankConnectionSettings;
             this._contactDataSettings = contactDataSettings;
             this._topicService = topicService;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._deliveryTimeService = deliveryTimeService;
+            this._quantityUnitService = quantityUnitService;
         }
 
         #endregion
@@ -230,7 +227,10 @@ namespace SmartStore.Services.Messages
                 }
                 sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: right;\">{0}</td>", unitPriceStr));
 
-                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0}</td>", orderItem.Quantity));
+                var quantityUnit = _quantityUnitService.GetQuantityUnitById(product.QuantityUnitId);
+                sb.AppendLine(string.Format("<td style=\"padding: 0.6em 0.4em;text-align: center;\">{0} {1}</td>", 
+                    orderItem.Quantity, 
+                    quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name)));
 
                 string priceStr = string.Empty;
                 switch (order.CustomerTaxDisplayType)
@@ -761,8 +761,8 @@ namespace SmartStore.Services.Messages
 			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
-
             tokens.Add(new Token("Order.Product(s)", ProductListToHtmlTable(order, languageId), true));
+            tokens.Add(new Token("Order.CustomerComment", order.CustomerOrderComment, true));
 
             var language = _languageService.GetLanguageById(languageId);
             if (language != null && !String.IsNullOrEmpty(language.LanguageCulture))
@@ -778,8 +778,6 @@ namespace SmartStore.Services.Messages
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
 
-
-            //Codehint: sm-add
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", languageId), true));
             tokens.Add(new Token("Order.ConditionsOfUse", TopicToHtml("ConditionsOfUse", languageId), true));
 
@@ -893,7 +891,6 @@ namespace SmartStore.Services.Messages
         public virtual void AddNewsLetterSubscriptionTokens(IList<Token> tokens, NewsLetterSubscription subscription)
         {
             tokens.Add(new Token("NewsLetterSubscription.Email", subscription.Email));
-
 
             const string urlFormat = "{0}newsletter/subscriptionactivation/{1}/{2}";
 
@@ -1059,6 +1056,7 @@ namespace SmartStore.Services.Messages
                 "%Order.ShippingCountry%",
                 "%Order.PaymentMethod%",
                 "%Order.VatNumber%", 
+                "%Order.CustomerComment%", 
                 "%Order.Product(s)%",
                 "%Order.CreatedOn%",
                 "%Order.OrderURLForCustomer%",
@@ -1112,7 +1110,6 @@ namespace SmartStore.Services.Messages
                 "%PrivateMessage.Subject%", 
                 "%PrivateMessage.Text%",
                 "%BackInStockSubscription.ProductName%",
-                //codehint: sm-add
                 "%Order.Disclaimer%",
                 "%Order.ConditionsOfUse%",
                 "%Company.CompanyName%",

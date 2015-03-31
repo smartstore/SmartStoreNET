@@ -115,6 +115,7 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
       <DependentUpon>201403112331027_Initial.cs</DependentUpon>
@@ -206,6 +207,38 @@
     <Compile Include="Migrations\201412081934318_V211.cs" />
     <Compile Include="Migrations\201412081934318_V211.Designer.cs">
       <DependentUpon>201412081934318_V211.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501191849483_WidgetWrapContent.cs" />
+    <Compile Include="Migrations\201501191849483_WidgetWrapContent.Designer.cs">
+      <DependentUpon>201501191849483_WidgetWrapContent.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.cs" />
+    <Compile Include="Migrations\201501221417371_DefaultViewModeForCategories.Designer.cs">
+      <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.cs" />
+    <Compile Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.Designer.cs">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.cs" />
+    <Compile Include="Migrations\201502202248081_NewIndexesV22.Designer.cs">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.cs" />
+    <Compile Include="Migrations\201502280342294_LocalizedPropertyIndex.Designer.cs">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503032227054_V22Res.cs" />
+    <Compile Include="Migrations\201503032227054_V22Res.Designer.cs">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.cs" />
+    <Compile Include="Migrations\201503101851123_PdfConverterUser.Designer.cs">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201502120858030_Licensing.cs" />
+    <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -416,6 +449,30 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201412081934318_V211.resx">
       <DependentUpon>201412081934318_V211.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501191849483_WidgetWrapContent.resx">
+      <DependentUpon>201501191849483_WidgetWrapContent.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201501221417371_DefaultViewModeForCategories.resx">
+      <DependentUpon>201501221417371_DefaultViewModeForCategories.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502191643156_QtyUnitsAndOrderItemTaxRate.resx">
+      <DependentUpon>201502191643156_QtyUnitsAndOrderItemTaxRate.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502202248081_NewIndexesV22.resx">
+      <DependentUpon>201502202248081_NewIndexesV22.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502280342294_LocalizedPropertyIndex.resx">
+      <DependentUpon>201502280342294_LocalizedPropertyIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503032227054_V22Res.resx">
+      <DependentUpon>201503032227054_V22Res.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201503101851123_PdfConverterUser.resx">
+      <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

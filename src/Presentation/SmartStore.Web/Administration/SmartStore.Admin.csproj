@@ -91,6 +91,10 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\..\packages\Newtonsoft.Json.6.0.6\lib\net45\Newtonsoft.Json.dll</HintPath>
     </Reference>
+    <Reference Include="SmartStore.Licensing, Version=1.0.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\..\lib\SmartStore.Licensing\SmartStore.Licensing.dll</HintPath>
+    </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
     <Reference Include="System.ServiceModel" />
@@ -107,11 +111,11 @@
     <Reference Include="System.Web.Abstractions" />
     <Reference Include="System.Web.Helpers, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.Helpers.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.Helpers.dll</HintPath>
     </Reference>
-    <Reference Include="System.Web.Mvc, Version=5.2.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+    <Reference Include="System.Web.Mvc, Version=5.2.3.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.0\lib\net45\System.Web.Mvc.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Mvc.5.2.3\lib\net45\System.Web.Mvc.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Optimization, Version=1.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -119,20 +123,20 @@
     </Reference>
     <Reference Include="System.Web.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.2\lib\net45\System.Web.Razor.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.Razor.3.2.3\lib\net45\System.Web.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.Routing" />
     <Reference Include="System.Web.WebPages, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Deployment, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Deployment.dll</HintPath>
     </Reference>
     <Reference Include="System.Web.WebPages.Razor, Version=3.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.2\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebPages.3.2.3\lib\net45\System.Web.WebPages.Razor.dll</HintPath>
     </Reference>
     <Reference Include="System.Xml" />
     <Reference Include="System.Configuration" />
@@ -166,6 +170,7 @@
     <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\CustomerRoleController.cs" />
+    <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
     <Compile Include="Controllers\DownloadController.cs" />
@@ -215,6 +220,7 @@
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
+    <Compile Include="Models\Catalog\PrintableProductsModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />
     <Compile Include="Models\Catalog\BulkEditProductModel.cs" />
     <Compile Include="Models\Catalog\BulkEditListModel.cs" />
@@ -233,10 +239,12 @@
     <Compile Include="Models\Common\SystemInfoModel.cs" />
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\Directory\QuantityUnitModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
+    <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
@@ -467,6 +475,16 @@
     <Content Include="Views\Theme\PreviewTool.cshtml" />
     <Content Include="Views\Shared\_AdminRoot.cshtml" />
     <Content Include="Views\Home\MarketplaceFeed.cshtml" />
+    <Content Include="Views\Order\ShipmentDetails.Print.cshtml" />
+    <Content Include="Views\Product\PdfCatalog.Print.cshtml" />
+    <Content Include="Views\Product\PdfCatalog.Print.Footer.cshtml" />
+    <Content Include="Views\Product\PdfCatalog.Print.Cover.cshtml" />
+    <Content Include="Views\QuantityUnit\_CreateOrUpdate.cshtml" />
+    <Content Include="Views\QuantityUnit\Create.cshtml" />
+    <Content Include="Views\QuantityUnit\Edit.cshtml" />
+    <Content Include="Views\QuantityUnit\List.cshtml" />
+    <Content Include="Views\Home\UaTester.cshtml" />
+    <Content Include="Views\Plugin\LicensePlugin.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -1259,4 +1277,8 @@
   </ProjectExtensions>
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <Import Project="..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets" Condition="Exists('..\..\..\packages\AutoMapper.3.2.1\tools\AutoMapper.targets')" />
+  <PropertyGroup>
+    <PreBuildEvent>
+    </PreBuildEvent>
+  </PropertyGroup>
 </Project>

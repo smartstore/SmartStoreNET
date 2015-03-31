@@ -18,11 +18,13 @@ namespace SmartStore.Services.Shipping
             if (shippingSettings.ActiveShippingRateComputationMethodSystemNames == null)
                 return false;
 
+			if (!srcm.Value.IsActive)
+				return false;
+
 			return shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(srcm.Metadata.SystemName, StringComparer.OrdinalIgnoreCase);
         }
 
-        public static bool CountryRestrictionExists(this ShippingMethod shippingMethod,
-            int countryId)
+        public static bool CountryRestrictionExists(this ShippingMethod shippingMethod, int countryId)
         {
             if (shippingMethod == null)
                 throw new ArgumentNullException("shippingMethod");

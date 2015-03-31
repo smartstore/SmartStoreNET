@@ -38,6 +38,10 @@
                         {
                             <text>class="product-price current text-success"</text>
                         }
+                        else
+                        {
+                            <text>class="line-through"</text>
+                        }
                         >
                             <span class="product-price-without-discount" itemprop="price">
                             @if (!String.IsNullOrWhiteSpace(Model.ProductPrice.Price))
@@ -120,6 +124,11 @@
                             @Html.TextBoxFor(model => Model.AddToCart.EnteredQuantity, new { @class = "qty-input", style="width:25px" })
                         }
 
+                        //if display measure unit
+                        <span style="margin-right: 5px;">
+                            @Model.QuantityUnitName
+                        </span>
+                        
                         <a class="btn btn-warning add-to-cart-button ajax-cart-link" 
                             href="#"
 					        rel="nofollow"
@@ -130,15 +139,15 @@
                             @(Model.AddToCart.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
                             <i class="fa fa-plus-circle"></i>
                         </a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-warning add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
-                            <i class="fa fa-envelope"></i>
-                            @T("Products.CallForPrice.GoToForm")
-                        </a>
-                    }
-                }
+					}
+					else
+					{
+						<a class="btn btn-warning add-to-cart-button" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new { id = Model.Id })">
+							<i class="fa fa-envelope"></i>
+							@T("Products.CallForPrice.GoToForm")
+						</a>
+					}
+				}
             </div>
         
         </div>

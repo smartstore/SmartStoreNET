@@ -88,7 +88,7 @@ namespace SmartStore.Services.Orders
         /// <returns>Order collection</returns>
 		IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime,
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			string billingName, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingEmail = null);
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null);
 
         /// <summary>
         /// Gets all orders by affiliate identifier

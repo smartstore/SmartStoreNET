@@ -82,6 +82,7 @@ namespace SmartStore.Web
                 model.FirstName = address.FirstName;
                 model.LastName = address.LastName;
                 model.Email = address.Email;
+                model.EmailMatch = address.Email;
                 model.Company = address.Company;
                 model.CountryId = address.CountryId;
                 model.CountryName = address.Country != null
@@ -149,6 +150,7 @@ namespace SmartStore.Web
             }
 
             //form fields
+            model.ValidateEmailAddress = addressSettings.ValidateEmailAddress;
             model.CompanyEnabled = addressSettings.CompanyEnabled;
             model.CompanyRequired = addressSettings.CompanyRequired;
             model.StreetAddressEnabled = addressSettings.StreetAddressEnabled;

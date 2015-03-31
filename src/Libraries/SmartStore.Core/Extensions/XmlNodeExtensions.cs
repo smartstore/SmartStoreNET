@@ -42,8 +42,8 @@ namespace SmartStore
             {
 				if (node != null) 
                 {
-					if (xpath.IsNullOrEmpty() && node.InnerText.HasValue())
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, node.InnerText);
+					if (xpath.IsEmpty())
+						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(node.InnerText);
 
 					var n = node.SelectSingleNode(xpath);
 

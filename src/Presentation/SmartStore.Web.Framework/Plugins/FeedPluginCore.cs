@@ -10,6 +10,11 @@ namespace SmartStore.Web.Framework.Plugins
 {
 	public class PromotionFeedSettings
 	{
+		public PromotionFeedSettings()
+		{
+			PageSize = 100;
+		}
+
 		public int ProductPictureSize { get; set; }
 		public int CurrencyId { get; set; }
 		public string StaticFileName { get; set; }
@@ -25,6 +30,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public string ExportFormat { get; set; }
 		public bool ConvertNetToGrossPrices { get; set; }
 		public int LanguageId { get; set; }
+		public int PageSize { get; set; }
 	}
 
 
@@ -72,6 +78,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public int TotalProcessed { get; set; }
 		public string FeedFileUrl { get; set; }
 		public string SecondFilePath { get; set; }
+		public string ErrorMessage { get; set; }
 		public IProgress<FeedFileCreationProgress> Progress { get; set; }
 
 		public void Report()

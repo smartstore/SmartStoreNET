@@ -1,7 +1,62 @@
 ﻿# Release Notes
+
+## SmartStore.NET 2.2
+
+### New Features
+* New mobile theme: MobileLight (a light variant of the default mobile theme)
+* Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
+* #428 Implement category option to override global list view type
+* #485 Enable shop admin to change creation date of a blog entry
+* #258 Implement email validation in checkout
+* Quantity unit management
+* Option to determine the maximum amount of filter items
+* Option to determine whether all filter groups should be displayed expanded
+* #459 New field to determine tag for page titles on widget level
+* Added _shrink database_ to backend UI
+* (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
+
+### Improvements
+* Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)
+* The data grid in the backend now preserves client state between requests (page, pageSize, sorting, filtering etc.)
+* Excel Import & Export: much lower memory consumption and increased performance
+* Moving pictures from DB to FS or vice versa is lightning fast now, consumes much lower memory and is encapsulated in a transaction which ensures reliable rollback after failure. Plus the database gets automatically shrinked after moving to FS.
+* Feed plugins: product query now paged to reduce memory payload
+* Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
+* Payone: CC-Check via client API, not via Server API (requires PCI certification)
+* #189 Allow deletion of multiple reviews
+* #622 UI: Redesign table in Sales > Orders > Order > Tab Products
+* #625 Bundles can be ordered if an attribute combination of a bundle item is not available
+* Minor UI tweaks in checkout process
+* #666 Export addresses in customer export
+* New shopping cart setting ShowItemsFromWishlistToCartButton
+
+### Bugfixes
+* Instant search box did not display all results when SQL Fulltext Search was enabled
+* Amazon payments: Declined authorization IPN did not void the payment status
+* Fixed „Payment method couldn't be loaded“ when order amount is zero
+* #598 Wrong input parameter name for ReturnRequestSubmit
+* #557 Localize MVC validation strings
+* Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
+* Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes
+* Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
+* Print order as pdf redirected to login although the admin already was logged in 
+* #621 PDF Order: does not take overridden attribute combination price into account (in order line)
+* Hide additional shipping surcharge when display prices permission is not granted
+* Fixed "Adding a relationship with an entity which is in the Deleted state is not allowed" when adding bundles to cart
+* Fixed price calculation of multiple bundles issue
+* Fixed auto add required products for bundle items
+* Fixes #641: Protocol in sitemap should be HTTPS when _ForceSslForAllPages_ is true
+* #640 Do not display shipping infos for grouped products in product lists
+* #634 Bundle price in list should not differ from price in details if there is only one bundle item with one attribute
+* Do not copy associated product when copying a bundle product
+* Fixed: Product with inactive attribute combination could be moved onto wishlist, copied to cart and be ordered
+
+
 ## SmartStore.NET 2.1.1
 
 ### New Features
+* Html to PDF converter: PDF documents are created from regular HTML templates now, therefore radically simplifying PDF output customization.
+* Html widgets: added option to create a wrapper around widget content
 * SEO: added new settings `Canonical host name rule`. Enforces permanent redirection to a single domain name for a better page rank (e.g. myshop.com > www.myshop.com or vice versa)
 * SEO: added support for `<link hreflang="..." ... />` in multi-language stores. The tags are automatically rendered along with the language switcher.
 * (Developer) Implemented new HtmlHelper extension `AddLinkPart`: registers `<link>` tags which should be rendered in page's head section
@@ -9,12 +64,15 @@
 * (Developer) Added `SmartUrlRoutingModule`, which can pass static files to `UrlRoutingModule` if desired (e.g. used by MiniProfiler). This way static files can be handled by regular actions or filters, without polluting web.config.
 * New payment plugin "Payone"
 * Option to set a delivery time for products available for order with stock quantity < 1
+* Option to disable product reviews on product detail page
+* Option to supress display of sub category picture links
 
 ### Improvements
 * (Perf) Faster application warmup
 * (Perf) Faster product list rendering
 * Reworked routing: removed static file security barrier again (caused too much problems)
 * #545 Made all (applicable) settings multi-store-enabled
+* #579 Make all relative urls absolute prior sending email
 * The display order of attribute values are considered in the sorting of backend's attribute combination grid
 * Optimized error handling and redesigned error pages
 * Removed `PageNotFound` topic. Text is a simple locale resource now.
@@ -23,18 +81,24 @@
 * #510 Payment plugins: Qualify configuration(s) for multistores
 * #556 A negative value should be possible for additional payment fees
 * Dashboard: Order items linked with order list
+* Security: Missing http-only flag for some cookies set
 
 ### Bugfixes
 * PayPal Express: corrected basket transmission by eliminating tax transmission
 * Fixed password recovery redirection
 * #552 Left navbar should stay expanded on product detail pages
-* #538 Spcification attribute labels in product filter mask are not displayed localized
-* #540 AmazonPay: Multistore configuration might be lost if "All stores" are left empty
-* #532 AmazonPay: Reflect refunds made at amazon seller central when using data polling
+* #538 Specification attribute labels in product filter mask are not displayed localized
+* #540 Amazon payments: Multistore configuration might be lost if "All stores" are left empty
+* #532 Amazon payments: Reflect refunds made at amazon seller central when using data polling
+* #577 Exception thrown because of missing TaxRate table when opening tax by region provider configuration
 * Added IIS rewrite rule for `/productreviews/{id}` > `/product/reviews/{id}`
 * Email a friend redirects to "not found"
 * #567 Products marked as 'Featured' should also be included in regular lists
 * Fixed some missing company information in order to PDF export
+* #583 Fixed "The property rate with the value x is malformed" when creating products
+* Fixed ignored discount and tier price when product has attribute combination price
+* PayPal Standard provider now using shipping rather than billing address if shipping is required
+* Amazon payments: Order wasn't found if the capturing\refunding took place at Amazon Seller Central and the notification came through IPN
 
 
 ## SmartStore.NET 2.1.0

@@ -13,7 +13,6 @@ namespace SmartStore.Core
     [DataContract]
     public abstract partial class BaseEntity
     {
-		private int? _cachedHashcode;
 		
 		/// <summary>
         /// Gets or sets the entity identifier
@@ -67,13 +66,9 @@ namespace SmartStore.Core
 
         public override int GetHashCode()
         {
-			// once hashcode is generated, never change it!
-			if (_cachedHashcode.HasValue)
-				return _cachedHashcode.Value;
-
 			if (this.IsTransient)
 			{
-				_cachedHashcode = base.GetHashCode();
+				return base.GetHashCode();
 			}
 			else
 			{
@@ -83,11 +78,9 @@ namespace SmartStore.Core
 					// identically valued properties, even if they're of two different types,
 					// so we include the object's type in the hash calculation
 					int hashCode = GetUnproxiedType().GetHashCode();
-					_cachedHashcode = (hashCode * 31) ^ Id.GetHashCode();
+					return (hashCode * 31) ^ Id.GetHashCode();
 				}
 			}
-
-			return _cachedHashcode.Value;
         }
 
         public static bool operator ==(BaseEntity x, BaseEntity y)

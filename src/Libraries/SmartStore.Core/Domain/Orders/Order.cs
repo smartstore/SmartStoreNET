@@ -187,6 +187,12 @@ namespace SmartStore.Core.Domain.Orders
         [DataMember]
         public decimal OrderShippingExclTax { get; set; }
 
+		/// <summary>
+		/// Gets or sets the tax rate for order shipping
+		/// </summary>
+		[DataMember]
+		public decimal OrderShippingTaxRate { get; set; }
+
         /// <summary>
         /// Gets or sets the payment method additional fee (incl tax)
         /// </summary>
@@ -198,6 +204,12 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         [DataMember]
         public decimal PaymentMethodAdditionalFeeExclTax { get; set; }
+
+		/// <summary>
+		/// Gets or sets the tax rate for payment method additional fee
+		/// </summary>
+		[DataMember]
+		public decimal PaymentMethodAdditionalFeeTaxRate { get; set; }
 
         /// <summary>
         /// Gets or sets the tax rates
@@ -351,6 +363,7 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets the customer order comment
         /// </summary>
+        [DataMember]
         public string CustomerOrderComment { get; set; }
 
         /// <summary>

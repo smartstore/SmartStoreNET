@@ -231,7 +231,7 @@ namespace SmartStore
         [DebuggerStepThrough]
 		public static string Hash(this string value, Encoding encoding, bool toBase64 = false)
         {
-			if (value.IsNullOrEmpty())
+			if (value.IsEmpty())
 				return value;
 
             using (var md5 = MD5.Create())
@@ -520,7 +520,8 @@ namespace SmartStore
         [DebuggerStepThrough]
 		public static bool SplitToPair(this string value, out string strLeft, out string strRight, string delimiter) {
 			int idx = -1;
-			if (value.IsNullOrEmpty() || delimiter.IsNullOrEmpty() || (idx = value.IndexOf(delimiter)) == -1) {
+			if (value.IsEmpty() || delimiter.IsEmpty() || (idx = value.IndexOf(delimiter)) == -1)
+			{
 				strLeft = value;
 				strRight = "";
 				return false;
@@ -724,7 +725,7 @@ namespace SmartStore
 		/// <param name="name">Name of the attribute.</param>
 		public static string ToAttribute(this string value, string name, bool htmlEncode = true) 
         {
-			if (value == null || name.IsNullOrEmpty())
+			if (name.IsEmpty())
 				return "";
 
 			if (value == "" && name != "value" && !name.StartsWith("data"))
@@ -993,7 +994,7 @@ namespace SmartStore
 		[DebuggerStepThrough]
 		public static string RemoveInvalidXmlChars(this string s)
 		{
-			if (s.IsNullOrEmpty())
+			if (s.IsEmpty())
 				return s;
 
 			return Regex.Replace(s, @"[^\u0009\u000A\u000D\u0020-\uD7FF\uE000-\uFFFD]", "", RegexOptions.Compiled);

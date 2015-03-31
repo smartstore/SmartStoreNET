@@ -1,16 +1,11 @@
 using System;
-using System.Collections.Generic;
 using System.Configuration;
-using System.Diagnostics;
 using System.IO;
-using System.Text;
 using System.Text.RegularExpressions;
 using System.Web;
 using System.Web.Configuration;
-using System.Web.Hosting;
 using SmartStore.Collections;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Utilities;
@@ -596,39 +591,6 @@ namespace SmartStore.Core
 				return s_optimizedCompilationsEnabled.Value;
 			}
 		}
-
-        /// <summary>
-        /// Get a value indicating whether the request is made by search engine (web crawler)
-        /// </summary>
-        /// <param name="request">HTTP Request</param>
-        /// <returns>Result</returns>
-        public virtual bool IsSearchEngine(HttpContextBase context)
-        {
-            //we accept HttpContext instead of HttpRequest and put required logic in try-catch block
-            //more info: http://www.nopcommerce.com/boards/t/17711/unhandled-exception-request-is-not-available-in-this-context.aspx
-            if (context == null)
-                return false;
-
-            bool result = false;
-            try
-            {
-				if (context.Request.GetType().ToString().Contains("Fake"))	// codehint: sm-add
-					return false;
-
-                result = context.Request.Browser.Crawler;
-                if (!result)
-                {
-                    //put any additional known crawlers in the Regex below for some custom validation
-                    //var regEx = new Regex("Twiceler|twiceler|BaiDuSpider|baduspider|Slurp|slurp|ask|Ask|Teoma|teoma|Yahoo|yahoo");
-                    //result = regEx.Match(request.UserAgent).Success;
-                }
-            }
-            catch (Exception exc)
-            {
-                Debug.WriteLine(exc);
-            }
-            return result;
-        }
 
         /// <summary>
         /// Gets a value that indicates whether the client is being redirected to a new location

@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Mvc;
-using System.Threading.Tasks;
-using System.Web;
+﻿using System.Web.Mvc;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -22,31 +16,17 @@ namespace SmartStore.Web.Framework.Controllers
 	public class AdminThemedAttribute : ActionFilterAttribute
 	{
 
-		public override void OnActionExecuted(ActionExecutedContext filterContext)
+		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			if (filterContext == null)
 				return;
 
 			// add extra view location formats to all view results (even the partial ones)
-			var viewResultBase = filterContext.Result as ViewResultBase;
-			if (viewResultBase != null)
+			filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[] 
 			{
-				filterContext.RouteData.DataTokens["ExtraAreaViewLocations"] = new string[] 
-				{
-					"~/Administration/Views/{1}/{0}.cshtml",
-					"~/Administration/Views/Shared/{0}.cshtml"
-				};
-			}
-
-			//// set MasterName (aka Layout) to view results if not explicitly specified
-			//if (!filterContext.IsChildAction)
-			//{
-			//	var viewResult = filterContext.Result as ViewResult;
-			//	if (viewResult != null && viewResult.MasterName.IsEmpty())
-			//	{
-			//		viewResult.MasterName = "_AdminLayout";
-			//	}
-			//}
+				"~/Administration/Views/{1}/{0}.cshtml",
+				"~/Administration/Views/Shared/{0}.cshtml"
+			};
 		}
 
 	}

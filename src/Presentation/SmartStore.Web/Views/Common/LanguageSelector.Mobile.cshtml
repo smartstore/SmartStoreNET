@@ -16,7 +16,7 @@
             @foreach (var lang in Model.AvailableLanguages)
             {
                 <li @(lang.Id == Model.CurrentLanguageId ? " data-icon=false" : null)>
-					<a href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)" data-ajax="false">
+					<a href="@webHelper.ModifyQueryString(Url.RouteUrl("ChangeLanguage", new { langid = lang.Id }), "returnurl=" + Url.Encode(Model.ReturnUrls[lang.SeoCode]), null)" data-ajax="false" rel="nofollow">
 						@lang.Name
 					</a>
 				</li>

@@ -9,7 +9,7 @@ namespace SmartStore.AmazonPay.Services
 {
 	public static class AmazonPayCore
 	{
-		public static string AppVersion { get { return "1.14"; } }
+		public static string PlatformId { get { return "A3OJ83WFYM72IY"; } }
 		public static string AppName { get { return "SmartStore.Net " + SystemName; } }
 		public static string SystemName { get { return "SmartStore.AmazonPay"; } }
 		public static string AmazonPayCheckoutStateKey { get { return SystemName + ".CheckoutState"; } }
@@ -87,6 +87,18 @@ namespace SmartStore.AmazonPay.Services
 		public bool? CaptureNow { get; set; }
 		public DateTime Creation { get; set; }
 		public DateTime? Expiration { get; set; }
+
+		public string AnyAmazonId
+		{
+			get
+			{
+				if (CaptureId.HasValue())
+					return CaptureId;
+				if (AuthorizationId.HasValue())
+					return AuthorizationId;
+				return RefundId;
+			}
+		}
 	}
 
 

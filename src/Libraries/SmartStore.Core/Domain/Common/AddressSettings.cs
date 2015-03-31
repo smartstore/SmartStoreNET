@@ -7,6 +7,7 @@ namespace SmartStore.Core.Domain.Common
     {
 		public AddressSettings()
 		{
+            ValidateEmailAddress = false;
 			CompanyEnabled = true;
 			StreetAddressEnabled = true;
 			StreetAddressRequired = true;
@@ -21,7 +22,12 @@ namespace SmartStore.Core.Domain.Common
 			PhoneRequired = true;
 			FaxEnabled = true;
 		}
-		
+
+        /// <summary>
+        /// Gets or sets a value indicating whether email address should be validated
+        /// </summary>
+        public bool ValidateEmailAddress { get; set; }
+
 		/// <summary>
         /// Gets or sets a value indicating whether 'Company' is enabled
         /// </summary>

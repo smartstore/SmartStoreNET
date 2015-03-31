@@ -9,7 +9,6 @@ namespace SmartStore.Core.Domain.Common
 		{
 			Enabled = true;
 			RenderOrderNotes = true;
-			FontFileName = "OpenSans-Regular.ttf";
 		}
 		
 		/// <summary>
@@ -31,10 +30,5 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets a value indicating whether to render order notes in PDf reports
         /// </summary>
         public bool RenderOrderNotes { get; set; }
-
-        /// <summary>
-        /// Gets or sets the font file name that will be used
-        /// </summary>
-        public string FontFileName { get; set; }
     }
 }

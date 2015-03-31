@@ -164,12 +164,14 @@ namespace SmartStore.Data.Tests.Customers
             fromDb.Addresses.Count.ShouldEqual(1);
             fromDb.BillingAddress.ShouldNotBeNull();
 
-            fromDb.RemoveAddress(address);
+			Assert.AreEqual(true, fromDb.Addresses.Contains(address));
+			fromDb.RemoveAddress(address);
+			Assert.AreEqual(false, fromDb.Addresses.Contains(address));
 
-            context.SaveChanges();
+			context.SaveChanges();
 
-            fromDb.Addresses.Count.ShouldEqual(0);
-            fromDb.BillingAddress.ShouldBeNull();
+			fromDb.Addresses.Count.ShouldEqual(0);
+			fromDb.BillingAddress.ShouldBeNull();
         }
         
         [Test]

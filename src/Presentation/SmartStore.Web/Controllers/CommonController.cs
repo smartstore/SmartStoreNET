@@ -6,8 +6,6 @@ using System.Linq;
 using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -18,15 +16,16 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Themes;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
@@ -37,6 +36,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Pdf;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -49,18 +49,13 @@ namespace SmartStore.Web.Controllers
         #region Fields
 
         private readonly ITopicService _topicService;
-        private readonly ILanguageService _languageService;
-        private readonly ICurrencyService _currencyService;
-        private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
+        private readonly Lazy<ILanguageService> _languageService;
+        private readonly Lazy<ICurrencyService> _currencyService;
         private readonly IThemeContext _themeContext;
-        private readonly IThemeRegistry _themeRegistry;
-        private readonly IForumService _forumservice;
-        private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IWebHelper _webHelper;
-        private readonly IPermissionService _permissionService;
-        private readonly IMobileDeviceHelper _mobileDeviceHelper;
-        private readonly ICacheManager _cacheManager;
+        private readonly Lazy<IThemeRegistry> _themeRegistry;
+        private readonly Lazy<IForumService> _forumservice;
+        private readonly Lazy<IGenericAttributeService> _genericAttributeService;
+        private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
 
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
@@ -72,11 +67,13 @@ namespace SmartStore.Web.Controllers
         private readonly BlogSettings _blogSettings;
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
+		private readonly Lazy<SecuritySettings> _securitySettings;
 
         private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly IPriceFormatter _priceFormatter;
-		private readonly ISettingService _settingService;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
+		private readonly Lazy<IPictureService> _pictureService;
+		private readonly ICommonServices _services;
 
         #endregion
 
@@ -84,18 +81,13 @@ namespace SmartStore.Web.Controllers
 
         public CommonController(
 			ITopicService topicService,
-            ILanguageService languageService,
-            ICurrencyService currencyService,
-            IWorkContext workContext, 
-			IStoreContext storeContext,
+            Lazy<ILanguageService> languageService,
+            Lazy<ICurrencyService> currencyService,
 			IThemeContext themeContext,
-            IThemeRegistry themeRegistry, 
-			IForumService forumService,
-            IGenericAttributeService genericAttributeService, 
-			IWebHelper webHelper,
-            IPermissionService permissionService, 
-			IMobileDeviceHelper mobileDeviceHelper,
-            ICacheManager cacheManager,
+            Lazy<IThemeRegistry> themeRegistry, 
+			Lazy<IForumService> forumService,
+            Lazy<IGenericAttributeService> genericAttributeService, 
+			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
 			CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
@@ -104,26 +96,23 @@ namespace SmartStore.Web.Controllers
 			BlogSettings blogSettings, 
 			ForumSettings forumSettings,
             LocalizationSettings localizationSettings, 
+			Lazy<SecuritySettings> securitySettings,
             IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
-			ISettingService settingService,
-			IPageAssetsBuilder pageAssetsBuilder)
+			IPageAssetsBuilder pageAssetsBuilder,
+			Lazy<IPictureService> pictureService,
+			ICommonServices services)
         {
             this._topicService = topicService;
             this._languageService = languageService;
             this._currencyService = currencyService;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
             this._themeContext = themeContext;
             this._themeRegistry = themeRegistry;
             this._forumservice = forumService;
             this._genericAttributeService = genericAttributeService;
-            this._webHelper = webHelper;
-            this._permissionService = permissionService;
             this._mobileDeviceHelper = mobileDeviceHelper;
-            this._cacheManager = cacheManager;
-
+			
             this._customerSettings = customerSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
@@ -131,16 +120,20 @@ namespace SmartStore.Web.Controllers
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
             this._localizationSettings = localizationSettings;
+			this._securitySettings = securitySettings;
 
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
 
             this._themeSettings = themeSettings;
-			this._settingService = settingService;
 			this._pageAssetsBuilder = pageAssetsBuilder;
+			this._pictureService = pictureService;
+			this._services = services;
 
 			T = NullLocalizer.Instance;
         }
+
+		public Localizer T { get; set; }
 
         #endregion
 
@@ -149,10 +142,10 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected LanguageSelectorModel PrepareLanguageSelectorModel()
         {
-			var availableLanguages = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _storeContext.CurrentStore.Id), () =>
+			var availableLanguages = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_LANGUAGES_MODEL_KEY, _services.StoreContext.CurrentStore.Id), () =>
             {
-                var result = _languageService
-					.GetAllLanguages(storeId: _storeContext.CurrentStore.Id)
+                var result = _languageService.Value
+					.GetAllLanguages(storeId: _services.StoreContext.CurrentStore.Id)
                     .Select(x => new LanguageModel
                     {
                         Id = x.Id,
@@ -166,7 +159,7 @@ namespace SmartStore.Web.Controllers
                 return result;
             });
 
-            var workingLanguage = _workContext.WorkingLanguage;
+			var workingLanguage = _services.WorkContext.WorkingLanguage;
 
             var model = new LanguageSelectorModel()
             {
@@ -174,8 +167,8 @@ namespace SmartStore.Web.Controllers
                 AvailableLanguages = availableLanguages,
                 UseImages = _localizationSettings.UseImagesForLanguageSelection
             };
-            
-            string defaultSeoCode = _workContext.GetDefaultLanguageSeoCode();
+
+			string defaultSeoCode = _languageService.Value.GetDefaultLanguageSeoCode();
 
             foreach (var lang in model.AvailableLanguages)
             {
@@ -224,15 +217,14 @@ namespace SmartStore.Web.Controllers
         [NonAction]
         protected CurrencySelectorModel PrepareCurrencySelectorModel()
         {
-			var availableCurrencies = _cacheManager.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _workContext.WorkingLanguage.Id, _storeContext.CurrentStore.Id), () =>
+			var availableCurrencies = _services.Cache.Get(string.Format(ModelCacheEventConsumer.AVAILABLE_CURRENCIES_MODEL_KEY, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id), () =>
             {
-                var result = _currencyService
-					.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)
+                var result = _currencyService.Value
+					.GetAllCurrencies(storeId: _services.StoreContext.CurrentStore.Id)
                     .Select(x => new CurrencyModel()
                     {
                         Id = x.Id,
                         Name = x.GetLocalized(y => y.Name),
-                        // codehint: sm-add
                         ISOCode = x.CurrencyCode,
                         Symbol = GetCurrencySymbol(x.DisplayLocale) ?? x.CurrencyCode
                     })
@@ -242,13 +234,12 @@ namespace SmartStore.Web.Controllers
 
             var model = new CurrencySelectorModel()
             {
-                CurrentCurrencyId = _workContext.WorkingCurrency.Id,
+				CurrentCurrencyId = _services.WorkContext.WorkingCurrency.Id,
                 AvailableCurrencies = availableCurrencies
             };
             return model;
         }
 
-        // codehint: sm-add
         // TODO: Zentral auslagern
         private static string GetCurrencySymbol(string locale)
         {
@@ -277,7 +268,7 @@ namespace SmartStore.Web.Controllers
             var model = new TaxTypeSelectorModel()
             {
                 Enabled = _taxSettings.AllowCustomersToSelectTaxDisplayType,
-                CurrentTaxType = _workContext.TaxDisplayType
+				CurrentTaxType = _services.WorkContext.TaxDisplayType
             };
             return model;
         }
@@ -286,11 +277,10 @@ namespace SmartStore.Web.Controllers
         protected int GetUnreadPrivateMessages()
         {
             var result = 0;
-            var customer = _workContext.CurrentCustomer;
+			var customer = _services.WorkContext.CurrentCustomer;
             if (_forumSettings.AllowPrivateMessages && !customer.IsGuest())
             {
-				var privateMessages = _forumservice.GetAllPrivateMessages(_storeContext.CurrentStore.Id,
-					 0, customer.Id, false, null, false, string.Empty, 0, 1);
+				var privateMessages = _forumservice.Value.GetAllPrivateMessages(_services.StoreContext.CurrentStore.Id, 0, customer.Id, false, null, false, string.Empty, 0, 1);
 
                 if (privateMessages.TotalCount > 0)
                 {
@@ -302,12 +292,6 @@ namespace SmartStore.Web.Controllers
         }
 
         #endregion
-
-		#region Properties
-
-		public Localizer T { get; set; }
-
-		#endregion
 
 		#region Methods
 
@@ -322,7 +306,7 @@ namespace SmartStore.Web.Controllers
 			// register all available languages as <link hreflang="..." ... />
 			if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
 			{
-				var host = _webHelper.GetStoreLocation();
+				var host = _services.WebHelper.GetStoreLocation();
 				foreach (var lang in model.AvailableLanguages)
 				{
 					_pageAssetsBuilder.AddLinkPart("alternate", host + model.ReturnUrls[lang.SeoCode].TrimStart('/'), hreflang: lang.SeoCode);
@@ -335,10 +319,10 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Header()
         {
-			var model = _cacheManager.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_storeContext.CurrentStore.Id), () =>
+			var model = _services.Cache.Get(ModelCacheEventConsumer.SHOPHEADER_MODEL_KEY.FormatWith(_services.StoreContext.CurrentStore.Id), () =>
 			{
-                var pictureService = EngineContext.Current.Resolve<IPictureService>();
-                int logoPictureId = _storeContext.CurrentStore.LogoPictureId;
+                var pictureService = _pictureService.Value;
+				int logoPictureId = _services.StoreContext.CurrentStore.LogoPictureId;
 
                 Picture picture = null;
                 if (logoPictureId > 0)
@@ -360,7 +344,7 @@ namespace SmartStore.Web.Controllers
                     LogoUrl = logoUrl,
                     LogoWidth = logoSize.Width,
                     LogoHeight = logoSize.Height,
-                    LogoTitle = _storeContext.CurrentStore.Name
+					LogoTitle = _services.StoreContext.CurrentStore.Name
                 };
             });
             
@@ -370,16 +354,16 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult SetLanguage(int langid, string returnUrl = "")
         {
-            var language = _languageService.GetLanguageById(langid);
+			var language = _languageService.Value.GetLanguageById(langid);
             if (language != null && language.Published)
             {
-                _workContext.WorkingLanguage = language;
+				_services.WorkContext.WorkingLanguage = language;
             }
             
             // url referrer
             if (String.IsNullOrEmpty(returnUrl))
             {
-                returnUrl = _webHelper.GetUrlReferrer();
+				returnUrl = _services.WebHelper.GetUrlReferrer();
             }
 
             // home page
@@ -391,7 +375,7 @@ namespace SmartStore.Web.Controllers
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 var helper = new LocalizedUrlHelper(HttpContext.Request.ApplicationPath, returnUrl, true);
-                helper.PrependSeoCode(_workContext.WorkingLanguage.UniqueSeoCode, true);
+				helper.PrependSeoCode(_services.WorkContext.WorkingLanguage.UniqueSeoCode, true);
                 returnUrl = helper.GetAbsolutePath();
             }
 
@@ -411,13 +395,13 @@ namespace SmartStore.Web.Controllers
         }
         public ActionResult CurrencySelected(int customerCurrency, string returnUrl = "")
         {
-            var currency = _currencyService.GetCurrencyById(customerCurrency);
+			var currency = _currencyService.Value.GetCurrencyById(customerCurrency);
             if (currency != null)
-                _workContext.WorkingCurrency = currency;
+				_services.WorkContext.WorkingCurrency = currency;
 
             //url referrer
             if (String.IsNullOrEmpty(returnUrl))
-                returnUrl = _webHelper.GetUrlReferrer();
+				returnUrl = _services.WebHelper.GetUrlReferrer();
             //home page
             if (String.IsNullOrEmpty(returnUrl))
                 returnUrl = Url.RouteUrl("HomePage");
@@ -434,11 +418,11 @@ namespace SmartStore.Web.Controllers
         public ActionResult TaxTypeSelected(int customerTaxType, string returnUrl = "")
         {
             var taxDisplayType = (TaxDisplayType)Enum.ToObject(typeof(TaxDisplayType), customerTaxType);
-            _workContext.TaxDisplayType = taxDisplayType;
+			_services.WorkContext.TaxDisplayType = taxDisplayType;
 
             //url referrer
             if (String.IsNullOrEmpty(returnUrl))
-                returnUrl = _webHelper.GetUrlReferrer();
+				returnUrl = _services.WebHelper.GetUrlReferrer();
             //home page
             if (String.IsNullOrEmpty(returnUrl))
                 returnUrl = Url.RouteUrl("HomePage");
@@ -460,12 +444,13 @@ namespace SmartStore.Web.Controllers
             else
                 return Content("");
         }
-        public ActionResult Config()
+
+        public ActionResult Settings()
         {
             return View();
         }
 
-        //footer
+        // footer
         [ChildActionOnly]
         public ActionResult JavaScriptDisabledWarning()
         {
@@ -475,11 +460,11 @@ namespace SmartStore.Web.Controllers
             return PartialView();
         }
 
-        //header links
+        // header links
         [ChildActionOnly]
         public ActionResult HeaderLinks()
         {
-            var customer = _workContext.CurrentCustomer;
+			var customer = _services.WorkContext.CurrentCustomer;
 
             var unreadMessageCount = GetUnreadPrivateMessages();
             var unreadMessage = string.Empty;
@@ -489,25 +474,25 @@ namespace SmartStore.Web.Controllers
                 unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
 
                 //notifications here
-				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id);
+				var notifiedAboutNewPrivateMessagesAttributeKey = string.Format(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id);
 				if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
+					_genericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _services.StoreContext.CurrentStore.Id);
 					alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
 
-            var model = new HeaderLinksModel()
+            var model = new HeaderLinksModel
             {
                 IsAuthenticated = customer.IsRegistered(),
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
-                IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
-                DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
-                ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
-				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id),
-                WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
-				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id),
+				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
+                DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
+				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
+				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage,
@@ -516,12 +501,10 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-
-        //shopbar
         [ChildActionOnly]
         public ActionResult ShopBar()
         {
-            var customer = _workContext.CurrentCustomer;
+			var customer = _services.WorkContext.CurrentCustomer;
 
             var unreadMessageCount = GetUnreadPrivateMessages();
             var unreadMessage = string.Empty;
@@ -532,16 +515,16 @@ namespace SmartStore.Web.Controllers
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
+					_genericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _services.StoreContext.CurrentStore.Id);
                     alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
 
             //subtotal
 			decimal subtotal = 0;
-            var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
             if (cart.Count > 0)
             {
@@ -555,17 +538,17 @@ namespace SmartStore.Web.Controllers
                     out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
                 subtotalBase = subTotalWithoutDiscountBase;
-                subtotal = _currencyService.ConvertFromPrimaryStoreCurrency(subtotalBase, _workContext.WorkingCurrency);
+				subtotal = _currencyService.Value.ConvertFromPrimaryStoreCurrency(subtotalBase, _services.WorkContext.WorkingCurrency);
             }
-            var model = new ShopBarModel()
+            var model = new ShopBarModel
             {
                 IsAuthenticated = customer.IsRegistered(),
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
-                IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
-                DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
-                ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
+				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
+				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
                 ShoppingCartAmount = _priceFormatter.FormatPrice(subtotal, true, false),
-                WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
+				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage,
@@ -578,7 +561,7 @@ namespace SmartStore.Web.Controllers
 					model.ShoppingCartItems = cart.GetTotalProducts();
 
                 if (model.WishlistEnabled)
-					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id);
+					model.WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id);
             }
 
             if (_catalogSettings.CompareProductsEnabled)
@@ -592,14 +575,14 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Footer()
         {
-            string taxInfo = (_workContext.GetTaxDisplayTypeFor(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
+			string taxInfo = (_services.WorkContext.GetTaxDisplayTypeFor(_services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
                 ? T("Tax.InclVAT") 
                 : T("Tax.ExclVAT");
 
             string shippingInfoLink = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-			var store = _storeContext.CurrentStore;
+			var store = _services.StoreContext.CurrentStore;
 
-            var AvailableStoreThemes = _themeRegistry.GetThemeManifests()
+			var availableStoreThemes = !_themeSettings.AllowCustomerToSelectTheme ? new List<StoreThemeModel>() : _themeRegistry.Value.GetThemeManifests()
                 .Where(x => !x.MobileTheme)
                 .Select(x =>
                 {
@@ -611,22 +594,22 @@ namespace SmartStore.Web.Controllers
                 })
                 .ToList();
 
-            var model = new FooterModel()
+            var model = new FooterModel
             {
 				StoreName = store.Name,
 				LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoLink),
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
-                ShowThemeSelector = _themeSettings.AllowCustomerToSelectTheme && AvailableStoreThemes.Count > 1,          
+                ShowThemeSelector = availableStoreThemes.Count > 1,          
                 BlogEnabled = _blogSettings.Enabled,                          
                 ForumEnabled = _forumSettings.ForumsEnabled,
                 HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
             };
 
-			var hint = _settingService.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
+			var hint = _services.Settings.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
 			if (hint.IsEmpty())
 			{
 				hint = s_hints[new Random().Next(s_hints.Length)];
-				_settingService.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
+				_services.Settings.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
 			}
 
             var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };
@@ -660,19 +643,19 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-            var customer = _workContext.CurrentCustomer;
+			var customer = _services.WorkContext.CurrentCustomer;
 
-            var model = new MenuModel()
+            var model = new MenuModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
                 BlogEnabled = _blogSettings.Enabled,
                 ForumEnabled = _forumSettings.ForumsEnabled,
-                AllowPrivateMessages = _forumSettings.AllowPrivateMessages && _workContext.CurrentCustomer.IsRegistered(),
+				AllowPrivateMessages = _forumSettings.AllowPrivateMessages && customer.IsRegistered(),
                 UnreadPrivateMessages = GetUnreadPrivateMessages(),
                 CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
-                IsCustomerImpersonated = _workContext.OriginalCustomerIfImpersonated != null,
+				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
-                DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
+				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
             };
 
             return PartialView(model);
@@ -682,7 +665,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult InfoBlock()
         {
-            var model = new InfoBlockModel()
+            var model = new InfoBlockModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
                 RecentlyViewedProductsEnabled = _catalogSettings.RecentlyViewedProductsEnabled,
@@ -703,13 +686,13 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             var model = new StoreThemeSelectorModel();
-            var currentTheme = _themeRegistry.GetThemeManifest(_themeContext.WorkingDesktopTheme);
+            var currentTheme = _themeRegistry.Value.GetThemeManifest(_themeContext.WorkingDesktopTheme);
             model.CurrentStoreTheme = new StoreThemeModel()
             {
                 Name = currentTheme.ThemeName,
                 Title = currentTheme.ThemeTitle
             };
-            model.AvailableStoreThemes = _themeRegistry.GetThemeManifests()
+			model.AvailableStoreThemes = _themeRegistry.Value.GetThemeManifests()
                 //do not display themes for mobile devices
                 .Where(x => !x.MobileTheme)
                 .Select(x =>
@@ -724,40 +707,35 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
-        public ActionResult StoreThemeSelected(string themeName)
+		public ActionResult ChangeTheme(string themeName, string returnUrl = null)
         {
-            _themeContext.WorkingDesktopTheme = themeName;
+			if (!_themeSettings.AllowCustomerToSelectTheme || (themeName.HasValue() && !_themeRegistry.Value.ThemeManifestExists(themeName)))
+			{
+				return HttpNotFound();
+			}
 
-            var model = new StoreThemeSelectorModel();
-            var currentTheme = _themeRegistry.GetThemeManifest(_themeContext.WorkingDesktopTheme);
-            model.CurrentStoreTheme = new StoreThemeModel()
-            {
-                Name = currentTheme.ThemeName,
-                Title = currentTheme.ThemeTitle
-            };
-            model.AvailableStoreThemes = _themeRegistry.GetThemeManifests()
-                //do not display themes for mobile devices
-                .Where(x => !x.MobileTheme)
-                .Select(x =>
-                {
-                    return new StoreThemeModel()
-                    {
-                        Name = x.ThemeName,
-                        Title = x.ThemeTitle
-                    };
-                })
-                .ToList();
-            return PartialView("StoreThemeSelector", model);
+			_themeContext.WorkingDesktopTheme = themeName;
+
+			if (HttpContext.Request.IsAjaxRequest())
+			{
+				return Json(new { Success = true });
+			}
+
+			if (returnUrl.IsEmpty())
+			{
+				return RedirectToRoute("HomePage");
+			}
+
+			return Redirect(returnUrl);
         }
 
-        //favicon
         [ChildActionOnly]
         [OutputCache(Duration=3600, VaryByCustom="Theme_Store")]
         public ActionResult Favicon()
         {
             var icons = new string[] 
             { 
-                "favicon-{0}.ico".FormatInvariant(_storeContext.CurrentStore.Id), 
+                "favicon-{0}.ico".FormatInvariant(_services.StoreContext.CurrentStore.Id), 
                 "favicon.ico" 
             };
 
@@ -793,22 +771,23 @@ namespace SmartStore.Web.Controllers
         /// <returns>Action result</returns>
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
-            _genericAttributeService.SaveAttribute(_workContext.CurrentCustomer,
-				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _storeContext.CurrentStore.Id);
+			_genericAttributeService.Value.SaveAttribute(_services.WorkContext.CurrentCustomer,
+				SystemCustomerAttributeNames.DontUseMobileVersion, dontUseMobileVersion, _services.StoreContext.CurrentStore.Id);
 
-            string returnurl = _webHelper.GetUrlReferrer();
+			string returnurl = _services.WebHelper.GetUrlReferrer();
             if (String.IsNullOrEmpty(returnurl))
                 returnurl = Url.RouteUrl("HomePage");
             return Redirect(returnurl);
         }
+
         [ChildActionOnly]
         public ActionResult ChangeDeviceBlock()
         {
-            if (!_mobileDeviceHelper.MobileDevicesSupported())
+			if (!_mobileDeviceHelper.Value.MobileDevicesSupported())
                 //mobile devices support is disabled
                 return Content("");
 
-            if (!_mobileDeviceHelper.IsMobileDevice())
+			if (!_mobileDeviceHelper.Value.IsMobileDevice())
                 //request is made by a desktop computer
                 return Content("");
 
@@ -866,7 +845,10 @@ namespace SmartStore.Web.Controllers
                 "/topic/authenticate",
                 "/wishlist",
                 "/product/askquestion",
-                "/product/emailafriend"
+                "/product/emailafriend",
+				"/search",
+				"/config",
+				"/settings"
             };
 
 
@@ -874,12 +856,14 @@ namespace SmartStore.Web.Controllers
             var sb = new StringBuilder();
             sb.Append("User-agent: *");
             sb.Append(newLine);
+			sb.AppendFormat("Sitemap: {0}", Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http"));
+			sb.AppendLine();
 
             var disallows = disallowPaths.Concat(localizableDisallowPaths);
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 // URLs are localizable. Append SEO code
-                foreach (var language in _languageService.GetAllLanguages(storeId: _storeContext.CurrentStore.Id))
+				foreach (var language in _languageService.Value.GetAllLanguages(storeId: _services.StoreContext.CurrentStore.Id))
                 {
                     disallows = disallows.Concat(localizableDisallowPaths.Select(x => "/{0}{1}".FormatInvariant(language.UniqueSeoCode, x)));
                 }
@@ -903,31 +887,27 @@ namespace SmartStore.Web.Controllers
 
         public ActionResult GenericUrl()
         {
-            //seems that no entity was found
+            // seems that no entity was found
             return HttpNotFound();
         }
 
-        /// <summary>
-        /// <remarks>codehint: sm-add</remarks>
-        /// </summary>
-        /// <returns></returns>
         [ChildActionOnly]
         public ActionResult AccountDropdown()
         {
-            var customer = _workContext.CurrentCustomer;
+			var customer = _services.WorkContext.CurrentCustomer;
 
             var unreadMessageCount = GetUnreadPrivateMessages();
             var unreadMessage = string.Empty;
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
             {
-                unreadMessage = T("PrivateMessages.TotalUnread", unreadMessageCount);
+                unreadMessage = unreadMessageCount.ToString();
 
                 //notifications here
                 if (_forumSettings.ShowAlertForPM &&
-					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _storeContext.CurrentStore.Id))
+					!customer.GetAttribute<bool>(SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, _services.StoreContext.CurrentStore.Id))
                 {
-					_genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _storeContext.CurrentStore.Id);
+					_genericAttributeService.Value.SaveAttribute(customer, SystemCustomerAttributeNames.NotifiedAboutNewPrivateMessages, true, _services.StoreContext.CurrentStore.Id);
 					alertMessage = T("PrivateMessages.YouHaveUnreadPM", unreadMessageCount);
                 }
             }
@@ -935,11 +915,11 @@ namespace SmartStore.Web.Controllers
             var model = new AccountDropdownModel
             {
                 IsAuthenticated = customer.IsRegistered(),
-                DisplayAdminLink = _permissionService.Authorize(StandardPermissionProvider.AccessAdminPanel),
-                ShoppingCartEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableShoppingCart),
-				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id),
-                WishlistEnabled = _permissionService.Authorize(StandardPermissionProvider.EnableWishlist),
-				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _storeContext.CurrentStore.Id),
+				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
+				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
+				ShoppingCartItems = customer.CountProductsInCart(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id),
+				WishlistEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist),
+				WishlistItems = customer.CountProductsInCart(ShoppingCartType.Wishlist, _services.StoreContext.CurrentStore.Id),
                 AllowPrivateMessages = _forumSettings.AllowPrivateMessages,
                 UnreadPrivateMessages = unreadMessage,
                 AlertMessage = alertMessage
@@ -947,6 +927,64 @@ namespace SmartStore.Web.Controllers
 
             return PartialView(model);
         }
+
+		public ActionResult PdfReceiptHeader(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
+		{
+			var model = PreparePdfReceiptHeaderFooterModel(storeId);
+			model.Variables = vars;
+
+			ViewBag.IsPartial = isPartial;
+
+			if (isPartial)
+				return PartialView(model);
+			return View(model);
+		}
+
+		public ActionResult PdfReceiptFooter(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
+		{
+			var model = PreparePdfReceiptHeaderFooterModel(storeId);
+			model.Variables = vars;
+
+			ViewBag.IsPartial = isPartial;
+
+			if (isPartial)
+				return PartialView(model);
+			return View(model);
+		}
+
+		protected PdfReceiptHeaderFooterModel PreparePdfReceiptHeaderFooterModel(int storeId)
+		{
+			return _services.Cache.Get("PdfReceiptHeaderFooterModel-{0}".FormatInvariant(storeId), () =>
+			{
+				var model = new PdfReceiptHeaderFooterModel { StoreId = storeId };
+				var store = _services.StoreService.GetStoreById(model.StoreId) ?? _services.StoreContext.CurrentStore;
+
+				var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
+				var bankSettings = _services.Settings.LoadSetting<BankConnectionSettings>(store.Id);
+				var contactSettings = _services.Settings.LoadSetting<ContactDataSettings>(store.Id);
+				var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
+
+				model.StoreName = store.Name;
+				model.StoreUrl = store.Url;
+
+				var logoPicture = _pictureService.Value.GetPictureById(pdfSettings.LogoPictureId);
+				if (logoPicture == null)
+				{
+					logoPicture = _pictureService.Value.GetPictureById(store.LogoPictureId);
+				}
+
+				if (logoPicture != null)
+				{
+					model.LogoUrl = _pictureService.Value.GetPictureUrl(logoPicture, showDefaultPicture: false);
+				}
+
+				model.MerchantCompanyInfo = companyInfoSettings;
+				model.MerchantBankAccount = bankSettings;
+				model.MerchantContactData = contactSettings;
+
+				return model;			
+			}, 1 /* 1 min. (just for the duration of pdf processing) */);
+		}
 
         #endregion
     }

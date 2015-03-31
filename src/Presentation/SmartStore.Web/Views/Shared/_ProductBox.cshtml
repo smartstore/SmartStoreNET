@@ -116,22 +116,22 @@
     </p>
     
     @if (Model.ShowDeliveryTimes)
-    {
-    <div class="delivery-time" data-equalized-part="delivery-time">
-        @if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
-        {
-            <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
-            if(Model.DisplayDeliveryTimeAccordingToStock)
-            {
-                <span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
-            }
-            else {
-                <span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
-            }
-            
-        }
-    </div>
-    }
+	{
+		<div class="delivery-time@(Model.InvisibleDeliveryTime ? " invisible" : "")" data-equalized-part="delivery-time">
+			@if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
+			{
+				<span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+				if (Model.DisplayDeliveryTimeAccordingToStock)
+				{
+					<span class="delivery-time-color" style="background-color:@Model.DeliveryTimeHexValue" title="@Model.DeliveryTimeName"></span>
+				}
+				else
+				{
+					<span class="delivery-time-color" style="background-color:#9d261d" title="@Model.StockAvailablity"></span>
+				}
+			}
+		</div>
+	}
 
     <div class="prices" data-equalized-part="prices">
         @if (!String.IsNullOrEmpty(Model.ProductPrice.OldPrice))
@@ -178,16 +178,16 @@
                     data-action="add">
                     <i class="fa fa-shopping-cart"></i>      
                 </a>
-            }
-            else
-            {
-                <a class="btn btn-primary add-to-cart-button"
-                   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
-                   title="@T("Products.CallForPrice.GoToForm")">
-                    <i class="fa fa-envelope"></i>
-                </a>
-            }
-        }
+			}
+			else
+			{
+				<a class="btn btn-primary add-to-cart-button" rel="nofollow"
+				   href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })"
+				   title="@T("Products.CallForPrice.GoToForm")">
+					<i class="fa fa-envelope"></i>
+				</a>
+			}
+		}
         <a href='@Url.RouteUrl("Product", new RouteValueDictionary { { "SeName", Model.SeName } })' class="btn">
             <i class="fa fa-info-circle"></i>
             @T("Products.Details")

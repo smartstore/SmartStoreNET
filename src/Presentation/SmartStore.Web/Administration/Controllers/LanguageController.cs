@@ -336,7 +336,7 @@ namespace SmartStore.Admin.Controllers
                 .GetResourceValues(languageId, true)
                 .OrderBy(x => x.Key)
                 .Where(x => x.Key != "!!___EOF___!!" && x.Value != null)
-                .Select(x => new LanguageResourceModel()
+                .Select(x => new LanguageResourceModel
                 {
                     LanguageId = languageId,
                     LanguageName = language.Name,

@@ -98,9 +98,11 @@ namespace SmartStore.Web.Infrastructure
 						{
 							Id = t.Id,
 							Bordered = t.WidgetBordered,
+							WrapContent = !t.WidgetWrapContent.HasValue || t.WidgetWrapContent.Value,
 							ShowTitle = t.WidgetShowTitle,
 							SystemName = t.SystemName.SanitizeHtmlId(),
 							Title = t.GetLocalized(x => t.Title),
+                            TitleTag = t.TitleTag,
 							Body = t.GetLocalized(x => t.Body),
 							WidgetZones = t.GetWidgetZones().ToArray(),
 							Priority = t.Priority
@@ -137,9 +139,11 @@ namespace SmartStore.Web.Infrastructure
 									{ 
 										Id = widget.Id,
 										SystemName = widget.SystemName,
+										WrapContent = widget.WrapContent,
 										ShowTitle = widget.ShowTitle,
 										IsBordered = widget.Bordered,
-										Title = widget.Title,
+										Title = String.IsNullOrEmpty(widget.Title) ? "div" : widget.Title,
+                                        TitleTag = widget.TitleTag ?? "h3",
 										Html = widget.Body
 									} }
 								}
@@ -211,9 +215,11 @@ namespace SmartStore.Web.Infrastructure
 			public int Id { get; set; }
 			public string[] WidgetZones { get; set; }
 			public string SystemName { get; set; }
+			public bool WrapContent { get; set; }
 			public bool ShowTitle { get; set; }
 			public bool Bordered { get; set; }
 			public string Title { get; set; }
+            public string TitleTag { get; set; }
 			public string Body { get; set; }
 			public int Priority { get; set; }
 		}

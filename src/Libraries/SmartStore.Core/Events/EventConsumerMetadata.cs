@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Core.Events
 {
@@ -6,5 +7,6 @@ namespace SmartStore.Core.Events
 	{
 		public bool ExecuteAsync { get; set; }
 		public bool IsActive { get; set; }
+		public PluginDescriptor PluginDescriptor { get; set; }
 	}
 }

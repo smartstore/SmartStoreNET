@@ -55,6 +55,8 @@ namespace SmartStore.Admin.Models.Common
 		[SmartResourceDisplayName("Admin.System.SystemInfo.DataProviderFriendlyName")]
 		public string DataProviderFriendlyName { get; set; }
 
+		public bool ShrinkDatabaseEnabled { get; set; }
+
         public class LoadedAssembly : ModelBase
         {
             public string FullName { get; set; }

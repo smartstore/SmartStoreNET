@@ -12,7 +12,6 @@ namespace SmartStore.Data.Mapping.Directory
             this.Property(c => c.Name).IsRequired().HasMaxLength(50);
             this.Property(c => c.ColorHexValue).IsRequired().HasMaxLength(50);
             this.Property(c => c.DisplayLocale).HasMaxLength(50);
-            //this.Property(c => c.Published);
             this.Property(c => c.DisplayOrder);
         }
     }

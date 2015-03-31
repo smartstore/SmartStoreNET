@@ -239,8 +239,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product manufacturer collection</returns>
-        public virtual IPagedList<ProductManufacturer> GetProductManufacturersByManufacturerId(int manufacturerId, 
-            int pageIndex, int pageSize, bool showHidden = false)
+        public virtual IPagedList<ProductManufacturer> GetProductManufacturersByManufacturerId(int manufacturerId, int pageIndex, int pageSize, bool showHidden = false)
         {
             if (manufacturerId == 0)
                 return new PagedList<ProductManufacturer>(new List<ProductManufacturer>(), pageIndex, pageSize);

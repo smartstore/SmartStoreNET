@@ -202,7 +202,7 @@ Kopie von*
 /src/Presentation/SmartStore.Web/App_Data/_temp/
 /src/Presentation/SmartStore.Web/App_Data/Settings.txt
 /src/Presentation/SmartStore.Web/App_Data/InstalledPlugins.txt
-/src/Presentation/SmartStore.Web/App_Data/Licensing.key
+/src/Presentation/SmartStore.Web/App_Data/Licenses.lic
 /src/Presentation/SmartStore.Web/Media
 
 # Import/Export
@@ -213,3 +213,4 @@ Kopie von*
 /src/Presentation/SmartStore.Web/Media/[Uu]ploaded
 
 src/SmartStoreNET.Packager.sln
+Log.txt

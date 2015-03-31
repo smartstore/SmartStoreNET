@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
@@ -180,7 +181,17 @@ namespace SmartStore.Services.Orders
 
             foreach (var shoppingCartItem in cart)
 			{
+				if (shoppingCartItem.Item.Product == null)
+					continue;
+
 				decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
+
+				IProductAttributeParser productAttrParser;
+				if (EngineContext.Current.ContainerManager.TryResolve<IProductAttributeParser>(null, out productAttrParser)) 
+				{
+					// make the call unit test safe
+					shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, productAttrParser);
+				}
 
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{

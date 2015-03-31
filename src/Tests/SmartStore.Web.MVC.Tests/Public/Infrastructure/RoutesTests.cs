@@ -147,8 +147,8 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         {
             "~/order/details/1".ShouldMapTo<OrderController>(c => c.Details(1));
             "~/order/reorder/3".ShouldMapTo<OrderController>(c => c.ReOrder(3));
-            "~/order/pdf/4".ShouldMapTo<OrderController>(c => c.GetPdfInvoice(4));
-            "~/order/print/5".ShouldMapTo<OrderController>(c => c.PrintOrderDetails(5));
+            //"~/order/pdf/4".ShouldMapTo<OrderController>(c => c.GetPdfInvoice(4));
+            "~/order/print/5".ShouldMapTo<OrderController>(c => c.Print(5, false));
         }
 
         [Test]
@@ -163,7 +163,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
             "~/contactus".ShouldMapTo<HomeController>(c => c.ContactUs());
 			"~/sitemap".ShouldMapTo<HomeController>(c => c.Sitemap());
 			"~/sitemap.xml".ShouldMapTo<HomeController>(c => c.SitemapSeo());
-            "~/config".ShouldMapTo<CommonController>(c => c.Config());
+            "~/settings".ShouldMapTo<CommonController>(c => c.Settings());
         }
 
         [Test]

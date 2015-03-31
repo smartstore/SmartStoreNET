@@ -38,6 +38,15 @@ namespace SmartStore.Core.Domain.Themes
         /// </summary>
         public bool AllowCustomerToSelectTheme { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether user's theme choice should be saved in a cookie
+		/// </summary>
+		/// <remarks>
+		/// If <c>false</c>, user's theme choice is associated to the account, 
+		/// which may be undesirable when, for example, multiple users share a guest account.
+		/// </remarks>
+		public bool SaveThemeChoiceInCookie { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether mobile devices supported
         /// </summary>

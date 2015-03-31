@@ -8,6 +8,7 @@
 	//page title
 	ViewBag.Title = T("Admin.Configuration.Themes").Text;
 }
+
 @using (Html.BeginForm())
 {
     <div class="section-header">
@@ -177,21 +178,45 @@
 
 @helper ThemeSettingsTab()
 {
-    
+	<script>
+		$(function () {
+			$("#@Html.FieldIdFor(model => model.AllowCustomerToSelectTheme)").on('click', toggleThemeChooser);
+			toggleThemeChooser();
+		});
+
+		function toggleThemeChooser() {
+			if ($('#@Html.FieldIdFor(model => model.AllowCustomerToSelectTheme)').is(':checked')) {
+				$('#pnlSaveThemeChoiceInCookie').show();
+			}
+			else {
+				$('#pnlSaveThemeChoiceInCookie').hide();
+			}
+		}
+	</script>
+
     @Html.HiddenFor(x => x.DefaultDesktopTheme)
     @Html.HiddenFor(x => x.DefaultMobileTheme)
     
     @Html.ValidationSummary(false)
     <table class="adminContent">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.AllowCustomerToSelectTheme)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.AllowCustomerToSelectTheme)
-                @Html.ValidationMessageFor(model => model.AllowCustomerToSelectTheme)
-            </td>
-        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.AllowCustomerToSelectTheme)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.AllowCustomerToSelectTheme)
+				@Html.ValidationMessageFor(model => model.AllowCustomerToSelectTheme)
+			</td>
+		</tr>
+		<tr id="pnlSaveThemeChoiceInCookie">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SaveThemeChoiceInCookie)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SaveThemeChoiceInCookie)
+				@Html.ValidationMessageFor(model => model.SaveThemeChoiceInCookie)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.MobileDevicesSupported)

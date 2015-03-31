@@ -1,6 +1,6 @@
-﻿using System.Web;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Collections.Generic;
+using System.Web;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Common;

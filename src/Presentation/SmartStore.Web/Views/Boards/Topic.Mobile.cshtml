@@ -17,21 +17,21 @@
     </div>
     <div class="manage">
         @if (Model.IsCustomerAllowedToEditTopic)
-        {
-            <a href="@Url.Action("TopicEdit", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.EditTopic")</a>   
-        }
+		{
+			<a href="@Url.Action("TopicEdit", new { id = @Model.Id })" data-inline="true" data-role="button" rel="nofollow">@T("Forum.EditTopic")</a>
+		}
         @if (Model.IsCustomerAllowedToDeleteTopic)
-        {
-            <a href="@Url.Action("TopicDelete", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.DeleteTopic")</a>
-        }
+		{
+			<a href="@Url.Action("TopicDelete", new { id = @Model.Id })" data-inline="true" data-role="button" rel="nofollow">@T("Forum.DeleteTopic")</a>
+		}
         @if (Model.IsCustomerAllowedToMoveTopic)
-        {
-            <a href="@Url.Action("TopicMove", new { id = @Model.Id })" data-inline="true" data-role="button">@T("Forum.MoveTopic")</a>
-        }
+		{
+			<a href="@Url.Action("TopicMove", new { id = @Model.Id })" data-inline="true" data-role="button" rel="nofollow">@T("Forum.MoveTopic")</a>
+		}
     </div>
     <div class="topic-header">
         <div class="topic-options">
-            <a href="@Url.Action("PostCreate", new { id = @Model.Id })" data-role="button">@T("Forum.Reply")</a>
+			<a href="@Url.Action("PostCreate", new { id = @Model.Id })" data-role="button" rel="nofollow">@T("Forum.Reply")</a>
         </div>
 
         @{

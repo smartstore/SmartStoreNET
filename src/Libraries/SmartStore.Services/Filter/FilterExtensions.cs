@@ -27,7 +27,7 @@ namespace SmartStore.Services.Filter
 		{
 			var localize = EngineContext.Current.Resolve<ILocalizationService>();
 
-			if (criteria == null || criteria.Value.IsNullOrEmpty())
+			if (criteria == null || criteria.Value.IsEmpty())
 				return localize.GetResource("Common.Unspecified");
 
 			if (criteria.Operator == FilterOperator.RangeGreaterEqualLessEqual || criteria.Operator == FilterOperator.RangeGreaterEqualLess)
@@ -120,11 +120,13 @@ namespace SmartStore.Services.Filter
 			}
 			return null;
 		}
+
 		public static bool StringToPrice(string value, out decimal result)
 		{
 			result = 0;
 			return (value.HasValue() && decimal.TryParse(value, NumberStyles.Number, CultureInfo.InvariantCulture, out result));
 		}
+
 		public static bool StringToPrice(this string[] range, int index, out decimal result)
 		{
 			result = 0;
@@ -170,6 +172,7 @@ namespace SmartStore.Services.Filter
 
 			return url;
 		}
+
 		public static bool IsActive(this FilterProductContext context, FilterCriteria criteria)
 		{
 			if (criteria != null && context.Criteria != null)
@@ -177,14 +180,6 @@ namespace SmartStore.Services.Filter
 				return (context.Criteria.FirstOrDefault(c => c.Entity == criteria.Entity && c.Name == criteria.Name && c.Value == criteria.Value && !c.IsInactive) != null);
 			}
 			return false;
-		}
-
-		public static bool IsShowAllText(this IEnumerable<FilterCriteria> criteriaGroup)
-		{
-			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
-				return false;
-
-			return (criteriaGroup.Count() >= FilterService.MaxDisplayCriteria || criteriaGroup.Any(c => !c.IsInactive));
 		}
 	}
 }

@@ -28,6 +28,8 @@
             $("#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)").click(toggleSearchPageSize);
             $("#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)").click(toggleProductSearchAutoComplete);
             $("#@Html.FieldIdFor(model => model.CompareProductsEnabled)").click(toggleCompareProducts);
+        	$("#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)").click(toggleHtmlTextCollapsedHeight);
+        	$("#@Html.FieldIdFor(model => model.FilterEnabled)").click(toggleFilterEnabled);
 
             toggleShowCategoryProductNumberIncludingSubcategories();
             toggleEmailAFriend();
@@ -39,6 +41,8 @@
             toggleSearchPageSize();
             toggleProductSearchAutoComplete();
             toggleCompareProducts();
+            toggleHtmlTextCollapsedHeight();
+            toggleFilterEnabled();
         });
 
         function toggleShowCategoryProductNumberIncludingSubcategories() {
@@ -130,6 +134,24 @@
             }
         }
         
+        function toggleHtmlTextCollapsedHeight() {
+            if ($('#@Html.FieldIdFor(model => model.EnableHtmlTextCollapser)').is(':checked')) {
+                $('#pnlHtmlTextCollapsedHeight').show();
+            }
+            else {
+                $('#pnlHtmlTextCollapsedHeight').hide();
+            }
+        }
+
+		function toggleFilterEnabled() {
+			if ($('#@Html.FieldIdFor(model => model.FilterEnabled)').is(':checked')) {
+				$('#pnlMaxFilterItemsToDisplay').show();
+				$('#pnlExpandAllFilterCriteria').show();
+			} else {
+				$('#pnlMaxFilterItemsToDisplay').hide();
+				$('#pnlExpandAllFilterCriteria').hide();
+			}
+		}
     </script>
 	
 	@Html.Action("StoreScopeConfiguration", "Setting")
@@ -275,13 +297,22 @@
                 @Html.ValidationMessageFor(model => model.EnableHtmlTextCollapser)
             </td>
         </tr>
-        <tr>
+        <tr id="pnlHtmlTextCollapsedHeight">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.HtmlTextCollapsedHeight)
             </td>
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.HtmlTextCollapsedHeight)
                 @Html.ValidationMessageFor(model => model.HtmlTextCollapsedHeight)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowDefaultQuantityUnit)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowDefaultQuantityUnit)
+                @Html.ValidationMessageFor(model => model.ShowDefaultQuantityUnit)
             </td>
         </tr>
     </table>
@@ -337,6 +368,7 @@
                     @Html.ValidationMessageFor(model => model.CategoryBreadcrumbEnabled)
                 </td>
             </tr>
+
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.FilterEnabled)
@@ -346,6 +378,35 @@
                     @Html.ValidationMessageFor(model => model.FilterEnabled)
                 </td>
             </tr>
+			<tr id="pnlMaxFilterItemsToDisplay">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaxFilterItemsToDisplay)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.MaxFilterItemsToDisplay)
+					@Html.ValidationMessageFor(model => model.MaxFilterItemsToDisplay)
+				</td>
+			</tr>
+			<tr id="pnlExpandAllFilterCriteria">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExpandAllFilterCriteria)
+				</td>
+				<td class="adminData">
+					@Html.SettingEditorFor(model => model.ExpandAllFilterCriteria)
+					@Html.ValidationMessageFor(model => model.ExpandAllFilterCriteria)
+				</td>
+			</tr>
+
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.ShowSubcategoriesAboveProductLists)
+                </td>
+                <td class="adminData">
+                    @Html.SettingEditorFor(model => model.ShowSubcategoriesAboveProductLists)
+                    @Html.ValidationMessageFor(model => model.ShowSubcategoriesAboveProductLists)
+                </td>
+            </tr>
+
         </table>
     </fieldset>
     
@@ -496,6 +557,15 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ShowProductReviewsInProductLists)
                 @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductLists)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowProductReviewsInProductDetail)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowProductReviewsInProductDetail)
+                @Html.ValidationMessageFor(model => model.ShowProductReviewsInProductDetail)
             </td>
         </tr>
         <tr>

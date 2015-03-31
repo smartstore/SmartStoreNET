@@ -12,14 +12,14 @@ copyright notices, and licenses.
 
 
 51Degrees
------
+---------------------------------------------
 WebSite:      http://http://51degrees.mobi/
 Copyright:    Copyright 2010 - 2013 51Degrees.mobi Limited
 License:      Mozilla Public License 2.0 (MPL-2.0)
 
 
 ANTLR 
------
+---------------------------------------------
 Website:      http://www.antlr.org
 Copyright:    Copyright ANTLR / Terence Parr 2014
 License:      BSD License
@@ -27,7 +27,7 @@ License:      BSD License
 
 
 ASP.NET MVC
------
+---------------------------------------------
 Website:      http://aspnet.codeplex.com/wikipage?title=MVC&referringTitle=Home
 Copyright:    Copyright (c) 2008-2011 Microsoft Corporation
 License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
@@ -35,7 +35,7 @@ License:      MICROSOFT ASP.NET MODEL VIEW CONTROLLER 3 EULA
 
 
 Autofac
------
+---------------------------------------------
 Website:      http://code.google.com/p/autofac/
 Copyright:    Copyright (c) 2007-2014 Autofac Contributors
               http://code.google.com/p/autofac/wiki/Contributing
@@ -43,155 +43,149 @@ License:      MIT
 
 
 AutoMapper
------
+---------------------------------------------
 WebSite:      http://http://www.automapper.org
 Copyright:    Copyright © 2008-2013 Jimmy Bogard and other contributors
 License:      MIT
 
 
 Bundle Transformer 
------
+---------------------------------------------
 Website:      https://bundletransformer.codeplex.com
 Copyright:    Copyright Andrey Taritsyn 2014
 License:      Apache License 2.0 (Apache)
 
 
 DotNetOpenAuth
------
+---------------------------------------------
 Website:      http://http://dotnetopenauth.net/
 Copyright:    Copyright (c) 2011, Outercurve Foundation
 License:      MS-PL
 
 
 DotNetZip
------
+---------------------------------------------
 Website:      http://dotnetzip.codeplex.com/
 Copyright:    
 License:      MS-PL
 
 
 Entity Framework
------
+---------------------------------------------
 Website:      https://entityframework.codeplex.com
 Copyright:    Copyright (c) 2012-2014 Microsoft Corporation
 License:      Apache License 2.0 (Apache)
 
 
 EPPlus
------
+---------------------------------------------
 Website:      https://epplus.codeplex.com/
 Copyright:    Copyright (C) 2011  Jan Källman
 License:      GNU Library General Public License (LGPL)
 
 
 Fasterflect
------
+---------------------------------------------
 Website:      https://fasterflect.codeplex.com/
 License:      Apache License 2.0 (Apache)
 
 
 Fluent Validation
------
+---------------------------------------------
 Website:      https://fluentvalidation.codeplex.com/
 License:      Apache License 2.0 (Apache)
 
 
 Glimpse
------
+---------------------------------------------
 Website:      https://github.com/Glimpse/Glimpse
 Copyright:    Copyright (C) 2014  Glimpse contributors (http://getglimpse.com/Community)
 License:      Apache License 2.0 (Apache)
 
 
 ImageResizer.NET
------
+---------------------------------------------
 Website:      https://imageresizing.net/
 Copyright:    Copyright (c) 2012 Imazen
 License:      Freedom License
 
 
-iTextSharp
------
-Website:      http://itextpdf.com/
-License:      Affero General Public License
-
-
 JavaScriptEngineSwitcher
------
+---------------------------------------------
 Website:      https://github.com/Taritsyn/JavaScriptEngineSwitcher
 Copyright:    Copyright Andrey Taritsyn 2014
 License:      Apache License 2.0 (Apache)
 
 
 jQuery
------
+---------------------------------------------
 Website:      http://jquery.com
 Copyright:    Copyright (c) 2010 John Resig, http://jquery.com
 License:      MIT
 
 
 jQuery ScrollTo
------
+---------------------------------------------
 Website:      http://flesler.blogspot.com
 Copyright:    Copyright (c) 2007-2009 Ariel Flesler
 License:      MIT
 
 
 jQuery UI (Core, Widget, Datepicker)
------
+---------------------------------------------
 Website:      http://docs.jquery.com/UI
 Copyright:    Copyright (c) 2010 lib/jquery.ui/AUTHORS.txt (http://jqueryui.com/about)
 License:      MIT
 
 
 JSON.NET
------
+---------------------------------------------
 Website:      http://james.newtonking.com/
 Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
 
 
 LESS CSS for .NET
------
+---------------------------------------------
 Website:      http://www.dotlesscss.org/
 License:      Apache License v2.0
 
 
 GeoLite Free by MaxMind
------
+---------------------------------------------
 Website:      http://www.maxmind.com
 Copyright:    Copyright (c) 2014 Maxmind
 License:      Creative Commons Attribution-ShareAlike 3.0 Unported License
 
 
 Microsoft SQL Server Compact 4.0
------
+---------------------------------------------
 Website:      http://www.microsoft.com
 Copyright:    Copyright (c) 2011 Microsoft Corporation
 License:      Custom EULA - http://www.microsoft.com/web/webpi/eula/SQLCE_EULA_ENU.rtf
 
 
 MiniProfiler
------
+---------------------------------------------
 Website:      http://miniprofiler.com/
 License:      Apache License, Version 2.0
 
 
 Modernizr
------
+---------------------------------------------
 Website:      http://modernizr.com/
 License:      MIT
 
 
 NuGet
------
+---------------------------------------------
 Website:      http://nuget.codeplex.com
 Copyright:    Copyright 2010-2011 Outercurve Foundation
 License:      Apache Software Foundation License 2.0
 
 
 nUnit
------
+---------------------------------------------
 Website:      http://www.nunit.org/index.php
 Copyright:    Copyright (c) 2002-2007 NUnit.org
               Portions Copyright (c) 2002-2008 Charlie Poole or Copyright (c) 2002-2004 James W. Newkirk, Michael C. Two, Alexei A. Vorontsov or Copyright (c) 2000-2002 Philip A. Craig
@@ -199,26 +193,32 @@ License:      Derived from zlib: http://nunit.org/index.php?p=license&r=2.4
 
 
 Telerik MVC Extensions
------
+---------------------------------------------
 Website:      http://www.telerik.com/
 License:      GPL v3.0
 
 
 TinyMCE
------
+---------------------------------------------
 WebSite:      http://tinymce.moxiecode.com/
 Copyright:    Copyright (c) 2003-2009 Moxiecode Systems AB
 License:      LGPL 2.1
 
 
 Twitter Bootstrap
------
+---------------------------------------------
 Website:      http://twitter.github.io/bootstrap/
 License:      Apache License v2.0
 
 
 underscore.js
------
+---------------------------------------------
 Website:      http://underscorejs.org
 Copyright:    Copyright (c) 2009-2014 Jeremy Ashkenas, DocumentCloud and Investigative Reporters & Editors
 License:      MIT
+
+
+wkhtmltopdf
+---------------------------------------------
+Website:      http://wkhtmltopdf.org/
+License:      LGPL

@@ -95,12 +95,12 @@
 
 		// global notification subscriber
 		if (window.EventBroker && window._ && $.pnotify) {
-			var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
-			//var stack_topright = { "dir1": "down", "dir2": "left", "firstpos1": 60 };
+			//var stack_bottomright = { "dir1": "up", "dir2": "left", "firstpos1": 25, "firstpos2": 25 };
+			var stack_topcenter = { "dir1": "down", "dir2": "right", "firstpos1": 60, "firstpos2": 10 };
 			EventBroker.subscribe("message", function (message, data) {
 				var opts = _.isString(data) ? { text: data } : data;
-				opts.stack = stack_bottomright;
-				opts.addclass = "stack-bottomright";
+				opts.stack = stack_topcenter;
+				opts.addclass = "stack-topcenter";
 				$.pnotify(opts);
 			});
 		}
@@ -124,6 +124,31 @@
 					global: false
 				});
 			}		
+		});
+
+		// Telerik grid smart AJAX state preserving
+		$('.t-grid.grid-preservestate').on('dataBound', function (e) {
+			var grid = $(this).data("tGrid"),
+				href = $(this).data("statepreserver-href"),
+				gridId = $(this).data("statepreserver-key");
+
+			if (href) {
+				$.ajax({
+					type: "POST",
+					url: href,
+					async: true,
+					data: {
+						gridId: gridId,
+						path: location.pathname + location.search,
+						page: grid.currentPage,
+						size: grid.pageSize,
+						orderBy: grid.orderBy,
+						groupBy: grid.groupBy,
+						filter: grid.filterBy
+					},
+					global: false
+				});
+			}
 		});
 
 		// AJAX tabs

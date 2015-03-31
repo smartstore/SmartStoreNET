@@ -777,6 +777,7 @@ namespace SmartStore.Services.ExportImport
                     "Picture2",
                     "Picture3",
 					"DeliveryTimeId",
+                    "QuantityUnitId",
 					"BasePriceEnabled",
 					"BasePriceMeasureUnit",
 					"BasePriceAmount",
@@ -1069,6 +1070,8 @@ namespace SmartStore.Services.ExportImport
 
 					cells[row, col].Value = p.DeliveryTimeId;
 					col++;
+                    cells[row, col].Value = p.QuantityUnitId;
+                    col++;
 					cells[row, col].Value = p.BasePriceEnabled;
 					col++;
 					cells[row, col].Value = p.BasePriceMeasureUnit;
@@ -1137,7 +1140,7 @@ namespace SmartStore.Services.ExportImport
                 xlPackage.Save();
             }
 
-			// EPPLus has serious memory leak problems.
+			// EPPLus had serious memory leak problems in V3.
 			// We enforce the garbage collector to release unused memory,
  			// it's not perfect, but better than nothing.
 			GC.Collect();
@@ -1195,7 +1198,6 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("CardExpirationMonth", null, order.CardExpirationMonth);
                 xmlWriter.WriteElementString("CardExpirationYear", null, order.CardExpirationYear);
 
-                //codehint: sm-add begin
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitAccountHolder);
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitAccountNumber);
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitBankCode);
@@ -1203,7 +1205,6 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitBIC);
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitCountry);
                 xmlWriter.WriteElementString("DirectDebitAccountHolder", null, order.DirectDebitIban);
-                //codehint: sm-add end
 
                 xmlWriter.WriteElementString("PaymentMethodSystemName", null, order.PaymentMethodSystemName);
                 xmlWriter.WriteElementString("AuthorizationTransactionId", null, order.AuthorizationTransactionId);
@@ -1598,22 +1599,24 @@ namespace SmartStore.Services.ExportImport
                 //Create Headers and format them
                 var properties = new string[]
                     {
-                        "CustomerId",
+                        "Id",
                         "CustomerGuid",
                         "Email",
                         "Username",
                         "PasswordStr",//why can't we use 'Password' name?
                         "PasswordFormatId",
                         "PasswordSalt",
-                        "LanguageId",
-                        "CurrencyId",
-                        "TaxDisplayTypeId",
+						"AdminComment",
                         "IsTaxExempt",
-                        "VatNumber",
-                        "VatNumberStatusId",
-                        "TimeZoneId",
                         "AffiliateId",
                         "Active",
+						"IsSystemAccount",
+						"SystemName",
+						"LastIpAddress",
+						"CreatedOnUtc",
+						"LastLoginDateUtc",
+						"LastActivityDateUtc",
+
                         "IsGuest",
                         "IsRegistered",
                         "IsAdministrator",
@@ -1630,10 +1633,15 @@ namespace SmartStore.Services.ExportImport
                         "StateProvinceId",
                         "Phone",
                         "Fax",
+                        "VatNumber",
+                        "VatNumberStatusId",
+                        "TimeZoneId",
+						"Newsletter",
                         "AvatarPictureId",
                         "ForumPostCount",
                         "Signature",
                     };
+
                 for (int i = 0; i < properties.Length; i++)
                 {
                     worksheet.Cells[1, i + 1].Value = properties[i];
@@ -1669,6 +1677,9 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = customer.PasswordSalt;
                     col++;
 
+					worksheet.Cells[row, col].Value = customer.AdminComment;
+					col++;
+
                     worksheet.Cells[row, col].Value = customer.IsTaxExempt;
                     col++;
 
@@ -1677,6 +1688,25 @@ namespace SmartStore.Services.ExportImport
 
                     worksheet.Cells[row, col].Value = customer.Active;
                     col++;
+
+					worksheet.Cells[row, col].Value = customer.IsSystemAccount;
+					col++;
+
+					worksheet.Cells[row, col].Value = customer.SystemName;
+					col++;
+
+					worksheet.Cells[row, col].Value = customer.LastIpAddress;
+					col++;
+
+					worksheet.Cells[row, col].Value = customer.CreatedOnUtc.ToString();
+					col++;
+
+					worksheet.Cells[row, col].Value = (customer.LastLoginDateUtc.HasValue ? customer.LastLoginDateUtc.Value.ToString() : null);
+					col++;
+
+					worksheet.Cells[row, col].Value = customer.LastActivityDateUtc.ToString();
+					col++;
+
 
                     //roles
                     worksheet.Cells[row, col].Value = customer.IsGuest();
@@ -1707,6 +1737,9 @@ namespace SmartStore.Services.ExportImport
 					var vatNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber);
 					var vatNumberStatusId = customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumberStatusId);
 					var timeZoneId = customer.GetAttribute<string>(SystemCustomerAttributeNames.TimeZoneId);
+
+					var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email);
+					bool subscribedToNewsletters = newsletter != null && newsletter.Active;
 
                     var avatarPictureId = customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId);
                     var forumPostCount = customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount);
@@ -1754,11 +1787,14 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = vatNumberStatusId;
 					col++;
 
-                    worksheet.Cells[row, col].Value = avatarPictureId;
-                    col++;
-
 					worksheet.Cells[row, col].Value = timeZoneId;
 					col++;
+
+					worksheet.Cells[row, col].Value = subscribedToNewsletters;
+					col++;
+
+                    worksheet.Cells[row, col].Value = avatarPictureId;
+                    col++;
 
                     worksheet.Cells[row, col].Value = forumPostCount;
                     col++;
@@ -1768,13 +1804,6 @@ namespace SmartStore.Services.ExportImport
 
                     row++;
                 }
-
-
-
-
-
-
-
 
                 // we had better add some document properties to the spreadsheet 
 
@@ -1814,17 +1843,24 @@ namespace SmartStore.Services.ExportImport
             foreach (var customer in customers)
             {
                 xmlWriter.WriteStartElement("Customer");
-                xmlWriter.WriteElementString("CustomerId", null, customer.Id.ToString());
+
+                xmlWriter.WriteElementString("Id", null, customer.Id.ToString());
                 xmlWriter.WriteElementString("CustomerGuid", null, customer.CustomerGuid.ToString());
                 xmlWriter.WriteElementString("Email", null, customer.Email);
                 xmlWriter.WriteElementString("Username", null, customer.Username);
                 xmlWriter.WriteElementString("Password", null, customer.Password);
                 xmlWriter.WriteElementString("PasswordFormatId", null, customer.PasswordFormatId.ToString());
                 xmlWriter.WriteElementString("PasswordSalt", null, customer.PasswordSalt);
+				xmlWriter.WriteElementString("AdminComment", null, customer.AdminComment);
                 xmlWriter.WriteElementString("IsTaxExempt", null, customer.IsTaxExempt.ToString());
 				xmlWriter.WriteElementString("AffiliateId", null, customer.AffiliateId.ToString());
                 xmlWriter.WriteElementString("Active", null, customer.Active.ToString());
-
+				xmlWriter.WriteElementString("IsSystemAccount", null, customer.IsSystemAccount.ToString());
+				xmlWriter.WriteElementString("SystemName", null, customer.SystemName);
+				xmlWriter.WriteElementString("LastIpAddress", null, customer.LastIpAddress);
+				xmlWriter.WriteElementString("CreatedOnUtc", null, customer.CreatedOnUtc.ToString());
+				xmlWriter.WriteElementString("LastLoginDateUtc", null, customer.LastLoginDateUtc.HasValue ? customer.LastLoginDateUtc.Value.ToString() : "");
+				xmlWriter.WriteElementString("LastActivityDateUtc", null, customer.LastActivityDateUtc.ToString());
 
                 xmlWriter.WriteElementString("IsGuest", null, customer.IsGuest().ToString());
                 xmlWriter.WriteElementString("IsRegistered", null, customer.IsRegistered().ToString());
@@ -1857,7 +1893,64 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("ForumPostCount", null, customer.GetAttribute<int>(SystemCustomerAttributeNames.ForumPostCount).ToString());
                 xmlWriter.WriteElementString("Signature", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.Signature));
 
-                xmlWriter.WriteEndElement();
+				xmlWriter.WriteStartElement("Addresses");
+
+				foreach (var address in customer.Addresses)
+				{
+					bool isCurrentBillingAddress = (customer.BillingAddress != null && customer.BillingAddress.Id == address.Id);
+					bool isCurrentShippingAddress = (customer.ShippingAddress != null && customer.ShippingAddress.Id == address.Id);
+
+					xmlWriter.WriteStartElement("Address");
+					xmlWriter.WriteElementString("IsCurrentBillingAddress", null, isCurrentBillingAddress.ToString());
+					xmlWriter.WriteElementString("IsCurrentShippingAddress", null, isCurrentShippingAddress.ToString());
+
+					xmlWriter.WriteElementString("Id", null, address.Id.ToString());
+					xmlWriter.WriteElementString("FirstName", null, address.FirstName);
+					xmlWriter.WriteElementString("LastName", null, address.LastName);
+					xmlWriter.WriteElementString("Email", null, address.Email);
+					xmlWriter.WriteElementString("Company", null, address.Company);
+					xmlWriter.WriteElementString("City", null, address.City);
+					xmlWriter.WriteElementString("Address1", null, address.Address1);
+					xmlWriter.WriteElementString("Address2", null, address.Address2);
+					xmlWriter.WriteElementString("ZipPostalCode", null, address.ZipPostalCode);
+					xmlWriter.WriteElementString("PhoneNumber", null, address.PhoneNumber);
+					xmlWriter.WriteElementString("FaxNumber", null, address.FaxNumber);
+					xmlWriter.WriteElementString("CreatedOnUtc", null, address.CreatedOnUtc.ToString());
+
+					if (address.Country != null)
+					{
+						xmlWriter.WriteStartElement("Country");
+						xmlWriter.WriteElementString("Id", null, address.Country.Id.ToString());
+						xmlWriter.WriteElementString("Name", null, address.Country.Name);
+						xmlWriter.WriteElementString("AllowsBilling", null, address.Country.AllowsBilling.ToString());
+						xmlWriter.WriteElementString("AllowsShipping", null, address.Country.AllowsShipping.ToString());
+						xmlWriter.WriteElementString("TwoLetterIsoCode", null, address.Country.TwoLetterIsoCode);
+						xmlWriter.WriteElementString("ThreeLetterIsoCode", null, address.Country.ThreeLetterIsoCode);
+						xmlWriter.WriteElementString("NumericIsoCode", null, address.Country.NumericIsoCode.ToString());
+						xmlWriter.WriteElementString("SubjectToVat", null, address.Country.SubjectToVat.ToString());
+						xmlWriter.WriteElementString("Published", null, address.Country.Published.ToString());
+						xmlWriter.WriteElementString("DisplayOrder", null, address.Country.DisplayOrder.ToString());
+						xmlWriter.WriteEndElement();	// Country
+					}
+
+					if (address.StateProvince != null)
+					{
+						xmlWriter.WriteStartElement("StateProvince");
+						xmlWriter.WriteElementString("Id", null, address.StateProvince.Id.ToString());
+						xmlWriter.WriteElementString("CountryId", null, address.StateProvince.CountryId.ToString());
+						xmlWriter.WriteElementString("Name", null, address.StateProvince.Name);
+						xmlWriter.WriteElementString("Abbreviation", null, address.StateProvince.Abbreviation);
+						xmlWriter.WriteElementString("Published", null, address.StateProvince.Published.ToString());
+						xmlWriter.WriteElementString("DisplayOrder", null, address.StateProvince.DisplayOrder.ToString());
+						xmlWriter.WriteEndElement();	// StateProvince
+					}
+
+					xmlWriter.WriteEndElement();	// Address
+				}
+
+				xmlWriter.WriteEndElement();	// Addresses
+
+				xmlWriter.WriteEndElement();	// Customer
             }
 
             xmlWriter.WriteEndElement();

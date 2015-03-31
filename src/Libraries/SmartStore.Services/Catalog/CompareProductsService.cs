@@ -145,13 +145,20 @@ namespace SmartStore.Services.Catalog
             var oldProductIds = GetComparedProductIds();
             var newProductIds = new List<int>();
             newProductIds.Add(productId);
-            foreach (int oldProductId in oldProductIds)
-                if (oldProductId != productId)
-                    newProductIds.Add(oldProductId);
+			
+			foreach (int oldProductId in oldProductIds)
+			{
+				if (oldProductId != productId)
+					newProductIds.Add(oldProductId);
+			}
 
             var compareCookie = _httpContext.Request.Cookies.Get(COMPARE_PRODUCTS_COOKIE_NAME);
-            if (compareCookie == null)
-                compareCookie = new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
+			if (compareCookie == null)
+			{
+				compareCookie = new HttpCookie(COMPARE_PRODUCTS_COOKIE_NAME);
+				compareCookie.HttpOnly = true;
+			}
+
             compareCookie.Values.Clear();
             int maxProducts = 4;
             int i = 1;

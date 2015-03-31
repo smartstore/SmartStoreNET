@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Topics;
 using SmartStore.Services.Seo;
+using SmartStore.Core.Domain.Security;
 
 namespace SmartStore.Services.Seo
 {
@@ -22,6 +23,7 @@ namespace SmartStore.Services.Seo
         private readonly ITopicService _topicService;
         private readonly CommonSettings _commonSettings;
         private readonly IWebHelper _webHelper;
+		private readonly SecuritySettings _securitySettings;
 
 		public SitemapGenerator(
 			IStoreContext storeContext, 
@@ -30,7 +32,8 @@ namespace SmartStore.Services.Seo
 			IManufacturerService manufacturerService,
             ITopicService topicService, 
 			CommonSettings commonSettings, 
-			IWebHelper webHelper)
+			IWebHelper webHelper,
+			SecuritySettings securitySettings)
         {
 			this._storeContext = storeContext;
             this._categoryService = categoryService;
@@ -39,6 +42,7 @@ namespace SmartStore.Services.Seo
             this._topicService = topicService;
             this._commonSettings = commonSettings;
             this._webHelper = webHelper;
+			this._securitySettings = securitySettings;
         }
 
 		protected override void GenerateUrlNodes(UrlHelper urlHelper)
@@ -67,9 +71,10 @@ namespace SmartStore.Services.Seo
         private void WriteCategories(UrlHelper urlHelper, int parentCategoryId)
         {
             var categories = _categoryService.GetAllCategories(showHidden: false);
+			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
             foreach (var category in categories)
             {
-				var url = urlHelper.RouteUrl("Category", new { SeName = category.GetSeName() }, "http");
+				var url = urlHelper.RouteUrl("Category", new { SeName = category.GetSeName() }, protocol);
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = category.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
@@ -79,9 +84,10 @@ namespace SmartStore.Services.Seo
 		private void WriteManufacturers(UrlHelper urlHelper)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(false);
+			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
             foreach (var manufacturer in manufacturers)
             {
-				var url = urlHelper.RouteUrl("Manufacturer", new { SeName = manufacturer.GetSeName() }, "http");
+				var url = urlHelper.RouteUrl("Manufacturer", new { SeName = manufacturer.GetSeName() }, protocol);
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = manufacturer.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
@@ -99,9 +105,10 @@ namespace SmartStore.Services.Seo
 			};
 
 			var products = _productService.SearchProducts(ctx);
+			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
             foreach (var product in products)
             {
-				var url = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
+				var url = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, protocol);
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = product.UpdatedOnUtc;
                 WriteUrlLocation(url, updateFrequency, updateTime);
@@ -111,9 +118,10 @@ namespace SmartStore.Services.Seo
 		private void WriteTopics(UrlHelper urlHelper)
         {
             var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
+			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
             foreach (var topic in topics)
             {
-				var url = urlHelper.RouteUrl("Topic", new { SystemName = topic.SystemName }, "http");
+				var url = urlHelper.RouteUrl("Topic", new { SystemName = topic.SystemName }, protocol);
                 var updateFrequency = UpdateFrequency.Weekly;
                 var updateTime = DateTime.UtcNow;
                 WriteUrlLocation(url, updateFrequency, updateTime);

@@ -33,6 +33,7 @@ using SmartStore.Services.Common;
 using SmartStore.Core.Domain.Common;
 using System.Reflection;
 using Autofac;
+using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -287,6 +288,17 @@ namespace SmartStore.Admin.Controllers
 			return Json(new { Success = true });
 		}
 
+		[HttpPost]
+		public JsonResult SetGridState(string gridId, GridState state, string path)
+		{
+			if (gridId.HasValue() && state != null && path.HasValue())
+			{
+				var info = new GridStateInfo { State = state, Path = path };
+				TempData[gridId] = info;
+			}
+			return Json(new { Success = true });
+		}
+
         public ActionResult SystemInfo()
         {
             var model = new SystemInfoModel();
@@ -324,7 +336,10 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				if (DataSettings.Current.IsValid())
+				{
 					model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
+					model.ShrinkDatabaseEnabled = DataSettings.Current.IsSqlServer;
+				}
 			}
 			catch (Exception) { }
 
@@ -548,6 +563,27 @@ namespace SmartStore.Admin.Controllers
             
             return View(model);
         }
+
+		public ActionResult ShrinkDatabase()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMaintenance))
+				return AccessDeniedView();
+
+			try
+			{
+				if (DataSettings.Current.IsSqlServer)
+				{
+					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+					NotifySuccess(_localizationService.GetResource("Common.ShrinkDatabaseSuccessful"));
+				}
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+
+			return RedirectToReferrer();
+		}
 
         public ActionResult Maintenance()
         {

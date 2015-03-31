@@ -1,0 +1,45 @@
+﻿@model Telerik.Web.Mvc.GridModel<QuantityUnitModel>
+@using Telerik.Web.Mvc.UI
+@{
+    ViewBag.Title = T("Admin.Configuration.QuantityUnit").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+		<i class="fa fa-gift"></i>
+        @T("Admin.Configuration.QuantityUnit")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary">
+            <i class="fa fa-plus"></i>
+            @T("Admin.Common.AddNew")
+        </a>
+    </div>
+</div>
+
+<table class="adminContent">
+    <tr>
+        <td>
+            @(Html.Telerik().Grid<QuantityUnitModel>()
+                    .Name("measure-unit-grid")
+                    .BindTo(Model.Data)
+                    .Columns(columns =>
+                    {
+                        columns.Bound(x => x.Name)
+                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+                        columns.Bound(x => x.Description)
+                            .Centered();
+                        columns.Bound(x => x.DisplayOrder)
+							.Width(100)
+                            .Centered();
+                        columns.Bound(x => x.IsDefault)
+							.Template(item => @Html.SymbolForBool(item.IsDefault))
+							.ClientTemplate(@Html.SymbolForBool("IsDefault"))
+							.Width(100)
+                            .Centered();
+                    })     
+               )
+        </td>
+    </tr>
+</table>

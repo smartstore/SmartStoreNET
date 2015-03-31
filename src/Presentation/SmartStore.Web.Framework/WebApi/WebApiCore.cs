@@ -26,7 +26,6 @@ namespace SmartStore.Web.Framework.WebApi
 			var sb = new StringBuilder();
 
 			sb.AppendLine(string.Format("PublicKey: ", PublicKey));
-			sb.AppendLine(string.Format("SecretKey: ", SecretKey));
 			sb.AppendLine(string.Format("Url: ", Url));
 			sb.AppendLine(string.Format("HttpMethod: ", HttpMethod));
 			sb.AppendLine(string.Format("HttpAcceptType: ", HttpAcceptType));

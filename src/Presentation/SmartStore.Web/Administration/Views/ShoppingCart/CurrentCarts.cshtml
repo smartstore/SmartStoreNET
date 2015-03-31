@@ -63,6 +63,7 @@
                         )
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("CurrentCarts", "ShoppingCart"))
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

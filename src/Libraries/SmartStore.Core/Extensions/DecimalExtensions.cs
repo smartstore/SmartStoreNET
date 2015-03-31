@@ -21,13 +21,16 @@ namespace SmartStore
 		/// </summary>
 		/// <param name="inclTax">Gross value</param>
 		/// <param name="exclTax">Net value</param>
+		/// <param name="decimals">Rounding decimal number</param>
 		/// <returns>Tax percentage</returns>
-		public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax)
+		public static decimal ToTaxPercentage(this decimal inclTax, decimal exclTax, int? decimals = null)
 		{
 			if (exclTax == decimal.Zero)
 				return decimal.Zero;
 
-			return ((inclTax / exclTax) - 1.0M) * 100.0M;
+			var result = ((inclTax / exclTax) - 1.0M) * 100.0M;
+
+			return (decimals.HasValue ? Math.Round(result, decimals.Value) : result);
 		}
 
 		/// <summary>

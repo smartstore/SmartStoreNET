@@ -90,23 +90,11 @@ namespace SmartStore.Services.Catalog
 
         #region Methods
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price)
         {
             return FormatPrice(price, true, _workContext.WorkingCurrency);
         }
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency)
         {
             var language = _workContext.WorkingLanguage;
@@ -123,13 +111,6 @@ namespace SmartStore.Services.Catalog
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax);
         }
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="showTax">A value indicating whether to show tax suffix</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, bool showTax)
         {
             var targetCurrency = _workContext.WorkingCurrency;
@@ -147,23 +128,9 @@ namespace SmartStore.Services.Catalog
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="currencyCode">Currency code</param>
-        /// <param name="showTax">A value indicating whether to show tax suffix</param>
-        /// <param name="language">Language</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, string currencyCode, bool showTax, Language language)
         {
-            var currency = _currencyService.GetCurrencyByCode(currencyCode);
-            if (currency == null)
-            {
-                currency = new Currency();
-                currency.CurrencyCode = currencyCode;
-            }
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
             bool priceIncludesTax = false;
             switch (_workContext.TaxDisplayType)
             {
@@ -179,15 +146,6 @@ namespace SmartStore.Services.Catalog
                 language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="currencyCode">Currency code</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
 			bool showTax = _taxSettings.DisplayTaxSuffix;
@@ -196,40 +154,16 @@ namespace SmartStore.Services.Catalog
 
 		public string FormatPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
 		{
-			var currency = _currencyService.GetCurrencyByCode(currencyCode);
-			if (currency == null)
-			{
-				currency = new Currency();
-				currency.CurrencyCode = currencyCode;
-			}
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
 			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
 		}
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax)
         {
             bool showTax = _taxSettings.DisplayTaxSuffix;
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <param name="showTax">A value indicating whether to show tax suffix</param>
-        /// <returns>Price</returns>
         public string FormatPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
             // Round before rendering (also take "BitCoin" into account, where more than 2 decimal places are relevant)
@@ -259,12 +193,7 @@ namespace SmartStore.Services.Catalog
         }
 
 
-        /// <summary>
-        /// Formats the shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <returns>Price</returns>
+
         public string FormatShippingPrice(decimal price, bool showCurrency)
         {
             var targetCurrency = _workContext.WorkingCurrency;
@@ -282,67 +211,31 @@ namespace SmartStore.Services.Catalog
             return FormatShippingPrice(price, showCurrency, targetCurrency, language, priceIncludesTax);
         }
 
-        /// <summary>
-        /// Formats the shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
-        public string FormatShippingPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax)
+        public string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax)
         {
             bool showTax = _taxSettings.ShippingIsTaxable && _taxSettings.DisplayTaxSuffix;
             return FormatShippingPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <param name="showTax">A value indicating whether to show tax suffix</param>
-        /// <returns>Price</returns>
-        public string FormatShippingPrice(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
+		public string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+		{
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+		}
+
+        public string FormatShippingPrice(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
             return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
         
-        /// <summary>
-        /// Formats the shipping price
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="currencyCode">Currency code</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
-        public string FormatShippingPrice(decimal price, bool showCurrency, 
-            string currencyCode, Language language, bool priceIncludesTax)
+        public string FormatShippingPrice(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-            var currency = _currencyService.GetCurrencyByCode(currencyCode);
-            if (currency == null)
-            {
-                currency = new Currency();
-                currency.CurrencyCode = currencyCode;
-            }
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
             return FormatShippingPrice(price, showCurrency, currency, language, priceIncludesTax);
         }
 
 
 
-        /// <summary>
-        /// Formats the payment method additional fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <returns>Price</returns>
         public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency)
         {
             var targetCurrency = _workContext.WorkingCurrency;
@@ -361,68 +254,31 @@ namespace SmartStore.Services.Catalog
                 language, priceIncludesTax);
         }
 
-        /// <summary>
-        /// Formats the payment method additional fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
-        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency,
-            Currency targetCurrency, Language language, bool priceIncludesTax)
+        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax)
         {
             bool showTax = _taxSettings.PaymentMethodAdditionalFeeIsTaxable && _taxSettings.DisplayTaxSuffix;
             return FormatPaymentMethodAdditionalFee(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the payment method additional fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="targetCurrency">Target currency</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <param name="showTax">A value indicating whether to show tax suffix</param>
-        /// <returns>Price</returns>
-        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, 
-            Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
+		public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax, bool showTax)
+		{
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+			return FormatPrice(price, showCurrency, currency, language, priceIncludesTax, showTax);
+		}
+
+        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, Currency targetCurrency, Language language, bool priceIncludesTax, bool showTax)
         {
-            return FormatPrice(price, showCurrency, targetCurrency, language, 
-                priceIncludesTax, showTax);
+            return FormatPrice(price, showCurrency, targetCurrency, language, priceIncludesTax, showTax);
         }
 
-        /// <summary>
-        /// Formats the payment method additional fee
-        /// </summary>
-        /// <param name="price">Price</param>
-        /// <param name="showCurrency">A value indicating whether to show a currency</param>
-        /// <param name="currencyCode">Currency code</param>
-        /// <param name="language">Language</param>
-        /// <param name="priceIncludesTax">A value indicating whether price includes tax</param>
-        /// <returns>Price</returns>
-        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, 
-            string currencyCode, Language language, bool priceIncludesTax)
+        public string FormatPaymentMethodAdditionalFee(decimal price, bool showCurrency, string currencyCode, Language language, bool priceIncludesTax)
         {
-            var currency = _currencyService.GetCurrencyByCode(currencyCode);
-            if (currency == null)
-            {
-                currency = new Currency();
-                currency.CurrencyCode = currencyCode;
-            }
-            return FormatPaymentMethodAdditionalFee(price, showCurrency, currency, 
-                language, priceIncludesTax);
+			var currency = _currencyService.GetCurrencyByCode(currencyCode) ?? new Currency { CurrencyCode = currencyCode };
+            return FormatPaymentMethodAdditionalFee(price, showCurrency, currency, language, priceIncludesTax);
         }
 
 
 
-        /// <summary>
-        /// Formats a tax rate
-        /// </summary>
-        /// <param name="taxRate">Tax rate</param>
-        /// <returns>Formatted tax rate</returns>
         public string FormatTaxRate(decimal taxRate)
         {
             return taxRate.ToString("G29");

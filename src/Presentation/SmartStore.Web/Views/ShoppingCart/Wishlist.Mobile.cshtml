@@ -198,9 +198,9 @@
                     {
                         <div class="common-buttons">
                             @if (Model.EmailWishlistEnabled)
-                            {
-                                <a href="@Url.Action("EmailWishlist")" data-role="button">@T("Wishlist.EmailAFriend")</a>
-                            }
+							{
+								<a href="@Url.Action("EmailWishlist")" data-role="button" rel="nofollow">@T("Wishlist.EmailAFriend")</a>
+							}
                         </div>
                     }
                 </div>        

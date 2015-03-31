@@ -10,9 +10,7 @@ using SmartStore.GoogleMerchantCenter.Data.Migrations;
 
 namespace SmartStore.GoogleMerchantCenter.Data
 {
-	/// <summary>
-	/// Object context
-	/// </summary>
+
 	public class GoogleProductObjectContext : ObjectContextBase
 	{
         public const string ALIASKEY = "sm_object_context_google_product";
@@ -43,9 +41,6 @@ namespace SmartStore.GoogleMerchantCenter.Data
 		protected override void OnModelCreating(DbModelBuilder modelBuilder)
 		{
 			modelBuilder.Configurations.Add(new GoogleProductRecordMap());
-
-			//disable EdmMetadata generation
-			//modelBuilder.Conventions.Remove<IncludeMetadataConvention>();
 			base.OnModelCreating(modelBuilder);
 		}
 

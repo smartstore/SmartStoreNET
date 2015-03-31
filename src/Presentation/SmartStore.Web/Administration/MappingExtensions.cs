@@ -381,7 +381,6 @@ namespace SmartStore.Admin
         }
         #endregion
 
-        //codehint: sm-add begin
         #region Delivery Times
 
         public static DeliveryTimeModel ToModel(this DeliveryTime entity)
@@ -419,7 +418,6 @@ namespace SmartStore.Admin
         }
 
         #endregion
-        //codehint: sm-add end
 
         #region Measure weights
 
@@ -453,6 +451,25 @@ namespace SmartStore.Admin
         }
 
         public static MeasureDimension ToEntity(this MeasureDimensionModel model, MeasureDimension destination)
+        {
+            return Mapper.Map(model, destination);
+        }
+
+        #endregion
+
+        #region Quantity units
+
+        public static QuantityUnitModel ToModel(this QuantityUnit entity)
+        {
+            return Mapper.Map<QuantityUnit, QuantityUnitModel>(entity);
+        }
+
+        public static QuantityUnit ToEntity(this QuantityUnitModel model)
+        {
+            return Mapper.Map<QuantityUnitModel, QuantityUnit>(model);
+        }
+
+        public static QuantityUnit ToEntity(this QuantityUnitModel model, QuantityUnit destination)
         {
             return Mapper.Map(model, destination);
         }
@@ -519,7 +536,9 @@ namespace SmartStore.Admin
 
         public static AddressModel ToModel(this Address entity)
         {
-            return Mapper.Map<Address, AddressModel>(entity);
+            var addressModel = Mapper.Map<Address, AddressModel>(entity);
+            addressModel.EmailMatch = entity.Email;
+            return addressModel;
         }
 
         public static Address ToEntity(this AddressModel model)
@@ -741,8 +760,6 @@ namespace SmartStore.Admin
 
         #region Settings
 
-        //codehint: sm-add begin
-
         public static ContentSliderSettingsModel ToModel(this ContentSliderSettings  entity)
         {
             return Mapper.Map<ContentSliderSettings, ContentSliderSettingsModel>(entity);
@@ -781,9 +798,6 @@ namespace SmartStore.Admin
         {
             return Mapper.Map(model, destination);
         }
-
-        //codehint: sm-add end
-
 
         public static TaxSettingsModel ToModel(this TaxSettings entity)
         {

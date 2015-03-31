@@ -1246,6 +1246,7 @@ namespace SmartStore.Admin.Controllers
             model.Address.LastNameRequired = true;
             model.Address.EmailEnabled = true;
             model.Address.EmailRequired = true;
+            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
             model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
             model.Address.CompanyRequired = _addressSettings.CompanyRequired;
             model.Address.CountryEnabled = _addressSettings.CountryEnabled;
@@ -1344,6 +1345,7 @@ namespace SmartStore.Admin.Controllers
             model.Address.LastNameRequired = true;
             model.Address.EmailEnabled = true;
             model.Address.EmailRequired = true;
+            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
             model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
             model.Address.CompanyRequired = _addressSettings.CompanyRequired;
             model.Address.CountryEnabled = _addressSettings.CountryEnabled;
@@ -1410,6 +1412,7 @@ namespace SmartStore.Admin.Controllers
             model.Address.LastNameRequired = true;
             model.Address.EmailEnabled = true;
             model.Address.EmailRequired = true;
+            model.Address.ValidateEmailAddress = _addressSettings.ValidateEmailAddress;
             model.Address.CompanyEnabled = _addressSettings.CompanyEnabled;
             model.Address.CompanyRequired = _addressSettings.CompanyRequired;
             model.Address.CountryEnabled = _addressSettings.CountryEnabled;

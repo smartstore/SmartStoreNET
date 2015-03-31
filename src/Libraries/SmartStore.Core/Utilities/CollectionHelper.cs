@@ -172,19 +172,19 @@ namespace SmartStore.Utilities
             return list;
         }
 
-        public static string ToUnsortedHtmlList(IEnumerable data)
+		public static string ToUnsortedHtmlList(ICollection<string> data)
         {
             return ToUnsortedHtmlList(data, null, null);
         }
 
-        public static string ToUnsortedHtmlList(IEnumerable data, string ulClassName)
+		public static string ToUnsortedHtmlList(ICollection<string> data, string ulClassName)
         {
             return ToUnsortedHtmlList(data, ulClassName, null);
         }
 
-        public static string ToUnsortedHtmlList(IEnumerable data, string ulClassName, string liClassName)
+        public static string ToUnsortedHtmlList(ICollection<string> data, string ulClassName, string liClassName)
         {
-            if (!data.HasItems())
+            if (data.IsNullOrEmpty())
                 return String.Empty;
 
             StringBuilder ul = new StringBuilder();

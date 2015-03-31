@@ -65,7 +65,7 @@ namespace SmartStore.Services.Payments
         {
 			var allMethods = LoadAllPaymentMethods(storeId);
 			var activeMethods = allMethods
-				   .Where(p => _paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+				.Where(p =>	p.Value.IsActive && _paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
 
 			if (!activeMethods.Any())
 			{

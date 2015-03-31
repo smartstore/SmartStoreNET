@@ -22,7 +22,7 @@
                     @T("Checkout.OrderNumber"): @Model.OrderNumber
                 </p>
                 <p>
-					<a href='@Url.Action("Details", "Order", new { id = Model.OrderId })' data-role="button">@T("Checkout.PlacedOrderDetails")</a>
+					<a href='@Url.Action("Details", "Order", new { id = Model.OrderId })' data-role="button" rel="nofollow">@T("Checkout.PlacedOrderDetails")</a>
                 </p>
             </div>
             <div class="select-button">

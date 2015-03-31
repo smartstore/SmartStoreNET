@@ -76,9 +76,6 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.StoreLastVisitedPage")]
             public bool StoreLastVisitedPage { get; set; }
 
-
-
-
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.GenderEnabled")]
             public bool GenderEnabled { get; set; }
 
@@ -169,6 +166,9 @@ namespace SmartStore.Admin.Models.Settings
             public bool FaxEnabled { get; set; }
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired")]
             public bool FaxRequired { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress")]
+            public bool ValidateEmailAddress { get; set; }
         }
 
         public partial class DateTimeSettingsModel

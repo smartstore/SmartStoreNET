@@ -34,7 +34,6 @@
 }
 @Html.HiddenFor(model => model.Id)
 
-@*codehint: sm-edit begin *@
 <div class="form-horizontal">  
     @if (Model.CompanyEnabled)
     {
@@ -143,7 +142,18 @@
             @Html.ValidationMessageFor(model => model.Email)
         </div>
     </div>
-
+    
+    @if (Model.ValidateEmailAddress)
+    {
+        <div class="control-group">
+            @Html.LabelFor(model => model.EmailMatch, new { @class = "control-label required", @for = "EmailMatch" })
+            <div class="controls">
+                @Html.EditorFor(model => model.EmailMatch)
+                @Html.ValidationMessageFor(model => model.EmailMatch)
+            </div>
+        </div>    
+    }
+    
     @if (Model.PhoneEnabled)
     {
     <div class="control-group">
@@ -167,179 +177,3 @@
     }
 
 </div>
-
-@*codehint: sm-edit end *@
-
-@*<table>
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.FirstName):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.FirstName)
-            @Html.RequiredHint()
-            @Html.ValidationMessageFor(model => model.FirstName)
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.LastName):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.LastName)
-            @Html.RequiredHint()
-            @Html.ValidationMessageFor(model => model.LastName)
-        </td>
-    </tr>
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.Email):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.Email)
-            @Html.RequiredHint()
-            @Html.ValidationMessageFor(model => model.Email)
-        </td>
-    </tr>
-    @if (Model.CompanyEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.Company):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.Company)
-                @if (Model.CompanyRequired)
-                {
-                    @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.Company)
-        </td>
-    </tr>
-    }
-    @if (Model.CountryEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.CountryId):
-        </td>
-        <td>
-            @Html.DropDownListFor(model => model.CountryId, Model.AvailableCountries)
-            @Html.RequiredHint()
-            @Html.ValidationMessageFor(model => model.CountryId)
-        </td>
-    </tr>
-    }
-
-    @if (Model.CountryEnabled && Model.StateProvinceEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.StateProvinceId):
-        </td>
-        <td>
-            @Html.DropDownListFor(model => model.StateProvinceId, Model.AvailableStates)
-            <span id="states-loading-progress" style="display: none;">@T("Common.Wait...")
-                <img src='@Url.Content("~/Content/Images/ajax_loader_small.gif")' alt="@T("Common.Wait...")" />
-            </span>
-            @Html.ValidationMessageFor(model => model.StateProvinceId)
-        </td>
-    </tr>
-    }
-    @if (Model.CityEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.City):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.City)
-
-                @if (Model.CityRequired)
-                {
-            @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.City)
-        </td>
-    </tr>
-    }
-    @if (Model.StreetAddressEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.Address1):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.Address1)
-                @if (Model.StreetAddressRequired)
-                {
-            @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.Address1)
-        </td>
-    </tr>
-    }
-    @if (Model.StreetAddress2Enabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.Address2):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.Address2)
-                @if (Model.StreetAddress2Required)
-                {
-                    @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.Address2)
-        </td>
-    </tr>
-    }
-    @if (Model.ZipPostalCodeEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.ZipPostalCode):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.ZipPostalCode)
-                @if (Model.ZipPostalCodeRequired)
-                {
-            @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.ZipPostalCode)
-        </td>
-    </tr>
-    }
-    @if (Model.PhoneEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.PhoneNumber):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.PhoneNumber)
-                @if (Model.PhoneRequired)
-                {
-            @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.PhoneNumber)
-        </td>
-    </tr>
-    }
-    @if (Model.FaxEnabled)
-    {
-    <tr>
-        <td>
-            @Html.LabelFor(model => model.FaxNumber):
-        </td>
-        <td>
-            @Html.EditorFor(model => model.FaxNumber)
-                @if (Model.FaxRequired)
-                {
-                    @Html.RequiredHint()
-                }
-            @Html.ValidationMessageFor(model => model.FaxNumber)
-        </td>
-    </tr>
-</table>*@

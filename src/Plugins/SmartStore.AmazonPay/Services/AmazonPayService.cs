@@ -649,12 +649,16 @@ namespace SmartStore.AmazonPay.Services
 			{
 				_orderProcessingService.VoidOffline(order);		// cancelation at amazon seller central
 			}
+			else if (data.State.IsCaseInsensitiveEqual("Declined") && _orderProcessingService.CanVoidOffline(order))
+			{
+				_orderProcessingService.VoidOffline(order);
+			}
 
 			if (!newResult.IsCaseInsensitiveEqual(order.AuthorizationTransactionResult))
 			{
 				order.AuthorizationTransactionResult = newResult;
 
-				if (order.CaptureTransactionId.IsNullOrEmpty() && data.CaptureId.HasValue())
+				if (order.CaptureTransactionId.IsEmpty() && data.CaptureId.HasValue())
 					order.CaptureTransactionId = data.CaptureId;	// captured at amazon seller central
 
 				_orderService.UpdateOrder(order);
@@ -775,7 +779,7 @@ namespace SmartStore.AmazonPay.Services
 
 			PollingLoop(d, () =>
 			{
-				if (d.Order.AuthorizationTransactionId.IsNullOrEmpty())
+				if (d.Order.AuthorizationTransactionId.IsEmpty())
 					return false;
 
 				var details = _api.GetAuthorizationDetails(d.Client, d.Order.AuthorizationTransactionId, out data);
@@ -791,7 +795,7 @@ namespace SmartStore.AmazonPay.Services
 
 			PollingLoop(d, () =>
 			{
-				if (d.Order.CaptureTransactionId.IsNullOrEmpty())
+				if (d.Order.CaptureTransactionId.IsEmpty())
 					return false;
 
 				_api.GetCaptureDetails(d.Client, d.Order.CaptureTransactionId, out data);
@@ -815,6 +819,9 @@ namespace SmartStore.AmazonPay.Services
 			else if (data.MessageType.IsCaseInsensitiveEqual("CaptureNotification"))
 			{
 				if ((order = _orderService.GetOrderByPaymentCapture(AmazonPayCore.SystemName, data.CaptureId)) == null)
+					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+				if (order == null)
 					errorId = "CaptureId {0}".FormatWith(data.CaptureId);
 			}
 			else if (data.MessageType.IsCaseInsensitiveEqual("RefundNotification"))
@@ -824,6 +831,9 @@ namespace SmartStore.AmazonPay.Services
 					.FirstOrDefault();
 
 				if (attribute == null || (order = _orderService.GetOrderById(attribute.EntityId)) == null)
+					order = _orderRepository.GetOrderByAmazonId(data.AnyAmazonId);
+
+				if (order == null)
 					errorId = "RefundId {0}".FormatWith(data.RefundId);
 			}
 

@@ -134,9 +134,9 @@ namespace SmartStore.Web.Controllers
         #region Return requests
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]
-        public ActionResult ReturnRequest(int orderId)
+		public ActionResult ReturnRequest(int id /* orderId */)
         {
-			var order = _orderService.GetOrderById(orderId);
+			var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 
@@ -150,9 +150,9 @@ namespace SmartStore.Web.Controllers
 
         [HttpPost, ActionName("ReturnRequest")] 
         [ValidateInput(false)]
-        public ActionResult ReturnRequestSubmit(int orderId, SubmitReturnRequestModel model, FormCollection form)
+        public ActionResult ReturnRequestSubmit(int id /* orderId */, SubmitReturnRequestModel model, FormCollection form)
         {
-            var order = _orderService.GetOrderById(orderId);
+            var order = _orderService.GetOrderById(id);
             if (order == null || order.Deleted || _workContext.CurrentCustomer.Id != order.CustomerId)
                 return new HttpUnauthorizedResult();
 

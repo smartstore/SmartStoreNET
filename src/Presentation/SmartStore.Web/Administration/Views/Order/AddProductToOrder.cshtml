@@ -82,6 +82,7 @@
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
 					.DataBinding(dataBinding => dataBinding.Ajax().Select("AddProductToOrder", "Order"))
                     .ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowSelect("onRowSelected"))
+					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
     </tr>

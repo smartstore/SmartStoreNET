@@ -81,11 +81,10 @@
                     {
                         if ((!String.IsNullOrEmpty(Model.DeliveryTimeName) && !String.IsNullOrEmpty(Model.DeliveryTimeHexValue)) && Model.IsShipEnabled)
                         {
-                            <tr class="delivery-time">
+                            <tr class="delivery-time@(Model.InvisibleDeliveryTime ? " hide" : "")">
                                 <td class="attr-label">
                                     <span><strong>@T("Products.DeliveryTime")</strong></span>
                                 </td>
-                                    
 
                                 @if(Model.DisplayDeliveryTimeAccordingToStock)
                                 {
@@ -253,15 +252,15 @@
                             @(Model.ProductPrice.AvailableForPreOrder ? T("ShoppingCart.PreOrder") : T("ShoppingCart.AddToCart"))
                             <i class="fa fa-shopping-cart"></i>      
                         </a>
-                    }
-                    else
-                    {
-                        <a class="btn btn-primary add-to-cart-button" href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })">
-                            <i class="fa fa-envelope"></i>
-                            @T("Products.CallForPrice.GoToForm")
-                        </a>
-                    }
-                }
+					}
+					else
+					{
+						<a class="btn btn-primary add-to-cart-button" rel="nofollow" href="@Url.Action("AskQuestion", "Product", new RouteValueDictionary { { "id", Model.Id } })">
+							<i class="fa fa-envelope"></i>
+							@T("Products.CallForPrice.GoToForm")
+						</a>
+					}
+				}
             </div>
         </div>
 

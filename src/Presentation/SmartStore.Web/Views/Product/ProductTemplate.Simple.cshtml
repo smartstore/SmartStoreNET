@@ -190,8 +190,10 @@
                         }
 
                         <!--product reviews-->
-                        @Html.Action("ReviewOverview", new { id = Model.Id })
-
+                        @if (Model.DisplayProductReviews) { 
+                            @Html.Action("ReviewOverview", new { id = Model.Id })
+                        }
+                        
                         <!-- product attributes or bundle items -->
                         @{
 							if (Model.ProductType == ProductType.BundledProduct)
@@ -312,7 +314,7 @@
                                 .Selected(String.IsNullOrWhiteSpace(Model.FullDescription));
                     }
 
-                    if (reviews.HasValue())
+                    if (reviews.HasValue() && Model.DisplayProductReviews)
                     {
                         x.Add().Text(@T("Reviews.ExistingReviews"))
                                 .Content(reviews)

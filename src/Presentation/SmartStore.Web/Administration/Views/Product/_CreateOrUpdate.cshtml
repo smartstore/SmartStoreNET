@@ -109,8 +109,12 @@
 	x.Add().Text(T("Admin.Common.SEO").Text)
 		.Icon("fa fa-search fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "SEO" })
-		.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
-		.Ajax();
+		.Content(Html.Partial("_CreateOrUpdate.SEO", Model).ToHtmlString());	
+	//x.Add().Text(T("Admin.Common.SEO").Text)
+	//	.Icon("fa fa-search fa-lg fa-fw")
+	//	.LinkHtmlAttributes(new { data_tab_name = "SEO" })
+	//	.Action("LoadEditTab", "Product", new { id = Model.Id, tabName = "SEO" })
+	//	.Ajax();
 	x.Add().Text(T("Admin.Catalog.Products.Acl").Text)
 		.Icon("fa fa-users fa-lg fa-fw")
 		.LinkHtmlAttributes(new { data_tab_name = "Acl" })

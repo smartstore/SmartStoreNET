@@ -256,22 +256,6 @@ header {
 
 /* SM additions
 -------------------------------------------------------------- */
-#ajax-busy {
-    position: absolute;
-    width: 150px;
-    height: 14px;
-    padding: 0;
-    background: transparent url('images/ajax-progress-2.gif') 50% 50% no-repeat;
-    top: 52px;
-    left: 30px;
-    visibility: hidden;
-    .opacity(0);
-    .transition(opacity 0.15s linear);
-}
-#ajax-busy.busy {
-    visibility: visible;
-    .opacity(100);
-}
 
 .ajax-loader-small {
     display: inline-block;
@@ -281,6 +265,58 @@ header {
     padding: 0;
     margin: 0;
     background: transparent url('images/ajax_loader_small.gif') 50% 50% no-repeat;
+}
+
+#ajax-busy {
+	position: fixed;
+	opacity: 0;
+	left: 0;
+	right: 0;
+	top: 0;
+	width: 100%;
+	height: 3px;
+	z-index: 20;
+	background-color: #ffab40;
+	        transition: opacity .05s ease-in;
+	     -o-transition: opacity .05s ease-in;
+	-webkit-transition: opacity .05s ease-in;
+}
+#ajax-busy.busy {
+	opacity: 1;
+}
+#ajax-busy.busy > .bar {
+	content: "";
+	display: inline;
+	position: absolute;
+	width: 0;
+	height: 100%;
+	left: 50%;
+	text-align: center;
+		    animation: loading 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+	-webkit-animation: loading 1.5s cubic-bezier(0.445, 0.05, 0.55, 0.95) infinite;
+}
+#ajax-busy > .bar:nth-child(1) {
+	background-color: #fff;
+}
+#ajax-busy > .bar:nth-child(2) {
+	background-color: #3F51B5;
+	        animation-delay: 0.5s;
+	-webkit-animation-delay: 0.5s;
+}
+#ajax-busy > .bar:nth-child(3) {
+	background-color: #ffab40;
+	        animation-delay: 1s;
+	-webkit-animation-delay: 1s;
+}
+@keyframes loading {
+    from {left: 50%; width: 0; z-index:100;}
+    50% {left: 0; width: 100%; z-index: 10;}
+    to {left: 0; width: 100%;}
+}
+@-webkit-keyframes loading {
+    from {left: 50%; width: 0; z-index:100;}
+    50% {left: 0; width: 100%; z-index: 10;}
+    to {left: 0; width: 100%;}
 }
 
 #content {
@@ -315,14 +351,21 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
-.admin-config-group .title {
+.admin-config-group .title,
+.admin-config-group .small-title {
     font-family: @headingsFontFamily;
     font-weight: @headingsFontWeight;
     color: inherit; 
+	border-bottom: 1px solid #ddd;
+}
+.admin-config-group .title {
     font-size: 18px;
 	margin: 12px 0;
 	padding: 12px 0;
-	border-bottom: 1px solid #ddd;
+}
+.admin-config-group .small-title {
+	margin: 2px 0;
+	padding: 2px 0;
 }
 
 
@@ -387,7 +430,12 @@ td.adminData > input[type="checkbox"] {
 }
 
 .t-grid-filter {
-	margin-top: -1.6em;
+	margin: 0;
+	padding: 0;
+	position: absolute;
+	right: 4px;
+	top: 50%;
+	margin-top: -8px;
 }
 
 .t-link:hover {
@@ -398,12 +446,13 @@ td.adminData > input[type="checkbox"] {
 	font-size: 12px;
 	text-transform: uppercase;
 	font-weight: bold !important;
-	padding-top: 0.6em !important;
-	padding-bottom: 0.6em !important;
+	padding: 0 !important;
+	position: relative;
 }
 
 .t-grid-header .t-header .t-link {
-    width: 100%;
+	margin: 0;
+	padding: 0.6em;
 }
 
 .t-grid-pager,
@@ -466,10 +515,6 @@ hr {
 label.forcheckbox {
     margin: 0 0 0 .4em;
     display: inline;
-}
-
-a:hover {
-    font-weight: normal;
 }
 
 /* SECTION HEADERS */
@@ -1275,8 +1320,8 @@ table.payment-method-features td {
     display: block;
     overflow: hidden;
     cursor: pointer;
-    border: 2px solid #969696;
-    border-radius: 5px;
+    border: 1px solid #969696;
+    border-radius: 4px;
     height: 14px;
     padding: 0;
     margin: 0;
@@ -1285,7 +1330,6 @@ table.payment-method-features td {
 .onoffswitch-inner {
     width: 200%;
     margin-left: -100%;
-    .transition(all 0.3s ease-in 0s);
 }
 
 .onoffswitch-on, .onoffswitch-off {
@@ -1294,37 +1338,36 @@ table.payment-method-features td {
     height: 15px;
     line-height: 15px;
     padding: 0;
-    color: white; 
-    font-size: 11px; 
-    font-family: Trebuchet, Arial, sans-serif;
+    color: #fff; 
+    font-size: 10px; 
     font-weight: normal;
+	text-align: center;
+	vertical-align: middle;
     .box-sizing(border-box);
 }
 
 .onoffswitch-on {
-    padding-left: 6px;
-    background-color: #6BB2ED;
-    color: #FFFFFF;
+    background-color: @orange;
+    color: #fff;
 }
 
 .onoffswitch-off {
-    padding-right: 3px;
-    background-color: #FFFFFF;
-    color: #969696;
-    text-align: right;
+    background-color: #fff;
+    color: #bbb;
 }
 
 .onoffswitch-switch {
-    width: 27px;
+    width: 30px;
+	box-sizing: border-box;
     margin: 0;
     position: absolute;
     top: 0;
     bottom: 0;
-    right: 29px;
-    background: #FFFFFF;
-    border: 2px solid #969696;
-    .border-radius(5px);
-    .transition(all 0.3s ease-in 0s);
+    right: 30px;
+    background: #fff;
+    border: 1px solid #969696;
+    .border-radius(4px 0 0 4px);
+    .transition(all 0.05s ease-in);
     #gradient > .vertical(#dddddd, #ffffff);
 }
 
@@ -1334,6 +1377,7 @@ table.payment-method-features td {
 
 .onoffswitch-checkbox:checked + .onoffswitch-label .onoffswitch-switch {
     right: 0; 
+	.border-radius(0 4px 4px 0);
 }
 #pnlAllFlags a.flag {
     min-width: 100px;

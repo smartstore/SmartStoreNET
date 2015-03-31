@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -11,9 +10,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;
@@ -92,6 +89,11 @@ namespace SmartStore.Web
 			// Routes
 			RegisterRoutes(RouteTable.Routes, installed);
 
+			// localize MVC resources
+			ClientDataTypeModelValidatorProvider.ResourceClassKey = "MvcLocalization";
+			DefaultModelBinder.ResourceClassKey = "MvcLocalization";
+			ErrorMessageProvider.SetResourceClassKey("MvcLocalization");
+
 			if (installed)
 			{
 				// register our themeable razor view engine we use
@@ -133,7 +135,7 @@ namespace SmartStore.Web
             
             if (DataSettings.DatabaseIsInstalled())
             {
-                custom = custom.ToLower();
+                custom = custom.ToLowerInvariant();
                 
                 switch (custom) 
                 {

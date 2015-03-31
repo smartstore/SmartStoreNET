@@ -1,10 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Text;
 using OffAmazonPaymentsService;
 using OffAmazonPaymentsService.Model;
+using SmartStore.AmazonPay.Extensions;
+using SmartStore.AmazonPay.Services;
+using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.AmazonPay.Extensions;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -124,7 +128,7 @@ namespace SmartStore.AmazonPay.Api
 			}
 
 			// normalize
-			if (address.Address1.IsNullOrEmpty() && address.Address2.HasValue())
+			if (address.Address1.IsEmpty() && address.Address2.HasValue())
 			{
 				address.Address1 = address.Address2;
 				address.Address2 = null;
@@ -192,6 +196,28 @@ namespace SmartStore.AmazonPay.Api
 			{
 				details.Destination.PhysicalDestination.ToAddress(address, countryService, stateProvinceService, out countryAllowsShipping, out countryAllowsBilling);
 			}
+		}
+
+		public static Order GetOrderByAmazonId(this IRepository<Order> orderRepository, string amazonId)
+		{
+			// S02-9777218-8608106				OrderReferenceId
+			// S02-9777218-8608106-A088344		Auth ID
+			// S02-9777218-8608106-C088344		Capture ID
+
+			if (amazonId.HasValue())
+			{
+				string amazonOrderReferenceId = amazonId.Substring(0, amazonId.LastIndexOf('-'));
+				if (amazonOrderReferenceId.HasValue())
+				{
+					var orders = orderRepository.Table
+						.Where(x => x.PaymentMethodSystemName == AmazonPayCore.SystemName && x.AuthorizationTransactionId.StartsWith(amazonOrderReferenceId))
+						.ToList();
+
+					if (orders.Count() == 1)
+						return orders.FirstOrDefault();
+				}
+			}
+			return null;
 		}
 	}
 }

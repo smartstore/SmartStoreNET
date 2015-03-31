@@ -163,6 +163,12 @@ namespace SmartStore.Core.Themes
 			protected internal set; 
 		}
 
+		public string Url
+		{
+			get;
+			protected internal set;
+		}
+
         public string Version 
 		{ 
 			get; 

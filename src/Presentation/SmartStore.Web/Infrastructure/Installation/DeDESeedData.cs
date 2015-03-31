@@ -46,14 +46,18 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entity);
 
-            if (entity.SystemName == "builtin@search-engine-record.com")
+			if (entity.SystemName == SystemCustomerNames.SearchEngine)
             {
-                entity.AdminComment = "System Gastkonto für Suchmaschinenanfragen.";
+                entity.AdminComment = "System-Gastkonto für Suchmaschinenanfragen.";
             }
-            else if (entity.SystemName == "builtin@background-task-record.com")
+			else if (entity.SystemName == SystemCustomerNames.BackgroundTask)
             {
-                entity.AdminComment = "System Konto für geplante Aufgaben.";
+                entity.AdminComment = "Systemkonto für geplante Aufgaben.";
             }
+			else if (entity.SystemName == SystemCustomerNames.PdfConverter)
+			{
+				entity.AdminComment = "Systemkonto für den PDF-Konverter.";
+			}
         }
 
         protected override void Alter(IList<MeasureDimension> entities)
@@ -135,7 +139,7 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            string cssString = @"<style type=""text/css"">address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px;font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:800px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; } .legal-infos, .legal-infos p { font-size:11px; color: #aaa} .supplier-identification, .supplier-identification td { color: #646464; font-size: 11px } .supplier-identification { width:100%; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc }</style>";
+            string cssString = @"<style type=""text/css"">address, blockquote, center, del, dir, div, dl, fieldset, form, h1, h2, h3, h4, h5, h6, hr, ins, isindex, menu, noframes, noscript, ol, p, pre, table{ margin:0px; } body, td, p{ font-size: 13px;font-family: 'Segoe UI', Tahoma, Arial, Helvetica, sans-serif; line-height: 18px; color: #163764; } body{ background:#efefef; } p{ margin-top: 0px; margin-bottom: 10px; } img{ border:0px; } th{ font-weight:bold; color: #ffffff; padding: 5px 0 5px 0; } ul{ list-style-type: square; } li{ line-height: normal; margin-bottom: 5px; } .template-body { width:720px; padding: 10px; border: 1px solid #ccc; } .attr-caption { font-weight: bold; text-align:right; } .attr-value { text-align:right; min-width:158px; width:160px; } .legal-infos, .legal-infos p { font-size:11px; color: #aaa} .supplier-identification, .supplier-identification td { color: #646464; font-size: 11px } .supplier-identification { width:100%; border-top: 1px solid #ccc; border-bottom: 1px solid #ccc }</style>";
             string templateHeader = cssString + "<center><table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" align=\"center\" bgcolor=\"#ffffff\" class=\"template-body\"><tbody><tr><td>";
             string templateFooter = "</td></tr></tbody></table></center>";
 
@@ -616,7 +620,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                     });
                     x.StateProvinces.Add(new StateProvince()
                     {
-                        Name = "Tiral",
+                        Name = "Tirol",
                         Abbreviation = "T",
                         Published = true,
                         DisplayOrder = 1,
@@ -3562,6 +3566,33 @@ namespace SmartStore.Web.Infrastructure.Installation
                 });
         }
 
+        protected override void Alter(IList<QuantityUnit> entities)
+        {
+            base.Alter(entities);
+
+            entities.WithKey(x => x.DisplayOrder)
+                .Alter(0, x =>
+                {
+                    x.Name = "Stück";
+                    x.Description = "Stück";
+                })
+                .Alter(1, x =>
+                {
+                    x.Name = "Schachtel";
+                    x.Description = "Schachtel";
+                })
+                .Alter(2, x =>
+                {
+                    x.Name = "Paket";
+                    x.Description = "Paket";
+                })
+                .Alter(3, x =>
+                {
+                    x.Name = "Palette";
+                    x.Description = "Palette";
+                });
+        }
+
 		protected override void Alter(IList<Store> entities)
 		{
 			base.Alter(entities);
@@ -3678,7 +3709,7 @@ namespace SmartStore.Web.Infrastructure.Installation
             base.Alter(entities);
 
             entities.WithKey(x => x.MetaTitle)
-            .Alter("smartstore.net new release!", x =>
+            .Alter("SmartStore.NET new release!", x =>
             {
                 x.Title = "SmartStore.NET - das clevere Shopsystem!";
                 x.Short = "SmartStore.NET ist die neue dynamische E-Commerce Lösung von SmartStore. SmartStore.NET bietet alle Funktionen und Möglichkeiten, um schnell und einfach einen leistungsfähigen und funktional kompletten Online-Shop zu erstellen.";

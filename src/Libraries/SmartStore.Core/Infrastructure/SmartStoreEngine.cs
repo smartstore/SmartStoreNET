@@ -39,19 +39,31 @@ namespace SmartStore.Core.Infrastructure
 			}
         }
 
-		protected virtual void RegisterDependencies()
+		protected virtual ITypeFinder CreateTypeFinder()
+		{
+			return new WebAppTypeFinder();
+		}
+
+		protected virtual object CreateDependencyResolver(IContainer container)
+		{
+			var scopeProvider = new AutofacLifetimeScopeProvider(container);
+			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
+			return dependencyResolver;
+		}
+
+		protected virtual ContainerManager RegisterDependencies()
 		{
 			var builder = new ContainerBuilder();
 			var container = builder.Build();
+			var typeFinder = CreateTypeFinder();
 
 			// core dependencies
 			builder = new ContainerBuilder();
 			builder.RegisterInstance(this).As<IEngine>().SingleInstance();
-			builder.RegisterType<WebAppTypeFinder>().As<ITypeFinder>().SingleInstance();
+			builder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
 			builder.Update(container);
 
 			// register dependencies provided by other assemblies
-			var typeFinder = container.Resolve<ITypeFinder>();
 			builder = new ContainerBuilder();
 			var registrarTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
 			var registrarInstances = new List<IDependencyRegistrar>();
@@ -68,11 +80,17 @@ namespace SmartStore.Core.Infrastructure
 			builder.Update(container);
 
 			// AutofacDependencyResolver
-			var scopeProvider = new AutofacLifetimeScopeProvider(container);
-			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
-			DependencyResolver.SetResolver(dependencyResolver);
+			var dependencyResolver = CreateDependencyResolver(container);
+			if (dependencyResolver is IDependencyResolver)
+			{
+				DependencyResolver.SetResolver((IDependencyResolver)dependencyResolver);
+			}
+			else if (dependencyResolver != null)
+			{
+				DependencyResolver.SetResolver(dependencyResolver);
+			}
 
-			_containerManager = new ContainerManager(container);
+			return new ContainerManager(container);
 		}
 
         #endregion
@@ -84,7 +102,7 @@ namespace SmartStore.Core.Infrastructure
         /// </summary>
         public void Initialize()
         {
-			RegisterDependencies();
+			_containerManager = RegisterDependencies();
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				RunStartupTasks();

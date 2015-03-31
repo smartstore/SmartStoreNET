@@ -431,7 +431,7 @@ namespace SmartStore.Services.Customers
         /// <returns>Customer</returns>
         public virtual Customer InsertGuestCustomer()
         {
-            var customer = new Customer()
+            var customer = new Customer
             {
                 CustomerGuid = Guid.NewGuid(),
                 Active = true,
@@ -556,6 +556,7 @@ namespace SmartStore.Services.Customers
 					query = query.Where(c => registrationFrom.Value <= c.CreatedOnUtc);
 				if (registrationTo.HasValue)
 					query = query.Where(c => registrationTo.Value >= c.CreatedOnUtc);
+
 				query = query.Where(c => c.CustomerRoles.Select(cr => cr.Id).Contains(guestRole.Id));
 
 				if (onlyWithoutShoppingCart)
@@ -572,21 +573,6 @@ namespace SmartStore.Services.Customers
 
 				// no forum topics
 				query = JoinWith<ForumTopic>(query, x => x.CustomerId);
-
-				// no blog comments
-				query = JoinWith<BlogComment>(query, x => x.CustomerId);
-
-				// no news comments
-				query = JoinWith<NewsComment>(query, x => x.CustomerId);
-
-				// no product reviews
-				query = JoinWith<ProductReview>(query, x => x.CustomerId);
-
-				// no product review helpfulness
-				query = JoinWith<ProductReviewHelpfulness>(query, x => x.CustomerId);
-
-				// no poll voting
-				query = JoinWith<PollVotingRecord>(query, x => x.CustomerId);
 
 				//don't delete system accounts
 				query = query.Where(c => !c.IsSystemAccount);

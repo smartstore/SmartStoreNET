@@ -372,8 +372,6 @@ namespace SmartStore.PayPal.Controllers
 					return RedirectToRoute("Login");
 
 				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
-
-				//var cart = _workContext.CurrentCustomer.ShoppingCartItems.Where(sci => sci.ShoppingCartType == ShoppingCartType.ShoppingCart).ToList();
 				var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
 				if (cart.Count == 0)
@@ -394,6 +392,8 @@ namespace SmartStore.PayPal.Controllers
 					throw new SmartException("PayPal Express Checkout module cannot be loaded");
 
 				var processPaymentRequest = new PayPalProcessPaymentRequest();
+
+                processPaymentRequest.StoreId = _services.StoreContext.CurrentStore.Id;
 
 				//Get sub-total and discounts that apply to sub-total
 				decimal orderSubTotalDiscountAmountBase = decimal.Zero;
@@ -473,8 +473,8 @@ namespace SmartStore.PayPal.Controllers
 					_logger.InsertLog(LogLevel.Error, resp.Errors[0].ShortMessage, resp.Errors[0].LongMessage, _services.WorkContext.CurrentCustomer);
                     
                     NotifyError(error.ToString(), false);
-                
-					return RedirectToAction("Cart");
+
+                    return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
 				}
 			}
 			catch (Exception ex)
@@ -483,7 +483,7 @@ namespace SmartStore.PayPal.Controllers
 
                 NotifyError(ex.Message, false);
 
-                return RedirectToAction("Cart");
+                return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
 
 			}
 		}
@@ -535,7 +535,7 @@ namespace SmartStore.PayPal.Controllers
 
                 NotifyError(error.ToString(), false);
 
-                return RedirectToAction("Cart");
+                return RedirectToAction("Cart", "ShoppingCart", new { area = "" });
             }
 		}
 

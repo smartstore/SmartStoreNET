@@ -47,8 +47,6 @@
 
                 </script>
 
-                @*codehint: sm-edit begin *@
-
                 @if (!String.IsNullOrEmpty(Model.Warning))
                 {
                     <div class="alert alert-error fade in">
@@ -134,100 +132,6 @@
                     </div>
 
                 </div>
-                @*codehint: sm-edit end *@
-
-                @*
-                <table class="basic-search">
-                    <tbody>
-                        <tr>
-                            <td class="title">
-                                @Html.LabelFor(model => model.Q):
-                            </td>
-                            <td class="data">
-                                @Html.TextBoxFor(model => model.Q, new { @class = "search-text" })
-                            </td>
-                        </tr>
-                        @Html.Widget("productsearch_page_basic")
-                        <tr>
-                            <td class="title" colspan="2">
-                                @Html.CheckBoxFor(model => model.As)
-                                @Html.LabelFor(model => model.As)
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2">
-                                <table class="adv-search" id="advanced-search-block">
-                                    <tbody>
-                                        @if (Model.AvailableCategories.Count > 0)
-                                        {
-                                            <tr>
-                                                <td class="title">
-                                                    @Html.LabelFor(model => model.Cid):
-                                                </td>
-                                                <td class="data">
-                                                    @Html.DropDownListFor(model => model.Cid, Model.AvailableCategories)
-                                                </td>
-                                            </tr>
-                                            <tr>
-                                                <td class="data" colspan="2">
-                                                    @Html.CheckBoxFor(model => model.Isc)
-                                                    @Html.LabelFor(model => model.Isc)
-                                                </td>
-                                            </tr>
-                                        }
-                                        @if (Model.AvailableManufacturers.Count > 0)
-                                        {
-                                            <tr>
-                                                <td class="title">
-                                                    @Html.LabelFor(model => model.Mid):
-                                                </td>
-                                                <td class="data">
-                                                    @Html.DropDownListFor(model => model.Mid, Model.AvailableManufacturers)
-                                                </td>
-                                            </tr>
-                                        }
-                                        <tr>
-                                            <td class="title">
-                                                @T("Search.PriceRange"):
-                                            </td>
-                                            <td class="data">
-                                                @T("Search.PriceRange.From")
-                                                @Html.TextBoxFor(model => model.Pf, new { @class = "price-from" })
-                                                @T("Search.PriceRange.To")
-                                                @Html.TextBoxFor(model => model.Pt, new { @class = "price-to" })
-                                            </td>
-                                        </tr>
-                                        <tr>
-                                            <td class="data" colspan="2">
-                                                @Html.CheckBoxFor(model => model.Sid)
-                                                @Html.LabelFor(model => model.Sid)
-                                            </td>
-                                        </tr>
-                                        @Html.Widget("productsearch_page_advanced")
-                                    </tbody>
-                                </table>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td colspan="2" class="buttons">
-                                <input type="submit" class="button-1 search-button" value="@T("Search")" />
-                            </td>
-                        </tr>
-                        @if (!String.IsNullOrEmpty(Model.Warning))
-                        {
-                            <tr>
-                                <td colspan="2">
-                                    <span class="warning">
-                                        @Model.Warning
-                                    </span>
-                                </td>
-                            </tr>
-                        }
-                    </tbody>
-                </table>
-                *@
-            </div>
-            <div class="clear">
             </div>
             
             if (ShowListOptions())
@@ -269,9 +173,6 @@
                     </div>
                     }
                 }
-
-                <div class="clear">
-                </div>
 
                 @Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber", "as", "isc", "sid")
 

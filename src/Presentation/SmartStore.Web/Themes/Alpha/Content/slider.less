@@ -68,9 +68,12 @@ Aside from these comments, you may modify and distribute this file as you please
 	display: block;
 	overflow: hidden;
 	.box-shadow(inset 0px 10px 8px -10px rgba(0,0,0, .5), inset 0px -10px 8px -10px rgba(0,0,0, .4));
-
 	.transition(background-position 1.5s ease-out);
-	
+
+	.transform(translate3d(0, 0, 0));
+	-webkit-perspective: 1000; -moz-perspective: 100; perspective: 1000;
+	-webkit-transform-style: preserve-3d; transform-style: preserve-3d;
+
 	// backface-visibility prevents graphical glitches when frames are animating
 	-moz-backface-visibility: hidden;
 	 -ms-backface-visibility: hidden;
@@ -210,7 +213,6 @@ Aside from these comments, you may modify and distribute this file as you please
 	padding: 0;
 	list-style-type: none;
 	background-color: transparent;
-
 	.radial-bg();
 }
 
@@ -262,9 +264,14 @@ Aside from these comments, you may modify and distribute this file as you please
 
 .sequence-canvas {
     .title, .info, .buttons {
-        left: 100%;
-        width: 40%;
+		box-sizing: border-box;
+        left: 75%;
+        width: 50%;
+		padding-right: 20px;
         .opacity(0);
+		.transform(scale3d(1, 1, 1));
+	    -webkit-perspective: 1000; -moz-perspective: 100; perspective: 1000;
+		-webkit-transform-style: preserve-3d; transform-style: preserve-3d;
     }
 
     .title {
@@ -283,19 +290,22 @@ Aside from these comments, you may modify and distribute this file as you please
     }
 
     .picture {
-	    left: 20%;
-	    width: 45%;
+		box-sizing: border-box;
+	    left: 25%;
+	    width: 50%;
+		padding-right: 20px;
 	    height: 100%;
 	    top: 0;
 	    .opacity(0);
-	    .transform(scale(2, 2));
+		-webkit-perspective: 1000; -moz-perspective: 100; perspective: 1000;
+		-webkit-transform-style: preserve-3d; transform-style: preserve-3d;
     }
 }
 
 .sequence-canvas .animate-in {
     .title, .info, .buttons {
-		left: 50%;
 		top: auto;
+		.transform(translate3d(-50%, 0, 0));
 		.opacity(100);
     }
 
@@ -313,16 +323,15 @@ Aside from these comments, you may modify and distribute this file as you please
     }
 
     .picture {
-	    left: 0;
 	    .opacity(100);
 	    .transition-duration(1s);
-	    .transform(none);
+	    .transform(translate3d(-50%, 0, 0));
     }
 }
 
 .sequence-canvas .animate-out {
     .title, .info, .buttons {
-		left: 25%;
+		.transform(translate3d(-75%, 0, 0));
 		.opacity(0);
     }
 
@@ -340,10 +349,9 @@ Aside from these comments, you may modify and distribute this file as you please
     }
 
     .picture {
-	    left: -10%;
 	    .opacity(0);
 	    .transition-duration(1s);
-	    .transform(scale(.5, .5));
+	    .transform(translate3d(-75%, 0, 0));
     }
 }
 

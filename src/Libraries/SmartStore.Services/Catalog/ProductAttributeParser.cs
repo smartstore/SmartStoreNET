@@ -70,7 +70,7 @@ namespace SmartStore.Services.Catalog
                 xmlDoc.LoadXml(attributes);
 
                 var nodeList1 = xmlDoc.SelectNodes(@"//Attributes/ProductVariantAttribute");
-                foreach (var node1 in nodeList1.Cast<XmlElement>()) // codehint: sm-edit
+                foreach (var node1 in nodeList1.Cast<XmlElement>())
                 {
                     string sid = node1.GetAttribute("ID").Trim();
                     if (sid.HasValue())
@@ -226,8 +226,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
         public virtual bool AreProductAttributesEqual(string attributes1, string attributes2)
         {
-            // codehint: sm-edit (massiv)
-
             var attrs1 = DeserializeProductVariantAttributes(attributes1);
             var attrs2 = DeserializeProductVariantAttributes(attributes2);
 

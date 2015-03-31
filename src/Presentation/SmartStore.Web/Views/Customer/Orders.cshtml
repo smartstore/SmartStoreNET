@@ -74,7 +74,7 @@
                                         @item.CyclesRemaining
                                     </td>
                                     <td>
-										<a class="btn" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })">
+										<a class="btn" href="@Url.Action("Details", "Order", new { id = item.InitialOrderId })" rel="nofollow">
 											<i class="fa fa-list-alt"></i>
 											@string.Format(@T("Account.CustomerOrders.RecurringOrders.ViewInitialOrder").Text, item.InitialOrderId)
 										</a>
@@ -82,7 +82,6 @@
                                     <td>
                                         @if (item.CanCancel)
                                         {
-                                            @*codehint: sm-edit *@
                                             <button type="submit" name="cancelRecurringPayment@(item.Id)" class="btn btn-danger">
 												<i class="fa fa-trash-o"></i>
                                                 @T("Account.CustomerOrders.RecurringOrders.Cancel")
@@ -127,13 +126,13 @@
                     <div class="buttons pull-right">
                         @if (order.IsReturnRequestAllowed)
                         {
-                            <a class="btn" href="@Url.RouteUrl("ReturnRequest", new { orderId = order.Id })">
+                            <a class="btn" href="@Url.Action("ReturnRequest", "ReturnRequest", new { id = order.Id })" rel="nofollow">
 								<i class="fa fa-reply"></i>
                                 @T("Account.CustomerOrders.ReturnItems")
                             </a>
                             <text>&nbsp;&nbsp;&nbsp;</text>
                         }
-						<a class="btn" href="@Url.Action("Details", "Order", new { id = order.Id })">
+						<a class="btn" href="@Url.Action("Details", "Order", new { id = order.Id })" rel="nofollow">
 							<i class="fa fa-list-alt"></i>
 							@T("Account.CustomerOrders.OrderDetails")
 						</a>

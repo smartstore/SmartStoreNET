@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using SmartStore.Web.Framework.Mvc;
-using SmartStore.Collections;
 using SmartStore.Admin.Models.Stores;
+using SmartStore.Collections;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Plugins
 {
@@ -20,6 +18,9 @@ namespace SmartStore.Admin.Models.Plugins
 		public List<StoreModel> AvailableStores { get; set; }
 
         public Multimap<string, PluginModel> Groups { get; set; }
+
+		public bool IsSandbox { get; set; }
+		public bool IsLocalhost { get; set; }
 
         public ICollection<PluginModel> AllPlugins
         {

@@ -21,189 +21,144 @@ namespace SmartStore.Services.Pdf
 
 		public ILogger Logger { get; set; }
 
-		public byte[] ConvertHtml(string html, PdfConvertOptions options)
+
+		public byte[] Convert(PdfConvertSettings settings)
 		{
-			Guard.ArgumentNotEmpty(() => html);
-			Guard.ArgumentNotNull(() => options);
+			Guard.ArgumentNotNull(() => settings);
+			if (settings.Page == null)
+			{
+				throw Error.InvalidOperation("The 'Page' property of the 'settings' argument cannot be null.");
+			}
 
 			try
 			{
-				var converter = CreateWkConverter(options);
-				var buffer = converter.GeneratePdf(html);
-				return buffer;
-			}
-			catch (Exception ex)
-			{
-				Logger.Error("Html to Pdf conversion error", ex);
-				throw;
-			}
-		}
+				var converter = CreateWkConverter(settings);
 
-		public byte[] ConvertFile(string htmlFilePath, PdfConvertOptions options, string coverHtml = null)
-		{
-			Guard.ArgumentNotEmpty(() => htmlFilePath);
-			Guard.ArgumentNotNull(() => options);
+				var input = settings.Page.Process("page");
 
-			try
-			{
-				var converter = CreateWkConverter(options);
-				var buffer = converter.GeneratePdfFromFile(htmlFilePath, coverHtml);
-				return buffer;
-			}
-			catch (Exception ex)
-			{
-				Logger.Error("Html to Pdf conversion error", ex);
-				throw;
-			}
-		}
-
-		internal HtmlToPdfConverter CreateWkConverter(PdfConvertOptions options)
-		{
-			var converter = new HtmlToPdfConverter
-			{
-				Grayscale = options.Grayscale,
-				LowQuality = options.LowQuality,
-				Orientation = (PageOrientation)(int)options.Orientation,
-				PageHeight = options.PageHeight,
-				PageWidth = options.PageWidth,
-				Size = (PageSize)(int)options.Size,
-				Zoom = options.Zoom
-			};
-
-			if (options.Margins != null)
-			{
-				converter.Margins.Bottom = options.Margins.Bottom;
-				converter.Margins.Left = options.Margins.Left;
-				converter.Margins.Right = options.Margins.Right;
-				converter.Margins.Top = options.Margins.Top;
-			}
-
-			converter.CustomWkHtmlArgs = options.CustomFlags;
-			converter.CustomWkHtmlPageArgs = CreateCustomPageFlags(options);
-
-			if (options.PageHeader != null)
-			{
-				ProcessRepeatableSection("header", options.PageHeader, converter);
-			}
-			if (options.PageFooter != null)
-			{
-				ProcessRepeatableSection("footer", options.PageFooter, converter);
-			}
-
-			return converter;
-		}
-
-		private void ProcessRepeatableSection(string flag, IRepeatablePdfSection section, HtmlToPdfConverter converter)
-		{
-			bool isUrl;
-			var result = section.Process(out isUrl);
-
-			if (result.IsEmpty())
-				return;
-
-			if (isUrl)
-			{
-				converter.CustomWkHtmlPageArgs += " --{0}-html \"{1}\"".FormatInvariant(flag, result);
-			}
-			else
-			{
-				// TODO: (MC) This is a very weak mechanism to determine if html is partial. Find a better way.
-				bool isPartial = !result.Trim().StartsWith("<!DOCTYPE", StringComparison.OrdinalIgnoreCase);
-				if (isPartial)
+				if (settings.Page.Kind == PdfContentKind.Url)
 				{
-					// NReco.PdfConverter is very well capable of handling partial html, so delegate it.
-					if (flag == "header")
-					{
-						converter.PageHeaderHtml = result;
-					}
-					else if (flag == "footer")
-					{
-						converter.PageFooterHtml = result;
-					}
+					return converter.GeneratePdfFromFile(input, null);
 				}
 				else
 				{
-					// TODO: (MC) Implement non-partial handling later (must create temp file and so on)
+					return converter.GeneratePdf(input, null);
 				}
+			}
+			catch (Exception ex)
+			{
+				Logger.Error("Html to Pdf conversion error", ex);
+				throw;
+			}
+			finally
+			{
+				TeardownContent(settings.Cover);
+				TeardownContent(settings.Footer);
+				TeardownContent(settings.Header);
+				TeardownContent(settings.Page);
 			}
 		}
 
-		private string CreateCustomPageFlags(PdfConvertOptions options)
+		private void TeardownContent(IPdfContent content)
 		{
-			var sb = new StringBuilder(options.CustomPageFlags);
+			if (content != null)
+				content.Teardown();
+		}
 
-			if (options.UserStylesheetUrl.HasValue())
+		internal HtmlToPdfConverter CreateWkConverter(PdfConvertSettings settings)
+		{
+			// Global options
+			var converter = new HtmlToPdfConverter
 			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " --user-style-sheet \"{0}\"", options.UserStylesheetUrl);
+				Grayscale = settings.Grayscale,
+				LowQuality = settings.LowQuality,
+				Orientation = (PageOrientation)(int)settings.Orientation,
+				PageHeight = settings.PageHeight,
+				PageWidth = settings.PageWidth,
+				Size = (PageSize)(int)settings.Size,
+			};
+
+			if (settings.Margins != null)
+			{
+				converter.Margins.Bottom = settings.Margins.Bottom;
+				converter.Margins.Left = settings.Margins.Left;
+				converter.Margins.Right = settings.Margins.Right;
+				converter.Margins.Top = settings.Margins.Top;
 			}
 
-			if (options.UsePrintMediaType)
+			var sb = new StringBuilder(settings.CustomFlags);
+
+			// doc title
+			if (settings.Title.HasValue())
 			{
-				sb.Append(" --print-media-type");
+				sb.AppendFormat(CultureInfo.CurrentCulture, " --title \"{0}\"", settings.Title);
 			}
 
-			if (options.BackgroundDisabled)
+			// Cover content & options
+			if (settings.Cover != null)
 			{
-				sb.Append(" --no-background");
-			}
-
-			if (options.UserName.HasValue())
-			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " --username {0}", options.UserName);
-			}
-
-			if (options.Password.HasValue())
-			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " --password {0}", options.Password);
-			}
-
-			if (options.HeaderSpacing.HasValue && options.PageHeader != null)
-			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " --header-spacing {0}", options.HeaderSpacing.Value);
-			}
-
-			if (options.FooterSpacing.HasValue && options.PageFooter != null)
-			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " --footer-spacing {0}", options.FooterSpacing.Value);
-			}
-
-			if (options.Post != null && options.Post.Count > 0)
-			{
-				CreateRepeatableFlags("--post", options.Post, sb);
-			}
-
-			if (options.Cookies != null && options.Cookies.Count > 0)
-			{
-				CreateRepeatableFlags("--cookie", options.Cookies, sb);
-			}
-
-			// Send FormsAuthentication Cookie
-			if (options.FormsAuthenticationCookieName.HasValue() && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Cookies != null)
-			{
-				if (options.Cookies == null || !options.Cookies.ContainsKey(options.FormsAuthenticationCookieName))
+				var path = settings.Cover.Process("cover");
+				if (path.HasValue())
 				{
-					HttpCookie authenticationCookie = null;
-					if (_httpContext.Request.Cookies.AllKeys.Contains(options.FormsAuthenticationCookieName))
+					sb.AppendFormat(" cover \"{0}\" ", path);
+					settings.Cover.WriteArguments("cover", sb);
+					if (settings.CoverOptions != null)
 					{
-						authenticationCookie = _httpContext.Request.Cookies[options.FormsAuthenticationCookieName];
-					}
-					if (authenticationCookie != null)
-					{
-						var authCookieValue = authenticationCookie.Value;
-						sb.AppendFormat(CultureInfo.InvariantCulture, " {0} {1} {2}", "--cookie", options.FormsAuthenticationCookieName, authCookieValue);
+						settings.CoverOptions.Process("cover", sb);
 					}
 				}
 			}
 
-			return sb.ToString().Trim().NullEmpty();
-		}
-
-		private void CreateRepeatableFlags(string flagName, IDictionary<string, string> dict, StringBuilder sb)
-		{
-			foreach (var kvp in dict)
+			// Toc options
+			if (settings.TocOptions != null && settings.TocOptions.Enabled)
 			{
-				sb.AppendFormat(CultureInfo.InvariantCulture, " {0} {1} {2}", flagName, kvp.Key, kvp.Value.EmptyNull());
+				settings.TocOptions.Process("toc", sb);
 			}
+
+			// apply cover & toc
+			converter.CustomWkHtmlArgs = sb.ToString().Trim().NullEmpty();
+			sb.Clear();
+
+			// Page options
+			if (settings.PageOptions != null)
+			{
+				settings.PageOptions.Process("page", sb);
+			}
+
+			// Header content & options
+			if (settings.Header != null)
+			{
+				var path = settings.Header.Process("header");
+				if (path.HasValue())
+				{
+					sb.AppendFormat(" --header-html \"{0}\"", path);
+					settings.Header.WriteArguments("header", sb);
+				}
+			}
+			if (settings.HeaderOptions != null && (settings.Header != null || settings.HeaderOptions.HasText))
+			{
+				settings.HeaderOptions.Process("header", sb);
+			}
+
+			// Footer content & options
+			if (settings.Footer != null)
+			{
+				var path = settings.Footer.Process("footer");
+				if (path.HasValue())
+				{
+					sb.AppendFormat(" --footer-html \"{0}\"", path);
+					settings.Footer.WriteArguments("footer", sb);
+				}
+			}
+			if (settings.FooterOptions != null && (settings.Footer != null || settings.FooterOptions.HasText))
+			{
+				settings.FooterOptions.Process("footer", sb);
+			}
+
+			// apply settings
+			converter.CustomWkHtmlPageArgs = sb.ToString().Trim().NullEmpty();
+
+			return converter;
 		}
 
 	}

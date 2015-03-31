@@ -60,7 +60,7 @@ namespace SmartStore
 		/// <summary>Safe way to delete a file.</summary>
 		public static bool Delete(string path)
 		{
-			if (path.IsNullOrEmpty())
+			if (path.IsEmpty())
 				return true;
 
 			bool result = true;

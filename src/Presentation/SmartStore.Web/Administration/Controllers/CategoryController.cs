@@ -184,6 +184,13 @@ namespace SmartStore.Admin.Controllers
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(category.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(category.UpdatedOnUtc, DateTimeKind.Utc);
 			}
+
+            model.AvailableDefaultViewModes.Add(
+                new SelectListItem { Value = "grid", Text = _localizationService.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }
+            );
+            model.AvailableDefaultViewModes.Add(
+                new SelectListItem { Value = "list", Text = _localizationService.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
+            );
         }
 
         [NonAction]

@@ -90,7 +90,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new CachingModule());
 			builder.RegisterModule(new LocalizationModule());
 			builder.RegisterModule(new LoggingModule());
-			builder.RegisterModule(new EventModule(typeFinder));
+			builder.RegisterModule(new EventModule(typeFinder, pluginFinder));
 			builder.RegisterModule(new MessagingModule());
 			builder.RegisterModule(new WebModule(typeFinder));
 			builder.RegisterModule(new WebApiModule(typeFinder));
@@ -162,7 +162,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<CurrencyService>().As<ICurrencyService>().InstancePerRequest();
 
 			builder.RegisterType<DeliveryTimeService>().As<IDeliveryTimeService>().InstancePerRequest();
-
+            builder.RegisterType<QuantityUnitService>().As<IQuantityUnitService>().InstancePerRequest();
 			builder.RegisterType<MeasureService>().As<IMeasureService>().InstancePerRequest();
 			builder.RegisterType<StateProvinceService>().As<IStateProvinceService>().InstancePerRequest();
 
@@ -223,7 +223,7 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
-            builder.RegisterType<PdfService>().As<IPdfService>().InstancePerRequest();
+			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();
 			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 
             builder.RegisterType<ExternalAuthorizer>().As<IExternalAuthorizer>().InstancePerRequest();
@@ -347,7 +347,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
-			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest();
+			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest().OnRelease(x => x.Flush());
 			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
 		}
 
@@ -493,10 +493,12 @@ namespace SmartStore.Web.Framework
 	public class EventModule : Module
 	{
 		private readonly ITypeFinder _typeFinder;
+		private readonly IPluginFinder _pluginFinder;
 
-		public EventModule(ITypeFinder typeFinder)
+		public EventModule(ITypeFinder typeFinder, IPluginFinder pluginFinder)
 		{
 			_typeFinder = typeFinder;
+			_pluginFinder = pluginFinder;
 		}
 
 		protected override void Load(ContainerBuilder builder)
@@ -512,12 +514,14 @@ namespace SmartStore.Web.Framework
 
 				var registration = builder.RegisterType(consumerType).As(implementedInterfaces);
 
+				var pluginDescriptor = _pluginFinder.GetPluginDescriptorByAssembly(consumerType.Assembly);
 				var isActive = PluginManager.IsActivePluginAssembly(consumerType.Assembly);
 				var shouldExecuteAsync = consumerType.GetAttribute<AsyncConsumerAttribute>(false) != null;
 
 				registration.WithMetadata<EventConsumerMetadata>(m => {
 					m.For(em => em.IsActive, isActive);
 					m.For(em => em.ExecuteAsync, shouldExecuteAsync);
+					m.For(em => em.PluginDescriptor, pluginDescriptor);
 				});
 
 				if (!shouldExecuteAsync)

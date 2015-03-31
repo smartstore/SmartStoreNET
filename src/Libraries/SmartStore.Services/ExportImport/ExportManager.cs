@@ -339,7 +339,6 @@ namespace SmartStore.Services.ExportImport
 			writer.Write("Height", product.Height.ToString(culture));
 			writer.Write("AvailableStartDateTimeUtc", product.AvailableStartDateTimeUtc.HasValue ? product.AvailableStartDateTimeUtc.Value.ToString(culture) : "");
 			writer.Write("AvailableEndDateTimeUtc", product.AvailableEndDateTimeUtc.HasValue ? product.AvailableEndDateTimeUtc.Value.ToString(culture) : "");
-			writer.Write("DeliveryTimeId", product.DeliveryTimeId.HasValue ? product.DeliveryTimeId.Value.ToString() : "");
 			writer.Write("BasePriceEnabled", product.BasePriceEnabled.ToString());
 			writer.Write("BasePriceMeasureUnit", product.BasePriceMeasureUnit);
 			writer.Write("BasePriceAmount", product.BasePriceAmount.HasValue ? product.BasePriceAmount.Value.ToString(culture) : "");
@@ -364,6 +363,38 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("MetaTitle", product.GetLocalized(x => x.MetaTitle, lang.Id, false, false), lang);
 				writer.Write("BundleTitleText", product.GetLocalized(x => x.BundleTitleText, lang.Id, false, false), lang);
 			});
+
+			if (product.DeliveryTime != null)
+			{
+				writer.WriteStartElement("DeliveryTime");
+				writer.Write("Id", product.DeliveryTime.Id.ToString());
+				writer.Write("Name", product.DeliveryTime.Name);
+				writer.Write("DisplayLocale", product.DeliveryTime.DisplayLocale);
+				writer.Write("ColorHexValue", product.DeliveryTime.ColorHexValue);
+				writer.Write("DisplayOrder", product.DeliveryTime.DisplayOrder.ToString());
+				WriteLocalized(writer, context, lang =>
+				{
+					writer.Write("Name", product.DeliveryTime.GetLocalized(x => x.Name, lang.Id, false, false), lang);
+				});
+				writer.WriteEndElement();
+			}
+
+			if (product.QuantityUnit != null)
+			{
+				writer.WriteStartElement("QuantityUnit");
+				writer.Write("Id", product.QuantityUnit.Id.ToString());
+				writer.Write("Name", product.QuantityUnit.Name);
+				writer.Write("Description", product.QuantityUnit.Description);
+				writer.Write("DisplayLocale", product.QuantityUnit.DisplayLocale);
+				writer.Write("DisplayOrder", product.QuantityUnit.DisplayOrder.ToString());
+				writer.Write("IsDefault", product.QuantityUnit.IsDefault.ToString());
+				WriteLocalized(writer, context, lang =>
+				{
+					writer.Write("Name", product.QuantityUnit.GetLocalized(x => x.Name, lang.Id, false, false), lang);
+					writer.Write("Description", product.QuantityUnit.GetLocalized(x => x.Description, lang.Id, false, false), lang);
+				});
+				writer.WriteEndElement();
+			}
 
 			writer.WriteStartElement("ProductTags");
 			foreach (var tag in product.ProductTags)
@@ -1958,7 +1989,6 @@ namespace SmartStore.Services.ExportImport
             xmlWriter.Close();
             return stringWriter.ToString();
         }
-
 
         #endregion
     }

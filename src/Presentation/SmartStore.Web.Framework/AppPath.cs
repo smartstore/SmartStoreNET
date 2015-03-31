@@ -134,7 +134,7 @@ namespace SmartStore
 		/// <param name="directoryPath">A directory path</param>
 		public static void ClearDirectory(string directoryPath, bool selfToo)
 		{
-			if (directoryPath.IsNullOrEmpty())
+			if (directoryPath.IsEmpty())
 				return;
 
 			try

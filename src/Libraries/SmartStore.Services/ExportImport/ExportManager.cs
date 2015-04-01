@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
@@ -40,6 +41,7 @@ namespace SmartStore.Services.ExportImport
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly ILanguageService _languageService;
 		private readonly MediaSettings _mediaSettings;
+		private readonly ICommonServices _commonServices;
 
         #endregion
 
@@ -52,7 +54,8 @@ namespace SmartStore.Services.ExportImport
             IPictureService pictureService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILanguageService languageService,
-			MediaSettings mediaSettings)
+			MediaSettings mediaSettings,
+			ICommonServices commonServices)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
@@ -62,6 +65,7 @@ namespace SmartStore.Services.ExportImport
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._languageService = languageService;
 			this._mediaSettings = mediaSettings;
+			this._commonServices = commonServices;
 
 			Logger = NullLogger.Instance;
         }
@@ -137,7 +141,7 @@ namespace SmartStore.Services.ExportImport
 			writer.WriteEndElement();
 		};
 
-		protected void WritePicture(XmlWriter writer, Picture picture)
+		protected void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture)
 		{
 			if (picture != null)
 			{
@@ -145,9 +149,9 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", picture.Id.ToString());
 				writer.Write("SeoFileName", picture.SeoFilename);
 				writer.Write("MimeType", picture.MimeType);
-				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSize, false));
-				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false));
-				writer.Write("FullSizeImageUrl", _pictureService.GetPictureUrl(picture, 0, false));
+				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSize, false, storeLocation: context.Store.Url));
+				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeLocation: context.Store.Url));
+				writer.Write("FullSizeImageUrl", _pictureService.GetPictureUrl(picture, 0, false, storeLocation: context.Store.Url));
 				writer.WriteEndElement();
 			}
 		}
@@ -508,7 +512,7 @@ namespace SmartStore.Services.ExportImport
 				writer.WriteStartElement("Pictures");
 				foreach (int pictureId in combination.GetAssignedPictureIds())
 				{
-					WritePicture(writer, _pictureService.GetPictureById(pictureId));
+					WritePicture(writer, context, _pictureService.GetPictureById(pictureId));
 				}
 				writer.WriteEndElement();	// Pictures
 
@@ -523,7 +527,7 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", productPicture.Id.ToString());
 				writer.Write("DisplayOrder", productPicture.DisplayOrder.ToString());
 
-				WritePicture(writer, productPicture.Picture);
+				WritePicture(writer, context, productPicture.Picture);
 
 				writer.WriteEndElement();
 			}
@@ -657,7 +661,8 @@ namespace SmartStore.Services.ExportImport
 				var context = new XmlExportContext()
 				{
 					ProductTemplates = _productTemplateService.GetAllProductTemplates(),
-					Languages = _languageService.GetAllLanguages(true)
+					Languages = _languageService.GetAllLanguages(true),
+					Store = _commonServices.StoreContext.CurrentStore
 				};
 
 				foreach (var product in products)
@@ -1998,5 +2003,6 @@ namespace SmartStore.Services.ExportImport
 	{
 		public IList<ProductTemplate> ProductTemplates { get; set; }
 		public IList<Language> Languages { get; set; }
+		public Store Store { get; set; }
 	}
 }

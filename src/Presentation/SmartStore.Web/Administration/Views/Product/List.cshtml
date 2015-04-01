@@ -159,7 +159,7 @@
     <table class="adminContent">
         <tr>
             <td>
-                @(Html.Telerik().Grid<ProductModel>(Model.Products.Data)
+                @(Html.Telerik().Grid<ProductModel>()
                     .Name("products-grid")
                     .Columns(columns =>
                     {
@@ -204,7 +204,7 @@
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
                             .Title(T("Admin.Common.Edit").Text);
                     })
-                    .Pageable(settings => settings.Total(Model.Products.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
                     .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
                     .EnableCustomBinding(true)

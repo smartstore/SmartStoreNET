@@ -50,7 +50,7 @@ namespace SmartStore.Services.Tasks
 					object instance;
 					if (!EngineContext.Current.ContainerManager.TryResolve(type2, scope, out instance))
                     {
-                        //not resolved
+                        // not resolved
 						instance = EngineContext.Current.ContainerManager.ResolveUnregistered(type2, scope);
                     }
                     task = instance as ITask;

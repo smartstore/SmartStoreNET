@@ -1,0 +1,51 @@
+﻿@model CheckUpdateResult
+
+@{
+	ViewBag.Title = "Check for Updates";
+}
+
+<div class="section-header">
+	<div class="title">
+		<i class="fa fa-level-up"></i>
+		Check for Updates
+	</div>
+</div>
+
+<div class="check-update-page" style="max-width: 1000px">
+	@if (!Model.UpdateAvailable)
+	{
+		<div class="alert alert-info">
+			Your SmartStore.NET version is up-to-date
+		</div>
+	}
+	else
+	{
+		<h3 class="text-error">Update available!</h3>
+		<dl>
+			<dt>Your Version</dt>
+			<dd>@Model.CurrentVersion</dd>
+			<dt>Current Version</dt>
+			<dd class="text-error">@Model.Version</dd>
+			<dt>Date</dt>
+			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
+		</dl>
+		
+		<div class="admin-config-group">
+			<div class="title">Release Notes</div>
+			<div>@Html.Raw(Model.ReleaseNotes)</div>
+		</div>
+		
+		<div style="margin-top: 30px">
+			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">More Info</a>
+			@if (Model.DownloadUrl.HasValue())
+			{
+				<a class="btn btn-default" href='@Model.DownloadUrl' style="margin-left: 5px">
+					<i class="fa fa-download"></i>
+					Download
+				</a>
+			}
+			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>Don't notify anymore</a>
+		</div>
+	}
+</div>
+

@@ -254,6 +254,15 @@ header {
 	.opacity(100);
 }
 
+.reddot {
+	position: absolute;
+	width: 10px;
+	height: 10px;
+	border-radius: 50%;
+	background-color: @red;
+	color: #fff;
+}
+
 /* SM additions
 -------------------------------------------------------------- */
 
@@ -277,9 +286,7 @@ header {
 	height: 3px;
 	z-index: 20;
 	background-color: #ffab40;
-	        transition: opacity .05s ease-in;
-	     -o-transition: opacity .05s ease-in;
-	-webkit-transition: opacity .05s ease-in;
+	.transition(opacity .05s ease-in);
 }
 #ajax-busy.busy {
 	opacity: 1;

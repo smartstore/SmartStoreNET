@@ -97,6 +97,11 @@
     </Reference>
     <Reference Include="System.ComponentModel.Composition" />
     <Reference Include="System.Data.DataSetExtensions" />
+    <Reference Include="System.Net.Http" />
+    <Reference Include="System.Net.Http.Formatting, Version=5.1.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\..\..\packages\Microsoft.AspNet.WebApi.Client.5.1.2\lib\net45\System.Net.Http.Formatting.dll</HintPath>
+    </Reference>
     <Reference Include="System.ServiceModel" />
     <Reference Include="System.Web.Extensions" />
     <Reference Include="Microsoft.CSharp" />
@@ -231,6 +236,7 @@
     <Compile Include="Models\Catalog\CopyProductModel.cs" />
     <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Cms\WidgetModel.cs" />
+    <Compile Include="Models\Common\CheckUpdateResult.cs" />
     <Compile Include="Models\Common\FeedItemModel.cs" />
     <Compile Include="Models\Common\GenericAttributeModel.cs" />
     <Compile Include="Models\Common\LanguageSelectorModel.cs" />
@@ -485,6 +491,7 @@
     <Content Include="Views\QuantityUnit\List.cshtml" />
     <Content Include="Views\Home\UaTester.cshtml" />
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
+    <Content Include="Views\Common\CheckUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

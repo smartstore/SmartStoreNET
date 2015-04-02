@@ -92,8 +92,9 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					string url = "http://community.smartstore.com/index.php?/rss/downloads/";
-					var request = WebRequest.Create(url);
+					var request = (HttpWebRequest)WebRequest.Create(url);
 					request.Timeout = 3000;
+					request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 
 					using (WebResponse response = request.GetResponse())
 					{

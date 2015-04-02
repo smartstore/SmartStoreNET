@@ -56,8 +56,9 @@ namespace SmartStore.Core.Caching
 			key = BuildKey(key);
 
 			var absoluteExpiration = Cache.NoAbsoluteExpiration;
-			if (cacheTime.GetValueOrDefault() > 0)
+			if (cacheTime.HasValue)
 			{
+				var span = cacheTime.Value == 0 ? TimeSpan.FromMilliseconds(10) : TimeSpan.FromMinutes(cacheTime.Value);
 				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
 			}
 

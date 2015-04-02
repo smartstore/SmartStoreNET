@@ -117,7 +117,7 @@ namespace SmartStore.Services.Seo
 
 		private void WriteTopics(UrlHelper urlHelper)
         {
-            var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap);
+            var topics = _topicService.GetAllTopics(_storeContext.CurrentStore.Id).ToList().FindAll(t => t.IncludeInSitemap && !t.RenderAsWidget);
 			var protocol = _securitySettings.ForceSslForAllPages ? "https" : "http";
             foreach (var topic in topics)
             {

@@ -7,15 +7,7 @@
 @using SmartStore;
 
 @{
-	Layout = "~/Administration/Views/Shared/_AdminRoot.cshtml";
-	
-	var currentCustomer = this.WorkContext.CurrentCustomer;
-    var usernamesEnabled = EngineContext.Current.Resolve<SmartStore.Core.Domain.Customers.CustomerSettings>().UsernamesEnabled;
-    var currentVersion = SmartStoreVersion.CurrentVersion;
-    var currentUICulture = System.Threading.Thread.CurrentThread.CurrentUICulture;
-    
-    // resources
-    var localizationService = EngineContext.Current.Resolve<ILocalizationService>();	
+	Layout = "~/Administration/Views/Shared/_AdminRoot.cshtml";	
 } 
 
 <div id="page">
@@ -41,7 +33,7 @@
 			else
 			{
 				@Html.Widget("admin_navbar_before")
-				@Html.Partial("Navbar")
+				@Html.Action("Navbar", "Common", new { area = "Admin" })
 				@Html.Widget("admin_navbar_after")
 			}
 

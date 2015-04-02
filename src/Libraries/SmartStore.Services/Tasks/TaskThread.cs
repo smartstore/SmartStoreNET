@@ -38,7 +38,7 @@ namespace SmartStore.Services.Tasks
 
             this._startedUtc = DateTime.UtcNow;
             this._isRunning = true;
-            foreach (Job job in this._jobs.Values)
+            foreach (var job in this._jobs.Values)
             {
 				job.Execute();
             }

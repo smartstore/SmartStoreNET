@@ -168,10 +168,10 @@ namespace SmartStore.Admin.Controllers
 
 			var t = AsyncRunner.Run(c =>
 			{
+				var svc = c.Resolve<IScheduleTaskService>();
+
 				try
 				{
-					var svc = c.Resolve<IScheduleTaskService>();
-
 					var scheduleTask = svc.GetTaskById(id);
 					if (scheduleTask == null)
 						throw new Exception("Schedule task cannot be loaded");
@@ -184,9 +184,9 @@ namespace SmartStore.Admin.Controllers
 				{
 					try
 					{
-						_scheduleTaskService.EnsureTaskIsNotRunning(id);
+						svc.EnsureTaskIsNotRunning(id);
 					}
-					catch (Exception) { }
+					catch { }
 				}
 			});
 

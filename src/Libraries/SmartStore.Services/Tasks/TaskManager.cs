@@ -27,10 +27,7 @@ namespace SmartStore.Services.Tasks
             this._taskThreads.Clear();
 
             var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
-            var scheduleTasks = taskService
-                .GetAllTasks()
-                .OrderBy(x => x.Seconds)
-                .ToList();
+            var scheduleTasks = taskService.GetAllTasks();
 
 			var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
 			eventPublisher.Publish(new AppInitScheduledTasksEvent {
@@ -52,8 +49,8 @@ namespace SmartStore.Services.Tasks
 						var isActiveModule = PluginManager.IsActivePluginAssembly(taskType.Assembly);
 						if (isActiveModule)
 						{
-							var task = new Job(scheduleTask);
-							taskThread.AddJob(task);
+							var job = new Job(scheduleTask);
+							taskThread.AddJob(job);
 						}
 					}
                 }

@@ -74,7 +74,7 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets specification attributes
         /// </summary>
-        /// <returns>Specification attributes</returns>
+		/// <returns>Specification attribute query</returns>
         public virtual IQueryable<SpecificationAttribute> GetSpecificationAttributes()
         {
             var query = 
@@ -84,6 +84,25 @@ namespace SmartStore.Services.Catalog
 
             return query;
         }
+
+		/// <summary>
+		/// Gets specification attributes by identifier
+		/// </summary>
+		/// <param name="ids">Identifiers</param>
+		/// <returns>Specification attribute query</returns>
+		public virtual IQueryable<SpecificationAttribute> GetSpecificationAttributesByIds(int[] ids)
+		{
+			if (ids == null || ids.Length == 0)
+				return null;
+
+			var query =
+				from sa in _specificationAttributeRepository.Table
+				where ids.Contains(sa.Id)
+				orderby sa.DisplayOrder, sa.Name
+				select sa;
+
+			return query;
+		}
 
         /// <summary>
         /// Deletes a specification attribute

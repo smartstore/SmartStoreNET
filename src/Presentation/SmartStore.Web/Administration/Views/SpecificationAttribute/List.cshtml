@@ -3,35 +3,131 @@
     ViewBag.Title = T("Admin.Catalog.Attributes.SpecificationAttributes").Text;
 }
 
-<div class="section-header">
-    <div class="title">
-        @T("Admin.Catalog.Attributes.SpecificationAttributes")
-    </div>
-    <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
-    </div>
-</div>
+@using (Html.BeginForm())
+{
+	<div class="section-header">
+		<div class="title">
+			@T("Admin.Catalog.Attributes.SpecificationAttributes")
+		</div>
+		<div class="options">
+			<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
 
-<table class="adminContent">
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<SpecificationAttributeModel>()
-				.Name("specificationattributes-grid")
-				.Columns(columns =>
-				{
-				columns.Bound(x => x.Name)
-					.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-					.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-				columns.Bound(x => x.DisplayOrder)
-					.Width(200)
-					.Filterable(false)
-					.Centered();
-				})
-				.Filterable()
-				.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
-				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "SpecificationAttribute"))
-				.PreserveGridState()
-				.EnableCustomBinding(true))
-        </td>
-    </tr>
-</table>
+			<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.DeleteSelected")
+			</button>
+		</div>
+	</div>
+
+	<table class="adminContent">
+		<tr>
+			<td>
+				@(Html.Telerik().Grid<SpecificationAttributeModel>()
+					.Name("specificationattributes-grid")
+					.ClientEvents(events => events.OnDataBound("onDataBound"))
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.Filterable(false)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.Name)
+							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+						columns.Bound(x => x.OptionCount)
+							.Filterable(false)
+							.Width(200)
+							.Centered();
+						columns.Bound(x => x.DisplayOrder)
+							.Filterable(false)
+							.Width(200)
+							.Centered();
+					})
+					.Filterable()
+					.Pageable(settings => settings.PageSize((int)ViewData["GridPageSize"]).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "SpecificationAttribute"))
+					.PreserveGridState()
+					.EnableCustomBinding(true))
+			</td>
+		</tr>
+	</table>
+}
+
+<script type="text/javascript">
+	var selectedIds = [];
+
+	$(document).ready(function () {
+		// "delete selected" button
+		$('#delete-selected').click(function (e) {
+			e.preventDefault();
+
+			var postData = { selectedIds: selectedIds };
+
+			$.ajax({
+				cache: false,
+				type: "POST",
+				url: "@(Url.Action("DeleteSelected", "SpecificationAttribute"))",
+				data: postData,
+				complete: function (data) {
+					var grid = $('#specificationattributes-grid').data('tGrid');
+					grid.currentPage = 1;
+					grid.ajaxRequest();
+
+					//clear selected checkboxes
+					$('.checkboxGroups').attr('checked', false).change();
+					selectedIds = [];
+				},
+				error: function (xhr, ajaxOptions, thrownError) {
+					alert(thrownError);
+				},
+				traditional: true
+			});
+			return false;
+		});
+
+		$('#mastercheckbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		// wire up checkboxes
+		$(document).on('change', '#specificationattributes-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(":checked") == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					// add id to selectedIds
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					// remove id from selectedIds
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+			updateMasterCheckbox();
+		});
+	});
+
+	function onDataBound(e) {
+		$('#specificationattributes-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+			var currentId = $(this).val();
+			var checked = jQuery.inArray(currentId, selectedIds);
+			// set checked based on if current checkbox's value is in selectedIds
+			$(this).attr('checked', checked > -1);
+		});
+
+		updateMasterCheckbox();
+	}
+
+	function updateMasterCheckbox() {
+		var numChkBoxes = $('#specificationattributes-grid input[type=checkbox][id!=mastercheckbox]').length;
+		var numChkBoxesChecked = $('#specificationattributes-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+		$('#specificationattributes-grid').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+</script>

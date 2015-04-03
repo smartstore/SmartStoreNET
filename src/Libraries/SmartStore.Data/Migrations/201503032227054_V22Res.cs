@@ -99,6 +99,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Execution",
 				"Execution",
 				"Ausführung");
+
+			builder.AddOrUpdate("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount",
+				"Number options",
+				"Anzahl Optionen");
+
+			builder.AddOrUpdate("Admin.Common.DeleteSelected",
+				"Delete selected",
+				"Ausgewählte löschen");
 		}
 	}
 }

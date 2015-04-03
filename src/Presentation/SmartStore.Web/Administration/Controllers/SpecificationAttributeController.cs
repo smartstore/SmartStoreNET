@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -120,16 +121,24 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
+			var optionsText = _localizationService.GetResource("Admin.Catalog.Attributes.SpecificationAttributes.Options");
+
 			var data = _specificationAttributeService.GetSpecificationAttributes()
 				.ForCommand(command)
-				.Select(x => x.ToModel())
+				.Select(x =>
+				{
+					var model = x.ToModel();
+					model.OptionCount = x.SpecificationAttributeOptions.Count;
+
+					return model;
+				})
 				.ToList();
 
-            var gridModel = new GridModel<SpecificationAttributeModel>
-            {
-                Data = data.PagedForCommand(command),
-                Total = data.Count
-            };
+			var gridModel = new GridModel<SpecificationAttributeModel>
+			{
+				Data = data.PagedForCommand(command),
+				Total = data.Count
+			};
 
             return new JsonResult
             {
@@ -180,7 +189,6 @@ namespace SmartStore.Admin.Controllers
 
             var specificationAttribute = _specificationAttributeService.GetSpecificationAttributeById(id);
             if (specificationAttribute == null)
-                //No specification attribute found with the specified id
                 return RedirectToAction("List");
 
             var model = specificationAttribute.ToModel();
@@ -201,7 +209,6 @@ namespace SmartStore.Admin.Controllers
 
             var specificationAttribute = _specificationAttributeService.GetSpecificationAttributeById(model.Id);
             if (specificationAttribute == null)
-                //No specification attribute found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -231,7 +238,6 @@ namespace SmartStore.Admin.Controllers
 
             var specificationAttribute = _specificationAttributeService.GetSpecificationAttributeById(id);
             if (specificationAttribute == null)
-                //No specification attribute found with the specified id
                 return RedirectToAction("List");
 
             _specificationAttributeService.DeleteSpecificationAttribute(specificationAttribute);
@@ -242,6 +248,26 @@ namespace SmartStore.Admin.Controllers
             NotifySuccess(_localizationService.GetResource("Admin.Catalog.Attributes.SpecificationAttributes.Deleted"));
             return RedirectToAction("List");
         }
+
+		[HttpPost]
+		public ActionResult DeleteSelected(ICollection<int> selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+				return AccessDeniedView();
+
+			if (selectedIds != null && selectedIds.Count > 0)
+			{
+				var attributes = _specificationAttributeService.GetSpecificationAttributesByIds(selectedIds.ToArray()).ToList();
+				string deletedNames = string.Join(", ", attributes.Select(x => x.Name));
+
+				foreach (var attribute in attributes)
+					_specificationAttributeService.DeleteSpecificationAttribute(attribute);
+
+				_customerActivityService.InsertActivity("DeleteSpecAttribute", _localizationService.GetResource("ActivityLog.DeleteSpecAttribute"), deletedNames);
+			}
+
+			return Json(new { Result = true });
+		}
 
 		[HttpPost]
 		public ActionResult ProductMappingEdit(int specificationAttributeId, string field, bool value)
@@ -345,7 +371,6 @@ namespace SmartStore.Admin.Controllers
 
             var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(id);
             if (sao == null)
-                //No specification attribute option found with the specified id
                 return RedirectToAction("List");
 
             var model = sao.ToModel();
@@ -366,7 +391,6 @@ namespace SmartStore.Admin.Controllers
 
             var sao = _specificationAttributeService.GetSpecificationAttributeOptionById(model.Id);
             if (sao == null)
-                //No specification attribute option found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)

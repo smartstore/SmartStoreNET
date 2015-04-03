@@ -878,37 +878,14 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-        public ActionResult List()
+        public ActionResult List(ProductListModel model)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var ctx = new ProductSearchContext();
-            ctx.LanguageId = _workContext.WorkingLanguage.Id;
-            ctx.OrderBy = ProductSortingEnum.Position;
-            ctx.PageSize = _adminAreaSettings.GridPageSize;
-            ctx.ShowHidden = true;
-
-            var products = _productService.SearchProducts(ctx);
-
-            var model = new ProductListModel();
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
             model.DisplayPdfExport = _pdfSettings.Enabled;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
-
-            model.Products = new GridModel<ProductModel>
-            {
-                Data = products.Select(x =>
-                {
-                    var productModel = x.ToModel();
-                    PrepareProductPictureThumbnailModel(productModel, x);
-
-					productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
-
-                    return productModel;
-                }),
-                Total = products.TotalCount
-            };
 
             //categories
             var allCategories = _categoryService.GetAllCategories(showHidden: true);
@@ -990,7 +967,7 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("Edit", "Product", new { id = product.Id });
 
             //not found
-            return List();
+            return List(model);
         }
 
         //create product

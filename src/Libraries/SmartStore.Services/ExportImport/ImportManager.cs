@@ -675,6 +675,7 @@ namespace SmartStore.Services.ExportImport
 			_rsProductPicture.AutoCommitEnabled = true;
 
 			ProductPicture lastInserted = null;
+			int equalPictureId = 0;
 
 			foreach (var row in batch)
 			{
@@ -696,7 +697,7 @@ namespace SmartStore.Services.ExportImport
 							continue;
 
                         var currentPictures = _rsProductPicture.Expand(_rsProductPicture.TableUntracked, x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
-                        var pictureBinary = FindEqualPicture(picture, currentPictures);
+                        var pictureBinary = _pictureService.FindEqualPicture(picture, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
@@ -753,42 +754,6 @@ namespace SmartStore.Services.ExportImport
 			}
 
 			return (int?)null;
-		}
-
-        /// <summary>
-        /// Finds an equal picture by comparing the binary buffer
-        /// </summary>
-        /// <param name="path">The picture to find a duplicate for</param>
-        /// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
-        /// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
-        private byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures)
-        {
-            try
-            {
-                var myBuffer = File.ReadAllBytes(path);
-
-                foreach (var picture in productPictures)
-                {
-                    var otherBuffer = _pictureService.LoadPictureBinary(picture);
-                    using (var myStream = new MemoryStream(myBuffer))
-                    {
-                        using (var otherStream = new MemoryStream(otherBuffer))
-                        {
-                            var equals = myStream.ContentsEqual(otherStream);
-                            if (equals)
-                            {
-                                return null;
-                            }
-                        }
-                    }
-                }
-
-                return myBuffer;
-            }
-            catch
-            {
-                return null;
-            }
 		}
 	}
 }

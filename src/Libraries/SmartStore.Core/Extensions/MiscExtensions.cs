@@ -26,7 +26,8 @@ namespace SmartStore
 
 			while (exc != null)
 			{
-				sb.Grow(exc.Message, " ");
+				if (!sb.ToString().EmptyNull().Contains(exc.Message))
+					sb.Grow(exc.Message, " ");
 				exc = exc.InnerException;
 			}
 			return sb.ToString();

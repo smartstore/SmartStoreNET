@@ -17,6 +17,15 @@ namespace SmartStore.Services.Media
         /// <param name="mimeType">MIME type</param>
         /// <returns>Picture binary or throws an exception</returns>
         byte[] ValidatePicture(byte[] pictureBinary);
+
+		/// <summary>
+		/// Finds an equal picture by comparing the binary buffer
+		/// </summary>
+		/// <param name="path">The picture to find a duplicate for</param>
+		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+		/// <param name="equalPictureId">Id of equal picture if any</param>
+		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
+		byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId);
         
         /// <summary>
         /// Gets the loaded picture binary depending on picture storage settings

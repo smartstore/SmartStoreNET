@@ -2,7 +2,6 @@
 
 namespace SmartStore.Web.Framework.Settings
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public class StoreDependingSettingData
 	{
 		public StoreDependingSettingData()

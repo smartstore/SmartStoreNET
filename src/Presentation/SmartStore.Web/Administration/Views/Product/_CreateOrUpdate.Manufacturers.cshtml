@@ -29,7 +29,8 @@
             .Columns(columns =>
             {
                 columns.Bound(x => x.Manufacturer)
-                    .Width(500);
+					.Template(x => Html.ActionLink(x.Manufacturer, "Edit", "Manufacturer", new { id = x.ManufacturerId }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Manufacturer/Edit/") + "<#= ManufacturerId #>\"><#= Manufacturer #></a>");
                 columns.Bound(x => x.IsFeaturedProduct)
                     .Width(100)
                     .Template(item => Html.SymbolForBool(item.IsFeaturedProduct))

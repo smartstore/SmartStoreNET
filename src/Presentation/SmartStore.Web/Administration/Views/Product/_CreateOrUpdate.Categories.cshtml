@@ -32,7 +32,9 @@
             })
             .Columns(columns =>
             {
-                columns.Bound(x => x.Category);
+                columns.Bound(x => x.Category)
+					.Template(x => Html.ActionLink(x.Category, "Edit", "Category", new { id = x.CategoryId }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Category/Edit/") + "<#= CategoryId #>\"><#= Category #></a>");
                 columns.Bound(x => x.IsFeaturedProduct)
                     .Width(100)
                     .Template(item => @Html.SymbolForBool(item.IsFeaturedProduct))

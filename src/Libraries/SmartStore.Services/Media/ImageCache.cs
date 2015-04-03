@@ -117,7 +117,7 @@ namespace SmartStore.Services.Media
                 {
                     foreach (var file in _cacheRootDir.GetFiles())
                     {
-						if (!file.Name.IsCaseInsensitiveEqual("placeholder"))
+						if (!file.Name.IsCaseInsensitiveEqual("placeholder") && !file.Name.IsCaseInsensitiveEqual("placeholder.txt"))
 						{
 							file.Delete();
 						}
@@ -137,11 +137,14 @@ namespace SmartStore.Services.Media
         public void CacheStatistics(out long fileCount, out long totalSize)
         {
             var allFiles = _cacheRootDir.GetFiles("*.*", SearchOption.AllDirectories);
-            fileCount = allFiles.Count();
+			var allImageFiles = allFiles.Where(x => !x.Name.IsCaseInsensitiveEqual("placeholder") && !x.Name.IsCaseInsensitiveEqual("placeholder.txt"));
+
+			fileCount = allImageFiles.Count();
+
             if (fileCount == 0)
                 totalSize = 0;
             else
-                totalSize = allFiles.Sum(x => x.Length);
+				totalSize = allImageFiles.Sum(x => x.Length);
         }
 
         #region Utils

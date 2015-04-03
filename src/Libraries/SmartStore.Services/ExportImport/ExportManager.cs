@@ -133,12 +133,15 @@ namespace SmartStore.Services.ExportImport
 
 		protected Action<XmlWriter, XmlExportContext, Action<Language>> WriteLocalized = (writer, context, content) =>
 		{
-			writer.WriteStartElement("Localized");
-			foreach (var language in context.Languages)
+			if (context.Languages.Count > 1)
 			{
-				content(language);
+				writer.WriteStartElement("Localized");
+				foreach (var language in context.Languages)
+				{
+					content(language);
+				}
+				writer.WriteEndElement();
 			}
-			writer.WriteEndElement();
 		};
 
 		protected void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture)
@@ -439,7 +442,7 @@ namespace SmartStore.Services.ExportImport
 			writer.WriteEndElement();
 
 			writer.WriteStartElement("ProductAttributes");
-			foreach (var pva in product.ProductVariantAttributes)
+			foreach (var pva in product.ProductVariantAttributes.OrderBy(x => x.DisplayOrder))
 			{
 				writer.WriteStartElement("ProductAttribute");
 
@@ -462,7 +465,7 @@ namespace SmartStore.Services.ExportImport
 				writer.WriteEndElement();	// Attribute
 
 				writer.WriteStartElement("AttributeValues");
-				foreach (var value in pva.ProductVariantAttributeValues)
+				foreach (var value in pva.ProductVariantAttributeValues.OrderBy(x => x.DisplayOrder))
 				{
 					writer.WriteStartElement("AttributeValue");
 					writer.Write("Id", value.Id.ToString());
@@ -521,7 +524,7 @@ namespace SmartStore.Services.ExportImport
 			writer.WriteEndElement(); // ProductAttributeCombinations
 
 			writer.WriteStartElement("ProductPictures");
-			foreach (var productPicture in product.ProductPictures)
+			foreach (var productPicture in product.ProductPictures.OrderBy(x => x.DisplayOrder))
 			{
 				writer.WriteStartElement("ProductPicture");
 				writer.Write("Id", productPicture.Id.ToString());
@@ -537,7 +540,7 @@ namespace SmartStore.Services.ExportImport
 			var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
 			if (productCategories != null)
 			{
-				foreach (var productCategory in productCategories)
+				foreach (var productCategory in productCategories.OrderBy(x => x.DisplayOrder))
 				{
 					writer.WriteStartElement("ProductCategory");
 					writer.Write("IsFeaturedProduct", productCategory.IsFeaturedProduct.ToString());
@@ -556,7 +559,7 @@ namespace SmartStore.Services.ExportImport
 			var productManufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id);
 			if (productManufacturers != null)
 			{
-				foreach (var productManufacturer in productManufacturers)
+				foreach (var productManufacturer in productManufacturers.OrderBy(x => x.DisplayOrder))
 				{
 					var manu = productManufacturer.Manufacturer;
 					writer.WriteStartElement("ProductManufacturer");
@@ -592,7 +595,7 @@ namespace SmartStore.Services.ExportImport
 			writer.WriteEndElement();
 
 			writer.WriteStartElement("ProductSpecificationAttributes");
-			foreach (var pca in product.ProductSpecificationAttributes)
+			foreach (var pca in product.ProductSpecificationAttributes.OrderBy(x => x.DisplayOrder))
 			{
 				writer.WriteStartElement("ProductSpecificationAttribute");
 				writer.Write("Id", pca.Id.ToString());
@@ -627,7 +630,7 @@ namespace SmartStore.Services.ExportImport
 
 			writer.WriteStartElement("ProductBundleItems");
 			var bundleItems = _productService.GetBundleItems(product.Id, true);
-			foreach (var bundleItem in bundleItems.Select(x => x.Item))
+			foreach (var bundleItem in bundleItems.Select(x => x.Item).OrderBy(x => x.DisplayOrder))
 			{
 				writer.WriteStartElement("ProductBundleItem");
 				writer.Write("ProductId", bundleItem.ProductId.ToString());

@@ -43,6 +43,9 @@ namespace SmartStore
 		{
 			if (name.HasValue() && value != null)
 			{
+				if (language != null && value.IsEmpty())
+					return;		// do not create too many empty nodes for empty localized values
+
 				writer.WriteStartElement(name);
 
 				if (language != null)

@@ -192,6 +192,12 @@
 							.RightAlign();
                         columns.Bound(x => x.StockQuantity)
 							.Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden(Model.StoreCount <= 1)
+							.Centered();
+						columns.Bound(x => x.UpdatedOn);
                         columns.Bound(x => x.Published)
                             .Width(100)
                             .Template(item => @Html.SymbolForBool(item.Published))

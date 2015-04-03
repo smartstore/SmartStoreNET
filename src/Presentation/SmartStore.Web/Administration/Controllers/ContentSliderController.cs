@@ -62,10 +62,13 @@ namespace SmartStore.Admin.Controllers
 		private ContentSliderSettingsModel PrepareContentSliderSettingsModel(ContentSliderSettingsModel modelIn = null)
 		{
 			int rowIndex = 0;
+			var allStores = _storeService.GetAllStores();
 			var model = _contentSliderSettings.ToModel();
 
+			model.StoreCount = allStores.Count;
+
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
-			foreach (var s in _storeService.GetAllStores())
+			foreach (var s in allStores)
 			{
 				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
 			}

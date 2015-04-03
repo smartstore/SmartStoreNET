@@ -1,5 +1,4 @@
-﻿@model Telerik.Web.Mvc.GridModel<CampaignModel>
-@using Telerik.Web.Mvc.UI
+﻿@using Telerik.Web.Mvc.UI
 @{
     ViewBag.Title = T("Admin.Promotions.Campaigns").Text;
 }
@@ -15,22 +14,20 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid<CampaignModel>(Model.Data)
+            @(Html.Telerik().Grid<CampaignModel>()
                     .Name("campaigns-grid")
                     .Columns(columns =>
                     {
                         columns.Bound(x => x.Name)
-                            .Width(500)
                             .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 						columns.Bound(x => x.Subject);
 						columns.Bound(x => x.LimitedToStores)
-							.Width(180)
 							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden((int)ViewData["StoreCount"] <= 1)
 							.Centered();
-                        columns.Bound(x => x.CreatedOn)
-                            .Width(180);
+                        columns.Bound(x => x.CreatedOn);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Campaign"))
 					.PreserveGridState()

@@ -11,7 +11,6 @@ using System.Xml.Serialization;
 namespace SmartStore.Web.Framework.Mvc
 {
 	/// <summary>An action method result wrapper that handles all required action results in a project.</summary>
-	/// <remarks>codehint: sm-add</remarks>
 	public class UniversalResult : ActionResult
 	{
 		public UniversalResult() {

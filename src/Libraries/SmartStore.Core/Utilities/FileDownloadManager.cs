@@ -9,7 +9,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Web.Framework.Utilities
+namespace SmartStore.Utilities
 {
 	public class FileDownloadManager
 	{

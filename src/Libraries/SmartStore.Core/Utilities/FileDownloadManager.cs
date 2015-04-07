@@ -15,6 +15,46 @@ namespace SmartStore.Utilities
 	{
 		private const int _bufferSize = 16384;
 
+		/// <summary>
+		/// Start asynchronous download of files
+		/// </summary>
+		/// <param name="context">Download context</param>
+		/// <param name="items">Items to be downloaded</param>
+		public async Task DownloadAsync(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
+		{
+			await DownloadFiles(context, items);
+		}
+
+		private async Task DownloadFiles(FileDownloadManagerContext context, IEnumerable<FileDownloadManagerItem> items)
+		{
+			var client = new HttpClient();
+
+			client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
+			client.DefaultRequestHeaders.CacheControl.NoCache = true;
+			client.DefaultRequestHeaders.Add("Connection", "Keep-alive");
+
+			if (context.Timeout != null)
+				client.Timeout = context.Timeout;
+
+			IEnumerable<Task> downloadTasksQuery =
+				from item in items
+				select ProcessUrl(context, client, item);
+
+			// now execute the bunch
+			List<Task> downloadTasks = downloadTasksQuery.ToList();
+
+			while (downloadTasks.Count > 0)
+			{
+				// identify the first task that completes
+				Task firstFinishedTask = await Task.WhenAny(downloadTasks);
+
+				// process only once
+				downloadTasks.Remove(firstFinishedTask);
+
+				await firstFinishedTask;
+			}
+		}
+
 		private async Task ProcessUrl(FileDownloadManagerContext context, HttpClient client, FileDownloadManagerItem item)
 		{
 			try
@@ -54,45 +94,6 @@ namespace SmartStore.Utilities
 			}
 		}
 
-		private async Task DownloadFiles(FileDownloadManagerContext context, List<FileDownloadManagerItem> items)
-		{
-			var client = new HttpClient();
-			
-			client.DefaultRequestHeaders.CacheControl = new CacheControlHeaderValue();
-			client.DefaultRequestHeaders.CacheControl.NoCache = true;
-			client.DefaultRequestHeaders.Add("Connection", "Keep-alive");
-
-			if (context.Timeout != null)
-				client.Timeout = context.Timeout;
-
-			IEnumerable<Task> downloadTasksQuery =
-				from item in items
-				select ProcessUrl(context, client, item);
-
-			// now execute the bunch
-			List<Task> downloadTasks = downloadTasksQuery.ToList();
-
-			while (downloadTasks.Count > 0)
-			{
-				// identify the first task that completes
-				Task firstFinishedTask = await Task.WhenAny(downloadTasks);
-
-				// process only once
-				downloadTasks.Remove(firstFinishedTask);
-
-				await firstFinishedTask;
-			}
-		}
-
-		/// <summary>
-		/// Start asynchronous download of files
-		/// </summary>
-		/// <param name="context">Download context</param>
-		/// <param name="items">Items to be downloaded</param>
-		public async Task StartAsynchronous(FileDownloadManagerContext context, List<FileDownloadManagerItem> items)
-		{
-			await DownloadFiles(context, items);
-		}
 	}
 
 

@@ -11,6 +11,7 @@ using OfficeOpenXml.Style;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
@@ -76,61 +77,6 @@ namespace SmartStore.Services.ExportImport
 
         #region Utilities
 
-        protected virtual void WriteCategories(XmlWriter xmlWriter, int parentCategoryId)
-        {
-            var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, true);
-            if (categories != null && categories.Count > 0)
-            {
-                foreach (var category in categories)
-                {
-                    xmlWriter.WriteStartElement("Category");
-                    xmlWriter.WriteElementString("Id", null, category.Id.ToString());
-                    xmlWriter.WriteElementString("Name", null, category.Name);
-                    xmlWriter.WriteElementString("Description", null, category.Description);
-                    xmlWriter.WriteElementString("CategoryTemplateId", null, category.CategoryTemplateId.ToString());
-                    xmlWriter.WriteElementString("MetaKeywords", null, category.MetaKeywords);
-                    xmlWriter.WriteElementString("MetaDescription", null, category.MetaDescription);
-                    xmlWriter.WriteElementString("MetaTitle", null, category.MetaTitle);
-                    xmlWriter.WriteElementString("SeName", null, category.GetSeName(0));
-                    xmlWriter.WriteElementString("ParentCategoryId", null, category.ParentCategoryId.ToString());
-                    xmlWriter.WriteElementString("PictureId", null, category.PictureId.ToString());
-                    xmlWriter.WriteElementString("PageSize", null, category.PageSize.ToString());
-                    xmlWriter.WriteElementString("AllowCustomersToSelectPageSize", null, category.AllowCustomersToSelectPageSize.ToString());
-                    xmlWriter.WriteElementString("PageSizeOptions", null, category.PageSizeOptions);
-                    xmlWriter.WriteElementString("PriceRanges", null, category.PriceRanges);
-                    xmlWriter.WriteElementString("ShowOnHomePage", null, category.ShowOnHomePage.ToString());
-                    xmlWriter.WriteElementString("Published", null, category.Published.ToString());
-                    xmlWriter.WriteElementString("Deleted", null, category.Deleted.ToString());
-                    xmlWriter.WriteElementString("DisplayOrder", null, category.DisplayOrder.ToString());
-                    xmlWriter.WriteElementString("CreatedOnUtc", null, category.CreatedOnUtc.ToString());
-                    xmlWriter.WriteElementString("UpdatedOnUtc", null, category.UpdatedOnUtc.ToString());
-
-
-                    xmlWriter.WriteStartElement("Products");
-                    var productCategories = _categoryService.GetProductCategoriesByCategoryId(category.Id, 0, int.MaxValue, true);
-                    foreach (var productCategory in productCategories)
-                    {
-                        var product = productCategory.Product;
-                        if (product != null && !product.Deleted)
-                        {
-                            xmlWriter.WriteStartElement("ProductCategory");
-                            xmlWriter.WriteElementString("ProductCategoryId", null, productCategory.Id.ToString());
-                            xmlWriter.WriteElementString("ProductId", null, productCategory.ProductId.ToString());
-                            xmlWriter.WriteElementString("IsFeaturedProduct", null, productCategory.IsFeaturedProduct.ToString());
-                            xmlWriter.WriteElementString("DisplayOrder", null, productCategory.DisplayOrder.ToString());
-                            xmlWriter.WriteEndElement();
-                        }
-                    }
-                    xmlWriter.WriteEndElement();
-
-                    xmlWriter.WriteStartElement("SubCategories");
-                    WriteCategories(xmlWriter, category.Id);
-                    xmlWriter.WriteEndElement();
-                    xmlWriter.WriteEndElement();
-                }
-            }
-        }
-
 		protected Action<XmlWriter, XmlExportContext, Action<Language>> WriteLocalized = (writer, context, content) =>
 		{
 			if (context.Languages.Count > 1)
@@ -144,7 +90,65 @@ namespace SmartStore.Services.ExportImport
 			}
 		};
 
-		protected void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture)
+        protected virtual void WriteCategories(XmlWriter writer, int parentCategoryId)
+        {
+            var categories = _categoryService.GetAllCategoriesByParentCategoryId(parentCategoryId, true);
+            if (categories != null && categories.Count > 0)
+            {
+                foreach (var category in categories)
+                {
+                    writer.WriteStartElement("Category");
+                    writer.Write("Id", category.Id.ToString());
+                    writer.Write("Name", category.Name);
+                    writer.Write("Description", category.Description);
+                    writer.Write("CategoryTemplateId", category.CategoryTemplateId.ToString());
+                    writer.Write("MetaKeywords", category.MetaKeywords);
+                    writer.Write("MetaDescription", category.MetaDescription);
+                    writer.Write("MetaTitle", category.MetaTitle);
+                    writer.Write("SeName", category.GetSeName(0, true, false));
+                    writer.Write("ParentCategoryId", category.ParentCategoryId.ToString());
+                    writer.Write("PageSize", category.PageSize.ToString());
+                    writer.Write("AllowCustomersToSelectPageSize", category.AllowCustomersToSelectPageSize.ToString());
+                    writer.Write("PageSizeOptions", category.PageSizeOptions);
+                    writer.Write("PriceRanges", category.PriceRanges);
+                    writer.Write("ShowOnHomePage", category.ShowOnHomePage.ToString());
+					writer.Write("HasDiscountsApplied", category.HasDiscountsApplied.ToString());
+                    writer.Write("Published", category.Published.ToString());
+                    writer.Write("Deleted", category.Deleted.ToString());
+                    writer.Write("DisplayOrder", category.DisplayOrder.ToString());
+                    writer.Write("CreatedOnUtc", category.CreatedOnUtc.ToString());
+                    writer.Write("UpdatedOnUtc", category.UpdatedOnUtc.ToString());
+					writer.Write("SubjectToAcl", category.SubjectToAcl.ToString());
+					writer.Write("LimitedToStores", category.LimitedToStores.ToString());
+					writer.Write("Alias", category.Alias);
+					writer.Write("DefaultViewMode", category.DefaultViewMode);
+
+                    writer.WriteStartElement("Products");
+                    var productCategories = _categoryService.GetProductCategoriesByCategoryId(category.Id, 0, int.MaxValue, true);
+                    foreach (var productCategory in productCategories)
+                    {
+                        var product = productCategory.Product;
+                        if (product != null && !product.Deleted)
+                        {
+                            writer.WriteStartElement("ProductCategory");
+                            writer.Write("ProductCategoryId", productCategory.Id.ToString());
+                            writer.Write("ProductId", productCategory.ProductId.ToString());
+                            writer.Write("IsFeaturedProduct", productCategory.IsFeaturedProduct.ToString());
+                            writer.Write("DisplayOrder", productCategory.DisplayOrder.ToString());
+                            writer.WriteEndElement();
+                        }
+                    }
+                    writer.WriteEndElement();
+
+                    writer.WriteStartElement("SubCategories");
+                    WriteCategories(writer, category.Id);
+                    writer.WriteEndElement();
+                    writer.WriteEndElement();
+                }
+            }
+        }
+
+		protected virtual void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture, int thumbSize)
 		{
 			if (picture != null)
 			{
@@ -152,9 +156,29 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", picture.Id.ToString());
 				writer.Write("SeoFileName", picture.SeoFilename);
 				writer.Write("MimeType", picture.MimeType);
-				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductThumbPictureSize, false, storeLocation: context.Store.Url));
-				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeLocation: context.Store.Url));
+				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, thumbSize, false, storeLocation: context.Store.Url));
+				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, thumbSize, false, storeLocation: context.Store.Url));
 				writer.Write("FullSizeImageUrl", _pictureService.GetPictureUrl(picture, 0, false, storeLocation: context.Store.Url));
+				writer.WriteEndElement();
+			}
+		}
+
+		protected virtual void WriteQuantityUnit(XmlWriter writer, XmlExportContext context, QuantityUnit quantityUnit)
+		{
+			if (quantityUnit != null)
+			{
+				writer.WriteStartElement("QuantityUnit");
+				writer.Write("Id", quantityUnit.Id.ToString());
+				writer.Write("Name", quantityUnit.Name);
+				writer.Write("Description", quantityUnit.Description);
+				writer.Write("DisplayLocale", quantityUnit.DisplayLocale);
+				writer.Write("DisplayOrder", quantityUnit.DisplayOrder.ToString());
+				writer.Write("IsDefault", quantityUnit.IsDefault.ToString());
+				WriteLocalized(writer, context, lang =>
+				{
+					writer.Write("Name", quantityUnit.GetLocalized(x => x.Name, lang.Id, false, false), lang);
+					writer.Write("Description", quantityUnit.GetLocalized(x => x.Description, lang.Id, false, false), lang);
+				});
 				writer.WriteEndElement();
 			}
 		}
@@ -386,22 +410,7 @@ namespace SmartStore.Services.ExportImport
 				writer.WriteEndElement();
 			}
 
-			if (product.QuantityUnit != null)
-			{
-				writer.WriteStartElement("QuantityUnit");
-				writer.Write("Id", product.QuantityUnit.Id.ToString());
-				writer.Write("Name", product.QuantityUnit.Name);
-				writer.Write("Description", product.QuantityUnit.Description);
-				writer.Write("DisplayLocale", product.QuantityUnit.DisplayLocale);
-				writer.Write("DisplayOrder", product.QuantityUnit.DisplayOrder.ToString());
-				writer.Write("IsDefault", product.QuantityUnit.IsDefault.ToString());
-				WriteLocalized(writer, context, lang =>
-				{
-					writer.Write("Name", product.QuantityUnit.GetLocalized(x => x.Name, lang.Id, false, false), lang);
-					writer.Write("Description", product.QuantityUnit.GetLocalized(x => x.Description, lang.Id, false, false), lang);
-				});
-				writer.WriteEndElement();
-			}
+			WriteQuantityUnit(writer, context, product.QuantityUnit);
 
 			writer.WriteStartElement("ProductTags");
 			foreach (var tag in product.ProductTags)
@@ -512,10 +521,12 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("DeliveryTimeId", combination.DeliveryTimeId.HasValue ? combination.DeliveryTimeId.Value.ToString() : "");
 				writer.Write("IsActive", combination.IsActive.ToString());
 
+				WriteQuantityUnit(writer, context, combination.QuantityUnit);
+
 				writer.WriteStartElement("Pictures");
 				foreach (int pictureId in combination.GetAssignedPictureIds())
 				{
-					WritePicture(writer, context, _pictureService.GetPictureById(pictureId));
+					WritePicture(writer, context, _pictureService.GetPictureById(pictureId), _mediaSettings.ProductThumbPictureSize);
 				}
 				writer.WriteEndElement();	// Pictures
 
@@ -530,7 +541,7 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", productPicture.Id.ToString());
 				writer.Write("DisplayOrder", productPicture.DisplayOrder.ToString());
 
-				WritePicture(writer, context, productPicture.Picture);
+				WritePicture(writer, context, productPicture.Picture, _mediaSettings.ProductThumbPictureSize);
 
 				writer.WriteEndElement();
 			}
@@ -542,12 +553,49 @@ namespace SmartStore.Services.ExportImport
 			{
 				foreach (var productCategory in productCategories.OrderBy(x => x.DisplayOrder))
 				{
+					var category = productCategory.Category;
 					writer.WriteStartElement("ProductCategory");
 					writer.Write("IsFeaturedProduct", productCategory.IsFeaturedProduct.ToString());
 					writer.Write("DisplayOrder", productCategory.DisplayOrder.ToString());
 					
 					writer.WriteStartElement("Category");
-					writer.Write("Id", productCategory.Category.Id.ToString());
+					writer.Write("Id", category.Id.ToString());
+					writer.Write("Name", category.Name);
+					writer.Write("Description", category.Description);
+					writer.Write("CategoryTemplateId", category.CategoryTemplateId.ToString());
+					writer.Write("MetaKeywords", category.MetaKeywords);
+					writer.Write("MetaDescription", category.MetaDescription);
+					writer.Write("MetaTitle", category.MetaTitle);
+					writer.Write("SeName", category.GetSeName(0));
+					writer.Write("ParentCategoryId", category.ParentCategoryId.ToString());
+					writer.Write("PageSize", category.PageSize.ToString());
+					writer.Write("AllowCustomersToSelectPageSize", category.AllowCustomersToSelectPageSize.ToString());
+					writer.Write("PageSizeOptions", category.PageSizeOptions);
+					writer.Write("PriceRanges", category.PriceRanges);
+					writer.Write("ShowOnHomePage", category.ShowOnHomePage.ToString());
+					writer.Write("HasDiscountsApplied", category.HasDiscountsApplied.ToString());
+					writer.Write("Published", category.Published.ToString());
+					writer.Write("Deleted", category.Deleted.ToString());
+					writer.Write("DisplayOrder", category.DisplayOrder.ToString());
+					writer.Write("CreatedOnUtc", category.CreatedOnUtc.ToString(culture));
+					writer.Write("UpdatedOnUtc", category.UpdatedOnUtc.ToString(culture));
+					writer.Write("SubjectToAcl", category.SubjectToAcl.ToString());
+					writer.Write("LimitedToStores", category.LimitedToStores.ToString());
+					writer.Write("Alias", category.Alias);
+					writer.Write("DefaultViewMode", category.DefaultViewMode);
+
+					WritePicture(writer, context, category.Picture, _mediaSettings.CategoryThumbPictureSize);
+
+					WriteLocalized(writer, context, lang =>
+					{
+						writer.Write("Name", category.GetLocalized(x => x.Name, lang.Id, false, false), lang);
+						writer.Write("Description", category.GetLocalized(x => x.Description, lang.Id, false, false), lang);
+						writer.Write("MetaKeywords", category.GetLocalized(x => x.MetaKeywords, lang.Id, false, false), lang);
+						writer.Write("MetaDescription", category.GetLocalized(x => x.MetaDescription, lang.Id, false, false), lang);
+						writer.Write("MetaTitle", category.GetLocalized(x => x.MetaTitle, lang.Id, false, false), lang);
+						writer.Write("SeName", category.GetSeName(lang.Id, false, false));
+					});
+
 					writer.WriteEndElement();
 					
 					writer.WriteEndElement();
@@ -576,6 +624,8 @@ namespace SmartStore.Services.ExportImport
 					writer.Write("MetaKeywords", manu.MetaKeywords);
 					writer.Write("MetaDescription", manu.MetaDescription);
 					writer.Write("MetaTitle", manu.MetaTitle);
+
+					WritePicture(writer, context, manu.Picture, _mediaSettings.ManufacturerThumbPictureSize);
 
 					WriteLocalized(writer, context, lang =>
 					{

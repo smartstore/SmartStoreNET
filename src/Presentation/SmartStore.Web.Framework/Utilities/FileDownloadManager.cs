@@ -33,7 +33,7 @@ namespace SmartStore.Web.Framework.Utilities
 					{
 						dstStream.Write(bytes, 0, count);
 
-						if (context.CancellationToken.IsCancellationRequested)
+						if (context.CancellationToken != null && context.CancellationToken.IsCancellationRequested)
 							canceled = true;
 					}
 				}
@@ -54,7 +54,7 @@ namespace SmartStore.Web.Framework.Utilities
 			}
 		}
 
-		private async Task DownloadFiles(FileDownloadManagerContext context)
+		private async Task DownloadFiles(FileDownloadManagerContext context, List<FileDownloadManagerItem> items)
 		{
 			var client = new HttpClient();
 			
@@ -66,7 +66,7 @@ namespace SmartStore.Web.Framework.Utilities
 				client.Timeout = context.Timeout;
 
 			IEnumerable<Task> downloadTasksQuery =
-				from item in context.Items
+				from item in items
 				select ProcessUrl(context, client, item);
 
 			// now execute the bunch
@@ -87,20 +87,17 @@ namespace SmartStore.Web.Framework.Utilities
 		/// <summary>
 		/// Start asynchronous download of files
 		/// </summary>
-		public async Task Start(FileDownloadManagerContext context)
+		/// <param name="context">Download context</param>
+		/// <param name="items">Items to be downloaded</param>
+		public async Task StartAsynchronous(FileDownloadManagerContext context, List<FileDownloadManagerItem> items)
 		{
-			await DownloadFiles(context);
+			await DownloadFiles(context, items);
 		}
 	}
 
 
 	public class FileDownloadManagerContext
 	{
-		/// <summary>
-		/// Items to be downloaded
-		/// </summary>
-		public List<FileDownloadManagerItem> Items { get; set; }
-
 		/// <summary>
 		/// Optional logger to log errors
 		/// </summary>

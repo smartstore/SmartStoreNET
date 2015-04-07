@@ -29,6 +29,7 @@
 * Minor UI tweaks in checkout process
 * #666 Export addresses in customer export
 * New shopping cart setting ShowItemsFromWishlistToCartButton
+* XML product export now paged and more data exported
 
 ### Bugfixes
 * Instant search box did not display all results when SQL Fulltext Search was enabled

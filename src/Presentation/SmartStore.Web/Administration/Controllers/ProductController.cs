@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -2709,24 +2710,28 @@ namespace SmartStore.Admin.Controllers
             {
 				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 				{
-					var ctx = new ProductSearchContext();
-					ctx.LanguageId = _workContext.WorkingLanguage.Id;
-					ctx.OrderBy = ProductSortingEnum.Position;
-					ctx.PageSize = int.MaxValue;
-					ctx.ShowHidden = true;
+					var searchContext = new ProductSearchContext
+					{
+						LanguageId = _workContext.WorkingLanguage.Id,
+						OrderBy = ProductSortingEnum.Position,
+						PageSize = 100,
+						ShowHidden = true
+					};
 
-					var products = _productService.SearchProducts(ctx);
+					var stream = new MemoryStream();
+					_exportManager.ExportProductsToXml(stream, searchContext);
 
-					var fileName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-					var xml = _exportManager.ExportProductsToXml(products);
-					return new XmlDownloadResult(xml, fileName);
+					var result = new FileStreamResult(stream, MediaTypeNames.Text.Xml);
+					result.FileDownloadName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+
+					return result;
 				}
             }
             catch (Exception exc)
             {
                 NotifyError(exc);
-                return RedirectToAction("List");
             }
+			return RedirectToAction("List");
         }
 
 		[HttpPost]
@@ -2735,21 +2740,37 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-			{
-				var products = new List<Product>();
-				if (selectedIds != null)
+            try
+            {
+				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 				{
-					var ids = selectedIds
+					var searchContext = new ProductSearchContext
+					{
+						LanguageId = _workContext.WorkingLanguage.Id,
+						OrderBy = ProductSortingEnum.Position,
+						PageSize = 100,
+						ShowHidden = true
+					};
+
+					searchContext.ProductIds = selectedIds
 						.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
 						.Select(x => Convert.ToInt32(x))
-						.ToArray();
-					products.AddRange(_productService.GetProductsByIds(ids));
-				}
+						.ToList();
 
-				var xml = _exportManager.ExportProductsToXml(products);
-				return new XmlDownloadResult(xml, "products.xml");
+					var stream = new MemoryStream();
+					_exportManager.ExportProductsToXml(stream, searchContext);
+
+					var result = new FileStreamResult(stream, MediaTypeNames.Text.Xml);
+					result.FileDownloadName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
+
+					return result;
+				}
 			}
+			catch (Exception exc)
+			{
+				NotifyError(exc);
+			}
+			return RedirectToAction("List");
         }
 
         public ActionResult ExportExcelAll()

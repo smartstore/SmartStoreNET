@@ -702,65 +702,64 @@ namespace SmartStore.Services.ExportImport
 			writer.WriteEndElement();
 		}
 
-        /// <summary>
-        /// Export product list to XML
-        /// </summary>
-        /// <param name="products">Products</param>
-        /// <returns>Result in XML format</returns>
-        public virtual string ExportProductsToXml(IList<Product> products)
-        {
-			string result = ExportProductsToXml(writer =>
-			{
-				var context = new XmlExportContext()
-				{
-					ProductTemplates = _productTemplateService.GetAllProductTemplates(),
-					Languages = _languageService.GetAllLanguages(true),
-					Store = _commonServices.StoreContext.CurrentStore
-				};
-
-				foreach (var product in products)
-				{
-					writer.WriteStartElement("Product");
-
-					try
-					{
-						WriteProductToXml(writer, product, context);
-					}
-					catch (Exception exc)
-					{
-						Logger.Error("{0} (Product.Id {1})".FormatWith(exc.Message, product.Id), exc);
-					}
-
-					writer.WriteEndElement();		// Product
-				}
-			});
-
-			return result;
-        }
-
 		/// <summary>
-		/// Export product(s) to XML
+		/// Export product list to XML
 		/// </summary>
-		/// <param name="writeProducts">Action to export product entities</param>
-		/// <param name="settings">XML writer settings</param>
-		/// <returns>Result in XML format</returns>
-		public virtual string ExportProductsToXml(Action<XmlWriter> writeProducts, XmlWriterSettings settings = null)
+		/// <param name="stream">Stream to write</param>
+		/// <param name="searchContext">Search context</param>
+		public virtual void ExportProductsToXml(Stream stream, ProductSearchContext searchContext)
 		{
-			var sb = new StringBuilder();
-			using (var stringWriter = new StringWriter(sb))
-			using (var xmlWriter = XmlWriter.Create(stringWriter, settings))
+			var settings = new XmlWriterSettings()
 			{
-				xmlWriter.WriteStartDocument();
-				xmlWriter.WriteStartElement("Products");
-				xmlWriter.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
+				Encoding = new UTF8Encoding(false),
+				CheckCharacters = false
+			};
 
-				writeProducts(xmlWriter);
+			var context = new XmlExportContext()
+			{
+				ProductTemplates = _productTemplateService.GetAllProductTemplates(),
+				Languages = _languageService.GetAllLanguages(true),
+				Store = _commonServices.StoreContext.CurrentStore
+			};
 
-				xmlWriter.WriteEndElement();
-				xmlWriter.WriteEndDocument();
-				xmlWriter.Close();
+			using (var writer = XmlWriter.Create(stream, settings))
+			{
+				writer.WriteStartDocument();
+				writer.WriteStartElement("Products");
+				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
-				return stringWriter.ToString();
+				for (int i = 0; i < 9999999; ++i)
+				{
+					searchContext.PageIndex = i;
+
+					var products = _productService.SearchProducts(searchContext);
+
+					foreach (var product in products)
+					{
+						writer.WriteStartElement("Product");
+
+						try
+						{
+							WriteProductToXml(writer, product, context);
+						}
+						catch (Exception exc)
+						{
+							Logger.Error("{0} (Product.Id {1})".FormatWith(exc.Message, product.Id), exc);
+						}
+
+						writer.WriteEndElement();		// Product
+					}
+
+					if (!products.HasNextPage)
+						break;
+				}
+
+				writer.WriteEndElement();
+				writer.WriteEndDocument();
+				writer.Flush();
+				writer.Close();
+
+				stream.Seek(0, SeekOrigin.Begin);
 			}
 		}
 

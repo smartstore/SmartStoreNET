@@ -829,20 +829,6 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-        [NonAction]
-        private string[] ParseProductTags(string productTags)
-        {
-            var result = new List<string>();
-            if (!String.IsNullOrWhiteSpace(productTags))
-            {
-                string[] values = productTags.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries);
-                foreach (string val1 in values)
-                    if (!String.IsNullOrEmpty(val1.Trim()))
-                        result.Add(val1.Trim());
-            }
-            return result.ToArray();
-        }
-
 		#endregion Utitilies
 
 		#region Methods

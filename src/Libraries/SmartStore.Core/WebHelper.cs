@@ -2,6 +2,7 @@ using System;
 using System.Configuration;
 using System.IO;
 using System.Text.RegularExpressions;
+using System.Threading;
 using System.Web;
 using System.Web.Configuration;
 using SmartStore.Collections;
@@ -467,40 +468,12 @@ namespace SmartStore.Core
         /// <param name="redirectUrl">Redirect URL; empty string if you want to redirect to the current page URL</param>
         public virtual void RestartAppDomain(bool makeRedirect = false, string redirectUrl = "")
         {
-            if (WebHelper.GetTrustLevel() > AspNetHostingPermissionLevel.Medium)
-            {
-				//full trust
-				HttpRuntime.UnloadAppDomain();
+			HttpRuntime.UnloadAppDomain();
 
-				if (!OptimizedCompilationsEnabled)
-				{
-					// not a good idea with optimized compilation!
-					TryWriteGlobalAsax();
-				}
-            }
-            else
-            {
-                //medium trust
-                bool success = TryWriteWebConfig();
-                if (!success)
-                {
-                    throw new SmartException("SmartStore.NET needs to be restarted due to a configuration change, but was unable to do so." + Environment.NewLine +
-                        "To prevent this issue in the future, a change to the web server configuration is required:" + Environment.NewLine + 
-                        "- run the application in a full trust environment, or" + Environment.NewLine +
-                        "- give the application write access to the 'web.config' file.");
-                }
+			// without this, MVC may fail resolving controllers for newly installed plugins after IIS restart
+			Thread.Sleep(250);
 
-                success = TryWriteGlobalAsax();
-                if (!success)
-                {
-                    throw new SmartException("SmartStore.NET needs to be restarted due to a configuration change, but was unable to do so." + Environment.NewLine +
-                        "To prevent this issue in the future, a change to the web server configuration is required:" + Environment.NewLine +
-                        "- run the application in a full trust environment, or" + Environment.NewLine +
-                        "- give the application write access to the 'Global.asax' file.");
-                }
-            }
-
-            // If setting up extensions/modules requires an AppDomain restart, it's very unlikely the
+            // If setting up plugins requires an AppDomain restart, it's very unlikely the
             // current request can be processed correctly.  So, we redirect to the same URL, so that the
             // new request will come to the newly started AppDomain.
             if (_httpContext != null && makeRedirect)

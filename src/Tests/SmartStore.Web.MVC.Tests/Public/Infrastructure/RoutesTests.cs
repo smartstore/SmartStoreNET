@@ -154,7 +154,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Infrastructure
         [Test]
         public void ReturnRequest_routes()
         {
-            "~/returnrequest/2".ShouldMapTo<ReturnRequestController>(c => c.ReturnRequest(2));
+			"~/returnrequest/returnrequest/2".ShouldMapTo<ReturnRequestController>(c => c.ReturnRequest(2));
         }
 
         [Test]

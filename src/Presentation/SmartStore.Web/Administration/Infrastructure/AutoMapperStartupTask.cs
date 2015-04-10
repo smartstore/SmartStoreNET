@@ -102,6 +102,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.PhoneRequired, mo => mo.Ignore())
                 .ForMember(dest => dest.FaxEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.FaxRequired, mo => mo.Ignore())
+				.ForMember(dest => dest.EmailMatch, mo => mo.Ignore())
                 .ForMember(dest => dest.CountryName, mo => mo.MapFrom(src => src.Country != null ? src.Country.Name : null))
                 .ForMember(dest => dest.StateProvinceName, mo => mo.MapFrom(src => src.StateProvince != null ? src.StateProvince.Name : null));
             Mapper.CreateMap<AddressModel, Address>()
@@ -171,7 +172,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableWidgetZones, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableTitleTags, mo => mo.Ignore());
             Mapper.CreateMap<TopicModel, Topic>();
 
             //category

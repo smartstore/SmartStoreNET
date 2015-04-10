@@ -3,6 +3,7 @@ using System.Diagnostics;
 using System.Web;
 using Autofac;
 using Autofac.Core.Lifetime;
+using SmartStore.Core.Data;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
@@ -47,9 +48,11 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 				{
 					try
 					{
-						scope.Resolve<ILogger>().Flush();
+						if (DataSettings.DatabaseIsInstalled())
+							scope.Resolve<ILogger>().Flush();
 					}
 					catch { }
+
 					scope.Dispose();
 					_state.RemoveState();
 				}

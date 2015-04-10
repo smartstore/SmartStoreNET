@@ -579,7 +579,10 @@ namespace SmartStore.Web.Framework
 			builder.RegisterFilterProvider();
 
 			// global exception handling
-			builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>();
+			if (DataSettings.DatabaseIsInstalled())
+			{
+				builder.RegisterType<HandleExceptionFilter>().AsActionFilterFor<Controller>();
+			}
 		}
 
 		static HttpContextBase HttpContextBaseFactory(IComponentContext ctx)

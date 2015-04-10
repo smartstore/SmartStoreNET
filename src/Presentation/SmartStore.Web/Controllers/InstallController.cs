@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Autofac;
+using System;
 using System.Collections.Generic;
 using System.Data.SqlClient;
 using System.Linq;
@@ -235,17 +236,19 @@ namespace SmartStore.Web.Controllers
         [HttpPost]
         public async Task<JsonResult> Install(InstallModel model)
         {
-			var result = await InstallCore(model);
-            return Json(result);
+			var t = AsyncRunner.Run(
+						(c, ct, state) => InstallCore(c, (InstallModel)state), 
+						model,
+						CancellationToken.None, 
+						TaskCreationOptions.LongRunning, 
+						TaskScheduler.Default);
+
+			return Json(await t);
         }
 
 		[NonAction]
-		protected virtual Task<InstallationResult> InstallCore(InstallModel model)
+		protected virtual InstallationResult InstallCore(ILifetimeScope scope, InstallModel model)
 		{
-
-			var tcs = new TaskCompletionSource<InstallationResult>();
-			var t = tcs.Task;
-			var scope = EngineContext.Current.ContainerManager.Scope();
 
 			UpdateResult(x =>
 			{
@@ -255,12 +258,11 @@ namespace SmartStore.Web.Controllers
 
 			if (DataSettings.DatabaseIsInstalled())
 			{
-				tcs.SetResult(UpdateResult(x =>
+				return UpdateResult(x =>
 				{
 					x.Success = true;
 					x.RedirectUrl = Url.Action("Index", "Home");
-				}));
-				return t;
+				});
 			}
 
 			//set page timeout to 5 minutes
@@ -329,7 +331,7 @@ namespace SmartStore.Web.Controllers
 			//and the configured application pool identity on IIS 7.5) that is used if the application is not impersonating.
 			//If the application is impersonating via <identity impersonate="true"/>, 
 			//the identity will be the anonymous user (typically IUSR_MACHINENAME) or the authenticated request user.
-			var webHelper = EngineContext.Current.ContainerManager.Resolve<IWebHelper>(scope: scope);
+			var webHelper = scope.Resolve<IWebHelper>();
 			//validate permissions
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(webHelper);
 			foreach (string dir in dirsToCheck)
@@ -351,13 +353,12 @@ namespace SmartStore.Web.Controllers
 
 			if (GetInstallResult().HasErrors)
 			{
-				tcs.SetResult(UpdateResult(x =>
+				return UpdateResult(x =>
 				{
 					x.Completed = true;
 					x.Success = false;
 					x.RedirectUrl = null;
-				}));
-				return t;
+				});
 			}
 			else
 			{
@@ -399,14 +400,13 @@ namespace SmartStore.Web.Controllers
 								var errorCreatingDatabase = CreateDatabase(connectionString, collation);
 								if (errorCreatingDatabase.HasValue())
 								{
-									tcs.SetResult(UpdateResult(x =>
+									return UpdateResult(x =>
 									{
 										x.Errors.Add(errorCreatingDatabase);
 										x.Completed = true;
 										x.Success = false;
 										x.RedirectUrl = null;
-									}));
-									return t;
+									});
 								}
 								else
 								{
@@ -423,14 +423,13 @@ namespace SmartStore.Web.Controllers
 							//check whether database exists
 							if (!SqlServerDatabaseExists(connectionString))
 							{
-								tcs.SetResult(UpdateResult(x =>
+								return UpdateResult(x =>
 								{
 									x.Errors.Add(_locService.GetResource("DatabaseNotExists"));
 									x.Completed = true;
 									x.Success = false;
 									x.RedirectUrl = null;
-								}));
-								return t;
+								});
 							}
 						}
 					}
@@ -460,7 +459,7 @@ namespace SmartStore.Web.Controllers
 					settings.Save();
 
 					// init data provider
-					var dataProviderInstance = EngineContext.Current.ContainerManager.Resolve<IEfDataProvider>(scope: scope);
+					var dataProviderInstance = scope.Resolve<IEfDataProvider>();
 					
 					// Although obsolete we have no other chance than using this here.
 					// Delegating this to DbConfiguration is not possible during installation.
@@ -472,14 +471,13 @@ namespace SmartStore.Web.Controllers
 					var lazyLanguage = _locService.GetAppLanguage(model.PrimaryLanguage);
 					if (lazyLanguage == null)
 					{
-						tcs.SetResult(UpdateResult(x =>
+						return UpdateResult(x =>
 						{
 							x.Errors.Add(string.Format("The install language '{0}' is not registered", model.PrimaryLanguage));
 							x.Completed = true;
 							x.Success = false;
 							x.RedirectUrl = null;
-						}));
-						return t;
+						});
 					}
 
 					// create the DataContext
@@ -517,7 +515,7 @@ namespace SmartStore.Web.Controllers
 
 					// install plugins
 					PluginManager.MarkAllPluginsAsUninstalled();
-					var pluginFinder = EngineContext.Current.ContainerManager.Resolve<IPluginFinder>(scope: scope);
+					var pluginFinder = scope.Resolve<IPluginFinder>();
 					var plugins = pluginFinder.GetPlugins<IPlugin>(false)
 						//.ToList()
 						.OrderBy(x => x.PluginDescriptor.Group)
@@ -568,17 +566,16 @@ namespace SmartStore.Web.Controllers
 					foreach (var providerType in permissionProviders)
 					{
 						dynamic provider = Activator.CreateInstance(providerType);
-						EngineContext.Current.ContainerManager.Resolve<IPermissionService>(scope: scope).InstallPermissions(provider);
+						scope.Resolve<IPermissionService>().InstallPermissions(provider);
 					}
 
 					// SUCCESS: Redirect to home page
-					tcs.SetResult(UpdateResult(x =>
+					return UpdateResult(x =>
 					{
 						x.Completed = true;
 						x.Success = true;
 						x.RedirectUrl = Url.Action("Index", "Home");
-					}));
-					return t;
+					});
 				}
 				catch (Exception exception)
 				{
@@ -607,14 +604,13 @@ namespace SmartStore.Web.Controllers
 						msg += " (" + realException.Message + ")";
 					}
 
-					tcs.SetResult(UpdateResult(x =>
+					return UpdateResult(x =>
 					{
 						x.Errors.Add(string.Format(_locService.GetResource("SetupFailed"), msg));
 						x.Success = false;
 						x.Completed = true;
 						x.RedirectUrl = null;
-					}));
-					return t;
+					});
 				}
 				finally
 				{

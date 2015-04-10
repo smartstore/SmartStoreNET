@@ -219,6 +219,7 @@ namespace SmartStore.Core.Async
 			return t;
 		}
 
+
 		private class ExclusiveSynchronizationContext : SynchronizationContext
 		{
 			private bool done;

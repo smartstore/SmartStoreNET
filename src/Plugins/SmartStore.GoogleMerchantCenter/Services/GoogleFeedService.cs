@@ -649,6 +649,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 			#endregion old code
 		}
+
 		private void CreateFeed(FeedFileCreationContext fileCreation, TaskExecutionContext taskContext)
 		{
 			var xmlSettings = new XmlWriterSettings
@@ -656,7 +657,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				Encoding = Encoding.UTF8,
 				CheckCharacters = false
 			};
-
+			
 			using (var writer = XmlWriter.Create(fileCreation.Stream, xmlSettings))
 			{
 				try
@@ -686,6 +687,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					for (int i = 0; i < 9999999; ++i)
 					{
 						searchContext.PageIndex = i;
+						
+						// Perf
+						_dbContext.DetachAll();
 
 						var products = _productService.SearchProducts(searchContext);
 
@@ -724,7 +728,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 							}
 						}
 
-						if (!products.HasNextPage)
+						if (!products.HasNextPage || taskContext.CancellationToken.IsCancellationRequested)
 							break;
 					}
 
@@ -741,6 +745,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				}
 			}
 		}
+
 		public void CreateFeed(TaskExecutionContext context)
 		{
 			Helper.StartCreatingFeeds(fileCreation =>
@@ -749,6 +754,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				return true;
 			});
 		}
+
 		public void SetupModel(FeedFroogleModel model)
 		{
 			Helper.SetupConfigModel(model, "FeedFroogle");

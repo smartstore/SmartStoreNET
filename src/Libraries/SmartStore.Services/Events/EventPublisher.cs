@@ -43,7 +43,7 @@ namespace SmartStore.Services.Events
 			// first fire/forget all async consumers
 			if (consumerFactory.HasAsyncConsumer)
 			{
-				AsyncRunner.Run(c =>
+				AsyncRunner.Run((c, ct) =>
 				{
 					// for wiring up dependencies correctly
 					var newFactory = c.Resolve<IConsumerFactory<T>>();

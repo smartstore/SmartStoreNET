@@ -21,6 +21,6 @@ namespace SmartStore.Services.Tasks
 		/// A cancellation token for the running task.
 		/// You can use ThrowIfCancellationRequested() for a hard or IsCancellationRequested for a soft break.
 		/// </summary>
-		public CancellationTokenSource CancellationToken { get; internal set; }
+		public CancellationToken CancellationToken { get; internal set; }
 	}
 }

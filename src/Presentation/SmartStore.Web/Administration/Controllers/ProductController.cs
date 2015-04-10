@@ -3037,7 +3037,7 @@ namespace SmartStore.Admin.Controllers
 					var cts = new CancellationTokenSource();
 					var scheduler = TaskScheduler.Default;
 
-					var task = AsyncRunner.Run(c =>
+					var task = AsyncRunner.Run((c, ct) =>
 					{
 						var progress = new Progress<ImportProgressInfo>(p =>
 						{
@@ -3048,9 +3048,7 @@ namespace SmartStore.Admin.Controllers
 						{
 							AsyncState.Current.SetCancelTokenSource<ImportProgressInfo>(cts);
 							var importManager = c.Resolve<IImportManager>();
-							var t = importManager.ImportProductsFromExcelAsync(stream, cts.Token, progress);
-
-							var result = t.Result;
+							var result = importManager.ImportProductsFromExcel(stream, ct, progress);
 
 							// Saving the result enables us to show a report for last import.
 							AsyncState.Current.Set(result, neverExpires: true);
@@ -3074,11 +3072,11 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
+					NotifyError(T("Admin.Common.UploadFile"));
 					return RedirectToAction("List");
 				}
 
-				NotifySuccess(_localizationService.GetResource("Admin.Common.ImportFromExcel.InProgress"));
+				NotifySuccess(T("Admin.Common.ImportFromExcel.InProgress"));
 				return RedirectToAction("List");
 			}
 			catch (Exception exc)

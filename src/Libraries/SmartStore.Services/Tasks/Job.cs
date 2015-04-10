@@ -1,10 +1,9 @@
 ﻿using System;
+using System.Threading;
+using Autofac;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
-using Autofac;
-using SmartStore.Core.Data;
-using System.Threading;
 
 namespace SmartStore.Services.Tasks
 {
@@ -59,15 +58,31 @@ namespace SmartStore.Services.Tasks
             return task;
         }
 
+		/// <summary>
+        /// Executes the task
+        /// </summary>
+		/// <remarks>
+		/// The caller is responsible for disposing the lifetime scope
+		/// </remarks>
+		public void Execute(ILifetimeScope scope = null, bool throwOnError = false)
+		{
+			Execute(CancellationToken.None, scope, throwOnError);
+		}
+
         /// <summary>
         /// Executes the task
         /// </summary>
-        public void Execute(ILifetimeScope scope = null, bool throwOnError = false)
+		/// <remarks>
+		/// The caller is responsible for disposing the lifetime scope
+		/// </remarks>
+        public void Execute(
+			CancellationToken cancellationToken,
+			ILifetimeScope scope = null, 
+			bool throwOnError = false)
         {
             this.IsRunning = true;
-
-			scope = scope ?? EngineContext.Current.ContainerManager.Scope();
 			var faulted = false;
+			scope = scope ?? EngineContext.Current.ContainerManager.Scope();
 
 			try
 			{
@@ -90,10 +105,12 @@ namespace SmartStore.Services.Tasks
 					var ctx = new TaskExecutionContext
 					{
 						LifetimeScope = scope,
-						CancellationToken = new CancellationTokenSource(TimeSpan.FromHours(6.0))	// TODO: make that somewhat configurable (AdminAreaSettings?)
+						CancellationToken = cancellationToken
 					};
 
 					task.Execute(ctx);
+
+					ctx.CancellationToken.ThrowIfCancellationRequested();
 					this.LastEndUtc = this.LastSuccessUtc = DateTime.UtcNow;
 					this.LastError = null;
 				}
@@ -135,8 +152,6 @@ namespace SmartStore.Services.Tasks
 
 					scheduleTaskService.UpdateTask(scheduleTask);
 				}
-
-				scope.Dispose();
 
 				this.IsRunning = false;
 			}

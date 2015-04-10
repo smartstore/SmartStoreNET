@@ -347,7 +347,7 @@ namespace SmartStore.Web.Framework
 		protected override void Load(ContainerBuilder builder)
 		{
 			builder.RegisterType<Notifier>().As<INotifier>().InstancePerRequest();
-			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest().OnRelease(x => x.Flush());
+			builder.RegisterType<DefaultLogger>().As<ILogger>().InstancePerRequest();
 			builder.RegisterType<CustomerActivityService>().As<ICustomerActivityService>().InstancePerRequest();
 		}
 
@@ -630,7 +630,7 @@ namespace SmartStore.Web.Framework
 			// register all api controllers
 			builder.RegisterApiControllers(foundAssemblies);
 			
-			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>().SingleInstance();
+			builder.RegisterType<WebApiConfigurationPublisher>().As<IWebApiConfigurationPublisher>();
 		}
 
 		protected override void AttachToComponentRegistration(IComponentRegistry componentRegistry, IComponentRegistration registration)

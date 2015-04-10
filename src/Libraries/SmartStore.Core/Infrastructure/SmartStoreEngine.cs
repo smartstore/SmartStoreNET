@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
@@ -46,7 +43,7 @@ namespace SmartStore.Core.Infrastructure
 
 		protected virtual object CreateDependencyResolver(IContainer container)
 		{
-			var scopeProvider = new AutofacLifetimeScopeProvider(container);
+			var scopeProvider = container.Resolve<ILifetimeScopeProvider>();
 			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
 			return dependencyResolver;
 		}
@@ -59,8 +56,19 @@ namespace SmartStore.Core.Infrastructure
 
 			// core dependencies
 			builder = new ContainerBuilder();
-			builder.RegisterInstance(this).As<IEngine>().SingleInstance();
-			builder.RegisterInstance(typeFinder).As<ITypeFinder>().SingleInstance();
+			builder.RegisterInstance(this).As<IEngine>();
+			builder.RegisterInstance(typeFinder).As<ITypeFinder>();
+
+			// Autofac
+			var lifetimeScopeAccessor = new DefaultLifetimeScopeAccessor(container);
+			var lifetimeScopeProvider = new DefaultLifetimeScopeProvider(lifetimeScopeAccessor);
+			builder.RegisterInstance(lifetimeScopeAccessor).As<ILifetimeScopeAccessor>();
+			builder.RegisterInstance(lifetimeScopeProvider).As<ILifetimeScopeProvider>();
+
+			var dependencyResolver = new AutofacDependencyResolver(container, lifetimeScopeProvider);
+			builder.RegisterInstance(dependencyResolver);
+			DependencyResolver.SetResolver(dependencyResolver);
+
 			builder.Update(container);
 
 			// register dependencies provided by other assemblies
@@ -78,17 +86,6 @@ namespace SmartStore.Core.Infrastructure
 				registrar.Register(builder, typeFinder, PluginManager.IsActivePluginAssembly(registrar.GetType().Assembly));
 			}
 			builder.Update(container);
-
-			// AutofacDependencyResolver
-			var dependencyResolver = CreateDependencyResolver(container);
-			if (dependencyResolver is IDependencyResolver)
-			{
-				DependencyResolver.SetResolver((IDependencyResolver)dependencyResolver);
-			}
-			else if (dependencyResolver != null)
-			{
-				DependencyResolver.SetResolver(dependencyResolver);
-			}
 
 			return new ContainerManager(container);
 		}

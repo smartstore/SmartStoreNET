@@ -1,9 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Threading.Tasks;
 using SmartStore.Core.Data;
-using SmartStore.Core.Async;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -12,9 +10,9 @@ namespace SmartStore.Services.ExportImport
     /// </summary>
     public interface IImportManager
     {
-		Task<ImportResult> ImportProductsFromExcelAsync(
+		ImportResult ImportProductsFromExcel(
 			Stream stream,
- 			CancellationToken cancellationToken,
+			CancellationToken cancellationToken,
 			IProgress<ImportProgressInfo> progress = null);
 
 		/// <summary>
@@ -27,19 +25,9 @@ namespace SmartStore.Services.ExportImport
 
 	public static class IImportManagerExtensions
 	{
-		public static Task<ImportResult> ImportProductsFromExcelAsync(
-			this IImportManager importManager,
-			Stream stream,
-			IProgress<ImportProgressInfo> progress = null)
-		{
-			return importManager.ImportProductsFromExcelAsync(stream, CancellationToken.None, progress);
-		}
-
 		public static ImportResult ImportProductsFromExcel(this IImportManager importManager, Stream stream)
 		{
-			//Func<Task<ImportResult>> fn = () => importManager.ImportProductsFromExcelAsync(stream);
-			//return fn.RunSync();
-			return AsyncRunner.RunSync(() => importManager.ImportProductsFromExcelAsync(stream));
+			return importManager.ImportProductsFromExcel(stream, CancellationToken.None);
 		}
 	}
 }

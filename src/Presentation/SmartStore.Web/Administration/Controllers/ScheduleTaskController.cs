@@ -166,7 +166,7 @@ namespace SmartStore.Admin.Controllers
 
 			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
 
-			var t = AsyncRunner.Run(c =>
+			var t = AsyncRunner.Run((c, ct) =>
 			{
 				var svc = c.Resolve<IScheduleTaskService>();
 
@@ -178,7 +178,7 @@ namespace SmartStore.Admin.Controllers
 
 					var job = new Job(scheduleTask);
 					job.Enabled = true;
-					job.Execute(c, false);
+					job.Execute(ct, c, false);
 				}
 				catch
 				{

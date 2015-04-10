@@ -1,7 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
+using System.Linq;
 using System.Threading;
+using System.Threading.Tasks;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
@@ -38,10 +41,17 @@ namespace SmartStore.Services.Tasks
 
             this._startedUtc = DateTime.UtcNow;
             this._isRunning = true;
-            foreach (var job in this._jobs.Values)
-            {
-				job.Execute();
-            }
+
+			var jobs = _jobs.Values
+				.Select(job => AsyncRunner.Run((c, ct) => job.Execute(ct, c)))
+				.ToArray();
+
+			try
+			{
+				Task.WaitAll(jobs);
+			}
+			catch { }
+
             this._isRunning = false;
         }
 

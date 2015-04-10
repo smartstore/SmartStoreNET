@@ -1,7 +1,5 @@
 ﻿using System;
-using System.Threading;
 using System.Web;
-using Autofac;
 using Autofac.Integration.Mvc;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
@@ -12,7 +10,6 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
     /// </summary>
     public class AutofacRequestLifetimeHttpModule : IHttpModule
 	{
-		#region New
 
 		public void Init(HttpApplication context)
 		{
@@ -42,13 +39,12 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 		internal static ILifetimeScopeProvider LifetimeScopeProvider
 		{
 			get;
-			set;
+			private set;
 		}
 
 		public void Dispose()
 		{
 		}
 
-		#endregion
 	}
 }

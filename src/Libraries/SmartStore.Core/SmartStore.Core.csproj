@@ -162,6 +162,10 @@
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="IActivatable.cs" />
+    <Compile Include="Infrastructure\ContextState.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
+    <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
@@ -235,7 +239,6 @@
     <Compile Include="Extensions\XmlWriterExtensions.cs" />
     <Compile Include="IMergedData.cs" />
     <Compile Include="Async\AsyncRunner.cs" />
-    <Compile Include="Infrastructure\DependencyManagement\AutofacLifetimeScopeProvider.cs" />
     <Compile Include="IO\Media\FileSystemStorageProvider.cs" />
     <Compile Include="IO\Media\IStorageFile.cs" />
     <Compile Include="IO\Media\IStorageFolder.cs" />

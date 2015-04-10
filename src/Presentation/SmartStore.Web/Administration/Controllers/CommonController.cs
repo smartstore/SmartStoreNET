@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Reflection;
@@ -303,7 +304,7 @@ namespace SmartStore.Admin.Controllers
 
 						HttpResponseMessage response = await client.GetAsync(url);
 
-						if (!response.IsSuccessStatusCode)
+						if (response.StatusCode != HttpStatusCode.OK)
 						{
 							return noUpdateResult;
 						}
@@ -611,7 +612,7 @@ namespace SmartStore.Admin.Controllers
             foreach (string file in filesToCheck)
                 if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Warning,
                         Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
@@ -619,7 +620,7 @@ namespace SmartStore.Admin.Controllers
                     filePermissionsOk = false;
                 }
             if (filePermissionsOk)
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")

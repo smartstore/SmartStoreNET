@@ -325,7 +325,7 @@ namespace SmartStore.Web.Framework
             {
                 if (delta < 60) // 60 (seconds)
                 {
-                    result = ts.Seconds == 1 ? localizer.GetResource("Time.OneSecondAgo") : String.Format(localizer.GetResource("Time.OneSecondAgo"), ts.Seconds);
+                    result = ts.Seconds == 1 ? localizer.GetResource("Time.OneSecondAgo") : String.Format(localizer.GetResource("Time.SecondsAgo"), ts.Seconds);
                 }
                 else if (delta < 120) //2 (minutes) * 60 (seconds)
                 {

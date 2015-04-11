@@ -34,6 +34,7 @@ namespace SmartStore.Core.Domain.Customers
         public static string ImpersonatedCustomerId { get { return "ImpersonatedCustomerId"; } }
 		public static string AdminAreaStoreScopeConfiguration { get { return "AdminAreaStoreScopeConfiguration"; } }
 		public static string MostRecentlyUsedCategories { get { return "MostRecentlyUsedCategories"; } }
+		public static string MostRecentlyUsedManufacturers { get { return "MostRecentlyUsedManufacturers"; } }
 
 		//depends on store
 		public static string CurrencyId { get { return "CurrencyId"; } }

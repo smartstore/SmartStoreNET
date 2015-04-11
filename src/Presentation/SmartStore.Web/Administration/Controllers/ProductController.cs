@@ -1419,6 +1419,11 @@ namespace SmartStore.Admin.Controllers
             };
             _manufacturerService.InsertProductManufacturer(productManufacturer);
 
+			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+				model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+
+			_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
+
             return ProductManufacturerList(command, model.ProductId);
         }
 
@@ -1432,11 +1437,21 @@ namespace SmartStore.Admin.Controllers
             if (productManufacturer == null)
                 throw new ArgumentException("No product manufacturer mapping found with the specified id");
 
+			bool manufacturerChanged = (Int32.Parse(model.Manufacturer) != productManufacturer.ManufacturerId);
+
             //use Manufacturer property (not ManufacturerId) because appropriate property is stored in it
             productManufacturer.ManufacturerId = Int32.Parse(model.Manufacturer);
             productManufacturer.IsFeaturedProduct = model.IsFeaturedProduct;
             productManufacturer.DisplayOrder = model.DisplayOrder;
             _manufacturerService.UpdateProductManufacturer(productManufacturer);
+
+			if (manufacturerChanged)
+			{
+				var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+					model.Manufacturer, _catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+
+				_genericAttributeService.SaveAttribute<string>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.MostRecentlyUsedManufacturers, mru.ToString());
+			}
 
             return ProductManufacturerList(command, productManufacturer.ProductId);
         }

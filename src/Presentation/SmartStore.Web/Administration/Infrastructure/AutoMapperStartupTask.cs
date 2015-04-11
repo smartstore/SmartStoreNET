@@ -598,7 +598,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ShowProductImagesInSearchAutoComplete, mo => mo.Ignore())
                 .ForMember(dest => dest.ProductSearchPageSize, mo => mo.Ignore())
                 .ForMember(dest => dest.ManufacturersBlockItemsToDisplay, mo => mo.Ignore())
-				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore());
+				.ForMember(dest => dest.MostRecentlyUsedCategoriesMaxSize, mo => mo.Ignore())
+				.ForMember(dest => dest.MostRecentlyUsedManufacturersMaxSize, mo => mo.Ignore());
             Mapper.CreateMap<RewardPointsSettings, RewardPointsSettingsModel>()
                 .ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
 				.ForMember(dest => dest.PointsForPurchases_OverrideForStore, mo => mo.Ignore());

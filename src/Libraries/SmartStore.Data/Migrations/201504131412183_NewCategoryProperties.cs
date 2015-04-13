@@ -11,12 +11,10 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.Category", "FullName", c => c.String(maxLength: 400));
-			AddColumn("dbo.Category", "BottomDescription", c => c.String());
-
-			AddColumn("dbo.CheckoutAttribute", "IsActive", c => c.Boolean(nullable: false, defaultValue: true));
-
-			AddColumn("dbo.ReturnRequest", "AdminComment", c => c.String(maxLength: 4000));
-			AddColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc", c => c.DateTime());
+            AddColumn("dbo.Category", "BottomDescription", c => c.String());
+            AddColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc", c => c.DateTime());
+            AddColumn("dbo.ReturnRequest", "AdminComment", c => c.String(maxLength: 4000));
+            AddColumn("dbo.CheckoutAttribute", "IsActive", c => c.Boolean(nullable: false));
 
 			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
@@ -28,13 +26,11 @@ namespace SmartStore.Data.Migrations
         {
 			// inverse of LatestProductLoadAllPaged.sql does not make sense to me
 
-			DropColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc");
-			DropColumn("dbo.ReturnRequest", "AdminComment");
-
-			DropColumn("dbo.CheckoutAttribute", "IsActive");
-
-			DropColumn("dbo.Category", "BottomDescription");
-			DropColumn("dbo.Category", "FullName");
+            DropColumn("dbo.CheckoutAttribute", "IsActive");
+            DropColumn("dbo.ReturnRequest", "AdminComment");
+            DropColumn("dbo.ReturnRequest", "RequestedActionUpdatedOnUtc");
+            DropColumn("dbo.Category", "BottomDescription");
+            DropColumn("dbo.Category", "FullName");
         }
 
 		public bool RollbackOnFailure

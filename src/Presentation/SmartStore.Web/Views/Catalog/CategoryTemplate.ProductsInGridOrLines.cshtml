@@ -22,8 +22,10 @@
 @using SmartStore.Web.Models.Catalog;
 @using SmartStore.Web.Framework.UI;
 
-@functions{
-	private bool ShowListOptions() {
+@functions
+{
+	private bool ShowListOptions()
+	{
 		return Model.Products.Count > 0 &&
 			   (Model.PagingFilteringContext.AllowProductViewModeChanging ||
 			   Model.PagingFilteringContext.AllowProductSorting ||
@@ -57,7 +59,7 @@
 	}
 
     <div class="page-title">
-        <h1>@Model.Name</h1>
+        <h1>@(Model.FullName.HasValue() ? Model.FullName : Model.Name)</h1>
     </div>
     <div class="page-body">
         @Html.Widget("categorydetails_top")
@@ -150,11 +152,19 @@
 			@Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")
 		</div>
 
+		@if (Model.BottomDescription.HasValue())
+		{
+			<div class="category-description">
+				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
+			</div>
+		}
+
         @Html.Widget("categorydetails_bottom")
     </div>
 </div>
 
-@section right_top {
+@section right_top
+{
     @Html.Widget("categorydetails_before_filters")
 
     @*filtering*@

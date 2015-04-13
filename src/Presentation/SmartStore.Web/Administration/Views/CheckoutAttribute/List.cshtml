@@ -1,8 +1,6 @@
-﻿@model Telerik.Web.Mvc.GridModel<CheckoutAttributeModel>
-@using Telerik.Web.Mvc.UI
+﻿@using Telerik.Web.Mvc.UI
 
 @{
-    //page title
     ViewBag.Title = T("Admin.Catalog.Attributes.CheckoutAttributes").Text;
 }
 <div class="section-header">
@@ -13,36 +11,49 @@
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
+<script>
+	function checkoutAttributesGrid_onRowDataBound(e) {
+		if (!e.dataItem.IsActive) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+</script>
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid<CheckoutAttributeModel>(Model.Data)
-                    .Name("checkoutattributes-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name)
-                            .Width(300)
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
-                        columns.Bound(x => x.AttributeControlTypeName)
-                            .Width(150);
-                        columns.Bound(x => x.IsRequired)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.IsRequired))
-                            .ClientTemplate(@Html.SymbolForBool("IsRequired"))
-                            .Centered();
-                        columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                            .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CheckoutAttribute"))
-                            .EnableCustomBinding(true))
+            @(Html.Telerik().Grid<CheckoutAttributeModel>()
+				.Name("checkoutattributes-grid")
+				.Columns(columns =>
+				{
+					columns.Bound(x => x.Name)
+						.Width(300)
+						.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+						.ClientTemplate("<a href='Edit/<#= Id #>'><#= Name #></a>");
+					columns.Bound(x => x.AttributeControlTypeName)
+						.Width(150);
+					columns.Bound(x => x.IsActive)
+						.Width(100)
+						.Template(item => @Html.SymbolForBool(item.IsActive))
+						.ClientTemplate(@Html.SymbolForBool("IsActive"))
+						.Centered();
+					columns.Bound(x => x.IsRequired)
+						.Width(100)
+						.Template(item => @Html.SymbolForBool(item.IsRequired))
+						.ClientTemplate(@Html.SymbolForBool("IsRequired"))
+						.Centered();
+					columns.Bound(x => x.DisplayOrder)
+						.Width(100)
+						.Centered();
+					columns.Bound(x => x.Id)
+						.Width(50)
+						.Centered()
+						.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
+						.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
+						.Title(T("Admin.Common.Edit").Text);
+				})
+				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "CheckoutAttribute"))
+				.ClientEvents(events => events.OnRowDataBound("checkoutAttributesGrid_onRowDataBound"))
+				.EnableCustomBinding(true))
         </td>
     </tr>
 </table>

@@ -46,6 +46,12 @@ namespace SmartStore.Core.Domain.Orders
 		[DataMember]
 		public string RequestedAction { get; set; }
 
+		/// <summary>
+		/// Gets or sets the date and time when requested action was last updated
+		/// </summary>
+		[DataMember]
+		public DateTime? RequestedActionUpdatedOnUtc { get; set; }
+
         /// <summary>
         /// Gets or sets the customer comments
         /// </summary>
@@ -57,6 +63,12 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
 		[DataMember]
 		public string StaffNotes { get; set; }
+
+		/// <summary>
+		/// Gets or sets the admin comment
+		/// </summary>
+		[DataMember]
+		public string AdminComment { get; set; }
 
         /// <summary>
         /// Gets or sets the return status identifier

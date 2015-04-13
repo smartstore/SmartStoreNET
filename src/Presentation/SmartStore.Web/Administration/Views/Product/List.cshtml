@@ -93,69 +93,86 @@
         </div>
     </div>
 
-       <table style="width:100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchProductName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.SearchProductName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchCategoryId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchManufacturerId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchStoreId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchStoreId", Model.AvailableStores)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchProductTypeId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.GoDirectlyToSku)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.GoDirectlyToSku)
-                <button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
+	<table style="width:100%">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchProductName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.SearchProductName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchProductTypeId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchStoreId", Model.AvailableStores)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchWithoutCategories)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.SearchWithoutCategories)
+			</td>
+		</tr>
+		<tr id="SearchCategoryIdContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchCategoryId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.SearchWithoutManufacturers)
+			</td>
+		</tr>
+		<tr id="SearchManufacturerIdContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchManufacturerId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.GoDirectlyToSku)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.GoDirectlyToSku)
+				<button type="submit" id="go-to-product-by-sku" name="go-to-product-by-sku" value="go-to-product-by-sku" class="btn">
 					<i class="fa fa-play-circle-o"></i>&nbsp;@T("Admin.Common.Go")
 				</button>
-            </td>
-        </tr>
-        <tr>
+			</td>
+		</tr>
+		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
-            <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-            </td>
-        </tr>
-    </table>
-    <p>
-    </p>
+			<td class="adminData">
+				<button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+			</td>
+		</tr>
+	</table>
+	
+    <p></p>
+	
     <table class="adminContent">
         <tr>
             <td>
@@ -245,12 +262,23 @@
                     return false;
                 }
             });
+
             $("#@Html.FieldIdFor(model => model.GoDirectlyToSku)").keydown(function (event) {
                 if (event.keyCode == 13) {
                     $("#go-to-product-by-sku").click();
                     return false;
                 }
             });
+
+        	// show/hide category filter
+        	$('#SearchWithoutCategories').change(function () {
+        		$('#SearchCategoryIdContainer').toggle(!$(this).is(':checked'));
+        	}).trigger('change');
+
+        	// show/hide manufacturer filter
+        	$('#SearchWithoutManufacturers').change(function () {
+        		$('#SearchManufacturerIdContainer').toggle(!$(this).is(':checked'));
+        	}).trigger('change');
 
         	// export selected to pdf, xml, xls...
         	$('a.export-form-post').click(function (e) {
@@ -303,7 +331,9 @@
                 SearchCategoryId: $('#SearchCategoryId').val(),
                 SearchManufacturerId: $('#SearchManufacturerId').val(),
                 SearchStoreId: $('#SearchStoreId').val(),
-                SearchProductTypeId: $('#SearchProductTypeId').val()
+                SearchProductTypeId: $('#SearchProductTypeId').val(),
+                SearchWithoutCategories: $('#SearchWithoutCategories').is(':checked'),
+                SearchWithoutManufacturers: $('#SearchWithoutManufacturers').is(':checked')
             };
             e.data = searchModel;
         }
@@ -486,6 +516,5 @@
         $(".export-catalog a").click(function (e) {
             displayNotification("@T("Admin.Common.Export.Wait")", 'danger');
         });
-
     });
 </script>

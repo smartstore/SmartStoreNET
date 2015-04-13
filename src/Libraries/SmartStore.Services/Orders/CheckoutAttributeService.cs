@@ -14,12 +14,14 @@ namespace SmartStore.Services.Orders
     public partial class CheckoutAttributeService : ICheckoutAttributeService
     {
         #region Constants
+
         private const string CHECKOUTATTRIBUTES_ALL_KEY = "SmartStore.checkoutattribute.all-{0}";
         private const string CHECKOUTATTRIBUTEVALUES_ALL_KEY = "SmartStore.checkoutattributevalue.all-{0}";
         private const string CHECKOUTATTRIBUTES_PATTERN_KEY = "SmartStore.checkoutattribute.";
         private const string CHECKOUTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.checkoutattributevalue.";
         private const string CHECKOUTATTRIBUTES_BY_ID_KEY = "SmartStore.checkoutattribute.id-{0}";
         private const string CHECKOUTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.checkoutattributevalue.id-{0}";
+
         #endregion
         
         #region Fields
@@ -79,13 +81,19 @@ namespace SmartStore.Services.Orders
         /// Gets all checkout attributes
         /// </summary>
         /// <returns>Checkout attribute collection</returns>
-        public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes()
+        public virtual IList<CheckoutAttribute> GetAllCheckoutAttributes(bool showHidden = false)
         {
-            return _cacheManager.Get(CHECKOUTATTRIBUTES_ALL_KEY, () =>
+			string key = CHECKOUTATTRIBUTES_ALL_KEY.FormatInvariant(showHidden);
+
+            return _cacheManager.Get(key, () =>
             {
-                var query = from ca in _checkoutAttributeRepository.Table
-                            orderby ca.DisplayOrder
-                            select ca;
+				var query = _checkoutAttributeRepository.Table;
+
+				if (!showHidden)
+					query = query.Where(x => x.IsActive);
+
+				query = query.OrderBy(x => x.DisplayOrder);
+
                 var checkoutAttributes = query.ToList();
                 return checkoutAttributes;
             });

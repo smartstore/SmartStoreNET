@@ -14,6 +14,8 @@
 * #459 New field to determine tag for page titles on widget level
 * Added _shrink database_ to backend UI
 * (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
+* #588 Alternative localized category name used as title for category pages
+* #592 Add a second category description displayed beyond products on category page
 
 ### Improvements
 * Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)
@@ -30,6 +32,9 @@
 * #666 Export addresses in customer export
 * New shopping cart setting ShowItemsFromWishlistToCartButton
 * XML product export now paged and more data exported
+* #560 Return requests: Add fields for last update, last update of requested action and general notes
+* #589 Backend product list: Add filter for products with "no category mapping" and "no manufacturer mapping"
+* #626 Add IsActive flag for checkout attributes
 
 ### Bugfixes
 * Instant search box did not display all results when SQL Fulltext Search was enabled

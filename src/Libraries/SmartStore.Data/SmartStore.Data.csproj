@@ -240,6 +240,10 @@
     <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
       <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504111815146_NewCategoryProperties.cs" />
+    <Compile Include="Migrations\201504111815146_NewCategoryProperties.Designer.cs">
+      <DependentUpon>201504111815146_NewCategoryProperties.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -474,6 +478,9 @@
     <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
       <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504111815146_NewCategoryProperties.resx">
+      <DependentUpon>201504111815146_NewCategoryProperties.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>
@@ -488,6 +495,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

@@ -17,6 +17,9 @@ namespace SmartStore.Admin.Models.Orders
             AvailableTaxCategories = new List<SelectListItem>();
         }
 
+		[SmartResourceDisplayName("Common.IsActive")]
+		public bool IsActive { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -47,9 +50,7 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
         
-
         public IList<CheckoutAttributeLocalizedModel> Locales { get; set; }
-
     }
 
     public class CheckoutAttributeLocalizedModel : ILocalizedModelLocal
@@ -63,6 +64,5 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.Catalog.Attributes.CheckoutAttributes.Fields.TextPrompt")]
         [AllowHtml]
         public string TextPrompt { get; set; }
-
     }
 }

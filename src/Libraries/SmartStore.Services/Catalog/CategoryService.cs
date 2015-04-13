@@ -148,12 +148,16 @@ namespace SmartStore.Services.Catalog
 			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true)
         {
             var query = _categoryRepository.Table;
+
             if (!showHidden)
                 query = query.Where(c => c.Published);
+
             if (!String.IsNullOrWhiteSpace(categoryName))
-                query = query.Where(c => c.Name.Contains(categoryName));
+                query = query.Where(c => c.Name.Contains(categoryName) || c.FullName.Contains(categoryName));
+
 			if (!String.IsNullOrWhiteSpace(alias))
 				query = query.Where(c => c.Alias.Contains(alias));
+
             query = query.Where(c => !c.Deleted);
             query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
             

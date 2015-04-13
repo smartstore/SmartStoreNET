@@ -55,6 +55,9 @@ namespace SmartStore.Admin.Models.Orders
         public string RequestedAction { get; set; }
 		public IList<SelectListItem> AvailableRequestedAction { get; set; }
 
+		[SmartResourceDisplayName("Admin.ReturnRequests.Fields.RequestedActionUpdatedOnUtc")]
+		public DateTime? RequestedActionUpdated { get; set; }
+
         [AllowHtml]
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.CustomerComments")]
         public string CustomerComments { get; set; }
@@ -63,6 +66,9 @@ namespace SmartStore.Admin.Models.Orders
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.StaffNotes")]
         public string StaffNotes { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.AdminComment")]
+		public string AdminComment { get; set; }
+
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Status")]
         public int ReturnRequestStatusId { get; set; }
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.Status")]
@@ -70,6 +76,9 @@ namespace SmartStore.Admin.Models.Orders
 
         [SmartResourceDisplayName("Admin.ReturnRequests.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
+
+		[SmartResourceDisplayName("Common.UpdatedOn")]
+		public DateTime UpdatedOn { get; set; }
 
 		public bool CanAccept
 		{

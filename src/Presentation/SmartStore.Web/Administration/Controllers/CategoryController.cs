@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -109,30 +108,19 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(category,
-                                                               x => x.Name,
-                                                               localized.Name,
-                                                               localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(category, x => x.Name, localized.Name, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(category,
-                                                           x => x.Description,
-                                                           localized.Description,
-                                                           localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(category, x => x.FullName, localized.FullName, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(category,
-                                                           x => x.MetaKeywords,
-                                                           localized.MetaKeywords,
-                                                           localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(category, x => x.Description, localized.Description, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(category,
-                                                           x => x.MetaDescription,
-                                                           localized.MetaDescription,
-                                                           localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(category, x => x.BottomDescription, localized.BottomDescription, localized.LanguageId);
 
-                _localizedEntityService.SaveLocalizedValue(category,
-                                                           x => x.MetaTitle,
-                                                           localized.MetaTitle,
-                                                           localized.LanguageId);
+                _localizedEntityService.SaveLocalizedValue(category, x => x.MetaKeywords, localized.MetaKeywords, localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(category, x => x.MetaDescription, localized.MetaDescription, localized.LanguageId);
+
+                _localizedEntityService.SaveLocalizedValue(category, x => x.MetaTitle, localized.MetaTitle, localized.LanguageId);
 
                 //search engine name
                 var seName = category.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
@@ -276,9 +264,14 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var model = new CategoryListModel();
+			var model = new CategoryListModel
+			{
+				GridPageSize = _adminAreaSettings.GridPageSize
+			};
+
             var categories = _categoryService.GetAllCategories(null, 0, _adminAreaSettings.GridPageSize, true);
             var mappedCategories = categories.ToDictionary(x => x.Id);
+
             model.Categories = new GridModel<CategoryModel>
             {
                 Data = categories.Select(x =>
@@ -591,7 +584,9 @@ namespace SmartStore.Admin.Controllers
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = category.GetLocalized(x => x.Name, languageId, false, false);
+				locale.FullName = category.GetLocalized(x => x.FullName, languageId, false, false);
                 locale.Description = category.GetLocalized(x => x.Description, languageId, false, false);
+				locale.BottomDescription = category.GetLocalized(x => x.BottomDescription, languageId, false, false);
                 locale.MetaKeywords = category.GetLocalized(x => x.MetaKeywords, languageId, false, false);
                 locale.MetaDescription = category.GetLocalized(x => x.MetaDescription, languageId, false, false);
                 locale.MetaTitle = category.GetLocalized(x => x.MetaTitle, languageId, false, false);

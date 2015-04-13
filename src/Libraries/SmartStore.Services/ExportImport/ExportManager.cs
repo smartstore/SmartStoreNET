@@ -100,7 +100,9 @@ namespace SmartStore.Services.ExportImport
                     writer.WriteStartElement("Category");
                     writer.Write("Id", category.Id.ToString());
                     writer.Write("Name", category.Name);
+					writer.Write("FullName", category.FullName);
                     writer.Write("Description", category.Description);
+					writer.Write("BottomDescription", category.BottomDescription);
                     writer.Write("CategoryTemplateId", category.CategoryTemplateId.ToString());
                     writer.Write("MetaKeywords", category.MetaKeywords);
                     writer.Write("MetaDescription", category.MetaDescription);
@@ -561,7 +563,9 @@ namespace SmartStore.Services.ExportImport
 					writer.WriteStartElement("Category");
 					writer.Write("Id", category.Id.ToString());
 					writer.Write("Name", category.Name);
+					writer.Write("FullName", category.FullName);
 					writer.Write("Description", category.Description);
+					writer.Write("BottomDescription", category.BottomDescription);
 					writer.Write("CategoryTemplateId", category.CategoryTemplateId.ToString());
 					writer.Write("MetaKeywords", category.MetaKeywords);
 					writer.Write("MetaDescription", category.MetaDescription);
@@ -589,7 +593,9 @@ namespace SmartStore.Services.ExportImport
 					WriteLocalized(writer, context, lang =>
 					{
 						writer.Write("Name", category.GetLocalized(x => x.Name, lang.Id, false, false), lang);
+						writer.Write("FullName", category.GetLocalized(x => x.FullName, lang.Id, false, false), lang);
 						writer.Write("Description", category.GetLocalized(x => x.Description, lang.Id, false, false), lang);
+						writer.Write("BottomDescription", category.GetLocalized(x => x.BottomDescription, lang.Id, false, false), lang);
 						writer.Write("MetaKeywords", category.GetLocalized(x => x.MetaKeywords, lang.Id, false, false), lang);
 						writer.Write("MetaDescription", category.GetLocalized(x => x.MetaDescription, lang.Id, false, false), lang);
 						writer.Write("MetaTitle", category.GetLocalized(x => x.MetaTitle, lang.Id, false, false), lang);

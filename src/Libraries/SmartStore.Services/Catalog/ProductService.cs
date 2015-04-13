@@ -42,7 +42,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
-        private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
+        private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
@@ -272,7 +272,6 @@ namespace SmartStore.Services.Catalog
 
         public virtual IPagedList<Product> SearchProducts(ProductSearchContext ctx)
         {
-            // codehint: sm-edit (turn off nc filtering, we have our own)
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
@@ -312,7 +311,7 @@ namespace SmartStore.Services.Catalog
 
                 //pass categry identifiers as comma-delimited string
                 string commaSeparatedCategoryIds = "";
-                if (ctx.CategoryIds != null)
+                if (ctx.CategoryIds != null && !ctx.WithoutCategories)
                 {
                     for (int i = 0; i < ctx.CategoryIds.Count; i++)
                     {
@@ -362,7 +361,7 @@ namespace SmartStore.Services.Catalog
 
                 var pManufacturerId = _dataProvider.GetParameter();
                 pManufacturerId.ParameterName = "ManufacturerId";
-                pManufacturerId.Value = ctx.ManufacturerId;
+                pManufacturerId.Value = (ctx.WithoutManufacturers ? 0 : ctx.ManufacturerId);
                 pManufacturerId.DbType = DbType.Int32;
 
 				var pStoreId = _dataProvider.GetParameter();
@@ -475,6 +474,16 @@ namespace SmartStore.Services.Catalog
                 pLoadFilterableSpecificationAttributeOptionIds.Value = ctx.LoadFilterableSpecificationAttributeOptionIds;
                 pLoadFilterableSpecificationAttributeOptionIds.DbType = DbType.Boolean;
 
+				var pWithoutCategories = _dataProvider.GetParameter();
+				pWithoutCategories.ParameterName = "WithoutCategories";
+				pWithoutCategories.Value = ctx.WithoutCategories;
+				pWithoutCategories.DbType = DbType.Boolean;
+
+				var pWithoutManufacturers = _dataProvider.GetParameter();
+				pWithoutManufacturers.ParameterName = "WithoutManufacturers";
+				pWithoutManufacturers.Value = ctx.WithoutManufacturers;
+				pWithoutManufacturers.DbType = DbType.Boolean;
+
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
                 pFilterableSpecificationAttributeOptionIds.Direction = ParameterDirection.Output;
@@ -513,6 +522,8 @@ namespace SmartStore.Services.Catalog
                     pPageSize,
                     pShowHidden,
                     pLoadFilterableSpecificationAttributeOptionIds,
+					pWithoutCategories,
+					pWithoutManufacturers,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
 
@@ -785,7 +796,11 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// category filtering
-			if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
+			if (ctx.WithoutCategories)
+			{
+				query = query.Where(x => x.ProductCategories.Count == 0);
+			}
+			else if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
 			{
 				//search in subcategories
 				if (ctx.MatchAllcategories)
@@ -806,7 +821,11 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// manufacturer filtering
-			if (ctx.ManufacturerId > 0)
+			if (ctx.WithoutManufacturers)
+			{
+				query = query.Where(x => x.ProductManufacturers.Count == 0);
+			}
+			else if (ctx.ManufacturerId > 0)
 			{
 				query = from p in query
 						from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
@@ -1446,7 +1465,6 @@ namespace SmartStore.Services.Catalog
             if (productPicture == null)
                 throw new ArgumentNullException("productPicture");
 
-            // codehint: sm-add
             UnassignDeletedPictureFromVariantCombinations(productPicture);
 
             _productPictureRepository.Delete(productPicture);

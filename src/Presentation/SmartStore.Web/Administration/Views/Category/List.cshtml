@@ -1,9 +1,6 @@
 ﻿@model CategoryListModel
 @using Telerik.Web.Mvc.UI
-@{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    
-    //page title
+@{   
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
 }
 <div class="section-header">
@@ -17,7 +14,7 @@
 		</a>
     </div>
 </div>
-<table width="100%">
+<table>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.SearchCategoryName)
@@ -53,10 +50,11 @@
                         .OnDataBinding("onDataBinding"))
                     .Columns(columns =>
                     {
-                        columns.Bound(x => x.Breadcrumb).Title(T("Admin.Catalog.Categories.Fields.Name").Text)
-
-                            .Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+                        columns.Bound(x => x.Breadcrumb)
+							.Title(T("Admin.Catalog.Products.Categories.Fields.Category").Text)
+                            .Template(x => Html.ActionLink(x.Breadcrumb, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Breadcrumb #></a>");
+						columns.Bound(x => x.FullName);
 						columns.Bound(x => x.Alias);
                         columns.Bound(x => x.Published)
                             .Width(100)
@@ -66,14 +64,8 @@
                         columns.Bound(x => x.DisplayOrder)
                             .Width(100)
                             .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
                     })
-                    .Pageable(settings => settings.Total(Model.Categories.Total).PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.Total(Model.Categories.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
 					.PreserveGridState()
                     .EnableCustomBinding(true))

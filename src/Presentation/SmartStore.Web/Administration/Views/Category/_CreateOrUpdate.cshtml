@@ -27,6 +27,15 @@
                             @Html.ValidationMessageFor(model => model.Locales[item].Name)
                         </td>
                     </tr>
+				 	<tr>
+				 		<td class="adminTitle">
+				 			@Html.SmartLabelFor(model => model.Locales[item].FullName)
+				 		</td>
+				 		<td class="adminData">
+				 			@Html.EditorFor(model => Model.Locales[item].FullName)
+				 			@Html.ValidationMessageFor(model => model.Locales[item].FullName)
+						</td>
+					</tr>
                     <tr>
                         <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Locales[item].Description)
@@ -34,6 +43,15 @@
                         <td class="adminData">
                             @Html.EditorFor(model => model.Locales[item].Description, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Locales[item].Description)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.Locales[item].BottomDescription)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => model.Locales[item].BottomDescription, Html.RichEditorFlavor())
+                            @Html.ValidationMessageFor(model => model.Locales[item].BottomDescription)
                         </td>
                     </tr>
                     <tr>
@@ -55,11 +73,29 @@
                     </tr>
                     <tr>
                         <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.FullName)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(model => model.FullName)
+                            @Html.ValidationMessageFor(model => model.FullName)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
                             @Html.SmartLabelFor(model => model.Description)
                         </td>
                         <td class="adminData">
                             @Html.EditorFor(x => x.Description, Html.RichEditorFlavor())
                             @Html.ValidationMessageFor(model => model.Description)
+                        </td>
+                    </tr>
+                    <tr>
+                        <td class="adminTitle">
+                            @Html.SmartLabelFor(model => model.BottomDescription)
+                        </td>
+                        <td class="adminData">
+                            @Html.EditorFor(x => x.BottomDescription, Html.RichEditorFlavor())
+                            @Html.ValidationMessageFor(model => model.BottomDescription)
                         </td>
                     </tr>
                 </table>
@@ -106,15 +142,15 @@
                 @Html.SmartLabelFor(model => model.ParentCategoryId)
             </td>
             <td class="adminData">
-                @* codehint: sm-edit *@
-                @(Html.HiddenFor(x => x.ParentCategoryId, new {
-				style = "min-width: 700px",
-				placeholder = "[" + T("Common.Unspecified") + "]",
-				data_select = true,
-				data_select_lazy = true,
-				data_select_init_text = Model.ParentCategoryBreadcrumb,
-				data_select_url = Url.Action("Allcategories", "Category")
-			}))
+                @(Html.HiddenFor(x => x.ParentCategoryId, new
+				{
+					style = "min-width: 700px",
+					placeholder = "[" + T("Common.Unspecified") + "]",
+					data_select = true,
+					data_select_lazy = true,
+					data_select_init_text = Model.ParentCategoryBreadcrumb,
+					data_select_url = Url.Action("Allcategories", "Category")
+				}))
                 @Html.ValidationMessageFor(model => model.ParentCategoryId)
             </td>
         </tr>

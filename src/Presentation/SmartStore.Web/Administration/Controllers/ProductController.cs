@@ -923,7 +923,9 @@ namespace SmartStore.Admin.Controllers
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
-				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
+				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null,
+				WithoutCategories = model.SearchWithoutCategories,
+				WithoutManufacturers = model.SearchWithoutManufacturers
 			};
 
 			if (model.SearchCategoryId > 0)

@@ -1674,6 +1674,36 @@ namespace SmartStore.Admin.Controllers
             model.Products = new GridModel<ProductModel>();
             return View(model);
         }
+
+		[HttpPost]
+		[ValidateInput(false)]
+		public ActionResult CreateAllMutuallyRelatedProducts(int productId)
+		{
+			string message = null;
+
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var product = _productService.GetProductById(productId);
+				if (product != null)
+				{
+					int count = _productService.EnsureMutuallyRelatedProducts(productId);
+					message = T("Admin.Common.CreateMutuallyAssociationsResult", count);
+				}
+				else
+				{
+					message = "No product found with the specified id";
+				}
+			}
+			else
+			{
+				message = T("Admin.AccessDenied.Title");
+			}
+
+			return new JsonResult
+			{
+				Data = new { Message = message }
+			};
+		}
         
         #endregion
 
@@ -1858,6 +1888,36 @@ namespace SmartStore.Admin.Controllers
             model.Products = new GridModel<ProductModel>();
             return View(model);
         }
+
+		[HttpPost]
+		[ValidateInput(false)]
+		public ActionResult CreateAllMutuallyCrossSellProducts(int productId)
+		{
+			string message = null;
+
+			if (_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
+			{
+				var product = _productService.GetProductById(productId);
+				if (product != null)
+				{
+					int count = _productService.EnsureMutuallyCrossSellProducts(productId);
+					message = T("Admin.Common.CreateMutuallyAssociationsResult", count);
+				}
+				else
+				{
+					message = "No product found with the specified id";
+				}
+			}
+			else
+			{
+				message = T("Admin.AccessDenied.Title");
+			}
+
+			return new JsonResult
+			{
+				Data = new { Message = message }
+			};
+		}
 
         #endregion
 

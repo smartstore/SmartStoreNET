@@ -84,6 +84,18 @@ namespace SmartStore.Data.Migrations
 				"Letzte Aktualisierung der angeforderten Aktion",
 				"Date when the requested action was updated the last time.",
 				"Datum, an dem die angeforderte Aktion zuletzt geändert wurde.");
+
+			builder.AddOrUpdate("Admin.Common.CreateMutuallyAssociations",
+				"Create all mutual associations",
+				"Alle gegenseitigen Zuordnungen erstellen");
+
+			builder.AddOrUpdate("Admin.Common.AskCreateMutuallyAssociations",
+				"Do you want to create all mutual associations?",
+				"Möchten Sie alle gegenseitigen Zuordnungen erstellen?");
+
+			builder.AddOrUpdate("Admin.Common.CreateMutuallyAssociationsResult",
+				"There were {0} mutual association(s) created.",
+				"Es wurden {0} gegenseitige Zuordnung(en) erstellt.");
 		}
     }
 }

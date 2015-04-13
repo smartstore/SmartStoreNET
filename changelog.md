@@ -16,6 +16,7 @@
 * (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 * #588 Alternative localized category name used as title for category pages
 * #592 Add a second category description displayed beyond products on category page
+* Resolves #672 Option to automatically create mutual associations for cross sell products and related products
 
 ### Improvements
 * Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)

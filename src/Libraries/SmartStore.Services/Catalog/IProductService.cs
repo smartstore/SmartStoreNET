@@ -188,6 +188,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="relatedProduct">Related product</param>
         void UpdateRelatedProduct(RelatedProduct relatedProduct);
 
+		/// <summary>
+		/// Ensure existence of all mutually related products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted related products</returns>
+		int EnsureMutuallyRelatedProducts(int productId1);
+
         #endregion
 
         #region Cross-sell products
@@ -232,6 +239,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
 		IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts);
+
+		/// <summary>
+		/// Ensure existence of all mutually cross selling products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted cross selling products</returns>
+		int EnsureMutuallyCrossSellProducts(int productId1);
 
         #endregion
         

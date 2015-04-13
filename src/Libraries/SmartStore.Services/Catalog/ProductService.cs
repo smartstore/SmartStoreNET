@@ -137,12 +137,91 @@ namespace SmartStore.Services.Catalog
 		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
-        
-        #region Methods
 
-        #region Products
+		#region Utilities
 
-        /// <summary>
+		protected virtual int EnsureMutuallyRelatedProducts(List<int> productIds)
+		{
+			int count = 0;
+
+			foreach (int id1 in productIds)
+			{
+				var mutualAssociations = (
+					from rp in _relatedProductRepository.Table
+					join p in _productRepository.Table on rp.ProductId2 equals p.Id
+					where !p.Deleted && rp.ProductId2 == id1
+					select rp).ToList();
+
+				foreach (int id2 in productIds)
+				{
+					if (id1 == id2)
+						continue;
+
+					if (!mutualAssociations.Any(x => x.ProductId1 == id2))
+					{
+						int maxDisplayOrder = _relatedProductRepository.TableUntracked
+							.Where(x => x.ProductId1 == id2)
+							.OrderByDescending(x => x.DisplayOrder)
+							.Select(x => x.DisplayOrder)
+							.FirstOrDefault();
+
+						var newRelatedProduct = new RelatedProduct
+						{
+							ProductId1 = id2,
+							ProductId2 = id1,
+							DisplayOrder = maxDisplayOrder + 1
+						};
+
+						InsertRelatedProduct(newRelatedProduct);
+						++count;
+					}
+				}
+			}
+
+			return count;
+		}
+
+		protected virtual int EnsureMutuallyCrossSellProducts(List<int> productIds)
+		{
+			int count = 0;
+
+			foreach (int id1 in productIds)
+			{
+				var mutualAssociations = (
+					from rp in _crossSellProductRepository.Table
+					join p in _productRepository.Table on rp.ProductId2 equals p.Id
+					where !p.Deleted && rp.ProductId2 == id1
+					select rp).ToList();
+
+				foreach (int id2 in productIds)
+				{
+					if (id1 == id2)
+						continue;
+
+					if (!mutualAssociations.Any(x => x.ProductId1 == id2))
+					{
+						var newCrossSellProduct = new CrossSellProduct
+						{
+							ProductId1 = id2,
+							ProductId2 = id1
+						};
+
+						InsertCrossSellProduct(newCrossSellProduct);
+						++count;
+					}
+				}
+			}
+
+			return count;
+		}
+
+		#endregion
+
+		#region Methods
+
+		#region Products
+
+		/// <summary>
         /// Delete a product
         /// </summary>
         /// <param name="product">Product</param>
@@ -1199,13 +1278,11 @@ namespace SmartStore.Services.Catalog
         {
             var query = from rp in _relatedProductRepository.Table
                         join p in _productRepository.Table on rp.ProductId2 equals p.Id
-                        where rp.ProductId1 == productId1 &&
-                        !p.Deleted &&
-                        (showHidden || p.Published)
+                        where rp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
                         orderby rp.DisplayOrder
                         select rp;
-            var relatedProducts = query.ToList();
 
+            var relatedProducts = query.ToList();
             return relatedProducts;
         }
 
@@ -1252,6 +1329,23 @@ namespace SmartStore.Services.Catalog
             //event notification
             _eventPublisher.EntityUpdated(relatedProduct);
         }
+
+		/// <summary>
+		/// Ensure existence of all mutually related products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted related products</returns>
+		public virtual int EnsureMutuallyRelatedProducts(int productId1)
+		{
+			var relatedProducts = GetRelatedProductsByProductId1(productId1, true);
+			var productIds = relatedProducts.Select(x => x.ProductId2).ToList();
+
+			if (productIds.Count > 0 && !productIds.Any(x => x == productId1))
+				productIds.Add(productId1);
+
+			int count = EnsureMutuallyRelatedProducts(productIds);
+			return count;
+		}
 
         #endregion
 
@@ -1383,6 +1477,24 @@ namespace SmartStore.Services.Catalog
             }
             return result;
         }
+
+		/// <summary>
+		/// Ensure existence of all mutually cross selling products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted cross selling products</returns>
+		public virtual int EnsureMutuallyCrossSellProducts(int productId1)
+		{
+			var crossSellProducts = GetCrossSellProductsByProductId1(productId1, true);
+			var productIds = crossSellProducts.Select(x => x.ProductId2).ToList();
+
+			if (productIds.Count > 0 && !productIds.Any(x => x == productId1))
+				productIds.Add(productId1);
+
+			int count = EnsureMutuallyCrossSellProducts(productIds);
+			return count;
+		}
+
         #endregion
         
         #region Tier prices

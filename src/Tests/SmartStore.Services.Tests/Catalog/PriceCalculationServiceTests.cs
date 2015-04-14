@@ -11,13 +11,15 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Services.Media;
+using System.Web;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Tests.Catalog
 {
     [TestFixture]
     public class PriceCalculationServiceTests : ServiceTest
     {
-        IWorkContext _workContext;
 		IStoreContext _storeContext;
         IDiscountService _discountService;
         ICategoryService _categoryService;
@@ -25,6 +27,10 @@ namespace SmartStore.Services.Tests.Catalog
 		IProductService _productService;
 		IProductAttributeService _productAttributeService;
         IPriceCalculationService _priceCalcService;
+		IDownloadService _downloadService;
+		ICommonServices _commonServices;
+		HttpRequestBase _httpRequestBase;
+		ITaxService _taxService;
         ShoppingCartSettings _shoppingCartSettings;
         CatalogSettings _catalogSettings;
 
@@ -33,8 +39,6 @@ namespace SmartStore.Services.Tests.Catalog
         [SetUp]
         public new void SetUp()
         {
-            _workContext = null;
-
 			_store = new Store() { Id = 1 };
 			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
@@ -47,11 +51,16 @@ namespace SmartStore.Services.Tests.Catalog
 			_productService = MockRepository.GenerateMock<IProductService>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 
+			_downloadService = MockRepository.GenerateMock<IDownloadService>();
+			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
+			_taxService = MockRepository.GenerateMock<ITaxService>();
+
             _shoppingCartSettings = new ShoppingCartSettings();
             _catalogSettings = new CatalogSettings();
 
-			_priceCalcService = new PriceCalculationService(_workContext, _storeContext, _discountService,
-                _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings, _productAttributeService);
+			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
+				_productAttributeService, _downloadService, _commonServices, _httpRequestBase, _taxService);
         }
 
         [Test]

@@ -99,6 +99,13 @@ namespace SmartStore.Services.Catalog
 		decimal? GetLowestPrice(Product product, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct);
 
 		/// <summary>
+		/// Get the initial price including preselected attributes
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <returns>Preselected price</returns>
+		decimal GetPreselectedPrice(Product product);
+
+		/// <summary>
 		/// Gets the product cost
 		/// </summary>
 		/// <param name="product">Product</param>

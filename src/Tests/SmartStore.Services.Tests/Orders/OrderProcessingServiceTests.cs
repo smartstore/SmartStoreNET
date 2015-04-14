@@ -34,6 +34,8 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
+using SmartStore.Services.Media;
+using System.Web;
 
 namespace SmartStore.Services.Tests.Orders
 {
@@ -85,6 +87,9 @@ namespace SmartStore.Services.Tests.Orders
         CurrencySettings _currencySettings;
 		IAffiliateService _affiliateService;
 		ISettingService _settingService;
+		IDownloadService _downloadService;
+		ICommonServices _commonServices;
+		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
 
 		Store _store;
@@ -109,8 +114,6 @@ namespace SmartStore.Services.Tests.Orders
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _productAttributeParser = MockRepository.GenerateMock<IProductAttributeParser>();
 			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
-			_priceCalcService = new PriceCalculationService(_workContext, _storeContext,
-				_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings, _productAttributeService);
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
 
@@ -151,11 +154,17 @@ namespace SmartStore.Services.Tests.Orders
 
             _addressService = MockRepository.GenerateMock<IAddressService>();
             _addressService.Expect(x => x.GetAddressById(_taxSettings.DefaultTaxAddressId)).Return(new Address() { Id = _taxSettings.DefaultTaxAddressId });
+			_downloadService = MockRepository.GenerateMock<IDownloadService>();
+			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
 			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
 
             _rewardPointsSettings = new RewardPointsSettings();
+
+			_priceCalcService = new PriceCalculationService(_discountService, _categoryService, _productAttributeParser, _productService, _shoppingCartSettings, _catalogSettings,
+				_productAttributeService, _downloadService, _commonServices, _httpRequestBase, _taxService);
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
                 _priceCalcService, _taxService, _shippingService, _paymentService,

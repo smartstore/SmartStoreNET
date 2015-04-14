@@ -264,7 +264,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 		public decimal GetProductPrice(Product product, Currency currency)
 		{
-			decimal priceBase = PriceCalculationService.GetFinalPrice(product, null, WorkContext.CurrentCustomer, decimal.Zero, true, 1);
+			decimal priceBase = PriceCalculationService.GetPreselectedPrice(product);
 
 			if (BaseSettings.ConvertNetToGrossPrices)
 			{

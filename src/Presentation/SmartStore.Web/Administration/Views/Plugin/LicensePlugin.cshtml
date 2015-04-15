@@ -28,7 +28,7 @@
 					@Html.HiddenFor(model => model.Licenses[i].StoreId)
 					@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
 
-					@Html.TextAreaFor(model => model.Licenses[i].LicenseKey, new { rows = 2 })
+					@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large" })
 				</td>
 			</tr>
 		}

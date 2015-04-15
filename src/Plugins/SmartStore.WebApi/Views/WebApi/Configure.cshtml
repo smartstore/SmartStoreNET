@@ -14,6 +14,18 @@
 	Html.AddScriptParts(true, Url.Content("~/Plugins/SmartStore.WebApi/Scripts/smartstore.web.api.js"));
 }
 
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		webApi.init();
+	});
+
+	function onRowDataBound_ApiUser(e) {
+		if (!e.dataItem.Enabled) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+</script>
+
 <div class="alert alert-info">
     @Html.Raw(@T("Plugins.Api.WebApi.AdminInstruction"))
 </div>
@@ -22,35 +34,36 @@
 <tr>
     <td>
 
-    @(Html.Telerik().Grid<WebApiUserModel>()
-        .Name("apiuser-grid")
-        .DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
-        .Columns(c =>
-        {
-            c.Bound(x => x.Id).Width(50);
-            c.Bound(x => x.Username);
-            c.Bound(x => x.Email)
-                .Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id, area = "admin" }, new { }))
-                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
-            c.Bound(x => x.AdminComment);
-            c.Bound(x => x.PublicKey);
-            c.Bound(x => x.SecretKey);
-            c.Bound(x => x.Enabled).Width(110).Centered()
-                .Template(x => @Html.SymbolForBool(x.Enabled))
-                .ClientTemplate(@Html.SymbolForBool("Enabled"));
-            c.Bound(x => x.LastRequest);
-            c.Template(x => @Html.ApiGridButtons())
-				.Width(330)
-                .ClientTemplate(@Html.ApiGridButtons());
-        })
-        .DataBinding(dataBinding =>
-        {
-			dataBinding.Ajax().Select("GridUserData", "WebApi", new RouteValueDictionary() { { "Namespaces", "SmartStore.WebApi.Controllers" }, { "area", WebApiGlobal.PluginSystemName } });
-        })
-        .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-		.PreserveGridState()
-        .EnableCustomBinding(true)
-    )
+		@(Html.Telerik().Grid<WebApiUserModel>()
+			.Name("apiuser-grid")
+			.DataKeys(keys => keys.Add(x => x.Id).RouteKey("Id"))
+			.Columns(c =>
+			{
+				c.Bound(x => x.Id).Width(50);
+				c.Bound(x => x.Username);
+				c.Bound(x => x.Email)
+					.Template(x => Html.ActionLink(x.Email, "Edit", "Customer", new { id = x.Id, area = "admin" }, new { }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= Id #>\"><#= Email #></a>");
+				c.Bound(x => x.AdminComment);
+				c.Bound(x => x.PublicKey);
+				c.Bound(x => x.SecretKey);
+				c.Bound(x => x.Enabled).Width(110).Centered()
+					.Template(x => @Html.SymbolForBool(x.Enabled))
+					.ClientTemplate(@Html.SymbolForBool("Enabled"));
+				c.Bound(x => x.LastRequest);
+				c.Template(x => @Html.ApiGridButtons())
+					.Width(330)
+					.ClientTemplate(@Html.ApiGridButtons());
+			})
+			.DataBinding(dataBinding =>
+			{
+				dataBinding.Ajax().Select("GridUserData", "WebApi", new { Namespaces = "SmartStore.WebApi.Controllers", area = WebApiGlobal.PluginSystemName });
+			})
+			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ApiUser"))
+			.PreserveGridState()
+			.EnableCustomBinding(true)
+		)
 
     </td>
 </tr>
@@ -105,9 +118,3 @@
         </tr>
     </table>
 }
-
-<script type="text/javascript">
-    jQuery(document).ready(function () {
-        webApi.init();
-    });
-</script>

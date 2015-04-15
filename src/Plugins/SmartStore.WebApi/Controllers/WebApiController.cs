@@ -5,6 +5,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Services;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.WebApi.Models;
 using SmartStore.WebApi.Security;
 using SmartStore.WebApi.Services;
@@ -18,36 +19,36 @@ namespace SmartStore.WebApi.Controllers
 		private readonly WebApiSettings _webApiSettings;
 		private readonly IWebApiPluginService _webApiPluginService;
 		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly ICommonServices _services;
+		private readonly ICommonServices _commonServices;
 
 		public WebApiController(
 			WebApiSettings settings,
 			IWebApiPluginService webApiPluginService,
 			AdminAreaSettings adminAreaSettings,
-			ICommonServices services)
+			ICommonServices commonServices)
 		{
 			_webApiSettings = settings;
 			_webApiPluginService = webApiPluginService;
 			_adminAreaSettings = adminAreaSettings;
-			_services = services;
+			_commonServices = commonServices;
 		}
 
 		private bool HasPermission(bool notify = true)
 		{
-			bool hasPermission = _services.Permissions.Authorize(WebApiPermissionProvider.ManageWebApi);
+			bool hasPermission = _commonServices.Permissions.Authorize(WebApiPermissionProvider.ManageWebApi);
 
 			if (notify && !hasPermission)
-				NotifyError(_services.Localization.GetResource("Admin.AccessDenied.Description"));
+				NotifyError(_commonServices.Localization.GetResource("Admin.AccessDenied.Description"));
 
 			return hasPermission;
 		}
 
 		private void AddButtonText()
 		{
-			ViewData["ButtonTextEnable"] = _services.Localization.GetResource("Plugins.Api.WebApi.Activate");
-			ViewData["ButtonTextDisable"] = _services.Localization.GetResource("Plugins.Api.WebApi.Deactivate");
-			ViewData["ButtonTextRemoveKeys"] = _services.Localization.GetResource("Plugins.Api.WebApi.RemoveKeys");
-			ViewData["ButtonTextCreateKeys"] = _services.Localization.GetResource("Plugins.Api.WebApi.CreateKeys");
+			ViewData["ButtonTextEnable"] = _commonServices.Localization.GetResource("Plugins.Api.WebApi.Activate");
+			ViewData["ButtonTextDisable"] = _commonServices.Localization.GetResource("Plugins.Api.WebApi.Deactivate");
+			ViewData["ButtonTextRemoveKeys"] = _commonServices.Localization.GetResource("Plugins.Api.WebApi.RemoveKeys");
+			ViewData["ButtonTextCreateKeys"] = _commonServices.Localization.GetResource("Plugins.Api.WebApi.CreateKeys");
 		}
 
 		public ActionResult Configure()
@@ -83,9 +84,9 @@ namespace SmartStore.WebApi.Controllers
 				return AccessDeniedPartialView();
 
 			model.Copy(_webApiSettings, false);
-			_services.Settings.SaveSetting(_webApiSettings);
+			_commonServices.Settings.SaveSetting(_webApiSettings);
 
-			WebApiCaching.Remove(WebApiControllingCacheData.Key);
+			WebApiCachingControllingData.Remove();
 
 			return Configure();
 		}
@@ -94,7 +95,7 @@ namespace SmartStore.WebApi.Controllers
 		public ActionResult GridUserData(GridCommand command)
 		{
 			if (!HasPermission())
-				return new JsonResult { Data = new GridModel<WebApiUserModel>()	{ Data = new List<WebApiUserModel>() }};
+				return new JsonResult { Data = new GridModel<WebApiUserModel> { Data = new List<WebApiUserModel>() }};
 
 			var model = _webApiPluginService.GetGridModel(command.Page - 1, command.PageSize);
 

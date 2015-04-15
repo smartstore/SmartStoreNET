@@ -1,11 +1,4 @@
-﻿using SmartStore.Core;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Logging;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
-using SmartStore.Services.Security;
-using System;
+﻿using System;
 using System.Linq;
 using System.Net;
 using System.Net.Http;
@@ -13,7 +6,15 @@ using System.Net.Http.Headers;
 using System.Web;
 using System.Web.Http;
 using System.Web.Http.Controllers;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Security;
+using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
@@ -136,7 +137,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (Math.Abs((headDateTime - now).TotalMinutes) > maxMinutes)
 				return HmacResult.TimestampOutOfPeriod;
 
-			var cacheUserData = WebApiCaching.UserData();
+			var cacheUserData = WebApiCachingUserData.Data();
 
 			var apiUser = cacheUserData.FirstOrDefault(x => x.PublicKey == headPublicKey);
 			if (apiUser == null)
@@ -190,7 +191,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		public override void OnAuthorization(HttpActionContext actionContext)
 		{
 			var result = HmacResult.FailedForUnknownReason;
-			var cacheControllingData = WebApiCaching.ControllingData();
+			var cacheControllingData = WebApiCachingControllingData.Data();
 			var now = DateTime.UtcNow;
 			Customer customer = null;
 

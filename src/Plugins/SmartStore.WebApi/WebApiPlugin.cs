@@ -1,10 +1,10 @@
 ﻿using System.Web.Routing;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
-using SmartStore.Services.Configuration;
 using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.WebApi.Security;
 
 namespace SmartStore.WebApi
@@ -46,14 +46,14 @@ namespace SmartStore.WebApi
 
 			base.Install();
 
-			WebApiCaching.Remove(WebApiControllingCacheData.Key);
-			WebApiCaching.Remove(WebApiUserCacheData.Key);
+			WebApiCachingControllingData.Remove();
+			WebApiCachingUserData.Remove();
 		}
 
 		public override void Uninstall()
 		{
-			WebApiCaching.Remove(WebApiControllingCacheData.Key);
-			WebApiCaching.Remove(WebApiUserCacheData.Key);
+			WebApiCachingControllingData.Remove();
+			WebApiCachingUserData.Remove();
 
 			_settingService.DeleteSetting<WebApiSettings>();
 

@@ -831,7 +831,7 @@
                 @if (Model.CanRefundOffline)
 				{
 					<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn"
-						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="Admin.Orders.Fields.RefundOffline.Hint" />
+						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
 				}
                 @if (Model.CanPartiallyRefund)
 				{

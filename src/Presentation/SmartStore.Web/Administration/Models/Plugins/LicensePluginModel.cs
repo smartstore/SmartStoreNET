@@ -7,6 +7,7 @@ namespace SmartStore.Admin.Models.Plugins
 	public class LicensePluginModel : ModelBase
 	{
 		public string SystemName { get; set; }
+		public int InvalidDataStoreId { get; set; }
 
 		public List<LicenseModel> Licenses { get; set; }
 

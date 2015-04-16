@@ -234,196 +234,196 @@
 
 
 <script type="text/javascript">
-    $(document).ready(function () {
+	$(document).ready(function () {
 
-    	var stores = @Html.Raw(availableStores);
+		var stores = @Html.Raw(availableStores);
 
-    	// Multistore
-    	$(".store-limiter").editable({
+		// Multistore
+		$(".store-limiter").editable({
 			type: 'checklist',
 			title: '@T("Admin.Common.Store.AvailableFor")',
 			url: '@Url.Action("SetSelectedStores")',
 			source: stores,
-    		unsavedclass: null,
-    		placement: "right",
-    		emptytext: '@T("Common.No")',
-    		autotext: 'always',
-    		display: function (value, sourceData) {
-    			//display checklist as comma-separated values
-    			var html = [],
+			unsavedclass: null,
+			placement: "right",
+			emptytext: '@T("Common.No")',
+			autotext: 'always',
+			display: function (value, sourceData) {
+				//display checklist as comma-separated values
+				var html = [],
 					checked = $.fn.editableutils.itemsByValue(value, sourceData);
 
-    			if (checked.length) {
-    				$.each(checked, function (i, v) { html.push($.fn.editableutils.escape(_.str.truncate(v.text, 40))); });
-    				$(this).html(html.join(', '));
-    			} else {
-    				$(this).empty();
-    			}
-    		}
-    	});
+				if (checked.length) {
+					$.each(checked, function (i, v) { html.push($.fn.editableutils.escape(_.str.truncate(v.text, 40))); });
+					$(this).html(html.join(', '));
+				} else {
+					$(this).empty();
+				}
+			}
+		});
 
-        function getPluginFriendlyName(dropdown, systemName) {
-            return dropdown.find('option[value="{0}"]'.format(systemName)).text();
-        }
+		function getPluginFriendlyName(dropdown, systemName) {
+			return dropdown.find('option[value="{0}"]'.format(systemName)).text();
+		}
 
-        var dropdownInstall = $('#pluginsToInstall'),
+		var dropdownInstall = $('#pluginsToInstall'),
             dropdownUninstall = $('#pluginsToUninstall'),
             btnExecuteTasks = $('#btn-execute-tasks');
 
-    	// Execute filtering
-        var mainContainer = $('#local-plugins');
-        $('#filter-query').on('keyup', function (e) {
-            var el = $(this);
+		// Execute filtering
+		var mainContainer = $('#local-plugins');
+		$('#filter-query').on('keyup', function (e) {
+			var el = $(this);
 
-            // Retrieve the input field text and reset the count to zero
-            var filter = el.val(),
+			// Retrieve the input field text and reset the count to zero
+			var filter = el.val(),
                 rg = new RegExp(filter, "i");
 
-            // Loop through the plugin items
-            $('.module-list').each(function () {
-                var group = $(this),
+			// Loop through the plugin items
+			$('.module-list').each(function () {
+				var group = $(this),
                     count = 0;
 
-                group.find('.module-item').each(function () {
-                    // If the list item does not contain the text phrase hide it
-                    if (filter.length > 1 && $(this).data('system-name').search(rg) < 0 && $(this).data('friendly-name').search(rg) < 0) {
-                        $(this).hide();
-                    }
-                    // Show the list item if the phrase matches and increase the count by 1
-                    else {
-                        $(this).show();
-                        count++;
-                    }
-                });
+				group.find('.module-item').each(function () {
+					// If the list item does not contain the text phrase hide it
+					if (filter.length > 1 && $(this).data('system-name').search(rg) < 0 && $(this).data('friendly-name').search(rg) < 0) {
+						$(this).hide();
+					}
+						// Show the list item if the phrase matches and increase the count by 1
+					else {
+						$(this).show();
+						count++;
+					}
+				});
 
-                if (count > 0) {
-                    group.show();
-                }
-                else {
-                    group.hide();
-                }
-            });
+				if (count > 0) {
+					group.show();
+				}
+				else {
+					group.hide();
+				}
+			});
 
-            if (!mainContainer.visible(true)) {
-            	$.scrollTo(mainContainer, 400, { offset: -50 });
-            }
-        });
+			if (!mainContainer.visible(true)) {
+				$.scrollTo(mainContainer, 400, { offset: -50 });
+			}
+		});
 
-        // Create tooltip for  ExecuteTasks button which informs
-        // about plugins to be installed and uninstalled
-        btnExecuteTasks.tooltip({
-            html: true,
-            placement: 'bottom',
-            title: function () {
-                var text = '';
+		// Create tooltip for  ExecuteTasks button which informs
+		// about plugins to be installed and uninstalled
+		btnExecuteTasks.tooltip({
+			html: true,
+			placement: 'bottom',
+			title: function () {
+				var text = '';
 
-                if (dropdownUninstall.val()) {
-                    text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall"):</b></div>';
-                    _.each(dropdownUninstall.val(), function (val, i) {
-                        text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownUninstall, val));
-                    });
-                }
+				if (dropdownUninstall.val()) {
+					text = '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Uninstall"):</b></div>';
+					_.each(dropdownUninstall.val(), function (val, i) {
+						text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownUninstall, val));
+					});
+				}
 
-                if (dropdownInstall.val()) {
-                    if (text) text += '<div style="height: 6px"></div>';
-                    text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install"):</b></div>';
-                    _.each(dropdownInstall.val(), function (val, i) {
-                        text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownInstall, val));
-                    });
-                }
+				if (dropdownInstall.val()) {
+					if (text) text += '<div style="height: 6px"></div>';
+					text += '<div class="al"><b>@T("Admin.Configuration.Plugins.Fields.Install"):</b></div>';
+					_.each(dropdownInstall.val(), function (val, i) {
+						text += '<div class="al">{0}</div>'.format(getPluginFriendlyName(dropdownInstall, val));
+					});
+				}
 
-                return text;
-            }
-        });
+				return text;
+			}
+		});
 
-        // Add/Remove plugins to/from the list of (un)installable plugins
-        $('#plugins-form').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
-            e.preventDefault();
+		// Add/Remove plugins to/from the list of (un)installable plugins
+		$('#plugins-form').on('click', 'a.plugin-install, a.plugin-uninstall', function (e) {
+			e.preventDefault();
 
-            var el = $(this),
+			var el = $(this),
                 systemName = el.closest('.module-item').data('system-name'),
                 dropdown = null;
 
-            if (el.hasClass("plugin-install")) {
-                dropdown = dropdownInstall;
-            }
-            else if (el.hasClass("plugin-uninstall")) {
-                dropdown = dropdownUninstall;
-            }
+			if (el.hasClass("plugin-install")) {
+				dropdown = dropdownInstall;
+			}
+			else if (el.hasClass("plugin-uninstall")) {
+				dropdown = dropdownUninstall;
+			}
 
-            // set the corresponding dropdown's option to selected
-            var wasRemoved = false;
-            var option = dropdown.find('option[value="{0}"]'.format(systemName));
-            if (option.attr('selected')) {
-                option.removeAttr('selected');
-                wasRemoved = true;
-            }
-            else {
-                option.attr('selected', 1);
-            }
+			// set the corresponding dropdown's option to selected
+			var wasRemoved = false;
+			var option = dropdown.find('option[value="{0}"]'.format(systemName));
+			if (option.attr('selected')) {
+				option.removeAttr('selected');
+				wasRemoved = true;
+			}
+			else {
+				option.attr('selected', 1);
+			}
 
-            var transferSrc = wasRemoved ? btnExecuteTasks : el;
-            var transferTarget = wasRemoved ? el : btnExecuteTasks;
+			var transferSrc = wasRemoved ? btnExecuteTasks : el;
+			var transferTarget = wasRemoved ? el : btnExecuteTasks;
 
-            transferSrc.stop(true, true).effect("transfer", { to: transferTarget, easing: "easeOutQuad", className: "transfer" }, 400, function () {
-                // Toggle the ExecuteTasks button and it's labels
-                var labelInstall = btnExecuteTasks.find('.label-install-count'),
+			transferSrc.stop(true, true).effect("transfer", { to: transferTarget, easing: "easeOutQuad", className: "transfer" }, 400, function () {
+				// Toggle the ExecuteTasks button and it's labels
+				var labelInstall = btnExecuteTasks.find('.label-install-count'),
                     labelUninstall = btnExecuteTasks.find('.label-uninstall-count'),
                     installCount = dropdownInstall.val() ? dropdownInstall.val().length : 0,
                     uninstallCount = dropdownUninstall.val() ? dropdownUninstall.val().length : 0;
 
-                labelInstall.toggleClass('hide', installCount == 0).text(installCount);
-                labelUninstall.toggleClass('hide', uninstallCount == 0).text(uninstallCount);
+				labelInstall.toggleClass('hide', installCount == 0).text(installCount);
+				labelUninstall.toggleClass('hide', uninstallCount == 0).text(uninstallCount);
 
-                if (!installCount && !uninstallCount) {
-                    btnExecuteTasks.attr('disabled', 'disabled');
-                }
-                else {
-                    btnExecuteTasks.removeAttr('disabled');
-                }
-            });
+				if (!installCount && !uninstallCount) {
+					btnExecuteTasks.attr('disabled', 'disabled');
+				}
+				else {
+					btnExecuteTasks.removeAttr('disabled');
+				}
+			});
 
-        });
+		});
 
-        // Execute the install actions
-        btnExecuteTasks.on('click', function (e) {
-            var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").Text';
-            var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").Text';
+		// Execute the install actions
+		btnExecuteTasks.on('click', function (e) {
+			var confirmText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Confirm").Text';
+			var progressText = '@T("Admin.Configuration.Plugins.ExecuteTasks.Progress").Text';
 
-            if (!confirm(_.str.unescapeHTML(confirmText))) {
-                e.preventDefault();
-                return false;
-            }
+			if (!confirm(_.str.unescapeHTML(confirmText))) {
+				e.preventDefault();
+				return false;
+			}
 
-            $.throbber.show({
-                message: progressText
-            });
-        });
+			$.throbber.show({
+				message: progressText
+			});
+		});
 
-        // Update (all) plugin resources
-        $('#plugins-form').on('click', 'a.plugin-update-resources, a.plugin-update-allresources', function (e) {
-            e.preventDefault();
-            var el = $(this);
+		// Update (all) plugin resources
+		$('#plugins-form').on('click', 'a.plugin-update-resources, a.plugin-update-allresources', function (e) {
+			e.preventDefault();
+			var el = $(this);
 
-            var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
+			var confirmText = '@T("Admin.Configuration.Plugins.Resources.UpdateConfirm").Text',
                 confirmAllText = '@T("Admin.Configuration.Plugins.Resources.UpdateAllConfirm").Text',
                 progressText = '@T("Admin.Configuration.Plugins.Resources.UpdateProgress")';
 
-            if (!confirm(_.str.unescapeHTML(el.hasClass('plugin-update-allresources') ? confirmAllText : confirmText))) {
-                return false;
-            }
+			if (!confirm(_.str.unescapeHTML(el.hasClass('plugin-update-allresources') ? confirmAllText : confirmText))) {
+				return false;
+			}
 
-            $.throbber.show({
-                message: progressText,
-                callback: function () {
-                    setLocation(el.attr("href"));
-                }
-            });
-        });
+			$.throbber.show({
+				message: progressText,
+				callback: function () {
+					setLocation(el.attr("href"));
+				}
+			});
+		});
 
 		// edit plugin
-        $('#plugins-form').on('click', '.plugin-edit', function (e) {
-            OpenWindow(
+		$('#plugins-form').on('click', '.plugin-edit', function (e) {
+			OpenWindow(
                 '{0}?systemName={1}&btnId=btnRefresh&formId=plugins-form'.format(
                     '@Url.Content("~/Admin/Plugin/EditPopup")',
                     $(this).data("systemname")
@@ -446,14 +446,19 @@
     			type: 'GET',
     			smallIcon: dialog.find('.modal-body'),
     			callbackSuccess: function (resp) {
+    				dialog = $('#plugin-licence-modal');
     				dialog.find('.modal-body').html(resp);
-    				
+
     				setTimeout(function() {
     					dialog.find('[name="Licenses[0].LicenseKey"]').focus();
     				}, 1000);
 
     				dialog.find('.btn-primary').click(function() {
-    					dialog.find('form:first').submit();
+    					e.preventDefault();
+    					if (confirm('@T("Admin.Configuration.Plugins.ConfirmLicensing")')) {
+    						dialog.find('form:first').submit();
+    					}
+    					return false;
     				});
 
     				dialog.find('.licensing-reset-status-check').click(function() {

@@ -92,6 +92,14 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.CreateMutuallyAssociationsResult",
 				"There were {0} mutual association(s) created.",
 				"Es wurden {0} gegenseitige Zuordnung(en) erstellt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.LicensingInvalidStoreUrl",
+				"The license key cannot be activated for the entered store URL. Please enter the right store URL in your store details before activating the key.",
+				"Der Lizenzschlüssel kann für die hinterlegte Shop-URL nicht aktiviert werden. Bitte tragen Sie vor der Aktivierung in den Shop-Details die korrekte Shop-URL ein.");
+
+			builder.AddOrUpdate("Admin.Configuration.Plugins.ConfirmLicensing",
+				"Please check whether the licensing is done for the right store URL! Proceed with the licensing?",
+				"Bitte überprüfen Sie, ob die Lizenzierung für die richtige Shop-URL erfolgt! Mit der Lizenzierung fortfahren?");
 		}
     }
 }

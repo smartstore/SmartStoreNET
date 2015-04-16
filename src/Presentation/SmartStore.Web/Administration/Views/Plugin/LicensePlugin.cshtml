@@ -5,29 +5,48 @@
 }
 
 <form method="POST" action="@Url.Action("LicensePlugin", "Plugin", new { systemName = Model.SystemName })"
-	   data-resetcheckurl="@Url.Action("LicenseResetStatusCheck", "Plugin", new { systemName = Model.SystemName })">
+	data-resetcheckurl="@Url.Action("LicenseResetStatusCheck", "Plugin", new { systemName = Model.SystemName })">
 
-	<table class="adminContent">
-		@for (int i = 0; i < Model.Licenses.Count; ++i)
-		{
-			<tr>
-				<td colspan="2">
-					<div class="admin-config-group" style="@(i==0 ? "" : "margin-top: 12px;")">
-						<div class="small-title">@Model.Licenses[i].StoreName (@Model.Licenses[i].StoreUrl)</div>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Licenses[i].LicenseKey)
-				</td>
-				<td class="adminData">
-					@Html.HiddenFor(model => model.Licenses[i].StoreId)
-					@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
+	@if (Model.InvalidDataStoreId == 0)
+	{
+		<table class="adminContent">
+			@for (int i = 0; i < Model.Licenses.Count; ++i)
+			{
+				<tr>
+					<td colspan="2">
+						<div class="admin-config-group" style="@(i==0 ? "" : "margin-top: 12px;")">
+							<div class="small-title">
+								@Model.Licenses[i].StoreUrl <span class="muted">(@Model.Licenses[i].StoreName)</span>
+								- <a href="@Url.Action("Edit", "Store", new { id = Model.Licenses[i].StoreId })">
+									@T("Admin.Common.Change")
+								</a>
+							</div>
+						</div>
+					</td>
+				</tr>
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.Licenses[i].LicenseKey)
+					</td>
+					<td class="adminData">
+						@Html.HiddenFor(model => model.Licenses[i].StoreId)
+						@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
 
-					@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large" })
-				</td>
-			</tr>
-		}
-	</table>
+						@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large" })
+					</td>
+				</tr>
+			}
+		</table>
+	}
+	else
+	{
+		<div class="alert alert-warning">
+			<p>@T("Admin.Configuration.Plugins.LicensingInvalidStoreUrl")</p>
+			<div>
+				<a href="@Url.Action("Edit", "Store", new { id = Model.InvalidDataStoreId })" class="btn btn-warning">
+					@T("Admin.Common.Change")
+				</a>
+			</div>
+		</div>
+	}
 </form>

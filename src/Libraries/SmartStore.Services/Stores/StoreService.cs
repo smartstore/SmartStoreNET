@@ -155,6 +155,41 @@ namespace SmartStore.Services.Stores
 			return _isSingleStoreMode.Value;
 		}
 
+		/// <summary>
+		/// True if the store data is valid. Otherwise False.
+		/// </summary>
+		/// <param name="store">Store entity</param>
+		public virtual bool IsStoreDataValid(Store store)
+		{
+			if (store == null)
+				throw new ArgumentNullException("store");
+
+			if (store.Url.IsEmpty())
+				return false;
+
+			try
+			{
+				var uri = new Uri(store.Url);
+				var domain = uri.DnsSafeHost.EmptyNull().ToLower();
+
+				switch (domain)
+				{
+					case "www.yourstore.com":
+					case "yourstore.com":
+					case "www.mein-shop.de":
+					case "mein-shop.de":
+						return false;
+					default:
+						return store.Url.IsWebUrl();
+				}
+			}
+			catch (Exception exc)
+			{
+				var message = "{0} ({1})".FormatInvariant(exc.Message.NaIfEmpty(), store.Url);
+				throw new Exception(message, exc);
+			}
+		}
+
 		#endregion
 	}
 }

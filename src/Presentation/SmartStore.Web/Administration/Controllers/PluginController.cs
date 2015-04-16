@@ -353,6 +353,16 @@ namespace SmartStore.Admin.Controllers
 				Licenses = new List<LicensePluginModel.LicenseModel>()
 			};
 
+			// validate store url
+			foreach (var store in stores)
+			{
+				if (!_commonService.StoreService.IsStoreDataValid(store))
+				{
+					model.InvalidDataStoreId = store.Id;
+					return View(model);
+				}
+			}
+
 			if (singleLicenseForAllStores)
 			{
 				var licenseModel = new LicensePluginModel.LicenseModel();
@@ -400,26 +410,29 @@ namespace SmartStore.Admin.Controllers
 			if (!isLicensable)
 				return HttpNotFound();
 
-			foreach (var item in model.Licenses)
+			if (model.Licenses != null)
 			{
-				var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);
+				foreach (var item in model.Licenses)
+				{
+					var result = LicenseChecker.Activate(item.LicenseKey, descriptor.SystemName, item.StoreUrl);
 
-				if (result == null)
-				{
-					// do nothing, skiped
-				}
-				else if (result.Success)
-				{
-					NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
-				}
-				else
-				{
-					if (result.IsFailureWarning)
-						NotifyWarning(result.ToString());
+					if (result == null)
+					{
+						// do nothing, skiped
+					}
+					else if (result.Success)
+					{
+						NotifySuccess(T("Admin.Configuration.Plugins.LicenseActivated"));
+					}
 					else
-						NotifyError(result.ToString());
+					{
+						if (result.IsFailureWarning)
+							NotifyWarning(result.ToString());
+						else
+							NotifyError(result.ToString());
 
-					return RedirectToAction("List");
+						return RedirectToAction("List");
+					}
 				}
 			}
 

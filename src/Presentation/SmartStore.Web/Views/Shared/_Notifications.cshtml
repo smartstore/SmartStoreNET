@@ -9,8 +9,9 @@
                 el = $(el);
                 var type = el.data("type");
                 var sticky = type != "success" && type != "info";
+                var delay = type == "success" ? 2000 : 5000;
                 var notify = function () {
-                	EventBroker.publish("message", { text: el.html(), type: type, hide: !sticky });
+                	EventBroker.publish("message", { text: el.html(), type: type, delay: delay, hide: !sticky });
                 };
                 _.delay(notify, 100 * i);
             });

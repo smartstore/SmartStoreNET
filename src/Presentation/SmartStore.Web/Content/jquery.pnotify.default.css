@@ -164,9 +164,14 @@ margin: 0;
     filter: alpha(75);
 }
 
-.ui-pnotify.stack-topcenter {
+.ui-pnotify.stack-topcenter,
+.ui-pnotify.stack-bottomcenter {
 	left: 50% !important;
 	margin-left: -250px !important;
+}
+
+.ui-pnotify.stack-bottomcenter {
+	top: auto;
 }
 
 /*.ui-pnotify.stack-bottomright {

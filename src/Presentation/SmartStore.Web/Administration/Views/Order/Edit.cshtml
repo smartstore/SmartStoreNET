@@ -820,25 +820,25 @@
 				}
                 @if (Model.CanCapture)
                 {
-                    <input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn" 
+                    <input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary" 
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Capture.Hint")" />
                 }
                 @if (Model.CanRefund)
-                {
-                    <input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn" 
+				{
+					<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Refund.Hint")" />
-                }
+				}
                 @if (Model.CanRefundOffline)
 				{
 					<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn"
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="Admin.Orders.Fields.RefundOffline.Hint" />
 				}
                 @if (Model.CanPartiallyRefund)
-                {
-                    <input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn" 
+				{
+					<input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn btn-primary"
 						   onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form" }))', 960, 320, true); return false;"
 						   title="@T("Admin.Orders.Fields.PartialRefund.Hint")" />
-                }
+				}
                 @if (Model.CanPartiallyRefundOffline)
 				{
 					<input type="submit" id="partiallyrefundorderoffline" name="partiallyrefundorderoffline" value="@T("Admin.Orders.Fields.PartialRefundOffline")" class="btn"
@@ -847,7 +847,7 @@
 				}
                 @if (Model.CanVoid)
 				{
-					<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn"
+					<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Void.Hint")" />
 				}
                 @if (Model.CanVoidOffline)

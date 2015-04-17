@@ -15,36 +15,36 @@
 	@if (!Model.UpdateAvailable)
 	{
 		<div class="alert alert-info">
-			Your SmartStore.NET version is up-to-date
+			@T("Admin.CheckUpdate.IsUpToDate")
 		</div>
 	}
 	else
 	{
-		<h3 class="text-error">Update available!</h3>
+		<h3 class="text-error">@T("Admin.CheckUpdate.UpdateAvailable")!</h3>
 		<dl>
-			<dt>Your Version</dt>
+			<dt>@T("Admin.CheckUpdate.YourVersion")</dt>
 			<dd>@Model.CurrentVersion</dd>
-			<dt>Current Version</dt>
+			<dt>@T("Admin.CheckUpdate.CurrentVersion")</dt>
 			<dd class="text-error">@Model.Version</dd>
-			<dt>Date</dt>
+			<dt>@T("Common.Date")</dt>
 			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
 		</dl>
 		
 		<div class="admin-config-group">
-			<div class="title">Release Notes</div>
+			<div class="title">@T("Admin.CheckUpdate.ReleaseNotes")</div>
 			<div>@Html.Raw(Model.ReleaseNotes)</div>
 		</div>
 		
 		<div style="margin-top: 30px">
-			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">More Info</a>
+			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">@T("Common.MoreInfo")</a>
 			@if (Model.DownloadUrl.HasValue())
 			{
 				<a class="btn btn-default" href='@Model.DownloadUrl' style="margin-left: 5px">
 					<i class="fa fa-download"></i>
-					Download
+					@T("Common.Download")
 				</a>
 			}
-			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>Don't notify anymore</a>
+			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>@T("Admin.CheckUpdate.DontNotifyAnymore")</a>
 		</div>
 	}
 </div>

@@ -244,6 +244,10 @@
     <Compile Include="Migrations\201504131412183_NewCategoryProperties.Designer.cs">
       <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504171629262_V22Final.cs" />
+    <Compile Include="Migrations\201504171629262_V22Final.Designer.cs">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -480,6 +484,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504131412183_NewCategoryProperties.resx">
       <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504171629262_V22Final.resx">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

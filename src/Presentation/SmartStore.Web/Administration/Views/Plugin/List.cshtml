@@ -1,6 +1,7 @@
 ﻿@model LocalPluginsModel
 @using SmartStore.Web.Framework.UI;
 @using Newtonsoft.Json;
+@using SmartStore.Licensing;
 
 @{    
     //page title
@@ -34,9 +35,13 @@
 						}
 						@if (plugin.IsLicensable)
 						{
-							if (plugin.IsLicensed)
+							if (plugin.LicenseState == LicensingState.Licensed)
 							{
 								<span class="label label-success">@T("Admin.Common.Licensed")</span>
+							}
+							else if (plugin.LicenseState == LicensingState.Unlicensed && plugin.TruncatedLicenseKey.HasValue())
+							{
+								<span class="label label-important">@T("Admin.Common.Unlicensed")</span>
 							}
 							else
 							{

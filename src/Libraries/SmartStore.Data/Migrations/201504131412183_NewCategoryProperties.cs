@@ -100,6 +100,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Plugins.ConfirmLicensing",
 				"Please check whether the licensing is done for the right store URL! Proceed with the licensing?",
 				"Bitte überprüfen Sie, ob die Lizenzierung für die richtige Shop-URL erfolgt! Mit der Lizenzierung fortfahren?");
+
+			builder.AddOrUpdate("Admin.Common.Unlicensed",
+				"Unlicensed",
+				"Unlizenziert");
 		}
     }
 }

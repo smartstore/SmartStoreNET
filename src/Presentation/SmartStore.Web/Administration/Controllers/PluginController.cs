@@ -140,7 +140,8 @@ namespace SmartStore.Admin.Controllers
 
 					if (license != null)	// license\plugin has been used
 					{
-						model.IsLicensed = license.TruncatedLicenseKey.HasValue();
+						model.LicenseState = license.State;
+						model.TruncatedLicenseKey = license.TruncatedLicenseKey;
 						model.RemainingDemoUsageDays = license.RemainingDemoDays;
 					}
 				}

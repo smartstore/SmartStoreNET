@@ -1,8 +1,8 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
-using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Plugins;
+using SmartStore.Licensing;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
@@ -52,7 +52,8 @@ namespace SmartStore.Admin.Models.Plugins
 
 		public string LicenseUrl { get; set; }
 		public bool IsLicensable { get; set; }
-		public bool IsLicensed { get; set; }
+		public LicensingState LicenseState { get; set; }
+		public string TruncatedLicenseKey { get; set; }
 		public int? RemainingDemoUsageDays { get; set; }
 
 		public string RemainingDemoUsageDaysLabel

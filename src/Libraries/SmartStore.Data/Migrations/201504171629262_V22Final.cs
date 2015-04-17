@@ -36,6 +36,15 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Download",
 				"Download",
 				"Download");
+
+			builder.Delete(
+				"Reviews.Date",
+				"RewardPoints.Fields.Date",
+				"Admin.Customers.Customers.RewardPoints.Fields.Date",
+				"DownloadableProducts.Fields.Date",
+				"Order.ShipmentStatusEvents.Date",
+				"PrivateMessages.Inbox.DateColumn",
+				"PrivateMessages.Sent.DateColumn");
 			
 			builder.AddOrUpdate("Admin.CheckUpdate",
 				"Check for update",

@@ -22,7 +22,7 @@
                                 @T("DownloadableProducts.Fields.Order"): <a class="link" href="@Url.Action("Details", "Order", new { id = item.OrderId })" rel="nofollow">@item.OrderId</a>
                             </div>
                             <div>
-                                @T("DownloadableProducts.Fields.Date"): @item.CreatedOn.ToString("d")
+                                @T("Common.CreatedOn"): @item.CreatedOn.ToString("d")
                             </div>
                             <div>
                                 @T("DownloadableProducts.Fields.Product"): <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>

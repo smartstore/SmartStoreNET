@@ -222,7 +222,7 @@ namespace SmartStore.Admin.Models.Customers
             [AllowHtml]
             public string Message { get; set; }
 
-            [SmartResourceDisplayName("Admin.Customers.Customers.RewardPoints.Fields.Date")]
+            [SmartResourceDisplayName("Common.CreatedOn")]
             public DateTime CreatedOn { get; set; }
         }
 

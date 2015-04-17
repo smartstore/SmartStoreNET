@@ -186,7 +186,7 @@ namespace SmartStore.Web.Controllers
             //set page timeout to 5 minutes
             this.Server.ScriptTimeout = 300;
 
-            var model = new InstallModel()
+            var model = new InstallModel
             {
                 AdminEmail = _locService.GetResource("AdminEmailValue"),
                 //AdminPassword = "admin",
@@ -201,25 +201,33 @@ namespace SmartStore.Web.Controllers
                 Collation = "SQL_Latin1_General_CP1_CI_AS",
             };
 
-            foreach (var lang in _locService.GetAvailableLanguages())
+			var curLanguage = _locService.GetCurrentLanguage();
+			var availableLanguages = _locService.GetAvailableLanguages();
+
+			foreach (var lang in availableLanguages)
             {
-                model.AvailableLanguages.Add(new SelectListItem()
+                model.AvailableLanguages.Add(new SelectListItem
                 {
                     Value = Url.Action("ChangeLanguage", "Install", new { language = lang.Code}),
                     Text = lang.Name,
-                    Selected = _locService.GetCurrentLanguage().Code == lang.Code,
+					Selected = curLanguage.Code == lang.Code,
                 });
             }
             
             foreach (var lang in _locService.GetAvailableAppLanguages())
             {
-                model.AvailableAppLanguages.Add(new SelectListItem()
+                model.AvailableAppLanguages.Add(new SelectListItem
                 {
                     Value = lang.Culture,
                     Text = lang.Name,
-                    Selected = lang.Culture == Thread.CurrentThread.CurrentCulture.IetfLanguageTag // TODO (?)
+					Selected = lang.UniqueSeoCode.IsCaseInsensitiveEqual(curLanguage.Code)
                 });
             }
+
+			if (!model.AvailableAppLanguages.Any(x => x.Selected))
+			{
+				model.AvailableAppLanguages.FirstOrDefault(x => x.Value.IsCaseInsensitiveEqual("en")).Selected = true;
+			}
 
             model.AvailableMediaStorages.Add(new SelectListItem { Value = "db", Text = _locService.GetResource("MediaStorage.DB"), Selected = true });
             model.AvailableMediaStorages.Add(new SelectListItem { Value = "fs", Text = _locService.GetResource("MediaStorage.FS") });

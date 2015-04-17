@@ -756,6 +756,9 @@
 	<LocaleResource Name="Address.Fields.Email.Required">
 		<Value>E-Mail wird benötigt.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Address.Fields.EmailMatch">
+		<Value>Bestätigung der E-Mail</Value>
+	</LocaleResource>
 	<LocaleResource Name="Address.Fields.FaxNumber">
 		<Value>Fax</Value>
 	</LocaleResource>
@@ -863,6 +866,15 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Address.Fields.Email.Required">
 		<Value>E-Mail wird benötigt.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Address.Fields.EmailMatch">
+		<Value>Bestätigung der E-Mail</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Address.Fields.EmailMatch.MustMatchEmail">
+		<Value>Die E-Mail-Adresse muss mit der zuvor eingegebenen E-Mail-Adresse übereinstimmen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Address.Fields.EmailMatch.Required">
+		<Value>Bitte wiederholen Sie die Eingabe Ihrer E-Mail-Adresse</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Address.Fields.FaxNumber">
 		<Value>Fax</Value>
@@ -1263,6 +1275,9 @@
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Options.SaveBeforeEdit">
 		<Value>Sie müssen das Attribut zunächst spreichern, bevor Sie Optionen hinzufügen können.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount">
+		<Value>Anzahl Optionen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Attributes.SpecificationAttributes.Updated">
 		<Value>Das Attribut wurde erfolgreich bearbeitet.</Value>
 	</LocaleResource>
@@ -1371,6 +1386,12 @@
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.AllowCustomersToSelectPageSize.Hint">
 		<Value>Kunden können die Listengröße mit Hilfe einer vorgegebenen Optionsliste ändern.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.BottomDescription">
+		<Value>Untere Beschreibung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.BottomDescription.Hint">
+		<Value>Optionale zweite Beschreibung, die auf der Warengruppenseite unterhalb der Produkte angezeigt wird.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.CategoryTemplate">
 		<Value>Design Vorlage</Value>
 	</LocaleResource>
@@ -1394,6 +1415,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.DisplayOrder.Hint">
 		<Value>Legt die Anzeige-Priorität fest (1 steht bspw. für das erste Element in der Liste)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.FullName">
+		<Value>Vollständiger Name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Categories.Fields.FullName.Hint">
+		<Value>Vollständiger Name, der als Titel auf der Warengruppenseite angezeigt wird.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.MetaDescription">
 		<Value>Meta Description</Value>
@@ -2380,6 +2407,9 @@
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Published.Hint">
 		<Value>Produkt veröffentlicht</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.Fields.QuantityUnit">
+		<Value>Verpackungseinheit</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.RecurringCycleLength">
 		<Value>Erneuerungszeitraum</Value>
 	</LocaleResource>
@@ -2547,6 +2577,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.List.SearchProductType.Hint">
 		<Value>Nach einem Produkttyp suchen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchWithoutCategories">
+		<Value>Ohne Warengruppenzuordnung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchWithoutCategories.Hint">
+		<Value>Filtert nach Produkten ohne Warengruppenzuordnung.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchWithoutManufacturers">
+		<Value>Ohne Herstellerzuordnung</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Catalog.Products.List.SearchWithoutManufacturers.Hint">
+		<Value>Filtert nach Produkten ohne Herstellerzuordnung.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Manage">
 		<Value>Produktverwaltung</Value>
@@ -2801,7 +2843,7 @@
 		<Value>Hinzufügen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.SpecificationAttributes.AddNew">
-		<Value>Neues Spezifikationsattribut hinzufügen</Value>
+		<Value>Spezifikationsattribut zuordnen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.SpecificationAttributes.Fields.AllowFiltering">
 		<Value>Filtern ermöglichen</Value>
@@ -2887,6 +2929,27 @@
 	<LocaleResource Name="Admin.Catalog.ProductTags.Fields.ProductCount">
 		<Value>Anzahl Artikel</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate">
+		<Value>Auf Aktualisierung prüfen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.CurrentVersion">
+		<Value>Aktuelle Version</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.DontNotifyAnymore">
+		<Value>Nicht mehr benachrichtigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.IsUpToDate">
+		<Value>SmartStore.NET ist auf dem neuesten Stand</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.ReleaseNotes">
+		<Value>Release Notes</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.UpdateAvailable">
+		<Value>Update verfügbar</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
+		<Value>Ihre Version</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.About">
 		<Value>Über</Value>
 	</LocaleResource>
@@ -2899,11 +2962,20 @@
 	<LocaleResource Name="Admin.Common.AddNew">
 		<Value>Neu</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.AdminComment">
+		<Value>Admin-Kommentar</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.AdminComment.Hint">
+		<Value>Kommentar für internen Gebrauch. Wird nicht veröffentlicht.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.All">
 		<Value>Alle</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.AreYouSure">
 		<Value>Sind Sie sicher?</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.AskCreateMutuallyAssociations">
+		<Value>Möchten Sie alle gegenseitigen Zuordnungen erstellen?</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.AskToProceed">
 		<Value>Möchten Sie fortfahren?</Value>
@@ -2938,6 +3010,12 @@
 	<LocaleResource Name="Admin.Common.CopyOf">
 		<Value>Kopie von</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.CreateMutuallyAssociations">
+		<Value>Alle gegenseitigen Zuordnungen erstellen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.CreateMutuallyAssociationsResult">
+		<Value>Es wurden {0} gegenseitige Zuordnung(en) erstellt.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.CsvFile">
 		<Value>CSV-Datei</Value>
 	</LocaleResource>
@@ -2962,6 +3040,9 @@
 	<LocaleResource Name="Admin.Common.DeleteConfirmationParam">
 		<Value>Möchten Sie "{0}" wirklich löschen?</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.DeleteSelected">
+		<Value>Ausgewählte löschen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Edit">
 		<Value>Bearbeiten</Value>
 	</LocaleResource>
@@ -2973,6 +3054,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExcelFile">
 		<Value>Excel-Datei</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Export.Wait">
+		<Value>Bitte haben Sie einen Augenblick Geduld, während der Export durchgeführt wird</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExportNoData">
 		<Value>Keine Daten zu exportieren.</Value>
@@ -2994,6 +3078,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExportToPdf.Selected">
 		<Value>Nur Ausgewählte nach PDF exportieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.ExportToPdf.TocTitle">
+		<Value>Inhaltsverzeichnis</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.ExportToPdf.TooManyItems">
+		<Value>Zu viele Objekte! Mehr als 500 Objekte können nicht konvertiert werden. Bitte reduzieren Sie die Anzahl ausgewählter Datensätze.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExportToXml">
 		<Value>Als XML exportieren</Value>
@@ -3071,7 +3161,10 @@
 		<Value>Info</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.License">
-		<Value>Lizenz</Value>
+		<Value>Lizenzieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Licensed">
+		<Value>Lizenziert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.List">
 		<Value>Listenansicht</Value>
@@ -3093,6 +3186,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Reset">
 		<Value>Auf Standardwerte zurücksetzen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.ResourceNotFound">
+		<Value>Die gewünschte Ressource wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.RestartAppRequest">
 		<Value>Sie müssen die Anwendung neu starten, damit die Änderungen wirksam werden.</Value>
@@ -3150,6 +3246,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Treeview">
 		<Value>Baumansicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.Unlicensed">
+		<Value>Unlizenziert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Update">
 		<Value>Aktualisieren</Value>
@@ -4003,6 +4102,9 @@
 	<LocaleResource Name="Admin.Configuration.Payment">
 		<Value>Zahlung</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Payment.CannotActivatePaymentMethod">
+		<Value>Das Plugin erlaubt keine Aktivierung dieser Zahlungsmethode.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods">
 		<Value>Zahlungsarten</Value>
 	</LocaleResource>
@@ -4029,6 +4131,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins">
 		<Value>Plugins</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.ConfirmLicensing">
+		<Value>Bitte überprüfen Sie, ob die Lizenzierung für die richtige Shop-URL erfolgt! Mit der Lizenzierung fortfahren?</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Description">
 		<Value>Plugins installieren oder aktualisieren</Value>
@@ -4108,6 +4213,18 @@
 	<LocaleResource Name="Admin.Configuration.Plugins.Installed">
 		<Value>Das Plugin wurde installiert.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.LicenseActivated">
+		<Value>Das Plugin wurde erfolgreich lizenziert.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.LicenseKey">
+		<Value>Lizenzschlüssel</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.LicenseKey.Hint">
+		<Value>Bitte den Lizenzschlüssel für das Plugin eingeben.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Plugins.LicensingInvalidStoreUrl">
+		<Value>Der Lizenzschlüssel kann für die hinterlegte Shop-URL nicht aktiviert werden. Bitte tragen Sie vor der Aktivierung in den Shop-Details die korrekte Shop-URL ein.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Misc.BackToList">
 		<Value>Zurück zur Plugin-Liste</Value>
 	</LocaleResource>
@@ -4140,6 +4257,33 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins.Uninstalled">
 		<Value>Das Plugin wurde deinstalliert.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit">
+		<Value>Verpackungseinheiten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Added">
+		<Value>Verpackungseinheit wurde erfolgreich zugefügt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.AddNew">
+		<Value>Verpackungseinheit hinzufügen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.EditQuantityUnitDetails">
+		<Value>Verpackungseinheit bearbeiten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.IsDefault">
+		<Value>Standard-Verpackungseinheit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.IsDefault.Hint">
+		<Value>Legt die Standard-Verpackungseinheit fest</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.Name">
+		<Value>Name</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.QuantityUnit.Fields.Name.Hint">
+		<Value>Legt den Namen der Verpackungseinheit fest</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Quantityunits.Updated">
+		<Value>Verpackungseinheit wurde erfolgreich aktualisiert</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.RegionalSettings">
 		<Value>Regionale Einstellungen</Value>
@@ -4270,6 +4414,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultViewMode.Hint">
 		<Value>Legt fest, wie Produktlisten standardmäßig dargestellt werden sollen. Der Kunde kann die Darstellung im Shop ändern.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock">
+		<Value>Lieferzeit, die bei einem leerem Lagerbestand angezeigt wird</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DeliveryTimeIdForEmptyStock.Hint">
+		<Value>Lieferzeit, die angezeigt wird, wenn der Warenbestand des Produktes kleiner gleich 0 ist.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DisplayAllImagesNumber">
 		<Value>Anzahl, ab der Bilder nur noch bei Variantenwechsel angezeigt werden</Value>
 	</LocaleResource>
@@ -4294,11 +4444,17 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser.Hint">
 		<Value>Option, bei der Langtexte gekürzt und erst auf Klick in voller Länge angezeigt werden.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria">
+		<Value>Alle Filtergruppen aufklappen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria.Hint">
+		<Value>Legt fest, ob alle Filtergruppen aufgeklappt angezeigt werden sollen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.FilterEnabled">
-		<Value>Filterfunktion aktivieren</Value>
+		<Value>Filter Sidebar Widget anzeigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.FilterEnabled.Hint">
-		<Value>Aktiviert die Filterfunktion für Produkte in Warengruppen.</Value>
+		<Value>Aktiviert das Filter Sidebar Widget zum Filtern von Produkten in Warengruppen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideBuyButtonInLists">
 		<Value>Verberge Kaufen-Button in Produktlisten</Value>
@@ -4324,6 +4480,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts.Hint">
 		<Value>Deaktiviert die Anzeige empfohlener Produkte im Shop. Dies kann die Performance erhöhen.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists">
+		<Value>Top-Produkte in Listen anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists.Hint">
+		<Value>Legt fest, ob Top-Produkte sowohl in den Produkt- als auch in den Filterlisten angezeigt werden sollen. Ansonsten erscheinen sie nur oberhalb in der Top-Produktliste.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeFullDescriptionInCompareProducts">
 		<Value>Komplette Beschreibung beim Produktvergleich einbeziehen</Value>
 	</LocaleResource>
@@ -4347,6 +4509,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay.Hint">
 		<Value>Legt die Anzahl der anzuzeigenen Hersteller in der Navigationsleiste fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay">
+		<Value>Maximale Anzahl Filtereinträge</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.MaxFilterItemsToDisplay.Hint">
+		<Value>Bestimmt die maximale Anzahl angezeigter Filtereinträge</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.MiscSettings">
 		<Value>Allgemein</Value>
@@ -4522,6 +4690,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists.Hint">
 		<Value>Legt fest, ob die Farben des ersten Farbattributes auch in Produktlisten angezeigt werden sollen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit">
+		<Value>Zeige die Standard-Verpackungseinheit</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit.Hint">
+		<Value>Zeige die Standard-Verpackungseinheit, falls für das Produkt keine Verpackungseinheit festgelegt ist.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDeliveryTimesInProductDetail">
 		<Value>Zeige Lieferzeiten</Value>
 	</LocaleResource>
@@ -4575,6 +4749,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete.Hint">
 		<Value>Legt fest, ob Produktbilder bei der Autovervollständigung währen der Suche angezeigt werden sollen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail">
+		<Value>Zeige Produktbewertungen in der Produktdetailansicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductDetail.Hint">
+		<Value>Legt fest, ob Produktbewertungen in der Produktdetailansicht angezeigt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductReviewsInProductLists">
 		<Value>Zeige Produktbewertungen in Produktlisten</Value>
@@ -4963,6 +5143,12 @@
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UserRegistrationType.Hint">
 		<Value>Registrierungsmethode für Benutzer. Standard-Methode: Registrierung ohne Bestätigung möglich. E-Mail-Bestätigungsmethode: Benutzer müssen auf eine Überprüfungs-E-Mail antworten, bevor ihr Konto aktiviert wird. Admin-Bestätigungs-Methode: Kunden können sich registrieren. Das Konto wird aber erst nach Bestätigung des Administrators aktiviert. Disabled-Methode: Registrierung ist deaktiviert.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress">
+		<Value>Prüfung der Kunden-Email-Adresse</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress.Hint">
+		<Value>Bestimmt ob die Email-Adresse des Kunden im Checkout validiert wird.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ZipPostalCodeEnabled">
 		<Value>Anzeige "Postleitzahl" aktiviert</Value>
 	</LocaleResource>
@@ -5148,6 +5334,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.BankConnectionSettings.Iban.Hint">
 		<Value>Geben Sie die IBAN Ihrer Bank an.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CanonicalHostNameRule">
+		<Value>Regel für kanonischen Domänennamen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CanonicalHostNameRule.Hint">
+		<Value>Erzwingt die permanente Umleitung zu einem einzelnen Domännennamen für ein besseres Seitenranking (z.B. meinshop.de &gt; www.meinshop.de oder umgekehrt)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CanonicalUrlsEnabled">
 		<Value>Kanonische Urls aktivieren</Value>
@@ -5674,6 +5866,15 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Media.MiniCartThumbPictureSize.Hint">
 		<Value>Legt die Miniwarenkorb-Symbolbild-Größe in Pixeln fest.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.MovePicturesNote">
+		<Value>Bitte sichern Sie Ihre Datenbank, ehe Sie Mediendateien verschieben. Dieser Vorgang kann je nach Menge der Bilddaten mehrere Minuten in Anspruch nehmen.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.MoveToDb">
+		<Value>In Datenbank verschieben</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Media.MoveToFs">
+		<Value>Ins Dateisystem verschieben</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase">
 		<Value>Bilddaten speichern in...</Value>
 	</LocaleResource>
@@ -5685,9 +5886,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.FileSystem">
 		<Value>Dateisystem</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.Configuration.Settings.Media.PicturesStoredIntoDatabase.Hint">
-		<Value>Legt fest, ob Bilder in der Datenbank oder im Dateisystem gespeichert werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media.PictureZoomType">
 		<Value>Zoomtyp</Value>
@@ -5807,16 +6005,16 @@
 		<Value>Benutzer können Bestellung erneut abschicken.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderSubtotalAmount">
-		<Value>Mindestbestellwert Netto</Value>
+		<Value>Mindestbestellwert Zwischensumme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderSubtotalAmount.Hint">
-		<Value>Legt den Netto-Mindestbestellwert fest.</Value>
+		<Value>Legt den Mindestbestellwert der Zwischensumme fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotalAmount">
-		<Value>Mindestbestellwert Brutto</Value>
+		<Value>Mindestbestellwert Gesamtsumme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderTotalAmount.Hint">
-		<Value>Legt den Brutto-Mindestbestellwert fest.</Value>
+		<Value>Legt den Mindestbestellwert der Gesamtsumme fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.NumberOfDaysReturnRequestAvailable">
 		<Value>Erlaubter Zeitraum für Retourenwünsche in Tagen</Value>
@@ -5997,6 +6195,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.CartSettings">
 		<Value>Warenkorb</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.Checkout">
+		<Value>Checkout</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.CrossSellsNumber">
 		<Value>Anzahl der angezeigten Cross-Selling-Artikel</Value>
@@ -6304,6 +6505,9 @@
 	<LocaleResource Name="Admin.Configuration.Shipping">
 		<Value>Versand</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Shipping.CannotActivateShippingRateComputationMethod">
+		<Value>Das Plugin erlaubt keine Aktivierung dieser Berechnungsmethode für Versandkosten.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Shipping.Methods">
 		<Value>Versandarten</Value>
 	</LocaleResource>
@@ -6597,6 +6801,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.MobileDevicesSupported.Hint">
 		<Value>Legt fest, ob für Mobile-Endgeräte die Mobile-Ansicht unterstützt wird.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie">
+		<Value>Benutzer Theme in Cookie speichern</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie.Hint">
+		<Value>Wenn nicht gewählt, wird das Benutzer Theme mit dem Kundenkonto verknüpft, was u.U. unerwünscht sein kann, wenn sich bspw. mehrere User einen Gastzugang teilen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Options.Info">
 		<Value>Deaktivieren Sie Ressourcen-Bundling und -Caching, um Theme-Änderungen optimal testen und debuggen zu können.</Value>
@@ -7261,6 +7471,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.Title.Hint">
 		<Value>Der Titel der Seite.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.TitleTag">
+		<Value>Titel-Tag</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.TitleTag.Hint">
+		<Value>Legt das Tag fest, welches für die Überschrift des Topics ausgegeben wird</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.URL">
 		<Value>URL</Value>
 	</LocaleResource>
@@ -7275,6 +7491,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetShowTitle.Hint">
 		<Value>Legt fest, ob der Titel als Überschrift dargestellt werden soll.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetWrapContent">
+		<Value>Inhalt mit Container umhüllen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetWrapContent.Hint">
+		<Value>Umhüllt den Widget Inhalt mit einem HTML-Container</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.WidgetZone">
 		<Value>Widget Zone</Value>
@@ -7828,9 +8050,6 @@
 	<LocaleResource Name="Admin.Customers.Customers.RewardPoints.Fields.AddRewardPointsValue.Hint">
 		<Value>Punkte hinzufügen.</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.Customers.Customers.RewardPoints.Fields.Date">
-		<Value>Datum</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.Customers.RewardPoints.Fields.Message">
 		<Value>Nachricht</Value>
 	</LocaleResource>
@@ -8182,6 +8401,9 @@
 	<LocaleResource Name="Admin.Order.CustomerComment.Heading">
 		<Value>Der Kunde hat folgenden Kommentar für diese Bestellung hinterlassen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Order.NotFound">
+		<Value>Ein Auftrag mit dieser Nummer wurde nicht gefunden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.OrderNotice.CustomerCancelledEmailQueued">
 		<Value>"Auftrag storniert" E-Mail (an Kunden) wurde gequeued. Queued Email ID: {0}</Value>
 	</LocaleResource>
@@ -8346,6 +8568,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.Capture">
 		<Value>Buchen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.Capture.Hint">
+		<Value>Zieht eine zuvor reservierte Zahlung über den Zahlungsanbieter ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.CaptureTransactionID">
 		<Value>Transaction ID buchen</Value>
@@ -8518,6 +8743,9 @@
 	<LocaleResource Name="Admin.Orders.Fields.MarkAsPaid">
 		<Value>Auftrag bezahlt</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.MarkAsPaid.Hint">
+		<Value>Setzt den Zahlungsstatus auf 'Bezahlt' ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderGuid">
 		<Value>Auftrags-GUID</Value>
 	</LocaleResource>
@@ -8605,11 +8833,17 @@
 	<LocaleResource Name="Admin.Orders.Fields.PartialRefund.AmountToRefund.Max">
 		<Value>Der maximale Erstattungsbetrag ist {0} {1}</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.PartialRefund.Hint">
+		<Value>Leitet die Rückerstattung eines Teilbetrages des Auftragswertes beim Zahlungsanbieter ein.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PartialRefund.OrderInfo">
 		<Value>Erstattungsbetrag für Auftrag #{0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PartialRefundOffline">
-		<Value>Erstattungsbetrag (Offline)</Value>
+		<Value>Teilerstattung (Offline)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.PartialRefundOffline.Hint">
+		<Value>Setzt den Zahlungsstatus auf 'Teilweise erstattet' samt Erstattungsbetrag, ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PaymentMethod">
 		<Value>Zahlungsmethode</Value>
@@ -8659,6 +8893,9 @@
 	<LocaleResource Name="Admin.Orders.Fields.Refund">
 		<Value>Erstattung</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.Refund.Hint">
+		<Value>Leitet eine Rückerstattung des gesamten Auftragswertes beim Zahlungsanbieter ein.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.RefundedAmount">
 		<Value>Erstatteter Betrag</Value>
 	</LocaleResource>
@@ -8667,6 +8904,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.RefundOffline">
 		<Value>Erstattung (Offline)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.RefundOffline.Hint">
+		<Value>Setzt den Zahlungsstatus auf 'Erstattet', ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.SaveCC">
 		<Value>Sichere Kreditkarte</Value>
@@ -8723,10 +8963,16 @@
 		<Value>Benutzte Umsatzsteuer-Identifikationsnummer.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.Void">
-		<Value>Ungültig</Value>
+		<Value>Stornieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.Void.Hint">
+		<Value>Leitet die Stornierung der Zahlungstransaktion beim Zahlungsanbieter ein.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.VoidOffline">
-		<Value>Ungültig (offline)</Value>
+		<Value>Stornieren (Offline)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Fields.VoidOffline.Hint">
+		<Value>Setzt den Zahlungsstatus auf 'Storniert', ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Info">
 		<Value>Information</Value>
@@ -8883,6 +9129,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products.AddNew.SubTotalInclTax.Hint">
 		<Value>Geben Sie den Gesamtbetrag (inklusive Steuer) ein.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Products.AddNew.TaxRate">
+		<Value>Steuersatz</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Products.AddNew.TaxRate.Hint">
+		<Value>Die Steuerrate des Produktes</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Products.AddNew.Title1">
 		<Value>Ein neues Produkt zu Auftrag #{0} hinzufügen</Value>
@@ -9163,6 +9415,9 @@
 	<LocaleResource Name="Admin.Plugins">
 		<Value>Plugins</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.AddOnLicensing">
+		<Value>Add-on Lizenzierung</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Admin">
 		<Value>Administration</Value>
 	</LocaleResource>
@@ -9219,6 +9474,18 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.KnownGroup.Tax">
 		<Value>Steuern</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.LicensingDemoExpired">
+		<Value>Demo abgelaufen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.LicensingDemoNotStarted">
+		<Value>Demo</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.LicensingDemoRemainingDays">
+		<Value>Demo {0} Tag(e) verbleibend</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Plugins.LicensingResetStatusCheck">
+		<Value>Prüfung erneuern</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.Manage">
 		<Value>Plugins verwalten</Value>
@@ -9660,6 +9927,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ReturnRequests.Fields.RequestedAction.Hint">
 		<Value>Die angeforderte Aktion.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ReturnRequests.Fields.RequestedActionUpdatedOnUtc">
+		<Value>Letzte Aktualisierung der angeforderten Aktion</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ReturnRequests.Fields.RequestedActionUpdatedOnUtc.Hint">
+		<Value>Datum, an dem die angeforderte Aktion zuletzt geändert wurde.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ReturnRequests.Fields.StaffNotes">
 		<Value>Mitarbeiternotizen</Value>
@@ -10832,16 +11105,16 @@
 		<Value>Kaufen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.ConfirmHint">
-		<Value>Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf &lt;STRONG&gt;[Zurück]&lt;/STRONG&gt; vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf &lt;STRONG&gt;[Jetzt kostenpflichtig Kaufen]&lt;/STRONG&gt; Ihre Bestellung.</Value>
+		<Value>Bitte prüfen Sie die Gesamtsumme und die Rechnungsadresse. Bei abweichender Lieferanschrift prüfen Sie bitte auch diese. Änderungen können Sie jederzeit mit einem Klick auf &lt;strong&gt;zurück&lt;/strong&gt; vornehmen. Sind alle Daten richtig, bestätigen Sie bitte mit einem Klick auf &lt;strong&gt;kaufen&lt;/strong&gt; Ihre Bestellung.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.ConfirmOrder">
 		<Value>Auftrag bestätigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.ConfirmYourOrder">
-		<Value>Bitte Bestätigen Sie Ihren Auftrag.</Value>
+		<Value>Bitte bestätigen Sie Ihren Auftrag.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.Continue">
-		<Value>Zurück zum Shop</Value>
+		<Value>Weiter einkaufen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.EnterBillingAddress">
 		<Value>Rechnungsanschrift eingeben</Value>
@@ -10867,8 +11140,11 @@
 	<LocaleResource Name="Checkout.NoPaymentMethods">
 		<Value>Keine Zahlungsmethoden verfügbar.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Checkout.OrderHasBeenReceived">
+		<Value>Ihre Bestellung ist angekommen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Checkout.OrderNumber">
-		<Value>Auftragsnummer</Value>
+		<Value>Ihre Bestellnummer</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.OrderSummary">
 		<Value>Auftragszusammenfassung</Value>
@@ -10883,7 +11159,7 @@
 		<Value>Zahlungsmethode</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.PlacedOrderDetails">
-		<Value>Auftragsdetails</Value>
+		<Value>Bestelldetails</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.Progress.Address">
 		<Value>Adresse</Value>
@@ -10952,13 +11228,10 @@
 		<Value>Lesen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.ThankYou">
-		<Value>Danke!</Value>
+		<Value>Vielen Dank für Ihren Einkauf!</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.UseRewardPoints">
 		<Value>Benutze meine Bonuspunkte, {0} Bonuspunkte ({1}) verfügbar</Value>
-	</LocaleResource>
-	<LocaleResource Name="Checkout.YourOrderHasBeenSuccessfullyProcessed">
-		<Value>Ihr Auftrag wurde erfolgreich übermittelt.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Activated">
 		<Value>Aktiv</Value>
@@ -11059,6 +11332,9 @@
 	<LocaleResource Name="Common.CrossReferences">
 		<Value>Querverweise</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Date">
+		<Value>Datum</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Day">
 		<Value>Tag</Value>
 	</LocaleResource>
@@ -11083,6 +11359,9 @@
 	<LocaleResource Name="Common.DisplayOrder">
 		<Value>Reihenfolge</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Download">
+		<Value>Download</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Duration">
 		<Value>Dauer</Value>
 	</LocaleResource>
@@ -11097,6 +11376,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Error.SendMail">
 		<Value>Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Execution">
+		<Value>Ausführung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Export">
 		<Value>Exportieren</Value>
@@ -11163,6 +11445,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Month">
 		<Value>Monat</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.MoreInfo">
+		<Value>Mehr Info</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Navigation">
 		<Value>Navigation</Value>
@@ -11275,6 +11560,12 @@
 	<LocaleResource Name="Common.Show">
 		<Value>Anzeigen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Shrink">
+		<Value>Verkleinern</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.ShrinkDatabaseSuccessful">
+		<Value>Die Datenbank wurde erfolgreich verkleinert</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Submit">
 		<Value>Absenden</Value>
 	</LocaleResource>
@@ -11370,9 +11661,6 @@
 	</LocaleResource>
 	<LocaleResource Name="Disclaimer">
 		<Value>Rechtshinweise</Value>
-	</LocaleResource>
-	<LocaleResource Name="DownloadableProducts.Fields.Date">
-		<Value>Datum</Value>
 	</LocaleResource>
 	<LocaleResource Name="DownloadableProducts.Fields.Download">
 		<Value>Download</Value>
@@ -11710,6 +11998,15 @@
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Security.UserRegistrationType.Standard">
 		<Value>Standard-Konto-Eröffnung</Value>
 	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Seo.CanonicalHostNameRule.NoRule">
+		<Value>Nicht anwenden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Seo.CanonicalHostNameRule.OmitWww">
+		<Value>www-Präfix weglassen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Seo.CanonicalHostNameRule.RequireWww">
+		<Value>www-Präfix erzwingen</Value>
+	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Shipping.ShippingStatus.Delivered">
 		<Value>Geliefert</Value>
 	</LocaleResource>
@@ -11786,10 +12083,11 @@
 		<Value>Nicht unterstützt</Value>
 	</LocaleResource>
 	<LocaleResource Name="ErrorPage.Body">
-		<Value>Unser Support-Team wurde über diesen Fehler informiert und wird sich in Kürze um die Behebung kümmern. Wir entschuldigen uns für diese Unannehmlichkeit! Bitte probieren Sie den Vorgang zu einem späteren Zeitpunkt erneut.</Value>
+		<Value>Leider ist ein Serverfehler aufgetreten, und das hat nichts mit Ihrem Computer oder Ihrem Internetanschluss zu tun.
+			Unser Support Team wurde bereits benachrichtigt und wird sich sehr bald um die Behebung kümmern.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ErrorPage.Title">
-		<Value>Leider ist ein interner Fehler aufgetreten.</Value>
+		<Value>Oops!</Value>
 	</LocaleResource>
 	<LocaleResource Name="ExampleOfNestedResources">
 		<Value>Resource name will be 'ExampleOfNestedResources'</Value>
@@ -12314,7 +12612,7 @@
 		<Value>Zurück</Value>
 	</LocaleResource>
 	<LocaleResource Name="Mobile.ViewFullSite">
-		<Value>Volle Ansicht der Site</Value>
+		<Value>Desktop Version</Value>
 	</LocaleResource>
 	<LocaleResource Name="Mobile.ViewMobileVersion">
 		<Value>Ansicht der mobilen Version</Value>
@@ -12399,6 +12697,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Newsletter.UnsubscribeEmailSent">
 		<Value>Eine Bestätigungs-E-Mail wurde versandt. Vielen Dank.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NotFoundPage.Body">
+		<Value>Tut uns leid! Diese Adresse gibt es auf unserer Website nicht.</Value>
+	</LocaleResource>
+	<LocaleResource Name="NotFoundPage.Title">
+		<Value>404</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.BillingAddress">
 		<Value>Rechnungsanschrift</Value>
@@ -12550,9 +12854,6 @@
 	<LocaleResource Name="Order.ShipmentStatusEvents.Country">
 		<Value>Land</Value>
 	</LocaleResource>
-	<LocaleResource Name="Order.ShipmentStatusEvents.Date">
-		<Value>Datum</Value>
-	</LocaleResource>
 	<LocaleResource Name="Order.ShipmentStatusEvents.Event">
 		<Value>Ereignis</Value>
 	</LocaleResource>
@@ -12658,9 +12959,6 @@
 	<LocaleResource Name="PageTitle.OrderDetails">
 		<Value>Auftragsdetails</Value>
 	</LocaleResource>
-	<LocaleResource Name="PageTitle.PageNotFound">
-		<Value>Seite nicht gefunden</Value>
-	</LocaleResource>
 	<LocaleResource Name="PageTitle.PasswordRecovery">
 		<Value>Passwort-Wiederherstellung</Value>
 	</LocaleResource>
@@ -12757,29 +13055,8 @@
 	<LocaleResource Name="Paymentinfo">
 		<Value>Zahlungsarten</Value>
 	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Address">
-		<Value>Strasse: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Address2">
-		<Value>Adressszusatz: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.BillingInformation">
-		<Value>Zahlungsinformation</Value>
-	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.CommercialRegisterHeading">
 		<Value>Handelsregister:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Company">
-		<Value>Firma: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.CreatedOn">
-		<Value>Erstellt am</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Discount">
-		<Value>Rabatt:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Fax">
-		<Value>Fax: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Footer.AccountHolder">
 		<Value>Inhaber: {0}</Value>
@@ -12788,7 +13065,7 @@
 		<Value>Kontonummer: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Footer.Bankcode">
-		<Value>Bankleitzahl: {0}</Value>
+		<Value>BLZ: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Footer.Bic">
 		<Value>BIC: {0}</Value>
@@ -12808,20 +13085,8 @@
 	<LocaleResource Name="PDFInvoice.Footer.Url">
 		<Value>Url: {0}</Value>
 	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.GiftCardInfo">
-		<Value>Geschenkgutschein ({0}):</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Name">
-		<Value>Name: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Note">
-		<Value>Notiz</Value>
-	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Order#">
-		<Value>Auftrag# {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.OrderDate">
-		<Value>Datum: {0}</Value>
+		<Value>Auftrag#</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.OrderNotes">
 		<Value>Auftragsnotizen</Value>
@@ -12831,18 +13096,6 @@
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.OrderNotes.Note">
 		<Value>Notiz</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.OrderTotal">
-		<Value>Auftragssumme gesamt:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.PaymentMethod">
-		<Value>Zahlungsmethode: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.PaymentMethodAdditionalFee">
-		<Value>Zahlungsgebühr</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Phone">
-		<Value>Telefon: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.Product(s)">
 		<Value>Produkte</Value>
@@ -12859,41 +13112,14 @@
 	<LocaleResource Name="PDFInvoice.ProductTotal">
 		<Value>Gesamt</Value>
 	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.PurchaseOrderNumber">
-		<Value>Auftragsnummer: {0}</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.RewardPoints">
-		<Value>{0} Bonuspunkte:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Shipping">
-		<Value>Versand:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.ShippingInformation">
-		<Value>Versandinformation:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.ShippingMethod">
-		<Value>Versand-Methode: {0}</Value>
-	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.SKU">
-		<Value>Artikelnummer</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Sub-Total">
-		<Value>Zwischensumme:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.Tax">
-		<Value>Steuer:</Value>
+		<Value>Artikelnr.</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.TaxNumber">
 		<Value>Steuer-Nr.:</Value>
 	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.TaxRate">
-		<Value>Steuer {0}%:</Value>
-	</LocaleResource>
 	<LocaleResource Name="PDFInvoice.VatId">
 		<Value>Ust-Id:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PDFInvoice.VATNumber">
-		<Value>Steuernummer: {0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.Address">
 		<Value>Strasse: {0}</Value>
@@ -12904,6 +13130,9 @@
 	<LocaleResource Name="PDFPackagingSlip.Company">
 		<Value>Firma: {0}</Value>
 	</LocaleResource>
+	<LocaleResource Name="PDFPackagingSlip.DeliveryDate">
+		<Value>Lieferdatum</Value>
+	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.Name">
 		<Value>Name: {0}</Value>
 	</LocaleResource>
@@ -12912,6 +13141,9 @@
 	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.Phone">
 		<Value>Telefon: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFPackagingSlip.ProductListHeadline">
+		<Value>Gelieferte Produkte</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.ProductName">
 		<Value>Produktname</Value>
@@ -12923,10 +13155,46 @@
 		<Value>Sendung #{0}</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.ShippingMethod">
-		<Value>Versandmethode: {0}</Value>
+		<Value>Versandart</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFPackagingSlip.SKU">
 		<Value>Artikelnummer</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFPackagingSlip.TrackingNumber">
+		<Value>Trackingnummer</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFPackagingSlip.Weight">
+		<Value>Gewicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.AssociatedProducts">
+		<Value>Gruppierte Produkte</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.BundledItems">
+		<Value>Produktset besteht aus</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.CompanyEmailAddress">
+		<Value>E-Mail</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.CompanyFaxNumber">
+		<Value>Fax</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.CompanyTelephoneNumber">
+		<Value>Telefon</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Cover.Address">
+		<Value>Anschrift</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Cover.ContactData">
+		<Value>Kontaktdaten</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Height">
+		<Value>Höhe</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Length">
+		<Value>Länge</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Manufacturer">
+		<Value>Hersteller</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFProductCatalog.Price">
 		<Value>Preis</Value>
@@ -12934,11 +13202,17 @@
 	<LocaleResource Name="PDFProductCatalog.SKU">
 		<Value>Artikelnummer</Value>
 	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.SpecificationAttributes">
+		<Value>Spezifikation</Value>
+	</LocaleResource>
 	<LocaleResource Name="PDFProductCatalog.StockQuantity">
 		<Value>Lagermenge</Value>
 	</LocaleResource>
 	<LocaleResource Name="PDFProductCatalog.Weight">
 		<Value>Gewicht</Value>
+	</LocaleResource>
+	<LocaleResource Name="PDFProductCatalog.Width">
+		<Value>Breite</Value>
 	</LocaleResource>
 	<LocaleResource Name="Polls.OnlyRegisteredUsersVote">
 		<Value>Nur registrierte Benutzer können abstimmen</Value>
@@ -12963,9 +13237,6 @@
 	</LocaleResource>
 	<LocaleResource Name="PrivateMessages.Inbox">
 		<Value>Posteingang</Value>
-	</LocaleResource>
-	<LocaleResource Name="PrivateMessages.Inbox.DateColumn">
-		<Value>Datum</Value>
 	</LocaleResource>
 	<LocaleResource Name="PrivateMessages.Inbox.DeleteSelected">
 		<Value>Ausgewählte löschen</Value>
@@ -13011,9 +13282,6 @@
 	</LocaleResource>
 	<LocaleResource Name="PrivateMessages.Send.To">
 		<Value>An:</Value>
-	</LocaleResource>
-	<LocaleResource Name="PrivateMessages.Sent.DateColumn">
-		<Value>Datum:</Value>
 	</LocaleResource>
 	<LocaleResource Name="PrivateMessages.Sent.DeleteSelected">
 		<Value>Ausgewählte löschen</Value>
@@ -13468,9 +13736,6 @@
 	<LocaleResource Name="Reviews">
 		<Value>Bewertungen</Value>
 	</LocaleResource>
-	<LocaleResource Name="Reviews.Date">
-		<Value>Datum</Value>
-	</LocaleResource>
 	<LocaleResource Name="Reviews.ExistingReviews">
 		<Value>Vorliegende Bewertungen</Value>
 	</LocaleResource>
@@ -13545,9 +13810,6 @@
 	</LocaleResource>
 	<LocaleResource Name="RewardPoints.CurrentBalance">
 		<Value>Sie haben aktuell {0} Bonuspunkte ({1}).</Value>
-	</LocaleResource>
-	<LocaleResource Name="RewardPoints.Fields.Date">
-		<Value>Datum</Value>
 	</LocaleResource>
 	<LocaleResource Name="RewardPoints.Fields.Message">
 		<Value>Nachricht</Value>
@@ -13647,6 +13909,9 @@
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.AllowedQuantities">
 		<Value>Erlaubte Mengen für dieses Produkt: {0}</Value>
+	</LocaleResource>
+	<LocaleResource Name="ShoppingCart.AttributeError">
+		<Value>Ein unbekannter Fehler ist bei der Prüfung der ausgewählten Produktvariante aufgetreten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.Bundle.BundleItemNotFound">
 		<Value>Der Bundle-Bestandteil "{0}" wurde nicht gefunden.</Value>
@@ -13862,7 +14127,7 @@
 		<Value>Dieses Produkt erfordert, dass das folgende Produkt auch bestellt wird: {0}.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.SelectAttribute">
-		<Value>Bitte auswählen {0}</Value>
+		<Value>Bitte '{0}' auswählen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="ShoppingCart.SenderEmailError">
 		<Value>Geben Sie eine gültige Absender-E-Mail-Adresse ein.</Value>

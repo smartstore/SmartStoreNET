@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2
 
@@ -60,7 +60,8 @@
 * #634 Bundle price in list should not differ from price in details if there is only one bundle item with one attribute
 * Do not copy associated product when copying a bundle product
 * Fixed: Product with inactive attribute combination could be moved onto wishlist, copied to cart and be ordered
-
+* Mobile Theme: Show prices according to selected variant value, display of deliverytime
+* Bundles: Display base price according to Catalog Setting > Product Detail > Display Base Price
 
 ## SmartStore.NET 2.1.1
 

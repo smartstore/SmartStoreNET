@@ -29,19 +29,12 @@
         {
         @T("Products.Price")<text>:</text>
         }
-        
-        
-        <span 
-        @if (String.IsNullOrWhiteSpace(Model.PriceWithDiscount))
-        {
-            <text>class="product-price"</text>
-        }
-        >
+
+
+        <span @if (String.IsNullOrWhiteSpace(Model.PriceWithDiscount)) { <text> class="product-price product-price-without-discount" </text>   }>
             @Html.Raw(Model.Price)
         </span>
-        
-        
-        
+
         if (!String.IsNullOrWhiteSpace(Model.PriceWithDiscount))
         {
         <br />

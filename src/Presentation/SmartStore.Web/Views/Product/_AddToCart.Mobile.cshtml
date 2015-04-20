@@ -5,6 +5,25 @@
 <div class="base-price muted @(!Model.IsBasePriceEnabled ? "hide fade" : "")">
     @Model.BasePriceInfo
 </div>
+
+@if (Model.DisplayDeliveryTime && Model.IsShipEnabled)
+{
+    <div class="delivery-time">
+        <span class="delivery-time-label">@T("Products.DeliveryTime")</span>
+
+        @if (Model.DisplayDeliveryTimeAccordingToStock)
+        {
+            <span class="delivery-time-color" style="background-color:@(Model.DeliveryTimeHexValue);@(Model.DeliveryTimeHexValue.HasValue() ? "" : "display:none;")" title="@Model.DeliveryTimeName"></span>
+            <span class="delivery-time-value">@Model.DeliveryTimeName</span>
+        }
+        else
+        {
+            <span class="delivery-time-color" style="display: none;" title="@Model.StockAvailability"></span>
+            <span class="delivery-time-value">@Model.StockAvailability</span>
+        }
+    </div>
+}
+
 <div class="add-to-cart">
     @if (Model.AddToCart.CustomerEntersPrice)
     {

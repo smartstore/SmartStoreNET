@@ -47,6 +47,8 @@ namespace SmartStore.Admin.Models.Plugins
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
         public string ConfigurationUrl { get; set; }
 
+		public string Url { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Installed")]
         public bool Installed { get; set; }
 

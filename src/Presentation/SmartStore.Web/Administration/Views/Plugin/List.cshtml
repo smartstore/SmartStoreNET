@@ -63,15 +63,28 @@
 						}
 					</div>
 					<div class="module-info">
+						@if (plugin.Url.HasValue())
+						{
+							<span class="attr">
+								<i class="fa fa-external-link"></i>
+								<a href="@plugin.Url" target="PluginWebsiteWnd">Website</a>
+							</span>
+						}
 						@if (plugin.Author.HasValue())
 						{
-							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Author"):</span>
-							<span class="attr-value">@plugin.Author</span>
+							<span class="attr">
+								<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Author"):</span>
+								<span class="attr-value">@plugin.Author</span>
+							</span>
 						}
-						<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Version"):</span>
-						<span class="attr-value">@plugin.Version</span>
-						<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.SystemName"):</span>
-						<span class="attr-value">@plugin.SystemName</span>
+						<span class="attr">
+							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.Version"):</span>
+							<span class="attr-value">@plugin.Version</span>
+						</span>
+						<span class="attr">
+							<span class="attr-name">@T("Admin.Configuration.Plugins.Fields.SystemName"):</span>
+							<span class="attr-value">@plugin.SystemName</span>
+						</span>
 					</div>
 					@if (plugin.Description.HasValue())
 					{

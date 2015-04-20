@@ -1166,11 +1166,18 @@ table.order-edit td {
 
 .module-info {
 	margin-top: 3px;
-	.attr-name { }
-	.attr-value {
-		color: #aaa;
-		padding-right: 5px;
-	}
+}
+.module-info .attr:after {
+	display: inline-block;
+	content: '\00b7';
+	padding: 0 5px;
+}
+.module-info .attr:last-child:after {
+	display: none;
+}
+.module-info .attr-value {
+	color: #aaa;
+	//padding-right: 5px;
 }
 
 .module-description {

@@ -18,6 +18,7 @@
 * #592 Add a second category description displayed beyond products on category page
 * #672 Option to automatically create mutual associations for cross sell products and related products
 * Promotion feeds now exports the preselected price (including price adjustments and overrides)
+* Implement 'free shipping threshold' for feed creation
 
 ### Improvements
 * Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)

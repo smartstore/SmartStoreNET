@@ -244,9 +244,12 @@ namespace SmartStore.Web.Framework.Plugins
 			return "";
 		}
 
-		public string GetShippingCost(Product product, decimal? shippingCost = null)
+		public string GetShippingCost(Product product, decimal productPrice, decimal? shippingCost = null)
 		{
 			if (product.IsFreeShipping)
+				return "0";
+
+			if (BaseSettings.FreeShippingThreshold.HasValue && productPrice >= BaseSettings.FreeShippingThreshold.Value)
 				return "0";
 
 			decimal cost = shippingCost ?? BaseSettings.ShippingCost;

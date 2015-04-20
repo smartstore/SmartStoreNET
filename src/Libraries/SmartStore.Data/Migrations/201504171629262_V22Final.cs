@@ -90,6 +90,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.UnknownError",
 				"An unknown error has occurred.",
 				"Es ist ein unbekannter Fehler aufgetreten.");
+
+			builder.AddOrUpdate("Plugins.Feed.FreeShippingThreshold",
+				"Free shipping threshold",
+				"Kostenloser Versand ab",
+				"Amount as from shipping is free.",
+				"Betrag, ab dem keine Versandkosten anfallen.");
 		}
 	}
 }

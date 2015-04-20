@@ -19,6 +19,7 @@
 * #672 Option to automatically create mutual associations for cross sell products and related products
 * Promotion feeds now exports the preselected price (including price adjustments and overrides)
 * Implement 'free shipping threshold' for feed creation
+* Billiger feed: Implement new field for shipping costs to austria
 
 ### Improvements
 * Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)

@@ -3,63 +3,63 @@
 ## SmartStore.NET 2.2
 
 ### New Features
-* New mobile theme: MobileLight (a light variant of the default mobile theme)
+* New mobile theme: _MobileLight_ (a light variant of the default mobile theme)
 * Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
-* #428 Implement category option to override global list view type
+* Quantity unit management
+* #428 New option to override category list view type globally
+* #672 New option to automatically create mutual associations for cross sell and related products
 * #485 Enable shop admin to change creation date of a blog entry
 * #258 Implement email validation in checkout
-* Quantity unit management
-* Option to determine the maximum amount of filter items
-* Option to determine whether all filter groups should be displayed expanded
-* #459 New field to determine tag for page titles on widget level
+* New option to specify the maximum number of displayed filter items
+* New option to specify whether all filter groups should be displayed expanded
+* #459 New field to specify html tag for page titles on widget level
 * Added _shrink database_ to backend UI
-* (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 * #588 Alternative localized category name used as title for category pages
 * #592 Add a second category description displayed beyond products on category page
-* #672 Option to automatically create mutual associations for cross sell products and related products
-* Promotion feeds now exports the preselected price (including price adjustments and overrides)
+* Promotion feeds now export the preselected price (including price adjustments and overrides)
 * Implement 'free shipping threshold' for feed creation
-* Billiger feed: Implement new field for shipping costs to austria
+* _Billiger_ feed: Implement new field for shipping costs to austria
+* (Developer) Added `BeginTransaction()` and `UseTransaction()`  methods to `IDbContext`
 
 ### Improvements
-* Perf: product list rendering up to 10x (!) faster now (depends on page size and view mode)
+* (Perf) product list rendering up to 10x (!) faster now (depends on page size and view mode)
 * The data grid in the backend now preserves client state between requests (page, pageSize, sorting, filtering etc.)
 * Excel Import & Export: much lower memory consumption and increased performance
 * Moving pictures from DB to FS or vice versa is lightning fast now, consumes much lower memory and is encapsulated in a transaction which ensures reliable rollback after failure. Plus the database gets automatically shrinked after moving to FS.
 * Feed plugins: product query now paged to reduce memory payload
-* Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
+* #589 Backend product list: add filter for products with "no category mapping" and "no manufacturer mapping"
+* Minor UI tweaks in checkout process
 * Payone: CC-Check via client API, not via Server API (requires PCI certification)
 * #189 Allow deletion of multiple reviews
 * #622 UI: Redesign table in Sales > Orders > Order > Tab Products
 * #625 Bundles can be ordered if an attribute combination of a bundle item is not available
-* Minor UI tweaks in checkout process
 * #666 Export addresses in customer export
 * New shopping cart setting ShowItemsFromWishlistToCartButton
-* XML product export now paged and more data exported
+* XML product export now is paged and more data gets exported
 * #560 Return requests: Add fields for last update, last update of requested action and general notes
-* #589 Backend product list: Add filter for products with "no category mapping" and "no manufacturer mapping"
-* #626 Add IsActive flag for checkout attributes
+* #626 Add `IsActive` flag for checkout attributes
 
 ### Bugfixes
 * Instant search box did not display all results when SQL Fulltext Search was enabled
-* Amazon payments: Declined authorization IPN did not void the payment status
+* Print order as PDF redirected to login although the admin already was logged in 
+* #621 PDF Order: does not take overridden attribute combination price into account (in order line)
+* _Amazon payments_: Declined authorization IPN did not void the payment status
 * Fixed „Payment method couldn't be loaded“ when order amount is zero
 * #598 Wrong input parameter name for ReturnRequestSubmit
 * #557 Localize MVC validation strings
 * Fixed rare bug "The length of the string exceeds the value set on the maxJsonLength property" (Controller: Order, Action: OrderNotesSelect)
-* Debitoor: Adding order notes can result in infinite order update event loop with thousands of order notes
+* _Debitoor_: Adding order notes can result in infinite order update event loop with thousands of order notes
 * Tax rates persisted on order item level to avoid rounding issues (required for Debitoor, Accarda and Payone)
-* Print order as pdf redirected to login although the admin already was logged in 
-* #621 PDF Order: does not take overridden attribute combination price into account (in order line)
 * Hide additional shipping surcharge when display prices permission is not granted
 * Fixed "Adding a relationship with an entity which is in the Deleted state is not allowed" when adding bundles to cart
 * Fixed price calculation of multiple bundles issue
 * Fixed auto add required products for bundle items
-* Fixes #641: Protocol in sitemap should be HTTPS when _ForceSslForAllPages_ is true
+* Fixes #641: Protocol in sitemap should be HTTPS when `ForceSslForAllPages` is true
 * #640 Do not display shipping infos for grouped products in product lists
 * #634 Bundle price in list should not differ from price in details if there is only one bundle item with one attribute
 * Do not copy associated product when copying a bundle product
-* Fixed: Product with inactive attribute combination could be moved onto wishlist, copied to cart and be ordered
+* Null DeliveryTimeId when deleting products. Otherwise deleted products can prevent deletion of delivery times.
+* Fixed: Product with inactive attribute combination could be moved to wishlist, copied to cart and be purchased
 * Mobile Theme: Show prices according to selected variant value, display of deliverytime
 * Bundles: Display base price according to Catalog Setting > Product Detail > Display Base Price
 

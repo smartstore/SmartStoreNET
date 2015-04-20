@@ -124,7 +124,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Price</returns>
         protected virtual decimal? GetMinimumTierPrice(Product product, Customer customer, int quantity)
         {
-            if (!product.HasTierPrices)
+			if (!product.HasTierPrices)
                 return decimal.Zero;
 
             var tierPrices = product.TierPrices
@@ -334,7 +334,8 @@ namespace SmartStore.Services.Catalog
         /// <param name="quantity">Shopping cart item quantity</param>
 		/// <param name="bundleItem">A product bundle item</param>
         /// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, 
+		public virtual decimal GetFinalPrice(
+			Product product, 
             Customer customer,
             decimal additionalCharge, 
             bool includeDiscounts, 
@@ -353,8 +354,8 @@ namespace SmartStore.Services.Catalog
 			if (product.HasTierPrices && !bundleItem.IsValid())
             {
 				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity);
-                if (tierPrice.HasValue)
-                    result = Math.Min(result, tierPrice.Value);
+				if (tierPrice.HasValue)
+					result = Math.Min(result, tierPrice.Value);
             }
 
             //discount + additional charge
@@ -384,8 +385,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="quantity">Shopping cart item quantity</param>
 		/// <param name="bundleItem">A product bundle item</param>
 		/// <returns>Final price</returns>
-		public virtual decimal GetFinalPrice(Product product, IList<ProductBundleItemData> bundleItems,
-			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null)
+		public virtual decimal GetFinalPrice(
+			Product product, 
+			IList<ProductBundleItemData> bundleItems,
+			Customer customer, 
+			decimal additionalCharge, 
+			bool includeDiscounts, 
+			int quantity, 
+			ProductBundleItemData bundleItem = null)
 		{
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{

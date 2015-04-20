@@ -15,8 +15,7 @@ namespace SmartStore.Data.Tests
 		public void SetUp()
 		{
 			var ctx = new SmartObjectContext(GetTestDbName());
-			ctx.Database.Delete();
-			Database.SetInitializer(new TestDatabaseInitializer<SmartObjectContext, MigrationsConfiguration>(GetTestDbName()));
+			Database.SetInitializer(new DropCreateDatabaseAlways<SmartObjectContext>());
 			ctx.Database.Initialize(true);
 		}
 
@@ -29,7 +28,7 @@ namespace SmartStore.Data.Tests
 
 		public static string GetTestDbName()
 		{
-			string testDbName = "Data Source=" + (System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)) + @"\\SmartStore.Data.Tests.Db.sdf;Persist Security Info=False";
+			string testDbName = "Data Source=" + (System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetExecutingAssembly().Location)) + @"\SmartStore.Data.Tests.Db.sdf;Persist Security Info=False";
 			return testDbName;
 		}  
 	}

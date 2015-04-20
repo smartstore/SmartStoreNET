@@ -179,6 +179,7 @@ namespace SmartStore.Admin.Infrastructure
             //category
 			Mapper.CreateMap<Category, CategoryModel>()
 				.ForMember(dest => dest.AvailableCategoryTemplates, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.Breadcrumb, mo => mo.Ignore())
 				.ForMember(dest => dest.ParentCategoryBreadcrumb, mo => mo.Ignore())
@@ -236,6 +237,7 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableTaxCategories, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableMeasureUnits, mo => mo.Ignore())
 				.ForMember(dest => dest.PrimaryStoreCurrencyCode, mo => mo.Ignore())
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.UpdatedOn, mo => mo.Ignore())
@@ -329,13 +331,15 @@ namespace SmartStore.Admin.Infrastructure
             // Measure unit
             Mapper.CreateMap<QuantityUnit, QuantityUnitModel>()
                 .ForMember(dest => dest.Locales, mo => mo.Ignore());
-            Mapper.CreateMap<QuantityUnitModel, QuantityUnit>();
+            Mapper.CreateMap<QuantityUnitModel, QuantityUnit>()
+				.ForMember(dest => dest.DisplayLocale, mo => mo.Ignore());
 
             // ContentSlider slides
             Mapper.CreateMap<ContentSliderSettings, ContentSliderSettingsModel>()
                 .ForMember(dest => dest.Id, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
-				.ForMember(dest => dest.SearchStoreId, mo => mo.Ignore());
+				.ForMember(dest => dest.SearchStoreId, mo => mo.Ignore())
+				.ForMember(dest => dest.StoreCount, mo => mo.Ignore());
             Mapper.CreateMap<ContentSliderSettingsModel, ContentSliderSettings>();
 
 			Mapper.CreateMap<ContentSliderSlideSettings, ContentSliderSlideModel>()
@@ -364,6 +368,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.QuantityUnit, mo => mo.Ignore())
                 .ForMember(dest => dest.Product, mo => mo.Ignore())
                 .ForMember(dest => dest.AssignedPictureIds, mo => mo.Ignore())
+				.ForMember(dest => dest.QuantityUnitId, mo => mo.Ignore())
                 .AfterMap((src, dest) => dest.SetAssignedPictureIds(src.AssignedPictureIds));
 
             //measure weights
@@ -388,7 +393,12 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
                 .ForMember(dest => dest.IconUrl, mo => mo.Ignore())
-				.ForMember(dest => dest.ConfigurationRoute, mo => mo.Ignore());
+				.ForMember(dest => dest.ConfigurationRoute, mo => mo.Ignore())
+				.ForMember(dest => dest.LicenseUrl, mo => mo.Ignore())
+				.ForMember(dest => dest.IsLicensable, mo => mo.Ignore())
+				.ForMember(dest => dest.LicenseState, mo => mo.Ignore())
+				.ForMember(dest => dest.TruncatedLicenseKey, mo => mo.Ignore())
+				.ForMember(dest => dest.RemainingDemoUsageDays, mo => mo.Ignore());
             //newsLetter subscriptions
             Mapper.CreateMap<NewsLetterSubscription, NewsLetterSubscriptionModel>()
                 .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
@@ -477,7 +487,8 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<ProductAttributeModel, ProductAttribute>();
             //specification attributes
             Mapper.CreateMap<SpecificationAttribute, SpecificationAttributeModel>()
-                .ForMember(dest => dest.Locales, mo => mo.Ignore());
+                .ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.OptionCount, mo => mo.Ignore());
             Mapper.CreateMap<SpecificationAttributeModel, SpecificationAttribute>()
                 .ForMember(dest => dest.SpecificationAttributeOptions, mo => mo.Ignore());
             Mapper.CreateMap<SpecificationAttributeOption, SpecificationAttributeOptionModel>()
@@ -615,10 +626,11 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.Id, mo => mo.Ignore());
             Mapper.CreateMap<ShoppingCartSettings, ShoppingCartSettingsModel>();
 			Mapper.CreateMap<ShoppingCartSettingsModel, ShoppingCartSettings>()
-				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore());
-            Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
-                .ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
+				.ForMember(dest => dest.MoveItemsFromWishlistToCart, mo => mo.Ignore())
+				.ForMember(dest => dest.ShowItemsFromWishlistToCartButton, mo => mo.Ignore());
+			Mapper.CreateMap<MediaSettings, MediaSettingsModel>()
+				.ForMember(dest => dest.PicturesStoredIntoDatabase, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailablePictureZoomTypes, mo => mo.Ignore());
             Mapper.CreateMap<MediaSettingsModel, MediaSettings>()
                 //.ForMember(dest => dest.DefaultPictureZoomEnabled, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())

@@ -53,6 +53,7 @@ namespace SmartStore.Services.Tests.Catalog
 
 			_downloadService = MockRepository.GenerateMock<IDownloadService>();
 			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_commonServices.Expect(x => x.StoreContext).Return(_storeContext);
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_taxService = MockRepository.GenerateMock<ITaxService>();
 
@@ -95,22 +96,23 @@ namespace SmartStore.Services.Tests.Catalog
 			};
 
 			//add tier prices
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 10,
 				Quantity = 2,
 				Product = product
 			});
-			product.TierPrices.Add(new TierPrice()
+			product.TierPrices.Add(new TierPrice
 			{
 				Price = 8,
 				Quantity = 5,
 				Product = product
 			});
-			//set HasTierPrices property
+
+			// set HasTierPrices property
 			product.HasTierPrices = true;
 
-			//customer
+			// customer
 			Customer customer = null;
 
 			_priceCalcService.GetFinalPrice(product, customer, 0, false, 1).ShouldEqual(12.34M);

@@ -67,6 +67,29 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.CheckUpdate.DontNotifyAnymore",
 				"Don't notify anymore",
 				"Nicht mehr benachrichtigen");
+
+			builder.AddOrUpdate("Common.Next",
+				"Next",
+				"Weiter");
+
+			builder.AddOrUpdate("Admin.Common.BackToConfiguration",
+				"Back to configuration",
+				"Zurück zur Konfiguration");
+			builder.AddOrUpdate("Admin.Common.UploadFileSucceeded",
+				"The file has been successfully uploaded.",
+				"Die Datei wurde erfolgreich hochgeladen.");
+			builder.AddOrUpdate("Admin.Common.UploadFileFailed",
+				"The upload has failed.",
+				"Der Upload ist leider fehlgeschlagen.");
+			builder.AddOrUpdate("Admin.Common.ImportAll",
+				"Import all",
+				"Alle importieren");
+			builder.AddOrUpdate("Admin.Common.ImportSelected",
+				"Import selected",
+				"Ausgewählte importieren");
+			builder.AddOrUpdate("Admin.Common.UnknownError",
+				"An unknown error has occurred.",
+				"Es ist ein unbekannter Fehler aufgetreten.");
 		}
 	}
 }

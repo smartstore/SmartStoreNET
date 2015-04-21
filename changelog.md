@@ -6,7 +6,7 @@
 * New mobile theme: _MobileLight_ (a light variant of the default mobile theme)
 * Localization: in a multi-language environment missing language resources fall back to default language's resources (instead of returning the ugly resource key)
 * Quantity unit management
-* #428 New option to override category list view type globally
+* #428 New option to override global category list view type
 * #672 New option to automatically create mutual associations for cross sell and related products
 * #485 Enable shop admin to change creation date of a blog entry
 * #258 Implement email validation in checkout

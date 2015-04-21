@@ -252,7 +252,17 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.Products.Pattern")]
 		public string Pattern { get; set; }
 
+		[SmartResourceDisplayName("Common.Export")]
+		public int Export { get; set; }
+		[SmartResourceDisplayName("Common.Export")]
+		public bool Exporting
+		{
+			get { return Export != 0; }
+			set { Export = (value ? 1 : 0); }
+		}
+
 		public string GenderLocalize { get; set; }
 		public string AgeGroupLocalize { get; set; }
+		public string ExportingLocalize { get; set; }
 	}
 }

@@ -35,7 +35,16 @@
 
 @Html.HiddenFor(m => m.ProductId)
 
-<table class="adminContent">
+<table id="GmcData" class="adminContent">
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.Exporting)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.Exporting)
+			@Html.ValidationMessageFor(m => m.Exporting)
+		</td>
+	</tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(m => m.Taxonomy)

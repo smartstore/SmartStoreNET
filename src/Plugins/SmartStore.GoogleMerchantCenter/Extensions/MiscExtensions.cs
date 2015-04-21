@@ -9,7 +9,7 @@ namespace SmartStore.GoogleMerchantCenter
 		{
 			string displayText = null;
 
-			if (fieldName == "Gender" || fieldName == "AgeGroup")
+			if (fieldName == "Gender" || fieldName == "AgeGroup" || fieldName == "Exporting")
 				displayText = "<#= {0}Localize #>".FormatWith(fieldName);
 			else
 				displayText = "<#= {0} #>".FormatWith(fieldName);
@@ -27,7 +27,8 @@ namespace SmartStore.GoogleMerchantCenter
 			if (product != null)
 			{
 				return product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
-					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue();
+					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue() ||
+					!product.Export;
 			}
 			return false;
 		}

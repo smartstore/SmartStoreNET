@@ -497,16 +497,19 @@
         <td>
             @(Html.Telerik().Grid<GoogleProductModel>()
 				.Name("froogleproducts-grid")
-				.DataKeys(keys => {
+				.DataKeys(keys =>
+				{
 					keys.Add(x => x.ProductId).RouteKey("ProductId");
 				})
-				.Columns(c => {
+				.Columns(c =>
+				{
 					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
 					c.Bound(x => x.Name)
 						.ReadOnly().Visible(true).Width(420)
 						.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 						.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
 					c.Bound(x => x.SKU).ReadOnly().Visible(true);
+					c.Bound(x => x.Exporting).ClientTemplate(Html.XEditableLink("Exporting", "select2"));
 					c.Bound(x => x.Taxonomy).ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
 					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
 					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);
@@ -515,13 +518,14 @@
 					c.Bound(x => x.Material).ClientTemplate(Html.XEditableLink("Material", "text"));
 					c.Bound(x => x.Pattern).ClientTemplate(Html.XEditableLink("Pattern", "text"));
 				})
-				.ClientEvents(e => {
+				.ClientEvents(e =>
+				{
 					e.OnDataBound("OnGridDataBound");
 					e.OnDataBinding("OnGridDataBinding");
 				})
-				.DataBinding(dataBinding => {
-					dataBinding.Ajax()
-						.Select("GoogleProductList", "FeedFroogle");
+				.DataBinding(dataBinding =>
+				{
+					dataBinding.Ajax().Select("GoogleProductList", "FeedFroogle");
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.PreserveGridState()
@@ -572,6 +576,16 @@
     				minimumResultsForSearch: 20,
     				allowClear: true
     			};
+
+    		grid.find('a.edit-link-exporting').editable($.extend(options, {
+    			select2: {
+    				minimumResultsForSearch: 20
+    			},
+    			source: [
+					{ id: 'true', text: '@T("Admin.Common.Yes")' },
+    				{ id: 'false', text: '@T("Admin.Common.No")' }
+    			]
+    		}));
 
     		grid.find('a.edit-link-taxonomy').editable($.extend(options, {
     			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)

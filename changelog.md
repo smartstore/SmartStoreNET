@@ -1,4 +1,9 @@
-# Release Notes
+﻿# Release Notes
+
+## SmartStore.NET 2.5
+
+### New Features
+* #582 GMC feed: Option to include\exclude a product
 
 ## SmartStore.NET 2.2
 

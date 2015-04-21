@@ -55,6 +55,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 				model.Size = entity.Size;
 				model.Material = entity.Material;
 				model.Pattern = entity.Pattern;
+				model.Exporting = entity.Export;
 			}
 			
 			ViewBag.DefaultCategory = _settings.DefaultGoogleCategory;

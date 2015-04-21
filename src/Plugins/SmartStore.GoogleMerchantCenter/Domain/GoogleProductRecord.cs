@@ -22,5 +22,7 @@ namespace SmartStore.GoogleMerchantCenter.Domain
 		public bool IsTouched { get; set; }
 		public DateTime CreatedOnUtc { get; set; }
 		public DateTime UpdatedOnUtc { get; set; }
+
+		public bool Export { get; set; }
     }
 }

@@ -243,7 +243,7 @@ namespace SmartStore.Admin.Controllers
                 // restart application
                 if (tasksCount > 0)
                 {
-					_commonService.WebHelper.RestartAppDomain();
+					_commonService.WebHelper.RestartAppDomain(aggressive: true);
                 }
             }
             catch (Exception exc)

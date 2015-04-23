@@ -1,13 +1,13 @@
 ﻿@model CheckUpdateResult
 
 @{
-	ViewBag.Title = "Check for Updates";
+	ViewBag.Title = T("Admin.CheckUpdate");
 }
 
 <div class="section-header">
 	<div class="title">
 		<i class="fa fa-level-up"></i>
-		Check for Updates
+		@ViewBag.Title
 	</div>
 </div>
 
@@ -29,12 +29,26 @@
 			<dt>@T("Common.Date")</dt>
 			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
 		</dl>
-		
+
+		if (Model.AutoUpdatePossible && Model.AutoUpdatePackageUrl.IsWebUrl())
+		{
+			<div class="alert alert-success" style="margin-top: 0px">
+				<h4>@T("Admin.CheckUpdate.AutoUpdatePossible")</h4>
+				@Html.Raw(T("Admin.CheckUpdate.AutoUpdatePossibleInfo"))
+				<p style="margin-top: 20px">
+					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-level-up"></i>
+						@T("Admin.CheckUpdate.UpdateNow")
+					</a>
+				</p>
+			</div>
+		}
+
 		<div class="admin-config-group">
 			<div class="title">@T("Admin.CheckUpdate.ReleaseNotes")</div>
 			<div>@Html.Raw(Model.ReleaseNotes)</div>
 		</div>
-		
+
 		<div style="margin-top: 30px">
 			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">@T("Common.MoreInfo")</a>
 			@if (Model.DownloadUrl.HasValue())

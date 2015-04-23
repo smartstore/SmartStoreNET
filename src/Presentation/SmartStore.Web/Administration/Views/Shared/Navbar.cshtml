@@ -11,7 +11,7 @@
 	string communityUrl = (currentLanguageCode == "de" ? 
 		"http://community.smartstore.com" :
 		"http://community.smartstore.com/index.php?/&k=880ea6a14ea49e853634fbdc5015a024&setlanguage=1&cal_id=&langid=1");
-	var checkUpdateResult = (CheckUpdateResult)ViewBag.CheckUpdateResult;
+	var checkUpdateResult = ViewBag.CheckUpdateResult as CheckUpdateResult;
 }
 
 <div id="navbar" class="navbar navbar-inverse">

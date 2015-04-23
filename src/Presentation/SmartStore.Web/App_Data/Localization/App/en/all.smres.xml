@@ -3043,6 +3043,18 @@
 	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
 		<Value>Your version</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.UpdateNow">
+		<Value>Update now</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
+		<Value>AutoUpdate possible</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
+		<Value>Unknown error during package download. Please try again later.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
+		<Value>&lt;p&gt;This update can be installed automatically. For this SmartStore.NET downloads an installation package to your webserver, executes it and restarts the application. Before the installation your shop directory is backed up, except the folders &lt;i&gt;App_Data&lt;/i&gt; and &lt;i&gt;Media&lt;/i&gt;, as well as the SQL Server database file. &lt;/p&gt;&lt;p&gt;Click the &lt;b&gt;Update now&lt;/b&gt; button to download and install the package. As an alternative to this, you can download the package to your local PC further below and perform the installation at a later time manually.&lt;/p&gt;</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common">
 		<Value>Actions</Value>
 	</LocaleResource>

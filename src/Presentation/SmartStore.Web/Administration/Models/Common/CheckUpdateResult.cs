@@ -21,5 +21,6 @@ namespace SmartStore.Admin.Models.Common
 		public DateTime ReleaseDateUtc { get; set; }
 		public bool IsStable { get; set; }
 		public bool AutoUpdatePossible { get; set; }
+		public string AutoUpdatePackageUrl { get; set; }
 	}
 }

@@ -24,6 +24,7 @@ using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
+using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Common;
@@ -69,7 +70,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly Func<string, ICacheManager> _cache;
 
-		private readonly static object _lock = new object();
+		private readonly static object s_lock = new object();
 
         #endregion
 
@@ -128,7 +129,10 @@ namespace SmartStore.Admin.Controllers
 
 			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
 			ViewBag.Stores = _services.StoreService.GetAllStores();
-			ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateAsync(false));
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			{
+				ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateAsync(false));
+			}
 
 			return PartialView();
 		}
@@ -143,7 +147,7 @@ namespace SmartStore.Admin.Controllers
 
             var rootNode = cacheManager.Get(cacheKey, () =>
             {
-				lock (_lock) {
+				lock (s_lock) {
 					return PrepareAdminMenu();
 				}
             });
@@ -258,6 +262,10 @@ namespace SmartStore.Admin.Controllers
             return result;
         }
 
+		#endregion
+
+		#region CheckUpdate
+
 		public async Task<ActionResult> CheckUpdate(bool enforce = false)
 		{
 			var model = await CheckUpdateAsync(enforce);
@@ -266,11 +274,15 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult CheckUpdateSuppress(string myVersion, string newVersion)
 		{
+			CheckUpdateSuppressInternal(myVersion, newVersion);
+			return RedirectToAction("Index", "Home");
+		}
+
+		public void CheckUpdateSuppressInternal(string myVersion, string newVersion)
+		{
 			var suppressKey = "SuppressUpdateMessage.{0}.{1}".FormatInvariant(myVersion, newVersion);
 			_genericAttributeService.SaveAttribute<bool?>(_services.WorkContext.CurrentCustomer, suppressKey, true);
 			_services.Cache.RemoveByPattern("Common.CheckUpdateResult");
-			
-			return RedirectToAction("Index", "Home");
 		}
 
 		[NonAction]
@@ -301,19 +313,25 @@ namespace SmartStore.Admin.Controllers
 						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET {0}".FormatInvariant(curVersion));
 						client.DefaultRequestHeaders.Add("Authorization-Key", _services.StoreContext.CurrentStore.Url.TrimEnd('/'));
-
+						
 						HttpResponseMessage response = await client.GetAsync(url);
-
+						
 						if (response.StatusCode != HttpStatusCode.OK)
 						{
 							return noUpdateResult;
 						}
-
+						
 						var jsonStr = await response.Content.ReadAsStringAsync();
 						var model = JsonConvert.DeserializeObject<CheckUpdateResult>(jsonStr);
+						
 						model.UpdateAvailable = true;
 						model.CurrentVersion = curVersion;
 						model.LanguageCode = lang;
+
+						if (CommonHelper.IsDevEnvironment || !_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+						{
+							model.AutoUpdatePossible = false;
+						}
 
 						// don't show message if user decided to suppress it
 						var suppressKey = "SuppressUpdateMessage.{0}.{1}".FormatInvariant(curVersion, model.Version);
@@ -339,6 +357,49 @@ namespace SmartStore.Admin.Controllers
 			}, 1440 /* 24h * 60min. */);
 
 			return result;
+		}
+
+		public ActionResult InstallUpdate(string packageUrl)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+				return AccessDeniedView();
+			
+			try
+			{
+				Uri uri = new Uri(packageUrl);
+				string fileName = System.IO.Path.GetFileName(uri.LocalPath);
+
+				using (var wc = new WebClient())
+				{
+					var dir = CommonHelper.MapPath(AppUpdater.UpdatePackagePath, false);
+					Directory.CreateDirectory(dir);
+					wc.DownloadFile(packageUrl, Path.Combine(dir, fileName));
+				}
+
+				if (!InstallablePackageExists())
+				{
+					NotifyError(_localizationService.GetResource("Admin.CheckUpdate.AutoUpdateFailure"));
+				}
+				else
+				{
+					_services.WebHelper.RestartAppDomain();
+				}
+				
+			}
+			catch (Exception ex)
+			{
+				NotifyError(ex);
+			}
+			
+			return RedirectToAction("CheckUpdate", new { enforce = true });
+		}
+
+		private bool InstallablePackageExists()
+		{
+			using (var updater = new AppUpdater())
+			{
+				return updater.InstallablePackageExists();
+			}
 		}
 
         #endregion
@@ -404,7 +465,7 @@ namespace SmartStore.Admin.Controllers
 				if (DataSettings.Current.IsValid())
 				{
 					model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
-					model.ShrinkDatabaseEnabled = DataSettings.Current.IsSqlServer;
+					model.ShrinkDatabaseEnabled = _services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance) && DataSettings.Current.IsSqlServer;
 				}
 			}
 			catch (Exception) { }

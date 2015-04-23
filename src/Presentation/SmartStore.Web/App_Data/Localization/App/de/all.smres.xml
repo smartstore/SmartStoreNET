@@ -2950,6 +2950,18 @@
 	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
 		<Value>Ihre Version</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.UpdateNow">
+		<Value>Jetzt aktualisieren</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
+		<Value>AutoUpdate möglich</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
+		<Value>Unbekannter Fehler beim Paket-Download. Bitte versuchen Sie es später erneut.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
+		<Value>&lt;p&gt;Dieses Update kann automatisch installiert werden. Hierfür lädt SmartStore.NET ein Installationspaket auf Ihren Webserver herunter, führt die Installation durch und startet die Anwendung neu. Vor der Installation wird der Verzeichnisinhalt Ihres Shops gesichert, mit Ausnahme der Ordner &lt;i&gt;App_Data&lt;/i&gt; und &lt;i&gt;Media&lt;/i&gt; sowie der SQL Server Datenbank. &lt;/p&gt;&lt;p&gt;Klicken Sie die Schaltfläche &lt;b&gt;Jetzt aktualisieren&lt;/b&gt;, um das Paket downzuloaden und zu installieren. Alternativ hierzu können Sie weiter unten das Paket auf Ihren lokalen PC downloaden und die Installation zu einem späteren Zeitpunkt manuell durchführen.&lt;/p&gt;</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.About">
 		<Value>Über</Value>
 	</LocaleResource>

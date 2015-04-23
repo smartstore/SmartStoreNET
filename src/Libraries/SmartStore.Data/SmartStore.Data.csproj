@@ -248,6 +248,10 @@
     <Compile Include="Migrations\201504171629262_V22Final.Designer.cs">
       <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.cs" />
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.Designer.cs">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -486,6 +490,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504171629262_V22Final.resx">
       <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504232202590_AutoUpdateRes.resx">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

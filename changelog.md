@@ -4,6 +4,7 @@
 
 ### New Features
 * #582 GMC feed: Option to include\exclude a product
+* #652 Web API: Support for file upload and multipart mime
 
 ## SmartStore.NET 2.2
 

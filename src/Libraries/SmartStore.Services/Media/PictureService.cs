@@ -128,6 +128,25 @@ namespace SmartStore.Services.Media
             }
         }
 
+		private string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
+		{
+			string defaultImageFileName;
+			switch (defaultPictureType)
+			{
+				case PictureType.Entity:
+					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
+					break;
+				case PictureType.Avatar:
+					defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
+					break;
+				default:
+					defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
+					break;
+			}
+
+			return defaultImageFileName;
+		}
+
         /// <summary>
         /// Validates input picture dimensions and prevents that the image size exceeds global max size
         /// </summary>
@@ -159,17 +178,27 @@ namespace SmartStore.Services.Media
 		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
 		public byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId)
 		{
+			return FindEqualPicture(File.ReadAllBytes(path), productPictures, out equalPictureId);
+		}
+
+		/// <summary>
+		/// Finds an equal picture by comparing the binary buffer
+		/// </summary>
+		/// <param name="pictureBinary">Binary picture data</param>
+		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
+		/// <param name="equalPictureId">Id of equal picture if any</param>
+		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
+		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> productPictures, out int equalPictureId)
+		{
 			equalPictureId = 0;
 			try
 			{
-				var myBuffer = File.ReadAllBytes(path);
-
 				foreach (var picture in productPictures)
 				{
-					var otherBuffer = LoadPictureBinary(picture);
+					var otherPictureBinary = LoadPictureBinary(picture);
 
-					using (var myStream = new MemoryStream(myBuffer))
-					using (var otherStream = new MemoryStream(otherBuffer))
+					using (var myStream = new MemoryStream(pictureBinary))
+					using (var otherStream = new MemoryStream(otherPictureBinary))
 					{
 						if (myStream.ContentsEqual(otherStream))
 						{
@@ -179,32 +208,13 @@ namespace SmartStore.Services.Media
 					}
 				}
 
-				return myBuffer;
+				return pictureBinary;
 			}
 			catch
 			{
 				return null;
 			}
 		}
-
-        private string GetDefaultImageFileName(PictureType defaultPictureType = PictureType.Entity)
-        {
-            string defaultImageFileName;
-            switch (defaultPictureType)
-            {
-                case PictureType.Entity:
-                    defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
-                    break;
-                case PictureType.Avatar:
-                    defaultImageFileName = _settingService.GetSettingByKey("Media.Customer.DefaultAvatarImageName", "default-avatar.jpg");
-                    break;
-                default:
-                    defaultImageFileName = _settingService.GetSettingByKey("Media.DefaultImageName", "default-image.jpg");
-                    break;
-            }
-
-            return defaultImageFileName;
-        }
 
         #endregion
 

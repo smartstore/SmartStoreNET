@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Web Api 2.2.0.1##
+###New Features###
+* #652 Support for file upload and multipart mime
+
 ##Web Api 1.32##
 ###New Features###
 * #618 Add endpoint for quantity units
@@ -20,4 +24,4 @@
 ###Improvements###
 * #384 Inserting sluged recources like products require an URL record
 ###Bugfixes###
-* PUT implementation was uncomplete
+* PUT implementation was incomplete

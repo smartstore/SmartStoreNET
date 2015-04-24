@@ -45,6 +45,18 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return new HttpResponseException(HttpStatusCode.Forbidden);
 		}
+		public static HttpResponseException ExceptionUnsupportedMediaType(this ApiController apiController)
+		{
+			return new HttpResponseException(HttpStatusCode.UnsupportedMediaType);
+		}
+		public static HttpResponseException ExceptionNotFound(this ApiController apiController, string message)
+		{
+			return new HttpResponseException(apiController.Request.CreateErrorResponse(HttpStatusCode.NotFound, message));
+		}
+		public static HttpResponseException ExceptionInternalServerError(this ApiController apiController, Exception exc)
+		{
+			return new HttpResponseException(apiController.Request.CreateErrorResponse(HttpStatusCode.InternalServerError, exc));
+		}
 
 		/// <summary>
 		/// Further entity processing typically used by OData actions.
@@ -66,6 +78,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (error.HasValue())
 				throw apiController.ExceptionUnprocessableEntity(error);
 		}
+		
 		public static bool GetNormalizedKey(this ODataPath odataPath, int segmentIndex, out int key)
 		{
 			if (odataPath.Segments.Count > segmentIndex)
@@ -82,6 +95,16 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			key = 0;
 			return false;
+		}
+
+		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)
+		{
+			try
+			{
+				foreach (var file in provider.FileData)
+					AppPath.Delete(file.LocalFileName);
+			}
+			catch { }
 		}
 	}
 }

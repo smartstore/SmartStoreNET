@@ -150,7 +150,7 @@ namespace SmartStore.Services.ExportImport
             }
         }
 
-		protected virtual void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture, int thumbSize)
+		protected virtual void WritePicture(XmlWriter writer, XmlExportContext context, Picture picture, int thumbSize, int defaultSize)
 		{
 			if (picture != null)
 			{
@@ -158,9 +158,9 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", picture.Id.ToString());
 				writer.Write("SeoFileName", picture.SeoFilename);
 				writer.Write("MimeType", picture.MimeType);
-				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, thumbSize, false, storeLocation: context.Store.Url));
-				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, thumbSize, false, storeLocation: context.Store.Url));
-				writer.Write("FullSizeImageUrl", _pictureService.GetPictureUrl(picture, 0, false, storeLocation: context.Store.Url));
+				writer.Write("ThumbImageUrl", _pictureService.GetPictureUrl(picture, thumbSize, false, context.Store.Url));
+				writer.Write("ImageUrl", _pictureService.GetPictureUrl(picture, defaultSize, false, context.Store.Url));
+				writer.Write("FullSizeImageUrl", _pictureService.GetPictureUrl(picture, 0, false, context.Store.Url));
 				writer.WriteEndElement();
 			}
 		}
@@ -528,7 +528,7 @@ namespace SmartStore.Services.ExportImport
 				writer.WriteStartElement("Pictures");
 				foreach (int pictureId in combination.GetAssignedPictureIds())
 				{
-					WritePicture(writer, context, _pictureService.GetPictureById(pictureId), _mediaSettings.ProductThumbPictureSize);
+					WritePicture(writer, context, _pictureService.GetPictureById(pictureId), _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
 				}
 				writer.WriteEndElement();	// Pictures
 
@@ -543,7 +543,7 @@ namespace SmartStore.Services.ExportImport
 				writer.Write("Id", productPicture.Id.ToString());
 				writer.Write("DisplayOrder", productPicture.DisplayOrder.ToString());
 
-				WritePicture(writer, context, productPicture.Picture, _mediaSettings.ProductThumbPictureSize);
+				WritePicture(writer, context, productPicture.Picture, _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
 
 				writer.WriteEndElement();
 			}
@@ -588,7 +588,7 @@ namespace SmartStore.Services.ExportImport
 					writer.Write("Alias", category.Alias);
 					writer.Write("DefaultViewMode", category.DefaultViewMode);
 
-					WritePicture(writer, context, category.Picture, _mediaSettings.CategoryThumbPictureSize);
+					WritePicture(writer, context, category.Picture, _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
 
 					WriteLocalized(writer, context, lang =>
 					{
@@ -631,7 +631,7 @@ namespace SmartStore.Services.ExportImport
 					writer.Write("MetaDescription", manu.MetaDescription);
 					writer.Write("MetaTitle", manu.MetaTitle);
 
-					WritePicture(writer, context, manu.Picture, _mediaSettings.ManufacturerThumbPictureSize);
+					WritePicture(writer, context, manu.Picture, _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
 
 					WriteLocalized(writer, context, lang =>
 					{

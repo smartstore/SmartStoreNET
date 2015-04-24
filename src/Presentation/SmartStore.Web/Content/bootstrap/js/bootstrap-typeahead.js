@@ -46,7 +46,8 @@
     constructor: Typeahead
 
   , select: function () {
-      var val = this.$menu.find('.active').attr('data-value')
+  	  var val = this.$menu.find('.active').attr('data-value')
+
 	  // codehint: deleted ('change' results in js error)
   	  /*this.$element
         .val(this.updater(val))
@@ -66,10 +67,12 @@
       var pos = $.extend({}, this.$element.offset(), {
         height: this.$element[0].offsetHeight
       })
-
+  
       this.$menu.css({
         top: pos.top + pos.height
       , left: pos.left
+	  , boxSizing: "border-box" // codehint: added
+	  , minWidth: this.$element.outerWidth(false) + "px" // codehint: added
       })
 
       this.$menu.show()
@@ -135,8 +138,8 @@
   , highlighter: function (item) {
   	  // codehint: sm-edit
 	  // Original:
-  	  //     var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
-	  
+  	//     var query = this.query.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&')
+
   	  // codehint: the above query transforms the whole query to a regex pattern, thus only highlighting 'exact' matches.
 	  // But we also want to highlight 'far' words. So we create a pattern like "word1|word2|wordn..." (instead of "word1\ word2\ wordn...")
   	  var query = _.map(_.str.words(this.query), function (val, i) { return val.replace(/[\-\[\]{}()*+?.,\\\^$|#\s]/g, '\\$&') }).join("|");
@@ -153,8 +156,12 @@
         i.find('a').html(that.highlighter(item))
         return i[0]
       })
+	  
+  	  // codehint: edit
+      if (this.options.autoSelectFirstItem) {
+      	items.first().addClass('active')
+      }
 
-      items.first().addClass('active')
       this.$menu.html(items)
       return this
     }
@@ -213,10 +220,15 @@
 
       switch(e.keyCode) {
         case 9: // tab
-        case 13: // enter
         case 27: // escape
           e.preventDefault()
           break
+
+      	case 13: // enter
+      	  if (this.$menu.find('.active').length > 0) {
+      		  e.preventDefault();
+      	  }
+      	  break
 
         case 38: // up arrow
           e.preventDefault()
@@ -330,6 +342,8 @@
   , minLength: 1
   // codehint: sm-add (throttled KeyPress)
   , keyUpDelay: 0
+  // codehint: sm-add
+  , autoSelectFirstItem: true
   }
 
   $.fn.typeahead.Constructor = Typeahead

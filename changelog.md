@@ -1,12 +1,13 @@
 ﻿# Release Notes
 
-## SmartStore.NET 2.5
+## SmartStore.NET 2.2.1
 
 ### New Features
 * #582 GMC feed: Option to include\exclude a product
 * #652 Web API: Support for file upload and multipart mime
+* New option to display product thumbnails in instant search (NOTE: the feature can be enabled via _Configuration > Settings > Catalog Settings > Search_)
 
-## SmartStore.NET 2.2
+## SmartStore.NET 2.2.0
 
 ### New Features
 * New mobile theme: _MobileLight_ (a light variant of the default mobile theme)

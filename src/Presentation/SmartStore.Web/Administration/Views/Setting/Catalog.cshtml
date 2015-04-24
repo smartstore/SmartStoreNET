@@ -117,10 +117,12 @@
 
         function toggleProductSearchAutoComplete() {
             if ($('#@Html.FieldIdFor(model => model.ProductSearchAutoCompleteEnabled)').is(':checked')) {
-                $('#pnlProductSearchAutoCompleteNumberOfProducts').show();
+            	$('#pnlProductSearchAutoCompleteNumberOfProducts').show();
+            	$('#pnlShowProductImagesInSearchAutoComplete').show();
             }
             else {
-                $('#pnlProductSearchAutoCompleteNumberOfProducts').hide();
+            	$('#pnlProductSearchAutoCompleteNumberOfProducts').hide();
+            	$('#pnlShowProductImagesInSearchAutoComplete').hide();
             }
         }
         
@@ -797,6 +799,20 @@
                 @Html.ValidationMessageFor(model => model.ProductSearchPageSizeOptions)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SuppressSkuSearch)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.SuppressSkuSearch)
+				@Html.ValidationMessageFor(model => model.SuppressSkuSearch)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteEnabled)
@@ -806,6 +822,15 @@
                 @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteEnabled)
             </td>
         </tr>
+		<tr id="pnlShowProductImagesInSearchAutoComplete">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.ShowProductImagesInSearchAutoComplete)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.ShowProductImagesInSearchAutoComplete)
+				@Html.ValidationMessageFor(model => model.ShowProductImagesInSearchAutoComplete)
+			</td>
+		</tr>
         <tr id="pnlProductSearchAutoCompleteNumberOfProducts">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
@@ -813,15 +838,6 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
                 @Html.ValidationMessageFor(model => model.ProductSearchAutoCompleteNumberOfProducts)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SuppressSkuSearch)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.SuppressSkuSearch)
-                @Html.ValidationMessageFor(model => model.SuppressSkuSearch)
             </td>
         </tr>
     </table>

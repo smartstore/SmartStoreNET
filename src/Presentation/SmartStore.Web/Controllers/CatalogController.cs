@@ -1223,7 +1223,7 @@ namespace SmartStore.Web.Controllers
 		[ChildActionOnly]
 		public ActionResult SearchBox()
 		{
-			var model = new SearchBoxModel()
+			var model = new SearchBoxModel
 			{
 				AutoCompleteEnabled = _catalogSettings.ProductSearchAutoCompleteEnabled,
 				ShowProductImagesInSearchAutoComplete = _catalogSettings.ShowProductImagesInSearchAutoComplete,
@@ -1237,16 +1237,15 @@ namespace SmartStore.Web.Controllers
 			if (String.IsNullOrWhiteSpace(term) || term.Length < _catalogSettings.ProductSearchTermMinimumLength)
 				return Content("");
 
-			//products
-			var productNumber = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ?
-				_catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 16;
+			// products
+			var pageSize = _catalogSettings.ProductSearchAutoCompleteNumberOfProducts > 0 ? _catalogSettings.ProductSearchAutoCompleteNumberOfProducts : 10;
 
 			var ctx = new ProductSearchContext();
 			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
 			ctx.Keywords = term;
 			ctx.SearchSku = !_catalogSettings.SuppressSkuSearch;
 			ctx.OrderBy = ProductSortingEnum.Position;
-			ctx.PageSize = productNumber;
+			ctx.PageSize = pageSize;
 			ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
 			ctx.VisibleIndividuallyOnly = true;
 
@@ -1256,12 +1255,13 @@ namespace SmartStore.Web.Controllers
 				products, 
 				false, 
 				_catalogSettings.ShowProductImagesInSearchAutoComplete, 
-				_mediaSettings.AutoCompleteSearchThumbPictureSize).ToList();
+				_mediaSettings.ProductThumbPictureSizeOnProductDetailsPage).ToList();
 			
 			var result = (from p in models
 						  select new
 						  {
 							  label = p.Name,
+							  secondary = p.ShortDescription.Truncate(70, "...") ?? "",
 							  producturl = Url.RouteUrl("Product", new { SeName = p.SeName }),
 							  productpictureurl = p.DefaultPictureModel.ImageUrl
 						  })

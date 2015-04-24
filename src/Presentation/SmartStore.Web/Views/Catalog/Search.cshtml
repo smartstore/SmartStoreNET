@@ -36,7 +36,6 @@
                     });
 
                     function toggleAdvancedSearch() {
-
                         if ($('#@Html.FieldIdFor(model => model.As)').is(':checked')) {
                             $('#advanced-search-block').show();
                         }
@@ -72,7 +71,7 @@
                         </div>
                     </div>
 
-                    <div class="adv-search" id="advanced-search-block">
+                    <div class="adv-search" id="advanced-search-block" style="display: @(Model.As ? "block" : "none")">
                         @if (Model.AvailableCategories.Count > 0)
                         {
                             <div class="control-group">
@@ -124,7 +123,7 @@
 
                     <div class="control-group">
                         <div class="controls">
-                            <button type="submit" class="btn btn-primary btn-large search-button">
+                            <button type="submit" class="btn btn-primary search-button">
                                 <i class="fa fa-search"></i>
                                 @T("Search")
                             </button>

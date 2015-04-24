@@ -70,6 +70,43 @@
 	z-index: 10;
 }
 
+.typeahead {
+	@baseHeight: 36px;
+	&.dropdown-instantsearch.rich li {
+		border-bottom: 1px solid rgba(0,0,0, 0.12);
+		&:last-child { border-bottom: none }
+	}
+	.item-wrapper { 
+		display: block; 
+		height: @baseHeight; 
+		padding: 5px 0;
+	}
+	.item-thumb { 
+		float: left; 
+		width: @baseHeight; 
+		height: @baseHeight; 
+		margin-right: 8px; 
+		text-align: center;
+	}
+	.item-thumb > img { 
+		max-height: 100% ;
+	}
+	.item-labels { 
+		float: left; 
+		height: @baseHeight; 
+	}
+	.item-primary { 
+		font-size: 13px;
+		line-height: @baseHeight / 2;
+	}
+	.item-secondary { 
+		font-size: 11px;
+		line-height: (@baseHeight / 2) - 2px;
+		padding-top: 2px;
+		opacity: 0.7 
+	}
+}
+
 #shopbar-account .shopbar-flyout-container .register {
 	text-align: center;
 }

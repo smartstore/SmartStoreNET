@@ -28,7 +28,8 @@ namespace SmartStore.Core.Domain.Catalog
             MaxFilterItemsToDisplay = 4;
             ShowSubcategoriesAboveProductLists = true;
 			ProductSearchAutoCompleteEnabled = true;
-			ProductSearchAutoCompleteNumberOfProducts = 16;
+			ShowProductImagesInSearchAutoComplete = true;
+			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
 			SearchPageProductsPerPage = 6;

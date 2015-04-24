@@ -244,6 +244,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled")]
         public bool ProductSearchAutoCompleteEnabled { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete")]
+		public bool ShowProductImagesInSearchAutoComplete { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts")]
         public int ProductSearchAutoCompleteNumberOfProducts { get; set; }
 

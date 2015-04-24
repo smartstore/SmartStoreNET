@@ -1,14 +1,12 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace SmartStoreNetWebApiClient
 {
 	static class Program
 	{
-		public static string AppName { get { return "SmartStore.Net API Client v.1.0"; } }
+		public static string AppName { get { return "SmartStore.Net Web API Client v.1.1"; } }
+		public static string ConsumerName { get { return "My shopping data consumer v.1.1"; } }
 
 		/// <summary>
 		/// Der Haupteinstiegspunkt für die Anwendung.

@@ -1,12 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Diagnostics;
-using System.Windows.Forms;
-using SmartStoreNetWebApiClient.Properties;
-using SmartStore.Net.WebApi;
-using SmartStoreNetWebApiClient.Misc;
-using System.Web;
-using System.Globalization;
 using System.Text;
+using System.Windows.Forms;
+using SmartStore.Net.WebApi;
+using SmartStoreNetWebApiClient.Properties;
 
 namespace SmartStoreNetWebApiClient
 {
@@ -33,6 +31,13 @@ namespace SmartStoreNetWebApiClient
 				cboPath.Items.Add("/Customers");
 
 			cboMethod_changeCommitted(null, null);
+			radioApi_CheckedChanged(null, null);
+
+			openFileDialog1.Filter = "Image files (*.jpg, *.jpeg, *.jpe, *.jfif, *.png) | *.jpg; *.jpeg; *.jpe; *.jfif; *.png";
+			openFileDialog1.DefaultExt = ".jpg";
+			openFileDialog1.FileName = "";
+			openFileDialog1.Title = "Please select an image file to upload";
+			openFileDialog1.Multiselect = true;
 		}
 
 		private void CallTheApi()
@@ -43,7 +48,7 @@ namespace SmartStoreNetWebApiClient
 			if (!string.IsNullOrWhiteSpace(cboPath.Text) && !cboPath.Text.StartsWith("/"))
 				cboPath.Text = "/" + cboPath.Text;
 
-			var context = new WebApiRequestContext()
+			var context = new WebApiRequestContext
 			{
 				PublicKey = txtPublicKey.Text,
 				SecretKey = txtSecretKey.Text,
@@ -63,15 +68,18 @@ namespace SmartStoreNetWebApiClient
 			}
 
 			var apiConsumer = new ApiConsumer();
-			var requestContent = new StringBuilder();
 			var response = new WebApiConsumerResponse();
 			var sb = new StringBuilder();
+			StringBuilder requestContent = null;
+			Dictionary<string, object> multiPartData = null;
 
 			lblRequest.Text = "Request: " + context.HttpMethod + " " + context.Url;
 			lblRequest.Refresh();
 
-			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, requestContent);
+			if (radioApi.Checked && !string.IsNullOrEmpty(txtFile.Text) && cboPath.Text.StartsWith("/Upload"))
+				multiPartData = apiConsumer.CreateProductImageMultipartData(txtFile.Text, txtProductId.Text.ToInt(), txtProductSku.Text);
 
+			var webRequest = apiConsumer.StartRequest(context, cboContent.Text, multiPartData, out requestContent);
 			txtRequest.Text = requestContent.ToString();
 
 			bool result = apiConsumer.ProcessResponse(webRequest, response);
@@ -82,7 +90,7 @@ namespace SmartStoreNetWebApiClient
 
 			if (result && radioJson.Checked && radioOdata.Checked)
 			{
-				var customers = apiConsumer.TryParseCustomers(response);
+				var customers = response.TryParseCustomers();
 
 				if (customers != null)
 				{
@@ -102,6 +110,7 @@ namespace SmartStoreNetWebApiClient
 			cboQuery.InsertRolled(cboQuery.Text, 64);
 			cboContent.InsertRolled(cboContent.Text, 64);
 		}
+		
 		private void SavePathItems(bool odata)
 		{
 			Settings.Default[odata ? "ApiPaths2" : "ApiPaths"] = cboPath.Items.IntoString();
@@ -121,6 +130,7 @@ namespace SmartStoreNetWebApiClient
 			Settings.Default["ApiContent"] = cboContent.Items.IntoString();
 			Settings.Default.Save();
 		}
+		
 		private void MainForm_Shown(object sender, EventArgs e)
 		{
 			if (txtVersion.Text.Length == 0)
@@ -131,6 +141,7 @@ namespace SmartStoreNetWebApiClient
 
 			cboPath.Focus();
 		}
+		
 		private void callApi_Click(object sender, EventArgs e)
 		{
 			clear_Click(null, null);
@@ -140,23 +151,28 @@ namespace SmartStoreNetWebApiClient
 				CallTheApi();
 			}
 		}
+		
 		private void cboMethod_changeCommitted(object sender, EventArgs e)
 		{
 			bool enable = ApiConsumer.BodySupported(cboMethod.Text);
 			cboContent.Enabled = enable;
 		}
+		
 		private void btnDeletePath_Click(object sender, EventArgs e)
 		{
 			cboPath.RemoveCurrent();
 		}
+		
 		private void btnDeleteQuery_Click(object sender, EventArgs e)
 		{
 			cboQuery.RemoveCurrent();
 		}
+		
 		private void btnDeleteContent_Click(object sender, EventArgs e)
 		{
 			cboContent.RemoveCurrent();
 		}
+		
 		private void clear_Click(object sender, EventArgs e)
 		{
 			txtRequest.Clear();
@@ -169,13 +185,37 @@ namespace SmartStoreNetWebApiClient
 			txtResponse.Refresh();
 			lblResponse.Refresh();
 		}
+		
 		private void odata_Click(object sender, EventArgs e)
 		{
 			SavePathItems(true);
 		}
+		
 		private void api_Click(object sender, EventArgs e)
 		{
 			SavePathItems(false);
+		}
+
+		private void radioApi_CheckedChanged(object sender, EventArgs e)
+		{
+			var show = radioApi.Checked;
+
+			lblFile.Visible = show;
+			txtFile.Visible = show;
+			btnFileOpen.Visible = show;
+			lblProductId.Visible = show;
+			txtProductId.Visible = show;
+			lblProductSku.Visible = show;
+			txtProductSku.Visible = show;
+		}
+
+		private void btnFileOpen_Click(object sender, EventArgs e)
+		{
+			var result = openFileDialog1.ShowDialog();
+			if (result == DialogResult.OK)
+			{
+				txtFile.Text = string.Join(";", openFileDialog1.FileNames);
+			}
 		}
 	}
 }

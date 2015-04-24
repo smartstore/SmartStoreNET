@@ -212,5 +212,9 @@ Kopie von*
 /src/Presentation/SmartStore.Web/Media/[Tt]humbs
 /src/Presentation/SmartStore.Web/Media/[Uu]ploaded
 
+# Tools
+/src/Tools/SmartStore.WebApi.Client/packages
+/src/Tools/SmartStore.WebApi.Client/SmartStore.WebApi.Client.sln
+
 src/SmartStoreNET.Packager.sln
 Log.txt

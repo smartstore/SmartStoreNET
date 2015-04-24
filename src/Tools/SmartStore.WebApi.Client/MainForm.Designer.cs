@@ -56,10 +56,18 @@
 			this.label4 = new System.Windows.Forms.Label();
 			this.label7 = new System.Windows.Forms.Label();
 			this.label9 = new System.Windows.Forms.Label();
-			this.txtVersion = new System.Windows.Forms.TextBox();
-			this.txtUrl = new System.Windows.Forms.TextBox();
 			this.lblRequest = new System.Windows.Forms.TextBox();
 			this.lblResponse = new System.Windows.Forms.TextBox();
+			this.lblFile = new System.Windows.Forms.Label();
+			this.txtFile = new System.Windows.Forms.TextBox();
+			this.txtVersion = new System.Windows.Forms.TextBox();
+			this.txtUrl = new System.Windows.Forms.TextBox();
+			this.btnFileOpen = new System.Windows.Forms.Button();
+			this.openFileDialog1 = new System.Windows.Forms.OpenFileDialog();
+			this.txtProductId = new System.Windows.Forms.TextBox();
+			this.lblProductId = new System.Windows.Forms.Label();
+			this.txtProductSku = new System.Windows.Forms.TextBox();
+			this.lblProductSku = new System.Windows.Forms.Label();
 			this.panel1.SuspendLayout();
 			this.panel2.SuspendLayout();
 			this.SuspendLayout();
@@ -95,7 +103,7 @@
 			// callApi
 			// 
 			this.callApi.AutoSize = true;
-			this.callApi.Location = new System.Drawing.Point(17, 734);
+			this.callApi.Location = new System.Drawing.Point(17, 784);
 			this.callApi.Name = "callApi";
 			this.callApi.Size = new System.Drawing.Size(75, 23);
 			this.callApi.TabIndex = 8;
@@ -124,7 +132,7 @@
 			// label6
 			// 
 			this.label6.AutoSize = true;
-			this.label6.Location = new System.Drawing.Point(487, 65);
+			this.label6.Location = new System.Drawing.Point(20, 98);
 			this.label6.Name = "label6";
 			this.label6.Size = new System.Drawing.Size(60, 13);
 			this.label6.TabIndex = 13;
@@ -152,7 +160,7 @@
 			this.txtResponse.DetectUrls = false;
 			this.txtResponse.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.txtResponse.HideSelection = false;
-			this.txtResponse.Location = new System.Drawing.Point(18, 326);
+			this.txtResponse.Location = new System.Drawing.Point(18, 376);
 			this.txtResponse.Name = "txtResponse";
 			this.txtResponse.ReadOnly = true;
 			this.txtResponse.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -163,7 +171,7 @@
 			// clear
 			// 
 			this.clear.AutoSize = true;
-			this.clear.Location = new System.Drawing.Point(1074, 734);
+			this.clear.Location = new System.Drawing.Point(1074, 784);
 			this.clear.Name = "clear";
 			this.clear.Size = new System.Drawing.Size(70, 23);
 			this.clear.TabIndex = 9;
@@ -190,9 +198,9 @@
 			// cboContent
 			// 
 			this.cboContent.FormattingEnabled = true;
-			this.cboContent.Location = new System.Drawing.Point(551, 62);
+			this.cboContent.Location = new System.Drawing.Point(84, 95);
 			this.cboContent.Name = "cboContent";
-			this.cboContent.Size = new System.Drawing.Size(571, 21);
+			this.cboContent.Size = new System.Drawing.Size(1038, 21);
 			this.cboContent.TabIndex = 7;
 			// 
 			// btnDeletePath
@@ -211,7 +219,7 @@
 			// 
 			this.btnDeleteContent.AutoSize = true;
 			this.btnDeleteContent.Font = new System.Drawing.Font("Arial", 6.75F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
-			this.btnDeleteContent.Location = new System.Drawing.Point(1124, 62);
+			this.btnDeleteContent.Location = new System.Drawing.Point(1124, 95);
 			this.btnDeleteContent.Name = "btnDeleteContent";
 			this.btnDeleteContent.Size = new System.Drawing.Size(20, 22);
 			this.btnDeleteContent.TabIndex = 9;
@@ -225,7 +233,7 @@
 			this.txtRequest.DetectUrls = false;
 			this.txtRequest.Font = new System.Drawing.Font("Consolas", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.txtRequest.HideSelection = false;
-			this.txtRequest.Location = new System.Drawing.Point(18, 113);
+			this.txtRequest.Location = new System.Drawing.Point(18, 165);
 			this.txtRequest.Name = "txtRequest";
 			this.txtRequest.ReadOnly = true;
 			this.txtRequest.ScrollBars = System.Windows.Forms.RichTextBoxScrollBars.Vertical;
@@ -308,6 +316,7 @@
 			this.radioApi.TabStop = true;
 			this.radioApi.Text = "api";
 			this.radioApi.UseVisualStyleBackColor = true;
+			this.radioApi.CheckedChanged += new System.EventHandler(this.radioApi_CheckedChanged);
 			this.radioApi.Click += new System.EventHandler(this.api_Click);
 			// 
 			// panel1
@@ -323,7 +332,7 @@
 			// 
 			this.panel2.Controls.Add(this.radioXml);
 			this.panel2.Controls.Add(this.radioJson);
-			this.panel2.Location = new System.Drawing.Point(1013, 303);
+			this.panel2.Location = new System.Drawing.Point(1013, 353);
 			this.panel2.Name = "panel2";
 			this.panel2.Size = new System.Drawing.Size(135, 23);
 			this.panel2.TabIndex = 26;
@@ -355,6 +364,42 @@
 			this.label9.TabIndex = 30;
 			this.label9.Text = "Service";
 			// 
+			// lblRequest
+			// 
+			this.lblRequest.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.lblRequest.Location = new System.Drawing.Point(19, 150);
+			this.lblRequest.Name = "lblRequest";
+			this.lblRequest.ReadOnly = true;
+			this.lblRequest.Size = new System.Drawing.Size(1123, 14);
+			this.lblRequest.TabIndex = 31;
+			this.lblRequest.Text = "Request";
+			// 
+			// lblResponse
+			// 
+			this.lblResponse.BorderStyle = System.Windows.Forms.BorderStyle.None;
+			this.lblResponse.Location = new System.Drawing.Point(19, 361);
+			this.lblResponse.Name = "lblResponse";
+			this.lblResponse.ReadOnly = true;
+			this.lblResponse.Size = new System.Drawing.Size(988, 14);
+			this.lblResponse.TabIndex = 32;
+			this.lblResponse.Text = "Response";
+			// 
+			// lblFile
+			// 
+			this.lblFile.AutoSize = true;
+			this.lblFile.Location = new System.Drawing.Point(23, 125);
+			this.lblFile.Name = "lblFile";
+			this.lblFile.Size = new System.Drawing.Size(58, 13);
+			this.lblFile.TabIndex = 34;
+			this.lblFile.Text = "File upload";
+			// 
+			// txtFile
+			// 
+			this.txtFile.Location = new System.Drawing.Point(84, 122);
+			this.txtFile.Name = "txtFile";
+			this.txtFile.Size = new System.Drawing.Size(423, 21);
+			this.txtFile.TabIndex = 33;
+			// 
 			// txtVersion
 			// 
 			this.txtVersion.DataBindings.Add(new System.Windows.Forms.Binding("Text", global::SmartStoreNetWebApiClient.Properties.Settings.Default, "ApiVersion", true, System.Windows.Forms.DataSourceUpdateMode.OnPropertyChanged));
@@ -373,31 +418,65 @@
 			this.txtUrl.TabIndex = 2;
 			this.txtUrl.Text = global::SmartStoreNetWebApiClient.Properties.Settings.Default.ApiUrl;
 			// 
-			// lblRequest
+			// btnFileOpen
 			// 
-			this.lblRequest.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.lblRequest.Location = new System.Drawing.Point(19, 98);
-			this.lblRequest.Name = "lblRequest";
-			this.lblRequest.ReadOnly = true;
-			this.lblRequest.Size = new System.Drawing.Size(679, 14);
-			this.lblRequest.TabIndex = 31;
-			this.lblRequest.Text = "Request";
+			this.btnFileOpen.AutoSize = true;
+			this.btnFileOpen.Location = new System.Drawing.Point(510, 120);
+			this.btnFileOpen.Name = "btnFileOpen";
+			this.btnFileOpen.Size = new System.Drawing.Size(43, 24);
+			this.btnFileOpen.TabIndex = 35;
+			this.btnFileOpen.Text = "Open";
+			this.btnFileOpen.UseVisualStyleBackColor = true;
+			this.btnFileOpen.Click += new System.EventHandler(this.btnFileOpen_Click);
 			// 
-			// lblResponse
+			// openFileDialog1
 			// 
-			this.lblResponse.BorderStyle = System.Windows.Forms.BorderStyle.None;
-			this.lblResponse.Location = new System.Drawing.Point(19, 311);
-			this.lblResponse.Name = "lblResponse";
-			this.lblResponse.ReadOnly = true;
-			this.lblResponse.Size = new System.Drawing.Size(679, 14);
-			this.lblResponse.TabIndex = 32;
-			this.lblResponse.Text = "Response";
+			this.openFileDialog1.FileName = "openFileDialog1";
+			// 
+			// txtProductId
+			// 
+			this.txtProductId.Location = new System.Drawing.Point(633, 122);
+			this.txtProductId.Name = "txtProductId";
+			this.txtProductId.Size = new System.Drawing.Size(61, 21);
+			this.txtProductId.TabIndex = 36;
+			// 
+			// lblProductId
+			// 
+			this.lblProductId.AutoSize = true;
+			this.lblProductId.Location = new System.Drawing.Point(571, 125);
+			this.lblProductId.Name = "lblProductId";
+			this.lblProductId.Size = new System.Drawing.Size(58, 13);
+			this.lblProductId.TabIndex = 37;
+			this.lblProductId.Text = "Product ID";
+			// 
+			// txtProductSku
+			// 
+			this.txtProductSku.Location = new System.Drawing.Point(781, 123);
+			this.txtProductSku.Name = "txtProductSku";
+			this.txtProductSku.Size = new System.Drawing.Size(113, 21);
+			this.txtProductSku.TabIndex = 38;
+			// 
+			// lblProductSku
+			// 
+			this.lblProductSku.AutoSize = true;
+			this.lblProductSku.Location = new System.Drawing.Point(714, 126);
+			this.lblProductSku.Name = "lblProductSku";
+			this.lblProductSku.Size = new System.Drawing.Size(66, 13);
+			this.lblProductSku.TabIndex = 39;
+			this.lblProductSku.Text = "Product SKU";
 			// 
 			// MainForm
 			// 
 			this.AutoScaleDimensions = new System.Drawing.SizeF(6F, 13F);
 			this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-			this.ClientSize = new System.Drawing.Size(1154, 762);
+			this.ClientSize = new System.Drawing.Size(1154, 812);
+			this.Controls.Add(this.txtProductSku);
+			this.Controls.Add(this.lblProductSku);
+			this.Controls.Add(this.txtProductId);
+			this.Controls.Add(this.lblProductId);
+			this.Controls.Add(this.btnFileOpen);
+			this.Controls.Add(this.txtFile);
+			this.Controls.Add(this.lblFile);
 			this.Controls.Add(this.lblResponse);
 			this.Controls.Add(this.lblRequest);
 			this.Controls.Add(this.label9);
@@ -428,11 +507,11 @@
 			this.Controls.Add(this.label1);
 			this.Font = new System.Drawing.Font("Tahoma", 8.25F, System.Drawing.FontStyle.Regular, System.Drawing.GraphicsUnit.Point, ((byte)(0)));
 			this.MaximizeBox = false;
-			this.MaximumSize = new System.Drawing.Size(1170, 800);
-			this.MinimumSize = new System.Drawing.Size(1170, 800);
+			this.MaximumSize = new System.Drawing.Size(1170, 850);
+			this.MinimumSize = new System.Drawing.Size(1170, 850);
 			this.Name = "MainForm";
 			this.StartPosition = System.Windows.Forms.FormStartPosition.CenterScreen;
-			this.Text = "SmartStore.NET WebApi Client";
+			this.Text = "Form1";
 			this.Shown += new System.EventHandler(this.MainForm_Shown);
 			this.panel1.ResumeLayout(false);
 			this.panel1.PerformLayout();
@@ -477,6 +556,14 @@
 		private System.Windows.Forms.Label label9;
 		private System.Windows.Forms.TextBox lblRequest;
 		private System.Windows.Forms.TextBox lblResponse;
+		private System.Windows.Forms.TextBox txtFile;
+		private System.Windows.Forms.Label lblFile;
+		private System.Windows.Forms.Button btnFileOpen;
+		private System.Windows.Forms.OpenFileDialog openFileDialog1;
+		private System.Windows.Forms.TextBox txtProductId;
+		private System.Windows.Forms.Label lblProductId;
+		private System.Windows.Forms.TextBox txtProductSku;
+		private System.Windows.Forms.Label lblProductSku;
 	}
 }
 

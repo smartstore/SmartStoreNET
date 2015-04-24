@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Windows.Forms;
 
-namespace SmartStoreNetWebApiClient.Misc
+namespace SmartStoreNetWebApiClient
 {
 	public class HourGlass : IDisposable
 	{

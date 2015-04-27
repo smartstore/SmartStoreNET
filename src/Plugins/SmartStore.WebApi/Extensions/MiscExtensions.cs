@@ -33,12 +33,10 @@ namespace SmartStore.WebApi
 	{
 		public static string ToUnquoted(this string value)
 		{
-			if (value.HasValue())
+			if (value.HasValue() && value.Length > 1)
 			{
-				if (value.StartsWith("\"") && value.EndsWith("\""))
-					return value.Trim(new char[] { '"' });
-				else if (value.StartsWith("'") && value.EndsWith("'"))
-					return value.Trim(new char[] { '\'' });
+				if ((value.StartsWith("\"") && value.EndsWith("\"")) || (value.StartsWith("'") && value.EndsWith("'")))
+					return value.Substring(1, value.Length - 2);
 			}
 			return value;
 		}

@@ -89,5 +89,10 @@ namespace SmartStoreNetWebApiClient
 			}
 			return defaultValue;
 		}
+
+		public static string EmptyNull(this string value)
+		{
+			return (value ?? string.Empty).Trim();
+		}
 	}
 }

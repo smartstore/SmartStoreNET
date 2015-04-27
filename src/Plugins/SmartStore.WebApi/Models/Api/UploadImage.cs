@@ -1,4 +1,6 @@
-﻿using System.Runtime.Serialization;
+﻿using System.Collections.Generic;
+using System.Net.Http.Headers;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.WebApi.Models.Api
@@ -7,19 +9,19 @@ namespace SmartStore.WebApi.Models.Api
 	public partial class UploadImage
 	{
 		/// <summary>
-		/// Name attribute of content-disposition request header
+		/// Unquoted name attribute of content-disposition multipart header
 		/// </summary>
 		[DataMember]
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Filename attribute of content-disposition request header
+		/// Unquoted filename attribute of content-disposition multipart header
 		/// </summary>
 		[DataMember]
 		public string FileName { get; set; }
 
 		/// <summary>
-		/// Media (mime) type of content-type request header
+		/// Media (mime) type of content-type multipart header
 		/// </summary>
 		[DataMember]
 		public string MediaType { get; set; }
@@ -31,7 +33,7 @@ namespace SmartStore.WebApi.Models.Api
 		public bool Exists { get; set; }
 
 		/// <summary>
-		/// Indicates whether the uploaded image was inserted
+		/// Indicates whether the uploaded image has been inserted
 		/// </summary>
 		[DataMember]
 		public bool Inserted { get; set; }
@@ -53,6 +55,12 @@ namespace SmartStore.WebApi.Models.Api
 		/// </summary>
 		[DataMember]
 		public string FullSizeImageUrl { get; set; }
+
+		/// <summary>
+		/// Raw custom parameters of the content-disposition multipart header
+		/// </summary>
+		[DataMember]
+		public ICollection<NameValueHeaderValue> ContentDisposition { get; set; }
 
 		/// <summary>
 		/// The picture entity. Can be null.

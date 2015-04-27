@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net;
@@ -31,6 +32,7 @@ namespace SmartStore.Net.WebApi
 		private byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary, StringBuilder requestContent)
 		{
 			var needsCLRF = false;
+			var sb = new StringBuilder();
 
 			using (var stream = new MemoryStream())
 			{
@@ -45,18 +47,23 @@ namespace SmartStore.Net.WebApi
 
 					if (param.Value is ApiFileParameter)
 					{
-						var fileToUpload = (ApiFileParameter)param.Value;
+						var file = (ApiFileParameter)param.Value;
 
-						string header = string.Format("--{0}\r\nContent-Disposition: form-data; name=\"{1}\"; filename=\"{2}\"\r\nContent-Type: {3}\r\n\r\n",
-							boundary,
-							param.Key,
-							fileToUpload.FileName ?? param.Key,
-							fileToUpload.ContentType ?? "application/octet-stream");
+						sb.Clear();
+						sb.AppendFormat("--{0}\r\n", boundary);
+						sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"", param.Key, file.FileName ?? param.Key);
 
-						WriteToStream(stream, requestContent, header);
+						foreach (var key in file.Parameters.AllKeys)
+						{
+							sb.AppendFormat("; {0}=\"{1}\"", key, file.Parameters[key].Replace('"', '\''));
+						}
 
-						stream.Write(fileToUpload.File, 0, fileToUpload.File.Length);
-						requestContent.AppendFormat("<Binary image data here (length {0} bytes)...>", fileToUpload.File.Length);
+						sb.AppendFormat("\r\nContent-Type: {0}\r\n\r\n", file.ContentType ?? "application/octet-stream");
+
+						WriteToStream(stream, requestContent, sb.ToString());
+
+						stream.Write(file.Data, 0, file.Data.Length);
+						requestContent.AppendFormat("<Binary image data here (length {0} bytes)...>", file.Data.Length);
 					}
 					else
 					{
@@ -114,6 +121,7 @@ namespace SmartStore.Net.WebApi
 			if (!string.IsNullOrEmpty(sku))
 				dic.Add("Sku", sku);
 
+			// also possible:
 			//if (!string.IsNullOrEmpty(gtin))
 			//	dic.Add("Gtin", sku);
 
@@ -125,7 +133,14 @@ namespace SmartStore.Net.WebApi
 					fstream.Read(data, 0, data.Length);
 
 					var name = Path.GetFileName(path);
-					dic.Add(string.Format("my-image{0}", ++count), new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name)));
+					var id = string.Format("my-image{0}", ++count);
+					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
+
+					// test pass through of custom parameters
+					apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
+					apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
+
+					dic.Add(id, apiFile);
 
 					fstream.Close();
 				}
@@ -258,23 +273,26 @@ namespace SmartStore.Net.WebApi
 
 	public class ApiFileParameter
 	{
-		public ApiFileParameter(byte[] file)
-			: this(file, null)
+		public ApiFileParameter(byte[] data)
+			: this(data, null)
 		{
 		}
-		public ApiFileParameter(byte[] file, string filename)
-			: this(file, filename, null)
+		public ApiFileParameter(byte[] data, string filename)
+			: this(data, filename, null)
 		{
 		}
-		public ApiFileParameter(byte[] file, string filename, string contenttype)
+		public ApiFileParameter(byte[] data, string filename, string contenttype)
 		{
-			File = file;
+			Data = data;
 			FileName = filename;
 			ContentType = contenttype;
+			Parameters = new NameValueCollection();
 		}
 
-		public byte[] File { get; set; }
+		public byte[] Data { get; set; }
 		public string FileName { get; set; }
 		public string ContentType { get; set; }
+
+		public NameValueCollection Parameters { get; set; }
 	}
 }

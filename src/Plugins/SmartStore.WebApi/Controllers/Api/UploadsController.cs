@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
+using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SmartStore.Core;
@@ -100,8 +102,12 @@ namespace SmartStore.WebApi.Controllers.Api
 				{
 					FileName = file.Headers.ContentDisposition.FileName.ToUnquoted(),
 					Name = file.Headers.ContentDisposition.Name.ToUnquoted(),
-					MediaType = file.Headers.ContentType.MediaType.ToUnquoted()
+					MediaType = file.Headers.ContentType.MediaType.ToUnquoted(),
+					ContentDisposition = file.Headers.ContentDisposition.Parameters
 				};
+
+				if (image.FileName.IsEmpty())
+					image.FileName = entity.Name;
 
 				var pictureBinary = File.ReadAllBytes(file.LocalFileName);
 
@@ -113,9 +119,6 @@ namespace SmartStore.WebApi.Controllers.Api
 
 					if (pictureBinary != null)
 					{
-						if (image.FileName.IsEmpty())
-							image.FileName = entity.Name;
-
 						var seoName = _pictureService.Value.GetPictureSeName(Path.GetFileNameWithoutExtension(image.FileName));
 
 						var newPicture = _pictureService.Value.InsertPicture(pictureBinary, image.MediaType, seoName, true, false);

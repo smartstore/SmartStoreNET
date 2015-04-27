@@ -102,9 +102,9 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets a product by GTIN
         /// </summary>
-        /// <param name="sku">SKU</param>
+		/// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
-        Product GetProductByGtin(string sku);
+		Product GetProductByGtin(string gtin);
         
 		/// <summary>
 		/// Adjusts inventory

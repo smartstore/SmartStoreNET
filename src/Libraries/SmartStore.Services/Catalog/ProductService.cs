@@ -1026,7 +1026,7 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets a product by GTIN
         /// </summary>
-        /// <param name="sku">GTIN</param>
+        /// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
         public virtual Product GetProductByGtin(string gtin)
         {

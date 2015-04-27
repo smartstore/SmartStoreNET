@@ -252,6 +252,10 @@
     <Compile Include="Migrations\201504232202590_AutoUpdateRes.Designer.cs">
       <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.cs" />
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.Designer.cs">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -493,6 +497,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504232202590_AutoUpdateRes.resx">
       <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504270946381_TempFileCleanupTask.resx">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

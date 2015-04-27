@@ -2,14 +2,14 @@
 using System.IO;
 using System.Threading;
 using System.Web.Hosting;
-using SmartStore.Utilities;
 
-namespace SmartStore
+namespace SmartStore.Utilities
 {
-	[Obsolete("Use Core.Utilities.FileSystemHelper instead.")]
-	public static class AppPath
+	public static class FileSystemHelper
 	{
-		/// <summary>Returns physical path to temp directory</summary>
+		/// <summary>
+		/// Returns physical path to temp directory
+		/// </summary>
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
@@ -30,26 +30,28 @@ namespace SmartStore
 			return path;
 		}
 
-		/// <summary>Safe way to cleanup the temp directory. Should be called via scheduled task.</summary>
+		/// <summary>
+		/// Safe way to cleanup the temp directory. Should be called via scheduled task.
+		/// </summary>
 		public static void TempCleanup()
 		{
 			try
 			{
-				string dir = AppPath.TempDir();
+				string dir = FileSystemHelper.TempDir();
 
-				if (!Directory.Exists(dir))
-					return;
-
-				FileInfo fi;
-				DateTime dtOld = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
-				var files = Directory.EnumerateFiles(dir);
-
-				foreach (string file in files)
+				if (Directory.Exists(dir))
 				{
-					fi = new FileInfo(file);
+					FileInfo fi;
+					var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
+					var files = Directory.EnumerateFiles(dir);
 
-					if (fi != null && fi.LastWriteTime < dtOld)
-						AppPath.Delete(file);
+					foreach (string file in files)
+					{
+						fi = new FileInfo(file);
+
+						if (fi != null && fi.LastWriteTime < oldestDate)
+							FileSystemHelper.Delete(file);
+					}
 				}
 			}
 			catch (Exception exc)
@@ -58,7 +60,9 @@ namespace SmartStore
 			}
 		}
 
-		/// <summary>Safe way to delete a file.</summary>
+		/// <summary>
+		/// Safe way to delete a file.
+		/// </summary>
 		public static bool Delete(string path)
 		{
 			if (path.IsEmpty())
@@ -72,7 +76,7 @@ namespace SmartStore
 					throw new MemberAccessException("Deleting folders cause of security reasons not possible: {0}".FormatWith(path));
 				}
 
-				System.IO.File.Delete(path);	// no exception, if file doesn't exists
+				File.Delete(path);	// no exception, if file doesn't exists
 			}
 			catch (Exception exc)
 			{
@@ -82,13 +86,15 @@ namespace SmartStore
 			return result;
 		}
 
-		/// <summary>Safe way to copy a file.</summary>
+		/// <summary>
+		/// Safe way to copy a file.
+		/// </summary>
 		public static bool Copy(string sourcePath, string destinationPath, bool overwrite = true, bool deleteSource = false)
 		{
 			bool result = true;
 			try
 			{
-				System.IO.File.Copy(sourcePath, destinationPath, overwrite);
+				File.Copy(sourcePath, destinationPath, overwrite);
 
 				if (deleteSource)
 					Delete(sourcePath);
@@ -101,6 +107,12 @@ namespace SmartStore
 			return result;
 		}
 
+		/// <summary>
+		/// Safe way to copy a directory and all content.
+		/// </summary>
+		/// <param name="source">Source directory</param>
+		/// <param name="target">Target directory</param>
+		/// <param name="overwrite">Whether to override existing files</param>
 		public static void CopyDirectory(DirectoryInfo source, DirectoryInfo target, bool overwrite = true)
 		{
 			foreach (FileInfo fi in source.GetFiles())

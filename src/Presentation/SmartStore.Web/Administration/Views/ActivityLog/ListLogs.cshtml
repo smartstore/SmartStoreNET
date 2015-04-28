@@ -97,6 +97,7 @@
                             dataBinding.Ajax().Select("ListLogs", "ActivityLog")
                                 .Delete("AcivityLogDelete", "ActivityLog");
                         })
+						.PreserveGridState()
                         .EnableCustomBinding(true))
             </td>
         </tr>

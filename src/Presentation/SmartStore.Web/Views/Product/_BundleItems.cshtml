@@ -67,9 +67,12 @@
 						@Html.Raw(item.ProductPrice.PriceWithDiscount)
 					</span>
 
-					<div class="base-price muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
-						@item.BasePriceInfo
-					</div>
+                    @if(item.ProductPrice.BundleItemShowBasePrice == true)
+                    { 
+					    <div class="base-price muted@(String.IsNullOrWhiteSpace(item.BasePriceInfo) ? " hide fade" : "")">
+						    @item.BasePriceInfo
+					    </div>
+                    }
 				</div>
 			}
 			

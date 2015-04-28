@@ -544,7 +544,6 @@ namespace SmartStore
             }
 
             return null;
-
         }
 
         public static bool HasAttribute<TAttribute>(this ICustomAttributeProvider target, bool inherits) where TAttribute : Attribute

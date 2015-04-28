@@ -31,6 +31,7 @@ namespace SmartStore.Web.Framework.Plugins
 		public bool ConvertNetToGrossPrices { get; set; }
 		public int LanguageId { get; set; }
 		public int PageSize { get; set; }
+		public decimal? FreeShippingThreshold { get; set; }
 	}
 
 

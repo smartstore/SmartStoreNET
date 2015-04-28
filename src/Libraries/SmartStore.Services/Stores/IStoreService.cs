@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.Web.Mvc;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.Stores
@@ -44,5 +43,11 @@ namespace SmartStore.Services.Stores
 		/// True if there's only one store. Otherwise False.
 		/// </summary>
 		bool IsSingleStoreMode();
+
+		/// <summary>
+		/// True if the store data is valid. Otherwise False.
+		/// </summary>
+		/// <param name="store">Store entity</param>
+		bool IsStoreDataValid(Store store);
 	}
 }

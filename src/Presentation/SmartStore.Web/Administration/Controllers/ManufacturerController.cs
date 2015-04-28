@@ -5,8 +5,11 @@ using SmartStore.Admin.Models.Catalog;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Common;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -182,6 +185,7 @@ namespace SmartStore.Admin.Controllers
         public ActionResult AllManufacturers(string label, int selectedId)
         {
             var manufacturers = _manufacturerService.GetAllManufacturers(true);
+
             if (label.HasValue())
             {
                 manufacturers.Insert(0, new Manufacturer { Name = label, Id = 0 });
@@ -195,7 +199,39 @@ namespace SmartStore.Admin.Controllers
                            selected = m.Id == selectedId
                        };
 
-            return new JsonResult { Data = list.ToList(), JsonRequestBehavior = JsonRequestBehavior.AllowGet };
+			var data = list.ToList();
+
+			var mru = new MostRecentlyUsedList<string>(_workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.MostRecentlyUsedManufacturers),
+				_catalogSettings.MostRecentlyUsedManufacturersMaxSize);
+
+			// TODO: insert disabled option separator (select2 v.3.4.2 or higher required)
+			//if (mru.Count > 0)
+			//{
+			//	data.Insert(0, new
+			//	{
+			//		id = "",
+			//		text = "----------------------",
+			//		selected = false,
+			//		disabled = true
+			//	});
+			//}
+
+			for (int i = mru.Count - 1; i >= 0; --i)
+			{
+				string id = mru[i];
+				var item = manufacturers.FirstOrDefault(x => x.Id.ToString() == id);
+				if (item != null)
+				{
+					data.Insert(0, new
+					{
+						id = id,
+						text = item.Name,
+						selected = false
+					});
+				}
+			}
+
+            return new JsonResult { Data = data, JsonRequestBehavior = JsonRequestBehavior.AllowGet };
         }
 
         public ActionResult Index()

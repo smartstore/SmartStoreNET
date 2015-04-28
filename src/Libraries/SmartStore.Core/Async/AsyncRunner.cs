@@ -1,87 +1,358 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web.Hosting;
 using Autofac;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Utilities;
 
 namespace SmartStore.Core.Async
 {
 
 	public static class AsyncRunner
 	{
-		private static readonly TaskFactory _myTaskFactory;
+		private static readonly BackgroundWorkHost _host = new BackgroundWorkHost();
 
-		static AsyncRunner()
-		{
-			_myTaskFactory = new TaskFactory(CancellationToken.None, TaskCreationOptions.None, TaskContinuationOptions.None, TaskScheduler.Default);
-		}
 
+		/// <summary>
+		/// Execute's an async Task<T> method which has a void return value synchronously
+		/// </summary>
+		/// <param name="func">Task<T> method to execute</param>
 		public static void RunSync(Func<Task> func)
 		{
-			_myTaskFactory.StartNew<Task>(func).Unwrap().GetAwaiter().GetResult();
+			var oldContext = SynchronizationContext.Current;
+			var synch = new ExclusiveSynchronizationContext();
+			SynchronizationContext.SetSynchronizationContext(synch);
+			synch.Post(async _ =>
+			{
+				try
+				{
+					await func();
+				}
+				catch (Exception e)
+				{
+					synch.InnerException = e;
+					throw;
+				}
+				finally
+				{
+					synch.EndMessageLoop();
+				}
+			}, null);
+			synch.BeginMessageLoop();
+
+			SynchronizationContext.SetSynchronizationContext(oldContext);
 		}
 
+		/// <summary>
+		/// Execute's an async Task<T> method which has a T return type synchronously
+		/// </summary>
+		/// <typeparam name="T">Return Type</typeparam>
+		/// <param name="func">Task<T> method to execute</param>
+		/// <returns></returns>
 		public static TResult RunSync<TResult>(Func<Task<TResult>> func)
 		{
-			return _myTaskFactory.StartNew<Task<TResult>>(func).Unwrap<TResult>().GetAwaiter().GetResult();
+			var oldContext = SynchronizationContext.Current;
+			var synch = new ExclusiveSynchronizationContext();
+			SynchronizationContext.SetSynchronizationContext(synch);
+			TResult ret = default(TResult);
+			synch.Post(async _ =>
+			{
+				try
+				{
+					ret = await func();
+				}
+				catch (Exception e)
+				{
+					synch.InnerException = e;
+					throw;
+				}
+				finally
+				{
+					synch.EndMessageLoop();
+				}
+			}, null);
+			synch.BeginMessageLoop();
+			SynchronizationContext.SetSynchronizationContext(oldContext);
+			return ret;
 		}
 
-		public static Task Run(Action<ILifetimeScope> action)
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action)
 		{
 			return Run(action, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 
-		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken)
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken)
 		{
 			return Run(action, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
 		}
 
-		public static Task Run(Action<ILifetimeScope> action, TaskCreationOptions options)
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action, TaskCreationOptions options)
 		{
 			return Run(action, CancellationToken.None, options, TaskScheduler.Default);
 		}
 
-		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options)
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken, TaskCreationOptions options)
 		{
 			return Run(action, cancellationToken, options, TaskScheduler.Default);
 		}
 
-		public static Task Run(Action<ILifetimeScope> action, TaskScheduler scheduler)
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action, TaskScheduler scheduler)
 		{
 			return Run(action, CancellationToken.None, TaskCreationOptions.None, scheduler);
 		}
-		
-		public static Task Run(Action<ILifetimeScope> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+
+		public static Task Run(Action<ILifetimeScope, CancellationToken> action, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
 			Guard.ArgumentNotNull(() => action);
 			Guard.ArgumentNotNull(() => scheduler);
 
+			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
+			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
+
 			var t = Task.Factory.StartNew(() => {
-				using (var container = EngineContext.Current.ContainerManager.Container.BeginLifetimeScope(AutofacLifetimeScopeProvider.HttpRequestTag))
+				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
+				using (var scope = accessor.BeginContextAwareScope())
 				{
-					action(container);
+					action(accessor.GetLifetimeScope(null), ct);
 				}
-			}, cancellationToken, options, scheduler);
+			}, ct, options, scheduler);
+
+			_host.Register(t, ct);
 
 			return t;
 		}
 
-		public static Task Run(Action<ILifetimeScope, object> action, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		public static Task Run(Action<ILifetimeScope, CancellationToken, object> action, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
 		{
 			Guard.ArgumentNotNull(() => state);
 			Guard.ArgumentNotNull(() => action);
 			Guard.ArgumentNotNull(() => scheduler);
 
+			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
+			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
+
 			var t = Task.Factory.StartNew((o) =>
 			{
-				using (var container = EngineContext.Current.ContainerManager.Container.BeginLifetimeScope(AutofacLifetimeScopeProvider.HttpRequestTag))
+				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
+				using (var scope = accessor.BeginContextAwareScope())
 				{
-					action(container, o);
+					action(accessor.GetLifetimeScope(null), ct, o);
 				}
-			}, state, cancellationToken, options, scheduler);
+			}, state, ct, options, scheduler);
+
+			_host.Register(t, ct);
 
 			return t;
+		}
+
+
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function)
+		{
+			return Run(function, CancellationToken.None, TaskCreationOptions.None, TaskScheduler.Default);
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken)
+		{
+			return Run(function, cancellationToken, TaskCreationOptions.None, TaskScheduler.Default);
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, TaskCreationOptions options)
+		{
+			return Run(function, CancellationToken.None, options, TaskScheduler.Default);
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken, TaskCreationOptions options)
+		{
+			return Run(function, cancellationToken, options, TaskScheduler.Default);
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, TaskScheduler scheduler)
+		{
+			return Run(function, CancellationToken.None, TaskCreationOptions.None, scheduler);
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, TResult> function, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		{
+			Guard.ArgumentNotNull(() => function);
+			Guard.ArgumentNotNull(() => scheduler);
+
+			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
+			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
+
+			var t = Task.Factory.StartNew(() =>
+			{
+				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
+				using (var scope = accessor.BeginContextAwareScope())
+				{
+					return function(accessor.GetLifetimeScope(null), ct);
+				}
+			}, ct, options, scheduler);
+
+			_host.Register(t, ct);
+
+			return t;
+		}
+
+		public static Task<TResult> Run<TResult>(Func<ILifetimeScope, CancellationToken, object, TResult> function, object state, CancellationToken cancellationToken, TaskCreationOptions options, TaskScheduler scheduler)
+		{
+			Guard.ArgumentNotNull(() => state);
+			Guard.ArgumentNotNull(() => function);
+			Guard.ArgumentNotNull(() => scheduler);
+
+			var ct = _host.CreateCompositeCancellationTokenSource(cancellationToken).Token;
+			options |= TaskCreationOptions.LongRunning; // enforce an exclusive thread (not from pool)
+
+			var t = Task.Factory.StartNew((o) =>
+			{
+				var accessor = EngineContext.Current.ContainerManager.ScopeAccessor;
+				using (var scope = accessor.BeginContextAwareScope())
+				{
+					return function(accessor.GetLifetimeScope(null), ct, o);
+				}
+			}, state, ct, options, scheduler);
+
+			_host.Register(t, ct);
+
+			return t;
+		}
+
+
+		private class ExclusiveSynchronizationContext : SynchronizationContext
+		{
+			private bool done;
+			public Exception InnerException { get; set; }
+			readonly AutoResetEvent workItemsWaiting = new AutoResetEvent(false);
+			readonly Queue<Tuple<SendOrPostCallback, object>> items = new Queue<Tuple<SendOrPostCallback, object>>();
+
+			public override void Send(SendOrPostCallback d, object state)
+			{
+				throw new NotSupportedException("We cannot send to the same thread");
+			}
+
+			public override void Post(SendOrPostCallback d, object state)
+			{
+				lock (items)
+				{
+					items.Enqueue(Tuple.Create(d, state));
+				}
+				workItemsWaiting.Set();
+			}
+
+			public void EndMessageLoop()
+			{
+				Post(_ => done = true, null);
+			}
+
+			public void BeginMessageLoop()
+			{
+				while (!done)
+				{
+					Tuple<SendOrPostCallback, object> task = null;
+					lock (items)
+					{
+						if (items.Count > 0)
+						{
+							task = items.Dequeue();
+						}
+					}
+					if (task != null)
+					{
+						task.Item1(task.Item2);
+						if (InnerException != null) // the method threw an exeption
+						{
+							throw new AggregateException("AsyncHelpers.Run method threw an exception.", InnerException);
+						}
+					}
+					else
+					{
+						workItemsWaiting.WaitOne();
+					}
+				}
+			}
+
+			public override SynchronizationContext CreateCopy()
+			{
+				return this;
+			}
+		}
+
+	}
+
+	internal class BackgroundWorkHost : IRegisteredObject
+	{
+		private CancellationTokenSource _shutdownCancellationTokenSource = new CancellationTokenSource();
+		private int _numRunningWorkItems = 0;
+		
+		public BackgroundWorkHost()
+		{
+			HostingEnvironment.RegisterObject(this);
+		}
+
+		public void Stop(bool immediate)
+		{
+			int num;
+			lock (this)
+			{
+				_shutdownCancellationTokenSource.Cancel();
+				num = _numRunningWorkItems;
+			}
+			if (num == 0)
+			{
+				FinalShutdown();
+			}
+		}
+
+		public CancellationTokenSource CreateCompositeCancellationTokenSource(CancellationToken userCancellationToken)
+		{
+			if (userCancellationToken == CancellationToken.None)
+			{
+				return _shutdownCancellationTokenSource;
+			}
+			return CancellationTokenSource.CreateLinkedTokenSource(_shutdownCancellationTokenSource.Token, userCancellationToken);
+		}
+
+		public void Register(Task work, CancellationToken cancellationToken)
+		{
+			if (!cancellationToken.IsCancellationRequested)
+			{
+				lock (this)
+				{
+					if (cancellationToken.IsCancellationRequested)
+					{
+						return;
+					}
+					_numRunningWorkItems++;
+				}
+				
+				work.ContinueWith(
+					WorkItemComplete,
+					CancellationToken.None,
+					TaskContinuationOptions.ExecuteSynchronously,
+					TaskScheduler.Default);
+			}
+		}
+
+		private void WorkItemComplete(Task work)
+		{
+			int num;
+			bool isCancellationRequested;
+			lock (this)
+			{
+				num = --_numRunningWorkItems;
+				isCancellationRequested = _shutdownCancellationTokenSource.IsCancellationRequested; 
+			}
+			if (num == 0 && isCancellationRequested)
+			{
+				FinalShutdown();
+			}
+		}
+
+		private void FinalShutdown()
+		{
+			HostingEnvironment.UnregisterObject(this);
 		}
 
 	}

@@ -1,13 +1,13 @@
-﻿using SmartStore.Core;
+﻿using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.WebApi.Models;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Web.Framework.WebApi;
+using SmartStore.Web.Framework.WebApi.Caching;
 using SmartStore.Web.Framework.WebApi.Security;
-using System.Linq;
+using SmartStore.WebApi.Models;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.WebApi.Services
@@ -40,7 +40,7 @@ namespace SmartStore.WebApi.Services
 				join a in
 					(
 						from a in _genericAttributes.Table
-						where a.KeyGroup == "Customer" && a.Key == WebApiUserCacheData.Key
+						where a.KeyGroup == "Customer" && a.Key == WebApiCachingUserData.Key
 						select a
 					)
 				on c.Id equals a.EntityId into ga
@@ -57,7 +57,7 @@ namespace SmartStore.WebApi.Services
 
 			var lst = new PagedList<WebApiUserModel>(query, pageIndex, pageSize);
 
-			var cacheData = WebApiCaching.UserData();
+			var cacheData = WebApiCachingUserData.Data();
 
 			foreach (var itm in lst)
 			{
@@ -80,7 +80,7 @@ namespace SmartStore.WebApi.Services
 		{
 			var apiUsers = GetUsers(pageIndex, pageSize);
 
-			var model = new GridModel<WebApiUserModel>()
+			var model = new GridModel<WebApiUserModel>
 			{
 				Data = apiUsers,
 				Total = apiUsers.TotalCount
@@ -94,14 +94,14 @@ namespace SmartStore.WebApi.Services
 			if (customerId != 0)
 			{
 				var hmac = new HmacAuthentication();
-				var userData = WebApiCaching.UserData();
+				var userData = WebApiCachingUserData.Data();
 				string key1, key2;
 
 				for (int i = 0; i < 9999; ++i)
 				{
 					if (hmac.CreateKeys(out key1, out key2) && !userData.Exists(x => x.PublicKey.IsCaseInsensitiveEqual(key1)))
 					{
-						var apiUser = new WebApiUserCacheData()
+						var apiUser = new WebApiUserCacheData
 						{
 							CustomerId = customerId,
 							PublicKey = key1,
@@ -111,17 +111,17 @@ namespace SmartStore.WebApi.Services
 
 						RemoveKeys(customerId);
 
-						var attribute = new GenericAttribute()
+						var attribute = new GenericAttribute
 						{
 							EntityId = customerId,
 							KeyGroup = "Customer",
-							Key = WebApiUserCacheData.Key,
+							Key = WebApiCachingUserData.Key,
 							Value = apiUser.ToString()
 						};
 
 						_genericAttributeService.InsertAttribute(attribute);
 
-						WebApiCaching.Remove(WebApiUserCacheData.Key);
+						WebApiCachingUserData.Remove();
 						return true;
 					}
 				}
@@ -134,7 +134,7 @@ namespace SmartStore.WebApi.Services
 			{
 				var data = (
 					from a in _genericAttributes.Table
-					where a.EntityId == customerId && a.KeyGroup == "Customer" && a.Key == WebApiUserCacheData.Key
+					where a.EntityId == customerId && a.KeyGroup == "Customer" && a.Key == WebApiCachingUserData.Key
 					select a).ToList();
 
 				if (data.Count > 0)
@@ -142,7 +142,7 @@ namespace SmartStore.WebApi.Services
 					foreach (var itm in data)
 						_genericAttributeService.DeleteAttribute(itm);
 
-					WebApiCaching.Remove(WebApiUserCacheData.Key);
+					WebApiCachingUserData.Remove();
 				}
 			}
 		}
@@ -150,7 +150,7 @@ namespace SmartStore.WebApi.Services
 		{
 			if (customerId != 0)
 			{
-				var cacheData = WebApiCaching.UserData();
+				var cacheData = WebApiCachingUserData.Data();
 				var apiUser = cacheData.FirstOrDefault(x => x.CustomerId == customerId);
 
 				if (apiUser != null)

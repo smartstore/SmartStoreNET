@@ -28,6 +28,7 @@ namespace SmartStore.Core.Domain.Catalog
             MaxFilterItemsToDisplay = 4;
             ShowSubcategoriesAboveProductLists = true;
 			ProductSearchAutoCompleteEnabled = true;
+			ShowProductImagesInSearchAutoComplete = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
@@ -53,6 +54,7 @@ namespace SmartStore.Core.Domain.Catalog
             ShowProductReviewsInProductDetail = true;
 			HtmlTextCollapsedHeight = 260;
 			MostRecentlyUsedCategoriesMaxSize = 6;
+			MostRecentlyUsedManufacturersMaxSize = 4;
         }
 
         /// <summary>
@@ -431,5 +433,10 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets how many items to display maximally in the most recently used category list
 		/// </summary>
 		public int MostRecentlyUsedCategoriesMaxSize { get; set; }
+
+		/// <summary>
+		/// Gets or sets how many items to display maximally in the most recently used manufacturer list
+		/// </summary>
+		public int MostRecentlyUsedManufacturersMaxSize { get; set; }
     }
 }

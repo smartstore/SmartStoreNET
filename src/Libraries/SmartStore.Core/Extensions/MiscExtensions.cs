@@ -20,13 +20,15 @@ namespace SmartStore
 			}
 			catch { }
 		}
+
 		public static string ToAllMessages(this Exception exc)
 		{
 			var sb = new StringBuilder();
 
 			while (exc != null)
 			{
-				sb.Grow(exc.Message, " ");
+				if (!sb.ToString().EmptyNull().Contains(exc.Message))
+					sb.Grow(exc.Message, " ");
 				exc = exc.InnerException;
 			}
 			return sb.ToString();
@@ -36,6 +38,7 @@ namespace SmartStore
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalMinutes);
 		}
+
 		public static string ToElapsedSeconds(this Stopwatch watch) 
         {
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalSeconds);
@@ -46,6 +49,7 @@ namespace SmartStore
 			dv.RowFilter = "ColumnName='" + columnName + "'";
 			return dv.Count > 0;
 		}
+
 		public static string GetDataType(this DataTable dt, string columnName) 
         {
 			dt.DefaultView.RowFilter = "ColumnName='" + columnName + "'";
@@ -75,6 +79,7 @@ namespace SmartStore
 			}
 			return null;
 		}
+
 		public static bool IsEqual(this TypeConverter converter, string value, object compareWith) 
         {
 			object convertedObject = converter.SafeConvert(value);

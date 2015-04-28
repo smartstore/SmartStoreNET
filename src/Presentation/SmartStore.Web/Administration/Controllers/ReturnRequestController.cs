@@ -1,24 +1,24 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Orders;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Logging;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
-using SmartStore.Services.Catalog;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
-using SmartStore.Core.Domain.Common;
-using SmartStore.Services.Stores;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -116,13 +116,19 @@ namespace SmartStore.Admin.Controllers
             model.Quantity = returnRequest.Quantity;
             model.ReturnRequestStatusStr = returnRequest.ReturnRequestStatus.GetLocalizedEnum(_localizationService, _workContext);
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc);
+			model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.UpdatedOnUtc, DateTimeKind.Utc);
 
             if (!excludeProperties)
             {
                 model.ReasonForReturn = returnRequest.ReasonForReturn;
                 model.RequestedAction = returnRequest.RequestedAction;
+
+				if (returnRequest.RequestedActionUpdatedOnUtc.HasValue)
+					model.RequestedActionUpdated = _dateTimeHelper.ConvertToUserTime(returnRequest.RequestedActionUpdatedOnUtc.Value, DateTimeKind.Utc);
+
                 model.CustomerComments = returnRequest.CustomerComments;
                 model.StaffNotes = returnRequest.StaffNotes;
+				model.AdminComment = returnRequest.AdminComment;
                 model.ReturnRequestStatusId = returnRequest.ReturnRequestStatusId;
             }
 
@@ -238,13 +244,19 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+				var utcNow = DateTime.UtcNow;
+
+				if (returnRequest.RequestedAction != model.RequestedAction)
+					returnRequest.RequestedActionUpdatedOnUtc = utcNow;
+
 				returnRequest.Quantity = model.Quantity;
                 returnRequest.ReasonForReturn = model.ReasonForReturn;
                 returnRequest.RequestedAction = model.RequestedAction;
                 returnRequest.CustomerComments = model.CustomerComments;
                 returnRequest.StaffNotes = model.StaffNotes;
+				returnRequest.AdminComment = model.AdminComment;
                 returnRequest.ReturnRequestStatusId = model.ReturnRequestStatusId;
-                returnRequest.UpdatedOnUtc = DateTime.UtcNow;
+                returnRequest.UpdatedOnUtc = utcNow;
 
 				if (returnRequest.ReasonForReturn == null)
 					returnRequest.ReasonForReturn = "";
@@ -260,7 +272,6 @@ namespace SmartStore.Admin.Controllers
                 NotifySuccess(_localizationService.GetResource("Admin.ReturnRequests.Updated"));
                 return continueEditing ? RedirectToAction("Edit", returnRequest.Id) : RedirectToAction("List");
             }
-
 
             //If we got this far, something failed, redisplay form
             PrepareReturnRequestModel(model, returnRequest, true);

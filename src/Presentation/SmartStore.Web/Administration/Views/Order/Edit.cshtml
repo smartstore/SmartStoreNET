@@ -9,12 +9,17 @@
 {
     <div class="section-header">
         <div class="title">
-            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber @Html.ActionLink("(" + T("Admin.Orders.BackToList") + ")", "List")
+            @T("Admin.Orders.EditOrderDetails") - @Model.OrderNumber 
+			<a href='@Url.Action("List")'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
+            <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
+                <i class="fa fa-print"></i>
+                @T("Order.Print")
+            </a>
             @if (Model.DisplayPdfInvoice)
             {
-                <a href="@Url.Action("PdfInvoice", new { orderId = Model.Id })" class="btn">
+                <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = true })" class="btn">
 					<i class="fa fa-file-pdf-o"></i>
 					@T("Admin.Orders.PdfInvoice")
 				</a>
@@ -815,25 +820,25 @@
 				}
                 @if (Model.CanCapture)
                 {
-                    <input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn" 
+                    <input type="submit" name="captureorder" value="@T("Admin.Orders.Fields.Capture")" id="captureorder" class="btn btn-primary" 
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Capture.Hint")" />
                 }
                 @if (Model.CanRefund)
-                {
-                    <input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn" 
+				{
+					<input type="submit" name="refundorder" value="@T("Admin.Orders.Fields.Refund")" id="refundorder" class="btn btn-primary"
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Refund.Hint")" />
-                }
+				}
                 @if (Model.CanRefundOffline)
 				{
 					<input type="submit" name="refundorderoffline" value="@T("Admin.Orders.Fields.RefundOffline")" id="refundorderoffline" class="btn"
-						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="Admin.Orders.Fields.RefundOffline.Hint" />
+						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.RefundOffline.Hint")" />
 				}
                 @if (Model.CanPartiallyRefund)
-                {
-                    <input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn" 
+				{
+					<input type="submit" id="partiallyrefundorder" name="partiallyrefundorder" value="@T("Admin.Orders.Fields.PartialRefund")" class="btn btn-primary"
 						   onclick="javascript:OpenWindow('@(Url.Action("PartiallyRefundOrderPopup", "Order", new { id = Model.Id, online = true, btnId = "btnRefreshPage", formId = "order-form" }))', 960, 320, true); return false;"
 						   title="@T("Admin.Orders.Fields.PartialRefund.Hint")" />
-                }
+				}
                 @if (Model.CanPartiallyRefundOffline)
 				{
 					<input type="submit" id="partiallyrefundorderoffline" name="partiallyrefundorderoffline" value="@T("Admin.Orders.Fields.PartialRefundOffline")" class="btn"
@@ -842,7 +847,7 @@
 				}
                 @if (Model.CanVoid)
 				{
-					<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn"
+					<input type="submit" name="voidorder" value="@T("Admin.Orders.Fields.Void")" id="voidorder" class="btn btn-primary"
 						   onclick="return confirm('@T("Admin.Common.AreYouSure")');" title="@T("Admin.Orders.Fields.Void.Hint")" />
 				}
                 @if (Model.CanVoidOffline)
@@ -1370,46 +1375,41 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData t-widget t-grid" style="padding:0;">
+            <td class="adminData" style="padding:0;">
 
-                <table id="OrderItemTable" class="table">
-                    <thead class="t-grid-header">
+                <table id="OrderItemTable" class="table table-bordered table-striped">
+                    <thead>
                         <tr>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.ProductName")
                             </th>
                             @if (Model.HasDownloadableProducts)
                             {
-                                <th class="t-header">
+                                <th>
                                     @T("Admin.Orders.Products.Download")
                                 </th>
                             }
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Price")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Quantity")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Discount")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Orders.Products.Total")
                             </th>
-                            <th class="t-header">
+                            <th>
                                 @T("Admin.Common.Edit")
                             </th>
                         </tr>
                     </thead>
                     <tbody>
-                        @{
-                            var j = 0;
-                        }
                         @foreach (var item in Model.Items)
                         {
-                            j++;
-                            
-                            <tr class="@(j % 2 == 0 ? "t-alt": "")">
+                            <tr>
                                 <td style="width: 25%;vertical-align: top">
                                     <div>
                                         @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)

@@ -865,6 +865,7 @@ namespace SmartStore.Web.Controllers
             model.CustomerFullname = customer.GetFullName();
             model.ShowProductImages = _shoppingCartSettings.ShowProductImagesOnShoppingCart;
 			model.ShowProductBundleImages = _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart;
+			model.ShowItemsFromWishlistToCartButton = _shoppingCartSettings.ShowItemsFromWishlistToCartButton;
             model.ShowSku = _catalogSettings.ShowProductSku;
 			model.DisplayShortDesc = _shoppingCartSettings.ShowShortDesc;
 			model.BundleThumbSize = _mediaSettings.CartThumbBundleItemPictureSize;

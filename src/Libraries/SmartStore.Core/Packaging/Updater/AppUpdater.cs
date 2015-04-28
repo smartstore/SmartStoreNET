@@ -17,16 +17,33 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Core.Packaging
 {
 	
-	internal sealed class AppUpdater : DisposableObject
+	public sealed class AppUpdater : DisposableObject
 	{
-		private const string UpdatePackagePath = "~/App_Data/Update";
+		public const string UpdatePackagePath = "~/App_Data/Update";
 		
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 		private TraceLogger _logger;
 
 		#region Package update
 
-		public bool TryUpdateFromPackage()
+		public bool InstallablePackageExists()
+		{
+			string packagePath = null;
+			var package = FindPackage(false, out packagePath);
+
+			if (package == null)
+				return false;
+
+			if (!ValidatePackage(package))
+				return false;
+
+			if (!CheckEnvironment())
+				return false;
+
+			return true;
+		}
+
+		internal bool TryUpdateFromPackage()
 		{
 			// NEVER EVER (!!!) make an attempt to auto-update in a dev environment!!!!!!!
 			if (CommonHelper.IsDevEnvironment)
@@ -37,7 +54,7 @@ namespace SmartStore.Core.Packaging
 				try
 				{
 					string packagePath = null;
-					var package = FindPackage(out packagePath);
+					var package = FindPackage(true, out packagePath);
 
 					if (package == null)
 						return false;
@@ -84,7 +101,7 @@ namespace SmartStore.Core.Packaging
 			return new TraceLogger(logFile);
 		}
 
-		private IPackage FindPackage(out string path)
+		private IPackage FindPackage(bool createLogger, out string path)
 		{
 			path = null;
 			var dir = CommonHelper.MapPath(UpdatePackagePath, false);
@@ -104,8 +121,11 @@ namespace SmartStore.Core.Packaging
 			{
 				path = files[0];
 				package = new ZipPackage(files[0]);
-				_logger = CreateLogger(package);
-				_logger.Information("Found update package '{0}'".FormatInvariant(package.GetFullName()));
+				if (createLogger)
+				{
+					_logger = CreateLogger(package);
+					_logger.Information("Found update package '{0}'".FormatInvariant(package.GetFullName()));
+				}
 				return package;
 			}
 			catch { }
@@ -198,7 +218,7 @@ namespace SmartStore.Core.Packaging
 
 		#region Migrations
 
-		public void ExecuteMigrations()
+		internal void ExecuteMigrations()
 		{
 			if (!DataSettings.DatabaseIsInstalled())
 				return;

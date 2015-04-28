@@ -52,11 +52,16 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning" style="margin-top:3px;"
+                    <button type="submit" id="btnAddNewRelatedProduct" name="btnAddNewRelatedProduct" class="btn btn-warning btn-below"
                             onclick="javascript:OpenWindow('@(Url.Action("RelatedProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshRelatedProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.RelatedProducts.AddNew")
                     </button>
+					<button type="button" id="btnCreateMutuallyRelatedProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyRelatedProducts", new { productId = Model.Id })"
+							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
+						<i class="fa fa-random"></i>
+						@T("Admin.Common.CreateMutuallyAssociations")
+					</button>
 
                     <input type="submit" id="btnRefreshRelatedProducts" name="btnRefreshRelatedProducts" style="display: none" />
                     <script type="text/javascript">
@@ -126,11 +131,16 @@
             </tr>
             <tr>
                 <td width="100%">
-                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning" style="margin-top:3px;"
+                    <button type="submit" id="btnAddNewCrossSellProduct" name="btnAddNewCrossSellProduct" class="btn btn-warning btn-below"
                             onclick="javascript:OpenWindow('@(Url.Action("CrossSellProductAddPopup", "Product", new { productId = Model.Id, btnId = "btnRefreshCrossSellProducts", formId = "product-form" }))', 1000, 700, true); return false;">
                         <i class="fa fa-plus"></i>
                         @T("Admin.Catalog.Products.CrossSells.AddNew")
                     </button>
+					<button type="button" id="btnCreateMutuallyCrossSellProducts" class="btn btn-below" data-url="@Url.Action("CreateAllMutuallyCrossSellProducts", new { productId = Model.Id })"
+							data-ask="@T("Admin.Common.AskCreateMutuallyAssociations")">
+						<i class="fa fa-random"></i>
+						@T("Admin.Common.CreateMutuallyAssociations")
+					</button>
 
                     <input type="submit" id="btnRefreshCrossSellProducts" name="btnRefreshCrossSellProducts" style="display: none" />
                     <script type="text/javascript">
@@ -156,3 +166,15 @@
         </div>
     }
 </div>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#btnCreateMutuallyRelatedProducts, #btnCreateMutuallyCrossSellProducts').click(function () {
+			$(this).doAjax({
+				callbackSuccess: function (resp) {
+					alert(resp.Message);
+				}
+			});
+		});
+	});
+</script>

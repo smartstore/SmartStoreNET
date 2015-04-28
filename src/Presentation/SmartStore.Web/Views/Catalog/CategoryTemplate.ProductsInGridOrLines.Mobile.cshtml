@@ -13,7 +13,7 @@
 @Html.Action("SearchBox", "Catalog")
 <div class="page category-page">
     <div class="page-title">
-        <h1>@Model.Name</h1>
+		<h1>@(Model.FullName.HasValue() ? Model.FullName : Model.Name)</h1>
     </div>
     <div class="page-body">
         @Html.Widget("mobile_categorydetails_top")
@@ -75,6 +75,13 @@
         }
 
         @(Html.SmartStore().Pager(Model.PagingFilteringContext).WithRenderer<MobilePagerRenderer>().Name("pagination-bottom").QueryParam("pagenumber"))
+
+		@if (Model.BottomDescription.HasValue())
+		{
+			<div class="category-description">
+				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
+			</div>
+		}
 
         @Html.Widget("mobile_categorydetails_bottom")
     </div>

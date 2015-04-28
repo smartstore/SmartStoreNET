@@ -34,7 +34,6 @@ namespace SmartStore.Web.Models.Catalog
         
         public PagingFilteringModel()
         {
-            // codehint: sm-edit (SelectListItem > ListOptionItem)
             this.AvailableSortOptions = new List<ListOptionItem>();
             this.AvailableViewModes = new List<ListOptionItem>();
             this.PageSizeOptions = new List<ListOptionItem>();

@@ -1,12 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Web;
-using System.Threading;
 using Autofac;
 using Autofac.Builder;
-using Autofac.Integration.Mvc;
-using SmartStore.Utilities;
 using SmartStore.Core.Caching;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
@@ -121,21 +117,17 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
         public ILifetimeScope Scope()
         {
-			ILifetimeScope scope = null;
-			try
-			{
-				scope = AutofacDependencyResolver.Current.RequestLifetimeScope;
-			}
-			catch { }
-
-			if (scope == null)
-			{
-				// really hackisch. But strange things are going on ?? :-)
-				scope = _container.BeginLifetimeScope("AutofacWebRequest");
-			}
-
+			var scope = _container.Resolve<ILifetimeScopeAccessor>().GetLifetimeScope(null);
 			return scope ?? _container;
         }
+
+		public ILifetimeScopeAccessor ScopeAccessor
+		{
+			get
+			{
+				return _container.Resolve<ILifetimeScopeAccessor>();
+			}
+		}
 
     }
 

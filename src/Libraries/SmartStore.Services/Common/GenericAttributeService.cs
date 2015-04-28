@@ -199,8 +199,9 @@ namespace SmartStore.Services.Common
 			var props = GetAttributesForEntity(entity.Id, keyGroup)
 				 .Where(x => x.StoreId == storeId)
 				 .ToList();
+
             var prop = props.FirstOrDefault(ga =>
-                ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); //should be culture invariant
+                ga.Key.Equals(key, StringComparison.InvariantCultureIgnoreCase)); // should be culture invariant
 
             string valueStr = value.Convert<string>();
 

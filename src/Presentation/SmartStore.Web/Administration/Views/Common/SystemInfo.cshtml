@@ -28,6 +28,7 @@
         </td>
         <td class="adminData">
             @Html.DisplayFor(model => model.AppVersion)
+			<a href='@Url.Action("CheckUpdate", new { enforce = true })' style="margin-left: 10px">@T("Admin.CheckUpdate")</a>
         </td>
     </tr>
     <tr>

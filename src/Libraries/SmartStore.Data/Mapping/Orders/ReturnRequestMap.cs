@@ -11,6 +11,7 @@ namespace SmartStore.Data.Mapping.Orders
             this.HasKey(rr => rr.Id);
             this.Property(rr => rr.ReasonForReturn).IsRequired();
             this.Property(rr => rr.RequestedAction).IsRequired();
+			this.Property(rr => rr.AdminComment).HasMaxLength(4000);
 
             this.Ignore(rr => rr.ReturnRequestStatus);
 

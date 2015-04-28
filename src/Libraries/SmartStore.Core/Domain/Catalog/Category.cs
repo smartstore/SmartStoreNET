@@ -26,6 +26,12 @@ namespace SmartStore.Core.Domain.Catalog
         [DataMember]
         public string Name { get; set; }
 
+		/// <summary>
+		/// Gets or sets the full name (category page title)
+		/// </summary>
+		[DataMember]
+		public string FullName { get; set; }
+
         /// <summary>
         /// Gets or sets the description
         /// </summary>
@@ -33,10 +39,15 @@ namespace SmartStore.Core.Domain.Catalog
         public string Description { get; set; }
 
 		/// <summary>
+		/// Gets or sets a description displayed at the bottom of the category page
+		/// </summary>
+		[DataMember]
+		public string BottomDescription { get; set; }
+
+		/// <summary>
 		/// Gets or sets the category alias 
 		/// (an optional key for advanced customization)
 		/// </summary>
-		/// <remarks>codehint: sm-add</remarks>
 		[DataMember]
 		public string Alias { get; set; }
 

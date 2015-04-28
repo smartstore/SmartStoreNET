@@ -23,9 +23,10 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.Fields.DisplayOrder")]
         public int DisplayOrder {get;set;}
 
-
         public IList<SpecificationAttributeLocalizedModel> Locales { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Attributes.SpecificationAttributes.OptionsCount")]
+		public int OptionCount { get; set; }
     }
 
     public class SpecificationAttributeLocalizedModel : ILocalizedModelLocal

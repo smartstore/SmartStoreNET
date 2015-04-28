@@ -10,19 +10,19 @@ namespace SmartStore.Core.Domain.Media
 	public partial class Download : BaseEntity
     {
         /// <summary>
-        /// Gets a sets a GUID
+        /// Gets or sets a GUID
         /// </summary>
 		[DataMember]
 		public Guid DownloadGuid { get; set; }
 
         /// <summary>
-        /// Gets a sets a value indicating whether DownloadUrl property should be used
+        /// Gets or sets a value indicating whether DownloadUrl property should be used
         /// </summary>
 		[DataMember]
 		public bool UseDownloadUrl { get; set; }
 
         /// <summary>
-        /// Gets a sets a download URL
+        /// Gets or sets a download URL
         /// </summary>
 		[DataMember]
 		public string DownloadUrl { get; set; }

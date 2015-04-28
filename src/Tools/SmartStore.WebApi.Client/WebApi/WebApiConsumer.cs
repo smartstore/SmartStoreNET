@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Linq;
-using System.Diagnostics;
+using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.IO;
+using System.Linq;
 using System.Net;
 using System.Text;
 using System.Web;
-using System.Web.Script.Serialization;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
+using SmartStoreNetWebApiClient;
 
 namespace SmartStore.Net.WebApi
 {
 	public class ApiConsumer : HmacAuthentication
 	{
-		private const string _consumerName = "My shopping data consumer v.1.0";
-
 		public static string XmlAcceptType { get { return "application/atom+xml,application/atomsvc+xml,application/xml"; } }
 		public static string JsonAcceptType { get { return "application/json, text/javascript, */*"; } }
 
@@ -24,6 +21,71 @@ namespace SmartStore.Net.WebApi
 			webRequest.Timeout = 1000 * 60 * 5;	// just for debugging
 #endif
 		}
+
+		private void WriteToStream(MemoryStream stream, StringBuilder requestContent, string data)
+		{
+			stream.Write(Encoding.UTF8.GetBytes(data), 0, Encoding.UTF8.GetByteCount(data));
+			requestContent.Append(data);
+		}
+
+		/// <see cref="http://stackoverflow.com/questions/219827/multipart-forms-from-c-sharp-client" />
+		private byte[] GetMultipartFormData(Dictionary<string, object> postParameters, string boundary, StringBuilder requestContent)
+		{
+			var needsCLRF = false;
+			var sb = new StringBuilder();
+
+			using (var stream = new MemoryStream())
+			{
+				foreach (var param in postParameters)
+				{
+					if (needsCLRF)
+					{
+						WriteToStream(stream, requestContent, "\r\n");
+					}
+
+					needsCLRF = true;
+
+					if (param.Value is ApiFileParameter)
+					{
+						var file = (ApiFileParameter)param.Value;
+
+						sb.Clear();
+						sb.AppendFormat("--{0}\r\n", boundary);
+						sb.AppendFormat("Content-Disposition: form-data; name=\"{0}\"; filename=\"{1}\"", param.Key, file.FileName ?? param.Key);
+
+						foreach (var key in file.Parameters.AllKeys)
+						{
+							sb.AppendFormat("; {0}=\"{1}\"", key, file.Parameters[key].Replace('"', '\''));
+						}
+
+						sb.AppendFormat("\r\nContent-Type: {0}\r\n\r\n", file.ContentType ?? "application/octet-stream");
+
+						WriteToStream(stream, requestContent, sb.ToString());
+
+						stream.Write(file.Data, 0, file.Data.Length);
+						requestContent.AppendFormat("<Binary image data here (length {0} bytes)...>", file.Data.Length);
+					}
+					else
+					{
+						string postData = string.Format("--{0}\r\nContent-Disposition: form-data; name=\"{1}\"\r\n\r\n{2}",
+							boundary,
+							param.Key,
+							param.Value);
+
+						WriteToStream(stream, requestContent, postData);
+					}
+				}
+
+				WriteToStream(stream, requestContent, "\r\n--" + boundary + "--\r\n");		// append final newline or not?
+
+				stream.Position = 0;
+				byte[] formData = new byte[stream.Length];
+				stream.Read(formData, 0, formData.Length);
+
+				return formData;
+			}
+		}
+		
 		private void GetResponse(HttpWebResponse webResponse, WebApiConsumerResponse response)
 		{
 			if (webResponse == null)
@@ -34,6 +96,7 @@ namespace SmartStore.Net.WebApi
 
 			using (var reader = new StreamReader(webResponse.GetResponseStream(), Encoding.UTF8))
 			{
+				// TODO: file uploads should use async and await keywords
 				response.Content = reader.ReadToEnd();
 			}
 		}
@@ -45,8 +108,58 @@ namespace SmartStore.Net.WebApi
 
 			return false;
 		}
-		public HttpWebRequest StartRequest(WebApiRequestContext context, string content, StringBuilder requestContent)
+
+		public Dictionary<string, object> CreateProductImageMultipartData(List<string> filePaths, int productId, string sku)
 		{
+			var count = 0;
+			var dic = new Dictionary<string, object>();
+
+			// only one identifier required (product Id, Sku or Gtin).
+			if (productId != 0)
+				dic.Add("Id", productId);
+
+			if (!string.IsNullOrEmpty(sku))
+				dic.Add("Sku", sku);
+
+			// also possible:
+			//if (!string.IsNullOrEmpty(gtin))
+			//	dic.Add("Gtin", sku);
+
+			foreach (var path in filePaths)
+			{
+				using (var fstream = new FileStream(path, FileMode.Open, FileAccess.Read))
+				{
+					byte[] data = new byte[fstream.Length];
+					fstream.Read(data, 0, data.Length);
+
+					var name = Path.GetFileName(path);
+					var id = string.Format("my-image{0}", ++count);
+					var apiFile = new ApiFileParameter(data, name, MimeMapping.GetMimeMapping(name));
+
+					// test pass through of custom parameters
+					apiFile.Parameters.Add("CustomValue1", string.Format("{0:N}", Guid.NewGuid()));
+					apiFile.Parameters.Add("CustomValue2", string.Format("say hello to {0}", id));
+
+					dic.Add(id, apiFile);
+
+					fstream.Close();
+				}
+			}
+
+			return dic;
+		}
+		public Dictionary<string, object> CreateProductImageMultipartData(string filePath, int productId, string sku)
+		{
+			if (filePath.Contains(";"))
+				return CreateProductImageMultipartData(filePath.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).ToList(), productId, sku);
+
+			return CreateProductImageMultipartData(new List<string> { filePath }, productId, sku);
+		}
+
+		public HttpWebRequest StartRequest(WebApiRequestContext context, string content, Dictionary<string, object> multipartData, out StringBuilder requestContent)
+		{
+			requestContent = new StringBuilder();
+
 			if (context == null || !context.IsValid)
 				return null;
 
@@ -60,7 +173,7 @@ namespace SmartStore.Net.WebApi
 			var request = (HttpWebRequest)WebRequest.Create(context.Url);
 			SetTimeout(request);
 
-			request.UserAgent = _consumerName;		// optional
+			request.UserAgent = Program.ConsumerName;		// optional
 			request.Method = context.HttpMethod;
 
 			request.Headers.Add(HttpRequestHeader.Pragma, "no-cache");
@@ -72,21 +185,34 @@ namespace SmartStore.Net.WebApi
 			request.Headers.Add(WebApiGlobal.HeaderName.PublicKey, context.PublicKey);
 			request.Headers.Add(WebApiGlobal.HeaderName.Date, timestamp);
 
-			if (!string.IsNullOrWhiteSpace(content) && BodySupported(request.Method))
+			if (multipartData != null && multipartData.Count > 0)
 			{
+				var formDataBoundary = string.Format("----------{0:N}", Guid.NewGuid());
+
+				data = GetMultipartFormData(multipartData, formDataBoundary, requestContent);
+				contentMd5Hash = CreateContentMd5Hash(data);
+
+				request.ContentLength = data.Length;
+				request.ContentType = "multipart/form-data; boundary=" + formDataBoundary;
+			}
+			else if (!string.IsNullOrWhiteSpace(content) && BodySupported(request.Method))
+			{
+				requestContent.Append(content);
 				data = Encoding.UTF8.GetBytes(content);
+				contentMd5Hash = CreateContentMd5Hash(data);
 				
 				request.ContentLength = data.Length;
 				request.ContentType = "application/json; charset=utf-8";
-
-				contentMd5Hash = CreateContentMd5Hash(data);
-
-				// optional... provider returns HmacResult.ContentMd5NotMatching if there's no match
-				request.Headers.Add(HttpRequestHeader.ContentMd5, contentMd5Hash);
 			}
 			else if (BodySupported(request.Method))
 			{
 				request.ContentLength = 0;
+			}
+
+			if (!string.IsNullOrEmpty(contentMd5Hash))
+			{
+				// optional... provider returns HmacResult.ContentMd5NotMatching if there's no match
+				request.Headers.Add(HttpRequestHeader.ContentMd5, contentMd5Hash);
 			}
 
 			string messageRepresentation = CreateMessageRepresentation(context, contentMd5Hash, timestamp);
@@ -101,13 +227,13 @@ namespace SmartStore.Net.WebApi
 				{
 					stream.Write(data, 0, data.Length);
 				}
-				requestContent.Append(content);
 			}
 
 			requestContent.Insert(0, request.Headers.ToString());
 
 			return request;
 		}
+		
 		public bool ProcessResponse(HttpWebRequest webRequest, WebApiConsumerResponse response)
 		{
 			if (webRequest == null)
@@ -141,36 +267,32 @@ namespace SmartStore.Net.WebApi
 				}
 			}
 			return result;
-		}
-		
-		/// <remarks>
-		/// http://weblog.west-wind.com/posts/2012/Aug/30/Using-JSONNET-for-dynamic-JSON-parsing
-		/// http://james.newtonking.com/json/help/index.html?topic=html/QueryJsonDynamic.htm
-		/// http://james.newtonking.com/json/help/index.html?topic=html/LINQtoJSON.htm
-		/// </remarks>
-		public List<Customer> TryParseCustomers(WebApiConsumerResponse response)
+		}		
+	}
+
+
+	public class ApiFileParameter
+	{
+		public ApiFileParameter(byte[] data)
+			: this(data, null)
 		{
-			if (response == null || string.IsNullOrWhiteSpace(response.Content))
-				return null;
-
-			//dynamic dynamicJson = JObject.Parse(response.Content);
-
-			//foreach (dynamic customer in dynamicJson.value)
-			//{
-			//	string str = string.Format("{0} {1} {2}", customer.Id, customer.CustomerGuid, customer.Email);
-			//	Debug.WriteLine(str);
-			//}
-
-			var json = JObject.Parse(response.Content);
-			string metadata = (string)json["odata.metadata"];
-
-			if (!string.IsNullOrWhiteSpace(metadata) && metadata.EndsWith("#Customers"))
-			{
-				var customers = json["value"].Select(x => x.ToObject<Customer>()).ToList();
-
-				return customers;
-			}
-			return null;
 		}
+		public ApiFileParameter(byte[] data, string filename)
+			: this(data, filename, null)
+		{
+		}
+		public ApiFileParameter(byte[] data, string filename, string contenttype)
+		{
+			Data = data;
+			FileName = filename;
+			ContentType = contenttype;
+			Parameters = new NameValueCollection();
+		}
+
+		public byte[] Data { get; set; }
+		public string FileName { get; set; }
+		public string ContentType { get; set; }
+
+		public NameValueCollection Parameters { get; set; }
 	}
 }

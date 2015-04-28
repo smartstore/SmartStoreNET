@@ -1,13 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Configuration;
 using System.Linq;
-using System.Reflection;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using Autofac;
 using Autofac.Integration.Mvc;
-using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
@@ -39,19 +36,42 @@ namespace SmartStore.Core.Infrastructure
 			}
         }
 
-		protected virtual void RegisterDependencies()
+		protected virtual ITypeFinder CreateTypeFinder()
+		{
+			return new WebAppTypeFinder();
+		}
+
+		protected virtual object CreateDependencyResolver(IContainer container)
+		{
+			var scopeProvider = container.Resolve<ILifetimeScopeProvider>();
+			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
+			return dependencyResolver;
+		}
+
+		protected virtual ContainerManager RegisterDependencies()
 		{
 			var builder = new ContainerBuilder();
 			var container = builder.Build();
+			var typeFinder = CreateTypeFinder();
 
 			// core dependencies
 			builder = new ContainerBuilder();
-			builder.RegisterInstance(this).As<IEngine>().SingleInstance();
-			builder.RegisterType<WebAppTypeFinder>().As<ITypeFinder>().SingleInstance();
+			builder.RegisterInstance(this).As<IEngine>();
+			builder.RegisterInstance(typeFinder).As<ITypeFinder>();
+
+			// Autofac
+			var lifetimeScopeAccessor = new DefaultLifetimeScopeAccessor(container);
+			var lifetimeScopeProvider = new DefaultLifetimeScopeProvider(lifetimeScopeAccessor);
+			builder.RegisterInstance(lifetimeScopeAccessor).As<ILifetimeScopeAccessor>();
+			builder.RegisterInstance(lifetimeScopeProvider).As<ILifetimeScopeProvider>();
+
+			var dependencyResolver = new AutofacDependencyResolver(container, lifetimeScopeProvider);
+			builder.RegisterInstance(dependencyResolver);
+			DependencyResolver.SetResolver(dependencyResolver);
+
 			builder.Update(container);
 
 			// register dependencies provided by other assemblies
-			var typeFinder = container.Resolve<ITypeFinder>();
 			builder = new ContainerBuilder();
 			var registrarTypes = typeFinder.FindClassesOfType<IDependencyRegistrar>();
 			var registrarInstances = new List<IDependencyRegistrar>();
@@ -67,12 +87,7 @@ namespace SmartStore.Core.Infrastructure
 			}
 			builder.Update(container);
 
-			// AutofacDependencyResolver
-			var scopeProvider = new AutofacLifetimeScopeProvider(container);
-			var dependencyResolver = new AutofacDependencyResolver(container, scopeProvider);
-			DependencyResolver.SetResolver(dependencyResolver);
-
-			_containerManager = new ContainerManager(container);
+			return new ContainerManager(container);
 		}
 
         #endregion
@@ -84,7 +99,7 @@ namespace SmartStore.Core.Infrastructure
         /// </summary>
         public void Initialize()
         {
-			RegisterDependencies();
+			_containerManager = RegisterDependencies();
 			if (DataSettings.DatabaseIsInstalled())
 			{
 				RunStartupTasks();

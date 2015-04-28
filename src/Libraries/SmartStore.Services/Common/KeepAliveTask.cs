@@ -26,7 +26,8 @@ namespace SmartStore.Services.Common
             {
                 using (var wc = new WebClient())
                 {
-                    //wc.Headers.Add("SmartStore.NET"); // makes problems
+                    // FAKE a user-agent
+					wc.Headers.Add("user-agent", @"Mozilla/5.0 (Windows NT 6.1; WOW64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/41.0.2272.118 Safari/537.36");
                     if (!url.StartsWith("http://", StringComparison.OrdinalIgnoreCase) && !url.StartsWith("https://", StringComparison.OrdinalIgnoreCase)) 
 					{
 						url = "http://" + url;

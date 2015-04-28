@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
@@ -70,6 +71,15 @@ namespace SmartStore.Services.Catalog
 		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
 		IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
 
+		/// <summary>
+		/// Builds a product query based on the options in ProductSearchContext parameter.
+		/// </summary>
+		/// <param name="ctx">Parameters to build the query.</param>
+		/// <param name="selector">Data projector</param>
+		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
+		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
+		IQueryable<TResult> PrepareProductSearchQuery<TResult>(ProductSearchContext ctx, Expression<Func<Product, TResult>> selector, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false);
+
         /// <summary>
         /// Update product review totals
         /// </summary>
@@ -92,9 +102,9 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets a product by GTIN
         /// </summary>
-        /// <param name="sku">SKU</param>
+		/// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
-        Product GetProductByGtin(string sku);
+		Product GetProductByGtin(string gtin);
         
 		/// <summary>
 		/// Adjusts inventory
@@ -178,6 +188,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="relatedProduct">Related product</param>
         void UpdateRelatedProduct(RelatedProduct relatedProduct);
 
+		/// <summary>
+		/// Ensure existence of all mutually related products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted related products</returns>
+		int EnsureMutuallyRelatedProducts(int productId1);
+
         #endregion
 
         #region Cross-sell products
@@ -222,6 +239,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="numberOfProducts">Number of products to return</param>
         /// <returns>Cross-sells</returns>
 		IList<Product> GetCrosssellProductsByShoppingCart(IList<OrganizedShoppingCartItem> cart, int numberOfProducts);
+
+		/// <summary>
+		/// Ensure existence of all mutually cross selling products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted cross selling products</returns>
+		int EnsureMutuallyCrossSellProducts(int productId1);
 
         #endregion
         

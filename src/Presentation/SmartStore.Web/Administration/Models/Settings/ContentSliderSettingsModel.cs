@@ -45,6 +45,8 @@ namespace SmartStore.Admin.Models.ContentSlider
 
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
+
+		public int StoreCount { get; set; }
     }
 
     [Validator(typeof(ContentSliderSlideValidator))]

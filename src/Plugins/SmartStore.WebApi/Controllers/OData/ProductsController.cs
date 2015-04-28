@@ -209,7 +209,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetFinalPrice(entity, null, _workContext.Value.CurrentCustomer, decimal.Zero, true, 1);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity);
 				}
 				return null;
 			});

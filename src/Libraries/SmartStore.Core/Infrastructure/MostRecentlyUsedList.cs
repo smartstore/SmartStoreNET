@@ -14,6 +14,7 @@ namespace SmartStore.Core.Infrastructure
 			_maxSize = maxSize;
 			_mru = new List<T>();
 		}
+
 		public MostRecentlyUsedList(IEnumerable<T> collection, int maxSize)
 		{
 			_maxSize = maxSize;
@@ -21,6 +22,7 @@ namespace SmartStore.Core.Infrastructure
 
 			Normalize();
 		}
+
 		public MostRecentlyUsedList(string collection, int maxSize)
 		{
 			_maxSize = maxSize;
@@ -28,6 +30,7 @@ namespace SmartStore.Core.Infrastructure
 
 			Normalize();
 		}
+
 		public MostRecentlyUsedList(IEnumerable<T> collection, T newItem, int maxSize)
 		{
 			_maxSize = maxSize;
@@ -35,6 +38,7 @@ namespace SmartStore.Core.Infrastructure
 
 			Add(newItem);
 		}
+
 		public MostRecentlyUsedList(string collection, T newItem, int maxSize)
 		{
 			_maxSize = maxSize;

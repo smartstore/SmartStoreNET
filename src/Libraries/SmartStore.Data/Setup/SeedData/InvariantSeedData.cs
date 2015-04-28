@@ -8968,7 +8968,7 @@ namespace SmartStore.Data.Setup
 				Language = defaultLanguage,
 				Title = "SmartStore.NET new release!",
                 Short = "SmartStore.NET includes everything you need to begin your e-commerce online store.",
-                Full = "<p>SmartStore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/>smartstore.net is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the SmartStore.NET community.</p>",
+                Full = "<p>SmartStore.NET includes everything you need to begin your e-commerce online store.<br/>  We have thought of everything and it's all included!<br/><br/SmartStore.NET is a fully customizable shop-system. It's stable and highly usable.<br>  From downloads to documentation, www.smartstore.com offers a comprehensive base of information, resources, and support to the SmartStore.NET community.</p>",
 				Published = true,
                 MetaTitle = "SmartStore.NET new release!",
 				CreatedOnUtc = DateTime.Now
@@ -8978,11 +8978,10 @@ namespace SmartStore.Data.Setup
 				AllowComments = true,
 				Language = defaultLanguage,
 				Title = "New online store is open!",
-				Short = "The new smartstore.net store is open now!  We are very excited to offer our new range of products. We will be constantly adding to our range so please register on our site, this will enable you to keep up to date with any new products.",
+                Short = "The new SmartStore.NET store is open now!  We are very excited to offer our new range of products. We will be constantly adding to our range so please register on our site, this will enable you to keep up to date with any new products.",
 				Full = "<p>Our online store is officially up and running. Stock up for the holiday season!  We have a great selection of items. We will be constantly adding to our range so please register on our site,  this will enable you to keep up to date with any new products.</p><p>  All shipping is worldwide and will leave the same day an order is placed! Happy Shopping and spread the word!!</p>",
 				Published = true,
 				MetaTitle = "New online store is open!",
-				//CreatedOnUtc = DateTime.UtcNow.AddSeconds(1),
 				CreatedOnUtc = DateTime.Now
 			};
 

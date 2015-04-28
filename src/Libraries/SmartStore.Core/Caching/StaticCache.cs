@@ -42,9 +42,10 @@ namespace SmartStore.Core.Caching
 		{
 			var cacheItem = new CacheItem(key, value);
 			CacheItemPolicy policy = null;
-			if (cacheTime.GetValueOrDefault() > 0)
+			if (cacheTime.HasValue)
 			{
-				policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + TimeSpan.FromMinutes(cacheTime.Value) };
+				var span = cacheTime.Value == 0 ? TimeSpan.FromMilliseconds(10) : TimeSpan.FromMinutes(cacheTime.Value);
+				policy = new CacheItemPolicy { AbsoluteExpiration = DateTime.Now + span };
 			}
 
 			Cache.Add(cacheItem, policy);

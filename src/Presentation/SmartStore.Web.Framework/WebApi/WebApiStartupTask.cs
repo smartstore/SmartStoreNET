@@ -42,7 +42,8 @@ namespace SmartStore.Web.Framework.WebApi
 
 			config.IncludeErrorDetailPolicy = IncludeErrorDetailPolicy.Always;
 
-			var configPublisher = EngineContext.Current.Resolve<IWebApiConfigurationPublisher>();
+			//var configPublisher = EngineContext.Current.Resolve<IWebApiConfigurationPublisher>();
+			var configPublisher = (IWebApiConfigurationPublisher)config.DependencyResolver.GetService(typeof(IWebApiConfigurationPublisher));
 			configPublisher.Configure(configBroadcaster);
 
 			//config.Services.Insert(typeof(ModelBinderProvider), 0,

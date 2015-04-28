@@ -20,7 +20,7 @@ namespace SmartStore.Services.Orders
         /// Gets all checkout attributes
         /// </summary>
         /// <returns>Checkout attribute collection</returns>
-        IList<CheckoutAttribute> GetAllCheckoutAttributes();
+		IList<CheckoutAttribute> GetAllCheckoutAttributes(bool showHidden = false);
 
         /// <summary>
         /// Gets a checkout attribute 

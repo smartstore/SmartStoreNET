@@ -21,11 +21,13 @@ namespace SmartStore.Web
             if (entity == null)
                 return null;
 
-            var model = new CategoryModel()
+            var model = new CategoryModel
             {
                 Id = entity.Id,
                 Name = entity.GetLocalized(x => x.Name),
+				FullName = entity.GetLocalized(x => x.FullName),
                 Description = entity.GetLocalized(x => x.Description),
+				BottomDescription = entity.GetLocalized(x => x.BottomDescription),
                 MetaKeywords = entity.GetLocalized(x => x.MetaKeywords),
                 MetaDescription = entity.GetLocalized(x => x.MetaDescription),
                 MetaTitle = entity.GetLocalized(x => x.MetaTitle),

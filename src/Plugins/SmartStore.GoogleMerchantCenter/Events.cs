@@ -48,7 +48,7 @@ namespace SmartStore.GoogleMerchantCenter
 
 			if (entity == null)
 			{
-				entity = new GoogleProductRecord()
+				entity = new GoogleProductRecord
 				{
 					ProductId = model.ProductId,
 					CreatedOnUtc = utcNow
@@ -63,6 +63,7 @@ namespace SmartStore.GoogleMerchantCenter
 			entity.Taxonomy = model.Taxonomy;
 			entity.Material = model.Material;
 			entity.Pattern = model.Pattern;
+			entity.Export = model.Exporting;
 			entity.UpdatedOnUtc = utcNow;
 
 			entity.IsTouched = entity.IsTouched();

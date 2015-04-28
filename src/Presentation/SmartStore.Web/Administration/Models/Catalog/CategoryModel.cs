@@ -11,7 +11,6 @@ using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
-using Telerik.Web.Mvc.UI;
 
 namespace SmartStore.Admin.Models.Catalog
 {
@@ -33,9 +32,16 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
+		public string FullName { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Description")]
         [AllowHtml]
         public string Description { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
+		[AllowHtml]
+		public string BottomDescription { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Alias")]
 		public string Alias { get; set; }
@@ -62,7 +68,6 @@ namespace SmartStore.Admin.Models.Catalog
         public string SeName { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Parent")]
-        // codehint: sm-edit
         public int? ParentCategoryId { get; set; }
 
         [UIHint("Picture")]
@@ -199,9 +204,16 @@ namespace SmartStore.Admin.Models.Catalog
         [AllowHtml]
         public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.FullName")]
+		public string FullName { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.Description")]
         [AllowHtml]
-        public string Description {get;set;}
+        public string Description { get;set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Categories.Fields.BottomDescription")]
+		[AllowHtml]
+		public string BottomDescription { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Categories.Fields.MetaKeywords")]
         [AllowHtml]

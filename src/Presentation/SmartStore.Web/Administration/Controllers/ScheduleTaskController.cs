@@ -166,27 +166,27 @@ namespace SmartStore.Admin.Controllers
 
 			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
 
-			var t = AsyncRunner.Run(c =>
+			var t = AsyncRunner.Run((c, ct) =>
 			{
+				var svc = c.Resolve<IScheduleTaskService>();
+
 				try
 				{
-					var svc = c.Resolve<IScheduleTaskService>();
-
 					var scheduleTask = svc.GetTaskById(id);
 					if (scheduleTask == null)
 						throw new Exception("Schedule task cannot be loaded");
 
 					var job = new Job(scheduleTask);
 					job.Enabled = true;
-					job.Execute(c, false);
+					job.Execute(ct, c, false);
 				}
 				catch
 				{
 					try
 					{
-						_scheduleTaskService.EnsureTaskIsNotRunning(id);
+						svc.EnsureTaskIsNotRunning(id);
 					}
-					catch (Exception) { }
+					catch { }
 				}
 			});
 

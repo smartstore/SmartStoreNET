@@ -9,7 +9,11 @@
         <script>
 			function onProductManufacturerEdit(e) {
                 $(e.form).find('#Manufacturer').select2('val', e.dataItem['ManufacturerId']);
-            }
+			}
+
+			function onProductManufacturerDataBound(e) {
+				$('#Manufacturer').selectWrapper({ resetDataUrl: '@Url.Action("AllManufacturers", "Manufacturer")' });
+			}
         </script>
 	
 		@(Html.Telerik().Grid<ProductModel.ProductManufacturerModel>()
@@ -29,7 +33,8 @@
             .Columns(columns =>
             {
                 columns.Bound(x => x.Manufacturer)
-                    .Width(500);
+					.Template(x => Html.ActionLink(x.Manufacturer, "Edit", "Manufacturer", new { id = x.ManufacturerId }))
+					.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Manufacturer/Edit/") + "<#= ManufacturerId #>\"><#= Manufacturer #></a>");
                 columns.Bound(x => x.IsFeaturedProduct)
                     .Width(100)
                     .Template(item => Html.SymbolForBool(item.IsFeaturedProduct))
@@ -46,7 +51,11 @@
                 .Width(180);
             })
             .ToolBar(commands => commands.Insert())
-            .ClientEvents(events => events.OnEdit("onProductManufacturerEdit"))
+            .ClientEvents(events =>
+			{
+				events.OnEdit("onProductManufacturerEdit");
+				events.OnDataBound("onProductManufacturerDataBound");
+			})
             .EnableCustomBinding(true))
     }
     else

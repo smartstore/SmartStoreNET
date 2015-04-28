@@ -7,9 +7,7 @@ using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
-    /// <summary>
-    /// <remarks>codehint: sm-add</remarks>
-    /// </summary>
+
     public static class ScaffoldExtensions
     {
         public static string SymbolForBool<T>(this HtmlHelper<T> helper, string boolFieldName)

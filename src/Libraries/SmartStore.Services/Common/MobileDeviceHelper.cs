@@ -15,7 +15,7 @@ namespace SmartStore.Services.Common
         private readonly ThemeSettings _themeSettings;
         private readonly IWorkContext _workContext;
 		private readonly IStoreContext _storeContext;
-        private readonly HttpContextBase _httpConttext;
+		private readonly IUserAgent _userAgent;
 
         #endregion
 
@@ -26,13 +26,16 @@ namespace SmartStore.Services.Common
         /// </summary>
         /// <param name="workContext">Work context</param>
 		/// <param name="storeContext">Store context</param>
-        public MobileDeviceHelper(ThemeSettings themeSettings, IWorkContext workContext,
-			IStoreContext storeContext, HttpContextBase httpContext)
+        public MobileDeviceHelper(
+			ThemeSettings themeSettings, 
+			IWorkContext workContext,
+			IStoreContext storeContext, 
+			IUserAgent userAgent)
         {
 			this._themeSettings = themeSettings;
             this._workContext = workContext;
 			this._storeContext = storeContext;
-            this._httpConttext = httpContext;
+			this._userAgent = userAgent;
         }
 
         #endregion
@@ -47,20 +50,7 @@ namespace SmartStore.Services.Common
         /// <returns>Result</returns>
         public virtual bool IsMobileDevice()
         {
-            if (_themeSettings.EmulateMobileDevice)
-                return true;
-
-            //comment the code below if you want tablets to be recognized as mobile devices.
-            //SmartStore.NET uses the free edition of the 51degrees.mobi library for detecting browser mobile properties.
-            //by default this property (IsTablet) is always false. you will need the premium edition in order to get it supported.
-            bool isTablet = false;
-            if (bool.TryParse(_httpConttext.Request.Browser["IsTablet"], out isTablet) && isTablet)
-                return false;
-
-            if (_httpConttext.Request.Browser.IsMobileDevice)
-                return true;
-
-            return false;
+			return _themeSettings.EmulateMobileDevice || (_userAgent.IsMobileDevice && !_userAgent.IsTablet);
         }
 
         /// <summary>

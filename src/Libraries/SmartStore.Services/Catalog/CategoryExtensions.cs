@@ -47,17 +47,17 @@ namespace SmartStore.Services.Catalog
         /// <param name="productId">Product identifier</param>
         /// <param name="categoryId">Category identifier</param>
         /// <returns>A ProductCategory that has the specified values; otherwise null</returns>
-        public static ProductCategory FindProductCategory(this IList<ProductCategory> source,
-            int productId, int categoryId)
+        public static ProductCategory FindProductCategory(this IList<ProductCategory> source, int productId, int categoryId)
         {
-            foreach (var productCategory in source)
-                if (productCategory.ProductId == productId && productCategory.CategoryId == categoryId)
-                    return productCategory;
-
+			foreach (var productCategory in source)
+			{
+				if (productCategory.ProductId == productId && productCategory.CategoryId == categoryId)
+					return productCategory;
+			}
             return null;
         }
 
-		public static string GetFullCategoryName(this Category category)
+		public static string GetCategoryNameWithAlias(this Category category)
 		{
 			if (category != null)
 			{
@@ -77,7 +77,7 @@ namespace SmartStore.Services.Catalog
             {
                 if (String.IsNullOrEmpty(result))
                 {
-                    result = category.GetFullCategoryName();
+                    result = category.GetCategoryNameWithAlias();
                 }
                 else
                 {
@@ -103,14 +103,13 @@ namespace SmartStore.Services.Catalog
 
             while (category != null && !category.Deleted)
             {
-				// codehint: sm-edit
                 if (String.IsNullOrEmpty(result))
                 {
-                    result = category.GetFullCategoryName();
+                    result = category.GetCategoryNameWithAlias();
                 }
                 else
                 {
-                    result = category.GetFullCategoryName() + " >> " + result;
+                    result = category.GetCategoryNameWithAlias() + " >> " + result;
                 }
 
                 int parentId = category.ParentCategoryId;

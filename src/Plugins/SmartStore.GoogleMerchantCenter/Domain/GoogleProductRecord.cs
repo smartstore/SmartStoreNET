@@ -8,6 +8,11 @@ namespace SmartStore.GoogleMerchantCenter.Domain
     /// </summary>
     public partial class GoogleProductRecord : BaseEntity
     {
+		public GoogleProductRecord()
+		{
+			Export = true;
+		}
+
 		public int ProductId { get; set; }
 
         public string Taxonomy { get; set; }
@@ -22,5 +27,7 @@ namespace SmartStore.GoogleMerchantCenter.Domain
 		public bool IsTouched { get; set; }
 		public DateTime CreatedOnUtc { get; set; }
 		public DateTime UpdatedOnUtc { get; set; }
+
+		public bool Export { get; set; }
     }
 }

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Linq;
+﻿using System.Linq;
 using System.Web;
 using System.Web.Hosting;
 using System.Web.Mvc;
@@ -11,9 +10,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Controllers;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;

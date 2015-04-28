@@ -1,17 +1,35 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Text;
 using System.Windows.Forms;
 
-namespace SmartStoreNetWebApiClient.Misc
+namespace SmartStoreNetWebApiClient
 {
 	public static class Extensions
 	{
 		private const char _delimiter = '¶';
 
+		public static void Dump(this string value, bool appendMarks = false)
+		{
+			Debug.WriteLine(value);
+			Debug.WriteLineIf(appendMarks, "------------------------------------------------");
+		}
+
+		public static void Dump(this Exception exc)
+		{
+			try
+			{
+				exc.StackTrace.Dump();
+				exc.Message.Dump();
+			}
+			catch { }
+		}
+
 		public static DialogResult Box(this string message, MessageBoxButtons buttons = MessageBoxButtons.OK, MessageBoxIcon icon = MessageBoxIcon.Information)
 		{
 			return MessageBox.Show(message, Program.AppName, buttons, icon);
 		}
+		
 		public static void InsertRolled(this ComboBox combo, string str, int max)
 		{
 			if (!string.IsNullOrEmpty(str))
@@ -31,6 +49,7 @@ namespace SmartStoreNetWebApiClient.Misc
 				combo.Text = str;
 			}
 		}
+		
 		public static void FromString(this ComboBox.ObjectCollection coll, string values)
 		{
 			if (!string.IsNullOrWhiteSpace(values))
@@ -39,6 +58,7 @@ namespace SmartStoreNetWebApiClient.Misc
 				coll.AddRange(items);
 			}
 		}
+		
 		public static string IntoString(this ComboBox.ObjectCollection coll)
 		{
 			if (coll.Count <= 0)
@@ -53,10 +73,26 @@ namespace SmartStoreNetWebApiClient.Misc
 			}
 			return string.Join(_delimiter.ToString(), sb.ToString());
 		}
+		
 		public static void RemoveCurrent(this ComboBox combo)
 		{
 			combo.Items.Remove(combo.Text);
 			combo.ResetText();
+		}
+
+		public static int ToInt(this string value, int defaultValue = 0)
+		{
+			int result;
+			if (int.TryParse(value, out result))
+			{
+				return result;
+			}
+			return defaultValue;
+		}
+
+		public static string EmptyNull(this string value)
+		{
+			return (value ?? string.Empty).Trim();
 		}
 	}
 }

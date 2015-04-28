@@ -160,6 +160,7 @@
 							.Width(100)
 							.Template(x => @Html.SymbolForBool(x.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Hidden(Model.StoreCount <= 1)
 							.Centered();
 						columns.Bound(x => x.Published)
 							.Width(100)

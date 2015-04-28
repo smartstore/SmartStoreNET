@@ -1,9 +1,9 @@
 ﻿using System.Text;
 using System.Web.Mvc;
 
-namespace SmartStore.WebApi.Extensions
+namespace SmartStore.WebApi
 {
-	public static class MiscExtensions
+	public static class PublicMiscExtensions
 	{
 		public static string ApiGridButtons<T>(this HtmlHelper<T> helper)
 		{
@@ -26,6 +26,19 @@ namespace SmartStore.WebApi.Extensions
 			sb.Append("</div>");
 
 			return sb.ToString();
+		}
+	}
+
+	internal static class MiscExtensions
+	{
+		public static string ToUnquoted(this string value)
+		{
+			if (value.HasValue() && value.Length > 1)
+			{
+				if ((value.StartsWith("\"") && value.EndsWith("\"")) || (value.StartsWith("'") && value.EndsWith("'")))
+					return value.Substring(1, value.Length - 2);
+			}
+			return value;
 		}
 	}
 }

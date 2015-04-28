@@ -53,7 +53,6 @@ namespace SmartStore.Web.Models.Install
 
         public List<SelectListItem> AvailableLanguages { get; set; }
 
-        // codehint: sm-add
         public string PrimaryLanguage { get; set; }
         public List<SelectListItem> AvailableAppLanguages { get; set; }
         public string MediaStorage { get; set; }

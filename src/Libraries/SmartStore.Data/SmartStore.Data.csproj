@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
@@ -10,7 +10,7 @@
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>SmartStore.Data</RootNamespace>
     <AssemblyName>SmartStore.Data</AssemblyName>
-    <TargetFrameworkVersion>v4.5</TargetFrameworkVersion>
+    <TargetFrameworkVersion>v4.5.1</TargetFrameworkVersion>
     <FileAlignment>512</FileAlignment>
     <SccProjectName>
     </SccProjectName>
@@ -236,6 +236,26 @@
     <Compile Include="Migrations\201503101851123_PdfConverterUser.Designer.cs">
       <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201502120858030_Licensing.cs" />
+    <Compile Include="Migrations\201502120858030_Licensing.Designer.cs">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504131412183_NewCategoryProperties.cs" />
+    <Compile Include="Migrations\201504131412183_NewCategoryProperties.Designer.cs">
+      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504171629262_V22Final.cs" />
+    <Compile Include="Migrations\201504171629262_V22Final.Designer.cs">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.cs" />
+    <Compile Include="Migrations\201504232202590_AutoUpdateRes.Designer.cs">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.cs" />
+    <Compile Include="Migrations\201504270946381_TempFileCleanupTask.Designer.cs">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -281,7 +301,6 @@
     <Compile Include="Mapping\Shipping\ShipmentItemMap.cs" />
     <Compile Include="Mapping\Tasks\ScheduleTaskMap.cs" />
     <Compile Include="Setup\Builder\BuilderDbContextExtensions.cs" />
-    <Compile Include="Setup\TestDatabaseInitializer.cs" />
     <Compile Include="SmartDbConfiguration.cs" />
     <Compile Include="SqlServerDataProvider.cs" />
     <Compile Include="SqlCeDataProvider.cs" />
@@ -467,6 +486,21 @@
     <EmbeddedResource Include="Migrations\201503101851123_PdfConverterUser.resx">
       <DependentUpon>201503101851123_PdfConverterUser.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201502120858030_Licensing.resx">
+      <DependentUpon>201502120858030_Licensing.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504131412183_NewCategoryProperties.resx">
+      <DependentUpon>201504131412183_NewCategoryProperties.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504171629262_V22Final.resx">
+      <DependentUpon>201504171629262_V22Final.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504232202590_AutoUpdateRes.resx">
+      <DependentUpon>201504232202590_AutoUpdateRes.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201504270946381_TempFileCleanupTask.resx">
+      <DependentUpon>201504270946381_TempFileCleanupTask.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>
@@ -481,6 +515,9 @@
   </ItemGroup>
   <ItemGroup>
     <EmbeddedResource Include="Sql\StoredProcedures.Inverse.sql" />
+  </ItemGroup>
+  <ItemGroup>
+    <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>

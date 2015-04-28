@@ -11,6 +11,11 @@ namespace SmartStore.Core.Domain.Orders
     {
         private ICollection<CheckoutAttributeValue> _checkoutAttributeValues;
 
+		public CheckoutAttribute()
+		{
+			this.IsActive = true;
+		}
+
         /// <summary>
         /// Gets or sets the name
         /// </summary>
@@ -50,6 +55,11 @@ namespace SmartStore.Core.Domain.Orders
         /// Gets or sets the display order
         /// </summary>
         public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets whether the checkout attribute is active
+		/// </summary>
+		public bool IsActive { get; set; }
         
         /// <summary>
         /// Gets the attribute control type

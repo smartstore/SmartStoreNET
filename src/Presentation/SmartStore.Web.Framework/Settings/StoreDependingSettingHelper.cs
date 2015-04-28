@@ -1,12 +1,10 @@
 ﻿using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Services.Configuration;
 using Fasterflect;
-using System.Collections.Generic;
+using SmartStore.Services.Configuration;
 
 namespace SmartStore.Web.Framework.Settings
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public class StoreDependingSettingHelper
 	{
 		private ViewDataDictionary _viewData;

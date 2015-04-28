@@ -7,6 +7,7 @@ using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Controllers
@@ -54,6 +55,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 				model.Size = entity.Size;
 				model.Material = entity.Material;
 				model.Pattern = entity.Pattern;
+				model.Exporting = entity.Export;
 			}
 			
 			ViewBag.DefaultCategory = _settings.DefaultGoogleCategory;
@@ -66,12 +68,12 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 
 			var ci = CultureInfo.InvariantCulture;
 
-			if (_settings.Gender.HasValue()) 
+			if (_settings.Gender.HasValue() && _settings.Gender != PluginHelper.NotSpecified)
 			{
 				ViewBag.DefaultGender = T("Plugins.Feed.Froogle.Gender" + ci.TextInfo.ToTitleCase(_settings.Gender));
 			}
 
-			if (_settings.AgeGroup.HasValue())
+			if (_settings.AgeGroup.HasValue() && _settings.AgeGroup != PluginHelper.NotSpecified)
 			{
 				ViewBag.DefaultAgeGroup = T("Plugins.Feed.Froogle.AgeGroup" + ci.TextInfo.ToTitleCase(_settings.AgeGroup));
 			}

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.ComponentModel;
+using System.Globalization;
 using System.Xml;
 
 namespace SmartStore
@@ -27,6 +28,7 @@ namespace SmartStore
 
 			return defaultValue;
 		}
+
 		/// <summary>Safe way to get inner text of an attribute.</summary>
 		public static string GetAttributeText(this XmlNode node, string attributeName) 
         {
@@ -34,7 +36,7 @@ namespace SmartStore
 		}
 
 		/// <summary>Safe way to get inner text of a node.</summary>
-		public static T GetText<T>(this XmlNode node, string xpath = null, T defaultValue = default(T)) 
+		public static T GetText<T>(this XmlNode node, string xpath = null, T defaultValue = default(T), CultureInfo culture = null) 
         {
 			try 
             {
@@ -43,9 +45,10 @@ namespace SmartStore
 					if (xpath.IsEmpty())
 						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(node.InnerText);
 
-					XmlNode n = node.SelectSingleNode(xpath);
-					if (n != null)
-						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(n.InnerText);
+					var n = node.SelectSingleNode(xpath);
+
+					if (n != null && n.InnerText.HasValue())
+						return (T)TypeDescriptor.GetConverter(typeof(T)).ConvertFromString(null, culture == null ? CultureInfo.InvariantCulture : culture, n.InnerText);
 				}
 			}
 			catch (Exception exc) 
@@ -55,11 +58,11 @@ namespace SmartStore
 
 			return defaultValue;
 		}
+
 		/// <summary>Safe way to get inner text of a node.</summary>
 		public static string GetText(this XmlNode node, string xpath = null, string defaultValue = default(string)) 
         {
 			return node.GetText<string>(xpath, defaultValue);
 		}
-
-	}	// class
+	}
 }

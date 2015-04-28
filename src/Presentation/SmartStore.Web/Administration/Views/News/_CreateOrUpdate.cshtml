@@ -9,6 +9,7 @@
 @Html.SmartStore().TabStrip().Name("news-edit").Style(TabsStyle.Tabs).Position(TabsPosition.Top).Items(x =>
 {
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
+    x.Add().Text(T("Admin.Common.SEO").Text).Content(TabSeo());
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
 
     //generate an event
@@ -88,33 +89,39 @@
                 @Html.ValidationMessageFor(model => model.Published)
             </td>
         </tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MetaKeywords)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.MetaKeywords)
-				@Html.ValidationMessageFor(model => model.MetaKeywords)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MetaDescription)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.MetaDescription)
-				@Html.ValidationMessageFor(model => model.MetaDescription)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.MetaTitle)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.MetaTitle)
-				@Html.ValidationMessageFor(model => model.MetaTitle)
-			</td>
-		</tr>
+    </table>
+}
+
+@helper TabSeo()
+{
+    <table class="adminContent">
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaKeywords)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.MetaKeywords)
+                @Html.ValidationMessageFor(model => model.MetaKeywords)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaDescription)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.MetaDescription)
+                @Html.ValidationMessageFor(model => model.MetaDescription)
+            </td>
+        </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.MetaTitle)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.MetaTitle)
+                @Html.ValidationMessageFor(model => model.MetaTitle)
+            </td>
+        </tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SeName)
@@ -126,6 +133,7 @@
         </tr>
     </table>
 }
+
 @helper TabStores()
 {
     <script type="text/javascript">

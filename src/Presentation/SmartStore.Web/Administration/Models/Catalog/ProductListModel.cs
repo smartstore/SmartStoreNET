@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Catalog
 			AvailableStores = new List<SelectListItem>();
 			AvailableProductTypes = new List<SelectListItem>();
         }
+
         public GridModel<ProductModel> Products { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductName")]
@@ -24,8 +25,14 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchCategory")]
         public int SearchCategoryId { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutCategories")]
+		public bool SearchWithoutCategories { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
         public int SearchManufacturerId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutManufacturers")]
+		public bool SearchWithoutManufacturers { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
@@ -40,6 +47,7 @@ namespace SmartStore.Admin.Models.Catalog
         public bool DisplayProductPictures { get; set; }
         public bool DisplayPdfExport { get; set; }
 		public int GridPageSize { get; set; }
+		public int StoreCount { get; set; }
 
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }

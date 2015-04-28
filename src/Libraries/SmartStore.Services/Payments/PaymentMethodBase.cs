@@ -167,6 +167,17 @@ namespace SmartStore.Services.Payments
 		#region Properties
 
 		/// <summary>
+		/// Gets a value indicating whether the payment method is active and should be offered to customers
+		/// </summary>
+		public virtual bool IsActive
+		{
+			get
+			{
+				return true;
+			}
+		}
+
+		/// <summary>
 		/// Gets a value indicating whether the payment method requires user input
 		/// before proceeding (e.g. CreditCard, DirectDebit etc.)
 		/// </summary>

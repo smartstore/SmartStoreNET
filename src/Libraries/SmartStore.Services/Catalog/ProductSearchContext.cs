@@ -37,10 +37,20 @@ namespace SmartStore.Services.Catalog
         /// <remarks>Only works in LINQ mode at the moment</remarks>
         public bool MatchAllcategories { get; set; }
 
+		/// <summary>
+		/// A value indicating whether to load products without any catgory mapping
+		/// </summary>
+		public bool WithoutCategories { get; set; }
+
         /// <summary>
         /// Manufacturer identifier; 0 to load all records
         /// </summary>
         public int ManufacturerId { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load products without any manufacturer mapping
+		/// </summary>
+		public bool WithoutManufacturers { get; set; }
 
         /// <summary>
         /// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 0 to load featured products only, 1 to load not featured products only, null to load all products

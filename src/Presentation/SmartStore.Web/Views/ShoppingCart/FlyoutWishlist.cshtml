@@ -46,17 +46,20 @@
                             </span>
                         }
                     </div>
-                    <div class="action pull-left">
-                         <a class="btn btn-mini ajax-cart-link" title='@T("ShoppingCart.AddToCart")' 
-                             href="#"
-							 rel="nofollow"
-                             data-href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
-                             data-name="@item.ProductName"
-                             data-type="cart"
-                             data-action="addfromwishlist">
-                            <i class="fa fa-shopping-cart"></i>
-                        </a>
-                    </div>
+					@if (Model.ShowItemsFromWishlistToCartButton)
+					{
+						<div class="action pull-left">
+							 <a class="btn btn-mini ajax-cart-link" title='@T("ShoppingCart.AddToCart")' 
+								 href="#"
+								 rel="nofollow"
+								 data-href="@Url.Action("AddOneItemtoCartFromWishlist", "ShoppingCart", new { cartItemId = item.Id })"
+								 data-name="@item.ProductName"
+								 data-type="cart"
+								 data-action="addfromwishlist">
+								<i class="fa fa-shopping-cart"></i>
+							</a>
+						</div>
+					}
                     <div class="price pull-right">
                         @item.UnitPrice
                     </div>

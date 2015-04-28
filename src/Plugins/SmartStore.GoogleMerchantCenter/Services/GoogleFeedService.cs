@@ -301,13 +301,26 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		}
 		private void WriteItem(FeedFileCreationContext fileCreation, XmlWriter writer, Product product, Currency currency, string measureWeightSystemKey)
 		{
+			GoogleProductRecord googleProduct = null;
+
+			try
+			{
+				googleProduct = GetGoogleProductRecord(product.Id);
+
+				if (googleProduct != null && !googleProduct.Export)
+					return;
+			}
+			catch (Exception exc)
+			{
+				fileCreation.Logger.Error(exc.Message, exc);
+			}
+
 			writer.WriteStartElement("item");
 
 			try
 			{
 				var manu = _manufacturerService.GetProductManufacturersByProductId(product.Id).FirstOrDefault();
 				var mainImageUrl = Helper.GetMainProductImageUrl(fileCreation.Store, product);
-				var googleProduct = GetGoogleProductRecord(product.Id);
 				var category = ProductCategory(googleProduct);
 
 				if (category.IsEmpty())
@@ -484,7 +497,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 			if (product == null)
 			{
-				product = new GoogleProductRecord()
+				product = new GoogleProductRecord
 				{
 					ProductId = pk,
 					CreatedOnUtc = utcNow
@@ -514,6 +527,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				case "Pattern":
 					product.Pattern = value;
 					break;
+				case "Exporting":
+					product.Export = value.ToBool(true);
+					break;
 			}
 
 			product.UpdatedOnUtc = utcNow;
@@ -540,7 +556,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
 			// there's no way to share a context instance across repositories which makes GoogleProductObjectContext pretty useless here.
-			// so let's fallback to good ole sql... by the way, fastest possible paged data query ever.
+			// so let's fallback to good old sql... by the way, fastest possible paged data query ever.
 
 			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
 
@@ -558,11 +574,11 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			}
 
 			string sql =
-"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern]" +
+"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export]" +
 " FROM (" +
-"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7]" +
+"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8]" +
 "    FROM (" +
-"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
 "        FROM [Product] AS [t0]" +
 "        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
 "        ) AS [t2]" +
@@ -588,6 +604,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 				if (x.AgeGroup.HasValue())
 					x.AgeGroupLocalize = Helper.GetResource("AgeGroup" + textInfo.ToTitleCase(x.AgeGroup));
+
+				x.ExportingLocalize = Helper.GetResource(x.Export == 0 ? "Admin.Common.No" : "Admin.Common.Yes");
 			});
 
 			model.Data = data;
@@ -649,6 +667,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 			#endregion old code
 		}
+
 		private void CreateFeed(FeedFileCreationContext fileCreation, TaskExecutionContext taskContext)
 		{
 			var xmlSettings = new XmlWriterSettings
@@ -656,7 +675,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				Encoding = Encoding.UTF8,
 				CheckCharacters = false
 			};
-
+			
 			using (var writer = XmlWriter.Create(fileCreation.Stream, xmlSettings))
 			{
 				try
@@ -686,6 +705,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					for (int i = 0; i < 9999999; ++i)
 					{
 						searchContext.PageIndex = i;
+						
+						// Perf
+						_dbContext.DetachAll();
 
 						var products = _productService.SearchProducts(searchContext);
 
@@ -724,7 +746,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 							}
 						}
 
-						if (!products.HasNextPage)
+						if (!products.HasNextPage || taskContext.CancellationToken.IsCancellationRequested)
 							break;
 					}
 
@@ -741,6 +763,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				}
 			}
 		}
+
 		public void CreateFeed(TaskExecutionContext context)
 		{
 			Helper.StartCreatingFeeds(fileCreation =>
@@ -749,6 +772,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				return true;
 			});
 		}
+
 		public void SetupModel(FeedFroogleModel model)
 		{
 			Helper.SetupConfigModel(model, "FeedFroogle");

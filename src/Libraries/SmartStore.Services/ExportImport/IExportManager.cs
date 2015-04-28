@@ -1,9 +1,10 @@
 ﻿using System.Collections.Generic;
 using System.IO;
+using System.Xml;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -25,12 +26,20 @@ namespace SmartStore.Services.ExportImport
         /// <returns>Result in XML format</returns>
         string ExportCategoriesToXml();
 
-        /// <summary>
-        /// Export product list to xml
-        /// </summary>
-        /// <param name="products">Products</param>
-        /// <returns>Result in XML format</returns>
-        string ExportProductsToXml(IList<Product> products);
+		/// <summary>
+		/// Writes a single product
+		/// </summary>
+		/// <param name="writer">The XML writer</param>
+		/// <param name="product">The product</param>
+		/// <param name="context">Context objects</param>
+		void WriteProductToXml(XmlWriter writer, Product product, XmlExportContext context);
+
+		/// <summary>
+		/// Export product list to XML
+		/// </summary>
+		/// <param name="stream">Stream to write</param>
+		/// <param name="searchContext">Search context</param>
+		void ExportProductsToXml(Stream stream, ProductSearchContext searchContext);
 
         /// <summary>
         /// Export products to XLSX

@@ -90,6 +90,17 @@
             @Html.ValidationMessageFor(model => model.RequestedAction)
         </td>
     </tr>
+	@if(Model.RequestedActionUpdated.HasValue)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.RequestedActionUpdated)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.RequestedActionUpdated)
+			</td>
+		</tr>		
+	}
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.CustomerComments)
@@ -108,6 +119,15 @@
             @Html.ValidationMessageFor(model => model.StaffNotes)
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.AdminComment)
+		</td>
+		<td class="adminData">
+			@Html.TextAreaFor(model => model.AdminComment, new { style = "min-width: 500px; min-height: 100px;" })
+			@Html.ValidationMessageFor(model => model.AdminComment)
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.CreatedOn)
@@ -116,4 +136,12 @@
             @Html.DisplayFor(model => model.CreatedOn)
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.UpdatedOn)
+		</td>
+		<td class="adminData">
+			@Html.DisplayFor(model => model.UpdatedOn)
+		</td>
+	</tr>
 </table>

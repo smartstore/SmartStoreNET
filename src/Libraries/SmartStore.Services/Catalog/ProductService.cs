@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -41,7 +42,7 @@ namespace SmartStore.Services.Catalog
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
         private readonly IRepository<ProductPicture> _productPictureRepository;
         private readonly IRepository<ProductSpecificationAttribute> _productSpecificationAttributeRepository;
-        private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository; // codehint: sm-add
+        private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
 		private readonly IRepository<ProductBundleItem> _productBundleItemRepository;
         private readonly IProductAttributeService _productAttributeService;
         private readonly IProductAttributeParser _productAttributeParser;
@@ -136,12 +137,91 @@ namespace SmartStore.Services.Catalog
 		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
-        
-        #region Methods
 
-        #region Products
+		#region Utilities
 
-        /// <summary>
+		protected virtual int EnsureMutuallyRelatedProducts(List<int> productIds)
+		{
+			int count = 0;
+
+			foreach (int id1 in productIds)
+			{
+				var mutualAssociations = (
+					from rp in _relatedProductRepository.Table
+					join p in _productRepository.Table on rp.ProductId2 equals p.Id
+					where !p.Deleted && rp.ProductId2 == id1
+					select rp).ToList();
+
+				foreach (int id2 in productIds)
+				{
+					if (id1 == id2)
+						continue;
+
+					if (!mutualAssociations.Any(x => x.ProductId1 == id2))
+					{
+						int maxDisplayOrder = _relatedProductRepository.TableUntracked
+							.Where(x => x.ProductId1 == id2)
+							.OrderByDescending(x => x.DisplayOrder)
+							.Select(x => x.DisplayOrder)
+							.FirstOrDefault();
+
+						var newRelatedProduct = new RelatedProduct
+						{
+							ProductId1 = id2,
+							ProductId2 = id1,
+							DisplayOrder = maxDisplayOrder + 1
+						};
+
+						InsertRelatedProduct(newRelatedProduct);
+						++count;
+					}
+				}
+			}
+
+			return count;
+		}
+
+		protected virtual int EnsureMutuallyCrossSellProducts(List<int> productIds)
+		{
+			int count = 0;
+
+			foreach (int id1 in productIds)
+			{
+				var mutualAssociations = (
+					from rp in _crossSellProductRepository.Table
+					join p in _productRepository.Table on rp.ProductId2 equals p.Id
+					where !p.Deleted && rp.ProductId2 == id1
+					select rp).ToList();
+
+				foreach (int id2 in productIds)
+				{
+					if (id1 == id2)
+						continue;
+
+					if (!mutualAssociations.Any(x => x.ProductId1 == id2))
+					{
+						var newCrossSellProduct = new CrossSellProduct
+						{
+							ProductId1 = id2,
+							ProductId2 = id1
+						};
+
+						InsertCrossSellProduct(newCrossSellProduct);
+						++count;
+					}
+				}
+			}
+
+			return count;
+		}
+
+		#endregion
+
+		#region Methods
+
+		#region Products
+
+		/// <summary>
         /// Delete a product
         /// </summary>
         /// <param name="product">Product</param>
@@ -204,17 +284,13 @@ namespace SmartStore.Services.Catalog
                         where productIds.Contains(p.Id)
                         select p;
             var products = query.ToList();
-            
-            //sort by passed identifiers
-            var sortedProducts = new List<Product>();
 
-            foreach (int id in productIds)
-            {
-                var product = products.Find(x => x.Id == id);
-                if (product != null)
-                    sortedProducts.Add(product);
-            }
-            return sortedProducts;
+			// sort by passed identifier sequence
+			var sortQuery = from i in productIds
+							join p in products on i equals p.Id
+							select p;
+
+			return sortQuery.ToList();
         }
 
         /// <summary>
@@ -273,13 +349,8 @@ namespace SmartStore.Services.Catalog
             return query.Distinct().Count();
         }
 
-        /// <summary>
-        /// Search products
-        /// <remarks>codehint: sm-edit (changed input parameter)</remarks>
-        /// </summary>
         public virtual IPagedList<Product> SearchProducts(ProductSearchContext ctx)
         {
-            // codehint: sm-edit (turn off nc filtering, we have our own)
             ctx.LoadFilterableSpecificationAttributeOptionIds = false;
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
@@ -319,7 +390,7 @@ namespace SmartStore.Services.Catalog
 
                 //pass categry identifiers as comma-delimited string
                 string commaSeparatedCategoryIds = "";
-                if (ctx.CategoryIds != null)
+                if (ctx.CategoryIds != null && !ctx.WithoutCategories)
                 {
                     for (int i = 0; i < ctx.CategoryIds.Count; i++)
                     {
@@ -369,7 +440,7 @@ namespace SmartStore.Services.Catalog
 
                 var pManufacturerId = _dataProvider.GetParameter();
                 pManufacturerId.ParameterName = "ManufacturerId";
-                pManufacturerId.Value = ctx.ManufacturerId;
+                pManufacturerId.Value = (ctx.WithoutManufacturers ? 0 : ctx.ManufacturerId);
                 pManufacturerId.DbType = DbType.Int32;
 
 				var pStoreId = _dataProvider.GetParameter();
@@ -482,6 +553,16 @@ namespace SmartStore.Services.Catalog
                 pLoadFilterableSpecificationAttributeOptionIds.Value = ctx.LoadFilterableSpecificationAttributeOptionIds;
                 pLoadFilterableSpecificationAttributeOptionIds.DbType = DbType.Boolean;
 
+				var pWithoutCategories = _dataProvider.GetParameter();
+				pWithoutCategories.ParameterName = "WithoutCategories";
+				pWithoutCategories.Value = ctx.WithoutCategories;
+				pWithoutCategories.DbType = DbType.Boolean;
+
+				var pWithoutManufacturers = _dataProvider.GetParameter();
+				pWithoutManufacturers.ParameterName = "WithoutManufacturers";
+				pWithoutManufacturers.Value = ctx.WithoutManufacturers;
+				pWithoutManufacturers.DbType = DbType.Boolean;
+
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
                 pFilterableSpecificationAttributeOptionIds.Direction = ParameterDirection.Output;
@@ -520,19 +601,21 @@ namespace SmartStore.Services.Catalog
                     pPageSize,
                     pShowHidden,
                     pLoadFilterableSpecificationAttributeOptionIds,
+					pWithoutCategories,
+					pWithoutManufacturers,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
-                //get filterable specification attribute option identifier
+
+                // get filterable specification attribute option identifier
                 string filterableSpecificationAttributeOptionIdsStr = (pFilterableSpecificationAttributeOptionIds.Value != DBNull.Value) ? (string)pFilterableSpecificationAttributeOptionIds.Value : "";
-                if (ctx.LoadFilterableSpecificationAttributeOptionIds &&
-                    !string.IsNullOrWhiteSpace(filterableSpecificationAttributeOptionIdsStr))
+                if (ctx.LoadFilterableSpecificationAttributeOptionIds && !string.IsNullOrWhiteSpace(filterableSpecificationAttributeOptionIdsStr))
                 {
-                    // codehint: sm-edit
                     ctx.FilterableSpecificationAttributeOptionIds.AddRange(filterableSpecificationAttributeOptionIdsStr
                        .Split(new[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
                        .Select(x => Convert.ToInt32(x.Trim())));
                 }
-                //return products
+
+                // return products
                 int totalRecords = (pTotalRecords.Value != DBNull.Value) ? Convert.ToInt32(pTotalRecords.Value) : 0;
                 return new PagedList<Product>(products, ctx.PageIndex, ctx.PageSize, totalRecords);
 
@@ -633,27 +716,36 @@ namespace SmartStore.Services.Catalog
             }
         }
 
-		/// <summary>
-		/// Builds a product query based on the options in ProductSearchContext parameter.
-		/// </summary>
-		/// <param name="ctx">Parameters to build the query.</param>
-		/// <param name="allowedCustomerRolesIds">Customer role ids (ACL).</param>
-		/// <param name="searchLocalizedValue">Whether to search localized values.</param>
-        public virtual IQueryable<Product> PrepareProductSearchQuery(ProductSearchContext ctx, IEnumerable<int> allowedCustomerRolesIds = null, bool searchLocalizedValue = false)
-        {
-            if (allowedCustomerRolesIds == null)
-            {
-                allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
-            }
-            
-            // products
-            var query = ctx.Query ?? _productRepository.Table;
-            query = query.Where(p => !p.Deleted);
+		public virtual IQueryable<Product> PrepareProductSearchQuery(
+			ProductSearchContext ctx,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false)
+		{
+			return PrepareProductSearchQuery<Product>(ctx, x => x, allowedCustomerRolesIds, searchLocalizedValue);
+		}
 
-            if (!ctx.ShowHidden)
-            {
-                query = query.Where(p => p.Published);
-            }
+		public virtual IQueryable<TResult> PrepareProductSearchQuery<TResult>(
+			ProductSearchContext ctx,
+			Expression<Func<Product, TResult>> selector,
+			IEnumerable<int> allowedCustomerRolesIds = null,
+			bool searchLocalizedValue = false)
+		{
+			Guard.ArgumentNotNull(() => ctx);
+			Guard.ArgumentNotNull(() => selector);
+
+			if (allowedCustomerRolesIds == null)
+			{
+				allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+			}
+
+			// products
+			var query = ctx.Query ?? _productRepository.Table;
+			query = query.Where(p => !p.Deleted);
+
+			if (!ctx.ShowHidden)
+			{
+				query = query.Where(p => p.Published);
+			}
 
 			if (ctx.ParentGroupedProductId > 0)
 			{
@@ -728,39 +820,39 @@ namespace SmartStore.Services.Catalog
 					(!p.AvailableEndDateTimeUtc.HasValue || p.AvailableEndDateTimeUtc.Value > nowUtc));
 			}
 
-            // searching by keyword
-            if (!String.IsNullOrWhiteSpace(ctx.Keywords))
-            {
-                query = from p in query
-                        join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
-                        from lp in p_lp.DefaultIfEmpty()
-                        from pt in p.ProductTags.DefaultIfEmpty()
-                        where (p.Name.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
+			// searching by keyword
+			if (!String.IsNullOrWhiteSpace(ctx.Keywords))
+			{
+				query = from p in query
+						join lp in _localizedPropertyRepository.Table on p.Id equals lp.EntityId into p_lp
+						from lp in p_lp.DefaultIfEmpty()
+						from pt in p.ProductTags.DefaultIfEmpty()
+						where (p.Name.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && p.ShortDescription.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && p.FullDescription.Contains(ctx.Keywords)) ||
 							  (ctx.SearchSku && p.Sku.Contains(ctx.Keywords)) ||
-                              (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
+							  (ctx.SearchProductTags && pt.Name.Contains(ctx.Keywords)) ||
 							//localized values
-                              (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
-                              (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
-                        //UNDONE search localized values in associated product tags
-                        select p;
-            }
+							  (searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "Name" && lp.LocaleValue.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "ShortDescription" && lp.LocaleValue.Contains(ctx.Keywords)) ||
+							  (ctx.SearchDescriptions && searchLocalizedValue && lp.LanguageId == ctx.LanguageId && lp.LocaleKeyGroup == "Product" && lp.LocaleKey == "FullDescription" && lp.LocaleValue.Contains(ctx.Keywords))
+						//UNDONE search localized values in associated product tags
+						select p;
+			}
 
-            if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
-            {
-				query = 
+			if (!ctx.ShowHidden && !QuerySettings.IgnoreAcl)
+			{
+				query =
 					from p in query
 					join acl in _aclRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = acl.EntityId, pname = acl.EntityName } into pacl
 					from acl in pacl.DefaultIfEmpty()
 					where !p.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
 					select p;
-            }
+			}
 
 			if (ctx.StoreId > 0 && !QuerySettings.IgnoreMultiStore)
 			{
-				query = 
+				query =
 					from p in query
 					join sm in _storeMappingRepository.Table on new { pid = p.Id, pname = "Product" } equals new { pid = sm.EntityId, pname = sm.EntityName } into psm
 					from sm in psm.DefaultIfEmpty()
@@ -768,10 +860,10 @@ namespace SmartStore.Services.Catalog
 					select p;
 			}
 
-            // search by specs
-            if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
-            {
-                query = 
+			// search by specs
+			if (ctx.FilteredSpecs != null && ctx.FilteredSpecs.Count > 0)
+			{
+				query =
 					from p in query
 					where !ctx.FilteredSpecs.Except
 					(
@@ -780,57 +872,65 @@ namespace SmartStore.Services.Catalog
 							.Select(psa => psa.SpecificationAttributeOptionId)
 					).Any()
 					select p;
-            }
+			}
 
-            // category filtering
-            if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
-            {
-                //search in subcategories
-                if (ctx.MatchAllcategories)
-                {
-                    query = from p in query
-                            where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
-                            from pc in p.ProductCategories
-                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                            select p;
-                }
-                else
-                {
-                    query = from p in query
-                            from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
-                            where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
-                            select p;
-                }
-            }
+			// category filtering
+			if (ctx.WithoutCategories)
+			{
+				query = query.Where(x => x.ProductCategories.Count == 0);
+			}
+			else if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
+			{
+				//search in subcategories
+				if (ctx.MatchAllcategories)
+				{
+					query = from p in query
+							where ctx.CategoryIds.All(i => p.ProductCategories.Any(p2 => p2.CategoryId == i))
+							from pc in p.ProductCategories
+							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+							select p;
+				}
+				else
+				{
+					query = from p in query
+							from pc in p.ProductCategories.Where(pc => ctx.CategoryIds.Contains(pc.CategoryId))
+							where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pc.IsFeaturedProduct)
+							select p;
+				}
+			}
 
-            // manufacturer filtering
-            if (ctx.ManufacturerId > 0)
-            {
-                query = from p in query
-                        from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
-                        where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pm.IsFeaturedProduct)
-                        select p;
-            }
+			// manufacturer filtering
+			if (ctx.WithoutManufacturers)
+			{
+				query = query.Where(x => x.ProductManufacturers.Count == 0);
+			}
+			else if (ctx.ManufacturerId > 0)
+			{
+				query = from p in query
+						from pm in p.ProductManufacturers.Where(pm => pm.ManufacturerId == ctx.ManufacturerId)
+						where (!ctx.FeaturedProducts.HasValue || ctx.FeaturedProducts.Value == pm.IsFeaturedProduct)
+						select p;
+			}
 
-            // related products filtering
-            //if (relatedToProductId > 0)
-            //{
-            //    query = from p in query
-            //            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
-            //            where (relatedToProductId == rp.ProductId1)
-            //            select p;
-            //}
+			// related products filtering
+			//if (relatedToProductId > 0)
+			//{
+			//    query = from p in query
+			//            join rp in _relatedProductRepository.Table on p.Id equals rp.ProductId2
+			//            where (relatedToProductId == rp.ProductId1)
+			//            select p;
+			//}
 
-            // tag filtering
-            if (ctx.ProductTagId > 0)
-            {
-                query = from p in query
-                        from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
-                        select p;
-            }
+			// tag filtering
+			if (ctx.ProductTagId > 0)
+			{
+				query = from p in query
+						from pt in p.ProductTags.Where(pt => pt.Id == ctx.ProductTagId)
+						select p;
+			}
 
-            return query;
-        }
+			return query.Select(selector);
+		}
 
         /// <summary>
         /// Update product review totals
@@ -926,7 +1026,7 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Gets a product by GTIN
         /// </summary>
-        /// <param name="sku">GTIN</param>
+        /// <param name="gtin">GTIN</param>
         /// <returns>Product</returns>
         public virtual Product GetProductByGtin(string gtin)
         {
@@ -1178,13 +1278,11 @@ namespace SmartStore.Services.Catalog
         {
             var query = from rp in _relatedProductRepository.Table
                         join p in _productRepository.Table on rp.ProductId2 equals p.Id
-                        where rp.ProductId1 == productId1 &&
-                        !p.Deleted &&
-                        (showHidden || p.Published)
+                        where rp.ProductId1 == productId1 && !p.Deleted && (showHidden || p.Published)
                         orderby rp.DisplayOrder
                         select rp;
-            var relatedProducts = query.ToList();
 
+            var relatedProducts = query.ToList();
             return relatedProducts;
         }
 
@@ -1231,6 +1329,23 @@ namespace SmartStore.Services.Catalog
             //event notification
             _eventPublisher.EntityUpdated(relatedProduct);
         }
+
+		/// <summary>
+		/// Ensure existence of all mutually related products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted related products</returns>
+		public virtual int EnsureMutuallyRelatedProducts(int productId1)
+		{
+			var relatedProducts = GetRelatedProductsByProductId1(productId1, true);
+			var productIds = relatedProducts.Select(x => x.ProductId2).ToList();
+
+			if (productIds.Count > 0 && !productIds.Any(x => x == productId1))
+				productIds.Add(productId1);
+
+			int count = EnsureMutuallyRelatedProducts(productIds);
+			return count;
+		}
 
         #endregion
 
@@ -1362,6 +1477,24 @@ namespace SmartStore.Services.Catalog
             }
             return result;
         }
+
+		/// <summary>
+		/// Ensure existence of all mutually cross selling products
+		/// </summary>
+		/// <param name="productId1">First product identifier</param>
+		/// <returns>Number of inserted cross selling products</returns>
+		public virtual int EnsureMutuallyCrossSellProducts(int productId1)
+		{
+			var crossSellProducts = GetCrossSellProductsByProductId1(productId1, true);
+			var productIds = crossSellProducts.Select(x => x.ProductId2).ToList();
+
+			if (productIds.Count > 0 && !productIds.Any(x => x == productId1))
+				productIds.Add(productId1);
+
+			int count = EnsureMutuallyCrossSellProducts(productIds);
+			return count;
+		}
+
         #endregion
         
         #region Tier prices
@@ -1444,7 +1577,6 @@ namespace SmartStore.Services.Catalog
             if (productPicture == null)
                 throw new ArgumentNullException("productPicture");
 
-            // codehint: sm-add
             UnassignDeletedPictureFromVariantCombinations(productPicture);
 
             _productPictureRepository.Delete(productPicture);

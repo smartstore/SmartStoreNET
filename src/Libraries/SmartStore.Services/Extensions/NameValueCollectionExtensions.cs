@@ -158,7 +158,7 @@ namespace SmartStore
 								else
 								{
 									//save an uploaded file
-									var download = new Download()
+									var download = new Download
 									{
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,

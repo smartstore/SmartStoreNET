@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Messages;
@@ -79,18 +78,9 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCampaigns))
                 return AccessDeniedView();
 
-            var campaigns = _campaignService.GetAllCampaigns();
-            var gridModel = new GridModel<CampaignModel>
-            {
-                Data = campaigns.Select(x =>
-                {
-                    var model = x.ToModel();
-                    model.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    return model;
-                }),
-                Total = campaigns.Count
-            };
-            return View(gridModel);
+			ViewData["StoreCount"] = _storeService.GetAllStores().Count();
+
+			return View();
 		}
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -110,6 +100,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = campaigns.Count
             };
+
             return new JsonResult
             {
                 Data = gridModel

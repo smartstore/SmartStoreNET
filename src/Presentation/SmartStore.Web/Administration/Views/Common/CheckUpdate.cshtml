@@ -1,0 +1,65 @@
+﻿@model CheckUpdateResult
+
+@{
+	ViewBag.Title = T("Admin.CheckUpdate");
+}
+
+<div class="section-header">
+	<div class="title">
+		<i class="fa fa-level-up"></i>
+		@ViewBag.Title
+	</div>
+</div>
+
+<div class="check-update-page" style="max-width: 1000px">
+	@if (!Model.UpdateAvailable)
+	{
+		<div class="alert alert-info">
+			@T("Admin.CheckUpdate.IsUpToDate")
+		</div>
+	}
+	else
+	{
+		<h3 class="text-error">@T("Admin.CheckUpdate.UpdateAvailable")!</h3>
+		<dl>
+			<dt>@T("Admin.CheckUpdate.YourVersion")</dt>
+			<dd>@Model.CurrentVersion</dd>
+			<dt>@T("Admin.CheckUpdate.CurrentVersion")</dt>
+			<dd class="text-error">@Model.Version</dd>
+			<dt>@T("Common.Date")</dt>
+			<dd>@Model.ReleaseDateUtc.ToShortDateString()</dd>
+		</dl>
+
+		if (Model.AutoUpdatePossible && Model.AutoUpdatePackageUrl.IsWebUrl())
+		{
+			<div class="alert alert-success" style="margin-top: 0px">
+				<h4>@T("Admin.CheckUpdate.AutoUpdatePossible")</h4>
+				@Html.Raw(T("Admin.CheckUpdate.AutoUpdatePossibleInfo"))
+				<p style="margin-top: 20px">
+					<a class="btn btn-primary" href='@Url.Action("InstallUpdate", new { packageUrl = Model.AutoUpdatePackageUrl })' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						<i class="fa fa-level-up"></i>
+						@T("Admin.CheckUpdate.UpdateNow")
+					</a>
+				</p>
+			</div>
+		}
+
+		<div class="admin-config-group">
+			<div class="title">@T("Admin.CheckUpdate.ReleaseNotes")</div>
+			<div>@Html.Raw(Model.ReleaseNotes)</div>
+		</div>
+
+		<div style="margin-top: 30px">
+			<a class="btn btn-primary" href='@Model.InfoUrl' target="UpdateInfoWnd">@T("Common.MoreInfo")</a>
+			@if (Model.DownloadUrl.HasValue())
+			{
+				<a class="btn btn-default" href='@Model.DownloadUrl' style="margin-left: 5px">
+					<i class="fa fa-download"></i>
+					@T("Common.Download")
+				</a>
+			}
+			<a class="btn btn-link" href='@Url.Action("CheckUpdateSuppress", new { myVersion = Model.CurrentVersion, newVersion = Model.Version })'>@T("Admin.CheckUpdate.DontNotifyAnymore")</a>
+		</div>
+	}
+</div>
+

@@ -1,10 +1,10 @@
-﻿@model IList<SmartStore.Core.Domain.Catalog.Category>
+﻿@model CategoryTreeModel
 @using Telerik.Web.Mvc.UI;
 @using SmartStore.Services.Catalog;
 @{   
-    //page title
     ViewBag.Title = T("Admin.Catalog.Categories.Manage").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-sitemap"></i>
@@ -14,39 +14,79 @@
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
+
+@using (Html.BeginForm())
+{
+	<table>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchStoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchStoreId", Model.AvailableStores)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				&nbsp;
+			</td>
+			<td class="adminData">
+				<button type="submit" id="btnSearch" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+			</td>
+		</tr>
+	</table>
+}
+
+<p></p>
+
 <table class="adminContent">
     <tr>
         <td>
             @(Html.Telerik().TreeView()
                 .Name("category-treeview")
-                .ClientEvents(events => events.OnNodeDropped("onNodeDropped"))
+				.ClientEvents(events => events.OnNodeDropped("onNodeDropped").OnDataBinding("onDataBinding"))
                 .DataBinding(dataBinding => dataBinding.Ajax().Enabled(true).Select("TreeLoadChildren", "Category"))
                 .ShowLines(true)
                 .DragAndDrop(true))
-
-            <script type="text/javascript">
-				function onNodeDropped(e) {
-					var treeview = $('#category-treeview').data("tTreeView");
-                
-					var item = treeview.getItemValue(e.item);
-					var destination = treeview.getItemValue(e.destinationItem);
-                
-					var data = {};
-					data.item = item;
-					data.destinationitem = destination;
-					data.position = e.dropPosition;
-
-					$.ajax({
-						cache:false,
-						url: "@Url.Action("TreeDrop")",
-						data: data,
-						type: "POST",
-						success: function () {
-							$(this).addClass("done");
-						}
-					});
-				}
-            </script>
         </td>
     </tr>
 </table>
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		$('#btnSearch').click(function () {
+			var tree = $('#category-treeview').data('tTreeView');
+			tree.ajaxRequest();
+			return false;
+		});
+	});
+
+	function onNodeDropped(e) {
+		var treeview = $('#category-treeview').data("tTreeView");
+                
+		var item = treeview.getItemValue(e.item);
+		var destination = treeview.getItemValue(e.destinationItem);
+                
+		var data = {};
+		data.item = item;
+		data.destinationitem = destination;
+		data.position = e.dropPosition;
+
+		$.ajax({
+			cache:false,
+			url: "@Url.Action("TreeDrop")",
+			data: data,
+			type: "POST",
+			success: function () {
+				$(this).addClass("done");
+			}
+		});
+	}
+
+	function onDataBinding(e) {
+		var searchModel = {
+			SearchStoreId: $('#SearchStoreId').val()
+		};
+		e.data = searchModel;
+	}
+</script>

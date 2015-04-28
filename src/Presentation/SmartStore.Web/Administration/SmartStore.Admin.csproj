@@ -224,6 +224,7 @@
     <Compile Include="MappingExtensions.cs" />
     <Compile Include="Infrastructure\AdminStartupTask.cs" />
     <Compile Include="Infrastructure\AutoMapperStartupTask.cs" />
+    <Compile Include="Models\Catalog\CategoryTreeModel.cs" />
     <Compile Include="Models\Catalog\ProductBundleItemModel.cs" />
     <Compile Include="Models\Catalog\PrintableProductsModel.cs" />
     <Compile Include="Models\Catalog\ProductVariantAttributeCombinationModel.cs" />

@@ -31,6 +31,14 @@
             @Html.EditorFor(model => Model.SearchAlias)
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.SearchStoreId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownList("SearchStoreId", Model.AvailableStores)
+		</td>
+	</tr>
     <tr>
 		<td class="adminTitle">
 			&nbsp;
@@ -44,7 +52,7 @@
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid<CategoryModel>(Model.Categories.Data)
+            @(Html.Telerik().Grid<CategoryModel>()
                     .Name("categories-grid")
                     .ClientEvents(events => events
                         .OnDataBinding("onDataBinding"))
@@ -65,7 +73,7 @@
                             .Width(100)
                             .Centered();
                     })
-                    .Pageable(settings => settings.Total(Model.Categories.Total).PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))
 					.PreserveGridState()
                     .EnableCustomBinding(true))
@@ -94,7 +102,8 @@
     function onDataBinding(e) {
         var searchModel = {
         	SearchCategoryName: $('#@Html.FieldIdFor(model => model.SearchCategoryName)').val(),
-        	SearchAlias: $('#@Html.FieldIdFor(model => model.SearchAlias)').val()
+        	SearchAlias: $('#@Html.FieldIdFor(model => model.SearchAlias)').val(),
+        	SearchStoreId: $('#SearchStoreId').val()
         };
         e.data = searchModel;
     }

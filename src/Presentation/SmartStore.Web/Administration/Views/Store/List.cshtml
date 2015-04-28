@@ -1,6 +1,5 @@
 ﻿@using Telerik.Web.Mvc.UI
 @{
-    //page title
 	ViewBag.Title = T("Admin.Common.Stores").Text;
 }
 <div class="section-header">
@@ -30,17 +29,9 @@
 						columns.Bound(x => x.SslEnabled)
 							.Template(item => @Html.SymbolForBool(item.SslEnabled))
 							.ClientTemplate(@Html.SymbolForBool("SslEnabled"))
-							.Width(100)
 							.Centered();
 						columns.Bound(x => x.DisplayOrder)
-							.Width(100)
 							.Centered();
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(100)
-                            .Centered()
-                            .HeaderTemplate(T("Admin.Common.Edit").Text);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Store"))
                     .EnableCustomBinding(true))

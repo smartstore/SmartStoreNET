@@ -264,24 +264,18 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
+			var allStores = _storeService.GetAllStores();
 			var model = new CategoryListModel
 			{
 				GridPageSize = _adminAreaSettings.GridPageSize
 			};
 
-            var categories = _categoryService.GetAllCategories(null, 0, _adminAreaSettings.GridPageSize, true);
-            var mappedCategories = categories.ToDictionary(x => x.Id);
+			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var store in allStores)
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
+			}
 
-            model.Categories = new GridModel<CategoryModel>
-            {
-                Data = categories.Select(x =>
-                {
-                    var categoryModel = x.ToModel();
-                    categoryModel.Breadcrumb = x.GetCategoryBreadCrumb(_categoryService, mappedCategories);
-                    return categoryModel;
-                }),
-                Total = categories.TotalCount
-            };
             return View(model);
         }
 
@@ -291,7 +285,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false);
+            var categories = _categoryService.GetAllCategories(model.SearchCategoryName, command.Page - 1, command.PageSize, true, model.SearchAlias, true, false, model.SearchStoreId);
             var mappedCategories = categories.ToDictionary(x => x.Id);
 
             var gridModel = new GridModel<CategoryModel>
@@ -304,6 +298,7 @@ namespace SmartStore.Admin.Controllers
                 }),
                 Total = categories.TotalCount
             };
+
             return new JsonResult
             {
                 Data = gridModel
@@ -369,32 +364,55 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var rootCategories = _categoryService.GetAllCategoriesByParentCategoryId(0, true);
-            return View(rootCategories);
+			var allStores = _storeService.GetAllStores();
+			var model = new CategoryTreeModel();
+
+			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			foreach (var store in allStores)
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
+			}
+
+			return View(model);
         }
 
         //ajax
         [AcceptVerbs(HttpVerbs.Post)]
-        public ActionResult TreeLoadChildren(TreeViewItem node)
+        public ActionResult TreeLoadChildren(TreeViewItem node, CategoryTreeModel model)
         {
             var parentId = !string.IsNullOrEmpty(node.Value) ? Convert.ToInt32(node.Value) : 0;
 			var urlHelper = new UrlHelper(this.ControllerContext.RequestContext);
 
-            var children = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true).Select(x =>
+			var parentCategories = _categoryService.GetAllCategoriesByParentCategoryId(parentId, true);
+
+			if (parentId == 0 && model.SearchStoreId != 0)
+			{
+				for (int i = parentCategories.Count - 1; i >= 0; --i)
+				{
+					var category = parentCategories[i];
+					if (!category.LimitedToStores || (category.LimitedToStores && !_storeMappingService.GetStoresIdsWithAccess(category).Contains(model.SearchStoreId)))
+					{
+						parentCategories.Remove(category);
+					}
+				}
+			}
+
+			var children = parentCategories.Select(x =>
 			{
 				var childCount = _categoryService.GetAllCategoriesByParentCategoryId(x.Id, true).Count;
-				string text = (childCount > 0 ? "{0} ({1})".FormatWith(x.Name, childCount) : x.Name);
+				string text = (childCount > 0 ? "{0} ({1})".FormatInvariant(x.Name, childCount) : x.Name);
 
-                var item = new TreeViewItem
-                {
-                    Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(text, x.Alias) : text,
-                    Encoded = x.Alias.IsEmpty(),
-                    Value = x.Id.ToString(),
-                    LoadOnDemand = (childCount > 0),
-                    Enabled = true,
-                    ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
+				var item = new TreeViewItem
+				{
+					Text = x.Alias.HasValue() ? "{0} <span class='label'>{1}</span>".FormatCurrent(text, x.Alias) : text,
+					Encoded = x.Alias.IsEmpty(),
+					Value = x.Id.ToString(),
+					LoadOnDemand = (childCount > 0),
+					Enabled = true,
+					ImageUrl = Url.Content(x.Published ? "~/Administration/Content/images/ico-content.png" : "~/Administration/Content/images/ico-content-o60.png"),
 					Url = urlHelper.Action("Edit", "Category", new { id = x.Id })
-                };
+				};
+
                 return item;
             });
 

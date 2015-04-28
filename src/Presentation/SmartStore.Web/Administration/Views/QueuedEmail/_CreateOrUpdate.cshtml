@@ -75,7 +75,7 @@
             @Html.SmartLabelFor(model => model.Subject)
         </td>
         <td class="adminData">
-            @Html.EditorFor(model => model.Subject)
+            @Html.TextBoxFor(model => model.Subject, new { @class = "input-large" })
             @Html.ValidationMessageFor(model => model.Subject)
         </td>
     </tr>
@@ -88,6 +88,15 @@
             @Html.ValidationMessageFor(model => model.Body)
         </td>
     </tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.SendManually)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.SendManually)
+			@Html.ValidationMessageFor(model => model.SendManually)
+		</td>
+	</tr>
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.SentTries)

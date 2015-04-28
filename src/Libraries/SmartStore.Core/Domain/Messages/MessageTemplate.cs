@@ -42,5 +42,10 @@ namespace SmartStore.Core.Domain.Messages
 		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
 		/// </summary>
 		public bool LimitedToStores { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether emails derived from the template are only send manually
+		/// </summary>
+		public bool SendManually { get; set; }
     }
 }

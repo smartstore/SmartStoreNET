@@ -51,27 +51,30 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
                 return AccessDeniedView();
 
-            DateTime? startDateValue = (model.SearchStartDate == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
+            DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.SearchEndDate == null) ? null 
-                            :(DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+            DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             var queuedEmails = _queuedEmailService.SearchEmails(model.SearchFromEmail, model.SearchToEmail, 
                 startDateValue, endDateValue, 
                 model.SearchLoadNotSent, model.SearchMaxSentTries, true,
-                command.Page - 1, command.PageSize);
+                command.Page - 1, command.PageSize, model.SearchSendManually);
+
             var gridModel = new GridModel<QueuedEmailModel>
             {
-                Data = queuedEmails.Select(x => {
+                Data = queuedEmails.Select(x =>
+				{
                     var m = x.ToModel();
                     m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
+
                     if (x.SentOnUtc.HasValue)
                         m.SentOn = _dateTimeHelper.ConvertToUserTime(x.SentOnUtc.Value, DateTimeKind.Utc);
+
                     return m;
                 }),
                 Total = queuedEmails.TotalCount
             };
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -96,13 +99,13 @@ namespace SmartStore.Admin.Controllers
 
 			var email = _queuedEmailService.GetQueuedEmailById(id);
             if (email == null)
-                //No email found with the specified id
                 return RedirectToAction("List");
 
             var model = email.ToModel();
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(email.CreatedOnUtc, DateTimeKind.Utc);
             if (email.SentOnUtc.HasValue)
                 model.SentOn = _dateTimeHelper.ConvertToUserTime(email.SentOnUtc.Value, DateTimeKind.Utc);
+
             return View(model);
 		}
 
@@ -116,7 +119,6 @@ namespace SmartStore.Admin.Controllers
 
             var email = _queuedEmailService.GetQueuedEmailById(model.Id);
             if (email == null)
-                //No email found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -132,6 +134,7 @@ namespace SmartStore.Admin.Controllers
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(email.CreatedOnUtc, DateTimeKind.Utc);
             if (email.SentOnUtc.HasValue)
                 model.SentOn = _dateTimeHelper.ConvertToUserTime(email.SentOnUtc.Value, DateTimeKind.Utc);
+
             return View(model);
 		}
 
@@ -143,10 +146,9 @@ namespace SmartStore.Admin.Controllers
 
             var queuedEmail = _queuedEmailService.GetQueuedEmailById(queuedEmailModel.Id);
             if (queuedEmail == null)
-                //No email found with the specified id
                 return RedirectToAction("List");
 
-            var requeuedEmail = new QueuedEmail()
+            var requeuedEmail = new QueuedEmail
             {
                 Priority = queuedEmail.Priority,
                 From = queuedEmail.From,
@@ -158,13 +160,35 @@ namespace SmartStore.Admin.Controllers
                 Subject = queuedEmail.Subject,
                 Body = queuedEmail.Body,
                 CreatedOnUtc = DateTime.UtcNow,
-                EmailAccountId = queuedEmail.EmailAccountId
+                EmailAccountId = queuedEmail.EmailAccountId,
+				SendManually = queuedEmail.SendManually
             };
             _queuedEmailService.InsertQueuedEmail(requeuedEmail);
 
             NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Requeued"));
+
             return RedirectToAction("Edit", requeuedEmail.Id);
         }
+
+		[HttpPost, ActionName("Edit"), FormValueRequired("sendnow")]
+		public ActionResult SendNow(QueuedEmailModel queuedEmailModel)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
+				return AccessDeniedView();
+
+			var queuedEmail = _queuedEmailService.GetQueuedEmailById(queuedEmailModel.Id);
+			if (queuedEmail == null)
+				return RedirectToAction("List");
+
+			var result = _queuedEmailService.SendEmail(queuedEmail);
+
+			if (result)
+				NotifySuccess(_localizationService.GetResource("Admin.Common.TaskSuccessfullyProcessed"));
+			else
+				NotifyError(_localizationService.GetResource("Common.Error.SendMail"));
+
+			return RedirectToAction("Edit", queuedEmail.Id);
+		}
 
 	    [HttpPost, ActionName("Delete")]
 		public ActionResult DeleteConfirmed(int id)
@@ -174,12 +198,12 @@ namespace SmartStore.Admin.Controllers
 
 			var email = _queuedEmailService.GetQueuedEmailById(id);
             if (email == null)
-                //No email found with the specified id
                 return RedirectToAction("List");
 
             _queuedEmailService.DeleteQueuedEmail(email);
 
             NotifySuccess(_localizationService.GetResource("Admin.System.QueuedEmails.Deleted"));
+
 			return RedirectToAction("List");
 		}
 
@@ -192,6 +216,7 @@ namespace SmartStore.Admin.Controllers
             if (selectedIds != null)
             {
                 var queuedEmails = _queuedEmailService.GetQueuedEmailsByIds(selectedIds.ToArray());
+
                 foreach (var queuedEmail in queuedEmails)
                     _queuedEmailService.DeleteQueuedEmail(queuedEmail);
             }

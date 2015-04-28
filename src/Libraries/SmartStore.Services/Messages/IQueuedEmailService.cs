@@ -51,10 +51,19 @@ namespace SmartStore.Services.Messages
         /// <param name="loadNewest">A value indicating whether we should sort queued email descending; otherwise, ascending.</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="sendManually">A value indicating whether to load manually send emails</param>
         /// <returns>Email item collection</returns>
         IPagedList<QueuedEmail> SearchEmails(string fromEmail,
             string toEmail, DateTime? startTime, DateTime? endTime,
             bool loadNotSentItemsOnly, int maxSendTries,
-            bool loadNewest, int pageIndex, int pageSize);
+            bool loadNewest, int pageIndex, int pageSize,
+			bool? sendManually = null);
+
+		/// <summary>
+		/// Sends a queued email
+		/// </summary>
+		/// <param name="queuedEmail">Queued email</param>
+		/// <returns>Whether the operation succeeded</returns>
+		bool SendEmail(QueuedEmail queuedEmail);
     }
 }

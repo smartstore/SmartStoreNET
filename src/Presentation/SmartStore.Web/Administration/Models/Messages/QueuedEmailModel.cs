@@ -56,11 +56,14 @@ namespace SmartStore.Admin.Models.Messages
         public int SentTries { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SentOn")]
-		[DisplayFormat(DataFormatString = "{0}", NullDisplayText = "n/a")]
+		//[DisplayFormat(DataFormatString = "{0}", NullDisplayText = "n/a")]
         public DateTime? SentOn { get; set; }
 
         [SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.EmailAccountName")]
         [AllowHtml]
         public string EmailAccountName { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.QueuedEmails.Fields.SendManually")]
+		public bool SendManually { get; set; }
     }
 }

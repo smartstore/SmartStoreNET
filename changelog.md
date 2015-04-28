@@ -6,6 +6,7 @@
 * #582 GMC feed: Option to include\exclude a product
 * #652 Web API: Support for file upload and multipart mime
 * New option to display product thumbnails in instant search (NOTE: the feature can be enabled via _Configuration > Settings > Catalog Settings > Search_)
+* #594 Option to prevent a message from being automatically sent
 
 ## SmartStore.NET 2.2.0
 

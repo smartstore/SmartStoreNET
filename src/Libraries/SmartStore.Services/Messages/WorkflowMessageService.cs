@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
@@ -12,11 +13,10 @@ using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
-using SmartStore.Services.Customers;
 using SmartStore.Core.Events;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
-using System.Web;
 
 namespace SmartStore.Services.Messages
 {
@@ -91,7 +91,7 @@ namespace SmartStore.Services.Messages
 			
             bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
 
-            var email = new QueuedEmail()
+            var email = new QueuedEmail
             {
                 Priority = 5,
                 From = emailAccount.Email,
@@ -105,15 +105,15 @@ namespace SmartStore.Services.Messages
                 Subject = subjectReplaced,
                 Body = bodyReplaced,
                 CreatedOnUtc = DateTime.UtcNow,
-                EmailAccountId = emailAccount.Id
+                EmailAccountId = emailAccount.Id,
+				SendManually = messageTemplate.SendManually
             };
 
             _queuedEmailService.InsertQueuedEmail(email);
             return email.Id;
         }
 
-        protected MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName,
-			int languageId, int storeId)
+        protected MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName, int languageId, int storeId)
         {
 			//TODO remove languageId parameter
 			var messageTemplate = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, storeId);

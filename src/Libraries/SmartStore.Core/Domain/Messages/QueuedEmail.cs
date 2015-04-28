@@ -82,6 +82,11 @@ namespace SmartStore.Core.Domain.Messages
         /// </summary>
         public int EmailAccountId { get; set; }
 
+		/// <summary>
+		/// Gets or sets a value indicating whether emails are only send manually
+		/// </summary>
+		public bool SendManually { get; set; }
+
         /// <summary>
         /// Gets the email account
         /// </summary>

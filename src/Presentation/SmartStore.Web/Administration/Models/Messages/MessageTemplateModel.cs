@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using System.Web.Script.Serialization;
 using FluentValidation.Attributes;
@@ -50,6 +49,9 @@ namespace SmartStore.Admin.Models.Messages
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
 
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.SendManually")]
+		public bool SendManually { get; set; }
+
 		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
@@ -59,7 +61,6 @@ namespace SmartStore.Admin.Models.Messages
 
         public IList<MessageTemplateLocalizedModel> Locales { get; set; }
         public IList<EmailAccountModel> AvailableEmailAccounts { get; set; }
-
     }
 
     public class MessageTemplateLocalizedModel : ILocalizedModelLocal

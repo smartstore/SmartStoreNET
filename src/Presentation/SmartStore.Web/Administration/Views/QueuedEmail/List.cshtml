@@ -2,7 +2,6 @@
 @using Telerik.Web.Mvc.UI
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
-    //page title
     ViewBag.Title = T("Admin.System.QueuedEmails").Text;
 }
 @using (Html.BeginForm())
@@ -58,6 +57,19 @@
                 @Html.EditorFor(model => Model.SearchLoadNotSent)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchSendManually)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchSendManually", new List<SelectListItem>
+				{
+					new SelectListItem { Text = T("Common.Unspecified"), Value = "", Selected = !Model.SearchSendManually.HasValue },
+					new SelectListItem { Text = T("Admin.Common.Yes"), Value = "true", Selected = Model.SearchSendManually ?? false },
+					new SelectListItem { Text = T("Admin.Common.No"), Value = "false", Selected = !Model.SearchSendManually ?? false }
+				})
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SearchMaxSentTries)
@@ -92,41 +104,36 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<QueuedEmailModel>()
-                        .Name("queuedEmails-grid")
-                .ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.Id)
-                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
-
-                            columns.Bound(x => x.Id).Width(50);
-                            columns.Bound(x => x.Subject).Width(500);
-                            columns.Bound(x => x.Priority)
-								.Centered()
-								.Width(50);
-                            columns.Bound(x => x.From);
-                            columns.Bound(x => x.FromName);
-							columns.Bound(x => x.SentTries)
-								.Centered()
-								.Width(50);
-                            columns.Bound(x => x.SentOn);
-							columns.Bound(x => x.CreatedOn);
-                            columns.Bound(x => x.Id)
-                                .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                                .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                                .Width(50)
-                                .Centered()
-                                .HeaderTemplate(T("Admin.Common.Edit").Text)
-                                .Filterable(false);
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding => dataBinding.Ajax().Select("QueuedEmailList", "QueuedEmail"))
-						.PreserveGridState()
-                        .EnableCustomBinding(true))
+					.Name("queuedEmails-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
+						columns.Bound(x => x.Id)
+							.Template(x => Html.ActionLink(x.Id.ToString(), "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Id #></a>");
+						columns.Bound(x => x.Subject);
+						columns.Bound(x => x.Priority)
+							.Centered();
+						columns.Bound(x => x.From);
+						columns.Bound(x => x.FromName);
+						columns.Bound(x => x.SendManually)
+							.Template(item => @Html.SymbolForBool(item.SendManually))
+							.ClientTemplate(@Html.SymbolForBool("SendManually"))
+							.Centered();
+						columns.Bound(x => x.SentTries)
+							.Centered();
+						columns.Bound(x => x.SentOn);
+						columns.Bound(x => x.CreatedOn);
+					})
+					.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("QueuedEmailList", "QueuedEmail"))
+					.ClientEvents(events => events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
+					.PreserveGridState()
+					.EnableCustomBinding(true))
             </td>
         </tr>
     </table>
@@ -207,18 +214,18 @@
 
     function onDataBinding(e) {
         var searchModel = {
-                SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
-                SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
-                SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
-                SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
-                SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
-                SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
-                };
+			SearchStartDate: $('#@Html.FieldIdFor(model => model.SearchStartDate)').val(),
+			SearchEndDate: $('#@Html.FieldIdFor(model => model.SearchEndDate)').val(),
+			SearchFromEmail: $('#@Html.FieldIdFor(model => model.SearchFromEmail)').val(),
+			SearchToEmail: $('#@Html.FieldIdFor(model => model.SearchToEmail)').val(),
+			SearchLoadNotSent: $('#@Html.FieldIdFor(model => model.SearchLoadNotSent)').is(':checked'),
+        	SearchSendManually: $('#@Html.FieldIdFor(model => model.SearchSendManually)').val(),
+			SearchMaxSentTries: $('#@Html.FieldIdFor(model => model.SearchMaxSentTries)').val()
+		};
         e.data = searchModel;
     }
 
     function onDataBound(e) {
-
         $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
             var currentId = $(this).val();
             var checked = jQuery.inArray(currentId, selectedIds);
@@ -228,12 +235,16 @@
 
         updateMasterCheckbox();
     }
+
+    function onRowDataBound(e) {
+    	if (e.dataItem.SentOn)
+    		$(e.row).find('td').wrapInner('<span class="muted" />');
+    }
     
     function updateMasterCheckbox() {
         var numChkBoxes = $('#queuedEmails-grid input[type=checkbox][id!=mastercheckbox]').length;
         var numChkBoxesChecked = $('#queuedEmails-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
         $('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
     }
-    </script>
-    
+    </script>   
 }

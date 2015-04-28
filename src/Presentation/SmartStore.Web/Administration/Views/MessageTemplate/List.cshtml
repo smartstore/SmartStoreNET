@@ -2,7 +2,6 @@
 @using Telerik.Web.Mvc.UI
 @using SmartStore.Web.Framework;
 @{
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.MessageTemplates").Text;
 }
 <div class="section-header">
@@ -13,6 +12,7 @@
     <div class="options">
     </div>
 </div>
+
 <table width="100%">
     <tr>
         <td class="adminTitle">
@@ -33,8 +33,9 @@
         </td>
     </tr>
 </table>
-<p>
-</p>
+
+<p></p>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -43,32 +44,26 @@
 				.Columns(columns =>
 				{
 					columns.Bound(x => x.Name)
-						.Width(350)
 						.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 						.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 					columns.Bound(x => x.Subject);
 					columns.Bound(x => x.IsActive)
 						.Template(item => @Html.SymbolForBool(item.IsActive))
 						.ClientTemplate(@Html.SymbolForBool("IsActive"))
-						.Centered()
-						.Width(100);
-					columns.Bound(x => x.Id)
-						.Width(50)
-						.Centered()
-						.Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-						.ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-						.Title(T("Admin.Common.Edit").Text);
+						.Centered();
+					columns.Bound(x => x.SendManually)
+						.Template(item => @Html.SymbolForBool(item.SendManually))
+						.ClientTemplate(@Html.SymbolForBool("SendManually"))
+						.Centered();
 				})
 				.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "MessageTemplate"))
-				.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+				.ClientEvents(events => events.OnDataBinding("onDataBinding").OnRowDataBound("onRowDataBound"))
 				.EnableCustomBinding(true))
-
         </td>
     </tr>
 </table>
 
 <script type="text/javascript">
-
     $(document).ready(function () {
         //search button
         $('#search-templates').click(function () {
@@ -86,5 +81,10 @@
             SearchStoreId: $('#SearchStoreId').val()
         };
         e.data = searchModel;
+    }
+
+    function onRowDataBound(e) {
+    	if (!e.dataItem.IsActive)
+    		$(e.row).find('td').wrapInner('<span class="muted" />');
     }
 </script>

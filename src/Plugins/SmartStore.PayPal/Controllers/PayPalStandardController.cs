@@ -367,7 +367,9 @@ namespace SmartStore.PayPal.Controllers
 							if (order != null)
 							{
 								//order note
-								order.OrderNotes.Add(new OrderNote()
+								order.HasNewPaymentNotification = true;
+
+								order.OrderNotes.Add(new OrderNote
 								{
 									Note = sb.ToString(),
 									DisplayToCustomer = false,

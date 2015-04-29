@@ -221,7 +221,7 @@ namespace SmartStore.AmazonPay.Services
 			return isActive;
 		}
 
-		public void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null)
+		public void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false)
 		{
 			try
 			{
@@ -250,7 +250,10 @@ namespace SmartStore.AmazonPay.Services
 					sb.AppendFormat("<span style=\"padding-left: 4px;\">{0}</span>", anyString);
 				}
 
-				order.OrderNotes.Add(new OrderNote()
+				if (isIpn)
+					order.HasNewPaymentNotification = true;
+
+				order.OrderNotes.Add(new OrderNote
 				{
 					Note = sb.ToString(),
 					DisplayToCustomer = false,
@@ -663,7 +666,7 @@ namespace SmartStore.AmazonPay.Services
 
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 			}
 		}
 		private void ProcessCaptureResult(AmazonPayClient client, Order order, AmazonPayApiData data)
@@ -692,7 +695,7 @@ namespace SmartStore.AmazonPay.Services
 				order.CaptureTransactionResult = newResult;
 				_orderService.UpdateOrder(order);
 
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 			}
 		}
 		private void ProcessRefundResult(AmazonPayClient client, Order order, AmazonPayApiData data)
@@ -715,7 +718,7 @@ namespace SmartStore.AmazonPay.Services
 							_orderProcessingService.RefundOffline(order);
 
 							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
-								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 						}
 					}
 					else
@@ -725,14 +728,14 @@ namespace SmartStore.AmazonPay.Services
 							_orderProcessingService.PartiallyRefundOffline(order, refundAmount);
 
 							if (client.Settings.DataFetching == AmazonPayDataFetchingType.Polling)
-								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+								AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 						}
 					}
 				}
 			}
 
 			if (client.Settings.DataFetching == AmazonPayDataFetchingType.Ipn)
-				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data));
+				AddOrderNote(client.Settings, order, AmazonPayOrderNote.AmazonMessageProcessed, _api.ToInfoString(data), true);
 		}
 
 		private void PollingLoop(PollingLoopData data, Func<bool> poll)

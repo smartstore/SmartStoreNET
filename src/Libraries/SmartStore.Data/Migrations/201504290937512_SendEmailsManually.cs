@@ -8,6 +8,7 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
+            AddColumn("dbo.Order", "HasNewPaymentNotification", c => c.Boolean(nullable: false));
             AddColumn("dbo.MessageTemplate", "SendManually", c => c.Boolean(nullable: false));
             AddColumn("dbo.QueuedEmail", "SendManually", c => c.Boolean(nullable: false));
         }
@@ -16,6 +17,7 @@ namespace SmartStore.Data.Migrations
         {
             DropColumn("dbo.QueuedEmail", "SendManually");
             DropColumn("dbo.MessageTemplate", "SendManually");
+            DropColumn("dbo.Order", "HasNewPaymentNotification");
         }
 
 		public bool RollbackOnFailure
@@ -65,6 +67,15 @@ namespace SmartStore.Data.Migrations
 				"Nur manuell senden",
 				"Indicates whether emails derived from this message template should only be send manually.",
 				"Legt fest, ob E-Mails, die von dieser Nachrichtenvorlage abgeleitet sind, ausschlieﬂlich manuell gesendet werden sollen.");
+
+
+			builder.AddOrUpdate("Admin.Orders.Payments.NewIpn",
+				"New IPN",
+				"Neue IPN");
+
+			builder.AddOrUpdate("Admin.Orders.Payments.NewIpn.Hint",
+				"A new notification from the payment provider has arrived in the order notes.",
+				"In den Auftragsnotizen ist eine neue Benachrichtigung vom Zahlungsanbieter eingetroffen.");
 		}
     }
 }

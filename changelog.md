@@ -8,6 +8,7 @@
 * New option to display product thumbnails in instant search (NOTE: the feature can be enabled via _Configuration > Settings > Catalog Settings > Search_)
 * #594 Option to prevent a message from being automatically sent
 * Category filtering by store for backend category tree and list
+* #554 Flag to indicate that a new payment notification (IPN) arrived for an order since last opening\editing of the order
 
 ## SmartStore.NET 2.2.0
 

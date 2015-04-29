@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 2.2.0.1
+### New Features
+* Supports order list label for new incoming IPNs
+
 ##Pay with Amazon 1.20##
 ###Bugfixes###
 * PlatformID must be .NET ID not merchant ID. PlatformID needs to be identical for all orders

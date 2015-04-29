@@ -205,6 +205,7 @@ namespace SmartStore.Admin.Controllers
             model.TaxDisplayType = _taxSettings.TaxDisplayType;
             model.AffiliateId = order.AffiliateId;
             model.CustomerComment = order.CustomerOrderComment;
+			model.HasNewPaymentNotification = order.HasNewPaymentNotification;
 
 			if (order.AffiliateId != 0)
 			{
@@ -817,7 +818,7 @@ namespace SmartStore.Admin.Controllers
                 Data = orders.Select(x =>
                 {
 					var store = _storeService.GetStoreById(x.StoreId);
-                    return new OrderModel()
+                    return new OrderModel
                     {
                         Id = x.Id,
                         OrderNumber = x.GetOrderNumber(),
@@ -827,7 +828,8 @@ namespace SmartStore.Admin.Controllers
                         PaymentStatus = x.PaymentStatus.GetLocalizedEnum(_localizationService, _workContext),
                         ShippingStatus = x.ShippingStatus.GetLocalizedEnum(_localizationService, _workContext),
                         CustomerEmail = x.BillingAddress.Email,
-                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc)
+                        CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+						HasNewPaymentNotification = x.HasNewPaymentNotification
                     };
                 }),
                 Total = orders.TotalCount
@@ -2428,12 +2430,11 @@ namespace SmartStore.Admin.Controllers
             if (order == null)
                 throw new ArgumentException("No order found with the specified id");
 
-            //order notes
             var orderNoteModels = new List<OrderModel.OrderNote>();
-            foreach (var orderNote in order.OrderNotes
-                .OrderByDescending(on => on.CreatedOnUtc))
+
+            foreach (var orderNote in order.OrderNotes.OrderByDescending(on => on.CreatedOnUtc))
             {
-                orderNoteModels.Add(new OrderModel.OrderNote()
+                orderNoteModels.Add(new OrderModel.OrderNote
                 {
                     Id = orderNote.Id,
                     OrderId = orderNote.OrderId,
@@ -2448,6 +2449,12 @@ namespace SmartStore.Admin.Controllers
                 Data = orderNoteModels,
                 Total = orderNoteModels.Count
             };
+
+			if (order.HasNewPaymentNotification)
+			{
+				order.HasNewPaymentNotification = false;
+				_orderService.UpdateOrder(order);
+			}
 
             return new JsonResult
             {

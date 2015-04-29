@@ -4,6 +4,7 @@ using Telerik.Web.Mvc.UI.Fluent;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -56,6 +57,20 @@ namespace SmartStore.Web.Framework.UI
 			}
 
 			return new HelperResult(writer => writer.Write("<span class='label label-smnet label-{0}'>{1}</span>{2}".FormatInvariant(typeLabelHint, typeName, namePart)));
+		}
+
+		public static string LabeledOrderNumber<T>(this HtmlHelper<T> helper)
+		{
+			var localize = EngineContext.Current.Resolve<ILocalizationService>();
+			string url = UrlHelper.GenerateContentUrl("~/Admin/Order/Edit/", helper.ViewContext.RequestContext.HttpContext);
+
+			string link = "<a href=\"{0}<#= Id #>\"><#= OrderNumber #></a>".FormatInvariant(url);
+
+			string label = "<span class='label label-smnet label-info' title='{0}'>{1}</span>".FormatInvariant(
+				localize.GetResource("Admin.Orders.Payments.NewIpn.Hint"),
+				localize.GetResource("Admin.Orders.Payments.NewIpn"));
+
+			return "<# if(HasNewPaymentNotification) {{ #>{0}<# }} #>{1}".FormatInvariant(label, link);
 		}
 
         public static string RichEditorFlavor(this HtmlHelper helper)

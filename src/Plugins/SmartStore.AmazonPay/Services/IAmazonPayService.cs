@@ -15,7 +15,7 @@ namespace SmartStore.AmazonPay.Services
 		void LogError(Exception exception, string shortMessage = null, string fullMessage = null, bool notify = false, IList<string> errors = null);
 		void LogAmazonError(OffAmazonPaymentsServiceException exception, bool notify = false, IList<string> errors = null);
 
-		void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null);
+		void AddOrderNote(AmazonPaySettings settings, Order order, AmazonPayOrderNote note, string anyString = null, bool isIpn = false);
 
 		void SetupConfiguration(ConfigurationModel model);
 

@@ -183,10 +183,9 @@ namespace SmartStore.Services.Stores
 						return store.Url.IsWebUrl();
 				}
 			}
-			catch (Exception exc)
+			catch (Exception)
 			{
-				var message = "{0} ({1})".FormatInvariant(exc.Message.NaIfEmpty(), store.Url);
-				throw new Exception(message, exc);
+				return false;
 			}
 		}
 

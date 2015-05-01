@@ -10,6 +10,9 @@
 * Category filtering by store for backend category tree and list
 * #554 Flag to indicate that a new payment notification (IPN) arrived for an order since last opening\editing of the order
 
+### Bugfixes
+Fixed System.NullReferenceException at admin/order/pdfpackagingslips
+
 ## SmartStore.NET 2.2.0
 
 ### New Features

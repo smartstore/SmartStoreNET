@@ -6,6 +6,7 @@ using System.Text;
 using System.Web;
 using NReco.PdfGenerator;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Pdf
 {
@@ -76,6 +77,7 @@ namespace SmartStore.Services.Pdf
 				PageHeight = settings.PageHeight,
 				PageWidth = settings.PageWidth,
 				Size = (PageSize)(int)settings.Size,
+				PdfToolPath = FileSystemHelper.TempDir("wkhtmltopdf")
 			};
 
 			if (settings.Margins != null)

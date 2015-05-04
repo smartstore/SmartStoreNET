@@ -14,7 +14,7 @@ namespace SmartStore.Utilities
 		public static string TempDir(string subDirectory = null)
 		{
 			string path = CommonHelper.GetAppSetting<string>("sm:TempDirectory", "~/App_Data/_temp");
-			path = HostingEnvironment.MapPath(path);
+			path = CommonHelper.MapPath(path);
 
 			if (!Directory.Exists(path))
 				Directory.CreateDirectory(path);

@@ -9,6 +9,7 @@ using System.Web.Hosting;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Themes;
 using SmartStore.Collections;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Packaging;
@@ -301,13 +302,13 @@ namespace SmartStore.Admin.Controllers
 				virtualPath = file.ResultVirtualPath;
 			}
 
-			var url = "{0}{1}?storeId={2}&theme={3}".FormatInvariant(
-				_services.WebHelper.GetStoreLocation().EnsureEndsWith("/"), 
-				VirtualPathUtility.ToAbsolute(virtualPath).TrimStart('/'),
+			var url = "{0}?storeId={1}&theme={2}".FormatInvariant(
+				WebHelper.GetAbsoluteUrl(virtualPath, this.Request),
 				storeId,
 				manifest.ThemeName);
 
 			HttpWebRequest request = WebRequest.CreateHttp(url);
+			request.UserAgent = "SmartStore.NET {0}".FormatInvariant(SmartStoreVersion.CurrentFullVersion);
 			WebResponse response = null;
 
 			try

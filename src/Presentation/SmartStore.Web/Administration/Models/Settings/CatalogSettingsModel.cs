@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -93,8 +94,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ExpandAllFilterCriteria")]
         public bool ExpandAllFilterCriteria { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowSubcategoriesAboveProductLists")]
-        public bool ShowSubcategoriesAboveProductLists { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType")]
+		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
+		public SelectList AvailableSubCategoryDisplayTypes { get; set; }
 
         #endregion 
 

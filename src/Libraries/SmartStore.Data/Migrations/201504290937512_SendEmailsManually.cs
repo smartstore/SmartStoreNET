@@ -76,6 +76,25 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Orders.Payments.NewIpn.Hint",
 				"A new notification from the payment provider has arrived in the order notes.",
 				"In den Auftragsnotizen ist eine neue Benachrichtigung vom Zahlungsanbieter eingetroffen.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.SubCategoryDisplayType",
+				"Show subcategories",
+				"Unterwarengruppen anzeigen",
+				"Indicates whether and where to show subcategories on a category page.",
+				"Legt fest, ob und wo Unterwarengruppen auf einer Warengruppenseite angezeigt werden sollen.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Hide",
+				"Do not display",
+				"Nicht anzeigen");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.AboveProductList",
+				"Above product list",
+				"Über der Produktliste");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Bottom",
+				"At bottom of page",
+				"Am Seitenende");
 		}
     }
 }

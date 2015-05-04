@@ -401,11 +401,12 @@
 
             <tr>
                 <td class="adminTitle">
-                    @Html.SmartLabelFor(model => model.ShowSubcategoriesAboveProductLists)
+                    @Html.SmartLabelFor(model => model.SubCategoryDisplayType)
                 </td>
                 <td class="adminData">
-                    @Html.SettingEditorFor(model => model.ShowSubcategoriesAboveProductLists)
-                    @Html.ValidationMessageFor(model => model.ShowSubcategoriesAboveProductLists)
+					@Html.SettingOverrideCheckbox(model => Model.SubCategoryDisplayType)
+					@Html.DropDownListFor(model => model.SubCategoryDisplayType, Model.AvailableSubCategoryDisplayTypes)
+                    @Html.ValidationMessageFor(model => model.SubCategoryDisplayType)
                 </td>
             </tr>
 

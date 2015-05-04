@@ -15,6 +15,7 @@
 }
 
 @using SmartStore.Core;
+@using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Core.Domain.Common;
 @using SmartStore.Core.Domain.Seo;
 @using SmartStore.Core.Infrastructure;
@@ -31,6 +32,26 @@
 			   Model.PagingFilteringContext.AllowProductSorting ||
 			   Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
 	}
+}
+
+@helper SubCategoryList()
+{
+	<div class="category-grid sub-category-grid">
+		@(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, 3,
+			@<article class="item-box equalized-column" data-equalized-column-name="subcat">
+				<div class="category-item sub-category-item">
+					<h2 class="category-title">
+						<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
+					</h2>
+					<div class="picture">
+						<a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
+							<img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" />
+						</a>
+					</div>
+				</div>
+			</article>
+		))
+	</div>
 }
 
 <div class="page category-page">
@@ -71,25 +92,10 @@
         }
 
         @*subcategories*@
-        @if (Model.SubCategories.Count > 0 && Model.ShowSubcategoriesAboveProductLists)
+        @if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.AboveProductList)
         {    
             @Html.Widget("categorydetails_before_subcategories")
-            
-            <div class="category-grid sub-category-grid">
-                @(Html.DataList<CategoryModel.SubCategoryModel>(Model.SubCategories, 3,
-				@<article class="item-box equalized-column" data-equalized-column-name="subcat">
-                    <div class="category-item sub-category-item">
-                        <h2 class="category-title">
-                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">@item.Name</a>
-                        </h2>
-                        <div class="picture">
-                            <a href="@Url.RouteUrl("Category", new { SeName = item.SeName })" title="@item.PictureModel.Title">
-                                <img alt="@item.PictureModel.AlternateText" src="@item.PictureModel.ImageUrl" title="@item.PictureModel.Title" /></a>
-                        </div>
-                    </div>
-                </article>
-				))
-            </div>
+            @SubCategoryList()
         }
         
         @*featured products*@
@@ -157,6 +163,13 @@
 			<div class="category-description">
 				@Html.Raw(Html.CollapsedText(Model.BottomDescription))
 			</div>
+		}
+
+		@*subcategories*@
+		@if (Model.SubCategories.Count > 0 && Model.SubCategoryDisplayType == SubCategoryDisplayType.Bottom)
+		{
+			@Html.Widget("categorydetails_before_subcategories")
+			@SubCategoryList()
 		}
 
         @Html.Widget("categorydetails_bottom")

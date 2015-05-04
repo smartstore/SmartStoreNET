@@ -3,6 +3,12 @@ using SmartStore.Core.Configuration;
 
 namespace SmartStore.Core.Domain.Catalog
 {
+	public enum SubCategoryDisplayType
+	{
+		Hide = 0,
+		AboveProductList = 5,
+		Bottom = 10
+	}
 
     public class CatalogSettings : ISettings
     {
@@ -26,7 +32,7 @@ namespace SmartStore.Core.Domain.Catalog
 			CompareProductsEnabled = true;
             FilterEnabled = true;
             MaxFilterItemsToDisplay = 4;
-            ShowSubcategoriesAboveProductLists = true;
+			SubCategoryDisplayType = SubCategoryDisplayType.AboveProductList;
 			ProductSearchAutoCompleteEnabled = true;
 			ShowProductImagesInSearchAutoComplete = true;
 			ProductSearchAutoCompleteNumberOfProducts = 10;
@@ -162,10 +168,10 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public bool ExpandAllFilterCriteria { get; set; }
         
-        /// <summary>
-        /// Gets or sets a value indicating whether sub categories above product lists are enabled
-        /// </summary>
-        public bool ShowSubcategoriesAboveProductLists { get; set; }
+		/// <summary>
+		/// Gets or sets a value indicating whether and where to display a list of subcategories
+		/// </summary>
+		public SubCategoryDisplayType SubCategoryDisplayType { get; set; }
         
         /// <summary>
         /// Gets or sets a value indicating whether a 'Share button' is enabled

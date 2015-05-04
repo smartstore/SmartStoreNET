@@ -171,6 +171,7 @@ namespace SmartStore.Web.Controllers
             var selectedPriceRange = model.PagingFilteringContext.PriceRangeFilter.GetSelectedPriceRange(_services.WebHelper, category.PriceRanges);
             decimal? minPriceConverted = null;
             decimal? maxPriceConverted = null;
+
             if (selectedPriceRange != null)
             {
                 if (selectedPriceRange.From.HasValue)
@@ -180,8 +181,6 @@ namespace SmartStore.Web.Controllers
                     maxPriceConverted = _currencyService.ConvertToPrimaryStoreCurrency(selectedPriceRange.To.Value, _services.WorkContext.WorkingCurrency);
             }
 
-
-
             //category breadcrumb
             model.DisplayCategoryBreadcrumb = _catalogSettings.CategoryBreadcrumbEnabled;
             if (model.DisplayCategoryBreadcrumb)
@@ -190,10 +189,9 @@ namespace SmartStore.Web.Controllers
             }
 
 			model.DisplayFilter = _catalogSettings.FilterEnabled;
-            model.ShowSubcategoriesAboveProductLists = _catalogSettings.ShowSubcategoriesAboveProductLists;
+			model.SubCategoryDisplayType = _catalogSettings.SubCategoryDisplayType;
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-
 
             //subcategories
             model.SubCategories = _categoryService
@@ -228,8 +226,6 @@ namespace SmartStore.Web.Controllers
                     return subCatModel;
                 })
                 .ToList();
-
-
 
 
             // Featured products

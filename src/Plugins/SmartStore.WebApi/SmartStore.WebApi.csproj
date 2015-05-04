@@ -274,7 +274,6 @@
     <Content Include="changelog.md">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
-    <None Include="Docs\Developer-Guide.md" />
     <None Include="packages.config">
       <SubType>Designer</SubType>
     </None>

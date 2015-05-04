@@ -1,5 +1,10 @@
 ﻿#Release Notes#
 
+##Web Api 2.2.0.2##
+###Improvements###
+* WebApiAuthenticate attribute can be applied on methods too
+* Product image upload requires manage catalog permission
+
 ##Web Api 2.2.0.1##
 ###New Features###
 * #652 Support for file upload and multipart mime

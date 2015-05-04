@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Collections.Specialized;
 using System.IO;
 using System.Linq;
 using System.Net.Http;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 using System.Web.Http;
 using SmartStore.Core;
@@ -19,7 +17,6 @@ using SmartStore.WebApi.Models.Api;
 
 namespace SmartStore.WebApi.Controllers.Api
 {
-	[WebApiAuthenticate]
 	public class UploadsController : ApiController
 	{
 		private readonly Lazy<IProductService> _productService;
@@ -40,6 +37,7 @@ namespace SmartStore.WebApi.Controllers.Api
 		}
 
 		/// <see cref="http://www.asp.net/web-api/overview/advanced/sending-html-form-data,-part-2"/>
+		[WebApiAuthenticate(Permission = "ManageCatalog")]
 		[WebApiQueryable(PagingOptional = true)]
 		public async Task<IQueryable<UploadImage>> PostProductImages()
 		{

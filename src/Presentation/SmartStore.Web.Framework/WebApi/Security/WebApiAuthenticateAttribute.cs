@@ -18,7 +18,7 @@ using SmartStore.Web.Framework.WebApi.Caching;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
-	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false)]
+	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
 	public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
 	{
 		private readonly IWorkContext _workContext;

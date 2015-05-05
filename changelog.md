@@ -9,9 +9,11 @@
 * #594 Option to prevent a message from being automatically sent
 * Category filtering by store for backend category tree and list
 * #554 Flag to indicate that a new payment notification (IPN) arrived for an order since last opening\editing of the order
+* Setting whether and how to display sub-categories on a category page (hide, above products, bottom of page)
+* Debitoor: Extend option "Book invoice if paid" to also (optionally) mail the invoice as a PDF
 
 ### Bugfixes
-Fixed System.NullReferenceException at admin/order/pdfpackagingslips
+* Fixed System.NullReferenceException at admin/order/pdfpackagingslips
 
 ## SmartStore.NET 2.2.0
 

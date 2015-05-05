@@ -23,6 +23,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Plugins
 {
@@ -302,7 +303,7 @@ namespace SmartStore.Web.Framework.Plugins
 			if (store == null)
 				return null;
 
-			string dirTemp = AppPath.TempDir();
+			string dirTemp = FileSystemHelper.TempDir();
 			string ext = extension ?? BaseSettings.ExportFormat;
 			string dir = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\exportimport");
 			string fileName = "{0}_{1}".FormatWith(store.Id, BaseSettings.StaticFileName);
@@ -401,10 +402,10 @@ namespace SmartStore.Web.Framework.Plugins
 						var feedFile = GetFeedFileByStore(store, secondFileName);
 						if (feedFile != null)
 						{
-							AppPath.Delete(feedFile.FileTempPath);
+							FileSystemHelper.Delete(feedFile.FileTempPath);
 
 							if (secondFileName.HasValue())
-								AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
 
 							using (var stream = new FileStream(feedFile.FileTempPath, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 							using (var logger = new TraceLogger(feedFile.LogPath))
@@ -421,10 +422,10 @@ namespace SmartStore.Web.Framework.Plugins
 									break;
 							}
 
-							AppPath.Copy(feedFile.FileTempPath, feedFile.FilePath);
+							FileSystemHelper.Copy(feedFile.FileTempPath, feedFile.FilePath);
 
 							if (secondFileName.HasValue())
-								AppPath.Copy(context.SecondFilePath, feedFile.CustomProperties["SecondFilePath"] as string);
+								FileSystemHelper.Copy(context.SecondFilePath, feedFile.CustomProperties["SecondFilePath"] as string);
 						}
 					}
 				}
@@ -454,14 +455,14 @@ namespace SmartStore.Web.Framework.Plugins
 						var feedFile = GetFeedFileByStore(store, secondFileName, ext);
 						if (feedFile != null)
 						{
-							AppPath.Delete(feedFile.FileTempPath);
-							AppPath.Delete(feedFile.FilePath);
-							AppPath.Delete(feedFile.LogPath);
+							FileSystemHelper.Delete(feedFile.FileTempPath);
+							FileSystemHelper.Delete(feedFile.FilePath);
+							FileSystemHelper.Delete(feedFile.LogPath);
 
 							if (secondFileName.HasValue())
 							{
-								AppPath.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
-								AppPath.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFilePath"] as string);
+								FileSystemHelper.Delete(feedFile.CustomProperties["SecondFileTempPath"] as string);
 							}
 						}
 					}

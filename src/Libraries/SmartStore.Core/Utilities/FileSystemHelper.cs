@@ -1,7 +1,6 @@
 ﻿using System;
 using System.IO;
 using System.Threading;
-using System.Web.Hosting;
 
 namespace SmartStore.Utilities
 {

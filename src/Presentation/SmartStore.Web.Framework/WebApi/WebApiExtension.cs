@@ -5,6 +5,7 @@ using System.Net.Http;
 using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData.Routing;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -102,7 +103,7 @@ namespace SmartStore.Web.Framework.WebApi
 			try
 			{
 				foreach (var file in provider.FileData)
-					AppPath.Delete(file.LocalFileName);
+					FileSystemHelper.Delete(file.LocalFileName);
 			}
 			catch { }
 		}

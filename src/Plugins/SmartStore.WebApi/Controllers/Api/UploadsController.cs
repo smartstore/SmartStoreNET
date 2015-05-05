@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Media;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.OData;
 using SmartStore.Web.Framework.WebApi.Security;
@@ -48,7 +49,7 @@ namespace SmartStore.WebApi.Controllers.Api
 
 			Product entity = null;
 			string identifier = null;
-			string tempDir = AppPath.TempDir();
+			string tempDir = FileSystemHelper.TempDir();
 			var provider = new MultipartFormDataStreamProvider(tempDir);
 
 			try

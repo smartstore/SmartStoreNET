@@ -260,6 +260,10 @@
     <Compile Include="Migrations\201504290937512_SendEmailsManually.Designer.cs">
       <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.cs" />
+    <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.Designer.cs">
+      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -507,6 +511,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201504290937512_SendEmailsManually.resx">
       <DependentUpon>201504290937512_SendEmailsManually.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505052021483_PdfConverterRoleFix.resx">
+      <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

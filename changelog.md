@@ -12,7 +12,11 @@
 * Setting whether and how to display sub-categories on a category page (hide, above products, bottom of page)
 * Debitoor: Extend option "Book invoice if paid" to also (optionally) mail the invoice as a PDF
 
+### Improvements
+* PDF converter: first init is much faster now
+
 ### Bugfixes
+* PDF converter: fixed _QFont::setPixelSize_ bug
 * Fixed System.NullReferenceException at admin/order/pdfpackagingslips
 
 ## SmartStore.NET 2.2.0

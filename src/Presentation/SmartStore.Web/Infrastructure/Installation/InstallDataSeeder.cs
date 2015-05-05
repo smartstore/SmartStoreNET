@@ -156,7 +156,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			SaveRange(customerRoles.Where(x => x != null));
 
             //admin user
-            var adminUser = new Customer()
+            var adminUser = new Customer
             {
                 CustomerGuid = Guid.NewGuid(),
                 Email = defaultUserEmail,

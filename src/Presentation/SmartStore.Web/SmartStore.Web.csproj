@@ -1863,6 +1863,7 @@
     <Content Include="Themes\MobileLight\theme.config" />
     <Content Include="Themes\MobileLight\Views\Web.config" />
     <Content Include="Views\Shared\LicenseRequired.cshtml" />
+    <Content Include="Themes\Web.config" />
   </ItemGroup>
   <ItemGroup>
     <Folder Include="Scripts\select2\" />

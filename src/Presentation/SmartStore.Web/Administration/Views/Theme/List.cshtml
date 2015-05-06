@@ -145,13 +145,13 @@
 							@if (!isBroken)
 							{	
 								<div class="btn-group pull-right">
-									if (!theme.IsMobileTheme)
+									@if (!theme.IsMobileTheme)
 									{
 										<a href='@Url.Action("Preview", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Configuration.Themes.Preview")">
 											<i class="fa fa-fw fa-eye"></i>
 										</a>
 									}
-									if (theme.IsConfigurable)
+									@if (theme.IsConfigurable)
 									{
 										<a href='@Url.Action("Configure", "Theme", new { theme = theme.Name, storeId = Model.StoreId })' class="btn tooltip-toggle" title="@T("Admin.Common.Configure")">
 											<i class="fa fa-fw fa-paint-brush"></i>

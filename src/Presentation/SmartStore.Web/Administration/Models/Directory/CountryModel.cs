@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Directory;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
@@ -15,6 +16,7 @@ namespace SmartStore.Admin.Models.Directory
         {
             Locales = new List<CountryLocalizedModel>();
         }
+
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -45,13 +47,17 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.DisplayOrder")]
         public int DisplayOrder { get; set; }
 
-
-
-
         [SmartResourceDisplayName("Admin.Configuration.Countries.Fields.NumberOfStates")]
         public int NumberOfStates { get; set; }
 
         public IList<CountryLocalizedModel> Locales { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
+		public bool LimitedToStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
+		public List<StoreModel> AvailableStores { get; set; }
+		public int[] SelectedStoreIds { get; set; }
     }
 
     public class CountryLocalizedModel : ILocalizedModelLocal

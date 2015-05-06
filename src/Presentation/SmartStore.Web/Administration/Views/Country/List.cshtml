@@ -1,7 +1,6 @@
 ﻿@model Telerik.Web.Mvc.GridModel<CountryModel>
 @using Telerik.Web.Mvc.UI
 @{
-    //page title
     ViewBag.Title = T("Admin.Configuration.Countries").Text;
 }
 <div class="section-header">
@@ -55,17 +54,17 @@
                         columns.Bound(x => x.DisplayOrder)
                             .Width(50)
                             .Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Centered()
+							.Width(100)
+							.Hidden(ViewBag.StoreCount <= 1);
                         columns.Bound(x => x.Published)
                              .Width(50)
                              .Template(item => @Html.SymbolForBool(item.Published))
                              .ClientTemplate(@Html.SymbolForBool("Published"))
                              .Centered();
-                        //columns.Bound(x => x.Id)
-                        //    .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                        //    .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                        //    .Width(50)
-                        //    .Centered()
-                        //    .HeaderTemplate(T("Admin.Common.Edit").Text);
                     })
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("CountryList", "Country"))
                     .EnableCustomBinding(true))

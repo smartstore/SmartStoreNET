@@ -9,6 +9,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -26,23 +27,32 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
 	    private readonly ILocalizedEntityService _localizedEntityService;
 	    private readonly ILanguageService _languageService;
+		private readonly IStoreService _storeService;
+		private readonly IStoreMappingService _storeMappingService;
 
 	    #endregion
 
 		#region Constructors
 
         public CountryController(ICountryService countryService,
-            IStateProvinceService stateProvinceService, ILocalizationService localizationService,
-            IAddressService addressService, IPermissionService permissionService,
-            ILocalizedEntityService localizedEntityService, ILanguageService languageService)
+            IStateProvinceService stateProvinceService,
+			ILocalizationService localizationService,
+            IAddressService addressService,
+			IPermissionService permissionService,
+            ILocalizedEntityService localizedEntityService,
+			ILanguageService languageService,
+			IStoreService storeService,
+			IStoreMappingService storeMappingService)
 		{
-            this._countryService = countryService;
-            this._stateProvinceService = stateProvinceService;
-            this._localizationService = localizationService;
-            this._addressService = addressService;
-            this._permissionService = permissionService;
-            this._localizedEntityService = localizedEntityService;
-            this._languageService = languageService;
+            _countryService = countryService;
+            _stateProvinceService = stateProvinceService;
+            _localizationService = localizationService;
+            _addressService = addressService;
+            _permissionService = permissionService;
+            _localizedEntityService = localizedEntityService;
+            _languageService = languageService;
+			_storeService = storeService;
+			_storeMappingService = storeMappingService;
 		}
 
 		#endregion 
@@ -50,7 +60,7 @@ namespace SmartStore.Admin.Controllers
         #region Utilities 
         
         [NonAction]
-        public void UpdateLocales(Country country, CountryModel model)
+		private void UpdateLocales(Country country, CountryModel model)
         {
             foreach (var localized in model.Locales)
             {
@@ -62,7 +72,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [NonAction]
-        public void UpdateLocales(StateProvince stateProvince, StateProvinceModel model)
+		private void UpdateLocales(StateProvince stateProvince, StateProvinceModel model)
         {
             foreach (var localized in model.Locales)
             {
@@ -72,6 +82,28 @@ namespace SmartStore.Admin.Controllers
                                                                localized.LanguageId);
             }
         }
+
+		[NonAction]
+		private void PrepareCountryModel(CountryModel model, Country country, bool excludeProperties)
+		{
+			if (model == null)
+				throw new ArgumentNullException("model");
+
+			var allStores = _storeService.GetAllStores();
+
+			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
+
+			if (!excludeProperties)
+			{
+				if (country != null)
+					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(country);
+				else
+					model.SelectedStoreIds = new int[0];
+			}
+
+			ViewBag.StoreCount = allStores.Count;
+		}
+
         #endregion
 
         #region Countries
@@ -120,12 +152,15 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new CountryModel();
-            //locales
+            
             AddLocales(_languageService, model.Locales);
-            //default values
+			PrepareCountryModel(model, null, false);
+            
+			//default values
             model.Published = true;
             model.AllowsBilling = true;
             model.AllowsShipping = true;
+
             return View(model);
         }
 
@@ -139,14 +174,18 @@ namespace SmartStore.Admin.Controllers
             {
                 var country = model.ToEntity();
                 _countryService.InsertCountry(country);
-                //locales
+
                 UpdateLocales(country, model);
 
+				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
+
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Added"));
+
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+			PrepareCountryModel(model, null, true);
+            
             return View(model);
         }
 
@@ -157,15 +196,17 @@ namespace SmartStore.Admin.Controllers
 
             var country = _countryService.GetCountryById(id);
             if (country == null)
-                //No country found with the specified id
                 return RedirectToAction("List");
 
             var model = country.ToModel();
-            //locales
+
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.Name = country.GetLocalized(x => x.Name, languageId, false, false);
             });
+
+			PrepareCountryModel(model, country, false);
+
             return View(model);
         }
 
@@ -177,21 +218,24 @@ namespace SmartStore.Admin.Controllers
 
             var country = _countryService.GetCountryById(model.Id);
             if (country == null)
-                //No country found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
             {
                 country = model.ToEntity(country);
                 _countryService.UpdateCountry(country);
-                //locales
+
                 UpdateLocales(country, model);
 
+				_storeMappingService.SaveStoreMappings<Country>(country, model.SelectedStoreIds);
+
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.Countries.Updated"));
+
                 return continueEditing ? RedirectToAction("Edit", new { id = country.Id }) : RedirectToAction("List");
             }
 
-            //If we got this far, something failed, redisplay form
+			PrepareCountryModel(model, country, true);
+
             return View(model);
         }
 
@@ -203,7 +247,6 @@ namespace SmartStore.Admin.Controllers
 
             var country = _countryService.GetCountryById(id);
             if (country == null)
-                //No country found with the specified id
                 return RedirectToAction("List");
 
             try
@@ -270,7 +313,6 @@ namespace SmartStore.Admin.Controllers
 
             var country = _countryService.GetCountryById(model.CountryId);
             if (country == null)
-                //No country found with the specified id
                 return RedirectToAction("List");
 
             if (ModelState.IsValid)
@@ -360,8 +402,7 @@ namespace SmartStore.Admin.Controllers
         }
 
         [AcceptVerbs(HttpVerbs.Get)]
-        public ActionResult GetStatesByCountryId(string countryId,
-            bool? addEmptyStateIfRequired, bool? addAsterisk)
+        public ActionResult GetStatesByCountryId(string countryId, bool? addEmptyStateIfRequired, bool? addAsterisk)
         {
             //permission validation is not required here
 

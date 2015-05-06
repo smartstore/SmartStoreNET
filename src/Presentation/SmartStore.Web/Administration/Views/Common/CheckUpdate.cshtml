@@ -14,6 +14,10 @@
 <div class="check-update-page" style="max-width: 1000px">
 	@if (!Model.UpdateAvailable)
 	{
+		<dl>
+			<dt>@T("Admin.CheckUpdate.YourVersion")</dt>
+			<dd>@Model.CurrentVersion</dd>
+		</dl>
 		<div class="alert alert-info">
 			@T("Admin.CheckUpdate.IsUpToDate")
 		</div>

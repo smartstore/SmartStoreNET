@@ -928,6 +928,7 @@ namespace SmartStore.Web.Controllers
             return PartialView(model);
         }
 
+        [OverrideActionFilters, OverrideAuthorization]
 		public ActionResult PdfReceiptHeader(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
 		{
 			var model = PreparePdfReceiptHeaderFooterModel(storeId);
@@ -940,6 +941,7 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
+        [OverrideActionFilters, OverrideAuthorization]
 		public ActionResult PdfReceiptFooter(PdfHeaderFooterVariables vars, int storeId = 0, bool isPartial = false)
 		{
 			var model = PreparePdfReceiptHeaderFooterModel(storeId);

@@ -207,14 +207,14 @@ namespace SmartStore.Services.ExportImport
             {
                 xmlWriter.WriteStartElement("Manufacturer");
 
-                xmlWriter.WriteElementString("ManufacturerId", null, manufacturer.Id.ToString());
+                xmlWriter.WriteElementString("Id", null, manufacturer.Id.ToString());
                 xmlWriter.WriteElementString("Name", null, manufacturer.Name);
+				xmlWriter.WriteElementString("SeName", null, manufacturer.GetSeName(0, true, false));
                 xmlWriter.WriteElementString("Description", null, manufacturer.Description);
                 xmlWriter.WriteElementString("ManufacturerTemplateId", null, manufacturer.ManufacturerTemplateId.ToString());
                 xmlWriter.WriteElementString("MetaKeywords", null, manufacturer.MetaKeywords);
                 xmlWriter.WriteElementString("MetaDescription", null, manufacturer.MetaDescription);
                 xmlWriter.WriteElementString("MetaTitle", null, manufacturer.MetaTitle);
-                xmlWriter.WriteElementString("SEName", null, manufacturer.GetSeName(0));
                 xmlWriter.WriteElementString("PictureId", null, manufacturer.PictureId.ToString());
                 xmlWriter.WriteElementString("PageSize", null, manufacturer.PageSize.ToString());
                 xmlWriter.WriteElementString("AllowCustomersToSelectPageSize", null, manufacturer.AllowCustomersToSelectPageSize.ToString());
@@ -236,7 +236,7 @@ namespace SmartStore.Services.ExportImport
                         if (product != null && !product.Deleted)
                         {
                             xmlWriter.WriteStartElement("ProductManufacturer");
-                            xmlWriter.WriteElementString("ProductManufacturerId", null, productManufacturer.Id.ToString());
+                            xmlWriter.WriteElementString("Id", null, productManufacturer.Id.ToString());
                             xmlWriter.WriteElementString("ProductId", null, productManufacturer.ProductId.ToString());
                             xmlWriter.WriteElementString("IsFeaturedProduct", null, productManufacturer.IsFeaturedProduct.ToString());
                             xmlWriter.WriteElementString("DisplayOrder", null, productManufacturer.DisplayOrder.ToString());
@@ -245,7 +245,6 @@ namespace SmartStore.Services.ExportImport
                     }
                 }
                 xmlWriter.WriteEndElement();
-
 
                 xmlWriter.WriteEndElement();
             }

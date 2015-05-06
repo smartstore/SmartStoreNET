@@ -264,6 +264,10 @@
     <Compile Include="Migrations\201505052021483_PdfConverterRoleFix.Designer.cs">
       <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201505061135313_CountryMultistore.cs" />
+    <Compile Include="Migrations\201505061135313_CountryMultistore.Designer.cs">
+      <DependentUpon>201505061135313_CountryMultistore.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -514,6 +518,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201505052021483_PdfConverterRoleFix.resx">
       <DependentUpon>201505052021483_PdfConverterRoleFix.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201505061135313_CountryMultistore.resx">
+      <DependentUpon>201505061135313_CountryMultistore.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

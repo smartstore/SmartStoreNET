@@ -1,9 +1,11 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Services.Directory
@@ -25,25 +27,27 @@ namespace SmartStore.Services.Directory
         private readonly IRepository<Country> _countryRepository;
         private readonly IEventPublisher _eventPublisher;
         private readonly ICacheManager _cacheManager;
+		private readonly IStoreContext _storeContext;
+		private readonly IRepository<StoreMapping> _storeMappingRepository;
 
         #endregion
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="countryRepository">Country repository</param>
-        /// <param name="eventPublisher">Event published</param>
         public CountryService(ICacheManager cacheManager,
             IRepository<Country> countryRepository,
-            IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher,
+			IStoreContext storeContext,
+			IRepository<StoreMapping> storeMappingRepository)
         {
             _cacheManager = cacheManager;
             _countryRepository = countryRepository;
             _eventPublisher = eventPublisher;
+			_storeContext = storeContext;
+			_storeMappingRepository = storeMappingRepository;
         }
+
+		public DbQuerySettings QuerySettings { get; set; }
 
         #endregion
 
@@ -76,10 +80,31 @@ namespace SmartStore.Services.Directory
             string key = string.Format(COUNTRIES_ALL_KEY, showHidden);
             return _cacheManager.Get(key, () =>
             {
-                var query = from c in _countryRepository.Table
-                            orderby c.DisplayOrder, c.Name
-                            where showHidden || c.Published
-                            select c;
+				var query = _countryRepository.Table;
+
+				if (!showHidden)
+					query = query.Where(c => c.Published);
+
+				query = query.OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name);
+
+				if (!showHidden && !QuerySettings.IgnoreMultiStore)
+				{
+					var currentStoreId = _storeContext.CurrentStore.Id;
+					query = from c in query
+							join sc in _storeMappingRepository.Table
+							on new { c1 = c.Id, c2 = "Country" } equals new { c1 = sc.EntityId, c2 = sc.EntityName } into c_sm
+							from sc in c_sm.DefaultIfEmpty()
+							where !c.LimitedToStores || currentStoreId == sc.StoreId
+							select c;
+
+					query = from c in query
+							group c by c.Id into cGroup
+							orderby cGroup.Key
+							select cGroup.FirstOrDefault();
+
+					query = query.OrderBy(c => c.DisplayOrder).ThenBy(c => c.Name);
+				}
+
                 var countries = query.ToList();
                 return countries;
             });
@@ -95,11 +120,9 @@ namespace SmartStore.Services.Directory
             string key = string.Format(COUNTRIES_BILLING_KEY, showHidden);
             return _cacheManager.Get(key, () =>
             {
-                var query = from c in _countryRepository.Table
-                            orderby c.DisplayOrder, c.Name
-                            where (showHidden || c.Published) && c.AllowsBilling
-                            select c;
-                var countries = query.ToList();
+				var allCountries = GetAllCountries(showHidden);
+
+				var countries = allCountries.Where(x => x.AllowsBilling).ToList();
                 return countries;
             });
         }
@@ -113,12 +136,10 @@ namespace SmartStore.Services.Directory
         {
             string key = string.Format(COUNTRIES_SHIPPING_KEY, showHidden);
             return _cacheManager.Get(key, () =>
-            {
-                var query = from c in _countryRepository.Table
-                            orderby c.DisplayOrder, c.Name
-                            where (showHidden || c.Published) && c.AllowsShipping
-                            select c;
-                var countries = query.ToList();
+            {			
+				var allCountries = GetAllCountries(showHidden);
+
+                var countries = allCountries.Where(x => x.AllowsShipping).ToList();
                 return countries;
             });
         }
@@ -160,11 +181,14 @@ namespace SmartStore.Services.Directory
         /// <returns>Country</returns>
         public virtual Country GetCountryByTwoLetterIsoCode(string twoLetterIsoCode)
         {
+			if (twoLetterIsoCode.IsEmpty())
+				return null;
+
             var query = from c in _countryRepository.Table
                         where c.TwoLetterIsoCode == twoLetterIsoCode
                         select c;
-            var country = query.FirstOrDefault();
 
+            var country = query.FirstOrDefault();
             return country;
         }
 
@@ -175,9 +199,13 @@ namespace SmartStore.Services.Directory
         /// <returns>Country</returns>
         public virtual Country GetCountryByThreeLetterIsoCode(string threeLetterIsoCode)
         {
+			if (threeLetterIsoCode.IsEmpty())
+				return null;
+
             var query = from c in _countryRepository.Table
                         where c.ThreeLetterIsoCode == threeLetterIsoCode
                         select c;
+
             var country = query.FirstOrDefault();
             return country;
         }

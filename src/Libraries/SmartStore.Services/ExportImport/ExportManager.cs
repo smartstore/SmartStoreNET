@@ -2029,6 +2029,7 @@ namespace SmartStore.Services.ExportImport
 						xmlWriter.WriteElementString("SubjectToVat", null, address.Country.SubjectToVat.ToString());
 						xmlWriter.WriteElementString("Published", null, address.Country.Published.ToString());
 						xmlWriter.WriteElementString("DisplayOrder", null, address.Country.DisplayOrder.ToString());
+						xmlWriter.WriteElementString("LimitedToStores", null, address.Country.LimitedToStores.ToString());
 						xmlWriter.WriteEndElement();	// Country
 					}
 

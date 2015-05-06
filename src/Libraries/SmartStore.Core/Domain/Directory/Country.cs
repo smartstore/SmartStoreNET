@@ -1,7 +1,8 @@
 using System.Collections.Generic;
+using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Shipping;
-using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Directory
 {
@@ -9,7 +10,7 @@ namespace SmartStore.Core.Domain.Directory
     /// Represents a country
     /// </summary>
 	[DataContract]
-	public partial class Country : BaseEntity, ILocalizedEntity
+	public partial class Country : BaseEntity, ILocalizedEntity, IStoreMappingSupported
     {
         private ICollection<StateProvince> _stateProvinces;
         private ICollection<ShippingMethod> _restrictedShippingMethods;
@@ -68,6 +69,12 @@ namespace SmartStore.Core.Domain.Directory
         /// </summary>
 		[DataMember]
 		public int DisplayOrder { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		[DataMember]
+		public bool LimitedToStores { get; set; }
        
         /// <summary>
         /// Gets or sets the state/provinces

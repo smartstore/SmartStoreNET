@@ -1,8 +1,8 @@
 ﻿using System.Linq;
+using NUnit.Framework;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Tests;
-using NUnit.Framework;
 
 namespace SmartStore.Data.Tests.Directory
 {
@@ -22,7 +22,8 @@ namespace SmartStore.Data.Tests.Directory
                 NumericIsoCode = 1,
                 SubjectToVat = true,
                 Published = true,
-                DisplayOrder = 1
+                DisplayOrder = 1,
+				LimitedToStores = true
             };
 
             var fromDb = SaveAndLoadEntity(country);
@@ -36,6 +37,7 @@ namespace SmartStore.Data.Tests.Directory
             fromDb.SubjectToVat.ShouldEqual(true);
             fromDb.Published.ShouldEqual(true);
             fromDb.DisplayOrder.ShouldEqual(1);
+			fromDb.LimitedToStores.ShouldEqual(true);
         }
 
         [Test]
@@ -55,7 +57,7 @@ namespace SmartStore.Data.Tests.Directory
             };
             country.StateProvinces.Add
                 (
-                    new StateProvince()
+                    new StateProvince
                     {
                         Name = "California",
                         Abbreviation = "CA",
@@ -88,7 +90,7 @@ namespace SmartStore.Data.Tests.Directory
             };
             country.RestrictedShippingMethods.Add
                 (
-                    new ShippingMethod()
+                    new ShippingMethod
                     {
                         Name = "By train",
                     }

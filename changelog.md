@@ -11,6 +11,7 @@
 * #554 Flag to indicate that a new payment notification (IPN) arrived for an order since last opening\editing of the order
 * Setting whether and how to display sub-categories on a category page (hide, above products, bottom of page)
 * Debitoor: Extend option "Book invoice if paid" to also (optionally) mail the invoice as a PDF
+* #508 Limit country settings to stores
 
 ### Improvements
 * PDF converter: first init is much faster now

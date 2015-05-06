@@ -11,39 +11,40 @@
     //generate an event
     EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "country-edit", this.Html, this.Model));
 })
+
 @helper TabInfo()
-    {        
+{        
     @(Html.LocalizedEditor<CountryModel, CountryLocalizedModel>("country-info-localized",
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-                ,
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                </table>
-            ))
-    <table class="adminContent">
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Locales[item].Name)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => Model.Locales[item].Name)
+                        @Html.ValidationMessageFor(model => model.Locales[item].Name)
+                    </td>
+                </tr>
+                <tr>
+                    <td colspan="2">
+                        @Html.HiddenFor(model => model.Locales[item].LanguageId)
+                    </td>
+                </tr>
+            </table>
+            ,
+            @<table class="adminContent">
+                <tr>
+                    <td class="adminTitle">
+                        @Html.SmartLabelFor(model => model.Name)
+                    </td>
+                    <td class="adminData">
+                        @Html.EditorFor(model => model.Name)
+                        @Html.ValidationMessageFor(model => model.Name)
+                    </td>
+                </tr>
+            </table>
+        ))
+		<table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AllowsBilling)
@@ -118,84 +119,85 @@
         </tr>
     </table>
 }
+
 @helper TabStates()
-    {
-        if (Model.Id > 0)
-        {
-            
-    <table class="adminContent">
-        <tr>
-            <td>
-                @(Html.Telerik().Grid<StateProvinceModel>()
-                    .Name("states-grid")
-                    .DataKeys(x =>
-                    {
-                        x.Add(y => y.Id).RouteKey("Id");
-                    })
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Name).Width(250);
-                        //TODO display localized values here
-                        columns.Bound(x => x.Abbreviation).Width(100);
-                        columns.Bound(x => x.Published)
-                             .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                             .Centered();
-                        columns.Bound(x => x.DisplayOrder1).Width(100);
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form', 800, 250, true); return false;\" class='t-button' />")
-                            .Title(T("Admin.Common.Edit").Text);
-                        columns.Command(commands =>
-                        {
-                            commands.Delete().Localize(T);
-                        }).Width(50);
+{
+	if (Model.Id > 0)
+	{            
+		<table class="adminContent">
+			<tr>
+				<td>
+					@(Html.Telerik().Grid<StateProvinceModel>()
+						.Name("states-grid")
+						.DataKeys(x =>
+						{
+							x.Add(y => y.Id).RouteKey("Id");
+						})
+						.DataBinding(dataBinding =>
+						{
+							dataBinding.Ajax()
+								.Select("States", "Country", new { countryId = Model.Id })
+								.Delete("StateDelete", "Country");
+						})
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.Name);
+							//TODO display localized values here
+							columns.Bound(x => x.Abbreviation);
+							columns.Bound(x => x.Published)
+								.Template(item => @Html.SymbolForBool(item.Published))
+								.ClientTemplate(@Html.SymbolForBool("Published"))
+								.Width(120)
+								.Centered();
+							columns.Bound(x => x.DisplayOrder1)
+								.Width(120)
+								.Centered();
+							columns.Bound(x => x.Id)
+								.Centered()
+								.Width(120)
+								.ClientTemplate("<input type='submit' value='" + @T("Admin.Common.Edit").Text + "' onclick=\"" + "javascript:OpenWindow('" + @Url.Content("~/Admin/Country/StateEditPopup/") + "<#= Id #>?btnId=btnRefresh&formId=country-form', 800, 250, true); return false;\" class='t-button' />")
+								.Title("");
+							columns.Command(commands =>
+							{
+								commands.Delete().Localize(T);
+							}).Width(120);
+						})
+						.ClientEvents(x => x.OnError("grid_onError"))
+						.EnableCustomBinding(true))
+				</td>
+			</tr>
+			<tr>
+				<td width="100%">
+					<button type="submit" id="btnAddNewState" name="btnAddNewState" class="btn btn-below"
+						onclick="javascript:OpenWindow('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))', 800, 250, true); return false;">
+						<i class="fa fa-plus"></i>&nbsp;@T("Admin.Configuration.Countries.States.AddNew")
+					</button>
+					<input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
+					<script type="text/javascript">
+						$(document).ready(function () {
+							$('#btnRefresh').click(function () {
+								//refresh grid
+								var optionsGrid = $("#states-grid");
+								optionsGrid.data('tGrid').ajaxRequest();
 
-                    })
-                    .DataBinding(dataBinding =>
-                    {
-                        dataBinding.Ajax().Select("States", "Country", new { countryId = Model.Id })
-                            .Delete("StateDelete", "Country");
-                    })
-                    .ClientEvents(x => x.OnError("grid_onError"))
-                    .EnableCustomBinding(true))
-            </td>
-        </tr>
-        <tr>
-            <td width="100%">
-                <button type="submit" id="btnAddNewState" name="btnAddNewState" class="btn btn-below"
-					onclick="javascript:OpenWindow('@(Url.Action("StateCreatePopup", "Country", new { countryId = Model.Id, btnId = "btnRefresh", formId = "country-form" }))', 800, 250, true); return false;">
-					<i class="fa fa-plus"></i>&nbsp;@T("Admin.Configuration.Countries.States.AddNew")
-				</button>
-                <input type="submit" id="btnRefresh" name="btnRefresh" style="display: none" />
-                <script type="text/javascript">
-                    $(document).ready(function () {
-                        $('#btnRefresh').click(function () {
-                            //refresh grid
-                            var optionsGrid = $("#states-grid");
-                            optionsGrid.data('tGrid').ajaxRequest();
-
-                            //return false to don't reload a page
-                            return false;
-                        });
-                    });
-                </script>
-            </td>
-        </tr>
-    </table>
-<script type="text/javascript">
-    function grid_onError(e) {
-        alert(e.XMLHttpRequest.responseText);
-        e.preventDefault();
-    }
-</script>
-
-
-        }
-        else
-        {
-    @T("Admin.Configuration.Countries.States.SaveBeforeEdit")
-        }
+								//return false to don't reload a page
+								return false;
+							});
+						});
+					</script>
+				</td>
+			</tr>
+		</table>
+	
+		<script type="text/javascript">
+			function grid_onError(e) {
+				alert(e.XMLHttpRequest.responseText);
+				e.preventDefault();
+			}
+		</script>
+	}
+	else
+	{
+		@T("Admin.Configuration.Countries.States.SaveBeforeEdit")
+	}
 }

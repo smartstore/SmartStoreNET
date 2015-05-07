@@ -16,7 +16,7 @@
 
 ### Improvements
 * PDF converter: first init is much faster now
-* Localized properties for forum groups
+* Localized properties for forums and forum groups
 
 ### Bugfixes
 * PDF converter: fixed _QFont::setPixelSize_ bug

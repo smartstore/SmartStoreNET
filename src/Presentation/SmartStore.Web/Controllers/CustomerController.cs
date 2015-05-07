@@ -1738,12 +1738,12 @@ namespace SmartStore.Web.Controllers
                     var forum = _forumService.GetForumById(forumId);
                     if (forum != null)
                     {
-                        title = forum.Name;
+                        title = forum.GetLocalized(x => x.Name);
                         slug = forum.GetSeName();
                     }
                 }
 
-                model.ForumSubscriptions.Add(new ForumSubscriptionModel()
+                model.ForumSubscriptions.Add(new ForumSubscriptionModel
                 {
                     Id = forumSubscription.Id,
                     ForumTopicId = forumTopicId,

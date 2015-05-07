@@ -971,12 +971,12 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityTokensAdded(forumPost, tokens);
         }
 
-        public virtual void AddForumTokens(IList<Token> tokens, Forum forum)
+		public virtual void AddForumTokens(IList<Token> tokens, Forum forum, int languageId)
         {
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
-            var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName());
+            var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName(languageId));
             tokens.Add(new Token("Forums.ForumURL", forumUrl, true));
-            tokens.Add(new Token("Forums.ForumName", forum.GetLocalized(x => x.Name)));
+            tokens.Add(new Token("Forums.ForumName", forum.GetLocalized(x => x.Name, languageId)));
 
             //event notification
             _eventPublisher.EntityTokensAdded(forum, tokens);

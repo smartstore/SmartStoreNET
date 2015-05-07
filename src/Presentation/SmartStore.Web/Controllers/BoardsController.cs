@@ -120,9 +120,9 @@ namespace SmartStore.Web.Controllers
             var forumGroupModel = new ForumGroupModel
             {
                 Id = forumGroup.Id,
-                Name = forumGroup.Name,
-                SeName = forumGroup.GetSeName(),
-                Description = forumGroup.Description,
+                Name = forumGroup.GetLocalized(x => x.Name),
+                Description = forumGroup.GetLocalized(x => x.Description),
+				SeName = forumGroup.GetSeName()
             };
 
             var forums = _forumService.GetAllForumsByGroupId(forumGroup.Id);
@@ -171,7 +171,7 @@ namespace SmartStore.Web.Controllers
             foreach (var fg in forumGroups)
             {
                 // Add the forum group with Value of 0 so it won't be used as a target forum
-                forumsList.Add(new SelectListItem { Text = fg.Name, Value = "0" });
+                forumsList.Add(new SelectListItem { Text = fg.GetLocalized(x => x.Name), Value = "0" });
 
                 var forums = _forumService.GetAllForumsByGroupId(fg.Id);
                 foreach (var f in forums)
@@ -1513,7 +1513,7 @@ namespace SmartStore.Web.Controllers
             foreach (var fg in forumGroups)
             {
                 // Add the forum group with value as '-' so it can't be used as a target forum id
-                forumsSelectList.Add(new SelectListItem { Text = fg.Name, Value = "-" });
+                forumsSelectList.Add(new SelectListItem { Text = fg.GetLocalized(x => x.Name), Value = "-" });
 
                 var forums = _forumService.GetAllForumsByGroupId(fg.Id);
                 foreach (var f in forums)
@@ -1683,7 +1683,7 @@ namespace SmartStore.Web.Controllers
             if (forumGroup != null)
             {
                 model.ForumGroupId = forumGroup.Id;
-                model.ForumGroupName = forumGroup.Name;
+                model.ForumGroupName = forumGroup.GetLocalized(x => x.Name);
                 model.ForumGroupSeName = forumGroup.GetSeName();
             }
 

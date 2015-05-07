@@ -6,7 +6,9 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Services;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 
@@ -19,16 +21,25 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _commonServices;
         private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILanguageService _languageService;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly IUrlRecordService _urlRecordService;
 
         public ForumController(IForumService forumService,
 			ICommonServices commonServices,
             IDateTimeHelper dateTimeHelper,
-			IStoreMappingService storeMappingService)
+			IStoreMappingService storeMappingService,
+			ILanguageService languageService,
+			ILocalizedEntityService localizedEntityService,
+			IUrlRecordService urlRecordService)
         {
             _forumService = forumService;
 			_commonServices = commonServices;
             _dateTimeHelper = dateTimeHelper;
 			_storeMappingService = storeMappingService;
+			_languageService = languageService;
+			_localizedEntityService = localizedEntityService;
+			_urlRecordService = urlRecordService;
         }
 
 		#region Utilities
@@ -57,6 +68,19 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			ViewBag.StoreCount = allStores.Count;
+		}
+
+		[NonAction]
+		private void UpdateLocales(ForumGroupModel model, ForumGroup forumGroup)
+		{
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(forumGroup, x => x.Description, localized.Description, localized.LanguageId);
+
+				var seName = forumGroup.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				_urlRecordService.SaveSlug(forumGroup, seName, localized.LanguageId);
+			}
 		}
 
 		#endregion
@@ -105,6 +129,8 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ForumGroupModel { DisplayOrder = 1 };
 
+			AddLocales(_languageService, model.Locales);
+
 			PrepareForumGroupModel(model, null, false);
 
             return View(model);
@@ -124,6 +150,11 @@ namespace SmartStore.Admin.Controllers
                 forumGroup.UpdatedOnUtc = utcNow;
 
                 _forumService.InsertForumGroup(forumGroup);
+
+				model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
+				_urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
+
+				UpdateLocales(model, forumGroup);
 
 				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
 
@@ -162,9 +193,11 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
+				var utcNow = DateTime.UtcNow;
                 var forum = model.ToEntity();
-                forum.CreatedOnUtc = DateTime.UtcNow;
-                forum.UpdatedOnUtc = DateTime.UtcNow;
+                forum.CreatedOnUtc = utcNow;
+                forum.UpdatedOnUtc = utcNow;
+
                 _forumService.InsertForum(forum);
 
                 NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
@@ -195,6 +228,13 @@ namespace SmartStore.Admin.Controllers
 
             var model = forumGroup.ToModel();
 
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.Name = forumGroup.GetLocalized(x => x.Name, languageId, false, false);
+				locale.Description = forumGroup.GetLocalized(x => x.Description, languageId, false, false);
+				locale.SeName = forumGroup.GetSeName(languageId, false, false);
+			});
+
 			PrepareForumGroupModel(model, forumGroup, false);
 
             return View(model);
@@ -216,6 +256,11 @@ namespace SmartStore.Admin.Controllers
                 forumGroup.UpdatedOnUtc = DateTime.UtcNow;
 
                 _forumService.UpdateForumGroup(forumGroup);
+
+				model.SeName = forumGroup.ValidateSeName(model.SeName, forumGroup.Name, true);
+				_urlRecordService.SaveSlug(forumGroup, model.SeName, 0);
+
+				UpdateLocales(model, forumGroup);
 
 				_storeMappingService.SaveStoreMappings<ForumGroup>(forumGroup, model.SelectedStoreIds);
 

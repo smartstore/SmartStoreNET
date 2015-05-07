@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Forums
@@ -7,7 +9,7 @@ namespace SmartStore.Core.Domain.Forums
     /// <summary>
     /// Represents a forum group
     /// </summary>
-	public partial class ForumGroup : BaseEntity, IStoreMappingSupported
+	public partial class ForumGroup : BaseEntity, IStoreMappingSupported, ILocalizedEntity, ISlugSupported
     {
         private ICollection<Forum> _forums;
 

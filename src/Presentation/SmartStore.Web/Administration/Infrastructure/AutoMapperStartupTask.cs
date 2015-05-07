@@ -411,9 +411,11 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.StoreId, mo => mo.Ignore());
             //forums
             Mapper.CreateMap<ForumGroup, ForumGroupModel>()
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.SeName, mo => mo.MapFrom(src => src.GetSeName(0, true, false)))
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
                 .ForMember(dest => dest.ForumModels, mo => mo.Ignore());
             Mapper.CreateMap<ForumGroupModel, ForumGroup>()
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore())

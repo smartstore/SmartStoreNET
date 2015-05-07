@@ -993,7 +993,7 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
 			_messageTokenProvider.AddForumTopicTokens(tokens, forumTopic);
-			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum);
+			_messageTokenProvider.AddForumTokens(tokens, forumTopic.Forum, languageId);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
@@ -1037,9 +1037,8 @@ namespace SmartStore.Services.Messages
 			_messageTokenProvider.AddStoreTokens(tokens, store);
 			_messageTokenProvider.AddForumPostTokens(tokens, forumPost);
             _messageTokenProvider.AddCustomerTokens(tokens, customer);
-			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic,
-				friendlyForumTopicPageIndex, forumPost.Id);
-			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum);
+			_messageTokenProvider.AddForumTopicTokens(tokens, forumPost.ForumTopic, friendlyForumTopicPageIndex, forumPost.Id);
+			_messageTokenProvider.AddForumTokens(tokens, forumPost.ForumTopic.Forum, languageId);
 
             //event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);

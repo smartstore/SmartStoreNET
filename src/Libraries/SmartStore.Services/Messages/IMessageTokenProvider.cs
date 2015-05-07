@@ -39,7 +39,7 @@ namespace SmartStore.Services.Messages
 
 		void AddProductTokens(IList<Token> tokens, Product product, int languageId);
 
-        void AddForumTokens(IList<Token> tokens, Forum forum);
+		void AddForumTokens(IList<Token> tokens, Forum forum, int languageId);
 
         void AddForumTopicTokens(IList<Token> tokens, ForumTopic forumTopic,
             int? friendlyForumTopicPageIndex = null, int? appendedPostIdentifierAnchor = null);

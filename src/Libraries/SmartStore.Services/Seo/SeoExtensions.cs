@@ -1,11 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Seo;
@@ -78,19 +75,6 @@ namespace SmartStore.Services.Seo
         #endregion
 
         #region Forum
-
-        /// <summary>
-        /// Gets ForumGroup SE (search engine) name
-        /// </summary>
-        /// <param name="forumGroup">ForumGroup</param>
-        /// <returns>ForumGroup SE (search engine) name</returns>
-        public static string GetSeName(this ForumGroup forumGroup)
-        {
-            if (forumGroup == null)
-                throw new ArgumentNullException("forumGroup");
-            string seName = GetSeName(forumGroup.Name);
-            return seName;
-        }
 
         /// <summary>
         /// Gets Forum SE (search engine) name

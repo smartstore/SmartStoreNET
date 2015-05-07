@@ -16,7 +16,43 @@
 
 @helper TabInfo()
 {
-	<table class="adminContent">
+	@(Html.LocalizedEditor<ForumGroupModel, ForumGroupLocalizedModel>("forumgroup-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].Name)
+				@Html.ValidationMessageFor(model => model.Locales[item].Name)
+			</td>
+		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.Locales[item].SeName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(model => model.Locales[item].SeName)
+                @Html.ValidationMessageFor(model => model.Locales[item].SeName)
+            </td>
+        </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.Locales[item].Description, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>
+    ,
+	@<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Name)
@@ -26,15 +62,28 @@
 				@Html.ValidationMessageFor(model => model.Name)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeName)
+            </td>
+            <td class="adminData">
+                @Html.EditorFor(x => x.SeName)
+                @Html.ValidationMessageFor(model => model.SeName)
+            </td>
+        </tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.Description)
 			</td>
 			<td class="adminData">
-				@Html.TextAreaFor(model => model.Description)
+				@Html.TextAreaFor(model => model.Description, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Description)
 			</td>
 		</tr>
+	</table>
+	))
+
+	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.DisplayOrder)

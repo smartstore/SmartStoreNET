@@ -12,9 +12,11 @@
 * Setting whether and how to display sub-categories on a category page (hide, above products, bottom of page)
 * Debitoor: Extend option "Book invoice if paid" to also (optionally) mail the invoice as a PDF
 * #508 Limit country settings to stores
+* #205 Add multistore support for forums
 
 ### Improvements
 * PDF converter: first init is much faster now
+* Localized properties for forum groups
 
 ### Bugfixes
 * PDF converter: fixed _QFont::setPixelSize_ bug

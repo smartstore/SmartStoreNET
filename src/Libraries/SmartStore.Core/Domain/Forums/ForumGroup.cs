@@ -1,12 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Core.Domain.Forums
 {
     /// <summary>
     /// Represents a forum group
     /// </summary>
-    public partial class ForumGroup : BaseEntity
+	public partial class ForumGroup : BaseEntity, IStoreMappingSupported
     {
         private ICollection<Forum> _forums;
 
@@ -34,6 +35,11 @@ namespace SmartStore.Core.Domain.Forums
         /// Gets or sets the date and time of instance update
         /// </summary>
         public DateTime UpdatedOnUtc { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether the entity is limited/restricted to certain stores
+		/// </summary>
+		public bool LimitedToStores { get; set; }
 
         /// <summary>
         /// Gets or sets the collection of Forums

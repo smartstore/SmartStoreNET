@@ -27,7 +27,7 @@ namespace SmartStore.Services.Forums
         /// Gets all forum groups
         /// </summary>
         /// <returns>Forum groups</returns>
-        IList<ForumGroup> GetAllForumGroups();
+		IList<ForumGroup> GetAllForumGroups(bool showHidden = false);
 
         /// <summary>
         /// Inserts a forum group
@@ -105,9 +105,7 @@ namespace SmartStore.Services.Forums
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <returns>Forum Topics</returns>
-        IPagedList<ForumTopic> GetAllTopics(int forumId,
-            int customerId, string keywords, ForumSearchType searchType,
-            int limitDays, int pageIndex, int pageSize);
+        IPagedList<ForumTopic> GetAllTopics(int forumId, int customerId, string keywords, ForumSearchType searchType, int limitDays, int pageIndex, int pageSize);
 
         /// <summary>
         /// Gets active forum topics

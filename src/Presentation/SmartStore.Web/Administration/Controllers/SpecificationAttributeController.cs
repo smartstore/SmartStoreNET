@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Logging;
@@ -124,6 +125,7 @@ namespace SmartStore.Admin.Controllers
 			var optionsText = _localizationService.GetResource("Admin.Catalog.Attributes.SpecificationAttributes.Options");
 
 			var data = _specificationAttributeService.GetSpecificationAttributes()
+				.Expand(x => x.SpecificationAttributeOptions)
 				.ForCommand(command)
 				.Select(x =>
 				{

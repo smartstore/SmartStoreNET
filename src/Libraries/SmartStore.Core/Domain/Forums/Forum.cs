@@ -1,11 +1,13 @@
 ﻿using System;
+using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Seo;
 
 namespace SmartStore.Core.Domain.Forums
 {
     /// <summary>
     /// Represents a forum
     /// </summary>
-    public partial class Forum : BaseEntity
+	public partial class Forum : BaseEntity, ILocalizedEntity, ISlugSupported
     {
         /// <summary>
         /// Gets or sets the forum group identifier

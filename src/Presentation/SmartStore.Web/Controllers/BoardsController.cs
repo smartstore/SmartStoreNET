@@ -104,9 +104,9 @@ namespace SmartStore.Web.Controllers
             var forumModel = new ForumRowModel
             {
                 Id = forum.Id,
-                Name = forum.Name,
+                Name = forum.GetLocalized(x => x.Name),
                 SeName = forum.GetSeName(),
-                Description = forum.Description,
+                Description = forum.GetLocalized(x => x.Description),
                 NumTopics = forum.NumTopics,
                 NumPosts = forum.NumPosts,
                 LastPostId = forum.LastPostId,
@@ -176,7 +176,7 @@ namespace SmartStore.Web.Controllers
                 var forums = _forumService.GetAllForumsByGroupId(fg.Id);
                 foreach (var f in forums)
                 {
-                    forumsList.Add(new SelectListItem { Text = string.Format("{0}{1}", separator, f.Name), Value = f.Id.ToString() });
+                    forumsList.Add(new SelectListItem { Text = string.Format("{0}{1}", separator, f.GetLocalized(x => x.Name)), Value = f.Id.ToString() });
                 }
             }
 
@@ -335,9 +335,9 @@ namespace SmartStore.Web.Controllers
             {
                 var model = new ForumPageModel();
                 model.Id = forum.Id;
-                model.Name = forum.Name;
+                model.Name = forum.GetLocalized(x => x.Name);
                 model.SeName = forum.GetSeName();
-                model.Description = forum.Description;
+                model.Description = forum.GetLocalized(x => x.Description);
 
                 int pageSize = 10;
                 if (_forumSettings.TopicsPageSize > 0)
@@ -405,7 +405,7 @@ namespace SmartStore.Web.Controllers
                 var feedDescription = _localizationService.GetResource("Forum.ForumFeedDescription");
 
                 var feed = new SyndicationFeed(
-					string.Format(feedTitle, _storeContext.CurrentStore.Name, forum.Name),
+					string.Format(feedTitle, _storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name)),
 					feedDescription,
 					new Uri(url),
 					string.Format("ForumRSS:{0}", forum.Id),
@@ -731,7 +731,7 @@ namespace SmartStore.Web.Controllers
             model.Id = 0;
             model.IsEdit = false;
             model.ForumId = forum.Id;
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.ForumEditor = _forumSettings.ForumEditor;
             model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(_workContext.CurrentCustomer);
@@ -854,7 +854,7 @@ namespace SmartStore.Web.Controllers
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = false;
             model.ForumId = forum.Id;
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.Id = 0;
             model.IsCustomerAllowedToSetTopicPriority = _forumService.IsCustomerAllowedToSetTopicPriority(_workContext.CurrentCustomer);
@@ -894,7 +894,7 @@ namespace SmartStore.Web.Controllers
 
             model.IsEdit = true;
             model.TopicPriorities = ForumTopicTypesList();
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.Text = firstPost.Text;
             model.Subject = forumTopic.Subject;
@@ -1042,7 +1042,7 @@ namespace SmartStore.Web.Controllers
             // redisplay form
             model.TopicPriorities = ForumTopicTypesList();
             model.IsEdit = true;
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumSeName = forum.GetSeName();
             model.ForumId = forum.Id;
             model.ForumEditor = _forumSettings.ForumEditor;
@@ -1122,7 +1122,7 @@ namespace SmartStore.Web.Controllers
                 ForumTopicId = forumTopic.Id,
                 IsEdit = false,
                 ForumEditor = _forumSettings.ForumEditor,
-                ForumName = forum.Name,
+                ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
                 ForumTopicSeName = forumTopic.GetSeName(),
                 IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(_workContext.CurrentCustomer),
@@ -1261,7 +1261,7 @@ namespace SmartStore.Web.Controllers
                 return RedirectToRoute("Boards");
 
             model.IsEdit = false;
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;
             model.ForumTopicSeName = forumTopic.GetSeName();
@@ -1307,7 +1307,7 @@ namespace SmartStore.Web.Controllers
                 ForumTopicId = forumTopic.Id,
                 IsEdit = true,
                 ForumEditor = _forumSettings.ForumEditor,
-                ForumName = forum.Name,
+                ForumName = forum.GetLocalized(x => x.Name),
                 ForumTopicSubject = forumTopic.Subject,
                 ForumTopicSeName = forumTopic.GetSeName(),
                 IsCustomerAllowedToSubscribe = _forumService.IsCustomerAllowedToSubscribe(_workContext.CurrentCustomer),
@@ -1430,7 +1430,7 @@ namespace SmartStore.Web.Controllers
 
             //redisplay form
             model.IsEdit = true;
-            model.ForumName = forum.Name;
+            model.ForumName = forum.GetLocalized(x => x.Name);
             model.ForumTopicId = forumTopic.Id;
             model.ForumTopicSubject = forumTopic.Subject;
             model.ForumTopicSeName = forumTopic.GetSeName();
@@ -1520,7 +1520,7 @@ namespace SmartStore.Web.Controllers
                 {
                     forumsSelectList.Add(new SelectListItem
                     {
-                        Text = string.Format("{0}{1}", separator, f.Name),
+                        Text = string.Format("{0}{1}", separator, f.GetLocalized(x => x.Name)),
                         Value = f.Id.ToString()
                     });
                 }
@@ -1675,7 +1675,7 @@ namespace SmartStore.Web.Controllers
             if (forum != null)
             {
                 model.ForumId = forum.Id;
-                model.ForumName = forum.Name;
+                model.ForumName = forum.GetLocalized(x => x.Name);
                 model.ForumSeName = forum.GetSeName();
             }
 

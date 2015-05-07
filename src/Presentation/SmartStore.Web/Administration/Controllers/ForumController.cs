@@ -83,6 +83,19 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+		[NonAction]
+		private void UpdateLocales(ForumModel model, Forum forum)
+		{
+			foreach (var localized in model.Locales)
+			{
+				_localizedEntityService.SaveLocalizedValue(forum, x => x.Name, localized.Name, localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(forum, x => x.Description, localized.Description, localized.LanguageId);
+
+				var seName = forum.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				_urlRecordService.SaveSlug(forum, seName, localized.LanguageId);
+			}
+		}
+
 		#endregion
 
         #region List
@@ -175,13 +188,16 @@ namespace SmartStore.Admin.Controllers
             if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageForums))
                 return AccessDeniedView();
 
-            var model = new ForumModel();
+			var model = new ForumModel { DisplayOrder = 1 };
+
+			AddLocales(_languageService, model.Locales);
+
             foreach (var forumGroup in _forumService.GetAllForumGroups(true))
             {
                 var forumGroupModel = forumGroup.ToModel();
                 model.ForumGroups.Add(forumGroupModel);
             }
-            model.DisplayOrder = 1;
+
             return View(model);
         }
 
@@ -200,7 +216,11 @@ namespace SmartStore.Admin.Controllers
 
                 _forumService.InsertForum(forum);
 
+				model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
+				_urlRecordService.SaveSlug(forum, model.SeName, 0);
+
                 NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Added"));
+
                 return continueEditing ? RedirectToAction("EditForum", new { forum.Id }) : RedirectToAction("List");
             }
 
@@ -286,6 +306,14 @@ namespace SmartStore.Admin.Controllers
                 return RedirectToAction("List");
 
             var model = forum.ToModel();
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.Name = forum.GetLocalized(x => x.Name, languageId, false, false);
+				locale.Description = forum.GetLocalized(x => x.Description, languageId, false, false);
+				locale.SeName = forum.GetSeName(languageId, false, false);
+			});
+
             foreach (var forumGroup in _forumService.GetAllForumGroups(true))
             {
                 var forumGroupModel = forumGroup.ToModel();
@@ -308,9 +336,16 @@ namespace SmartStore.Admin.Controllers
             {
                 forum = model.ToEntity(forum);
                 forum.UpdatedOnUtc = DateTime.UtcNow;
+
                 _forumService.UpdateForum(forum);
 
+				model.SeName = forum.ValidateSeName(model.SeName, forum.Name, true);
+				_urlRecordService.SaveSlug(forum, model.SeName, 0);
+
+				UpdateLocales(model, forum);
+
                 NotifySuccess(_commonServices.Localization.GetResource("Admin.ContentManagement.Forums.Forum.Updated"));
+
                 return continueEditing ? RedirectToAction("EditForum", forum.Id) : RedirectToAction("List");
             }
 

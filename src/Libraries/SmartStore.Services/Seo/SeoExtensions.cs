@@ -77,19 +77,6 @@ namespace SmartStore.Services.Seo
         #region Forum
 
         /// <summary>
-        /// Gets Forum SE (search engine) name
-        /// </summary>
-        /// <param name="forum">Forum</param>
-        /// <returns>Forum SE (search engine) name</returns>
-        public static string GetSeName(this Forum forum)
-        {
-            if (forum == null)
-                throw new ArgumentNullException("forum");
-            string seName = GetSeName(forum.Name);
-            return seName;
-        }
-
-        /// <summary>
         /// Gets ForumTopic SE (search engine) name
         /// </summary>
         /// <param name="forumTopic">ForumTopic</param>

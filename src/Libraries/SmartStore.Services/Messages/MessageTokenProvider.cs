@@ -976,7 +976,7 @@ namespace SmartStore.Services.Messages
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             var forumUrl = string.Format("{0}boards/forum/{1}/{2}", _webHelper.GetStoreLocation(false), forum.Id, forum.GetSeName());
             tokens.Add(new Token("Forums.ForumURL", forumUrl, true));
-            tokens.Add(new Token("Forums.ForumName", forum.Name));
+            tokens.Add(new Token("Forums.ForumName", forum.GetLocalized(x => x.Name)));
 
             //event notification
             _eventPublisher.EntityTokensAdded(forum, tokens);

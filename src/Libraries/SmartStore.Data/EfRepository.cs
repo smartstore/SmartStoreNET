@@ -165,6 +165,7 @@ namespace SmartStore.Data
                 _context.SaveChanges();
         }
 
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand(IQueryable<T> query, string path)
         {
             Guard.ArgumentNotNull(query, "query");
@@ -173,6 +174,7 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path)
         {
             Guard.ArgumentNotNull(query, "query");

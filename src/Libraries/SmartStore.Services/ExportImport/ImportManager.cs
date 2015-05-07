@@ -694,7 +694,7 @@ namespace SmartStore.Services.ExportImport
 						if (picture.IsEmpty() || !File.Exists(picture))
 							continue;
 
-                        var currentPictures = _rsProductPicture.Expand(_rsProductPicture.TableUntracked, x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
+                        var currentPictures = _rsProductPicture.TableUntracked.Expand(x => x.Picture).Where(x => x.ProductId == row.Entity.Id).Select(x => x.Picture).ToList();
                         var pictureBinary = _pictureService.FindEqualPicture(picture, currentPictures, out equalPictureId);
 
 						if (pictureBinary != null && pictureBinary.Length > 0)

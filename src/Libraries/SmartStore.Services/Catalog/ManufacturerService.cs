@@ -298,8 +298,7 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTMANUFACTURERS_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
 				{
-					var table = _productManufacturerRepository.Table;
-					var query = from pm in _productManufacturerRepository.Expand(table, x => x.Manufacturer.Picture)
+					var query = from pm in _productManufacturerRepository.Table.Expand(x => x.Manufacturer.Picture)
 								join m in _manufacturerRepository.Table on
 									pm.ManufacturerId equals m.Id
 								where pm.ProductId == productId &&

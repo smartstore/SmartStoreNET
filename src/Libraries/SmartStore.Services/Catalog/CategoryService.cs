@@ -436,8 +436,7 @@ namespace SmartStore.Services.Catalog
 			string key = string.Format(PRODUCTCATEGORIES_ALLBYPRODUCTID_KEY, showHidden, productId, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
             return _cacheManager.Get(key, () =>
             {
-				var table = _productCategoryRepository.Table;
-				var query = from pc in _productCategoryRepository.Expand(table, x => x.Category)
+				var query = from pc in _productCategoryRepository.Table.Expand(x => x.Category)
                             join c in _categoryRepository.Table on pc.CategoryId equals c.Id
                             where pc.ProductId == productId &&
                                   !c.Deleted &&

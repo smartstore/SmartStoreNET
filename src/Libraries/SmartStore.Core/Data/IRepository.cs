@@ -67,23 +67,10 @@ namespace SmartStore.Core.Data
         /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
         void Delete(T entity);
 
-        /// <summary>
-        /// Instructs the repository to eager load entities that may be in the type's association path.
-        /// </summary>
-        /// <param name="query">A previously created query object which the expansion should be applied to.</param>
-        /// <param name="path">
-        /// The path of the child entities to eager load.
-        /// Deeper paths can be specified by separating the path with dots.
-        /// </param>
-        /// <returns>A new query object to which the expansion was applied.</returns>
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand(IQueryable<T> query, string path);
 
-        /// <summary>
-        /// Instructs the repository to eager load entities that may be in the type's association path.
-        /// </summary>
-        /// <param name="query">A previously created query object which the expansion should be applied to.</param>
-        /// <param name="path">The path of the child entities to eager load.</param>
-        /// <returns>A new query object to which the expansion was applied.</returns>
+		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand<TProperty>(IQueryable<T> query, Expression<Func<T, TProperty>> path);
 
 		/// <summary>

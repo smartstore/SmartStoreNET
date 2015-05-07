@@ -160,6 +160,7 @@
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
+    <Compile Include="Data\IQueryableExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />

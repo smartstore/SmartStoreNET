@@ -134,17 +134,18 @@ namespace SmartStore.Web.Framework.WebApi
 
 		protected internal virtual IQueryable<TEntity> GetExpandedEntitySet<TProperty>(Expression<Func<TEntity, TProperty>> path)
 		{
-			var query = this.Repository
-				.Expand<TProperty>(GetEntitySet(), path);
-
+			var query = GetEntitySet().Expand(path);
 			return query;
 		}
+
 		protected internal virtual IQueryable<TEntity> GetExpandedEntitySet(string properties)
 		{
 			var query = GetEntitySet();
 
 			foreach (var property in properties.SplitSafe(","))
-				query = this.Repository.Expand(query, property.Trim());
+			{
+				query = query.Expand(property.Trim());
+			}
 
 			return query;
 		}

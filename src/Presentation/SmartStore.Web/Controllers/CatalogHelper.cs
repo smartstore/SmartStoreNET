@@ -686,7 +686,18 @@ namespace SmartStore.Web.Controllers
 			}
 
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-			model.LegalInfo = T("Tax.LegalInfoProductDetail", taxInfo, defaultTaxRate, additionalShippingCosts, shippingInfoLink);
+            
+            if (!product.IsTaxExempt && !product.IsShipEnabled)
+                model.LegalInfo += taxInfo + " " + defaultTaxRate;
+
+            if(product.IsShipEnabled) 
+            {
+                model.LegalInfo = T("Tax.LegalInfoProductDetail",
+                    product.IsTaxExempt ? "" : taxInfo,
+                    product.IsTaxExempt ? "" : defaultTaxRate,
+                    additionalShippingCosts,
+                    shippingInfoLink);
+            }
 
 			string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 

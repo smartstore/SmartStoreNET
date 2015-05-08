@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.1
 
@@ -21,6 +21,7 @@
 ### Bugfixes
 * PDF converter: fixed _QFont::setPixelSize_ bug
 * Fixed System.NullReferenceException at admin/order/pdfpackagingslips
+* #660 Don't show shipping cost hint in product detail page if product has free shipping
 
 ## SmartStore.NET 2.2.0
 

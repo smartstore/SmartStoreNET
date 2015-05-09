@@ -471,8 +471,8 @@
     					dialog.find('[name="Licenses[0].LicenseKey"]').focus();
     				}, 1000);
 
-    				dialog.find('.btn-primary').click(function() {
-    					e.preventDefault();
+    				dialog.find('.btn-primary').click(function(e2) {
+    					e2.preventDefault();
     					if (confirm('@T("Admin.Configuration.Plugins.ConfirmLicensing")')) {
     						dialog.find('form:first').submit();
     					}

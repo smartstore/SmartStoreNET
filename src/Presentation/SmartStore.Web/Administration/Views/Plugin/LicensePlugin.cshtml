@@ -32,7 +32,7 @@
 						@Html.HiddenFor(model => model.Licenses[i].StoreId)
 						@Html.HiddenFor(model => model.Licenses[i].StoreUrl)
 
-						@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large" })
+						@Html.TextBoxFor(model => model.Licenses[i].LicenseKey, new { @class = "input-large", autocomplete = "off" })
 					</td>
 				</tr>
 			}

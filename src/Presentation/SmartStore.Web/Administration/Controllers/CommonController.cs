@@ -57,6 +57,7 @@ namespace SmartStore.Admin.Controllers
         private readonly Lazy<IMeasureService> _measureService;
         private readonly ICustomerService _customerService;
         private readonly IUrlRecordService _urlRecordService;
+		private readonly Lazy<CommonSettings> _commonSettings;
         private readonly Lazy<CurrencySettings> _currencySettings;
         private readonly Lazy<MeasureSettings> _measureSettings;
         private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
@@ -83,6 +84,7 @@ namespace SmartStore.Admin.Controllers
 			Lazy<IMeasureService> measureService,
             ICustomerService customerService,
 			IUrlRecordService urlRecordService, 
+			Lazy<CommonSettings> commonSettings,
 			Lazy<CurrencySettings> currencySettings,
             Lazy<MeasureSettings> measureSettings,
 			Lazy<IDateTimeHelper> dateTimeHelper,
@@ -102,6 +104,7 @@ namespace SmartStore.Admin.Controllers
             this._measureService = measureService;
             this._customerService = customerService;
             this._urlRecordService = urlRecordService;
+			this._commonSettings = commonSettings;
             this._currencySettings = currencySettings;
             this._measureSettings = measureSettings;
             this._dateTimeHelper = dateTimeHelper;
@@ -328,7 +331,7 @@ namespace SmartStore.Admin.Controllers
 						model.CurrentVersion = curVersion;
 						model.LanguageCode = lang;
 
-						if (CommonHelper.IsDevEnvironment || !_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+						if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 						{
 							model.AutoUpdatePossible = false;
 						}

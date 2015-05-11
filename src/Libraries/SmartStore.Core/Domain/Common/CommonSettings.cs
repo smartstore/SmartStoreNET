@@ -13,6 +13,7 @@ namespace SmartStore.Core.Domain.Common
 			SitemapIncludeManufacturers = true;
 			SitemapIncludeTopics = true;
 			FullTextMode = FulltextSearchMode.ExactMatch;
+			AutoUpdateEnabled = true;
 		}
 		
 		public bool UseSystemEmailForContactUsForm { get; set; }
@@ -41,6 +42,8 @@ namespace SmartStore.Core.Domain.Common
         /// Gets a sets a Full-Text search mode
         /// </summary>
         public FulltextSearchMode FullTextMode { get; set; }
+
+		public bool AutoUpdateEnabled { get; set; }
 
     }
 }

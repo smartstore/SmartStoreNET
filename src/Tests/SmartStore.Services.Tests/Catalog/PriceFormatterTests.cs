@@ -3,23 +3,20 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
 using System.Threading;
+using NUnit.Framework;
+using Rhino.Mocks;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
 using SmartStore.Services.Stores;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Catalog
 {
@@ -120,9 +117,9 @@ namespace SmartStore.Services.Tests.Catalog
             var rub_currency = new Currency()
             {
                 Id = 2,
-                Name = "Russian Ruble",
-                CurrencyCode = "RUB",
-                DisplayLocale = "ru-RU",
+                Name = "British Pound",
+                CurrencyCode = "GBP",
+				DisplayLocale = "en-GB",
             };
             var language = new Language()
             {
@@ -131,7 +128,7 @@ namespace SmartStore.Services.Tests.Catalog
                 LanguageCulture = "en-US"
             };
             _priceFormatter.FormatPrice(1234.5M, true, usd_currency, language, false, false).ShouldEqual("$1,234.50");
-            _priceFormatter.FormatPrice(1234.5M, true, rub_currency, language, false, false).ShouldEqual("1 234,50р.");
+			_priceFormatter.FormatPrice(1234.5M, true, rub_currency, language, false, false).ShouldEqual("£1,234.50");
         }
 
         [Test]

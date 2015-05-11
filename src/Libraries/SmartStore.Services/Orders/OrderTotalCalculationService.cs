@@ -9,7 +9,6 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
@@ -36,11 +35,13 @@ namespace SmartStore.Services.Orders
         private readonly IDiscountService _discountService;
         private readonly IGiftCardService _giftCardService;
         private readonly IGenericAttributeService _genericAttributeService;
+		private readonly IProductAttributeParser _productAttributeParser;
         private readonly TaxSettings _taxSettings;
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly ShippingSettings _shippingSettings;
         private readonly ShoppingCartSettings _shoppingCartSettings;
         private readonly CatalogSettings _catalogSettings;
+
         #endregion
 
         #region Ctor
@@ -73,6 +74,7 @@ namespace SmartStore.Services.Orders
             IDiscountService discountService,
             IGiftCardService giftCardService,
             IGenericAttributeService genericAttributeService,
+			IProductAttributeParser productAttributeParser,
             TaxSettings taxSettings,
             RewardPointsSettings rewardPointsSettings,
             ShippingSettings shippingSettings,
@@ -89,6 +91,7 @@ namespace SmartStore.Services.Orders
             this._discountService = discountService;
             this._giftCardService = giftCardService;
             this._genericAttributeService = genericAttributeService;
+			this._productAttributeParser = productAttributeParser;
             this._taxSettings = taxSettings;
             this._rewardPointsSettings = rewardPointsSettings;
             this._shippingSettings = shippingSettings;
@@ -186,12 +189,7 @@ namespace SmartStore.Services.Orders
 
 				decimal taxRate, sciSubTotal, sciExclTax, sciInclTax = decimal.Zero;
 
-				IProductAttributeParser productAttrParser;
-				if (EngineContext.Current.ContainerManager.TryResolve<IProductAttributeParser>(null, out productAttrParser)) 
-				{
-					// make the call unit test safe
-					shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, productAttrParser);
-				}
+				shoppingCartItem.Item.Product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
 
 				if (_shoppingCartSettings.RoundPricesDuringCalculation)
 				{

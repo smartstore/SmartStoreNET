@@ -422,6 +422,9 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.BundlePerItemShipping);
 				row.SetProperty(result, product, (x) => x.BundlePerItemShoppingCart);
 				row.SetProperty(result, product, (x) => x.BundleTitleText);
+                row.SetProperty(result, product, (x) => x.AvailableStartDateTimeUtc, null, OADateToUtcDate);
+                row.SetProperty(result, product, (x) => x.AvailableEndDateTimeUtc, null, OADateToUtcDate);
+
 				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow, OADateToUtcDate);
 
 				product.UpdatedOnUtc = DateTime.UtcNow;

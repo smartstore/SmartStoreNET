@@ -879,7 +879,9 @@ namespace SmartStore.Services.ExportImport
 					"BundlePerItemShipping",
 					"BundlePerItemPricing",
 					"BundlePerItemShoppingCart",
-					"BundleItemSkus"
+					"BundleItemSkus",
+                    "AvailableStartDateTimeUtc",
+                    "AvailableEndDateTimeUtc"
                 };
 
                 //BEGIN: add headers for languages 
@@ -1195,6 +1197,12 @@ namespace SmartStore.Services.ExportImport
 
 					cells[row, col].Value = bundleItemSkus;
 					col++;
+
+                    cells[row, col].Value = p.AvailableStartDateTimeUtc;
+                    col++;
+
+                    cells[row, col].Value = p.AvailableEndDateTimeUtc;
+                    col++;
 
                     //BEGIN: export localized values
                     foreach (var lang in languages)

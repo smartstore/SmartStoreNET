@@ -64,10 +64,9 @@ namespace SmartStore.Core.Data
                 query = query.Where(predicate);
             }
 
-            foreach (var includeProperty in includeProperties.Split
-                (new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
+            foreach (var includeProperty in includeProperties.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries))
             {
-                query = rs.Expand(query, includeProperty.Trim());
+				query = query.Expand(includeProperty.Trim());
             }
 
             if (orderBy != null)

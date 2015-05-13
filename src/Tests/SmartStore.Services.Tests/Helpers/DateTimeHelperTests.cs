@@ -124,19 +124,26 @@ namespace SmartStore.Services.Tests.Helpers
         [Test]
         public void Can_convert_dateTime_to_userTime()
         {
-            var sourceDateTime = TimeZoneInfo.FindSystemTimeZoneById("E. Europe Standard Time"); //(GMT+02:00) Minsk;
+			var sourceDateTime = TimeZoneInfo.FindSystemTimeZoneById("W. Europe Standard Time"); // (GMT+01:00) Berlin;
             sourceDateTime.ShouldNotBeNull();
 
-            var destinationDateTime = TimeZoneInfo.FindSystemTimeZoneById("North Asia Standard Time"); //(GMT+07:00) Krasnoyarsk;
+			var destinationDateTime = TimeZoneInfo.FindSystemTimeZoneById("GTB Standard Time"); // (GMT+02:00) Istanbul;
             destinationDateTime.ShouldNotBeNull();
 
-            //summer time
-            _dateTimeHelper.ConvertToUserTime(new DateTime(2010, 06, 01, 0, 0, 0), sourceDateTime, destinationDateTime)
-                .ShouldEqual(new DateTime(2010, 06, 01, 5, 0, 0));
+            // Berlin > Istanbul
+            _dateTimeHelper
+				.ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), sourceDateTime, destinationDateTime)
+                .ShouldEqual(new DateTime(2015, 06, 1, 1, 0, 0));
 
-            //winter time
-            _dateTimeHelper.ConvertToUserTime(new DateTime(2010, 01, 01, 0, 0, 0), sourceDateTime, destinationDateTime)
-                .ShouldEqual(new DateTime(2010, 01, 01, 5, 0, 0));
+			// UTC > Istanbul (summer)
+			_dateTimeHelper
+				.ConvertToUserTime(new DateTime(2015, 06, 1, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
+				.ShouldEqual(new DateTime(2015, 06, 1, 3, 0, 0));
+
+			// UTC > Istanbul (winter)
+			_dateTimeHelper
+				.ConvertToUserTime(new DateTime(2015, 01, 01, 0, 0, 0), TimeZoneInfo.Utc, destinationDateTime)
+				.ShouldEqual(new DateTime(2015, 01, 1, 2, 0, 0));
         }
 
         [Test]

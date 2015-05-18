@@ -16,6 +16,8 @@ using SmartStore.Utilities;
 using System.Text;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Services.Stores;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -39,6 +41,7 @@ namespace SmartStore.Services.ExportImport
 		private readonly IRepository<UrlRecord> _rsUrlRecord;
         private readonly ILanguageService _languageService;
         private readonly ILocalizedEntityService _localizedEntityService;
+        private readonly IStoreMappingService _storeMappingService;
 
         public ImportManager(
 			IProductService productService, 
@@ -55,7 +58,8 @@ namespace SmartStore.Services.ExportImport
 			IRepository<ProductPicture> rsProductPicture,
             IRepository<UrlRecord> rsUrlRecord,
             ILanguageService languageService,
-            ILocalizedEntityService localizedEntityService)
+            ILocalizedEntityService localizedEntityService,
+            IStoreMappingService storeMappingService)
         {
             this._productService = productService;
             this._categoryService = categoryService;
@@ -72,6 +76,7 @@ namespace SmartStore.Services.ExportImport
             this._rsPicture = rsPicture;
             this._languageService = languageService;
             this._localizedEntityService = localizedEntityService;
+            this._storeMappingService = storeMappingService;
         }
 
 		public virtual string CreateTextReport(ImportResult result)
@@ -256,6 +261,7 @@ namespace SmartStore.Services.ExportImport
 								result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
 							}
 						}
+                        
 
 						// ===========================================================================
 						// 6.) Import product picture mappings
@@ -424,6 +430,15 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.BundleTitleText);
                 row.SetProperty(result, product, (x) => x.AvailableStartDateTimeUtc, null, OADateToUtcDate);
                 row.SetProperty(result, product, (x) => x.AvailableEndDateTimeUtc, null, OADateToUtcDate);
+                row.SetProperty(result, product, (x) => x.LimitedToStores);
+
+                string storeIds = row.GetValue<string>("StoreIds");
+                if (storeIds.HasValue()) 
+                {
+                    _storeMappingService.SaveStoreMappings(product,
+                        row["StoreIds"].ToString()
+                        .Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())).ToArray());
+                }
 
 				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow, OADateToUtcDate);
 
@@ -668,7 +683,7 @@ namespace SmartStore.Services.ExportImport
 
 			return num;
 		}
-
+        
 		private void ProcessProductPictures(ICollection<ImportRow<Product>> batch, ImportResult result)
 		{
 			// true, cause pictures must be saved and assigned an id

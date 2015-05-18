@@ -1,5 +1,10 @@
 # Release Notes
 
+## SmartStore.NET 3.0.0
+
+### New Features
+* #210 Implement multi-store support for import/export 
+
 ## SmartStore.NET 2.2.1
 
 ### New Features

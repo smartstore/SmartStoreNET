@@ -24,6 +24,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -43,7 +44,8 @@ namespace SmartStore.Services.ExportImport
         private readonly ILanguageService _languageService;
 		private readonly MediaSettings _mediaSettings;
 		private readonly ICommonServices _commonServices;
-
+        private readonly IStoreMappingService _storeMappingService;
+        
         #endregion
 
         #region Ctor
@@ -56,7 +58,8 @@ namespace SmartStore.Services.ExportImport
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILanguageService languageService,
 			MediaSettings mediaSettings,
-			ICommonServices commonServices)
+			ICommonServices commonServices,
+            IStoreMappingService storeMappingService)
         {
             this._categoryService = categoryService;
             this._manufacturerService = manufacturerService;
@@ -67,6 +70,7 @@ namespace SmartStore.Services.ExportImport
             this._languageService = languageService;
 			this._mediaSettings = mediaSettings;
 			this._commonServices = commonServices;
+            this._storeMappingService = storeMappingService;
 
 			Logger = NullLogger.Instance;
         }
@@ -881,7 +885,9 @@ namespace SmartStore.Services.ExportImport
 					"BundlePerItemShoppingCart",
 					"BundleItemSkus",
                     "AvailableStartDateTimeUtc",
-                    "AvailableEndDateTimeUtc"
+                    "AvailableEndDateTimeUtc",
+                    "StoreIds",
+                    "LimitedToStores"
                 };
 
                 //BEGIN: add headers for languages 
@@ -1202,6 +1208,18 @@ namespace SmartStore.Services.ExportImport
                     col++;
 
                     cells[row, col].Value = p.AvailableEndDateTimeUtc;
+                    col++;
+
+                    string storeIds = "";
+
+                    if (p.LimitedToStores)
+                    {
+                        storeIds = string.Join(";", _storeMappingService.GetStoreMappings(p).Select(x => x.StoreId));
+                    }
+                    cells[row, col].Value = storeIds;
+                    col++;
+
+                    cells[row, col].Value = p.LimitedToStores;
                     col++;
 
                     //BEGIN: export localized values

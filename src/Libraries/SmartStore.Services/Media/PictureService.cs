@@ -873,6 +873,7 @@ namespace SmartStore.Services.Media
 						tx.Rollback();
 						_settingService.SetSetting<bool>("Media.Images.StoreInDB", !toDb);
 						_notifier.Error(ex.Message);
+						_logger.Error(ex);
 					}
 				}		
 			}

@@ -32,6 +32,11 @@ namespace SmartStore.Core.Logging
             FilteredLog(logger, LogLevel.Fatal, message, exception, customer);
         }
 
+		public static void Error(this ILogger logger, Exception exception, Customer customer = null)
+		{
+			FilteredLog(logger, LogLevel.Error, exception.Message, exception, customer);
+		}
+
         private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
         {
             //don't log thread abort exception

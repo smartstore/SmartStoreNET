@@ -828,7 +828,7 @@ namespace SmartStore.Services.Media
 
 								if (!toDb)
 								{
-									if (picture.PictureBinary.Length > 0)
+									if (picture.PictureBinary != null && picture.PictureBinary.Length > 0)
 									{
 										// save picture as file
 										SavePictureInFile(picture.Id, picture.PictureBinary, picture.MimeType, out filePath);

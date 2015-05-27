@@ -67,6 +67,13 @@ namespace SmartStore.Core.Data
         /// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
         void Delete(T entity);
 
+		/// <summary>
+		/// Marks existing entities to be deleted from the store.
+		/// </summary>
+		/// <param name="entities">A list of entity instances that should be deleted from the database.</param>
+		/// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
+		void DeleteRange(IEnumerable<T> entities);
+
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         IQueryable<T> Expand(IQueryable<T> query, string path);
 

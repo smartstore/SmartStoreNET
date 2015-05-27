@@ -158,12 +158,23 @@ namespace SmartStore.Data
             {
                 this.Entities.Attach(entity);
             }
-
+			
             this.Entities.Remove(entity);
 
             if (this.AutoCommitEnabled)
                 _context.SaveChanges();
         }
+
+		public void DeleteRange(IEnumerable<T> entities)
+		{
+			if (entities == null)
+				throw new ArgumentNullException("entities");
+
+			this.Entities.RemoveRange(entities);
+
+			if (this.AutoCommitEnabled)
+				_context.SaveChanges();
+		}
 
 		[Obsolete("Use the extension method from 'SmartStore.Core, SmartStore.Core.Data' instead")]
         public IQueryable<T> Expand(IQueryable<T> query, string path)

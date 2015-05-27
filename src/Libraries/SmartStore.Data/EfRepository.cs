@@ -149,6 +149,36 @@ namespace SmartStore.Data
             }
         }
 
+		public void UpdateRange(IEnumerable<T> entities)
+		{
+			if (entities == null)
+				throw new ArgumentNullException("entities");
+
+			if (this.AutoCommitEnabled)
+			{
+				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
+				{
+					entities.Each(entity =>
+					{
+						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+					});
+				}
+				_context.SaveChanges();
+			}
+			else
+			{
+				try
+				{
+					entities.Each(entity =>
+					{
+						this.Entities.Attach(entity);
+						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
+					});
+				}
+				finally { }
+			}
+		}
+
         public void Delete(T entity)
         {
             if (entity == null)

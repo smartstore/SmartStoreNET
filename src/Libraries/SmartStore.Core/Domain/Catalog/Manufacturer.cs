@@ -4,6 +4,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Stores;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Media;
+using System.ComponentModel.DataAnnotations.Schema;
 
 namespace SmartStore.Core.Domain.Catalog
 {
@@ -100,6 +101,7 @@ namespace SmartStore.Core.Domain.Catalog
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
         /// </summary>
+		[Index]
         public bool Deleted { get; set; }
 
         /// <summary>

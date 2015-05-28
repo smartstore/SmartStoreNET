@@ -561,9 +561,6 @@ namespace SmartStore.Web.Controllers
 						if (defaultValue == null)
 							defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
 
-						if (defaultValue == null && pvaModel.Values.Count > 0 && attribute.IsRequired)
-							defaultValue = pvaModel.Values.First();
-
 						if (defaultValue != null)
 							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 					}

@@ -41,10 +41,14 @@
                         case AttributeControlType.DropdownList:
                             {
                         <select name="@(controlId)" id="@(controlId)"@(Html.Raw(disabled))>
-                            @if (!attribute.IsRequired)
-                            {
-                                <option value="0">---</option>
-                            }
+							@if (!attribute.IsRequired)
+							{
+								<option value="0">@T("Common.Unspecified")</option>
+							}
+							else if (attribute.Values.Count > 0 && !attribute.Values.Any(x => x.IsPreSelected))
+							{
+								<option value="0">@T("Common.PleaseSelect")</option>
+							}
                             @foreach (var pvaValue in attribute.Values)
                             {
                                 <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>

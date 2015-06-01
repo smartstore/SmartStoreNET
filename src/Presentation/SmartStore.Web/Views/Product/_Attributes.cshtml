@@ -72,7 +72,7 @@
                                 }
 
                                 <label for="@(controlId)_@(pvaValue.Id)" class="radio @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
-									<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@(Html.Raw(disabled)) />
+									<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected)@(Html.Raw(disabled)) />
                                         @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
                                 </label>
                             }
@@ -98,7 +98,7 @@
                                 }
                                 
                                 <label for="@(controlId)_@(pvaValue.Id)" class="checkbox @(pvaValue.ImageUrl.HasValue() ? "image-has-value" : "")">
-                                    <input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected" @(Html.Raw(disabled)) />
+									<input id="@(controlId)_@(pvaValue.Id)" type="checkbox" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected)@(Html.Raw(disabled)) />
                                     @(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())
                                 </label>
                             }
@@ -222,7 +222,7 @@
 										<span class="color-container tooltip-toggle" title="@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())">
 											<span class="color" style="background-color:@(pvaValue.ColorSquaresRgb);">&nbsp;</span>
 										</span>
-                                        <input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" checked="@pvaValue.IsPreSelected"@Html.Raw(disabled) />
+										<input id="@(controlId)_@(pvaValue.Id)" type="radio" name="@(controlId)" value="@pvaValue.Id" @Html.Attr("checked", "checked", pvaValue.IsPreSelected) @Html.Raw(disabled) />
                                         @*uncomment below to display attribute value name*@
                                         @*<span class="name">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</span>*@
                                     </label>

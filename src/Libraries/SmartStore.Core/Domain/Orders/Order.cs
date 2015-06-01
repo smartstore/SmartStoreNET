@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 using System.Globalization;
 using System.Runtime.Serialization;
@@ -429,6 +430,7 @@ namespace SmartStore.Core.Domain.Orders
         /// <summary>
         /// Gets or sets a value indicating whether the entity has been deleted
         /// </summary>
+		[Index]
         public bool Deleted { get; set; }
 
         /// <summary>

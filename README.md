@@ -54,18 +54,18 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * and many more...
 
 ## Project Status
-SmartStore.NET V2.1 has been released on November 24. 2014. The highlights are:
+SmartStore.NET V2.2.1 has been released on May 15, 2015. The highlights are:
 
-* Drastically **simplified plugin development, debugging & deployment**
-* **Theme inheritance**: create derived child themes with minimum effort by overriding only small parts (static files and even variables)
-* New backend design and cleaner frontend theme
-* More comfortable catalog management & product editing
-* New payment plugins `Pay with Amazon` & `Accarda-Kar`
-* **Preview Mode**: virtually test themes and shops more easily
-* **Simplified checkout** process
-* **New Image Gallery** component in public product details page
-* Support for **hierarchical SEO slugs**, e.g.: samsung/galaxy/s5/16gb/white
-* Support for new EU VAT regulation for digital goods (2008/8/EG directive)
+* Overall performance increase
+* Added multistore support for forums
+* New option to display product thumbnails in instant search
+* New mobile theme: _MobileLight_ (a light variant of the default mobile theme)
+* Quantity unit management
+* Limit country settings to stores
+* Web API: Support for file upload and multipart mime
+* More reliable mobile device detection
+* Performance: product list rendering up to 10x (!) faster now
+* Lots of bug fixes
 
 
 ##Try it online

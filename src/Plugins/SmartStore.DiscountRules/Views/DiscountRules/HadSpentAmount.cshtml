@@ -7,18 +7,6 @@
 <script>
 	$(function () {
 		var prefix = '@ViewData.TemplateInfo.HtmlFieldPrefix';
-		var chk = $("#@Html.FieldIdFor(model => model.LimitToCurrentBasketSubTotal)").click(toggleLimitToBasketSettings);
-		toggleLimitToBasketSettings();
-
-		function toggleLimitToBasketSettings() {
-			var pnl = $('#@Html.FieldIdFor(model => model.LimitToCurrentBasketSubTotal)').closest('tr').next();
-			if (chk.is(':checked')) {
-				pnl.show();
-			}
-			else {
-				pnl.hide();
-			}
-		}
 		
 		window[prefix + '_getSettings'] = function () {
 			return JSON.stringify(

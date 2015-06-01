@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Common;
@@ -103,6 +104,7 @@ namespace SmartStore.Core.Domain.Customers
         /// <summary>
         /// Gets or sets a value indicating whether the customer has been deleted
         /// </summary>
+		[Index]
         public bool Deleted { get; set; }
 
         /// <summary>
@@ -115,6 +117,7 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets the customer system name
         /// </summary>
 		[DataMember]
+		[Index]
 		public string SystemName { get; set; }
 
         /// <summary>

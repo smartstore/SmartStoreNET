@@ -28,6 +28,9 @@
         <div class="news-content">
             @Html.Raw(Model.Full)
         </div>
+
+		<div class="clear"></div>
+
         @Html.Widget("newsitem_page_before_comments")
 
         @if (Model.AllowComments)

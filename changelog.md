@@ -1,9 +1,16 @@
-# Release Notes
+﻿# Release Notes
 
-## SmartStore.NET 3.0.0
+## SmartStore.NET 2.2.2
 
 ### New Features
-* #210 Implement multi-store support for import/export 
+* #210 Implement multi-store support for import/export
+
+### Improvements
+* License checker now supports IDN mapping for domain names
+
+### Bugfixes
+* #694 Product variant attribute in product page should not be preselected implicitly
+
 
 ## SmartStore.NET 2.2.1
 

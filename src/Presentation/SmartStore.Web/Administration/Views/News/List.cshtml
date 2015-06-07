@@ -4,18 +4,23 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.ContentManagement.News.NewsItems").Text;
 }
+
 <div class="section-header">
     <div class="title">
         <i class="fa fa-rss"></i>
         @T("Admin.ContentManagement.News.NewsItems")
     </div>
     <div class="options">
+		<button type="submit" id="delete-selected" name="delete-selected" value="delete_selected" class="btn btn-danger">
+			<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
+		</button>
+
         <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
+
 <table width="100%">
     <tr>
         <td class="adminTitle">
@@ -36,8 +41,9 @@
         </td>
     </tr>
 </table>
-<p>
-</p>
+
+<p></p>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -45,10 +51,19 @@
                     .Name("newsitem-grid")
                     .Columns(columns =>
                     {
+						columns.Bound(x => x.Id)
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
                         columns.Bound(x => x.Title)
 							.Width(450)
                             .Template(x => Html.ActionLink(x.Title, "Edit", new { id = x.Id }))
                             .ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Title #></a>");
+						columns.Bound(x => x.Published)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
                         columns.Bound(x => x.LanguageName);
                         columns.Bound(x => x.Comments)
                             .Template(
@@ -59,22 +74,15 @@
                             .ClientTemplate("<div><a href=\"Comments?filterByNewsItemId=<#= Id #>\">" + T("Admin.ContentManagement.News.NewsItems.Fields.Comments").Text + " - <#= Comments #>" + "</a></div>");
                         columns.Bound(x => x.StartDate);
                         columns.Bound(x => x.EndDate);
-                        columns.Bound(x => x.Published)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Centered();
                         columns.Bound(x => x.CreatedOn);
-                        columns.Bound(x => x.Id)
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Width(50)
-                            .Centered()
-                            .HeaderTemplate(T("Admin.Common.Edit").Text)
-                            .Filterable(false);
                     })
                     .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "News"))
-					.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+					.ClientEvents(events =>	events.OnDataBinding("onDataBinding").OnDataBound("onDataBound").OnRowDataBound("onRowDataBound"))
 					.PreserveGridState()
                     .EnableCustomBinding(true))
         </td>
@@ -82,6 +90,7 @@
 </table>
 
 <script type="text/javascript">
+	var selectedIds = [];
 
     $(document).ready(function () {
         //search button
@@ -91,8 +100,68 @@
             //no paging support in this grid
             grid.currentPage = 1; //new search. Set page size to 1
             grid.ajaxRequest();
+        	//clear selected checkboxes
+            $('.checkboxGroups').attr('checked', false).change();
+            selectedIds = [];
             return false;
         });
+
+    	//"delete selected" button
+        $('#delete-selected').click(function (e) {
+        	e.preventDefault();
+
+        	var postData = {
+        		selectedIds: selectedIds
+        	};
+
+        	$.ajax({
+        		cache:false,
+        		type: "POST",
+        		url: "@(Url.Action("DeleteSelected", "News"))",
+        		data: postData,
+        		complete: function (data) {
+        			//reload grid
+        			var grid = $('#newsitem-grid').data('tGrid');
+        			grid.currentPage = 1; //new search. Set page size to 1
+        			grid.ajaxRequest();
+        			//clear selected checkboxes
+        			$('.checkboxGroups').attr('checked', false).change();
+        			selectedIds = [];
+        		},
+        		error:function (xhr, ajaxOptions, thrownError){
+        			alert(thrownError);
+        		},
+        		traditional: true
+			});
+			return false;
+        });
+
+    	$('#mastercheckbox').click(function () {
+    		$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+    	});
+
+    	//wire up checkboxes. 
+    	$(document).on('change', '#newsitem-grid input[type=checkbox][id!=mastercheckbox]', function (e) {
+    		var $check = $(this);
+    		if ($check.is(":checked") == true) {
+    			var checked = jQuery.inArray($check.val(), selectedIds);
+    			if (checked == -1) {
+    				//add id to selectedIds.  
+    				selectedIds.push($check.val());
+    			}
+    		}
+    		else {
+    			var checked = jQuery.inArray($check.val(), selectedIds);
+    			if (checked > -1) {
+    				//remove id from selectedIds.  
+    				selectedIds = $.grep(selectedIds, function (item, index) {
+    					return item != $check.val();
+    				});
+    			}
+    		}
+    		updateMasterCheckbox();
+    	});
+
     });
 
     function onDataBinding(e) {
@@ -100,5 +169,28 @@
             SearchStoreId: $('#SearchStoreId').val()
         };
         e.data = searchModel;
+    }
+
+    function onRowDataBound(e) {
+    	if (!e.dataItem.Published) {
+    		$(e.row).find('td').wrapInner('<span class="muted" />');
+    	}
+    }
+
+    function onDataBound(e) {
+    	$('#newsitem-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
+    		var currentId = $(this).val();
+    		var checked = jQuery.inArray(currentId, selectedIds);
+    		//set checked based on if current checkbox's value is in selectedIds.  
+    		$(this).attr('checked', checked > -1);
+    	});
+
+    	updateMasterCheckbox();
+    }
+
+    function updateMasterCheckbox() {
+    	var numChkBoxes = $('#newsitem-grid input[type=checkbox][id!=mastercheckbox]').length;
+    	var numChkBoxesChecked = $('#newsitem-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
+    	$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
     }
 </script>

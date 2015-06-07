@@ -72,6 +72,24 @@ namespace SmartStore.Services.News
             return _newsItemRepository.GetById(newsId);
         }
 
+		/// <summary>
+		/// Get news by identifiers
+		/// </summary>
+		/// <param name="newsIds">News identifiers</param>
+		/// <returns>News query</returns>
+		public virtual IQueryable<NewsItem> GetNewsByIds(int[] newsIds)
+		{
+			if (newsIds == null || newsIds.Length == 0)
+				return null;
+
+			var query =
+				from x in _newsItemRepository.Table
+				where newsIds.Contains(x.Id)
+				select x;
+
+			return query;
+		}
+
         /// <summary>
         /// Gets all news
         /// </summary>

@@ -262,6 +262,22 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
+		[HttpPost]
+		public ActionResult DeleteSelected(ICollection<int> selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageNews))
+				return AccessDeniedView();
+
+			if (selectedIds != null)
+			{
+				var news = _newsService.GetNewsByIds(selectedIds.ToArray()).ToList();
+
+				news.ForEach(x => _newsService.DeleteNews(x));
+			}
+
+			return Json(new { Result = true });
+		}
+
         #endregion
 
         #region Comments

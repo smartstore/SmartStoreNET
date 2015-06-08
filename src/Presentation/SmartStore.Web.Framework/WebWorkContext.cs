@@ -352,6 +352,7 @@ namespace SmartStore.Web.Framework
 
                 bool fixPrimaryStoreCurrency = false;
                 Currency currency = null;
+
                 // return primary store currency when we're in admin area/mode
                 if (this.IsAdmin)
                 {
@@ -362,6 +363,7 @@ namespace SmartStore.Web.Framework
                 {
                     // find current customer language
                     var customer = this.CurrentCustomer;
+					var currentStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
 
                     if (customer != null && !customer.IsSearchEngineAccount())
                     {
@@ -380,9 +382,13 @@ namespace SmartStore.Web.Framework
 					// find currency by domain ending
 					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
 					{
-						currency = _currencyService
-							.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id)
-							.GetByDomainEnding(_httpContext.Request.Url.Authority);
+						currency = currentStoreCurrencies.GetByDomainEnding(_httpContext.Request.Url.Authority);
+					}
+
+					// if there's only one currency for current store it dominates the primary currency
+					if (currentStoreCurrencies.Count == 1)
+					{
+						currency = currentStoreCurrencies.First();
 					}
 
                     // get PrimaryStoreCurrency
@@ -395,11 +401,7 @@ namespace SmartStore.Web.Framework
                     // get the first published currency for current store
                     if (currency == null)
                     {
-                        var allStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
-                        if (allStoreCurrencies.Count > 0)
-                        { 
-                            currency = allStoreCurrencies.FirstOrDefault();
-                        }
+						currency = currentStoreCurrencies.FirstOrDefault();
                     }
                 }
 
@@ -424,8 +426,7 @@ namespace SmartStore.Web.Framework
                 {
                     _currencySettings.PrimaryStoreCurrencyId = currency.Id;
                     _settingService.UpdateSetting(_currencySettings, x => x.PrimaryStoreCurrencyId, true, _storeContext.CurrentStore.Id);
-                } 
-
+                }
 
                 _cachedCurrency = currency;
                 return _cachedCurrency;

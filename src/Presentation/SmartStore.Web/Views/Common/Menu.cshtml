@@ -48,9 +48,18 @@
     @Html.Widget("header_menu_after")
 </ul>
 
-@if (Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayAdminLink)
+@if (Model.NewsEnabled || Model.BlogEnabled || Model.ForumEnabled || Model.DisplayAdminLink || Model.DisplayAdminLink)
 {
     <ul class="pull-left special">
+		@if (Model.NewsEnabled)
+		{
+			<li>
+				<a class="special-news" href="@Url.RouteUrl("NewsArchive")">
+					<i class="fa fa-rss-square"></i>
+					@T("News")
+				</a>
+			</li>
+		}
         @if (Model.BlogEnabled)
         {
             <li>

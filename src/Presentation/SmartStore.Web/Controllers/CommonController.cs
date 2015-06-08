@@ -15,6 +15,7 @@ using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Seo;
@@ -64,6 +65,7 @@ namespace SmartStore.Web.Controllers
         private readonly CatalogSettings _catalogSettings;
         private readonly ThemeSettings _themeSettings;
         private readonly CommonSettings _commonSettings;
+		private readonly NewsSettings _newsSettings;
         private readonly BlogSettings _blogSettings;
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
@@ -93,6 +95,7 @@ namespace SmartStore.Web.Controllers
 			CatalogSettings catalogSettings,
             EmailAccountSettings emailAccountSettings,
             CommonSettings commonSettings, 
+			NewsSettings newsSettings,
 			BlogSettings blogSettings, 
 			ForumSettings forumSettings,
             LocalizationSettings localizationSettings, 
@@ -117,6 +120,7 @@ namespace SmartStore.Web.Controllers
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
             this._commonSettings = commonSettings;
+			this._newsSettings = newsSettings;
             this._blogSettings = blogSettings;
             this._forumSettings = forumSettings;
             this._localizationSettings = localizationSettings;
@@ -648,6 +652,7 @@ namespace SmartStore.Web.Controllers
             var model = new MenuModel
             {
                 RecentlyAddedProductsEnabled = _catalogSettings.RecentlyAddedProductsEnabled,
+				NewsEnabled = _newsSettings.Enabled,
                 BlogEnabled = _blogSettings.Enabled,
                 ForumEnabled = _forumSettings.ForumsEnabled,
 				AllowPrivateMessages = _forumSettings.AllowPrivateMessages && customer.IsRegistered(),

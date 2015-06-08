@@ -4,6 +4,7 @@ namespace SmartStore.Web.Models.Common
 {
     public partial class MenuModel : ModelBase
     {
+		public bool NewsEnabled { get; set; }
         public bool BlogEnabled { get; set; }
         public bool RecentlyAddedProductsEnabled { get; set; }
         public bool ForumEnabled { get; set; }

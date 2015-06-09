@@ -11,6 +11,7 @@
 ### Bugfixes
 * #694 Product variant attribute in product page should not be preselected implicitly
 * Fixed: If currencies are limited to one for a multi-store, this currency should dominate the setting for the primary store currency
+* #563 Scheduled Tasks: ensure, that 'LastEndUtc' is ALWAYS set
 
 
 ## SmartStore.NET 2.2.1

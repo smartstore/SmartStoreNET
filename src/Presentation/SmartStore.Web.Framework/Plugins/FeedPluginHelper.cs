@@ -606,6 +606,7 @@ namespace SmartStore.Web.Framework.Plugins
 
 			var task = AsyncRunner.Run((container, ct) =>
 			{
+				int taskId = 0;
 				try
 				{
 					var svc = container.Resolve<IScheduleTaskService>();
@@ -615,19 +616,15 @@ namespace SmartStore.Web.Framework.Plugins
 					if (scheduleTask == null)
 						throw new Exception("Schedule task cannot be loaded");
 
+					taskId = scheduleTask.Id;
+
 					var job = new Job(scheduleTask);
 					job.Enabled = true;
 					job.Execute(ct, container, false);
 				}
-				catch (Exception exc)
+				catch (Exception)
 				{
-					exc.Dump();
-
-					try
-					{
-						_scheduleTaskService.EnsureTaskIsNotRunning(scheduleTaskType);
-					}
-					catch (Exception) { }
+					_scheduleTaskService.EnsureTaskIsNotRunning(taskId);
 				}
 			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
 

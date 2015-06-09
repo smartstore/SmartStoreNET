@@ -182,11 +182,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				catch
 				{
-					try
-					{
-						svc.EnsureTaskIsNotRunning(id);
-					}
-					catch { }
+					svc.EnsureTaskIsNotRunning(id);
 				}
 			});
 

@@ -123,30 +123,23 @@ namespace SmartStore.Services.Tasks
         }
 
 		/// <summary>
-		/// Ensures that a task is not marked as running
-		/// </summary>
-		/// <param name="type">Task type</param>
-		public virtual void EnsureTaskIsNotRunning(string type)
-		{
-			var task = GetTaskByType(type);
-			if (task != null && task.IsRunning)
-			{
-				task.LastEndUtc = task.LastStartUtc;
-				UpdateTask(task);
-			}
-		}
-
-		/// <summary>
-		/// Ensures that a task is not marked as running
+		/// Ensures that a task is not marked as running (normalize last start and end date).
 		/// </summary>
 		/// <param name="taskId">Task identifier</param>
+		/// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
 		public virtual void EnsureTaskIsNotRunning(int taskId)
 		{
-			var task = GetTaskById(taskId);
-			if (task != null && task.IsRunning)
+			try
 			{
-				task.LastEndUtc = task.LastStartUtc;
-				UpdateTask(task);
+				if (taskId != 0)
+				{
+					_taskRepository.Context.ExecuteSqlCommand("Update [dbo].[ScheduleTask] Set [LastEndUtc] = [LastStartUtc] Where Id = {0} And [LastEndUtc] < [LastStartUtc]",
+						true, null, taskId);
+				}
+			}
+			catch (Exception exc)
+			{
+				exc.Dump();
 			}
 		}
 

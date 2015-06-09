@@ -599,7 +599,7 @@ namespace SmartStore.Web.Controllers
 					if (model.CombinationSelected != null && model.CombinationSelected.IsActive == false)
 					{
 						model.IsAvailable = false;
-						model.StockAvailability = T("Products.Availability.OutOfStock");
+                        model.StockAvailability = T("Products.Availability.IsNotActive");
 					}
 
 					product.MergeWithCombination(model.CombinationSelected);

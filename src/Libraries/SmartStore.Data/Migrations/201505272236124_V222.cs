@@ -2,8 +2,9 @@ namespace SmartStore.Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class V222 : DbMigration
+    using SmartStore.Data.Setup;
+
+    public partial class V222 : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -25,6 +26,24 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.Category", new[] { "Deleted" });
             DropIndex("dbo.Product", new[] { "Deleted" });
             AlterColumn("dbo.Customer", "SystemName", c => c.String());
+        }
+
+        public bool RollbackOnFailure
+        {
+            get { return false; }
+        }
+
+        public void Seed(SmartObjectContext context)
+        {
+            context.MigrateLocaleResources(MigrateLocaleResources);
+        }
+
+        public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+        {
+            builder.AddOrUpdate("Products.Availability.IsNotActive",
+                "Not in assortment",
+                "Nicht im Sortiment");
+
         }
     }
 }

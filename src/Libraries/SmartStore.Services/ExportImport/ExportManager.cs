@@ -621,7 +621,7 @@ namespace SmartStore.Services.ExportImport
 					var manu = productManufacturer.Manufacturer;
 					writer.WriteStartElement("ProductManufacturer");
 
-					writer.Write("ProductManufacturerId", productManufacturer.Id.ToString());
+					writer.Write("Id", productManufacturer.Id.ToString());
 					writer.Write("IsFeaturedProduct", productManufacturer.IsFeaturedProduct.ToString());
 					writer.Write("DisplayOrder", productManufacturer.DisplayOrder.ToString());
 

@@ -93,6 +93,20 @@ namespace SmartStore.Admin.Controllers
 			return RedirectToAction("Providers");
 		}
 
+		public ActionResult Edit(string systemName)
+		{
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+				return AccessDeniedView();
+
+			var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(systemName);
+
+			var model = _pluginMediator.ToProviderModel<IPaymentMethod, PaymentMethodEditModel>(paymentMethod);
+
+			model.IconUrl = _pluginMediator.GetIconUrl(model.PluginDescriptor);
+
+			return View(model);
+		}
+
         #endregion
     }
 }

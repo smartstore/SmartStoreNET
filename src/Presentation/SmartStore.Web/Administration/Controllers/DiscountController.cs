@@ -408,7 +408,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = duh.Select(x =>
                 {
-                    return new DiscountModel.DiscountUsageHistoryModel()
+                    return new DiscountModel.DiscountUsageHistoryModel
                     {
                         Id = x.Id,
                         DiscountId = x.DiscountId,

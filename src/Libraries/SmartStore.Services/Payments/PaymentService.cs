@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
@@ -17,12 +18,14 @@ namespace SmartStore.Services.Payments
     {
         #region Fields
 
+		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
         private readonly PaymentSettings _paymentSettings;
         private readonly IPluginFinder _pluginFinder;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly ISettingService _settingService;
 		private readonly ILocalizationService _localizationService;
 		private readonly IProviderManager _providerManager;
+		private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
@@ -36,19 +39,23 @@ namespace SmartStore.Services.Payments
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
 		/// <param name="pluginService">Plugin service</param>
         public PaymentService(
+			IRepository<PaymentMethod> paymentMethodRepository,
 			PaymentSettings paymentSettings, 
 			IPluginFinder pluginFinder,
             ShoppingCartSettings shoppingCartSettings,
 			ISettingService settingService,
 			ILocalizationService localizationService,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			IEventPublisher eventPublisher)
         {
+			this._paymentMethodRepository = paymentMethodRepository;
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
 			this._localizationService = localizationService;
 			this._providerManager = providerManager;
+			this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -120,6 +127,49 @@ namespace SmartStore.Services.Payments
         {
 			return _providerManager.GetAllProviders<IPaymentMethod>(storeId);
         }
+
+
+		/// <summary>
+		/// Gets a payment method by system name
+		/// </summary>
+		/// <param name="systemName">Provider system name</param>
+		/// <returns>Payment method entity</returns>
+		public virtual PaymentMethod GetPaymentMethodBySystemName(string systemName)
+		{
+			if (systemName.HasValue())
+			{
+				return _paymentMethodRepository.Table.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Insert a payment method
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void InsertPaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Insert(paymentMethod);
+
+			_eventPublisher.EntityInserted(paymentMethod);
+		}
+
+		/// <summary>
+		/// Updates a payment method
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void UpdatePaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Update(paymentMethod);
+
+			_eventPublisher.EntityUpdated(paymentMethod);
+		}
 
 
 		/// <summary>

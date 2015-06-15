@@ -1,13 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Web;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Payments
 {
 	public class PaymentMethodEditModel : ProviderModel
 	{
-		public string IconUrl { get; set; }
+		public List<SelectListItem> AvailableCustomerRoles { get; set; }
+		public List<SelectListItem> AvailableShippingMethods { get; set; }
+		public List<SelectListItem> AvaliableCountries { get; set; }
 	}
 }

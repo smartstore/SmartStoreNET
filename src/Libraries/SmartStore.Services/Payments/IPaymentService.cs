@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
@@ -35,6 +36,26 @@ namespace SmartStore.Services.Payments
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Payment providers</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0);
+
+
+		/// <summary>
+		/// Gets a payment method by system name
+		/// </summary>
+		/// <param name="systemName">Provider system name</param>
+		/// <returns>Payment method entity</returns>
+		PaymentMethod GetPaymentMethodBySystemName(string systemName);
+
+		/// <summary>
+		/// Insert a payment method
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		void InsertPaymentMethod(PaymentMethod paymentMethod);
+
+		/// <summary>
+		/// Updates a payment method
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		void UpdatePaymentMethod(PaymentMethod paymentMethod);
 
 
 

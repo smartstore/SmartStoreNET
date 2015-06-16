@@ -15,6 +15,8 @@ namespace SmartStore.Data.Mapping.Payments
 			this.Property(x => x.ExcludedCustomerRoleIds).IsMaxLength();
 			this.Property(x => x.ExcludedCountryIds).IsMaxLength();
 			this.Property(x => x.ExcludedShippingMethodIds).IsMaxLength();
+
+			this.Ignore(x => x.CountryExclusionContext);
 		}
 	}
 }

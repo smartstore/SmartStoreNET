@@ -1,4 +1,6 @@
-﻿@model PaymentMethodEditModel
+﻿@using SmartStore.Core.Domain.Payments;
+
+@model PaymentMethodEditModel
 
 @{
 	ViewBag.Title = T("Common.Edit").Text + " - " + Model.FriendlyName;
@@ -115,6 +117,19 @@
 							@T("Admin.Configuration.Countries")
 						</label>
 					</div>
+					<div class="normal-font">
+						@T("Admin.Common.AppliedTo")
+					</div>
+					<div>
+						<label class="radio normal-font">
+							<input type="radio" name="CountryExclusionContext" value="@((int)CountryExclusionContextType.BillingAddress)" @(Model.CountryExclusionContext == CountryExclusionContextType.BillingAddress ? "checked='checked'" : "") />
+							@T("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.BillingAddress")
+						</label>
+						<label class="radio normal-font">
+							<input type="radio" name="CountryExclusionContext" value="@((int)CountryExclusionContextType.ShippingAddress)" @(Model.CountryExclusionContext == CountryExclusionContextType.ShippingAddress ? "checked='checked'" : "") />
+							@T("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.ShippingAddress")
+						</label>
+					</div>
 				</th>
 			</tr>
 			<tr>
@@ -132,7 +147,7 @@
 				</td>
 				<td class="column-countries">
 
-					@foreach (var grp in Model.AvaliableCountries.Select((x, i) => new { Key = i / 4, Value = x }).GroupBy(x => x.Key, x => x.Value))
+					@foreach (var grp in Model.AvailableCountries.Select((x, i) => new { Key = i / 4, Value = x }).GroupBy(x => x.Key, x => x.Value))
 					{
 						<div>
 							@foreach (var item in grp)

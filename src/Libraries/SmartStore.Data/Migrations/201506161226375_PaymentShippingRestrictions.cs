@@ -8,18 +8,19 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            CreateTable(
-                "dbo.PaymentMethod",
-                c => new
-                    {
-                        Id = c.Int(nullable: false, identity: true),
-                        PaymentMethodSystemName = c.String(nullable: false, maxLength: 4000),
-                        ExcludedCustomerRoleIds = c.String(),
-                        ExcludedCountryIds = c.String(),
-                        ExcludedShippingMethodIds = c.String(),
-                    })
-                .PrimaryKey(t => t.Id)
-				.Index(t => t.PaymentMethodSystemName);            
+			CreateTable(
+				"dbo.PaymentMethod",
+				c => new
+					{
+						Id = c.Int(nullable: false, identity: true),
+						PaymentMethodSystemName = c.String(nullable: false, maxLength: 4000),
+						ExcludedCustomerRoleIds = c.String(),
+						ExcludedCountryIds = c.String(),
+						ExcludedShippingMethodIds = c.String(),
+						CountryExclusionContextId = c.Int(nullable: false),
+					})
+				.PrimaryKey(t => t.Id)
+				.Index(t => t.PaymentMethodSystemName);
         }
         
         public override void Down()
@@ -43,9 +44,21 @@ namespace SmartStore.Data.Migrations
 				"Restrictions",
 				"Einschränkungen");
 
+			builder.AddOrUpdate("Admin.Common.AppliedTo",
+				"applied to",
+				"bezogen auf");
+
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
 				"Select customer roles, shipping methods and countries for which you do <u>not</u> want to offer this payment method.",
 				"Wählen Sie Kundengruppen, Versandarten und Länder, bei denen sie diese Zahlungsmethode <u>nicht</u> anbieten möchten.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.BillingAddress",
+				"Billing address",
+				"Rechnungsadresse");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.ShippingAddress",
+				"Shipping address",
+				"Versandadresse");
 		}
     }
 }

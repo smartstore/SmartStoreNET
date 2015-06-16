@@ -1199,24 +1199,38 @@ table.payment-method-features td {
 
 /* payment methods restrictions
 -------------------------------------------------------------- */
-.payment-restrictions th label {
-	margin: 0;
-}
-.payment-restrictions .column-customerroles,
-.payment-restrictions .column-shippingmethods {
-	width: 18%;
-}
-.payment-restrictions .column-countries {
-	width: 64%;
-
-	> div {
-		display: table-row;
+.payment-restrictions {
+	th label {
+		margin: 0 10px 0 0;
+		display: inline-block;
 	}
 
-	.country-countainer {
-		display: table-cell;
-		width: 25%;
+	th > div {
+		display: inline-block;
 		padding-right: 10px;
+	}
+
+	.normal-font {
+		font-weight: normal;
+	}
+
+	.column-customerroles,
+	.column-shippingmethods {
+		width: 18%;
+	}
+
+	.column-countries {
+		width: 64%;
+
+		> div {
+			display: table-row;
+		}
+
+		.country-countainer {
+			display: table-cell;
+			width: 25%;
+			padding-right: 10px;
+		}
 	}
 }
 

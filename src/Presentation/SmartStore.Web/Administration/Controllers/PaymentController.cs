@@ -71,7 +71,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableShippingMethods = new List<SelectListItem>();
-			model.AvaliableCountries = new List<SelectListItem>();
+			model.AvailableCountries = new List<SelectListItem>();
 
 			foreach (var role in customerRoles.OrderBy(x => x.Name))
 			{
@@ -85,11 +85,13 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var country in countries.OrderBy(x => x.Name))
 			{
-				model.AvaliableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
+				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
 			}
 
 			if (paymentMethod != null)
 			{
+				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
+
 				foreach (var id in paymentMethod.ExcludedCustomerRoleIds.SplitSafe(","))
 				{
 					if ((item = model.AvailableCustomerRoles.FirstOrDefault(x => x.Value == id)) != null)
@@ -104,7 +106,7 @@ namespace SmartStore.Admin.Controllers
 
 				foreach (var id in paymentMethod.ExcludedCountryIds.SplitSafe(","))
 				{
-					if ((item = model.AvaliableCountries.FirstOrDefault(x => x.Value == id)) != null)
+					if ((item = model.AvailableCountries.FirstOrDefault(x => x.Value == id)) != null)
 						item.Selected = true;
 				}
 			}
@@ -184,7 +186,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public ActionResult Edit(string systemName, bool continueEditing, ProviderModel model)
+		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
 		{
 			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
@@ -225,6 +227,8 @@ namespace SmartStore.Admin.Controllers
 			paymentMethod.ExcludedCustomerRoleIds = string.Join(",", customerRoleIds);
 			paymentMethod.ExcludedShippingMethodIds = string.Join(",", shippingMethodIds);
 			paymentMethod.ExcludedCountryIds = string.Join(",", countryIds);
+
+			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);

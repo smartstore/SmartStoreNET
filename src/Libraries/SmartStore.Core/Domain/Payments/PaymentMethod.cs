@@ -31,5 +31,27 @@ namespace SmartStore.Core.Domain.Payments
 		/// </summary>
 		[DataMember]
 		public string ExcludedShippingMethodIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets the context identifier for country exclusion
+		/// </summary>
+		[DataMember]
+		public int CountryExclusionContextId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country exclusion context
+		/// </summary>
+		[DataMember]
+		public CountryExclusionContextType CountryExclusionContext
+		{
+			get
+			{
+				return (CountryExclusionContextType)this.CountryExclusionContextId;
+			}
+			set
+			{
+				this.CountryExclusionContextId = (int)value;
+			}
+		}
 	}
 }

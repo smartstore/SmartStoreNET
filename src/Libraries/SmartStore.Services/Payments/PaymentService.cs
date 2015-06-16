@@ -126,9 +126,15 @@ namespace SmartStore.Services.Payments
 
 							// method restricted by country of selected billing address?
 							var excludedCountryIds = method.ExcludedCountryIds.ToIntArray();
-							if (excludedCountryIds.Any() && customer.BillingAddress != null && (customer.BillingAddress.CountryId ?? 0) != 0)
+							if (excludedCountryIds.Any())
 							{
-								if (excludedCountryIds.Contains(customer.BillingAddress.CountryId.Value))
+								int countryId = 0;
+								if (method.CountryExclusionContext == CountryExclusionContextType.ShippingAddress)
+									countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
+								else
+									countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
+
+								if (countryId != 0 && excludedCountryIds.Contains(countryId))
 									return false;
 							}							
 						}

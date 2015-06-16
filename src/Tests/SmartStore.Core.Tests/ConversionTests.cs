@@ -32,30 +32,41 @@ namespace SmartStore.Core.Tests
 			r1.ShouldBe<int?>();
 			Assert.AreEqual(r1.Value, 3);
 
-			var shippingOption = new ShippingOption { Name = "Name", Description = "Desc", Rate = 1, ShippingRateComputationMethodSystemName = "SystemName" };
+			var shippingOption = new ShippingOption
+			{
+				ShippingMethodId = 2,
+				Name = "Name",
+				Description = "Desc",
+				Rate = 1,
+				ShippingRateComputationMethodSystemName = "SystemName"
+			};
 			var soStr = shippingOption.Convert<string>();
 			Assert.IsNotEmpty(soStr);
 
 			shippingOption = soStr.Convert<ShippingOption>();
 			Assert.IsNotNull(shippingOption);
+			Assert.AreEqual(shippingOption.ShippingMethodId, 2);
 			Assert.AreEqual(shippingOption.Name, "Name");
 			Assert.AreEqual(shippingOption.Description, "Desc");
 			Assert.AreEqual(shippingOption.Rate, 1);
 			Assert.AreEqual(shippingOption.ShippingRateComputationMethodSystemName, "SystemName");
 
-			var shippingOptions = new List<ShippingOption> { 
-				new ShippingOption { Name = "Name1", Description = "Desc1" },
-				new ShippingOption { Name = "Name2", Description = "Desc2" }
+			var shippingOptions = new List<ShippingOption>
+			{ 
+				new ShippingOption { ShippingMethodId = 1, Name = "Name1", Description = "Desc1" },
+				new ShippingOption { ShippingMethodId = 2, Name = "Name2", Description = "Desc2" }
 			};
 			soStr = shippingOptions.Convert<string>();
 			Assert.IsNotEmpty(soStr);
 
 			shippingOptions = soStr.Convert<List<ShippingOption>>();
 			Assert.AreEqual(shippingOptions.Count, 2);
+			Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
 			Assert.AreEqual(shippingOptions[1].Description, "Desc2");
 
 			var shippingOptions2 = soStr.Convert<IList<ShippingOption>>();
 			Assert.AreEqual(shippingOptions2.Count, 2);
+			Assert.AreEqual(shippingOptions[1].ShippingMethodId, 2);
 			Assert.AreEqual(shippingOptions2[1].Description, "Desc2");
 
 			var enu = SmartStore.Core.Domain.Catalog.AttributeControlType.FileUpload;

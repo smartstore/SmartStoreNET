@@ -150,6 +150,7 @@ namespace SmartStore.ShippingByWeight
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();
+					shippingOption.ShippingMethodId = shippingMethod.Id;
                     shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
 
                     if (record != null && record.SmallQuantityThreshold > subTotal)

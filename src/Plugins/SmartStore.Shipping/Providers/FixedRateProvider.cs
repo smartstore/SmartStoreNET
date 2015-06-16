@@ -60,6 +60,7 @@ namespace SmartStore.Shipping
             foreach (var shippingMethod in shippingMethods)
             {
                 var shippingOption = new ShippingOption();
+				shippingOption.ShippingMethodId = shippingMethod.Id;
                 shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
                 shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
                 shippingOption.Rate = GetRate(shippingMethod.Id);

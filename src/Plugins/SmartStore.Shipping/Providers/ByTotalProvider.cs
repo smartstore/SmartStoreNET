@@ -200,6 +200,7 @@ namespace SmartStore.Shipping
                     }
                     
                     var shippingOption = new ShippingOption();
+					shippingOption.ShippingMethodId = shippingMethod.Id;
                     shippingOption.Name = shippingMethod.Name;
                     shippingOption.Description = shippingMethod.Description;
                     shippingOption.Rate = rate.Value;

@@ -27,7 +27,7 @@ namespace SmartStore.Core.Domain.Payments
 		public string ExcludedCountryIds { get; set; }
 
 		/// <summary>
-		/// Gets or sets identifiers of shipping methods (comma separated) to be excluded in checkout
+		/// Gets or sets shipping methods (comma separated) to be excluded in checkout
 		/// </summary>
 		[DataMember]
 		public string ExcludedShippingMethodIds { get; set; }

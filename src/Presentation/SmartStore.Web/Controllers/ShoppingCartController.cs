@@ -546,8 +546,10 @@ namespace SmartStore.Web.Controllers
 			model.Items.Clear();
 
 			var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Button || pm.Value.PaymentMethodType == PaymentMethodType.StandardAndButton)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id)
+				.Where(pm => 
+					pm.Value.PaymentMethodType == PaymentMethodType.Button || 
+					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndButton)
 				.ToList();
 
 			foreach (var pm in boundPaymentMethods)
@@ -560,7 +562,7 @@ namespace SmartStore.Web.Controllers
 				RouteValueDictionary routeValues;
 				pm.Value.GetPaymentInfoRoute(out actionName, out controllerName, out routeValues);
 
-				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem()
+				model.Items.Add(new ButtonPaymentMethodModel.ButtonPaymentMethodItem
 				{
 					ActionName = actionName,
 					ControllerName = controllerName,
@@ -1845,6 +1847,7 @@ namespace SmartStore.Web.Controllers
                         {
                             var soModel = new EstimateShippingModel.ShippingOptionModel()
                             {
+								ShippingMethodId = shippingOption.ShippingMethodId,
                                 Name = shippingOption.Name,
                                 Description = shippingOption.Description,
 

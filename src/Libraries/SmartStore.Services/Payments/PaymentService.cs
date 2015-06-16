@@ -1,11 +1,15 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 
@@ -16,6 +20,12 @@ namespace SmartStore.Services.Payments
     /// </summary>
     public partial class PaymentService : IPaymentService
     {
+		#region Constants
+		
+		private const string PAYMENTMETHOD_ALL_KEY = "SmartStore.paymentmethod.all";
+		
+		#endregion
+
         #region Fields
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
@@ -26,6 +36,7 @@ namespace SmartStore.Services.Payments
 		private readonly ILocalizationService _localizationService;
 		private readonly IProviderManager _providerManager;
 		private readonly IEventPublisher _eventPublisher;
+		private readonly ICacheManager _cacheManager;
 
         #endregion
 
@@ -46,7 +57,8 @@ namespace SmartStore.Services.Payments
 			ISettingService settingService,
 			ILocalizationService localizationService,
 			IProviderManager providerManager,
-			IEventPublisher eventPublisher)
+			IEventPublisher eventPublisher,
+			ICacheManager cacheManager)
         {
 			this._paymentMethodRepository = paymentMethodRepository;
             this._paymentSettings = paymentSettings;
@@ -56,32 +68,83 @@ namespace SmartStore.Services.Payments
 			this._localizationService = localizationService;
 			this._providerManager = providerManager;
 			this._eventPublisher = eventPublisher;
+			this._cacheManager = cacheManager;
         }
 
         #endregion
 
-        #region Methods
+		#region Methods
 
-        /// <summary>
+		/// <summary>
         /// Load active payment methods
         /// </summary>
-        /// <param name="filterByCustomerId">Filter payment methods by customer; null to load all records</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
+		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
         /// <returns>Payment methods</returns>
-		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0)
+		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(Customer customer = null, int storeId = 0)
         {
-			var allMethods = LoadAllPaymentMethods(storeId);
-			var activeMethods = allMethods
-				.Where(p =>	p.Value.IsActive && _paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
+			List<int> customerRoleIds = null;
+			int? selectedShippingMethodId = null;
 
-			if (!activeMethods.Any())
+			var allProviders = LoadAllPaymentMethods(storeId);
+
+			var activeProviders = allProviders
+				.Where(p =>
+				{
+					if (!p.Value.IsActive || !_paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase))
+						return false;
+
+					if (customer != null)
+					{
+						var method = GetPaymentMethodBySystemName(p.Metadata.SystemName);
+						if (method != null)
+						{
+							// method restricted by customer role id?
+							var excludedRoleIds = method.ExcludedCustomerRoleIds.ToIntArray();
+							if (excludedRoleIds.Any())
+							{
+								if (customerRoleIds == null)
+									customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
+
+								if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+									return false;
+							}
+
+							// method restricted by selected shipping method?
+							var excludedShippingMethodIds = method.ExcludedShippingMethodIds.ToIntArray();
+							if (excludedShippingMethodIds.Any())
+							{
+								if (!selectedShippingMethodId.HasValue)
+								{
+									var selectedShipping = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, storeId);
+									selectedShippingMethodId = (selectedShipping == null ? 0 : selectedShipping.ShippingMethodId);
+								}
+
+								if ((selectedShippingMethodId ?? 0) != 0 && excludedShippingMethodIds.Contains(selectedShippingMethodId.Value))
+									return false;
+							}
+
+							// method restricted by country of selected billing address?
+							var excludedCountryIds = method.ExcludedCountryIds.ToIntArray();
+							if (excludedCountryIds.Any() && customer.BillingAddress != null && (customer.BillingAddress.CountryId ?? 0) != 0)
+							{
+								if (excludedCountryIds.Contains(customer.BillingAddress.CountryId.Value))
+									return false;
+							}							
+						}
+					}
+					return true;
+				});
+
+			if (!activeProviders.Any())
 			{
-				var fallbackMethod = allMethods.FirstOrDefault();
+				var fallbackMethod = allProviders.FirstOrDefault();
 				if (fallbackMethod != null)
 				{
 					_paymentSettings.ActivePaymentMethodSystemNames.Clear();
 					_paymentSettings.ActivePaymentMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
 					_settingService.SaveSetting(_paymentSettings);
+
 					return new Provider<IPaymentMethod>[] { fallbackMethod };
 				}
 				else
@@ -91,7 +154,7 @@ namespace SmartStore.Services.Payments
 				}
 			}
 
-			return activeMethods;
+			return activeProviders;
         }
 
 		/// <summary>
@@ -130,7 +193,21 @@ namespace SmartStore.Services.Payments
 
 
 		/// <summary>
-		/// Gets a payment method by system name
+		/// Gets all payment method extra data
+		/// </summary>
+		/// <returns>List of payment method objects</returns>
+		public virtual IList<PaymentMethod> GetAllPaymentMethods()
+		{
+			var paymentMethods = _cacheManager.Get(PAYMENTMETHOD_ALL_KEY, () =>
+			{
+				return _paymentMethodRepository.Table.ToList();
+			});
+
+			return paymentMethods;
+		}
+
+		/// <summary>
+		/// Gets payment method extra data by system name
 		/// </summary>
 		/// <param name="systemName">Provider system name</param>
 		/// <returns>Payment method entity</returns>
@@ -138,13 +215,15 @@ namespace SmartStore.Services.Payments
 		{
 			if (systemName.HasValue())
 			{
-				return _paymentMethodRepository.Table.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
+				var allPaymentMethods = GetAllPaymentMethods();
+
+				return allPaymentMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(systemName));
 			}
 			return null;
 		}
 
 		/// <summary>
-		/// Insert a payment method
+		/// Insert payment method extra data
 		/// </summary>
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void InsertPaymentMethod(PaymentMethod paymentMethod)
@@ -154,11 +233,13 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Insert(paymentMethod);
 
+			_cacheManager.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+
 			_eventPublisher.EntityInserted(paymentMethod);
 		}
 
 		/// <summary>
-		/// Updates a payment method
+		/// Updates payment method extra data
 		/// </summary>
 		/// <param name="paymentMethod">Payment method</param>
 		public virtual void UpdatePaymentMethod(PaymentMethod paymentMethod)
@@ -168,7 +249,25 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Update(paymentMethod);
 
+			_cacheManager.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+
 			_eventPublisher.EntityUpdated(paymentMethod);
+		}
+
+		/// <summary>
+		/// Delete payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		public virtual void DeletePaymentMethod(PaymentMethod paymentMethod)
+		{
+			if (paymentMethod == null)
+				throw new ArgumentNullException("paymentMethod");
+
+			_paymentMethodRepository.Delete(paymentMethod);
+
+			_cacheManager.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+
+			_eventPublisher.EntityDeleted(paymentMethod);
 		}
 
 

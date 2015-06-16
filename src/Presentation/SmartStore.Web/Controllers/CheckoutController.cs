@@ -205,6 +205,7 @@ namespace SmartStore.Web.Controllers
 				{
 					var soModel = new CheckoutShippingMethodModel.ShippingMethodModel()
 					{
+						ShippingMethodId = shippingOption.ShippingMethodId,
 						Name = shippingOption.Name,
 						Description = shippingOption.Description,
 						ShippingRateComputationMethodSystemName = shippingOption.ShippingRateComputationMethodSystemName,
@@ -268,6 +269,7 @@ namespace SmartStore.Web.Controllers
                 int rewardPointsBalance = _workContext.CurrentCustomer.GetRewardPointsBalance();
                 decimal rewardPointsAmountBase = _orderTotalCalculationService.ConvertRewardPointsToAmount(rewardPointsBalance);
                 decimal rewardPointsAmount = _currencyService.ConvertFromPrimaryStoreCurrency(rewardPointsAmountBase, _workContext.WorkingCurrency);
+
                 if (rewardPointsAmount > decimal.Zero)
                 {
                     model.DisplayRewardPoints = true;
@@ -277,8 +279,10 @@ namespace SmartStore.Web.Controllers
             }
 
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id)
-				.Where(pm => pm.Value.PaymentMethodType == PaymentMethodType.Standard || pm.Value.PaymentMethodType == PaymentMethodType.Redirection ||
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id)
+				.Where(pm => 
+					pm.Value.PaymentMethodType == PaymentMethodType.Standard ||
+					pm.Value.PaymentMethodType == PaymentMethodType.Redirection ||
 					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndRedirection)
                 .ToList();
 
@@ -619,9 +623,11 @@ namespace SmartStore.Web.Controllers
             //parse selected method 
             if (String.IsNullOrEmpty(shippingoption))
                 return ShippingMethod();
-            var splittedOption = shippingoption.Split(new string[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
+            
+			var splittedOption = shippingoption.Split(new string[] { "___" }, StringSplitOptions.RemoveEmptyEntries);
             if (splittedOption.Length != 2)
                 return ShippingMethod();
+
             string selectedName = splittedOption[0];
             string shippingRateComputationMethodSystemName = splittedOption[1];
             
@@ -643,8 +649,8 @@ namespace SmartStore.Web.Controllers
                     .ToList();
             }
 
-            var shippingOption = shippingOptions
-                .Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedName, StringComparison.InvariantCultureIgnoreCase));
+            var shippingOption = shippingOptions.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedName, StringComparison.InvariantCultureIgnoreCase));
+
             if (shippingOption == null)
                 return ShippingMethod();
 

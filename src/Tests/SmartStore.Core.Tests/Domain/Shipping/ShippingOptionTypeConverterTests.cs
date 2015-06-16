@@ -26,6 +26,7 @@ namespace SmartStore.Core.Tests.Domain.Shipping
         {
             var shippingOptionInput = new ShippingOption()
             {
+				ShippingMethodId = 1,
                 Name = "1",
                 Description = "2",
                 Rate = 3.57M,
@@ -36,6 +37,7 @@ namespace SmartStore.Core.Tests.Domain.Shipping
 
             var shippingOptionOutput = converter.ConvertFrom(result) as ShippingOption;
             shippingOptionOutput.ShouldNotBeNull();
+			shippingOptionInput.ShippingMethodId.ShouldEqual(1);
             shippingOptionOutput.Name.ShouldEqual("1");
             shippingOptionOutput.Description.ShouldEqual("2");
             shippingOptionOutput.Rate.ShouldEqual(3.57M);

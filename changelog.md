@@ -4,6 +4,9 @@
 
 ### New Features
 * #210 Implement multi-store support for import/export
+* #141 Payment methods by customer roles
+* #67 Restrict payment methods to certain countries
+* #94 Restrict payment methods to certain shipping methods
 
 ### Improvements
 * License checker now supports IDN mapping for domain names

@@ -13,6 +13,11 @@ namespace SmartStore.Core.Domain.Shipping
     /// </summary>
     public partial class ShippingOption
     {
+		/// <summary>
+		/// Shipping method identifier
+		/// </summary>
+		public int ShippingMethodId { get; set; }
+
         /// <summary>
         /// Gets or sets the system name of shipping rate computation method
         /// </summary>

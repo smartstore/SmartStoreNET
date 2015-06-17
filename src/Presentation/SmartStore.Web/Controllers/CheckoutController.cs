@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
@@ -11,24 +10,22 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Plugins;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Checkout;
 using SmartStore.Web.Models.Common;
-using SmartStore.Services.Configuration;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Models.ShoppingCart;
 
 namespace SmartStore.Web.Controllers
 {
@@ -238,6 +235,7 @@ namespace SmartStore.Web.Controllers
 						.Find(so => !String.IsNullOrEmpty(so.Name) && so.Name.Equals(selectedShippingOption.Name, StringComparison.InvariantCultureIgnoreCase) &&
 						!String.IsNullOrEmpty(so.ShippingRateComputationMethodSystemName) &&
 						so.ShippingRateComputationMethodSystemName.Equals(selectedShippingOption.ShippingRateComputationMethodSystemName, StringComparison.InvariantCultureIgnoreCase));
+
 					if (shippingOptionToSelect != null)
 						shippingOptionToSelect.Selected = true;
 				}
@@ -592,8 +590,7 @@ namespace SmartStore.Web.Controllers
             {
 				_genericAttributeService.SaveAttribute<ShippingOption>(_workContext.CurrentCustomer, SystemCustomerAttributeNames.SelectedShippingOption, null, _storeContext.CurrentStore.Id);
                 return RedirectToAction("PaymentMethod");
-            }
-            
+            }            
             
             //model
             var model = PrepareShippingMethodModel(cart);

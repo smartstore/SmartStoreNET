@@ -6,7 +6,7 @@
 	ViewBag.Title = T("Common.Edit").Text + " - " + Model.FriendlyName;
 }
 
-@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "paymentmethod-form" }))
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "payment-method-form" }))
 {
 	<div class="section-header">
 		<div class="title">
@@ -24,12 +24,12 @@
 	@Html.HiddenFor(model => model.SystemName)
 
 	
-	@Html.SmartStore().TabStrip().Name("paymentmethod-edit").Items(x =>
+	@Html.SmartStore().TabStrip().Name("payment-method-edit").Items(x =>
 	{
 		x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
 		x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
 
-		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "paymentmethod-edit", this.Html, this.Model));
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "payment-method-edit", this.Html, this.Model));
 	})
 }
 
@@ -91,7 +91,7 @@
 		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
 	</div>
 
-	<div class="payment-restrictions">
+	<div class="restriction-container">
 		<table class="table">
 			<tr>
 				<th>
@@ -152,7 +152,7 @@
 						<div>
 							@foreach (var item in grp)
 							{
-								<div class="country-countainer">
+								<div class="country-container">
 									@RenderCheckbox(item, "Country_")
 								</div>
 							}
@@ -180,11 +180,11 @@
 	jQuery(document).ready(function () {
 		
 		// restictions column header checkbox clicked
-		$('.payment-restrictions th input[type="checkbox"]').change(function () {
+		$('.restriction-container th input[type="checkbox"]').change(function () {
 			var id = $(this).attr('id').replace('Master', ''),
 				isChecked = $(this).is(':checked');
 
-			$('.payment-restrictions td input[name^="' + id + '"]').attr('checked', isChecked);
+			$('.restriction-container td input[name^="' + id + '"]').attr('checked', isChecked);
 		});
 
 	});

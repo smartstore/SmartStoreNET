@@ -1,72 +1,140 @@
 ﻿@model ShippingMethodModel
 @using Telerik.Web.Mvc.UI;
+
 @Html.ValidationSummary(true)
 @Html.HiddenFor(model => model.Id)
-@(Html.LocalizedEditor<ShippingMethodModel, ShippingMethodLocalizedModel>("shipping-method-localized",
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => Model.Locales[item].Name)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Locales[item].Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(model => model.Locales[item].Description)
-                            @Html.ValidationMessageFor(model => model.Locales[item].Description)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td colspan="2">
-                            @Html.HiddenFor(model => model.Locales[item].LanguageId)
-                        </td>
-                    </tr>
-                </table>
-                ,
-                @<table class="adminContent">
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Name)
-                        </td>
-                        <td class="adminData">
-                            @Html.EditorFor(model => model.Name)
-                            @Html.ValidationMessageFor(model => model.Name)
-                        </td>
-                    </tr>
-                    <tr>
-                        <td class="adminTitle">
-                            @Html.SmartLabelFor(model => model.Description)
-                        </td>
-                        <td class="adminData">
-                            @Html.TextAreaFor(model => model.Description)
-                            @Html.ValidationMessageFor(model => model.Description)
-                        </td>
-                    </tr>
-                </table>
-            ))
-<table class="adminContent">
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.DisplayOrder)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.DisplayOrder)
-            @Html.ValidationMessageFor(model => model.DisplayOrder)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(model => model.IgnoreCharges)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(model => model.IgnoreCharges)
-            @Html.ValidationMessageFor(model => model.IgnoreCharges)
-        </td>
-    </tr>
-</table>
+
+@Html.SmartStore().TabStrip().Name("shipping-method-edit").Items(x =>
+{
+	x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
+	x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+
+	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "shipping-method-edit", this.Html, this.Model));
+})
+
+@helper TabGeneral()
+{
+	@(Html.LocalizedEditor<ShippingMethodModel, ShippingMethodLocalizedModel>("shipping-method-localized",
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => Model.Locales[item].Name)
+					@Html.ValidationMessageFor(model => model.Locales[item].Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Locales[item].Description)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => model.Locales[item].Description)
+					@Html.ValidationMessageFor(model => model.Locales[item].Description)
+				</td>
+			</tr>
+			<tr>
+				<td colspan="2">
+					@Html.HiddenFor(model => model.Locales[item].LanguageId)
+				</td>
+			</tr>
+		</table>
+		,
+		@<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Name)
+					@Html.ValidationMessageFor(model => model.Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Description)
+				</td>
+				<td class="adminData">
+					@Html.TextAreaFor(model => model.Description)
+					@Html.ValidationMessageFor(model => model.Description)
+				</td>
+			</tr>
+		</table>
+	))
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.DisplayOrder)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.DisplayOrder)
+				@Html.ValidationMessageFor(model => model.DisplayOrder)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.IgnoreCharges)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.IgnoreCharges)
+				@Html.ValidationMessageFor(model => model.IgnoreCharges)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabRestrictions()
+{
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.Configuration.Shipping.Methods.RestrictionNote"))
+	</div>
+
+	<div class="restriction-container">
+		<table class="table">
+			<tr>
+				<th>
+					<div class="checkbox">
+						<label>
+							<input type="checkbox" id="MasterCustomerRole" name="MasterCustomerRole" value="" />
+							@T("Admin.Customers.CustomerRoles")
+						</label>
+					</div>
+				</th>
+			</tr>
+			<tr>
+				<td class="column-customerroles">
+					@foreach (var item in Model.AvailableCustomerRoles)
+					{
+						@RenderCheckbox(item, "CustomerRole_")
+					}
+				</td>
+			</tr>
+		</table>
+	</div>
+}
+
+@helper RenderCheckbox(SelectListItem item, string prefix)
+{
+	<div class="checkbox">
+		<label>
+			<input type="checkbox" id="@(prefix)@(item.Value)" name="@(prefix)@(item.Value)" value="@item.Value" @(item.Selected ? "checked='checked'" : "") />
+			@item.Text
+		</label>
+	</div>
+}
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+
+		// restictions column header checkbox clicked
+		$('.restriction-container th input[type="checkbox"]').change(function () {
+			var id = $(this).attr('id').replace('Master', ''),
+				isChecked = $(this).is(':checked');
+
+			$('.restriction-container td input[name^="' + id + '"]').attr('checked', isChecked);
+		});
+
+	});
+</script>

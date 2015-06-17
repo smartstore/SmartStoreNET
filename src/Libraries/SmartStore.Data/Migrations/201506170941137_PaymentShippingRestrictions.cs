@@ -8,23 +8,26 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-			CreateTable(
-				"dbo.PaymentMethod",
-				c => new
-					{
-						Id = c.Int(nullable: false, identity: true),
-						PaymentMethodSystemName = c.String(nullable: false, maxLength: 4000),
-						ExcludedCustomerRoleIds = c.String(),
-						ExcludedCountryIds = c.String(),
-						ExcludedShippingMethodIds = c.String(),
-						CountryExclusionContextId = c.Int(nullable: false),
-					})
-				.PrimaryKey(t => t.Id)
+            CreateTable(
+                "dbo.PaymentMethod",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        PaymentMethodSystemName = c.String(nullable: false, maxLength: 4000),
+                        ExcludedCustomerRoleIds = c.String(),
+                        ExcludedCountryIds = c.String(),
+                        ExcludedShippingMethodIds = c.String(),
+                        CountryExclusionContextId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
 				.Index(t => t.PaymentMethodSystemName);
+            
+            AddColumn("dbo.ShippingMethod", "ExcludedCustomerRoleIds", c => c.String());
         }
         
         public override void Down()
         {
+            DropColumn("dbo.ShippingMethod", "ExcludedCustomerRoleIds");
             DropTable("dbo.PaymentMethod");
         }
 
@@ -59,6 +62,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.ShippingAddress",
 				"Shipping address",
 				"Versandadresse");
+
+			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.RestrictionNote",
+				"Select customer roles for which you do <u>not</u> want to offer this shipping method.",
+				"Wählen Sie Kundengruppen, bei denen sie diese Versandart <u>nicht</u> anbieten möchten.");
 		}
     }
 }

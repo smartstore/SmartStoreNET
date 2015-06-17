@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Seo;
@@ -50,6 +51,15 @@ namespace SmartStore.Services.Seo
         /// <param name="pageSize">Page size</param>
         /// <returns>Customer collection</returns>
         IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize);
+
+		/// <summary>
+		/// Gets all URL records for the specified entity
+		/// </summary>
+		/// <typeparam name="T">Type</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <param name="activeOnly">Specifies whether only active URL records should be returned</param>
+		/// <returns>List of URL records</returns>
+		IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false);
 
         /// <summary>
         /// Find slug

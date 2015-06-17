@@ -80,7 +80,7 @@ namespace SmartStore.Data
 			if (hooksEnabled)
 			{
 				modifiedHookEntries = modifiedEntries
-								.Select(x => new HookedEntityEntry()
+								.Select(x => new HookedEntityEntry
 								{
 									Entity = x.Entity,
 									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)

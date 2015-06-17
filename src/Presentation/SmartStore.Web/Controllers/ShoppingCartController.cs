@@ -545,11 +545,10 @@ namespace SmartStore.Web.Controllers
 		{
 			model.Items.Clear();
 
+			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Button, PaymentMethodType.StandardAndButton };
+
 			var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id)
-				.Where(pm => 
-					pm.Value.PaymentMethodType == PaymentMethodType.Button || 
-					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndButton)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id, paymentTypes, false)
 				.ToList();
 
 			foreach (var pm in boundPaymentMethods)

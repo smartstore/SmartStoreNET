@@ -80,13 +80,20 @@ namespace SmartStore.Services.Payments
         /// </summary>
 		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
 		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
+		/// <param name="types">Filter payment methods by payment method types</param>
+		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
         /// <returns>Payment methods</returns>
-		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(Customer customer = null, int storeId = 0)
+		public virtual IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(Customer customer = null, int storeId = 0, PaymentMethodType[] types = null,
+			bool provideFallbackMethod = true)
         {
 			List<int> customerRoleIds = null;
 			int? selectedShippingMethodId = null;
+			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
 
-			var allProviders = LoadAllPaymentMethods(storeId);
+			if (types != null && types.Any())
+				allProviders = LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType));
+			else
+				allProviders = LoadAllPaymentMethods(storeId);
 
 			var activeProviders = allProviders
 				.Where(p =>
@@ -142,15 +149,15 @@ namespace SmartStore.Services.Payments
 					return true;
 				});
 
-			if (!activeProviders.Any())
+			if (!activeProviders.Any() && provideFallbackMethod)
 			{
-				var fallbackMethod = allProviders.FirstOrDefault();
+				var fallbackMethod = allProviders.FirstOrDefault(x => x.IsPaymentMethodActive(_paymentSettings));
+
+				if (fallbackMethod == null)
+					fallbackMethod = allProviders.FirstOrDefault();
+
 				if (fallbackMethod != null)
 				{
-					_paymentSettings.ActivePaymentMethodSystemNames.Clear();
-					_paymentSettings.ActivePaymentMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
-					_settingService.SaveSetting(_paymentSettings);
-
 					return new Provider<IPaymentMethod>[] { fallbackMethod };
 				}
 				else

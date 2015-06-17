@@ -16,8 +16,10 @@ namespace SmartStore.Services.Payments
         /// </summary>
 		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
 		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
+		/// <param name="types">Filter payment methods by payment method types</param>
+		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
         /// <returns>Payment methods</returns>
-		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(Customer customer = null, int storeId = 0);
+		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(Customer customer = null, int storeId = 0, PaymentMethodType[] types = null, bool provideFallbackMethod = true);
 
 		/// <summary>
 		/// Determines whether a payment method is active\enabled for a shop

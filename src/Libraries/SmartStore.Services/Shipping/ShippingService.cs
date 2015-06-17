@@ -109,18 +109,24 @@ namespace SmartStore.Services.Shipping
 
 			if (!activeMethods.Any())
 			{
-				var fallbackMethod = allMethods.FirstOrDefault();
+				var fallbackMethod = allMethods.FirstOrDefault(x => x.IsShippingRateComputationMethodActive(_shippingSettings));
+
+				if (fallbackMethod == null)
+					fallbackMethod = allMethods.FirstOrDefault();
+				
 				if (fallbackMethod != null)
 				{
-					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
-					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
-					_settingService.SaveSetting(_shippingSettings);
+					// a frontend request should not revoke merchant settings
+					//_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
+					//_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
+					//_settingService.SaveSetting(_shippingSettings);
 
 					return new Provider<IShippingRateComputationMethod>[] { fallbackMethod };
 				}
 				else
 				{
-					throw Error.Application("At least one shipping method provider is required to be active.");
+					if (DataSettings.DatabaseIsInstalled())
+						throw Error.Application("At least one shipping method provider is required to be active.");
 				}
 			}
 

@@ -276,12 +276,10 @@ namespace SmartStore.Web.Controllers
                 }
             }
 
+			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
+
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id)
-				.Where(pm => 
-					pm.Value.PaymentMethodType == PaymentMethodType.Standard ||
-					pm.Value.PaymentMethodType == PaymentMethodType.Redirection ||
-					pm.Value.PaymentMethodType == PaymentMethodType.StandardAndRedirection)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id, paymentTypes)
                 .ToList();
 
             foreach (var pm in boundPaymentMethods)

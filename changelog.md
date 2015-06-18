@@ -6,6 +6,7 @@
 * #210 Implement multi-store support for import/export
 
 ### Improvements
+* (Soft) deletion of SEO slug supporting entities now also deletes the corresponding url records
 * License checker now supports IDN mapping for domain names
 
 ### Bugfixes

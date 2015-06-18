@@ -9,12 +9,11 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
-// codehint: sm-delete
 
 namespace SmartStore.Web.Models.Catalog
 {
-    // codehint: sm-edit (formerly inherited BasePageableModel)
-    public partial class CatalogPagingFilteringModel : PagingFilteringModel //BasePageableModel
+
+    public partial class CatalogPagingFilteringModel : PagingFilteringModel
     {
         #region Constructors
 

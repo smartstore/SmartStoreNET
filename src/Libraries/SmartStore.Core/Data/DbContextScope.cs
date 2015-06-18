@@ -9,15 +9,22 @@ namespace SmartStore.Core.Data
         private readonly bool _proxyCreationEnabled;
         private readonly bool _validateOnSaveEnabled;
 		private readonly bool _forceNoTracking;
+		private readonly bool _hooksEnabled;
 		private readonly IDbContext _ctx;
 
-		public DbContextScope(IDbContext ctx = null, bool? autoDetectChanges = null, bool? proxyCreation = null, bool? validateOnSave = null, bool? forceNoTracking = null)
+		public DbContextScope(IDbContext ctx = null, 
+			bool? autoDetectChanges = null, 
+			bool? proxyCreation = null, 
+			bool? validateOnSave = null, 
+			bool? forceNoTracking = null,
+			bool? hooksEnabled = null)
         {
 			_ctx = ctx ?? EngineContext.Current.Resolve<IDbContext>();
 			_autoDetectChangesEnabled = _ctx.AutoDetectChangesEnabled;
 			_proxyCreationEnabled = _ctx.ProxyCreationEnabled;
 			_validateOnSaveEnabled = _ctx.ValidateOnSaveEnabled;
 			_forceNoTracking = _ctx.ForceNoTracking;
+			_hooksEnabled = _ctx.HooksEnabled;
             
             if (autoDetectChanges.HasValue)
 				_ctx.AutoDetectChangesEnabled = autoDetectChanges.Value;
@@ -30,6 +37,9 @@ namespace SmartStore.Core.Data
 
 			if (forceNoTracking.HasValue)
 				_ctx.ForceNoTracking = forceNoTracking.Value;
+
+			if (hooksEnabled.HasValue)
+				_ctx.HooksEnabled = hooksEnabled.Value;
         }
 
 		public int Commit()
@@ -43,6 +53,7 @@ namespace SmartStore.Core.Data
 			_ctx.ProxyCreationEnabled = _proxyCreationEnabled;
 			_ctx.ValidateOnSaveEnabled = _validateOnSaveEnabled;
 			_ctx.ForceNoTracking = _forceNoTracking;
+			_ctx.HooksEnabled = _hooksEnabled;
         }
 
     }

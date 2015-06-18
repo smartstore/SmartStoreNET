@@ -47,7 +47,6 @@ namespace SmartStore.Services.Seo
 
             _urlRecordRepository.Delete(urlRecord);
 
-            //cache
             _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
         }
 

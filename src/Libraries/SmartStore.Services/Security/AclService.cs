@@ -180,7 +180,6 @@ namespace SmartStore.Services.Security
 
             _aclRecordRepository.Update(aclRecord);
 
-            //cache
             _cacheManager.RemoveByPattern(ACLRECORD_PATTERN_KEY);
         }
 

@@ -27,6 +27,7 @@ namespace SmartStore.Services.Hooks
 				return;
 
 			var dbContext = _ctx.Resolve<IDbContext>();
+			var autoCommitEnabled = false;
 			var modifiedProps = dbContext.GetModifiedProperties(baseEntity);
 
 			if (!modifiedProps.ContainsKey("Deleted"))
@@ -40,6 +41,10 @@ namespace SmartStore.Services.Hooks
 			{
 				var shouldSetIdle = entity.Deleted;
 
+				var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
+				autoCommitEnabled = rsAclRecord.AutoCommitEnabled;
+				rsAclRecord.AutoCommitEnabled = false;
+
 				var aclService = _ctx.Resolve<IAclService>();
 				var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
 				foreach (var record in records)
@@ -47,6 +52,8 @@ namespace SmartStore.Services.Hooks
 					record.IsIdle = shouldSetIdle;
 					aclService.UpdateAclRecord(record);
 				}
+
+				rsAclRecord.AutoCommitEnabled = autoCommitEnabled;
 			}
 
 			// Delete orphaned inactive UrlRecords.
@@ -54,6 +61,10 @@ namespace SmartStore.Services.Hooks
 			var slugSupported = baseEntity as ISlugSupported;
 			if (slugSupported != null && entity.Deleted)
 			{
+				var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
+				autoCommitEnabled = rsUrlRecord.AutoCommitEnabled;
+				rsUrlRecord.AutoCommitEnabled = false;
+				
 				var urlRecordService = _ctx.Resolve<IUrlRecordService>();
 				var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
 				foreach (var record in activeRecords)
@@ -63,6 +74,8 @@ namespace SmartStore.Services.Hooks
 						urlRecordService.DeleteUrlRecord(record);
 					}
 				}
+
+				rsUrlRecord.AutoCommitEnabled = autoCommitEnabled;
 			}
 		}
 

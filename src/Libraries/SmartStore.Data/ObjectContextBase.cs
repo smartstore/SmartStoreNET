@@ -580,9 +580,10 @@ namespace SmartStore.Data
 				foreach (var entry in entries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
-
 					if (entityWithPossibleMergedData != null)
+					{
 						entityWithPossibleMergedData.MergedDataIgnore = ignore;
+					}
 				}
 			}
 			catch { }

@@ -1,3 +1,4 @@
+using SmartStore.Core.Domain.Customers;
 namespace SmartStore.Core.Domain.Security
 {
     /// <summary>
@@ -19,6 +20,11 @@ namespace SmartStore.Core.Domain.Security
         /// Gets or sets the customer role identifier
         /// </summary>
         public int CustomerRoleId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the customer role
+		/// </summary>
+		public virtual CustomerRole CustomerRole { get; set; }
 
 		/// <summary>
 		/// Gets or sets a value indicating whether the entry is idle

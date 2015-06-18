@@ -12,6 +12,11 @@ namespace SmartStore.Data.Mapping.Seo
 
             this.Property(lp => lp.EntityName).IsRequired().HasMaxLength(400);
 			this.Property(x => x.IsIdle).IsRequired();
+
+			this.HasRequired(tp => tp.CustomerRole)
+				.WithMany()
+				.HasForeignKey(tp => tp.CustomerRoleId)
+				.WillCascadeOnDelete(true);
         }
     }
 }

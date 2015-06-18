@@ -87,6 +87,40 @@
 
 @helper TabRestrictions()
 {
+	<div>
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MinimumOrderAmount)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.MinimumOrderAmount)
+					@Html.ValidationMessageFor(model => model.MinimumOrderAmount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaximumOrderAmount)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.MaximumOrderAmount)
+					@Html.ValidationMessageFor(model => model.MaximumOrderAmount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AmountRestrictionContext)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.AmountRestrictionContext, Model.AvailableAmountRestrictionContextTypes)
+					@Html.ValidationMessageFor(model => model.AmountRestrictionContext)
+				</td>
+			</tr>
+		</table>
+	</div>
+	
+	<p>&nbsp;</p>
+	
 	<div class="alert alert-info">
 		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
 	</div>
@@ -118,7 +152,7 @@
 						</label>
 					</div>
 					<div class="normal-font">
-						@T("Admin.Common.AppliedTo")
+						@T("Admin.Common.RelatedTo")
 					</div>
 					<div>
 						<label class="radio normal-font">

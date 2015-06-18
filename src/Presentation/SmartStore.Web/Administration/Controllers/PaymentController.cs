@@ -1,5 +1,5 @@
-﻿using System.Linq;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
 using SmartStore.Core.Domain.Payments;
@@ -11,9 +11,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -72,6 +72,7 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableShippingMethods = new List<SelectListItem>();
 			model.AvailableCountries = new List<SelectListItem>();
+			model.AvailableAmountRestrictionContextTypes = AmountRestrictionContextType.SubtotalAmount.ToSelectList(false).ToList();
 
 			foreach (var role in customerRoles.OrderBy(x => x.Name))
 			{
@@ -91,6 +92,9 @@ namespace SmartStore.Admin.Controllers
 			if (paymentMethod != null)
 			{
 				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
+				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
+				model.MinimumOrderAmount = paymentMethod.MinimumOrderAmount;
+				model.MaximumOrderAmount = paymentMethod.MaximumOrderAmount;
 
 				foreach (var id in paymentMethod.ExcludedCustomerRoleIds.SplitSafe(","))
 				{
@@ -229,6 +233,9 @@ namespace SmartStore.Admin.Controllers
 			paymentMethod.ExcludedCountryIds = string.Join(",", countryIds);
 
 			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
+			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
+			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
+			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);

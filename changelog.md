@@ -6,6 +6,7 @@
 * #141 Payment and shipping methods by customer roles
 * #67 Restrict payment methods to certain countries
 * #94 Restrict payment methods to certain shipping methods
+* #526 Min\max amount option for which the payment method should be offered during checkout
 
 ## SmartStore.NET 2.2.2
 

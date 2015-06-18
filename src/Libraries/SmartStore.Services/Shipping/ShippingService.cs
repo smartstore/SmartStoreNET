@@ -116,10 +116,9 @@ namespace SmartStore.Services.Shipping
 				
 				if (fallbackMethod != null)
 				{
-					// a frontend request should not revoke merchant settings
-					//_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
-					//_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
-					//_settingService.SaveSetting(_shippingSettings);
+					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
+					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
+					_settingService.SaveSetting(_shippingSettings);
 
 					return new Provider<IShippingRateComputationMethod>[] { fallbackMethod };
 				}

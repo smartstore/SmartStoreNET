@@ -53,5 +53,39 @@ namespace SmartStore.Core.Domain.Payments
 				this.CountryExclusionContextId = (int)value;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the minimum order amount for which to offer the payment method
+		/// </summary>
+		[DataMember]
+		public decimal? MinimumOrderAmount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the maximum order amount for which to offer the payment method
+		/// </summary>
+		[DataMember]
+		public decimal? MaximumOrderAmount { get; set; }
+
+		/// <summary>
+		/// Gets or sets the context identifier for amount restriction
+		/// </summary>
+		[DataMember]
+		public int AmountRestrictionContextId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the amount restriction context
+		/// </summary>
+		[DataMember]
+		public AmountRestrictionContextType AmountRestrictionContext
+		{
+			get
+			{
+				return (AmountRestrictionContextType)this.AmountRestrictionContextId;
+			}
+			set
+			{
+				this.AmountRestrictionContextId = (int)value;
+			}
+		}
 	}
 }

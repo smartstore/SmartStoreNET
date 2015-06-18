@@ -548,7 +548,7 @@ namespace SmartStore.Web.Controllers
 			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Button, PaymentMethodType.StandardAndButton };
 
 			var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id, paymentTypes, false)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, cart, _storeContext.CurrentStore.Id, paymentTypes, false)
 				.ToList();
 
 			foreach (var pm in boundPaymentMethods)

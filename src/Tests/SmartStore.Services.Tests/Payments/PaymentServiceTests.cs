@@ -2,13 +2,11 @@
 using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Configuration;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Tests;
@@ -22,9 +20,8 @@ namespace SmartStore.Services.Tests.Payments
         PaymentSettings _paymentSettings;
         ShoppingCartSettings _shoppingCartSettings;
         IPaymentService _paymentService;
-		ISettingService _settingService;
-		IEventPublisher _eventPublisher;
-		ICacheManager _cacheManager;
+		ICurrencyService _currencyService;
+		ICommonServices _commonServices;
         
         [SetUp]
         public new void SetUp()
@@ -37,15 +34,14 @@ namespace SmartStore.Services.Tests.Payments
 
             _shoppingCartSettings = new ShoppingCartSettings();
 			_paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
-			_settingService = MockRepository.GenerateMock<ISettingService>();
-			_eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
-			_cacheManager = MockRepository.GenerateMock<ICacheManager>();
+			_currencyService = MockRepository.GenerateMock<ICurrencyService>();
+			_commonServices = MockRepository.GenerateMock<ICommonServices>();
 
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
 			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, pluginFinder, _shoppingCartSettings, 
-				_settingService, localizationService, this.ProviderManager, _eventPublisher, _cacheManager);
+				this.ProviderManager, _currencyService, _commonServices);
         }
 
         [Test]

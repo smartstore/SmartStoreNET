@@ -279,7 +279,7 @@ namespace SmartStore.Web.Controllers
 			var paymentTypes = new PaymentMethodType[] { PaymentMethodType.Standard, PaymentMethodType.Redirection, PaymentMethodType.StandardAndRedirection };
 
             var boundPaymentMethods = _paymentService
-				.LoadActivePaymentMethods(_workContext.CurrentCustomer, _storeContext.CurrentStore.Id, paymentTypes)
+				.LoadActivePaymentMethods(_workContext.CurrentCustomer, cart, _storeContext.CurrentStore.Id, paymentTypes)
                 .ToList();
 
             foreach (var pm in boundPaymentMethods)

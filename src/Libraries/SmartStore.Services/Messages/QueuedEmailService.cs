@@ -133,7 +133,7 @@ namespace SmartStore.Services.Messages
         /// <param name="toEmail">To Email</param>
         /// <param name="startTime">The start time</param>
         /// <param name="endTime">The end time</param>
-        /// <param name="loadNotSentItemsOnly">A value indicating whether to load only not sent emails</param>
+        /// <param name="loadUnsentItemsOnly">A value indicating whether to load only not sent emails</param>
         /// <param name="maxSendTries">Maximum send tries</param>
         /// <param name="loadNewest">A value indicating whether we should sort queued email descending; otherwise, ascending.</param>
         /// <param name="pageIndex">Page index</param>
@@ -142,7 +142,7 @@ namespace SmartStore.Services.Messages
         /// <returns>Email item list</returns>
         public virtual IPagedList<QueuedEmail> SearchEmails(string fromEmail, 
             string toEmail, DateTime? startTime, DateTime? endTime, 
-            bool loadNotSentItemsOnly, int maxSendTries,
+            bool loadUnsentItemsOnly, int maxSendTries,
             bool loadNewest, int pageIndex, int pageSize,
 			bool? sendManually = null)
         {
@@ -163,7 +163,7 @@ namespace SmartStore.Services.Messages
             if (endTime.HasValue)
                 query = query.Where(qe => qe.CreatedOnUtc <= endTime);
 
-            if (loadNotSentItemsOnly)
+            if (loadUnsentItemsOnly)
                 query = query.Where(qe => !qe.SentOnUtc.HasValue);
 
 			if (sendManually.HasValue)

@@ -64,7 +64,11 @@ namespace SmartStore.Core.Data.Hooks
 					if (hook.HookStates == e.PreSaveState && hook.RequiresValidation == eventMessage.RequiresValidation)
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
-						hook.HookObject(e.Entity, metadata);
+						using (var scope = new DbContextScope(hooksEnabled: false))
+						{
+							// dead end: don't let hooks call hooks again
+							hook.HookObject(e.Entity, metadata);
+						}
 
 						if (metadata.HasStateChanged)
 						{
@@ -103,7 +107,11 @@ namespace SmartStore.Core.Data.Hooks
 					if (hook.HookStates == e.PreSaveState)
 					{
 						var metadata = new HookEntityMetadata(e.PreSaveState);
-						hook.HookObject(e.Entity, metadata);
+						using (var scope = new DbContextScope(hooksEnabled: false))
+						{
+							// dead end: don't let hooks call hooks again
+							hook.HookObject(e.Entity, metadata);
+						}
 					}
 				}
 			}

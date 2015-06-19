@@ -5,7 +5,6 @@ using System.Linq;
 namespace SmartStore.Core
 {
     
-    // codehint: sm-add (whole file)
     public abstract class PagedListBase : IPageable
     {
 

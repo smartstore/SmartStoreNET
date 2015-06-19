@@ -603,7 +603,7 @@ namespace SmartStore.Services.ExportImport
 								var category = _categoryService.GetCategoryById(id);
 								if (category != null)
 								{
-									var productCategory = new ProductCategory()
+									var productCategory = new ProductCategory
 									{
 										ProductId = row.Entity.Id,
 										CategoryId = category.Id,

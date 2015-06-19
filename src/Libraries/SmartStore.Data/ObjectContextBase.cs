@@ -80,7 +80,7 @@ namespace SmartStore.Data
 			if (hooksEnabled)
 			{
 				modifiedHookEntries = modifiedEntries
-								.Select(x => new HookedEntityEntry()
+								.Select(x => new HookedEntityEntry
 								{
 									Entity = x.Entity,
 									PreSaveState = (SmartStore.Core.Data.EntityState)((int)x.State)
@@ -580,9 +580,10 @@ namespace SmartStore.Data
 				foreach (var entry in entries)
 				{
 					var entityWithPossibleMergedData = entry.Entity as IMergedData;
-
 					if (entityWithPossibleMergedData != null)
+					{
 						entityWithPossibleMergedData.MergedDataIgnore = ignore;
+					}
 				}
 			}
 			catch { }

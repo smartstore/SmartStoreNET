@@ -39,7 +39,6 @@ namespace SmartStore.Services.Tests.Orders
 		IStoreContext _storeContext;
         ITaxService _taxService;
         IShippingService _shippingService;
-        IPaymentService _paymentService;
 		IProviderManager _providerManager;
         ICheckoutAttributeParser _checkoutAttributeParser;
         IDiscountService _discountService;
@@ -115,7 +114,6 @@ namespace SmartStore.Services.Tests.Orders
 				_settingService,
 				this.ProviderManager);
 
-            _paymentService = MockRepository.GenerateMock<IPaymentService>();
 			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
             _giftCardService = MockRepository.GenerateMock<IGiftCardService>();
@@ -993,37 +991,43 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 
-			_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
-				.Return(new List<GenericAttribute>()
-                            {
-                                new GenericAttribute()
-                                    {
-                                        StoreId = _store.Id,
-                                        EntityId = customer.Id,
-                                        Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
-                                        KeyGroup = "Customer",
-                                        Value = "test1"
-                                    }
-                            });
-			_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
+			//_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
+			//	.Return(new List<GenericAttribute>()
+			//				{
+			//					new GenericAttribute()
+			//						{
+			//							StoreId = _store.Id,
+			//							EntityId = customer.Id,
+			//							Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
+			//							KeyGroup = "Customer",
+			//							Value = "test1"
+			//						}
+			//				});
+			//_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
+
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
-			//56 - items, 10 - shipping (fixed), 20 - payment fee
+			//56 - items, 10 - shipping (fixed), 20 - payment fee = 86
+			//56 - items, 10 - shipping (fixed) = 66
 
 			//1. shipping is taxable, payment fee is taxable
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
 			SortedDictionary<decimal, decimal> taxRates;
-			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(8.6);
+
+			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(6.6);
+
 			taxRates.ShouldNotBeNull();
 			taxRates.Count.ShouldEqual(1);
 			taxRates.ContainsKey(10).ShouldBeTrue();
-			taxRates[10].ShouldEqual(8.6);
+			taxRates[10].ShouldEqual(6.6);
 
 			//2. shipping is taxable, payment fee is not taxable
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = false;
+
 			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(6.6);
+
 			taxRates.ShouldNotBeNull();
 			taxRates.Count.ShouldEqual(1);
 			taxRates.ContainsKey(10).ShouldBeTrue();
@@ -1032,16 +1036,20 @@ namespace SmartStore.Services.Tests.Orders
 			//3. shipping is not taxable, payment fee is taxable
 			_taxSettings.ShippingIsTaxable = false;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
-			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(7.6);
+
+			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(5.6);
+
 			taxRates.ShouldNotBeNull();
 			taxRates.Count.ShouldEqual(1);
 			taxRates.ContainsKey(10).ShouldBeTrue();
-			taxRates[10].ShouldEqual(7.6);
+			taxRates[10].ShouldEqual(5.6);
 
 			//3. shipping is not taxable, payment fee is not taxable
 			_taxSettings.ShippingIsTaxable = false;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = false;
+
 			_orderTotalCalcService.GetTaxTotal(cart, out taxRates).ShouldEqual(5.6);
+
 			taxRates.ShouldNotBeNull();
 			taxRates.Count.ShouldEqual(1);
 			taxRates.ContainsKey(10).ShouldBeTrue();
@@ -1298,7 +1306,7 @@ namespace SmartStore.Services.Tests.Orders
         public void Can_get_shopping_cart_total_discount()
         {
 			//customer
-			var customer = new Customer()
+			var customer = new Customer
 			{
 				Id = 10,
 			};
@@ -1312,12 +1320,13 @@ namespace SmartStore.Services.Tests.Orders
 				Published = true,
 				IsShipEnabled = true,
 			};
-			var sci1 = new ShoppingCartItem()
+			var sci1 = new ShoppingCartItem
 			{
 				Product = product1,
 				ProductId = product1.Id,
 				Quantity = 2,
 			};
+
 			var product2 = new Product
 			{
 				Id = 2,
@@ -1326,7 +1335,7 @@ namespace SmartStore.Services.Tests.Orders
 				Published = true,
 				IsShipEnabled = true,
 			};
-			var sci2 = new ShoppingCartItem()
+			var sci2 = new ShoppingCartItem
 			{
 				Product = product2,
 				ProductId = product2.Id,
@@ -1341,7 +1350,7 @@ namespace SmartStore.Services.Tests.Orders
 			cart.ForEach(sci => sci.Item.CustomerId = customer.Id);
 
 			//discounts
-			var discount1 = new Discount()
+			var discount1 = new Discount
 			{
 				Id = 1,
 				Name = "Discount 1",
@@ -1354,19 +1363,20 @@ namespace SmartStore.Services.Tests.Orders
 			_discountService.Expect(ds => ds.GetAllDiscounts(DiscountType.AssignedToCategories)).Return(new List<Discount>());
 
 
-			_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
-				.Return(new List<GenericAttribute>()
-                            {
-                                new GenericAttribute()
-                                    {
-                                        StoreId = _store.Id,
-                                        EntityId = customer.Id,
-                                        Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
-                                        KeyGroup = "Customer",
-                                        Value = "test1"
-                                    }
-                            });
-			_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
+			//_genericAttributeService.Expect(x => x.GetAttributesForEntity(customer.Id, "Customer"))
+			//	.Return(new List<GenericAttribute>
+			//	{
+			//		new GenericAttribute
+			//		{
+			//			StoreId = _store.Id,
+			//			EntityId = customer.Id,
+			//			Key = SystemCustomerAttributeNames.SelectedPaymentMethod,
+			//			KeyGroup = "Customer",
+			//			Value = "test1"
+			//		}
+			//	});
+
+			//_paymentService.Expect(ps => ps.GetAdditionalHandlingFee(cart, "test1")).Return(20);
 
 
 			decimal discountAmount;
@@ -1379,10 +1389,11 @@ namespace SmartStore.Services.Tests.Orders
 			_taxSettings.ShippingIsTaxable = true;
 			_taxSettings.PaymentMethodAdditionalFeeIsTaxable = true;
 
-			//56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount
-			_orderTotalCalcService.GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,
-				out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount)
-				.ShouldEqual(91.6M);
+			//56 - items, 10 - shipping (fixed), 20 - payment fee, 8.6 - tax, [-3] - discount = 91.6
+			//56 - items, 10 - shipping (fixed), 6.6 - tax, [-3] - discount = 69.6
+			_orderTotalCalcService.GetShoppingCartTotal(cart, out discountAmount, out appliedDiscount,	out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount)
+				.ShouldEqual(69.6M);
+
 			discountAmount.ShouldEqual(3);
 			appliedDiscount.ShouldNotBeNull();
 			appliedDiscount.Name.ShouldEqual("Discount 1");

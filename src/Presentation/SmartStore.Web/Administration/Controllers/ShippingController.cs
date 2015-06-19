@@ -7,6 +7,7 @@ using SmartStore.Admin.Models.Shipping;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -31,6 +32,7 @@ namespace SmartStore.Admin.Controllers
         private readonly IPluginFinder _pluginFinder;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICommonServices _commonServices;
+		private readonly ICustomerService _customerService;
 
 		#endregion
 
@@ -43,7 +45,8 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
             IPluginFinder pluginFinder,
 			PluginMediator pluginMediator,
-			ICommonServices commonServices)
+			ICommonServices commonServices,
+			ICustomerService customerService)
 		{
             this._shippingService = shippingService;
             this._shippingSettings = shippingSettings;
@@ -53,6 +56,7 @@ namespace SmartStore.Admin.Controllers
             this._pluginFinder = pluginFinder;
 			this._pluginMediator = pluginMediator;
 			this._commonServices = commonServices;
+			this._customerService = customerService;
 		}
 
 		#endregion 
@@ -75,6 +79,38 @@ namespace SmartStore.Admin.Controllers
                                                            localized.LanguageId);
             }
         }
+
+		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
+		{
+			SelectListItem item = null;
+			var customerRoles = _customerService.GetAllCustomerRoles(true);
+
+			model.AvailableCustomerRoles = new List<SelectListItem>();
+
+			foreach (var role in customerRoles.OrderBy(x => x.Name))
+			{
+				model.AvailableCustomerRoles.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+			}
+
+			if (shippingMethod != null)
+			{
+				foreach (var id in shippingMethod.ExcludedCustomerRoleIds.SplitSafe(","))
+				{
+					if ((item = model.AvailableCustomerRoles.FirstOrDefault(x => x.Value == id)) != null)
+						item.Selected = true;
+				}
+			}
+		}
+
+		private void ApplyRestrictions(ShippingMethod shippingMethod)
+		{
+			var customerRoleIds = Request.Form.AllKeys
+				.Where(x => x.StartsWith("CustomerRole_"))
+				.Select(x => x.Replace("CustomerRole_", ""))
+				.ToList();
+
+			shippingMethod.ExcludedCustomerRoleIds = string.Join(",", customerRoleIds);
+		}
 
         #endregion
 
@@ -173,6 +209,7 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             var model = new ShippingMethodModel();
+			PrepareShippingMethodModel(model, null);
 
             //locales
             AddLocales(_languageService, model.Locales);
@@ -188,6 +225,8 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 var sm = model.ToEntity();
+				ApplyRestrictions(sm);
+
                 _shippingService.InsertShippingMethod(sm);
                 
 				//locales
@@ -209,10 +248,11 @@ namespace SmartStore.Admin.Controllers
 
             var sm = _shippingService.GetShippingMethodById(id);
             if (sm == null)
-                //No shipping method found with the specified id
                 return RedirectToAction("Methods");
 
             var model = sm.ToModel();
+			PrepareShippingMethodModel(model, sm);
+
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -236,6 +276,8 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 sm = model.ToEntity(sm);
+				ApplyRestrictions(sm);
+
                 _shippingService.UpdateShippingMethod(sm);
 
                 //locales

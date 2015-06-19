@@ -1,12 +1,17 @@
 ﻿using System.Collections.Generic;
+using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
+using SmartStore.Services.Shipping;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 
@@ -22,6 +27,10 @@ namespace SmartStore.Admin.Controllers
         private readonly PaymentSettings _paymentSettings;
         private readonly IPluginFinder _pluginFinder;
 		private readonly PluginMediator _pluginMediator;
+		private readonly ILanguageService _languageService;
+		private readonly ICustomerService _customerService;
+		private readonly IShippingService _shippingService;
+		private readonly ICountryService _countryService;
 
 		#endregion
 
@@ -32,20 +41,86 @@ namespace SmartStore.Admin.Controllers
 			IPaymentService paymentService, 
 			PaymentSettings paymentSettings,
             IPluginFinder pluginFinder, 
-			PluginMediator pluginMediator)
+			PluginMediator pluginMediator,
+			ILanguageService languageService,
+			ICustomerService customerService,
+			IShippingService shippingService,
+			ICountryService countryService)
 		{
 			this._commonServices = commonServices;
             this._paymentService = paymentService;
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
 			this._pluginMediator = pluginMediator;
+			this._languageService = languageService;
+			this._customerService = customerService;
+			this._shippingService = shippingService;
+			this._countryService = countryService;
 		}
 
-		#endregion 
+		#endregion
 
-        #region Methods
+		#region Utilities
 
-        public ActionResult Providers()
+		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
+		{
+			SelectListItem item = null;
+			var customerRoles = _customerService.GetAllCustomerRoles(true);
+			var shippingMethods = _shippingService.GetAllShippingMethods();
+			var countries = _countryService.GetAllCountries(true);
+
+			model.AvailableCustomerRoles = new List<SelectListItem>();
+			model.AvailableShippingMethods = new List<SelectListItem>();
+			model.AvailableCountries = new List<SelectListItem>();
+			model.AvailableAmountRestrictionContextTypes = AmountRestrictionContextType.SubtotalAmount.ToSelectList(false).ToList();
+
+			foreach (var role in customerRoles.OrderBy(x => x.Name))
+			{
+				model.AvailableCustomerRoles.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+			}
+
+			foreach (var shippingMethod in shippingMethods.OrderBy(x => x.Name))
+			{
+				model.AvailableShippingMethods.Add(new SelectListItem { Text = shippingMethod.GetLocalized(x => x.Name), Value = shippingMethod.Id.ToString() });
+			}
+
+			foreach (var country in countries.OrderBy(x => x.Name))
+			{
+				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
+			}
+
+			if (paymentMethod != null)
+			{
+				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
+				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
+				model.MinimumOrderAmount = paymentMethod.MinimumOrderAmount;
+				model.MaximumOrderAmount = paymentMethod.MaximumOrderAmount;
+
+				foreach (var id in paymentMethod.ExcludedCustomerRoleIds.SplitSafe(","))
+				{
+					if ((item = model.AvailableCustomerRoles.FirstOrDefault(x => x.Value == id)) != null)
+						item.Selected = true;
+				}
+
+				foreach (var id in paymentMethod.ExcludedShippingMethodIds.SplitSafe(","))
+				{
+					if ((item = model.AvailableShippingMethods.FirstOrDefault(x => x.Value == id)) != null)
+						item.Selected = true;
+				}
+
+				foreach (var id in paymentMethod.ExcludedCountryIds.SplitSafe(","))
+				{
+					if ((item = model.AvailableCountries.FirstOrDefault(x => x.Value == id)) != null)
+						item.Selected = true;
+				}
+			}
+		}
+
+		#endregion
+
+		#region Methods
+
+		public ActionResult Providers()
         {
 			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
                 return AccessDeniedView();
@@ -91,6 +166,87 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return RedirectToAction("Providers");
+		}
+
+		public ActionResult Edit(string systemName)
+		{
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+				return AccessDeniedView();
+
+			var provider = _paymentService.LoadPaymentMethodBySystemName(systemName);
+			var paymentMethod = _paymentService.GetPaymentMethodBySystemName(systemName);
+
+			var model = _pluginMediator.ToProviderModel<IPaymentMethod, PaymentMethodEditModel>(provider, true);
+
+			AddLocales(_languageService, model.Locales, (locale, languageId) =>
+			{
+				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
+				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
+			});
+
+			PreparePaymentMethodEditModel(model, paymentMethod);
+
+			return View(model);
+		}
+
+		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
+		{
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+				return AccessDeniedView();
+
+			var provider = _paymentService.LoadPaymentMethodBySystemName(systemName);
+			if (provider == null)
+				return HttpNotFound();
+
+			_pluginMediator.SetSetting(provider.Metadata, "FriendlyName", model.FriendlyName);
+			_pluginMediator.SetSetting(provider.Metadata, "Description", model.Description);
+
+			foreach (var localized in model.Locales)
+			{
+				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "FriendlyName", localized.FriendlyName);
+				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "Description", localized.Description);
+			}
+
+			var paymentMethod = _paymentService.GetPaymentMethodBySystemName(systemName);
+
+			if (paymentMethod == null)
+				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
+
+			var customerRoleIds = Request.Form.AllKeys
+				.Where(x => x.StartsWith("CustomerRole_"))
+				.Select(x => x.Replace("CustomerRole_", ""))
+				.ToList();
+
+			var shippingMethodIds = Request.Form.AllKeys
+				.Where(x => x.StartsWith("ShippingMethod_"))
+				.Select(x => x.Replace("ShippingMethod_", ""))
+				.ToList();
+
+			var countryIds = Request.Form.AllKeys
+				.Where(x => x.StartsWith("Country_"))
+				.Select(x => x.Replace("Country_", ""))
+				.ToList();
+
+			paymentMethod.ExcludedCustomerRoleIds = string.Join(",", customerRoleIds);
+			paymentMethod.ExcludedShippingMethodIds = string.Join(",", shippingMethodIds);
+			paymentMethod.ExcludedCountryIds = string.Join(",", countryIds);
+
+			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
+			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
+			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
+			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
+
+			if (paymentMethod.Id == 0)
+				_paymentService.InsertPaymentMethod(paymentMethod);
+			else
+				_paymentService.UpdatePaymentMethod(paymentMethod);
+
+			NotifySuccess(_commonServices.Localization.GetResource("Admin.Common.DataEditSuccess"));
+
+			return (continueEditing ?
+				RedirectToAction("Edit", "Payment", new { systemName = systemName }) :
+				RedirectToAction("Providers", "Payment"));
 		}
 
         #endregion

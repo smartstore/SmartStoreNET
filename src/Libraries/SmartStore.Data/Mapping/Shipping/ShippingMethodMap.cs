@@ -9,7 +9,9 @@ namespace SmartStore.Data.Mapping.Shipping
         {
             this.ToTable("ShippingMethod");
             this.HasKey(sm => sm.Id);
+
             this.Property(sm => sm.Name).IsRequired().HasMaxLength(400);
+			this.Property(sm => sm.ExcludedCustomerRoleIds).IsMaxLength();
 
             this.HasMany(sm => sm.RestrictedCountries)
                 .WithMany(c => c.RestrictedShippingMethods)

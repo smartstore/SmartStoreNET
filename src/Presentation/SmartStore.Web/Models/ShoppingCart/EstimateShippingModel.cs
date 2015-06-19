@@ -36,6 +36,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public partial class ShippingOptionModel : ModelBase
         {
+			public int ShippingMethodId { get; set; }
+
             public string Name { get; set; }
 
             public string Description { get; set; }

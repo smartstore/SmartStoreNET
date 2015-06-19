@@ -19,6 +19,7 @@ namespace SmartStore.Web.Models.Checkout
 
         public partial class ShippingMethodModel : ModelBase
         {
+			public int ShippingMethodId { get; set; }
             public string ShippingRateComputationMethodSystemName { get; set; }
             public string Name { get; set; }
             public string BrandUrl { get; set; }

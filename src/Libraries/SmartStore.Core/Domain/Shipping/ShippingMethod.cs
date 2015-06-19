@@ -34,6 +34,12 @@ namespace SmartStore.Core.Domain.Shipping
 		[DataMember]
 		public bool IgnoreCharges { get; set; }
 
+		/// <summary>
+		/// Gets or sets identifiers of customer roles (comma separated) to be excluded in checkout
+		/// </summary>
+		[DataMember]
+		public string ExcludedCustomerRoleIds { get; set; }
+
         /// <summary>
         /// Gets or sets the restricted countries
         /// </summary>

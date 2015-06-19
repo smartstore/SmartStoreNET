@@ -116,6 +116,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
+    <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
       <DependentUpon>201403112331027_Initial.cs</DependentUpon>
@@ -271,6 +272,10 @@
     <Compile Include="Migrations\201505272236124_V222.cs" />
     <Compile Include="Migrations\201505272236124_V222.Designer.cs">
       <DependentUpon>201505272236124_V222.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506181501470_PaymentShippingRestrictions.cs" />
+    <Compile Include="Migrations\201506181501470_PaymentShippingRestrictions.Designer.cs">
+      <DependentUpon>201506181501470_PaymentShippingRestrictions.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -528,6 +533,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201505272236124_V222.resx">
       <DependentUpon>201505272236124_V222.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506181501470_PaymentShippingRestrictions.resx">
+      <DependentUpon>201506181501470_PaymentShippingRestrictions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

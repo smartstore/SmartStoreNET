@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
@@ -53,8 +54,9 @@ namespace SmartStore.Services.Shipping
         /// Gets all shipping methods
         /// </summary>
         /// <param name="filterByCountryId">The country indentifier to filter by</param>
+		/// <param name="customer">Filter methods by roles of a customer</param>
         /// <returns>Shipping method collection</returns>
-        IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null);
+		IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null, Customer customer = null);
 
         /// <summary>
         /// Inserts a shipping method

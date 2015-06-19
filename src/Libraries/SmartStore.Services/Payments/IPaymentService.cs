@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
@@ -12,10 +14,18 @@ namespace SmartStore.Services.Payments
         /// <summary>
         /// Load active payment methods
         /// </summary>
-        /// <param name="filterByCustomerId">Filter payment methods by customer; null to load all records</param>
-		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
+		/// <param name="customer">Filter payment methods by customer and apply payment method restrictions; null to load all records</param>
+		/// <param name="cart">Filter payment methods by cart amount; null to load all records</param>
+		/// <param name="storeId">Filter payment methods by store identifier; pass 0 to load all records</param>
+		/// <param name="types">Filter payment methods by payment method types</param>
+		/// <param name="provideFallbackMethod">Provide a fallback payment method if none is active</param>
         /// <returns>Payment methods</returns>
-		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(int? filterByCustomerId = null, int storeId = 0);
+		IEnumerable<Provider<IPaymentMethod>> LoadActivePaymentMethods(
+			Customer customer = null,
+			IList<OrganizedShoppingCartItem> cart = null,
+			int storeId = 0,
+			PaymentMethodType[] types = null,
+			bool provideFallbackMethod = true);
 
 		/// <summary>
 		/// Determines whether a payment method is active\enabled for a shop
@@ -36,6 +46,37 @@ namespace SmartStore.Services.Payments
         /// <returns>Payment providers</returns>
 		IEnumerable<Provider<IPaymentMethod>> LoadAllPaymentMethods(int storeId = 0);
 
+
+		/// <summary>
+		/// Gets all payment method extra data
+		/// </summary>
+		/// <returns>List of payment method objects</returns>
+		IList<PaymentMethod> GetAllPaymentMethods();
+
+		/// <summary>
+		/// Gets payment method extra data by system name
+		/// </summary>
+		/// <param name="systemName">Provider system name</param>
+		/// <returns>Payment method entity</returns>
+		PaymentMethod GetPaymentMethodBySystemName(string systemName);
+
+		/// <summary>
+		/// Insert payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		void InsertPaymentMethod(PaymentMethod paymentMethod);
+
+		/// <summary>
+		/// Updates payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		void UpdatePaymentMethod(PaymentMethod paymentMethod);
+
+		/// <summary>
+		/// Delete payment method extra data
+		/// </summary>
+		/// <param name="paymentMethod">Payment method</param>
+		void DeletePaymentMethod(PaymentMethod paymentMethod);
 
 
 		/// <summary>

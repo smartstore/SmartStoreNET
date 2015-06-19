@@ -141,7 +141,7 @@ namespace SmartStore.ShippingByWeight
             }
             decimal weight = _shippingService.GetShoppingCartTotalWeight(getShippingOptionRequest.Items);
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
+            var shippingMethods = _shippingService.GetAllShippingMethods(countryId, getShippingOptionRequest.Customer);
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight);
@@ -150,6 +150,7 @@ namespace SmartStore.ShippingByWeight
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();
+					shippingOption.ShippingMethodId = shippingMethod.Id;
                     shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
 
                     if (record != null && record.SmallQuantityThreshold > subTotal)

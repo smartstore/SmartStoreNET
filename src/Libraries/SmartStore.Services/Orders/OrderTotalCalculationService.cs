@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Discounts;
@@ -30,7 +31,7 @@ namespace SmartStore.Services.Orders
         private readonly IPriceCalculationService _priceCalculationService;
         private readonly ITaxService _taxService;
         private readonly IShippingService _shippingService;
-        private readonly IPaymentService _paymentService;
+		private readonly IProviderManager _providerManager;
         private readonly ICheckoutAttributeParser _checkoutAttributeParser;
         private readonly IDiscountService _discountService;
         private readonly IGiftCardService _giftCardService;
@@ -69,7 +70,7 @@ namespace SmartStore.Services.Orders
             IPriceCalculationService priceCalculationService,
             ITaxService taxService,
             IShippingService shippingService,
-            IPaymentService paymentService,
+			IProviderManager providerManager,
             ICheckoutAttributeParser checkoutAttributeParser,
             IDiscountService discountService,
             IGiftCardService giftCardService,
@@ -86,7 +87,7 @@ namespace SmartStore.Services.Orders
             this._priceCalculationService = priceCalculationService;
             this._taxService = taxService;
             this._shippingService = shippingService;
-            this._paymentService = paymentService;
+			this._providerManager = providerManager;
             this._checkoutAttributeParser = checkoutAttributeParser;
             this._discountService = discountService;
             this._giftCardService = giftCardService;
@@ -798,8 +799,10 @@ namespace SmartStore.Services.Orders
             if (usePaymentMethodAdditionalFee && _taxSettings.PaymentMethodAdditionalFeeIsTaxable)
             {
                 decimal taxRate = decimal.Zero;
+				
+				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
+				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
 
-                decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
                 decimal paymentMethodAdditionalFeeExclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer, out taxRate);
                 decimal paymentMethodAdditionalFeeInclTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, true, customer, out taxRate);
 
@@ -906,7 +909,9 @@ namespace SmartStore.Services.Orders
             decimal paymentMethodAdditionalFeeWithoutTax = decimal.Zero;
             if (usePaymentMethodAdditionalFee && !String.IsNullOrEmpty(paymentMethodSystemName))
             {
-                decimal paymentMethodAdditionalFee = _paymentService.GetAdditionalHandlingFee(cart, paymentMethodSystemName);
+				var provider = _providerManager.GetProvider<IPaymentMethod>(paymentMethodSystemName);
+				decimal paymentMethodAdditionalFee = provider.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
+
                 paymentMethodAdditionalFeeWithoutTax = _taxService.GetPaymentMethodAdditionalFee(paymentMethodAdditionalFee, false, customer);
             }
 

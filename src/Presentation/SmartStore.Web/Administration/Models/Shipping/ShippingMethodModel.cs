@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Shipping
         {
             Locales = new List<ShippingMethodLocalizedModel>();
         }
+
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Name")]
         [AllowHtml]
         public string Name { get; set; }
@@ -30,6 +31,8 @@ namespace SmartStore.Admin.Models.Shipping
 		public bool IgnoreCharges { get; set; }
 
         public IList<ShippingMethodLocalizedModel> Locales { get; set; }
+
+		public List<SelectListItem> AvailableCustomerRoles { get; set; }
     }
 
     public class ShippingMethodLocalizedModel : ILocalizedModelLocal
@@ -43,6 +46,5 @@ namespace SmartStore.Admin.Models.Shipping
         [SmartResourceDisplayName("Admin.Configuration.Shipping.Methods.Fields.Description")]
         [AllowHtml]
         public string Description { get; set; }
-
     }
 }

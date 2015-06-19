@@ -103,22 +103,29 @@ namespace SmartStore.Services.Shipping
 		public virtual IEnumerable<Provider<IShippingRateComputationMethod>> LoadActiveShippingRateComputationMethods(int storeId = 0)
         {
 			var allMethods = LoadAllShippingRateComputationMethods(storeId);
+
 			var activeMethods = allMethods
 				.Where(p => p.Value.IsActive && _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
 
 			if (!activeMethods.Any())
 			{
-				var fallbackMethod = allMethods.FirstOrDefault();
+				var fallbackMethod = allMethods.FirstOrDefault(x => x.IsShippingRateComputationMethodActive(_shippingSettings));
+
+				if (fallbackMethod == null)
+					fallbackMethod = allMethods.FirstOrDefault();
+				
 				if (fallbackMethod != null)
 				{
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
 					_settingService.SaveSetting(_shippingSettings);
+
 					return new Provider<IShippingRateComputationMethod>[] { fallbackMethod };
 				}
 				else
 				{
-					throw Error.Application("At least one shipping method provider is required to be active.");
+					if (DataSettings.DatabaseIsInstalled())
+						throw Error.Application("At least one shipping method provider is required to be active.");
 				}
 			}
 
@@ -182,32 +189,57 @@ namespace SmartStore.Services.Shipping
         /// Gets all shipping methods
         /// </summary>
         /// <param name="filterByCountryId">The country indentifier to filter by</param>
+		/// <param name="customer">Filter methods by roles of a customer</param>
         /// <returns>Shipping method collection</returns>
-        public virtual IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null)
+		public virtual IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null, Customer customer = null)
         {
+			IQueryable<ShippingMethod> query = null;
+
             if (filterByCountryId.HasValue && filterByCountryId.Value > 0)
             {
-                var query1 = from sm in _shippingMethodRepository.Table
-                             where
-                             sm.RestrictedCountries.Select(c => c.Id).Contains(filterByCountryId.Value)
-                             select sm.Id;
+                var query1 = 
+					from sm in _shippingMethodRepository.Table
+					where sm.RestrictedCountries.Select(c => c.Id).Contains(filterByCountryId.Value)
+					select sm.Id;
 
-                var query2 = from sm in _shippingMethodRepository.Table
-                             where !query1.Contains(sm.Id)
-                             orderby sm.DisplayOrder
-                             select sm;
-
-                var shippingMethods = query2.ToList();
-                return shippingMethods;
+                query =
+					from sm in _shippingMethodRepository.Table
+					where !query1.Contains(sm.Id)
+					orderby sm.DisplayOrder
+					select sm;
             }
             else
             {
-                var query = from sm in _shippingMethodRepository.Table
-                            orderby sm.DisplayOrder
-                            select sm;
-                var shippingMethods = query.ToList();
-                return shippingMethods;
+                query = 
+					from sm in _shippingMethodRepository.Table
+					orderby sm.DisplayOrder
+					select sm;
             }
+
+			var shippingMethods = query.ToList();
+
+			if (customer != null)
+			{
+				List<int> customerRoleIds = null;
+
+				for (int i = shippingMethods.Count - 1; i >= 0; --i)
+				{
+					var method = shippingMethods[i];
+
+					// method restricted by customer role id?
+					var excludedRoleIds = method.ExcludedCustomerRoleIds.ToIntArray();
+					if (excludedRoleIds.Any())
+					{
+						if (customerRoleIds == null)
+							customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
+
+						if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+							shippingMethods.Remove(method);
+					}
+				}
+			}
+
+			return shippingMethods;
         }
 
         /// <summary>
@@ -357,7 +389,8 @@ namespace SmartStore.Services.Shipping
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
-		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
+		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, 
+			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");

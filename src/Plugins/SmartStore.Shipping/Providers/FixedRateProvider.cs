@@ -55,11 +55,14 @@ namespace SmartStore.Shipping
                 return response;
             }
 
-            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) ? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
-            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId);
+            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) 
+				? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
+
+            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId, getShippingOptionRequest.Customer);
             foreach (var shippingMethod in shippingMethods)
             {
                 var shippingOption = new ShippingOption();
+				shippingOption.ShippingMethodId = shippingMethod.Id;
                 shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
                 shippingOption.Description = shippingMethod.GetLocalized(x => x.Description);
                 shippingOption.Rate = GetRate(shippingMethod.Id);
@@ -79,8 +82,10 @@ namespace SmartStore.Shipping
             if (getShippingOptionRequest == null)
                 throw new ArgumentNullException("getShippingOptionRequest");
 
-            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) ? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
-            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId);
+            int? restrictByCountryId = (getShippingOptionRequest.ShippingAddress != null && getShippingOptionRequest.ShippingAddress.Country != null) 
+				? (int?)getShippingOptionRequest.ShippingAddress.Country.Id : null;
+
+            var shippingMethods = this._shippingService.GetAllShippingMethods(restrictByCountryId, getShippingOptionRequest.Customer);
             
             var rates = new List<decimal>();
             foreach (var shippingMethod in shippingMethods)

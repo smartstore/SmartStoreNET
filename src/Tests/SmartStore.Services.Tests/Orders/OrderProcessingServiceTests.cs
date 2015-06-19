@@ -47,6 +47,7 @@ namespace SmartStore.Services.Tests.Orders
         IShippingService _shippingService;
         IShipmentService _shipmentService;
         IPaymentService _paymentService;
+		IProviderManager _providerManager;
         ICheckoutAttributeParser _checkoutAttributeParser;
         IDiscountService _discountService;
         IGiftCardService _giftCardService;
@@ -141,6 +142,7 @@ namespace SmartStore.Services.Tests.Orders
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
             _paymentService = MockRepository.GenerateMock<IPaymentService>();
+			_providerManager = MockRepository.GenerateMock<IProviderManager>();
             _checkoutAttributeParser = MockRepository.GenerateMock<ICheckoutAttributeParser>();
             _giftCardService = MockRepository.GenerateMock<IGiftCardService>();
             
@@ -165,7 +167,7 @@ namespace SmartStore.Services.Tests.Orders
 				_productAttributeService, _downloadService, _commonServices, _httpRequestBase, _taxService);
 
             _orderTotalCalcService = new OrderTotalCalculationService(_workContext, _storeContext,
-                _priceCalcService, _taxService, _shippingService, _paymentService,
+                _priceCalcService, _taxService, _shippingService, _providerManager,
                 _checkoutAttributeParser, _discountService, _giftCardService, _genericAttributeService, _productAttributeParser,
                 _taxSettings, _rewardPointsSettings, _shippingSettings, _shoppingCartSettings, _catalogSettings);
 

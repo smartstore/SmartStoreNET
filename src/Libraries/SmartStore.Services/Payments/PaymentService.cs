@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
@@ -36,6 +35,7 @@ namespace SmartStore.Services.Payments
 		private readonly IProviderManager _providerManager;
 		private readonly ICurrencyService _currencyService;
 		private readonly ICommonServices _commonServices;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 
         #endregion
 
@@ -55,7 +55,8 @@ namespace SmartStore.Services.Payments
             ShoppingCartSettings shoppingCartSettings,
 			IProviderManager providerManager,
 			ICurrencyService currencyService,
-			ICommonServices commonServices)
+			ICommonServices commonServices,
+			IOrderTotalCalculationService orderTotalCalculationService)
         {
 			this._paymentMethodRepository = paymentMethodRepository;
             this._paymentSettings = paymentSettings;
@@ -64,6 +65,7 @@ namespace SmartStore.Services.Payments
 			this._providerManager = providerManager;
 			this._currencyService = currencyService;
 			this._commonServices = commonServices;
+			this._orderTotalCalculationService = orderTotalCalculationService;
         }
 
         #endregion
@@ -90,6 +92,7 @@ namespace SmartStore.Services.Payments
 			int? selectedShippingMethodId = null;
 			decimal? orderSubTotal = null;
 			decimal? orderTotal = null;
+			IList<PaymentMethod> allMethods = null;
 			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
 
 			if (types != null && types.Any())
@@ -105,7 +108,10 @@ namespace SmartStore.Services.Payments
 
 					if (customer != null)
 					{
-						var method = GetPaymentMethodBySystemName(p.Metadata.SystemName);
+						if (allMethods == null)
+							allMethods = GetAllPaymentMethods();
+
+						var method = allMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(p.Metadata.SystemName));
 						if (method != null)
 						{
 							// method restricted by customer role id?
@@ -151,8 +157,6 @@ namespace SmartStore.Services.Payments
 							if ((method.MinimumOrderAmount.HasValue || method.MaximumOrderAmount.HasValue) && cart != null)
 							{
 								decimal compareAmount = decimal.Zero;
-								// TODO: resolve circular object dependencies
-								var orderTotalCalculationService = EngineContext.Current.Resolve<IOrderTotalCalculationService>();
 
 								if (method.AmountRestrictionContext == AmountRestrictionContextType.SubtotalAmount)
 								{
@@ -163,7 +167,7 @@ namespace SmartStore.Services.Payments
 										decimal subTotalWithoutDiscountBase = decimal.Zero;
 										decimal subTotalWithDiscountBase = decimal.Zero;
 
-										orderTotalCalculationService.GetShoppingCartSubTotal(cart, out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
+										_orderTotalCalculationService.GetShoppingCartSubTotal(cart, out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
 											out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
 										orderSubTotal = _currencyService.ConvertFromPrimaryStoreCurrency(subTotalWithoutDiscountBase, _commonServices.WorkContext.WorkingCurrency);
@@ -175,7 +179,7 @@ namespace SmartStore.Services.Payments
 								{
 									if (!orderTotal.HasValue)
 									{
-										orderTotal = orderTotalCalculationService.GetShoppingCartTotal(cart) ?? decimal.Zero;
+										orderTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart) ?? decimal.Zero;
 
 										orderTotal = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, _commonServices.WorkContext.WorkingCurrency);
 									}
@@ -273,9 +277,7 @@ namespace SmartStore.Services.Payments
 		{
 			if (systemName.HasValue())
 			{
-				var allPaymentMethods = GetAllPaymentMethods();
-
-				return allPaymentMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(systemName));
+				return _paymentMethodRepository.Table.FirstOrDefault(x => x.PaymentMethodSystemName == systemName);
 			}
 			return null;
 		}
@@ -437,15 +439,8 @@ namespace SmartStore.Services.Payments
 		public virtual decimal GetAdditionalHandlingFee(IList<OrganizedShoppingCartItem> cart, string paymentMethodSystemName)
         {
             var paymentMethod = LoadPaymentMethodBySystemName(paymentMethodSystemName);
-            if (paymentMethod == null)
-                return decimal.Zero;
 
-			decimal result = paymentMethod.Value.GetAdditionalHandlingFee(cart);
-
-            if (_shoppingCartSettings.RoundPricesDuringCalculation)
-                result = Math.Round(result, 2);
-
-            return result;
+			return paymentMethod.GetAdditionalHandlingFee(cart, _shoppingCartSettings.RoundPricesDuringCalculation);
         }
 
 

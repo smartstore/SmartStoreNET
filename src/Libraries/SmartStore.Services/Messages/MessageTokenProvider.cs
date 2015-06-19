@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Web;
 using SmartStore.Core;
@@ -10,6 +11,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
@@ -17,12 +19,13 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Events;
 using SmartStore.Core.Html;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Core.Events;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -31,9 +34,6 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Topics;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Plugins;
-using System.Linq.Expressions;
 
 namespace SmartStore.Services.Messages
 {
@@ -52,7 +52,7 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreContext _storeContext;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
-        private readonly IPaymentService _paymentService;
+		private readonly IProviderManager _providerManager;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly StoreInformationSettings _storeSettings;
         private readonly MessageTemplatesSettings _templatesSettings;
@@ -78,7 +78,7 @@ namespace SmartStore.Services.Messages
             IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
             IWorkContext workContext, IStoreContext storeContext,
 			IDownloadService downloadService, ShoppingCartSettings shoppingCartSettings,
-            IOrderService orderService, IPaymentService paymentService,
+            IOrderService orderService, IProviderManager providerManager,
             IProductAttributeParser productAttributeParser,
             StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
             EmailAccountSettings emailAccountSettings, CatalogSettings catalogSettings,
@@ -98,7 +98,7 @@ namespace SmartStore.Services.Messages
 			this._storeContext = storeContext;
             this._downloadService = downloadService;
             this._orderService = orderService;
-            this._paymentService = paymentService;
+			this._providerManager = providerManager;
             this._productAttributeParser = productAttributeParser;
             this._storeSettings = storeSettings;
             this._templatesSettings = templatesSettings;
@@ -757,8 +757,9 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.ShippingZipPostalCode", order.ShippingAddress != null ? order.ShippingAddress.ZipPostalCode : ""));
             tokens.Add(new Token("Order.ShippingCountry", order.ShippingAddress != null && order.ShippingAddress.Country != null ? order.ShippingAddress.Country.GetLocalized(x => x.Name) : ""));
 
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
+			var paymentMethod = _providerManager.GetProvider<IPaymentMethod>(order.PaymentMethodSystemName);
 			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
+
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
             tokens.Add(new Token("Order.Product(s)", ProductListToHtmlTable(order, languageId), true));

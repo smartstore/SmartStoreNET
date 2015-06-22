@@ -628,7 +628,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// cases where stock inventory is not functional. determined by what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory is not handling.
 				model.IsAvailable = true;
-				model.StockAvailability = "";
+                model.StockAvailability = product.ProductVariantAttributeCombinations.Count == 0 ? product.FormatStockMessage(_localizationService) : "";
 			}
 			else if (model.IsAvailable)
 			{

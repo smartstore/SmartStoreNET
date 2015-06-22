@@ -130,7 +130,15 @@
 		    updateAttrLine(".attr-length", data.Measure.Length.Text);
 		    updateAttrLine(".attr-width", data.Measure.Width.Text);
 		    updateAttrLine(".attr-height", data.Measure.Height.Text);
-		    updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+
+		    if (data.Stock.Quantity.Show)
+		    {
+		        updateAttrLine(".attr-stock", data.Stock.Availability.Text);
+		    }
+		    else
+		    {
+		        updateAttrLine(".attr-stock", "");
+		    }
 
 		    context.find('.add-to-cart .form-inline').toggle(data.Stock.Availability.Available);
 

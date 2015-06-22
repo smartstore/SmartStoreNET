@@ -59,6 +59,8 @@ namespace SmartStore.Web.Controllers
 		private readonly LocalizationSettings _localizationSettings;
 		private readonly CaptchaSettings _captchaSettings;
 		private readonly CatalogHelper _helper;
+        private readonly IDownloadService _downloadService;
+        private readonly ILocalizationService _localizationService;
 
 		#endregion
 
@@ -90,7 +92,9 @@ namespace SmartStore.Web.Controllers
 			ShoppingCartSettings shoppingCartSettings,
 			LocalizationSettings localizationSettings, 
 			CaptchaSettings captchaSettings,
-			CatalogHelper helper)
+			CatalogHelper helper,
+            IDownloadService downloadService,
+            ILocalizationService localizationService)
         {
 			this._services = services;
 			this._manufacturerService = manufacturerService;
@@ -118,6 +122,8 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
+            this._downloadService = downloadService;
+            this._localizationService = localizationService;
 
 			T = NullLocalizer.Instance;
         }
@@ -662,62 +668,73 @@ namespace SmartStore.Web.Controllers
 				}
 			}
 
+            var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
+            var warnings = new List<string>();
+			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
+ 
 			#region data object
-			object data = new
-			{
-				Delivery = new
-				{
-					Id = 0,
-					Name = m.DeliveryTimeName,
-					Color = m.DeliveryTimeHexValue,
-					DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
-				},
-				Measure = new
-				{
-					Weight = new { Value = m.WeightValue, Text = m.Weight },
-					Height = new { Value = product.Height, Text = m.Height },
-					Width = new { Value = product.Width, Text = m.Width },
-					Length = new { Value = product.Length, Text = m.Length }
-				},
-				Number = new
-				{
-					Sku = new { Value = m.Sku, Show = m.ShowSku },
-					Gtin = new { Value = m.Gtin, Show = m.ShowGtin },
-					Mpn = new { Value = m.ManufacturerPartNumber, Show = m.ShowManufacturerPartNumber }
-				},
-				Price = new
-				{
-					Base = new
-					{
-						Enabled = m.IsBasePriceEnabled,
-						Info = m.BasePriceInfo
-					},
-					Old = new
-					{
-						Value = decimal.Zero,
-						Text = m.ProductPrice.OldPrice
-					},
-					WithoutDiscount = new
-					{
-						Value = m.ProductPrice.PriceValue,
-						Text = m.ProductPrice.Price
-					},
-					WithDiscount = new
-					{
-						Value = m.ProductPrice.PriceWithDiscountValue,
-						Text = m.ProductPrice.PriceWithDiscount
-					}
-				},
-				Stock = new
-				{
-					Quantity = new { Value = product.StockQuantity, Show = product.DisplayStockQuantity },
-					Availability = new { Text = m.StockAvailability, Show = product.DisplayStockAvailability, Available = m.IsAvailable }
-				},
+            object data = new
+            {
+                Delivery = new
+                {
+                    Id = 0,
+                    Name = m.DeliveryTimeName,
+                    Color = m.DeliveryTimeHexValue,
+                    DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
+                },
+                Measure = new
+                {
+                    Weight = new { Value = m.WeightValue, Text = m.Weight },
+                    Height = new { Value = product.Height, Text = m.Height },
+                    Width = new { Value = product.Width, Text = m.Width },
+                    Length = new { Value = product.Length, Text = m.Length }
+                },
+                Number = new
+                {
+                    Sku = new { Value = m.Sku, Show = m.ShowSku },
+                    Gtin = new { Value = m.Gtin, Show = m.ShowGtin },
+                    Mpn = new { Value = m.ManufacturerPartNumber, Show = m.ShowManufacturerPartNumber }
+                },
+                Price = new
+                {
+                    Base = new
+                    {
+                        Enabled = m.IsBasePriceEnabled,
+                        Info = m.BasePriceInfo
+                    },
+                    Old = new
+                    {
+                        Value = decimal.Zero,
+                        Text = m.ProductPrice.OldPrice
+                    },
+                    WithoutDiscount = new
+                    {
+                        Value = m.ProductPrice.PriceValue,
+                        Text = m.ProductPrice.Price
+                    },
+                    WithDiscount = new
+                    {
+                        Value = m.ProductPrice.PriceWithDiscountValue,
+                        Text = m.ProductPrice.PriceWithDiscount
+                    }
+                },
+                Stock = new
+                {
+                    Quantity = new { 
+                        Value = product.StockQuantity,
+                        Show = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product) ? product.DisplayStockQuantity : false
+                    },
+                    Availability = new { 
+                        Text = m.StockAvailability,
+                        Show = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product) ? product.DisplayStockAvailability : false, 
+                        Available = m.IsAvailable }
+                },
 
-				DynamicThumblUrl = dynamicThumbUrl,
-				GalleryStartIndex = galleryStartIndex,
-				GalleryHtml = galleryHtml
-			};
+                DynamicThumblUrl = dynamicThumbUrl,
+                GalleryStartIndex = galleryStartIndex,
+                GalleryHtml = galleryHtml
+            };
 			#endregion
 
 			return new JsonResult { Data = data };

@@ -2,6 +2,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
@@ -139,12 +140,12 @@ namespace SmartStore.Services.Payments
 									return false;
 							}
 
-							// method restricted by country of selected billing address?
+							// method restricted by country of selected billing or shipping address?
 							var excludedCountryIds = method.ExcludedCountryIds.ToIntArray();
 							if (excludedCountryIds.Any())
 							{
 								int countryId = 0;
-								if (method.CountryExclusionContext == CountryExclusionContextType.ShippingAddress)
+								if (method.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
 									countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
 								else
 									countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
@@ -262,7 +263,11 @@ namespace SmartStore.Services.Payments
 		{
 			var paymentMethods = _commonServices.Cache.Get(PAYMENTMETHOD_ALL_KEY, () =>
 			{
-				return _paymentMethodRepository.Table.ToList();
+				var methods = _paymentMethodRepository.TableUntracked.ToList();
+
+				methods.Each(x => _paymentMethodRepository.Context.DetachEntity<PaymentMethod>(x));
+
+				return methods;
 			});
 
 			return paymentMethods;

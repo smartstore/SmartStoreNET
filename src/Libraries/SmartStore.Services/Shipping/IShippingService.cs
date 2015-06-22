@@ -53,10 +53,9 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Gets all shipping methods
         /// </summary>
-        /// <param name="filterByCountryId">The country indentifier to filter by</param>
-		/// <param name="customer">Filter methods by roles of a customer</param>
+		/// <param name="customer">Filter shipping methods by customer and apply payment method restrictions; null to load all records</param>
         /// <returns>Shipping method collection</returns>
-		IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null, Customer customer = null);
+		IList<ShippingMethod> GetAllShippingMethods(Customer customer = null);
 
         /// <summary>
         /// Inserts a shipping method

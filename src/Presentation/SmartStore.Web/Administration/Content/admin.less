@@ -748,9 +748,16 @@ td.adminData .text-box.single-line {
     width: 300px;
 }
 td.adminData input[type=text].input-large,
-td.adminData textarea.input-large {
+td.adminData textarea.input-large,
+td.adminData .control-large {
 	width: 500px;
 }
+td.adminData input[type=text].input-xlarge,
+td.adminData textarea.input-xlarge,
+td.adminData .control-xlarge {
+	width: 800px;
+}
+
 
 .t-grid .text-box.single-line {
     /* ... */
@@ -1195,43 +1202,6 @@ table.order-edit td {
 table.payment-method-features td {
 	padding: 2px 4px;
 	font-size: 12px;
-}
-
-/* payment and shipping restrictions
--------------------------------------------------------------- */
-.restriction-container {
-	th label {
-		margin: 0 10px 0 0;
-		display: inline-block;
-	}
-
-	th > div {
-		display: inline-block;
-		padding-right: 10px;
-	}
-
-	.normal-font {
-		font-weight: normal;
-	}
-
-	.column-customerroles,
-	.column-shippingmethods {
-		width: 18%;
-	}
-
-	.column-countries {
-		width: 64%;
-
-		> div {
-			display: table-row;
-		}
-
-		.country-container {
-			display: table-cell;
-			width: 25%;
-			padding-right: 10px;
-		}
-	}
 }
 
 

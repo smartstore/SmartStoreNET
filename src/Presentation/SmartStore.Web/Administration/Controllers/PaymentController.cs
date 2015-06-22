@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
@@ -64,7 +65,6 @@ namespace SmartStore.Admin.Controllers
 
 		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
 		{
-			SelectListItem item = null;
 			var customerRoles = _customerService.GetAllCustomerRoles(true);
 			var shippingMethods = _shippingService.GetAllShippingMethods();
 			var countries = _countryService.GetAllCountries(true);
@@ -72,6 +72,8 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableShippingMethods = new List<SelectListItem>();
 			model.AvailableCountries = new List<SelectListItem>();
+
+			model.AvailableCountryExclusionContextTypes = CountryRestrictionContextType.BillingAddress.ToSelectList(false).ToList();
 			model.AvailableAmountRestrictionContextTypes = AmountRestrictionContextType.SubtotalAmount.ToSelectList(false).ToList();
 
 			foreach (var role in customerRoles.OrderBy(x => x.Name))
@@ -91,28 +93,15 @@ namespace SmartStore.Admin.Controllers
 
 			if (paymentMethod != null)
 			{
-				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
-				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
+				model.ExcludedCustomerRoleIds = paymentMethod.ExcludedCustomerRoleIds.SplitSafe(",");
+				model.ExcludedShippingMethodIds = paymentMethod.ExcludedShippingMethodIds.SplitSafe(",");
+				model.ExcludedCountryIds = paymentMethod.ExcludedCountryIds.SplitSafe(",");
+
 				model.MinimumOrderAmount = paymentMethod.MinimumOrderAmount;
 				model.MaximumOrderAmount = paymentMethod.MaximumOrderAmount;
 
-				foreach (var id in paymentMethod.ExcludedCustomerRoleIds.SplitSafe(","))
-				{
-					if ((item = model.AvailableCustomerRoles.FirstOrDefault(x => x.Value == id)) != null)
-						item.Selected = true;
-				}
-
-				foreach (var id in paymentMethod.ExcludedShippingMethodIds.SplitSafe(","))
-				{
-					if ((item = model.AvailableShippingMethods.FirstOrDefault(x => x.Value == id)) != null)
-						item.Selected = true;
-				}
-
-				foreach (var id in paymentMethod.ExcludedCountryIds.SplitSafe(","))
-				{
-					if ((item = model.AvailableCountries.FirstOrDefault(x => x.Value == id)) != null)
-						item.Selected = true;
-				}
+				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
+				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
 			}
 		}
 
@@ -213,29 +202,15 @@ namespace SmartStore.Admin.Controllers
 			if (paymentMethod == null)
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
 
-			var customerRoleIds = Request.Form.AllKeys
-				.Where(x => x.StartsWith("CustomerRole_"))
-				.Select(x => x.Replace("CustomerRole_", ""))
-				.ToList();
+			paymentMethod.ExcludedCustomerRoleIds = Request.Form["ExcludedCustomerRoleIds"];
+			paymentMethod.ExcludedShippingMethodIds = Request.Form["ExcludedShippingMethodIds"];
+			paymentMethod.ExcludedCountryIds = Request.Form["ExcludedCountryIds"];
 
-			var shippingMethodIds = Request.Form.AllKeys
-				.Where(x => x.StartsWith("ShippingMethod_"))
-				.Select(x => x.Replace("ShippingMethod_", ""))
-				.ToList();
-
-			var countryIds = Request.Form.AllKeys
-				.Where(x => x.StartsWith("Country_"))
-				.Select(x => x.Replace("Country_", ""))
-				.ToList();
-
-			paymentMethod.ExcludedCustomerRoleIds = string.Join(",", customerRoleIds);
-			paymentMethod.ExcludedShippingMethodIds = string.Join(",", shippingMethodIds);
-			paymentMethod.ExcludedCountryIds = string.Join(",", countryIds);
+			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
+			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
 
 			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
 			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
-			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
-			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
 
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);

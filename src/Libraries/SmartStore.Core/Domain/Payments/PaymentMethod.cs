@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Common;
 
 namespace SmartStore.Core.Domain.Payments
 {
@@ -42,11 +43,11 @@ namespace SmartStore.Core.Domain.Payments
 		/// Gets or sets the country exclusion context
 		/// </summary>
 		[DataMember]
-		public CountryExclusionContextType CountryExclusionContext
+		public CountryRestrictionContextType CountryExclusionContext
 		{
 			get
 			{
-				return (CountryExclusionContextType)this.CountryExclusionContextId;
+				return (CountryRestrictionContextType)this.CountryExclusionContextId;
 			}
 			set
 			{

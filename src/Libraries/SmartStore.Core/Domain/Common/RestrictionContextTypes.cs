@@ -1,7 +1,7 @@
 ﻿
-namespace SmartStore.Core.Domain.Payments
+namespace SmartStore.Core.Domain.Common
 {
-	public enum CountryExclusionContextType
+	public enum CountryRestrictionContextType
 	{
 		BillingAddress = 0,
 		ShippingAddress

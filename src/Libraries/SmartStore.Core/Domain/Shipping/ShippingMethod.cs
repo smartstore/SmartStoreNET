@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 
@@ -39,6 +40,28 @@ namespace SmartStore.Core.Domain.Shipping
 		/// </summary>
 		[DataMember]
 		public string ExcludedCustomerRoleIds { get; set; }
+
+		/// <summary>
+		/// Gets or sets the context identifier for country exclusion
+		/// </summary>
+		[DataMember]
+		public int CountryExclusionContextId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the country exclusion context
+		/// </summary>
+		[DataMember]
+		public CountryRestrictionContextType CountryExclusionContext
+		{
+			get
+			{
+				return (CountryRestrictionContextType)this.CountryExclusionContextId;
+			}
+			set
+			{
+				this.CountryExclusionContextId = (int)value;
+			}
+		}
 
         /// <summary>
         /// Gets or sets the restricted countries

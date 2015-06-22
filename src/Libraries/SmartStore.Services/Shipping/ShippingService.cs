@@ -188,58 +188,49 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Gets all shipping methods
         /// </summary>
-        /// <param name="filterByCountryId">The country indentifier to filter by</param>
-		/// <param name="customer">Filter methods by roles of a customer</param>
+		/// <param name="customer">Filter shipping methods by customer and apply payment method restrictions; null to load all records</param>
         /// <returns>Shipping method collection</returns>
-		public virtual IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null, Customer customer = null)
+		public virtual IList<ShippingMethod> GetAllShippingMethods(Customer customer = null)
         {
-			IQueryable<ShippingMethod> query = null;
+			List<int> customerRoleIds = null;
 
-            if (filterByCountryId.HasValue && filterByCountryId.Value > 0)
-            {
-                var query1 = 
-					from sm in _shippingMethodRepository.Table
-					where sm.RestrictedCountries.Select(c => c.Id).Contains(filterByCountryId.Value)
-					select sm.Id;
+			var query =
+				from sm in _shippingMethodRepository.Table
+				orderby sm.DisplayOrder
+				select sm;
 
-                query =
-					from sm in _shippingMethodRepository.Table
-					where !query1.Contains(sm.Id)
-					orderby sm.DisplayOrder
-					select sm;
-            }
-            else
-            {
-                query = 
-					from sm in _shippingMethodRepository.Table
-					orderby sm.DisplayOrder
-					select sm;
-            }
+			var allMethods = query.ToList();
 
-			var shippingMethods = query.ToList();
+			if (customer == null)
+				return allMethods;
 
-			if (customer != null)
+			var activeShippingMethods = allMethods.Where(x =>
 			{
-				List<int> customerRoleIds = null;
-
-				for (int i = shippingMethods.Count - 1; i >= 0; --i)
+				// method restricted by customer role id?
+				var excludedRoleIds = x.ExcludedCustomerRoleIds.ToIntArray();
+				if (excludedRoleIds.Any())
 				{
-					var method = shippingMethods[i];
+					if (customerRoleIds == null)
+						customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
 
-					// method restricted by customer role id?
-					var excludedRoleIds = method.ExcludedCustomerRoleIds.ToIntArray();
-					if (excludedRoleIds.Any())
-					{
-						if (customerRoleIds == null)
-							customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
-
-						if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
-							shippingMethods.Remove(method);
-					}
+					if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+						return false;
 				}
-			}
 
-			return shippingMethods;
+				// method restricted by country of selected billing or shipping address?
+				int countryId = 0;
+				if (x.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
+					countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
+				else
+					countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
+
+				if (countryId != 0 && x.CountryRestrictionExists(countryId))
+					return false;
+
+				return true;
+			});
+
+			return activeShippingMethods.ToList();
         }
 
         /// <summary>

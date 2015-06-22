@@ -157,7 +157,7 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
-    <Compile Include="Domain\Payments\RestrictionContextTypes.cs" />
+    <Compile Include="Domain\Common\RestrictionContextTypes.cs" />
     <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />

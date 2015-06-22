@@ -87,8 +87,54 @@
 
 @helper TabRestrictions()
 {
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
+	</div>
+
 	<div>
 		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedCustomerRoleIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedCustomerRoleIds,
+						new MultiSelectList(Model.AvailableCustomerRoles, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedCustomerRoleIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedShippingMethodIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedShippingMethodIds,
+						new MultiSelectList(Model.AvailableShippingMethods, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedShippingMethodIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedCountryIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedCountryIds,
+						new MultiSelectList(Model.AvailableCountries, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedCountryIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CountryExclusionContext)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.CountryExclusionContext, Model.AvailableCountryExclusionContextTypes)
+					@Html.ValidationMessageFor(model => model.CountryExclusionContext)
+				</td>
+			</tr>
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.MinimumOrderAmount)
@@ -118,108 +164,4 @@
 			</tr>
 		</table>
 	</div>
-	
-	<p>&nbsp;</p>
-	
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
-	</div>
-
-	<div class="restriction-container">
-		<table class="table">
-			<tr>
-				<th>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="MasterCustomerRole" name="MasterCustomerRole" value="" />
-							@T("Admin.Customers.CustomerRoles")
-						</label>
-					</div>
-				</th>
-				<th>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="MasterShippingMethod" name="MasterShippingMethod" value="" />
-							@T("Admin.Configuration.Shipping.Methods")
-						</label>
-					</div>
-				</th>
-				<th>
-					<div class="checkbox">
-						<label>
-							<input type="checkbox" id="MasterCountry" name="MasterCountry" value="" />
-							@T("Admin.Configuration.Countries")
-						</label>
-					</div>
-					<div class="normal-font">
-						@T("Admin.Common.RelatedTo")
-					</div>
-					<div>
-						<label class="radio normal-font">
-							<input type="radio" name="CountryExclusionContext" value="@((int)CountryExclusionContextType.BillingAddress)" @(Model.CountryExclusionContext == CountryExclusionContextType.BillingAddress ? "checked='checked'" : "") />
-							@T("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.BillingAddress")
-						</label>
-						<label class="radio normal-font">
-							<input type="radio" name="CountryExclusionContext" value="@((int)CountryExclusionContextType.ShippingAddress)" @(Model.CountryExclusionContext == CountryExclusionContextType.ShippingAddress ? "checked='checked'" : "") />
-							@T("Enums.SmartStore.Core.Domain.Payments.CountryExclusionContextType.ShippingAddress")
-						</label>
-					</div>
-				</th>
-			</tr>
-			<tr>
-				<td class="column-customerroles">
-					@foreach (var item in Model.AvailableCustomerRoles)
-					{
-						@RenderCheckbox(item, "CustomerRole_")
-					}
-				</td>
-				<td class="column-shippingmethods">
-					@foreach (var item in Model.AvailableShippingMethods)
-					{
-						@RenderCheckbox(item, "ShippingMethod_")
-					}
-				</td>
-				<td class="column-countries">
-
-					@foreach (var grp in Model.AvailableCountries.Select((x, i) => new { Key = i / 4, Value = x }).GroupBy(x => x.Key, x => x.Value))
-					{
-						<div>
-							@foreach (var item in grp)
-							{
-								<div class="country-container">
-									@RenderCheckbox(item, "Country_")
-								</div>
-							}
-						</div>
-					}
-
-				</td>
-			</tr>
-		</table>
-	</div>
 }
-
-
-@helper RenderCheckbox(SelectListItem item, string prefix)
-{
-	<div class="checkbox">
-		<label>
-			<input type="checkbox" id="@(prefix)@(item.Value)" name="@(prefix)@(item.Value)" value="@item.Value" @(item.Selected ? "checked='checked'" : "") />
-			@item.Text
-		</label>
-	</div>
-}
-
-<script type="text/javascript">
-	jQuery(document).ready(function () {
-		
-		// restictions column header checkbox clicked
-		$('.restriction-container th input[type="checkbox"]').change(function () {
-			var id = $(this).attr('id').replace('Master', ''),
-				isChecked = $(this).is(':checked');
-
-			$('.restriction-container td input[name^="' + id + '"]').attr('checked', isChecked);
-		});
-
-	});
-</script>

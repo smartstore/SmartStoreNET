@@ -309,7 +309,6 @@
     <Compile Include="Models\Themes\ThemeManifestModel.cs" />
     <Compile Include="Models\Topics\TopicListModel.cs" />
     <Compile Include="Models\Topics\TopicModel.cs" />
-    <Compile Include="Models\Shipping\ShippingMethodRestrictionModel.cs" />
     <Compile Include="Models\News\NewsCommentModel.cs" />
     <Compile Include="Models\News\NewsItemModel.cs" />
     <Compile Include="Models\Settings\NewsSettingsModel.cs" />
@@ -892,9 +891,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\News\Comments.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shipping\Restrictions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Topic\_CreateOrUpdate.cshtml" />

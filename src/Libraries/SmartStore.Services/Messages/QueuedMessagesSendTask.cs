@@ -9,8 +9,7 @@ namespace SmartStore.Services.Messages
     {
         private readonly IQueuedEmailService _queuedEmailService;
 
-        public QueuedMessagesSendTask(
-			IQueuedEmailService queuedEmailService)
+        public QueuedMessagesSendTask(IQueuedEmailService queuedEmailService)
         {
             _queuedEmailService = queuedEmailService;
         }

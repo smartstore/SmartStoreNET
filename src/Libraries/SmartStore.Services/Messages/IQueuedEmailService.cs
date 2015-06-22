@@ -53,9 +53,10 @@ namespace SmartStore.Services.Messages
         /// <param name="pageSize">Page size</param>
 		/// <param name="sendManually">A value indicating whether to load manually send emails</param>
         /// <returns>Email item collection</returns>
-        IPagedList<QueuedEmail> SearchEmails(string fromEmail,
-            string toEmail, DateTime? startTime, DateTime? endTime,
-            bool loadNotSentItemsOnly, int maxSendTries,
+        IPagedList<QueuedEmail> SearchEmails(
+			string fromEmail, string toEmail, 
+			DateTime? startTime, DateTime? endTime,
+            bool loadUnsentItemsOnly, int maxSendTries,
             bool loadNewest, int pageIndex, int pageSize,
 			bool? sendManually = null);
 

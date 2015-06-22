@@ -327,13 +327,13 @@ namespace SmartStore.Services.Catalog
 				modified = _productRepository.IsModified(product);
 			}
 
-            //update
+            // update
             _productRepository.Update(product);
 
-			//cache
+			// cache
 			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
-            //event notification
+            // event notification
 			if (publishEvent && modified)
 			{
 				_eventPublisher.EntityUpdated(product);

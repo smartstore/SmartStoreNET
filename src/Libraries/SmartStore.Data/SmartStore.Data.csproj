@@ -273,9 +273,13 @@
     <Compile Include="Migrations\201505272236124_V222.Designer.cs">
       <DependentUpon>201505272236124_V222.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.cs" />
-    <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.Designer.cs">
-      <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
+    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.cs" />
+    <Compile Include="Migrations\201506181858349_AclRecordCustomerRole.Designer.cs">
+      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506181501470_PaymentShippingRestrictions.cs" />
+    <Compile Include="Migrations\201506181501470_PaymentShippingRestrictions.Designer.cs">
+      <DependentUpon>201506181501470_PaymentShippingRestrictions.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -534,8 +538,11 @@
     <EmbeddedResource Include="Migrations\201505272236124_V222.resx">
       <DependentUpon>201505272236124_V222.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506211043073_PaymentShippingRestrictions.resx">
-      <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201506181858349_AclRecordCustomerRole.resx">
+      <DependentUpon>201506181858349_AclRecordCustomerRole.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506181501470_PaymentShippingRestrictions.resx">
+      <DependentUpon>201506181501470_PaymentShippingRestrictions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

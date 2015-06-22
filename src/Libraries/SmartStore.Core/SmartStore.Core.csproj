@@ -224,7 +224,6 @@
     <Compile Include="Domain\Stores\StoreMapping.cs" />
     <Compile Include="Domain\Themes\ThemeSettings.cs" />
     <Compile Include="Domain\Themes\ThemeVariable.cs" />
-    <Compile Include="Email\Attachment.cs" />
     <Compile Include="Email\DefaultEmailSender.cs" />
     <Compile Include="Email\EmailAddress.cs" />
     <Compile Include="Email\EmailException.cs" />

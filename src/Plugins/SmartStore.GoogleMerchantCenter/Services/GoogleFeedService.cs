@@ -573,6 +573,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			}
 
 			string sql = null;
+			string sqlCount = null;
 			var isSqlServer = DataSettings.Current.IsSqlServer;
 
 			if (isSqlServer)
@@ -596,18 +597,24 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			{
 				// OFFSET... FETCH NEXT requires SQL Server 2012 or SQL CE 4
 				sql =
-					"SELECT [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export]" +
+					"SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value] AS [Taxonomy], [t2].[value2] AS [Gender], [t2].[value3] AS [AgeGroup], [t2].[value4] AS [Color], [t2].[value5] AS [Size], [t2].[value6] AS [Material], [t2].[value7] AS [Pattern], [t2].[value8] AS [Export]" +
 					" FROM (" +
-					"    SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8]" +
-					"    FROM (" +
-					"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
-					"        FROM [Product] AS [t0]" +
-					"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
-					"        ) AS [t2]" +
-					"    WHERE " + whereClause.ToString() +
-					"    ) AS [t3]" +
-					" ORDER BY [t3].[Name]" +
+					"     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+					"     FROM [Product] AS [t0]" +
+					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+					" ) AS [t2]" +
+					" WHERE " + whereClause.ToString() +
+					" ORDER BY [t2].[Name]" +
 					" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";
+
+				sqlCount =
+					"SELECT COUNT(*)" +
+					" FROM (" +
+					"     SELECT [t0].[Id], [t0].[Name], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+					"     FROM [Product] AS [t0]" +
+					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+					" ) AS [t2]" +
+					" WHERE " + whereClause.ToString();
 			}
 
 
@@ -639,7 +646,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				if (isSqlServer)
 					model.Total = data.First().TotalCount;
 				else
-					model.Total = _gpRepository.Context.SqlQuery<int>("Select Count(*) From [Product] As [t2] Where " + whereClause.ToString()).FirstOrDefault();
+					model.Total = _gpRepository.Context.SqlQuery<int>(sqlCount).FirstOrDefault();
 			}
 			else
 			{

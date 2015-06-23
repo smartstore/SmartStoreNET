@@ -8,9 +8,9 @@ SmartStore.NET is a free, open source, full-featured e-commerce solution for com
 
 **SmartStore.NET includes all essential features to create multilingual and multi-currency stores** targeting desktop or mobile devices and enabling SEO optimized rich product catalogs with support for an unlimited number of products and categories, variants, bundles, datasheets, ESD, discounts, coupons and many more.
 
-A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling among others makes SmartStore.NET a powerful all-in-one solution fulfilling all your needs... totally FREE!
+A comprehensive set of tools for CRM & CMS, sales, marketing, payment & shipping handling, etc. makes SmartStore.NET a powerful all-in-one solution fulfilling all your needs... totally FREE!
 
-**SmartStore.NET delivers a beautiful and configurable shop frontend out-of-the-box** built with a design approach on the highest level, including components like `Twitter Bootstrap`, `Less CSS` and others. The innovative ShopBar, a powerful layered navigation, reviews & ratings, an optimized checkout process... they all provide a perfect shopping experience to your buyers.
+**SmartStore.NET delivers a beautiful and configurable shop front-end out-of-the-box**, built with a design approach on the highest level, including components like `Twitter Bootstrap`, `Less CSS` and others. The innovative ShopBar, a powerful layered navigation, reviews & ratings, an optimized checkout process... they all provide a perfect shopping experience for your buyers.
 
 The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 5`, `Entity Framework 6` and Domain Driven Design approach - makes it easy to extend, extremely flexible and essentially fun to work with ;-)
 
@@ -26,7 +26,7 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * State of the art architecture thanks to `ASP.NET 4.5`, `ASP.NET MVC 5`, `Entity Framework 6` and Domain Driven Design
 * Easy to extend and extremely flexible thanks to modular design
 * (NEW) A powerful theming engine lets you create themes & skins with minimum effort thanks to theme inheritance
-* Consistent and sophisticated use of modern components such as `jQuery`, `Twitter Bootstrap`, `LESS` & more in the frontend and backend.
+* Consistent and sophisticated use of modern components such as `jQuery`, `Twitter Bootstrap`, `LESS` & more in the front and back end.
 * Easy shop management thanks to modern and clean UI
 * Out of the box shop design on the highest level
 * Revolutionary Shopbar for the best shopping experience

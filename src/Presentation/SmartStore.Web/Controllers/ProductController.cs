@@ -610,6 +610,14 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> bundleItems = null;
 			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
 
+			var warnings = new List<string>();
+			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
+
+			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
+
+			var areAllAttributesForCombinationSelected = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product);
+
 			// quantity required for tier prices
 			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
 			if (quantityKey.HasValue())
@@ -667,13 +675,9 @@ namespace SmartStore.Web.Controllers
 					galleryHtml = this.RenderPartialViewToString("_PictureGallery", pictureModel);
 				}
 			}
-
-            var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
-            var warnings = new List<string>();
-			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
-				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
  
 			#region data object
+
             object data = new
             {
                 Delivery = new
@@ -721,20 +725,24 @@ namespace SmartStore.Web.Controllers
                 },
                 Stock = new
                 {
-                    Quantity = new { 
+                    Quantity = new
+					{ 
                         Value = product.StockQuantity,
-                        Show = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product) ? product.DisplayStockQuantity : false
+						Show = areAllAttributesForCombinationSelected ? product.DisplayStockQuantity : false
                     },
-                    Availability = new { 
+                    Availability = new
+					{ 
                         Text = m.StockAvailability,
-                        Show = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product) ? product.DisplayStockAvailability : false, 
-                        Available = m.IsAvailable }
+						Show = areAllAttributesForCombinationSelected ? product.DisplayStockAvailability : false, 
+                        Available = m.IsAvailable
+					}
                 },
 
                 DynamicThumblUrl = dynamicThumbUrl,
                 GalleryStartIndex = galleryStartIndex,
                 GalleryHtml = galleryHtml
             };
+
 			#endregion
 
 			return new JsonResult { Data = data };

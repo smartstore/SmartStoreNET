@@ -436,10 +436,10 @@
 
         function toggleAcl() {
             if ($('#@Html.FieldIdFor(model => model.SubjectToAcl)').is(':checked')) {
-                $('#pnl-acl').show();
+                $('.pnl-acl').show();
             }
             else {
-                $('#pnl-acl').hide();
+                $('.pnl-acl').hide();
             }
         }
 
@@ -454,7 +454,7 @@
                 @Html.ValidationMessageFor(model => model.SubjectToAcl)
             </td>
         </tr>
-        <tr id="pnl-acl">
+        <tr class="pnl-acl">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AvailableCustomerRoles)
             </td>
@@ -466,11 +466,30 @@
                             <input type="checkbox" name="SelectedCustomerRoleIds" value="@customerRole.Id" checked="@(Model.SelectedCustomerRoleIds != null && Model.SelectedCustomerRoleIds.Contains(customerRole.Id))" />@customerRole.Name
                         </label>
                     </div>
-					}
-				}
-				else {
-                    <div>No customer roles defined</div>
-				}</td>
+                    }
+                }
+                else
+                {
+                    <div>
+                        @T("Admin.Configuration.Acl.NoRolesDefined")
+                    </div>
+                }
+            </td>
+        </tr>
+        <tr class="pnl"><td colspan="2"><hr /></td></tr>
+        <tr class="pnl">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <div class="alert alert-danger"  >
+                    @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
+                </div>
+                <a href="@Url.Action("AssignAclToSubCategoriesAndProducts", "Category", new { categoryId = Model.Id })" name="assign-acl-to-subcats-and-products" class="btn btn-danger">
+                    <i class="fa fa-bolt"></i>&nbsp;
+                    @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")
+                </a>
+            </td>
         </tr>
     </table>
 }
@@ -488,10 +507,10 @@
 
         function toggleStoreMapping() {
         	if ($('#@Html.FieldIdFor(model => model.LimitedToStores)').is(':checked')) {
-        		$('#pnl-available-stores').show();
+        		$('.pnl-available-stores').show();
         	}
         	else {
-        		$('#pnl-available-stores').hide();
+        		$('.pnl-available-stores').hide();
         	}
         }
 
@@ -506,7 +525,7 @@
                 @Html.ValidationMessageFor(model => model.LimitedToStores)
             </td>
         </tr>
-        <tr id="pnl-available-stores">
+        <tr class="pnl-available-stores">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AvailableStores)
             </td>
@@ -524,7 +543,24 @@
                 else
                 {
                     <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
+                }
+            </td>
+        </tr>
+
+        <tr class="pnl"><td colspan="2"><hr /></td></tr>
+        <tr class="pnl">
+            <td class="adminTitle">
+                &nbsp;
+            </td>
+            <td class="adminData">
+                <div class="alert alert-danger">
+                    @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint")
+                </div>
+                <a href="@Url.Action("AssignStoresToSubCategoriesAndProducts", "Category", new { categoryId = Model.Id })" name="assign-stores-to-subcats-and-products" class="btn btn-danger">
+                    <i class="fa fa-bolt"></i>&nbsp;
+                    @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts")
+                </a>
+            </td>
         </tr>
     </table>
 }

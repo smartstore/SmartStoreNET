@@ -66,7 +66,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute mappings by their keys
         /// </summary>

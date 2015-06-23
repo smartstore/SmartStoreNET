@@ -8,6 +8,7 @@
 ### Improvements
 * (Soft) deletion of SEO slug supporting entities now also deletes the corresponding url records
 * License checker now supports IDN mapping for domain names
+* #716 Supporting of paged google-product data query for SQL-Server Compact Edition
 
 ### Bugfixes
 * #694 Product variant attribute in product page should not be preselected implicitly

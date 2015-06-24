@@ -52,6 +52,10 @@ namespace SmartStore.Data.Migrations
 				"Restrictions",
 				"Einschränkungen");
 
+			builder.AddOrUpdate("Common.RequestProcessingFailed",
+				"The request could not be processed.<br />Controller: {0}, Action: {1}, Reason: {2}.",
+				"Die Anfrage konnte nicht ausgeführt werden.<br />Controller: {0}, Action: {1}, Grund: {2}.");
+
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
 				"Select customer roles, shipping methods, countries and order amounts for which you do <b>not</b> want to offer this payment method.",
 				"Wählen Sie Kundengruppen, Versandarten, Länder und Bestellwerte, bei denen Sie diese Zahlungsmethode <b>nicht</b> anbieten möchten.");

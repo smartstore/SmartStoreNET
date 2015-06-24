@@ -1,18 +1,17 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
@@ -27,14 +26,13 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Models.Common;
 using SmartStore.Web.Models.Customer;
-using SmartStore.Core.Logging;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.Utilities;
 
 namespace SmartStore.Web.Controllers
 {
@@ -393,7 +391,6 @@ namespace SmartStore.Web.Controllers
             model.CheckoutAsGuest = checkoutAsGuest.HasValue ? checkoutAsGuest.Value : false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
             
-            // codehint: sm-add
             if (_customerSettings.PrefillLoginUsername.HasValue())
             {
                 if (model.UsernamesEnabled)
@@ -875,14 +872,14 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer == null)
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Email");
 
             var cToken = customer.GetAttribute<string>(SystemCustomerAttributeNames.AccountActivationToken);
             if (String.IsNullOrEmpty(cToken))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
 
             if (!cToken.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
 
             //activate user account
             customer.Active = true;
@@ -1381,11 +1378,11 @@ namespace SmartStore.Web.Controllers
 
 			var orderItem = _orderService.GetOrderItemByGuid(id);
             if (orderItem == null)
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Guid");
 
             var product = orderItem.Product;
             if (product == null || !product.HasUserAgreement)
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Product");
 
             var model = new UserAgreementModel();
             model.UserAgreementText = product.UserAgreementText;
@@ -1637,14 +1634,14 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer == null )
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Email");
 
             var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
             if (String.IsNullOrEmpty(cPrt))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
 
             if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
             
             var model = new PasswordRecoveryConfirmModel();
             return View(model);
@@ -1656,14 +1653,14 @@ namespace SmartStore.Web.Controllers
         {
             var customer = _customerService.GetCustomerByEmail(email);
             if (customer == null)
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Email");
 
             var cPrt = customer.GetAttribute<string>(SystemCustomerAttributeNames.PasswordRecoveryToken);
             if (String.IsNullOrEmpty(cPrt))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
 
             if (!cPrt.Equals(token, StringComparison.InvariantCultureIgnoreCase))
-                return RedirectToRoute("HomePage");
+				return RedirectToHomePageWithError("Token");
             
             if (ModelState.IsValid)
             {

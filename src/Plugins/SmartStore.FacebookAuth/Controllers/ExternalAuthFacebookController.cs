@@ -1,54 +1,52 @@
 ﻿using System.Web.Mvc;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.FacebookAuth.Core;
 using SmartStore.FacebookAuth.Models;
+using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.FacebookAuth.Controllers
 {
     //[UnitOfWork]
 	public class ExternalAuthFacebookController : PluginControllerBase
     {
-        private readonly ISettingService _settingService;
-        private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
         private readonly IOAuthProviderFacebookAuthorizer _oAuthProviderFacebookAuthorizer;
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
-		private readonly IStoreContext _storeContext;
-		private readonly IPermissionService _permissionService;
+		private readonly ICommonServices _commonServices;
 
-        public ExternalAuthFacebookController(ISettingService settingService,
-            FacebookExternalAuthSettings facebookExternalAuthSettings,
+        public ExternalAuthFacebookController(
             IOAuthProviderFacebookAuthorizer oAuthProviderFacebookAuthorizer,
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-			IStoreContext storeContext,
-			IPermissionService permissionService)
+			ICommonServices commonServices)
         {
-            this._settingService = settingService;
-            this._facebookExternalAuthSettings = facebookExternalAuthSettings;
             this._oAuthProviderFacebookAuthorizer = oAuthProviderFacebookAuthorizer;
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
-			this._storeContext = storeContext;
-			this._permissionService = permissionService;
+			this._commonServices = commonServices;
         }
         
         [AdminAuthorize]
         [ChildActionOnly]
         public ActionResult Configure()
         {
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
 				return Content("Access denied");
 
             var model = new ConfigurationModel();
-            model.ClientKeyIdentifier = _facebookExternalAuthSettings.ClientKeyIdentifier;
-            model.ClientSecret = _facebookExternalAuthSettings.ClientSecret;
+			int storeScope = this.GetActiveStoreScopeConfiguration(_commonServices.StoreService, _commonServices.WorkContext);
+			var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
+
+            model.ClientKeyIdentifier = settings.ClientKeyIdentifier;
+            model.ClientSecret = settings.ClientSecret;
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _commonServices.Settings);
             
             return View(model);
         }
@@ -56,20 +54,27 @@ namespace SmartStore.FacebookAuth.Controllers
         [HttpPost]
         [AdminAuthorize]
         [ChildActionOnly]
-        public ActionResult Configure(ConfigurationModel model)
+		public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
 				return Content("Access denied");
 
             if (!ModelState.IsValid)
                 return Configure();
-            
-            //save settings
-            _facebookExternalAuthSettings.ClientKeyIdentifier = model.ClientKeyIdentifier;
-            _facebookExternalAuthSettings.ClientSecret = model.ClientSecret;
-            _settingService.SaveSetting(_facebookExternalAuthSettings);
-            
-            return View(model);
+
+			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
+			int storeScope = this.GetActiveStoreScopeConfiguration(_commonServices.StoreService, _commonServices.WorkContext);
+			var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
+
+            settings.ClientKeyIdentifier = model.ClientKeyIdentifier;
+            settings.ClientSecret = model.ClientSecret;
+
+			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _commonServices.Settings);
+			_commonServices.Settings.ClearCache();
+
+			NotifySuccess(_commonServices.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
+
+			return Configure();
         }
 
         [ChildActionOnly]
@@ -81,7 +86,7 @@ namespace SmartStore.FacebookAuth.Controllers
 		[NonAction]
 		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
         {
-			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName("SmartStore.FacebookAuth", _storeContext.CurrentStore.Id);
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(Provider.SystemName, _commonServices.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
 			{
 				throw new SmartException("Facebook module cannot be loaded");
@@ -122,8 +127,12 @@ namespace SmartStore.FacebookAuth.Controllers
                     break;
             }
 
-            if (result.Result != null) return result.Result;
-            return HttpContext.Request.IsAuthenticated ? new RedirectResult(!string.IsNullOrEmpty(returnUrl) ? returnUrl : "~/") : new RedirectResult(Url.LogOn(returnUrl));
+            if (result.Result != null)
+				return result.Result;
+
+            return HttpContext.Request.IsAuthenticated ?
+				new RedirectResult(!string.IsNullOrEmpty(returnUrl) ? returnUrl : "~/") :
+				new RedirectResult(Url.LogOn(returnUrl));
         }
 
 		public ActionResult Login(string returnUrl)

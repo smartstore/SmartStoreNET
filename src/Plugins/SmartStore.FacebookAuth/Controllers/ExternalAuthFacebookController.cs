@@ -30,13 +30,22 @@ namespace SmartStore.FacebookAuth.Controllers
             this._externalAuthenticationSettings = externalAuthenticationSettings;
 			this._commonServices = commonServices;
         }
+
+		private bool HasPermission(bool notify = true)
+		{
+			bool hasPermission = _commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods);
+
+			if (notify && !hasPermission)
+				NotifyError(_commonServices.Localization.GetResource("Admin.AccessDenied.Description"));
+
+			return hasPermission;
+		}
         
-        [AdminAuthorize]
-        [ChildActionOnly]
+		[AdminAuthorize, ChildActionOnly]
         public ActionResult Configure()
         {
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
-				return Content("Access denied");
+			if (!HasPermission(false))
+				return AccessDeniedPartialView();
 
             var model = new ConfigurationModel();
 			int storeScope = this.GetActiveStoreScopeConfiguration(_commonServices.StoreService, _commonServices.WorkContext);
@@ -51,13 +60,11 @@ namespace SmartStore.FacebookAuth.Controllers
             return View(model);
         }
 
-        [HttpPost]
-        [AdminAuthorize]
-        [ChildActionOnly]
+		[HttpPost, AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure(ConfigurationModel model, FormCollection form)
         {
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods))
-				return Content("Access denied");
+			if (!HasPermission(false))
+				return Configure();
 
             if (!ModelState.IsValid)
                 return Configure();

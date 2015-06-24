@@ -8,7 +8,7 @@
 * #94 Restrict payment methods to certain shipping methods
 * #526 Min\max amount option for which the payment method should be offered during checkout
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
-* #702 Facebook external authentication suitable for multi-stores
+* #702 Facebook and Twitter external authentication suitable for multi-stores
 
 
 ## SmartStore.NET 2.2.2

@@ -68,7 +68,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly Lazy<IMenuPublisher> _menuPublisher;
         private readonly Lazy<IPluginFinder> _pluginFinder;
         private readonly IGenericAttributeService _genericAttributeService;
-		private readonly ICommonServices _services;
+		private readonly ICommonServices _commonServices;
 		private readonly Func<string, ICacheManager> _cache;
 
 		private readonly static object s_lock = new object();
@@ -95,7 +95,7 @@ namespace SmartStore.Admin.Controllers
 			Lazy<IMenuPublisher> menuPublisher,
             Lazy<IPluginFinder> pluginFinder,
             IGenericAttributeService genericAttributeService,
-			ICommonServices services,
+			ICommonServices commonServices,
 			Func<string, ICacheManager> cache)
         {
             this._paymentService = paymentService;
@@ -115,7 +115,7 @@ namespace SmartStore.Admin.Controllers
             this._menuPublisher = menuPublisher;
 			this._pluginFinder = pluginFinder;
             this._genericAttributeService = genericAttributeService;
-			this._services = services;
+			this._commonServices = commonServices;
 			this._cache = cache;
         }
 
@@ -128,11 +128,11 @@ namespace SmartStore.Admin.Controllers
 		[ChildActionOnly]
 		public ActionResult Navbar()
 		{
-			var currentCustomer = _services.WorkContext.CurrentCustomer;
+			var currentCustomer = _commonServices.WorkContext.CurrentCustomer;
 
-			ViewBag.UserName = _services.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
-			ViewBag.Stores = _services.StoreService.GetAllStores();
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			ViewBag.UserName = _commonServices.Settings.LoadSetting<CustomerSettings>().UsernamesEnabled ? currentCustomer.Username : currentCustomer.Email;
+			ViewBag.Stores = _commonServices.StoreService.GetAllStores();
+			if (_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 			{
 				ViewBag.CheckUpdateResult = AsyncRunner.RunSync(() => CheckUpdateAsync(false));
 			}
@@ -143,10 +143,10 @@ namespace SmartStore.Admin.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
-			var cacheManager = _services.Cache;
+			var cacheManager = _commonServices.Cache;
 
-			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
-			string cacheKey = string.Format("smartstore.pres.adminmenu.navigation-{0}-{1}", _services.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
+			var customerRolesIds = _commonServices.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
+			string cacheKey = string.Format("smartstore.pres.adminmenu.navigation-{0}-{1}", _commonServices.WorkContext.WorkingLanguage.Id, string.Join(",", customerRolesIds));
 
             var rootNode = cacheManager.Get(cacheKey, () =>
             {
@@ -255,7 +255,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (_securitySettings.Value.HideAdminMenuItemsBasedOnPermissions && item.PermissionNames.HasValue())
             {
-				var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => _services.Permissions.Authorize(x.Trim()));
+				var permitted = item.PermissionNames.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Any(x => _commonServices.Permissions.Authorize(x.Trim()));
                 if (!permitted)
                 {
                     result = false;
@@ -284,24 +284,24 @@ namespace SmartStore.Admin.Controllers
 		public void CheckUpdateSuppressInternal(string myVersion, string newVersion)
 		{
 			var suppressKey = "SuppressUpdateMessage.{0}.{1}".FormatInvariant(myVersion, newVersion);
-			_genericAttributeService.SaveAttribute<bool?>(_services.WorkContext.CurrentCustomer, suppressKey, true);
-			_services.Cache.RemoveByPattern("Common.CheckUpdateResult");
+			_genericAttributeService.SaveAttribute<bool?>(_commonServices.WorkContext.CurrentCustomer, suppressKey, true);
+			_commonServices.Cache.RemoveByPattern("Common.CheckUpdateResult");
 		}
 
 		[NonAction]
 		private async Task<CheckUpdateResult> CheckUpdateAsync(bool enforce = false, bool forSuppress = false)
 		{
 			var curVersion = SmartStoreVersion.CurrentFullVersion;
-			var lang = _services.WorkContext.WorkingLanguage.UniqueSeoCode;
+			var lang = _commonServices.WorkContext.WorkingLanguage.UniqueSeoCode;
 			var cacheKeyPattern = "Common.CheckUpdateResult";
 			var cacheKey = "{0}.{1}".FormatInvariant(cacheKeyPattern, lang);
 
 			if (enforce)
 			{
-				_services.Cache.RemoveByPattern(cacheKeyPattern);
+				_commonServices.Cache.RemoveByPattern(cacheKeyPattern);
 			}
 
-			var result = await _services.Cache.Get(cacheKey, async () =>
+			var result = await _commonServices.Cache.Get(cacheKey, async () =>
 			{
 				var noUpdateResult = new CheckUpdateResult { UpdateAvailable = false, LanguageCode = lang, CurrentVersion = curVersion };
 
@@ -315,7 +315,7 @@ namespace SmartStore.Admin.Controllers
 						client.DefaultRequestHeaders.Accept.Clear();
 						client.DefaultRequestHeaders.Accept.Add(new MediaTypeWithQualityHeaderValue("application/json"));
 						client.DefaultRequestHeaders.UserAgent.ParseAdd("SmartStore.NET {0}".FormatInvariant(curVersion));
-						client.DefaultRequestHeaders.Add("Authorization-Key", _services.StoreContext.CurrentStore.Url.TrimEnd('/'));
+						client.DefaultRequestHeaders.Add("Authorization-Key", _commonServices.StoreContext.CurrentStore.Url.TrimEnd('/'));
 						
 						HttpResponseMessage response = await client.GetAsync(url);
 						
@@ -331,7 +331,7 @@ namespace SmartStore.Admin.Controllers
 						model.CurrentVersion = curVersion;
 						model.LanguageCode = lang;
 
-						if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+						if (CommonHelper.IsDevEnvironment || !_commonSettings.Value.AutoUpdateEnabled || !_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 						{
 							model.AutoUpdatePossible = false;
 						}
@@ -341,9 +341,9 @@ namespace SmartStore.Admin.Controllers
 						if (enforce)
 						{
 							// but ignore user's decision if 'enforce'
-							_genericAttributeService.SaveAttribute<bool?>(_services.WorkContext.CurrentCustomer, suppressKey, null);
+							_genericAttributeService.SaveAttribute<bool?>(_commonServices.WorkContext.CurrentCustomer, suppressKey, null);
 						}
-						var showMessage = enforce || _services.WorkContext.CurrentCustomer.GetAttribute<bool?>(suppressKey, _genericAttributeService).GetValueOrDefault() == false;
+						var showMessage = enforce || _commonServices.WorkContext.CurrentCustomer.GetAttribute<bool?>(suppressKey, _genericAttributeService).GetValueOrDefault() == false;
 						if (!showMessage)
 						{
 							return noUpdateResult;
@@ -364,7 +364,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult InstallUpdate(string packageUrl)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 				return AccessDeniedView();
 			
 			try
@@ -385,7 +385,7 @@ namespace SmartStore.Admin.Controllers
 				}
 				else
 				{
-					_services.WebHelper.RestartAppDomain();
+					_commonServices.WebHelper.RestartAppDomain();
 				}
 				
 			}
@@ -453,12 +453,12 @@ namespace SmartStore.Admin.Controllers
             model.ServerTimeZone = TimeZone.CurrentTimeZone.StandardName;
             model.ServerLocalTime = DateTime.Now;
             model.UtcTime = DateTime.UtcNow;
-			model.HttpHost = _services.WebHelper.ServerVariables("HTTP_HOST");
+			model.HttpHost = _commonServices.WebHelper.ServerVariables("HTTP_HOST");
             //Environment.GetEnvironmentVariable("USERNAME");
 
 			try
 			{
-				var mbSize = _services.DbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
+				var mbSize = _commonServices.DbContext.SqlQuery<decimal>("Select Sum(size)/128.0 From sysfiles").FirstOrDefault();
 				model.DatabaseSize = Convert.ToDouble(mbSize);
 			}
 			catch (Exception) {	}
@@ -468,7 +468,7 @@ namespace SmartStore.Admin.Controllers
 				if (DataSettings.Current.IsValid())
 				{
 					model.DataProviderFriendlyName = DataSettings.Current.ProviderFriendlyName;
-					model.ShrinkDatabaseEnabled = _services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance) && DataSettings.Current.IsSqlServer;
+					model.ShrinkDatabaseEnabled = _commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance) && DataSettings.Current.IsSqlServer;
 				}
 			}
 			catch (Exception) { }
@@ -498,33 +498,70 @@ namespace SmartStore.Admin.Controllers
             var model = new List<SystemWarningModel>();
             
             //store URL
-			var currentStoreUrl = _services.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
-			if (currentStoreUrl.HasValue() && (currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
-                model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Pass,
-                        Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
-                    });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), currentStoreUrl, _services.WebHelper.GetStoreLocation(false))
-                });
+			var storeUrl = _commonServices.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
+			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_commonServices.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_commonServices.WebHelper.GetStoreLocation(true))))
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), storeUrl, _commonServices.WebHelper.GetStoreLocation(false))
+				});
+			}
 
+			// sitemap reachability
+			var sitemapReachable = false;
+			try
+			{
+				var sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
+				var request = (HttpWebRequest)WebRequest.Create(sitemapUrl);
+				request.Method = "HEAD";
+				request.Timeout = 15000;
+
+				using (var response = (HttpWebResponse)request.GetResponse())
+				{
+					sitemapReachable = (response.StatusCode == HttpStatusCode.OK);
+				}
+			}
+			catch (WebException) { }
+
+			if (sitemapReachable)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.Wrong")
+				});
+			}
 
             //primary exchange rate currency
 			var perCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryExchangeRateCurrencyId);
             if (perCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Set"),
                 });
+
                 if (perCurrency.Rate != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Rate1")
@@ -533,7 +570,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.NotSet")
@@ -544,7 +581,7 @@ namespace SmartStore.Admin.Controllers
 			var pscCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryStoreCurrencyId);
             if (pscCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.Set"),
@@ -552,7 +589,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.NotSet")
@@ -564,7 +601,7 @@ namespace SmartStore.Admin.Controllers
 			var bWeight = _measureService.Value.GetMeasureWeightById(_measureSettings.Value.BaseWeightId);
             if (bWeight != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Set"),
@@ -572,7 +609,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bWeight.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Ratio1")
@@ -581,7 +618,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.NotSet")
@@ -593,7 +630,7 @@ namespace SmartStore.Admin.Controllers
 			var bDimension = _measureService.Value.GetMeasureDimensionById(_measureSettings.Value.BaseDimensionId);
             if (bDimension != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Set"),
@@ -601,7 +638,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bDimension.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Ratio1")
@@ -610,7 +647,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.NotSet")
@@ -619,91 +656,107 @@ namespace SmartStore.Admin.Controllers
 
             // shipping rate coputation methods
 			if (_shippingService.Value.LoadActiveShippingRateComputationMethods()
-                .Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
-                .Count() > 1)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
-                });
+				.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+				.Count() > 1)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
+				});
+			}
 
             //payment methods
-			if (_paymentService.Value.LoadActivePaymentMethods()
-                .Count() > 0)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
-                });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Fail,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
-                });
+			if (_paymentService.Value.LoadActivePaymentMethods().Count() > 0)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Fail,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
+				});
+			}
 
             //incompatible plugins
-            if (PluginManager.IncompatiblePlugins != null)
-                foreach (var pluginName in PluginManager.IncompatiblePlugins)
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName )
-                    });
+			if (PluginManager.IncompatiblePlugins != null)
+			{
+				foreach (var pluginName in PluginManager.IncompatiblePlugins)
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName)
+					});
+				}
+			}
 
             //validate write permissions (the same procedure like during installation)
             var dirPermissionsOk = true;
-			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(_services.WebHelper);
-            foreach (string dir in dirsToCheck)
-                if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
-                {
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
-                    });
-                    dirPermissionsOk = false;
-                }
-            if (dirPermissionsOk)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
-                });
+			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(_commonServices.WebHelper);
+			foreach (string dir in dirsToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
+					});
+					dirPermissionsOk = false;
+				}
+			}
+			if (dirPermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
+				});
+			}
 
             var filePermissionsOk = true;
-			var filesToCheck = FilePermissionHelper.GetFilesWrite(_services.WebHelper);
-            foreach (string file in filesToCheck)
-                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
-                {
-                    model.Add(new SystemWarningModel
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
-                    });
-                    filePermissionsOk = false;
-                }
-            if (filePermissionsOk)
-                model.Add(new SystemWarningModel
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
-                });
-            
+			var filesToCheck = FilePermissionHelper.GetFilesWrite(_commonServices.WebHelper);
+			foreach (string file in filesToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
+					});
+					filePermissionsOk = false;
+				}
+			}
+			if (filePermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
+				});
+			}
             
             return View(model);
         }
 
 		public ActionResult ShrinkDatabase()
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 				return AccessDeniedView();
 
 			try
 			{
 				if (DataSettings.Current.IsSqlServer)
 				{
-					_services.DbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
+					_commonServices.DbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
 					NotifySuccess(_localizationService.GetResource("Common.ShrinkDatabaseSuccessful"));
 				}
 			}
@@ -717,7 +770,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Maintenance()
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             var model = new MaintenanceModel();
@@ -738,7 +791,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("delete-image-cache")]
         public ActionResult MaintenanceDeleteImageCache()
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
 			_imageCache.Value.DeleteCachedImages();
@@ -750,7 +803,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("delete-guests")]
         public ActionResult MaintenanceDeleteGuests(MaintenanceModel model)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             DateTime? startDateValue = (model.DeleteGuests.StartDate == null) ? null
@@ -768,7 +821,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("delete-exported-files")]
         public ActionResult MaintenanceDeleteFiles(MaintenanceModel model)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             DateTime? startDateValue = (model.DeleteExportedFiles.StartDate == null) ? null
@@ -812,7 +865,7 @@ namespace SmartStore.Admin.Controllers
         [FormValueRequired("execute-sql-query")]
         public ActionResult MaintenanceExecuteSql(MaintenanceModel model)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             if (model.SqlQuery.HasValue())
@@ -837,9 +890,9 @@ namespace SmartStore.Admin.Controllers
         public ActionResult LanguageSelector()
         {
             var model = new LanguageSelectorModel();
-			model.CurrentLanguage = _services.WorkContext.WorkingLanguage.ToModel();
+			model.CurrentLanguage = _commonServices.WorkContext.WorkingLanguage.ToModel();
 			model.AvailableLanguages = _languageService
-				 .GetAllLanguages(storeId: _services.StoreContext.CurrentStore.Id)
+				 .GetAllLanguages(storeId: _commonServices.StoreContext.CurrentStore.Id)
 				 .Select(x => x.ToModel())
 				 .ToList();
             return PartialView(model);
@@ -849,14 +902,14 @@ namespace SmartStore.Admin.Controllers
             var language = _languageService.GetLanguageById(customerlanguage);
             if (language != null)
             {
-				_services.WorkContext.WorkingLanguage = language;
+				_commonServices.WorkContext.WorkingLanguage = language;
             }
 			return Content(_localizationService.GetResource("Admin.Common.DataEditSuccess"));
         }
 
 		public ActionResult ClearCache(string previousUrl)
         {
-			var cacheManager = _services.Cache;
+			var cacheManager = _commonServices.Cache;
             cacheManager.Clear();
 
 			cacheManager = _cache("aspnet");
@@ -872,10 +925,10 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult RestartApplication(string previousUrl)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
-			_services.WebHelper.RestartAppDomain();
+			_commonServices.WebHelper.RestartAppDomain();
 
 			if (previousUrl.HasValue())
 				return Redirect(previousUrl);
@@ -889,7 +942,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult SeNames()
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             var model = new UrlRecordListModel();
@@ -899,7 +952,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult SeNames(GridCommand command, UrlRecordListModel model)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             var urlRecords = _urlRecordService.GetAllUrlRecords(model.SeName, command.Page - 1, command.PageSize);
@@ -938,7 +991,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult DeleteSelectedSeNames(ICollection<int> selectedIds)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
                 return AccessDeniedView();
 
             if (selectedIds != null)
@@ -973,10 +1026,10 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult GenericAttributesSelect(string entityName, int entityId, GridCommand command)
         {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
+            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
                 return AccessDeniedView();
 
-			var storeId = _services.StoreContext.CurrentStore.Id;
+			var storeId = _commonServices.StoreContext.CurrentStore.Id;
             ViewBag.StoreId = storeId;
 
             var model = new List<GenericAttributeModel>();
@@ -1011,7 +1064,7 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult GenericAttributeAdd(GenericAttributeModel model, GridCommand command)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
                 return AccessDeniedView();
 
             model.Key = model.Key.TrimSafe();
@@ -1024,7 +1077,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrorMessages.FirstOrDefault());
             }
 
-			var storeId = _services.StoreContext.CurrentStore.Id;
+			var storeId = _commonServices.StoreContext.CurrentStore.Id;
 
             var attr = _genericAttributeService.GetAttribute<string>(model.EntityName, model.EntityId, model.Key, storeId);
             if (attr == null)
@@ -1050,7 +1103,7 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult GenericAttributeUpdate(GenericAttributeModel model, GridCommand command)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
                 return AccessDeniedView();
 
             model.Key = model.Key.TrimSafe();
@@ -1063,7 +1116,7 @@ namespace SmartStore.Admin.Controllers
                 return Content(modelStateErrorMessages.FirstOrDefault());
             }
 
-			var storeId = _services.StoreContext.CurrentStore.Id;
+			var storeId = _commonServices.StoreContext.CurrentStore.Id;
 
             var attr = _genericAttributeService.GetAttributeById(model.Id);
             // if the key changed, ensure it isn't being used by another attribute
@@ -1089,7 +1142,7 @@ namespace SmartStore.Admin.Controllers
         [GridAction(EnableCustomBinding = true)]
         public ActionResult GenericAttributeDelete(int id, GridCommand command)
         {
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
+			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel))
                 return AccessDeniedView();
 
             var attr = _genericAttributeService.GetAttributeById(id);

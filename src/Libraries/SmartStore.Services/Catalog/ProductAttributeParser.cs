@@ -105,8 +105,6 @@ namespace SmartStore.Services.Catalog
         public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributes)
         {
             var pvaCollection = new List<ProductVariantAttribute>();
-
-            // codehint: sm-edit
             var ids = ParseProductVariantAttributeIds(attributes);
             return this.ParseProductVariantAttributes(ids.ToList()).ToList();
         }

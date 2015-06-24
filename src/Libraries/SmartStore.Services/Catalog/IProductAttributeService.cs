@@ -109,7 +109,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute value</returns>
         ProductVariantAttributeValue GetProductVariantAttributeValueById(int productVariantAttributeValueId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute value
         /// </summary>

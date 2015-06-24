@@ -146,7 +146,7 @@ namespace SmartStore.Web.Controllers
         protected string CreateConnectionString(
             bool trustedConnection,
             string serverName, string databaseName, 
-            string userName, string password, int timeout = 15 /* codehint: sm-edit (was 0) */)
+            string userName, string password, int timeout = 15)
         {
             var builder = new SqlConnectionStringBuilder();
             builder.IntegratedSecurity = trustedConnection;
@@ -160,7 +160,6 @@ namespace SmartStore.Web.Controllers
             builder.PersistSecurityInfo = false;
             //builder.MultipleActiveResultSets = true;
 
-            // codehint: sm-add
             builder.UserInstance = false;
             builder.Pooling = true;
             builder.MinPoolSize = 1;

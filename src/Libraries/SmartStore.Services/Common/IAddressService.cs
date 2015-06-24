@@ -15,7 +15,6 @@ namespace SmartStore.Services.Common
         /// <param name="address">Address</param>
         void DeleteAddress(Address address);
 
-		/// <remarks>codehint: sm-add</remarks>
 		void DeleteAddress(int id);
 
         /// <summary>

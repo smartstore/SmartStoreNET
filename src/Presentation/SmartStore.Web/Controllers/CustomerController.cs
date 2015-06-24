@@ -393,7 +393,6 @@ namespace SmartStore.Web.Controllers
             model.CheckoutAsGuest = checkoutAsGuest.HasValue ? checkoutAsGuest.Value : false;
             model.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnLoginPage;
             
-            // codehint: sm-add
             if (_customerSettings.PrefillLoginUsername.HasValue())
             {
                 if (model.UsernamesEnabled)

@@ -126,14 +126,7 @@ namespace SmartStore.Services.Catalog
 
 		#region Methods
 
-        /// <summary>
-        /// Assign acl to sub categories and products
-        /// </summary>
-        /// <param name="categoryId">Category Id</param>
-        /// <param name="touchProductsWithMultipleCategories">Whether to assign acl's to products which are contained in multiple categories.</param>
-        /// <param name="touchExistingAcls">Whether to delete existing Acls.</param>
-        /// <param name="categoriesOnly">Whether to assign acl's only to categories.</param>
-        public virtual void AssignAclToSubCategoriesAndProducts(int categoryId, 
+        public virtual void InheritAclIntoChildren(int categoryId, 
             bool touchProductsWithMultipleCategories = false,
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
@@ -181,6 +174,8 @@ namespace SmartStore.Services.Catalog
                         }
                     }
                 }
+                
+                _aclRepository.Context.SaveChanges();
 
                 foreach (var product in products)
                 {
@@ -215,15 +210,8 @@ namespace SmartStore.Services.Catalog
                 _aclRepository.Context.SaveChanges();
             }
         }
-        
-        /// <summary>
-        /// Assign stores to sub categories and products
-        /// </summary>
-        /// <param name="categoryId">Category Id</param>
-        /// <param name="touchProductsWithMultipleCategories">Whether to assign stores to products which are contained in multiple categories.</param>
-        /// <param name="touchExistingAcls">Whether to delete existing store assingments.</param>
-        /// <param name="categoriesOnly">Whether to assign store only to categories.</param>
-        public virtual void AssignStoresToSubCategoriesAndProducts(int categoryId, 
+
+        public virtual void InheritStoresIntoChildren(int categoryId, 
             bool touchProductsWithMultipleCategories = false,
             bool touchExistingAcls = false,
             bool categoriesOnly = false)
@@ -272,6 +260,8 @@ namespace SmartStore.Services.Catalog
                         }
                     }
                 }
+
+                _storeMappingRepository.Context.SaveChanges();
 
                 foreach (var product in products)
                 {

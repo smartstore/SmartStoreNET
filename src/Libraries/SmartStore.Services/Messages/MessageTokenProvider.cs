@@ -259,8 +259,6 @@ namespace SmartStore.Services.Messages
             if (!String.IsNullOrEmpty(order.CheckoutAttributeDescription))
             {
                 sb.AppendLine("<tr><td style=\"text-align:right;\" colspan=\"1\">&nbsp;</td><td colspan=\"3\" style=\"text-align:right\">");
-                //codehint: sm-edit
-                //sb.AppendLine(order.CheckoutAttributeDescription);
                 sb.AppendLine(HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription)));
                 sb.AppendLine("</td></tr>");
             }
@@ -524,7 +522,6 @@ namespace SmartStore.Services.Messages
             return result;
         }
 
-        //codehint: sm-add
         protected virtual string TopicToHtml(string systemName, int languageId)
         {
             var result = "";
@@ -676,8 +673,6 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Store.Email", defaultEmailAccount.Email));
         }
 
-        //codehint: sm-add begin
-
         public virtual void AddCompanyTokens(IList<Token> tokens)
         {
             tokens.Add(new Token("Company.CompanyName", _companyInfoSettings.CompanyName));
@@ -719,8 +714,6 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Contact.SupportEmailAddress", _contactDataSettings.SupportEmailAddress));
             tokens.Add(new Token("Contact.ContactEmailAddress", _contactDataSettings.ContactEmailAddress));
         }
-
-        //codehint: sm-add end
 
         public virtual void AddOrderTokens(IList<Token> tokens, Order order, int languageId)
         {
@@ -1013,7 +1006,6 @@ namespace SmartStore.Services.Messages
                 "%NewsLetterSubscription.Email%",
                 "%NewsLetterSubscription.ActivationUrl%",
                 "%NewsLetterSubscription.DeactivationUrl%",
-                //codehint: sm-add
                 "%Store.SupplierIdentification%",
             };
             return allowedTokens.ToArray();

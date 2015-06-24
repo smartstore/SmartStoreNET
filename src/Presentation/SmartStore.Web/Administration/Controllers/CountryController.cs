@@ -408,7 +408,6 @@ namespace SmartStore.Admin.Controllers
 
             // This action method gets called via an ajax request
 
-            // codehint: sm-edit
             int cid = 0;
             int.TryParse(countryId, out cid);
             /*if (String.IsNullOrEmpty(countryId))

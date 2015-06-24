@@ -485,7 +485,7 @@
                 <div class="alert alert-danger"  >
                     @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint")
                 </div>
-                <a href="@Url.Action("AssignAclToSubCategoriesAndProducts", "Category", new { categoryId = Model.Id })" name="assign-acl-to-subcats-and-products" class="btn btn-danger">
+                <a href="@Url.Action("InheritAclIntoChildren", "Category", new { categoryId = Model.Id })" name="inherit-acl-into-children" class="btn btn-danger">
                     <i class="fa fa-bolt"></i>&nbsp;
                     @T("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts")
                 </a>
@@ -556,7 +556,7 @@
                 <div class="alert alert-danger">
                     @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint")
                 </div>
-                <a href="@Url.Action("AssignStoresToSubCategoriesAndProducts", "Category", new { categoryId = Model.Id })" name="assign-stores-to-subcats-and-products" class="btn btn-danger">
+                <a href="@Url.Action("InheritStoresIntoChildren", "Category", new { categoryId = Model.Id })" name="assign-stores-to-subcats-and-products" class="btn btn-danger">
                     <i class="fa fa-bolt"></i>&nbsp;
                     @T("Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts")
                 </a>

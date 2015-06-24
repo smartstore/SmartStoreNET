@@ -146,13 +146,11 @@ namespace SmartStore.Web.Controllers
                 });
             }
 
-            // codehint: sm-edit
             ViewData["PagerRouteValues"] = new PrivateMessageRouteValues { page = page, tab = tab };
 
             var model = new PrivateMessageListModel(list)
             {
                 Messages = inbox
-                // codehint: sm-delete
             };
 
             return PartialView(model);

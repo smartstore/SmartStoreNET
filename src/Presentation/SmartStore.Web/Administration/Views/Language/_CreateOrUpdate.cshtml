@@ -44,7 +44,6 @@
             @Html.SmartLabelFor(model => model.LanguageCulture)
         </td>
         <td class="adminData">
-            @* codehint: sm-edit *@
             @Html.DropDownListFor(x => x.LanguageCulture, cultures.Select(x => 
                 new SelectListItem { Value = x.IetfLanguageTag, Text = string.Format("{0} [{1}]", x.DisplayName, x.IetfLanguageTag) }))
             @Html.ValidationMessageFor(model => model.LanguageCulture)

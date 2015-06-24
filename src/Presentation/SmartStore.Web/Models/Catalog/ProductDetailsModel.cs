@@ -16,8 +16,6 @@ namespace SmartStore.Web.Models.Catalog
 
         public ProductDetailsModel()
         {
-            //codehint: sm-edit
-            //Manufacturers = new List<ProductManufacturer>();
             Manufacturers = new List<ManufacturerOverviewModel>();
 			GiftCard = new GiftCardModel();
 			ProductPrice = new ProductPriceModel();

@@ -38,7 +38,6 @@ namespace SmartStore.Admin.Controllers
             this._localizationService = localizationService;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
-            //codehint: sm-add
             this._taxSettings = taxSettings;
 		}
 

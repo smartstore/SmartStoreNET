@@ -234,7 +234,6 @@ namespace SmartStore.Services.Catalog
             });
         }
 
-        // codehint: sm-add
         public virtual IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids)
         {
             if (ids == null || ids.Length == 0)
@@ -245,7 +244,6 @@ namespace SmartStore.Services.Catalog
             return _productVariantAttributeRepository.GetMany(ids);
         }
 
-        // codehint: sm-add
         public virtual IEnumerable<ProductVariantAttributeValue> GetProductVariantAttributeValuesByIds(params int[] productVariantAttributeValueIds)
         {
             if (productVariantAttributeValueIds == null || productVariantAttributeValueIds.Length == 0)
@@ -488,7 +486,6 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-			// codehint: sm-add
 			//if (combination.IsDefaultCombination)
 			//{
 			//	EnsureSingleDefaultVariant(combination);
@@ -509,7 +506,6 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-            // codehint: sm-add
 			//if (combination.IsDefaultCombination)
 			//{
 			//	EnsureSingleDefaultVariant(combination);

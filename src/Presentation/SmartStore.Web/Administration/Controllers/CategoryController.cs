@@ -718,17 +718,17 @@ namespace SmartStore.Admin.Controllers
         }
 
         [ValidateInput(false)]
-        public ActionResult AssignAclToSubCategoriesAndProducts(int categoryId)
+        public ActionResult InheritAclIntoChildren(int categoryId)
         {
-            _categoryService.AssignAclToSubCategoriesAndProducts(categoryId, false, true, false );
+            _categoryService.InheritAclIntoChildren(categoryId, false, true, false);
 
             return RedirectToAction("Edit", "Category", new { id = categoryId });
         }
 
         [ValidateInput(false)]
-        public ActionResult AssignStoresToSubCategoriesAndProducts(int categoryId)
+        public ActionResult InheritStoresIntoChildren(int categoryId)
         {
-            _categoryService.AssignStoresToSubCategoriesAndProducts(categoryId, false, true, false);
+            _categoryService.InheritStoresIntoChildren(categoryId, false, true, false);
 
             return RedirectToAction("Edit", "Category", new { id = categoryId });
         }

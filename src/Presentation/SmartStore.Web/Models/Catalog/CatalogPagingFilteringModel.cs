@@ -73,7 +73,7 @@ namespace SmartStore.Web.Models.Catalog
                 {
                     string[] fromTo = str1.Trim().Split(new char[] { '-' });
 
-					if (fromTo.Length > 1) {	// codehint: sm-edit
+					if (fromTo.Length > 1) {
 						decimal? from = null;
 						if (!String.IsNullOrEmpty(fromTo[0]) && !String.IsNullOrEmpty(fromTo[0].Trim()))
 							from = decimal.Parse(fromTo[0].Trim(), new CultureInfo("en-US"));

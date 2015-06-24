@@ -15,7 +15,6 @@ namespace SmartStore.Core.Domain.Media
         Avatar = 10,
     }
 
-    // codehint: sm-add
     public enum ThumbnailScaleMode
     {
         Auto,

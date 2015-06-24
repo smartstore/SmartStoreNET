@@ -7,9 +7,6 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Web.Framework.Mvc.Bundles
 {
-    /// <summary>
-    /// <remarks>codehint: sm-add</remarks>
-    /// </summary>
     public class BundlePublisher : IBundlePublisher
     {
         private readonly ITypeFinder _typeFinder;

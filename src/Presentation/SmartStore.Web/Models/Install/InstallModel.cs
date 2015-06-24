@@ -13,7 +13,6 @@ namespace SmartStore.Web.Models.Install
         public InstallModel()
         {
             this.AvailableLanguages = new List<SelectListItem>();
-            // codehint: sm-add
             this.AvailableAppLanguages = new List<SelectListItem>();
             this.AvailableMediaStorages = new List<SelectListItem>();
         }

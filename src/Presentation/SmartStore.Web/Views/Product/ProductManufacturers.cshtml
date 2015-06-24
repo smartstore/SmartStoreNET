@@ -2,24 +2,13 @@
 @using SmartStore.Web.Models.Catalog;
 @if (Model.Count > 0)
 {
-    //codehint: sm-edit
-    @*<div class="manufacturers">
-        @if (Model.Count == 1)
+    for (int i = 0; i < Model.Count; i++)
+    {
+        var item = Model[i];
+        <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
+        if (i != Model.Count - 1)
         {
-            @T("Products.Manufacturer")<text>:</text>
+        <text>,</text>
         }
-        else
-        {
-            @T("Products.Manufacturers")<text>:</text>
-        }*@
-        for (int i = 0; i < Model.Count; i++)
-        {
-            var item = Model[i];
-            <a href="@Url.RouteUrl("Manufacturer", new { SeName = item.SeName })">@item.Name</a>
-            if (i != Model.Count - 1)
-            {
-            <text>,</text>
-            }
-        }
-    @*</div>*@
+    }
 }

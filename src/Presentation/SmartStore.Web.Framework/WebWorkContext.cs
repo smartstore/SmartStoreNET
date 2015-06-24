@@ -255,6 +255,7 @@ namespace SmartStore.Web.Framework
                 }
 
                 #region Get language from URL (if possible)
+
 				if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled && _httpContext != null && _httpContext.Request != null)
                 {
                     var helper = new LocalizedUrlHelper(_httpContext.Request, true);
@@ -265,6 +266,7 @@ namespace SmartStore.Web.Framework
                         {
                             // the language is found. now we need to save it
                             var langBySeoCode = _languageService.GetLanguageBySeoCode(seoCode);
+							
                             if (this.CurrentCustomer != null && customerLangId != langBySeoCode.Id)
                             {
                                 customerLangId = langBySeoCode.Id;
@@ -275,6 +277,7 @@ namespace SmartStore.Web.Framework
                         }
                     }
                 }
+
                 #endregion
 
 				if (_localizationSettings.DetectBrowserUserLanguage && (customerLangId == 0 || !_languageService.IsPublishedLanguage(customerLangId, storeId)))
@@ -363,7 +366,7 @@ namespace SmartStore.Web.Framework
                 {
                     // find current customer language
                     var customer = this.CurrentCustomer;
-					var currentStoreCurrencies = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id);
+					var storeCurrenciesMap = _currencyService.GetAllCurrencies(storeId: _storeContext.CurrentStore.Id).ToDictionary(x => x.Id);
 
                     if (customer != null && !customer.IsSearchEngineAccount())
                     {
@@ -371,37 +374,43 @@ namespace SmartStore.Web.Framework
                         var customerCurrencyId = customer.GetAttribute<int?>(SystemCustomerAttributeNames.CurrencyId, _attrService, _storeContext.CurrentStore.Id);
                         if (customerCurrencyId.GetValueOrDefault() > 0)
                         {
-                            currency = VerifyCurrency(_currencyService.GetCurrencyById(customerCurrencyId.Value));
-                            if (currency == null)
-                            {
-                                _attrService.SaveAttribute<int?>(customer, SystemCustomerAttributeNames.CurrencyId, null, _storeContext.CurrentStore.Id);
-                            }
+							if (storeCurrenciesMap.TryGetValue(customerCurrencyId.Value, out currency))
+							{
+								currency = VerifyCurrency(currency);
+								if (currency == null)
+								{
+									_attrService.SaveAttribute<int?>(customer, SystemCustomerAttributeNames.CurrencyId, null, _storeContext.CurrentStore.Id);
+								}
+							}
                         }
                     }
 
 					// find currency by domain ending
 					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
 					{
-						currency = currentStoreCurrencies.GetByDomainEnding(_httpContext.Request.Url.Authority);
+						currency = storeCurrenciesMap.Values.GetByDomainEnding(_httpContext.Request.Url.Authority);
 					}
 
 					// if there's only one currency for current store it dominates the primary currency
-					if (currentStoreCurrencies.Count == 1)
+					if (storeCurrenciesMap.Count == 1)
 					{
-						currency = currentStoreCurrencies.First();
+						currency = storeCurrenciesMap[0];
 					}
 
                     // get PrimaryStoreCurrency
                     if (currency == null)
                     {
-                        currency = VerifyCurrency(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId));
-                        fixPrimaryStoreCurrency = (currency == null);
+						if (storeCurrenciesMap.TryGetValue(_currencySettings.PrimaryStoreCurrencyId, out currency))
+						{
+							currency = VerifyCurrency(currency);
+							fixPrimaryStoreCurrency = (currency == null);
+						}
                     }
 
                     // get the first published currency for current store
                     if (currency == null)
                     {
-						currency = currentStoreCurrencies.FirstOrDefault();
+						currency = storeCurrenciesMap.Values.FirstOrDefault();
                     }
                 }
 

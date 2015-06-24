@@ -30,8 +30,6 @@ namespace SmartStore.Admin.Controllers
 			this._themeRegistry = themeRegistry;
 		}
 
-		public Localizer T { get; set; }
-
 		[ChildActionOnly]
 		public ActionResult UploadPackage(bool isTheme)
 		{

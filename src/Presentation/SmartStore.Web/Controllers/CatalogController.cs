@@ -105,21 +105,9 @@ namespace SmartStore.Web.Controllers
             this._catalogSettings = catalogSettings;
 
 			this._helper = helper;
-
-			T = NullLocalizer.Instance;
         }
 
         #endregion
-
-		#region Properties
-
-		public Localizer T
-		{
-			get;
-			set;
-		}
-
-		#endregion
 
         #region Categories
 

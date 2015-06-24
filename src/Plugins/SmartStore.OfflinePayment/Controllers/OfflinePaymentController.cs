@@ -33,11 +33,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			this._services = services;
 			this._storeService = storeService;
 			this._ctx = ctx;
-
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
 		#region Global
 

@@ -68,13 +68,9 @@ namespace SmartStore.Web.Controllers
 			this._sitemapGenerator = sitemapGenerator;
 			this._captchaSettings = captchaSettings;
 			this._commonSettings = commonSettings;
-
-			T = NullLocalizer.Instance;
         }
         
         #endregion
-
-		public Localizer T { get; set; }
 
         [RequireHttpsByConfigAttribute(SslRequirement.No)]
         public ActionResult Index()

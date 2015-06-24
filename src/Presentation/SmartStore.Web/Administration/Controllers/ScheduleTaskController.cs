@@ -42,12 +42,9 @@ namespace SmartStore.Admin.Controllers
             this._scheduleTaskService = scheduleTaskService;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
-			T = NullLocalizer.Instance;
         }
 
         #endregion
-
-		public Localizer T { get; set; }
 
         #region Utility
 

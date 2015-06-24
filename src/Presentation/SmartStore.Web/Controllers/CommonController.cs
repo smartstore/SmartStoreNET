@@ -133,11 +133,7 @@ namespace SmartStore.Web.Controllers
 			this._pageAssetsBuilder = pageAssetsBuilder;
 			this._pictureService = pictureService;
 			this._services = services;
-
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
         #endregion
 

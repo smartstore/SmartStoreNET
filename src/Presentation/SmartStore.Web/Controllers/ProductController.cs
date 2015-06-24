@@ -118,14 +118,9 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
-
-			T = NullLocalizer.Instance;
         }
         
         #endregion
-
-		public Localizer T { get; set; }
-
 
 		#region Products
 

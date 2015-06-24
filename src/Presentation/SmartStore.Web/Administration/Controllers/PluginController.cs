@@ -71,15 +71,11 @@ namespace SmartStore.Admin.Controllers
 			this._providerManager = providerManager;
 			this._pluginMediator = pluginMediator;
 			this._commonService = commonService;
-
-			T = NullLocalizer.Instance;
 		}
 
 		#endregion 
 
         #region Utilities
-
-		public Localizer T { get; set; }
 
         [NonAction]
         protected PluginModel PreparePluginModel(PluginDescriptor pluginDescriptor, bool forList = true)

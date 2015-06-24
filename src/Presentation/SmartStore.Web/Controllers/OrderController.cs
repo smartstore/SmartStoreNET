@@ -95,10 +95,7 @@ namespace SmartStore.Web.Controllers
 			this._pluginMediator = pluginMediator;
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
         #endregion
 

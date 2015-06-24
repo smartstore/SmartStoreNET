@@ -62,11 +62,7 @@ namespace SmartStore.Admin.Controllers
 			this._services = services;
 			this._themeContext = themeContext;
 			this._themeFileResolver = themeFileResolver;
-
-			this.T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		#endregion 
 

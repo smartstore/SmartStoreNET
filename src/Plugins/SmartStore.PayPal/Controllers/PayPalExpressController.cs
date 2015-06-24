@@ -78,14 +78,6 @@ namespace SmartStore.PayPal.Controllers
             _storeService = storeService;
 
 			_helper = new PluginHelper(ctx, "SmartStore.PayPal", "Plugins.Payments.PayPalExpress");
-
-			T = NullLocalizer.Instance;
-		}
-
-		public Localizer T
-		{
-			get;
-			set;
 		}
 
 		public SelectList TransactModeValues(TransactMode selected)

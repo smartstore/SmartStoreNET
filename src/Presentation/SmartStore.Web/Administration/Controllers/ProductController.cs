@@ -193,13 +193,9 @@ namespace SmartStore.Admin.Controllers
 			this._genericAttributeService = genericAttributeService;
             _pdfConverter = pdfConverter;
             _services = services;
-
-			T = NullLocalizer.Instance;
         }
 
         #endregion
-
-		public Localizer T { get; set; }
 
 		#region Update[...]
 

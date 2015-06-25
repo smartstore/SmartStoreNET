@@ -57,6 +57,14 @@ namespace SmartStore.Data.Migrations
 				"Restrictions",
 				"Einschränkungen");
 
+			builder.AddOrUpdate("Admin.Common.DeleteAll",
+				"Delete all",
+				"Alle löschen");
+
+			builder.AddOrUpdate("Admin.Common.RecordsDeleted",
+				"{0} records were deleted.",
+				"Es wurden {0} Datensätze gelöscht.");
+
 			builder.AddOrUpdate("Common.RequestProcessingFailed",
 				"The request could not be processed.<br />Controller: {0}, Action: {1}, Reason: {2}.",
 				"Die Anfrage konnte nicht ausgeführt werden.<br />Controller: {0}, Action: {1}, Grund: {2}.");

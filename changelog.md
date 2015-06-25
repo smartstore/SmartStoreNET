@@ -10,6 +10,9 @@
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 
+### Improvements
+* #721 Message Queue: implement "Delete all"
+
 
 ## SmartStore.NET 2.2.2
 

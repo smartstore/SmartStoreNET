@@ -223,5 +223,32 @@ namespace SmartStore.Admin.Controllers
 
             return Json(new { Result = true });
         }
+
+		[HttpPost, ActionName("List"), FormValueRequired("delete-all")]
+		public ActionResult DeleteAll()
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
+				return AccessDeniedView();
+
+			int count = 0;
+
+			for (int i = 0; i < 9999999; ++i)
+			{
+				var queuedEmails = _queuedEmailService.SearchEmails(null, null, null, null, false, int.MaxValue, false, i, 100, null);
+
+				foreach (var email in queuedEmails)
+				{
+					_queuedEmailService.DeleteQueuedEmail(email);
+					++count;
+				}
+
+				if (!queuedEmails.HasNextPage)
+					break;
+			}
+
+			NotifySuccess(T("Admin.Common.RecordsDeleted", count));
+
+			return RedirectToAction("List");
+		}
 	}
 }

@@ -38,21 +38,21 @@ namespace SmartStore.PayPal
 		private readonly CurrencySettings _currencySettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly HttpContextBase _httpContext;
-        private readonly ICommonServices _commonServices;
+        private readonly ICommonServices _services;
         private readonly ILogger _logger;
 
         public PayPalStandardProvider(ICurrencyService currencyService, 
             HttpContextBase httpContext,
 			CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
-            ICommonServices commonServices, 
+            ICommonServices services, 
             ILogger logger)
 		{
 			_currencyService = currencyService;
 			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
             _httpContext = httpContext;
-            _commonServices = commonServices;
+            _services = services;
             _logger = logger;
 		}
 
@@ -66,7 +66,7 @@ namespace SmartStore.PayPal
 			var result = new ProcessPaymentResult();
 			result.NewPaymentStatus = PaymentStatus.Pending;
 
-			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(processPaymentRequest.StoreId);
+			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(processPaymentRequest.StoreId);
 
 			if (settings.BusinessEmail.IsEmpty() || settings.PdtToken.IsEmpty())
 			{
@@ -85,7 +85,7 @@ namespace SmartStore.PayPal
 			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
 				return;
 
-			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
+			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
 
 			var builder = new StringBuilder();
             builder.Append(PayPalHelper.GetPaypalUrl(settings));
@@ -239,8 +239,8 @@ namespace SmartStore.PayPal
 				builder.AppendFormat("&no_shipping=1", new object[0]);
 			}
 
-            string returnUrl = _commonServices.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/PDTHandler";
-            string cancelReturnUrl = _commonServices.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/CancelOrder";
+            string returnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/PDTHandler";
+            string cancelReturnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/CancelOrder";
 			builder.AppendFormat("&return={0}&cancel_return={1}", HttpUtility.UrlEncode(returnUrl), HttpUtility.UrlEncode(cancelReturnUrl));
 
 			//Instant Payment Notification (server to server message)
@@ -248,7 +248,7 @@ namespace SmartStore.PayPal
 			{
 				string ipnUrl;
                 if (String.IsNullOrWhiteSpace(settings.IpnUrl))
-                    ipnUrl = _commonServices.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/IPNHandler";
+                    ipnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/IPNHandler";
 				else
                     ipnUrl = settings.IpnUrl;
 				builder.AppendFormat("&notify_url={0}", ipnUrl);
@@ -315,7 +315,7 @@ namespace SmartStore.PayPal
 			var result = decimal.Zero;
 			try
 			{
-				var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>(_commonServices.StoreContext.CurrentStore.Id);
+				var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(_services.StoreContext.CurrentStore.Id);
 
 				result = this.CalculateAdditionalFee(_orderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}
@@ -569,7 +569,7 @@ namespace SmartStore.PayPal
         public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
 			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-			var settings = _commonServices.Settings.LoadSetting<PayPalStandardPaymentSettings>();
+			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>();
 
             var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
             req.Method = "POST";

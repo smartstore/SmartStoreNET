@@ -43,7 +43,7 @@ namespace SmartStore.Services.ExportImport
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
         private readonly ILanguageService _languageService;
 		private readonly MediaSettings _mediaSettings;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
         private readonly IStoreMappingService _storeMappingService;
         
         #endregion
@@ -58,7 +58,7 @@ namespace SmartStore.Services.ExportImport
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILanguageService languageService,
 			MediaSettings mediaSettings,
-			ICommonServices commonServices,
+			ICommonServices services,
             IStoreMappingService storeMappingService)
         {
             this._categoryService = categoryService;
@@ -69,7 +69,7 @@ namespace SmartStore.Services.ExportImport
             this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._languageService = languageService;
 			this._mediaSettings = mediaSettings;
-			this._commonServices = commonServices;
+			this._services = services;
             this._storeMappingService = storeMappingService;
 
 			Logger = NullLogger.Instance;
@@ -728,7 +728,7 @@ namespace SmartStore.Services.ExportImport
 			{
 				ProductTemplates = _productTemplateService.GetAllProductTemplates(),
 				Languages = _languageService.GetAllLanguages(true),
-				Store = _commonServices.StoreContext.CurrentStore
+				Store = _services.StoreContext.CurrentStore
 			};
 
 			using (var writer = XmlWriter.Create(stream, settings))

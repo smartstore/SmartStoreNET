@@ -23,7 +23,7 @@ namespace SmartStore.Admin.Controllers
 	{
 		#region Fields
 
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
         private readonly IPaymentService _paymentService;
         private readonly PaymentSettings _paymentSettings;
         private readonly IPluginFinder _pluginFinder;
@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Controllers
 		#region Constructors
 
         public PaymentController(
-			ICommonServices commonServices,
+			ICommonServices services,
 			IPaymentService paymentService, 
 			PaymentSettings paymentSettings,
             IPluginFinder pluginFinder, 
@@ -48,7 +48,7 @@ namespace SmartStore.Admin.Controllers
 			IShippingService shippingService,
 			ICountryService countryService)
 		{
-			this._commonServices = commonServices;
+			this._services = services;
             this._paymentService = paymentService;
             this._paymentSettings = paymentSettings;
             this._pluginFinder = pluginFinder;
@@ -111,7 +111,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Providers()
         {
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
                 return AccessDeniedView();
 
             var paymentMethodsModel = new List<PaymentMethodModel>();
@@ -125,7 +125,7 @@ namespace SmartStore.Admin.Controllers
 				model.SupportPartiallyRefund = instance.SupportPartiallyRefund;
 				model.SupportRefund = instance.SupportRefund;
 				model.SupportVoid = instance.SupportVoid;
-				model.RecurringPaymentType = instance.RecurringPaymentType.GetLocalizedEnum(_commonServices.Localization);
+				model.RecurringPaymentType = instance.RecurringPaymentType.GetLocalizedEnum(_services.Localization);
                 paymentMethodsModel.Add(model);
             }
 
@@ -134,14 +134,14 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ActivateProvider(string systemName, bool activate)
 		{
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
 
 			var pm = _paymentService.LoadPaymentMethodBySystemName(systemName);
 
 			if (activate && !pm.Value.IsActive)
 			{
-				NotifyWarning(_commonServices.Localization.GetResource("Admin.Configuration.Payment.CannotActivatePaymentMethod"));
+				NotifyWarning(_services.Localization.GetResource("Admin.Configuration.Payment.CannotActivatePaymentMethod"));
 			}
 			else
 			{
@@ -150,7 +150,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_paymentSettings.ActivePaymentMethodSystemNames.Add(pm.Metadata.SystemName);
 
-				_commonServices.Settings.SaveSetting(_paymentSettings);
+				_services.Settings.SaveSetting(_paymentSettings);
 				_pluginMediator.ActivateDependentWidgets(pm.Metadata, activate);
 			}
 
@@ -159,7 +159,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(string systemName)
 		{
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName(systemName);
@@ -181,7 +181,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
 		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
 		{
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName(systemName);
@@ -217,7 +217,7 @@ namespace SmartStore.Admin.Controllers
 			else
 				_paymentService.UpdatePaymentMethod(paymentMethod);
 
-			NotifySuccess(_commonServices.Localization.GetResource("Admin.Common.DataEditSuccess"));
+			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataEditSuccess"));
 
 			return (continueEditing ?
 				RedirectToAction("Edit", "Payment", new { systemName = systemName }) :

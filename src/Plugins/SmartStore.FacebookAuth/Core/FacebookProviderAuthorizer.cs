@@ -22,7 +22,7 @@ namespace SmartStore.FacebookAuth.Core
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
         private readonly HttpContextBase _httpContext;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 
 		private FacebookClient _facebookApplication;
 
@@ -34,13 +34,13 @@ namespace SmartStore.FacebookAuth.Core
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
             HttpContextBase httpContext,
-			ICommonServices commonServices)
+			ICommonServices services)
         {
             this._authorizer = authorizer;
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
             this._httpContext = httpContext;
-			this._commonServices = commonServices;
+			this._services = services;
         }
 
 		#endregion
@@ -53,7 +53,7 @@ namespace SmartStore.FacebookAuth.Core
 			{
 				if (_facebookApplication == null)
 				{
-					var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(_commonServices.StoreContext.CurrentStore.Id);
+					var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
 
 					_facebookApplication = new FacebookClient(settings.ClientKeyIdentifier, settings.ClientSecret);
 				}
@@ -133,7 +133,7 @@ namespace SmartStore.FacebookAuth.Core
 
 		private Uri GenerateLocalCallbackUri()
 		{
-			string url = string.Format("{0}Plugins/SmartStore.FacebookAuth/logincallback/", _commonServices.WebHelper.GetStoreLocation());
+			string url = string.Format("{0}Plugins/SmartStore.FacebookAuth/logincallback/", _services.WebHelper.GetStoreLocation());
 			return new Uri(url);
 		}
 
@@ -142,7 +142,7 @@ namespace SmartStore.FacebookAuth.Core
 			//code copied from DotNetOpenAuth.AspNet.Clients.FacebookClient file
 			var builder = new UriBuilder("https://www.facebook.com/dialog/oauth");
 			var args = new Dictionary<string, string>();
-			var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(_commonServices.StoreContext.CurrentStore.Id);
+			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
 
 			args.Add("client_id", settings.ClientKeyIdentifier);
 			args.Add("redirect_uri", GenerateLocalCallbackUri().AbsoluteUri);

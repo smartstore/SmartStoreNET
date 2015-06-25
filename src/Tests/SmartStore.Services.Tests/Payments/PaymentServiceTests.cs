@@ -22,7 +22,7 @@ namespace SmartStore.Services.Tests.Payments
         ShoppingCartSettings _shoppingCartSettings;
         IPaymentService _paymentService;
 		ICurrencyService _currencyService;
-		ICommonServices _commonServices;
+		ICommonServices _services;
 		IOrderTotalCalculationService _orderTotalCalculationService;
         
         [SetUp]
@@ -37,14 +37,14 @@ namespace SmartStore.Services.Tests.Payments
             _shoppingCartSettings = new ShoppingCartSettings();
 			_paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
 			_currencyService = MockRepository.GenerateMock<ICurrencyService>();
-			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
 			_orderTotalCalculationService = MockRepository.GenerateMock<IOrderTotalCalculationService>();
 
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
 			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, pluginFinder, _shoppingCartSettings, 
-				this.ProviderManager, _currencyService, _commonServices, _orderTotalCalculationService);
+				this.ProviderManager, _currencyService, _services, _orderTotalCalculationService);
         }
 
         [Test]

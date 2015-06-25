@@ -35,7 +35,7 @@ namespace SmartStore.Services.Payments
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IProviderManager _providerManager;
 		private readonly ICurrencyService _currencyService;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 
         #endregion
@@ -56,7 +56,7 @@ namespace SmartStore.Services.Payments
             ShoppingCartSettings shoppingCartSettings,
 			IProviderManager providerManager,
 			ICurrencyService currencyService,
-			ICommonServices commonServices,
+			ICommonServices services,
 			IOrderTotalCalculationService orderTotalCalculationService)
         {
 			this._paymentMethodRepository = paymentMethodRepository;
@@ -65,7 +65,7 @@ namespace SmartStore.Services.Payments
             this._shoppingCartSettings = shoppingCartSettings;
 			this._providerManager = providerManager;
 			this._currencyService = currencyService;
-			this._commonServices = commonServices;
+			this._services = services;
 			this._orderTotalCalculationService = orderTotalCalculationService;
         }
 
@@ -171,7 +171,7 @@ namespace SmartStore.Services.Payments
 										_orderTotalCalculationService.GetShoppingCartSubTotal(cart, out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
 											out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
-										orderSubTotal = _currencyService.ConvertFromPrimaryStoreCurrency(subTotalWithoutDiscountBase, _commonServices.WorkContext.WorkingCurrency);
+										orderSubTotal = _currencyService.ConvertFromPrimaryStoreCurrency(subTotalWithoutDiscountBase, _services.WorkContext.WorkingCurrency);
 									}
 
 									compareAmount = orderSubTotal.Value;
@@ -182,7 +182,7 @@ namespace SmartStore.Services.Payments
 									{
 										orderTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart) ?? decimal.Zero;
 
-										orderTotal = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, _commonServices.WorkContext.WorkingCurrency);
+										orderTotal = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, _services.WorkContext.WorkingCurrency);
 									}
 
 									compareAmount = orderTotal.Value;
@@ -261,7 +261,7 @@ namespace SmartStore.Services.Payments
 		/// <returns>List of payment method objects</returns>
 		public virtual IList<PaymentMethod> GetAllPaymentMethods()
 		{
-			var paymentMethods = _commonServices.Cache.Get(PAYMENTMETHOD_ALL_KEY, () =>
+			var paymentMethods = _services.Cache.Get(PAYMENTMETHOD_ALL_KEY, () =>
 			{
 				var methods = _paymentMethodRepository.TableUntracked.ToList();
 
@@ -298,9 +298,9 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Insert(paymentMethod);
 
-			_commonServices.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
 
-			_commonServices.EventPublisher.EntityInserted(paymentMethod);
+			_services.EventPublisher.EntityInserted(paymentMethod);
 		}
 
 		/// <summary>
@@ -314,9 +314,9 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Update(paymentMethod);
 
-			_commonServices.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
 
-			_commonServices.EventPublisher.EntityUpdated(paymentMethod);
+			_services.EventPublisher.EntityUpdated(paymentMethod);
 		}
 
 		/// <summary>
@@ -330,9 +330,9 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Delete(paymentMethod);
 
-			_commonServices.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
+			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
 
-			_commonServices.EventPublisher.EntityDeleted(paymentMethod);
+			_services.EventPublisher.EntityDeleted(paymentMethod);
 		}
 
 
@@ -481,7 +481,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CapturePaymentResult();
-				result.AddError(_commonServices.Localization.GetResource("Common.Payment.NoCaptureSupport"));
+				result.AddError(_services.Localization.GetResource("Common.Payment.NoCaptureSupport"));
 				return result;
 			}
 			catch
@@ -536,7 +536,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new RefundPaymentResult();
-				result.AddError(_commonServices.Localization.GetResource("Common.Payment.NoRefundSupport"));
+				result.AddError(_services.Localization.GetResource("Common.Payment.NoRefundSupport"));
 				return result;
 			}
 			catch
@@ -578,7 +578,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new VoidPaymentResult();
-				result.AddError(_commonServices.Localization.GetResource("Common.Payment.NoVoidSupport"));
+				result.AddError(_services.Localization.GetResource("Common.Payment.NoVoidSupport"));
 				return result;
 			}
 			catch
@@ -630,7 +630,7 @@ namespace SmartStore.Services.Payments
 				catch (NotSupportedException)
 				{
 					var result = new ProcessPaymentResult();
-					result.AddError(_commonServices.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+					result.AddError(_services.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
 					return result;
 				}
 				catch
@@ -661,7 +661,7 @@ namespace SmartStore.Services.Payments
 			catch (NotSupportedException)
 			{
 				var result = new CancelRecurringPaymentResult();
-				result.AddError(_commonServices.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
+				result.AddError(_services.Localization.GetResource("Common.Payment.NoRecurringPaymentSupport"));
 				return result;
 			}
 			catch

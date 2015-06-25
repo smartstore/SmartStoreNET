@@ -17,26 +17,26 @@ namespace SmartStore.FacebookAuth.Controllers
         private readonly IOAuthProviderFacebookAuthorizer _oAuthProviderFacebookAuthorizer;
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 
         public ExternalAuthFacebookController(
             IOAuthProviderFacebookAuthorizer oAuthProviderFacebookAuthorizer,
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-			ICommonServices commonServices)
+			ICommonServices services)
         {
             this._oAuthProviderFacebookAuthorizer = oAuthProviderFacebookAuthorizer;
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
-			this._commonServices = commonServices;
+			this._services = services;
         }
 
 		private bool HasPermission(bool notify = true)
 		{
-			bool hasPermission = _commonServices.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods);
+			bool hasPermission = _services.Permissions.Authorize(StandardPermissionProvider.ManageExternalAuthenticationMethods);
 
 			if (notify && !hasPermission)
-				NotifyError(_commonServices.Localization.GetResource("Admin.AccessDenied.Description"));
+				NotifyError(_services.Localization.GetResource("Admin.AccessDenied.Description"));
 
 			return hasPermission;
 		}
@@ -48,14 +48,14 @@ namespace SmartStore.FacebookAuth.Controllers
 				return AccessDeniedPartialView();
 
             var model = new ConfigurationModel();
-			int storeScope = this.GetActiveStoreScopeConfiguration(_commonServices.StoreService, _commonServices.WorkContext);
-			var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
 
             model.ClientKeyIdentifier = settings.ClientKeyIdentifier;
             model.ClientSecret = settings.ClientSecret;
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _commonServices.Settings);
+			storeDependingSettingHelper.GetOverrideKeys(settings, model, storeScope, _services.Settings);
             
             return View(model);
         }
@@ -70,16 +70,16 @@ namespace SmartStore.FacebookAuth.Controllers
                 return Configure();
 
 			var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-			int storeScope = this.GetActiveStoreScopeConfiguration(_commonServices.StoreService, _commonServices.WorkContext);
-			var settings = _commonServices.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
+			int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
+			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(storeScope);
 
             settings.ClientKeyIdentifier = model.ClientKeyIdentifier;
             settings.ClientSecret = model.ClientSecret;
 
-			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _commonServices.Settings);
-			_commonServices.Settings.ClearCache();
+			storeDependingSettingHelper.UpdateSettings(settings, form, storeScope, _services.Settings);
+			_services.Settings.ClearCache();
 
-			NotifySuccess(_commonServices.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
+			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataSuccessfullySaved"));
 
 			return Configure();
         }
@@ -93,7 +93,7 @@ namespace SmartStore.FacebookAuth.Controllers
 		[NonAction]
 		private ActionResult LoginInternal(string returnUrl, bool verifyResponse)
         {
-			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(Provider.SystemName, _commonServices.StoreContext.CurrentStore.Id);
+			var processor = _openAuthenticationService.LoadExternalAuthenticationMethodBySystemName(Provider.SystemName, _services.StoreContext.CurrentStore.Id);
 			if (processor == null || !processor.IsMethodActive(_externalAuthenticationSettings))
 			{
 				throw new SmartException("Facebook module cannot be loaded");

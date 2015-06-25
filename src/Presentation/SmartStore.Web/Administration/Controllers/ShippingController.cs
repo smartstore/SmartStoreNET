@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
 		private readonly PluginMediator _pluginMediator;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 		private readonly ICustomerService _customerService;
 
 		#endregion
@@ -41,7 +41,7 @@ namespace SmartStore.Admin.Controllers
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
 			PluginMediator pluginMediator,
-			ICommonServices commonServices,
+			ICommonServices services,
 			ICustomerService customerService)
 		{
             this._shippingService = shippingService;
@@ -50,7 +50,7 @@ namespace SmartStore.Admin.Controllers
             this._localizedEntityService = localizedEntityService;
             this._languageService = languageService;
 			this._pluginMediator = pluginMediator;
-			this._commonServices = commonServices;
+			this._services = services;
 			this._customerService = customerService;
 		}
 
@@ -140,7 +140,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Providers()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingProvidersModel = new List<ShippingRateComputationMethodModel>();
@@ -157,14 +157,14 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ActivateProvider(string systemName, bool activate)
 		{
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
 				return AccessDeniedView();
 
 			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
 
 			if (activate && !srcm.Value.IsActive)
 			{
-				NotifyWarning(_commonServices.Localization.GetResource("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
+				NotifyWarning(_services.Localization.GetResource("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
 			}
 			else
 			{
@@ -173,7 +173,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
 
-				_commonServices.Settings.SaveSetting(_shippingSettings);
+				_services.Settings.SaveSetting(_shippingSettings);
 				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
 			}
 
@@ -186,7 +186,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Methods()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
@@ -204,7 +204,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Methods(GridCommand command)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
@@ -227,7 +227,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult CreateMethod()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var model = new ShippingMethodModel();
@@ -241,7 +241,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult CreateMethod(ShippingMethodModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -254,7 +254,7 @@ namespace SmartStore.Admin.Controllers
 				//locales
                 UpdateLocales(sm, model);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
 
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
             }
@@ -265,7 +265,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult EditMethod(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(id);
@@ -288,7 +288,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(model.Id);
@@ -305,7 +305,7 @@ namespace SmartStore.Admin.Controllers
                 //locales
                 UpdateLocales(sm, model);
 
-				NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
+				NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
 
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
             }
@@ -317,7 +317,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult DeleteMethod(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(id);
@@ -326,7 +326,7 @@ namespace SmartStore.Admin.Controllers
 
             _shippingService.DeleteShippingMethod(sm);
 
-			NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
+			NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
             return RedirectToAction("Methods");
         }
         

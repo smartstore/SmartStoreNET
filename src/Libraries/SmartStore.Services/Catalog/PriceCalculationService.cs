@@ -26,7 +26,7 @@ namespace SmartStore.Services.Catalog
         private readonly CatalogSettings _catalogSettings;
 		private readonly IProductAttributeService _productAttributeService;
 		private readonly IDownloadService _downloadService;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 		private readonly HttpRequestBase _httpRequestBase;
 		private readonly ITaxService _taxService;
 
@@ -39,7 +39,7 @@ namespace SmartStore.Services.Catalog
             CatalogSettings catalogSettings,
 			IProductAttributeService productAttributeService,
 			IDownloadService downloadService,
-			ICommonServices commonServices,
+			ICommonServices services,
 			HttpRequestBase httpRequestBase,
 			ITaxService taxService)
         {
@@ -51,7 +51,7 @@ namespace SmartStore.Services.Catalog
             this._catalogSettings = catalogSettings;
 			this._productAttributeService = productAttributeService;
 			this._downloadService = downloadService;
-			this._commonServices = commonServices;
+			this._services = services;
 			this._httpRequestBase = httpRequestBase;
 			this._taxService = taxService;
         }
@@ -129,7 +129,7 @@ namespace SmartStore.Services.Catalog
 
             var tierPrices = product.TierPrices
                 .OrderBy(tp => tp.Quantity)
-				.FilterByStore(_commonServices.StoreContext.CurrentStore.Id)
+				.FilterByStore(_services.StoreContext.CurrentStore.Id)
                 .FilterForCustomer(customer)
                 .ToList()
                 .RemoveDuplicatedQuantities();
@@ -212,7 +212,7 @@ namespace SmartStore.Services.Catalog
 
 			if (!isBundle && selectedAttributes.Count > 0)
 			{
-				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _commonServices.Localization,
+				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
 				selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
@@ -242,7 +242,7 @@ namespace SmartStore.Services.Catalog
 				bundleItem.AdditionalCharge = attributesTotalPriceBase;
 			}
 
-			var result = GetFinalPrice(product, bundleItems, _commonServices.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
+			var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
 			return result;
 		}
 
@@ -290,7 +290,7 @@ namespace SmartStore.Services.Catalog
 		public virtual decimal GetFinalPrice(Product product, 
             bool includeDiscounts)
         {
-            var customer = _commonServices.WorkContext.CurrentCustomer;
+            var customer = _services.WorkContext.CurrentCustomer;
 			return GetFinalPrice(product, customer, includeDiscounts);
         }
 
@@ -456,7 +456,7 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
-			decimal lowestPrice = GetFinalPrice(product, bundleItems, _commonServices.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+			decimal lowestPrice = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 
 			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
 			{
@@ -502,7 +502,7 @@ namespace SmartStore.Services.Catalog
 
 			foreach (var associatedProduct in associatedProducts)
 			{
-				var tmpPrice = GetFinalPrice(associatedProduct, _commonServices.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+				var tmpPrice = GetFinalPrice(associatedProduct, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 
 				if (associatedProduct.LowestAttributeCombinationPrice.HasValue && associatedProduct.LowestAttributeCombinationPrice.Value < tmpPrice)
 				{
@@ -583,7 +583,7 @@ namespace SmartStore.Services.Catalog
         /// <returns>Discount amount</returns>
 		public virtual decimal GetDiscountAmount(Product product)
         {
-            var customer = _commonServices.WorkContext.CurrentCustomer;
+            var customer = _services.WorkContext.CurrentCustomer;
             return GetDiscountAmount(product, customer, decimal.Zero);
         }
 

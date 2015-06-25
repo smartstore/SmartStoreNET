@@ -614,9 +614,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported
 		{
+			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			
 			if (_urlRecordService == null)
 			{
-				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false });
+				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false }, seoSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, new SeoSettings());

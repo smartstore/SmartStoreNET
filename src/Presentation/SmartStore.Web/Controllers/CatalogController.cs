@@ -181,13 +181,13 @@ namespace SmartStore.Web.Controllers
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
-            //subcategories
+            // subcategories
             model.SubCategories = _categoryService
                 .GetAllCategoriesByParentCategoryId(categoryId)
                 .Select(x =>
                 {
                     var subCatName = x.GetLocalized(y => y.Name);
-                    var subCatModel = new CategoryModel.SubCategoryModel()
+                    var subCatModel = new CategoryModel.SubCategoryModel
                     {
                         Id = x.Id,
                         Name = subCatName,
@@ -610,7 +610,7 @@ namespace SmartStore.Web.Controllers
 
                 foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
                 {
-                    var modelMan = new ManufacturerBriefInfoModel()
+                    var modelMan = new ManufacturerBriefInfoModel
                     {
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),

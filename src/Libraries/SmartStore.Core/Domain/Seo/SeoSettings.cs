@@ -17,6 +17,7 @@ namespace SmartStore.Core.Domain.Seo
 			CanonicalHostNameRule = Seo.CanonicalHostNameRule.NoRule;
 			ReservedUrlRecordSlugs = new List<string>() { "admin", "install", "recentlyviewedproducts", "newproducts", "compareproducts", "clearcomparelist", "setproductreviewhelpfulness", "login", "register", "logout", "cart", "wishlist", "emailwishlist", "checkout", "contactus", "passwordrecovery", "subscribenewsletter", "blog", "boards", "inboxupdate", "sentupdate", "news", "sitemap", "sitemapseo", "search", "config", "api", "odata" };
 			ExtraRobotsDisallows = new List<string>();
+			LoadAllUrlAliasesOnStartup = true;
 		}
 		
 		public string PageTitleSeparator { get; set; }
@@ -37,5 +38,10 @@ namespace SmartStore.Core.Domain.Seo
         public List<string> ReservedUrlRecordSlugs { get; set; }
 
         public List<string> ExtraRobotsDisallows { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load all URL records and active slugs on application startup
+		/// </summary>
+		public bool LoadAllUrlAliasesOnStartup { get; set; }
     }
 }

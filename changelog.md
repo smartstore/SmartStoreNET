@@ -11,6 +11,7 @@
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 
 ### Improvements
+* (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
 * #721 Message Queue: implement "Delete all"
 
 

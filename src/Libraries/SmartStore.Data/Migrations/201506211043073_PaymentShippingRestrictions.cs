@@ -48,6 +48,7 @@ namespace SmartStore.Data.Migrations
 			context.MigrateSettings(x =>
 			{
 				x.Add("localizationsettings.loadalllocalizedpropertiesonstartup", true);
+				x.Add("seosettings.loadallurlaliasesonstartup", true);
 			});
 		}
 

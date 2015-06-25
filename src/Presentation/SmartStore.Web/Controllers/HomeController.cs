@@ -141,9 +141,7 @@ namespace SmartStore.Web.Controllers
 				string fullName = model.FullName;
 				string subject = T("ContactUs.EmailSubject", _services.StoreContext.CurrentStore.Name);
 
-				var emailAccount = _emailAccountService.Value.GetEmailAccountById(EngineContext.Current.Resolve<EmailAccountSettings>().DefaultEmailAccountId);
-				if (emailAccount == null)
-					emailAccount = _emailAccountService.Value.GetAllEmailAccounts().FirstOrDefault();
+				var emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
 
 				string from = null;
 				string fromName = null;

@@ -669,14 +669,10 @@ namespace SmartStore.Services.Messages
         {
 			tokens.Add(new Token("Store.Name", store.Name));
 			tokens.Add(new Token("Store.URL", store.Url, true));
-            var defaultEmailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-            if (defaultEmailAccount == null)
-                defaultEmailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+			var defaultEmailAccount = _emailAccountService.GetDefaultEmailAccount();
             tokens.Add(new Token("Store.SupplierIdentification", GetSupplierIdentification(), true));
             tokens.Add(new Token("Store.Email", defaultEmailAccount.Email));
         }
-
-        //codehint: sm-add begin
 
         public virtual void AddCompanyTokens(IList<Token> tokens)
         {

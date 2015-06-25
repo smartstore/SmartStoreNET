@@ -135,9 +135,7 @@ namespace SmartStore.Services.Messages
             var emailAccounId = messageTemplate.GetLocalized(mt => mt.EmailAccountId, languageId);
             var emailAccount = _emailAccountService.GetEmailAccountById(emailAccounId);
             if (emailAccount == null)
-                emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-            if (emailAccount == null)
-                emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+				emailAccount = _emailAccountService.GetDefaultEmailAccount();
 
             return emailAccount;
         }

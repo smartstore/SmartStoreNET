@@ -19,7 +19,6 @@ namespace SmartStore.Services.Seo
 		// {0} = id, {1} = name, {2} = language
         private const string URLRECORD_KEY = "SmartStore.urlrecord.{0}-{1}-{2}";
 		private const string URLRECORD_ALL_ACTIVESLUGS_KEY = "SmartStore.urlrecord.all-active-slugs";
-		private const string URLRECORD_ALL_KEY = "SmartStore.urlrecord.all";
 		private const string URLRECORD_PATTERN_KEY = "SmartStore.urlrecord.";
 
         #endregion

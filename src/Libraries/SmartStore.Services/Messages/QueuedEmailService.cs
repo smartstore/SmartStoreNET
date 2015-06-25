@@ -108,13 +108,13 @@ namespace SmartStore.Services.Messages
             if (queuedEmailIds == null || queuedEmailIds.Length == 0)
                 return new List<QueuedEmail>();
 
-            var query = from qe in _queuedEmailRepository.Table
+            var query = from qe in _queuedEmailRepository.Table.Expand(x => x.EmailAccount)
                         where queuedEmailIds.Contains(qe.Id)
                         select qe;
 
             var queuedEmails = query.ToList();
 
-            //sort by passed identifiers
+            // sort by passed identifiers
             var sortedQueuedEmails = new List<QueuedEmail>();
 
             foreach (int id in queuedEmailIds)
@@ -149,7 +149,7 @@ namespace SmartStore.Services.Messages
             fromEmail = (fromEmail ?? String.Empty).Trim();
             toEmail = (toEmail ?? String.Empty).Trim();
             
-            var query = _queuedEmailRepository.Table;
+            var query = _queuedEmailRepository.Table.Expand(x => x.EmailAccount);
 
             if (!String.IsNullOrEmpty(fromEmail))
                 query = query.Where(qe => qe.From.Contains(fromEmail));

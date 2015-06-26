@@ -25,6 +25,12 @@ namespace SmartStore.Services.Messages
         /// <param name="queuedEmail">Queued email</param>
         void DeleteQueuedEmail(QueuedEmail queuedEmail);
 
+		/// <summary>
+		/// Deletes all queued emails
+		/// </summary>
+		/// <returns>The count of deleted entries</returns>
+		int DeleteAllQueuedEmails();
+
         /// <summary>
         /// Gets a queued email by identifier
         /// </summary>

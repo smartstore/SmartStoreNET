@@ -19,11 +19,6 @@ namespace SmartStore.Services.Messages
 		private readonly ILogger _logger;
 		private readonly ILocalizationService _localizationService;
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="queuedEmailRepository">Queued email repository</param>
-        /// <param name="eventPublisher">Event published</param>
         public QueuedEmailService(
 			IRepository<QueuedEmail> queuedEmailRepository,
 			IEventPublisher eventPublisher,
@@ -37,11 +32,7 @@ namespace SmartStore.Services.Messages
 			_logger = logger;
 			_localizationService = localizationService;
         }
-
-        /// <summary>
-        /// Inserts a queued email
-        /// </summary>
-        /// <param name="queuedEmail">Queued email</param>        
+     
         public virtual void InsertQueuedEmail(QueuedEmail queuedEmail)
         {
             if (queuedEmail == null)
@@ -53,10 +44,6 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityInserted(queuedEmail);
         }
 
-        /// <summary>
-        /// Updates a queued email
-        /// </summary>
-        /// <param name="queuedEmail">Queued email</param>
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
         {
             if (queuedEmail == null)
@@ -68,10 +55,6 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityUpdated(queuedEmail);
         }
 
-        /// <summary>
-        /// Deleted a queued email
-        /// </summary>
-        /// <param name="queuedEmail">Queued email</param>
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
         {
             if (queuedEmail == null)
@@ -83,11 +66,30 @@ namespace SmartStore.Services.Messages
             _eventPublisher.EntityDeleted(queuedEmail);
         }
 
-        /// <summary>
-        /// Gets a queued email by identifier
-        /// </summary>
-        /// <param name="queuedEmailId">Queued email identifier</param>
-        /// <returns>Queued email</returns>
+		public virtual int DeleteAllQueuedEmails()
+		{
+			var autoCommit = _queuedEmailRepository.AutoCommitEnabled;
+			_queuedEmailRepository.AutoCommitEnabled = false;
+
+			var count = 0;
+
+			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
+			{
+				var queuedEmails = _queuedEmailRepository.Table.ToList();
+				foreach (var chunk in queuedEmails.Chunk(500))
+				{
+					_queuedEmailRepository.DeleteRange(chunk.ToList());
+					_queuedEmailRepository.Context.SaveChanges();
+				}
+
+				count = queuedEmails.Count;
+			}
+
+			_queuedEmailRepository.AutoCommitEnabled = autoCommit;
+
+			return count;
+		}
+
         public virtual QueuedEmail GetQueuedEmailById(int queuedEmailId)
         {
             if (queuedEmailId == 0)
@@ -98,11 +100,6 @@ namespace SmartStore.Services.Messages
 
         }
 
-        /// <summary>
-        /// Get queued emails by identifiers
-        /// </summary>
-        /// <param name="queuedEmailIds">queued email identifiers</param>
-        /// <returns>Queued emails</returns>
         public virtual IList<QueuedEmail> GetQueuedEmailsByIds(int[] queuedEmailIds)
         {
             if (queuedEmailIds == null || queuedEmailIds.Length == 0)
@@ -126,20 +123,6 @@ namespace SmartStore.Services.Messages
             return sortedQueuedEmails;
         }
 
-        /// <summary>
-        /// Gets all queued emails
-        /// </summary>
-        /// <param name="fromEmail">From Email</param>
-        /// <param name="toEmail">To Email</param>
-        /// <param name="startTime">The start time</param>
-        /// <param name="endTime">The end time</param>
-        /// <param name="loadUnsentItemsOnly">A value indicating whether to load only not sent emails</param>
-        /// <param name="maxSendTries">Maximum send tries</param>
-        /// <param name="loadNewest">A value indicating whether we should sort queued email descending; otherwise, ascending.</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-		/// <param name="sendManually">A value indicating whether to load manually send emails</param>
-        /// <returns>Email item list</returns>
         public virtual IPagedList<QueuedEmail> SearchEmails(string fromEmail, 
             string toEmail, DateTime? startTime, DateTime? endTime, 
             bool loadUnsentItemsOnly, int maxSendTries,
@@ -181,11 +164,6 @@ namespace SmartStore.Services.Messages
             return queuedEmails;
         }
 
-		/// <summary>
-		/// Sends a queued email
-		/// </summary>
-		/// <param name="queuedEmail">Queued email</param>
-		/// <returns>Whether the operation succeeded</returns>
 		public virtual bool SendEmail(QueuedEmail queuedEmail)
 		{
 			var result = false;

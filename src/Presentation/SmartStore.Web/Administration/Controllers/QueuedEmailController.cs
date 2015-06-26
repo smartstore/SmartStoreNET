@@ -21,7 +21,8 @@ namespace SmartStore.Admin.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
 
-		public QueuedEmailController(IQueuedEmailService queuedEmailService,
+		public QueuedEmailController(
+			IQueuedEmailService queuedEmailService,
             IDateTimeHelper dateTimeHelper, ILocalizationService localizationService,
             IPermissionService permissionService)
 		{
@@ -217,8 +218,10 @@ namespace SmartStore.Admin.Controllers
             {
                 var queuedEmails = _queuedEmailService.GetQueuedEmailsByIds(selectedIds.ToArray());
 
-                foreach (var queuedEmail in queuedEmails)
-                    _queuedEmailService.DeleteQueuedEmail(queuedEmail);
+				foreach (var queuedEmail in queuedEmails)
+				{
+					_queuedEmailService.DeleteQueuedEmail(queuedEmail);
+				}
             }
 
             return Json(new { Result = true });
@@ -230,21 +233,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
 				return AccessDeniedView();
 
-			int count = 0;
-
-			for (int i = 0; i < 9999999; ++i)
-			{
-				var queuedEmails = _queuedEmailService.SearchEmails(null, null, null, null, false, int.MaxValue, false, i, 100, null);
-
-				foreach (var email in queuedEmails)
-				{
-					_queuedEmailService.DeleteQueuedEmail(email);
-					++count;
-				}
-
-				if (!queuedEmails.HasNextPage)
-					break;
-			}
+			int count = _queuedEmailService.DeleteAllQueuedEmails();
 
 			NotifySuccess(T("Admin.Common.RecordsDeleted", count));
 

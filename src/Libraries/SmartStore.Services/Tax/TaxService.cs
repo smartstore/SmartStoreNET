@@ -355,7 +355,12 @@ namespace SmartStore.Services.Tax
 			{
 				return decimal.Zero;
 			}
-			
+
+            if (IsTaxExempt(product, customer))
+            {
+                return decimal.Zero;
+            }
+
 			// tax request
             var calculateTaxRequest = CreateCalculateTaxRequest(product, taxCategoryId, customer);
 

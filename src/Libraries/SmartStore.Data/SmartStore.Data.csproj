@@ -116,6 +116,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
+    <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
@@ -280,6 +281,10 @@
     <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.cs" />
     <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.Designer.cs">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506262044329_QueuedEmailAttachments.cs" />
+    <Compile Include="Migrations\201506262044329_QueuedEmailAttachments.Designer.cs">
+      <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -543,6 +548,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506211043073_PaymentShippingRestrictions.resx">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506262044329_QueuedEmailAttachments.resx">
+      <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

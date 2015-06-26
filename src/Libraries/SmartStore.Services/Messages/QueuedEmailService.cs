@@ -68,26 +68,7 @@ namespace SmartStore.Services.Messages
 
 		public virtual int DeleteAllQueuedEmails()
 		{
-			var autoCommit = _queuedEmailRepository.AutoCommitEnabled;
-			_queuedEmailRepository.AutoCommitEnabled = false;
-
-			var count = 0;
-
-			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
-			{
-				var queuedEmails = _queuedEmailRepository.Table.ToList();
-				foreach (var chunk in queuedEmails.Chunk(500))
-				{
-					_queuedEmailRepository.DeleteRange(chunk.ToList());
-					_queuedEmailRepository.Context.SaveChanges();
-				}
-
-				count = queuedEmails.Count;
-			}
-
-			_queuedEmailRepository.AutoCommitEnabled = autoCommit;
-
-			return count;
+			return _queuedEmailRepository.DeleteAll();
 		}
 
         public virtual QueuedEmail GetQueuedEmailById(int queuedEmailId)

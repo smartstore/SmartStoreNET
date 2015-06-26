@@ -14,6 +14,14 @@ namespace SmartStore.Data.Mapping.Stores
 			this.Property(s => s.ContentDeliveryNetwork).HasMaxLength(400);
 			this.Property(s => s.SecureUrl).HasMaxLength(400);
 			this.Property(s => s.Hosts).HasMaxLength(1000);
+
+			this.HasOptional(s => s.PrimaryStoreCurrency)
+				.WithMany()
+				.HasForeignKey(s => s.PrimaryStoreCurrencyId).WillCascadeOnDelete(false);
+
+			this.HasOptional(s => s.PrimaryExchangeRateCurrency)
+				.WithMany()
+				.HasForeignKey(s => s.PrimaryExchangeRateCurrencyId).WillCascadeOnDelete(false);
 		}
 	}
 }

@@ -281,6 +281,14 @@
     <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.Designer.cs">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201506261018157_Merge.cs" />
+    <Compile Include="Migrations\201506261018157_Merge.Designer.cs">
+      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506261028198_PrimaryStoreCurrencyMultiStore.cs" />
+    <Compile Include="Migrations\201506261028198_PrimaryStoreCurrencyMultiStore.Designer.cs">
+      <DependentUpon>201506261028198_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -543,6 +551,12 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506211043073_PaymentShippingRestrictions.resx">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506261018157_Merge.resx">
+      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506261028198_PrimaryStoreCurrencyMultiStore.resx">
+      <DependentUpon>201506261028198_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

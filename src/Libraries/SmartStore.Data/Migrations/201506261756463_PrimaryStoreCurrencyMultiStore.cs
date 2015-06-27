@@ -66,7 +66,17 @@ namespace SmartStore.Data.Migrations
 				"The currency cannot be deleted or deactivated because it is attached to the store \"{0}\" as primary or exchange rate currency.",
 				"Die Währung kann nicht gelöscht oder deaktiviert werden, weil sie dem Shop \"{0}\" als Leit- oder Umrechnungswährung zugeordnet ist.");
 
+			builder.AddOrUpdate("Admin.Configuration.Stores.Fields.PrimaryStoreCurrencyId",
+				"Primary store currency",
+				"Leitwährung",
+				"Specifies the the primary store currency.",
+				"Legt die Leitwährung des Shops fest.");
 
+			builder.AddOrUpdate("Admin.Configuration.Stores.Fields.PrimaryExchangeRateCurrencyId",
+				"Primary exchange rate currency",
+				"Haupwährung für Währungsumrechnung",
+				"Specifies the primary exchange rate currency for this store.",
+				"Legt die Haupwährung für Währungsumrechnungen für diesen Shop fest.");
 
 			builder.Delete("Admin.Configuration.Currencies.CantDeletePrimary");
 			builder.Delete("Admin.Configuration.Currencies.CantDeleteExchange");

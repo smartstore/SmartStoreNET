@@ -96,6 +96,24 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryStoreCurrencyId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.PrimaryStoreCurrencyId, Model.AvailableCurrencies)
+			@Html.ValidationMessageFor(model => model.PrimaryStoreCurrencyId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryExchangeRateCurrencyId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.PrimaryExchangeRateCurrencyId, Model.AvailableCurrencies)
+			@Html.ValidationMessageFor(model => model.PrimaryExchangeRateCurrencyId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.DisplayOrder)
 		</td>
 		<td class="adminData">

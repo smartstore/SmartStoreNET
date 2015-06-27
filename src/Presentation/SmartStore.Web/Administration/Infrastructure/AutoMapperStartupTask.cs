@@ -567,7 +567,8 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.IsRecipientNotified, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//stores
-			Mapper.CreateMap<Store, StoreModel>();
+			Mapper.CreateMap<Store, StoreModel>()
+				.ForMember(dest => dest.AvailableCurrencies, mo => mo.Ignore());
 			Mapper.CreateMap<StoreModel, Store>();
 
             //Settings

@@ -1,4 +1,5 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Stores;
@@ -42,5 +43,13 @@ namespace SmartStore.Admin.Models.Stores
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.ContentDeliveryNetwork")]
 	    [AllowHtml]
 	    public string ContentDeliveryNetwork { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.PrimaryStoreCurrencyId")]
+		public int PrimaryStoreCurrencyId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.PrimaryExchangeRateCurrencyId")]
+		public int PrimaryExchangeRateCurrencyId { get; set; }
+
+		public List<SelectListItem> AvailableCurrencies { get; set; }
 	}
 }

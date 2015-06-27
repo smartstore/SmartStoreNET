@@ -17,12 +17,12 @@ namespace SmartStore.Admin.Models.Directory
         {
             Locales = new List<CurrencyLocalizedModel>();
 
-			AvailableDomainEndings = new List<SelectListItem>()
+			AvailableDomainEndings = new List<SelectListItem>
 			{
-				new SelectListItem() { Text = ".com", Value = ".com" },
-				new SelectListItem() { Text = ".uk", Value = ".uk" },
-				new SelectListItem() { Text = ".de", Value = ".de" },
-				new SelectListItem() { Text = ".ch", Value = ".ch" }
+				new SelectListItem { Text = ".com", Value = ".com" },
+				new SelectListItem { Text = ".uk", Value = ".uk" },
+				new SelectListItem { Text = ".de", Value = ".de" },
+				new SelectListItem { Text = ".ch", Value = ".ch" }
 			};
         }
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.Name")]

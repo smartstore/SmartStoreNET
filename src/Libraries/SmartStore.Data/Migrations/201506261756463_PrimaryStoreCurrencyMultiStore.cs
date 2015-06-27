@@ -62,6 +62,14 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Admin.Configuration.Currencies.NoDeleteOrDeactivate",
+				"The currency cannot be deleted or deactivated because it is attached to the store \"{0}\" as primary or exchange rate currency.",
+				"Die Währung kann nicht gelöscht oder deaktiviert werden, weil sie dem Shop \"{0}\" als Leit- oder Umrechnungswährung zugeordnet ist.");
+
+
+
+			builder.Delete("Admin.Configuration.Currencies.CantDeletePrimary");
+			builder.Delete("Admin.Configuration.Currencies.CantDeleteExchange");
 		}
     }
 }

@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
@@ -90,6 +91,19 @@ namespace SmartStore.Admin.Controllers
 					model.SelectedStoreIds = new int[0];
 				}
 			}
+		}
+
+		private bool IsAttachedToStore(Currency currency, IList<Store> stores)
+		{
+			foreach (var store in stores)
+			{
+				if (store.PrimaryStoreCurrencyId == currency.Id || store.PrimaryExchangeRateCurrencyId == currency.Id)
+				{
+					NotifyError(T("Admin.Configuration.Currencies.NoDeleteOrDeactivate", store.Name));
+					return true;
+				}
+			}
+			return false;
 		}
 
         #endregion
@@ -315,18 +329,22 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 currency = model.ToEntity(currency);
-                currency.UpdatedOnUtc = DateTime.UtcNow;
-    
-				_currencyService.UpdateCurrency(currency);
-                
-				//locales
-                UpdateLocales(currency, model);
-				
-				//Stores
-				_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
 
-                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
-                return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
+				if (currency.Published || (!currency.Published && !IsAttachedToStore(currency, _services.StoreService.GetAllStores())))
+				{
+					currency.UpdatedOnUtc = DateTime.UtcNow;
+    
+					_currencyService.UpdateCurrency(currency);
+                
+					//locales
+					UpdateLocales(currency, model);
+				
+					//Stores
+					_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
+
+					NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
+					return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
+				}
             }
 
             //If we got this far, something failed, redisplay form
@@ -350,23 +368,20 @@ namespace SmartStore.Admin.Controllers
             
             try
             {
-				// TODO
-				//if (currency.Id == _currencySettings.PrimaryStoreCurrencyId)
-				//	throw new SmartException(_services.Localization.GetResource("Admin.Configuration.Currencies.CantDeletePrimary"));
+				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores()))
+				{
+					_currencyService.DeleteCurrency(currency);
 
-				//if (currency.Id == _currencySettings.PrimaryExchangeRateCurrencyId)
-				//	throw new SmartException(_services.Localization.GetResource("Admin.Configuration.Currencies.CantDeleteExchange"));
-
-                _currencyService.DeleteCurrency(currency);
-
-                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Deleted"));
-                return RedirectToAction("List");
+					NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Deleted"));
+					return RedirectToAction("List");
+				}
             }
             catch (Exception exc)
             {
                 NotifyError(exc);
-                return RedirectToAction("Edit", new { id = currency.Id });
             }
+
+			return RedirectToAction("Edit", new { id = currency.Id });
         }
 
         #endregion

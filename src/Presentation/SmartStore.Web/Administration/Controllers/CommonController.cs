@@ -578,7 +578,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             //primary store currency
-			var pscCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryStoreCurrencyId);
+			var pscCurrency = _services.StoreContext.CurrentStore.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
                 model.Add(new SystemWarningModel

@@ -521,7 +521,9 @@ namespace SmartStore.Services.Orders
 					var currencyTmp = _currencyService.GetCurrencyById(customer.GetAttribute<int>(SystemCustomerAttributeNames.CurrencyId, processPaymentRequest.StoreId));
 					var customerCurrency = (currencyTmp != null && currencyTmp.Published) ? currencyTmp : _workContext.WorkingCurrency;
                     customerCurrencyCode = customerCurrency.CurrencyCode;
-                    var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+
+                    var primaryStoreCurrency = _storeContext.CurrentStore.PrimaryStoreCurrency;
+
                     customerCurrencyRate = customerCurrency.Rate / primaryStoreCurrency.Rate;
                 }
                 else

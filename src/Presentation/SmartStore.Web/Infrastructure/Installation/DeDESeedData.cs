@@ -2114,7 +2114,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 
                 .Alter<CurrencySettings>(x =>
                 {
-                    x.PrimaryStoreCurrencyId = base.DbContext.Set<Currency>().Where(c => c.CurrencyCode == "EUR").Single().Id;
                     x.PrimaryExchangeRateCurrencyId = base.DbContext.Set<Currency>().Where(c => c.CurrencyCode == "EUR").Single().Id;
                 })
 

@@ -649,7 +649,7 @@ namespace SmartStore.Admin.Controllers
 				model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 			}
 
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
 			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 
@@ -3004,7 +3004,7 @@ namespace SmartStore.Admin.Controllers
             model.MerchantContactData = contactSettings;
 
             string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
-            string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			string currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
             foreach (var product in products) 
             {

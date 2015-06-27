@@ -187,7 +187,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentNullException("model");
 
 			var store = _storeService.GetStoreById(order.StoreId);
-			var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = store.PrimaryStoreCurrency;
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);

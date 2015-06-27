@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Directory;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Services.Configuration;
+using SmartStore.Services;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -23,40 +23,34 @@ namespace SmartStore.Admin.Controllers
 
         private readonly ICurrencyService _currencyService;
         private readonly CurrencySettings _currencySettings;
-        private readonly ISettingService _settingService;
         private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly ILocalizationService _localizationService;
-        private readonly IPermissionService _permissionService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
-		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
 		private readonly PluginMediator _pluginMediator;
+		private readonly ICommonServices _services;
 
         #endregion
 
         #region Constructors
 
         public CurrencyController(ICurrencyService currencyService, 
-            CurrencySettings currencySettings, ISettingService settingService,
-            IDateTimeHelper dateTimeHelper, ILocalizationService localizationService,
-            IPermissionService permissionService,
-            ILocalizedEntityService localizedEntityService, ILanguageService languageService,
-            IStoreService storeService, 
+            CurrencySettings currencySettings,
+            IDateTimeHelper dateTimeHelper,
+            ILocalizedEntityService localizedEntityService,
+			ILanguageService languageService,
             IStoreMappingService storeMappingService,
-			PluginMediator pluginMediator)
+			PluginMediator pluginMediator,
+			ICommonServices services)
         {
             this._currencyService = currencyService;
             this._currencySettings = currencySettings;
-            this._settingService = settingService;
             this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
-            this._permissionService = permissionService;
             this._localizedEntityService = localizedEntityService;
             this._languageService = languageService;
-			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
 			this._pluginMediator = pluginMediator;
+			this._services = services;
         }
         
         #endregion
@@ -81,7 +75,7 @@ namespace SmartStore.Admin.Controllers
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			model.AvailableStores = _storeService
+			model.AvailableStores = _services.StoreService
 				.GetAllStores()
 				.Select(s => s.ToModel())
 				.ToList();
@@ -109,14 +103,21 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult List(bool liveRates = false)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var currenciesModel = _currencyService.GetAllCurrencies(true).Select(x => x.ToModel()).ToList();
-            foreach (var currency in currenciesModel)
-                currency.IsPrimaryExchangeRateCurrency = currency.Id == _currencySettings.PrimaryExchangeRateCurrencyId ? true : false;
-            foreach (var currency in currenciesModel)
-                currency.IsPrimaryStoreCurrency = currency.Id == _currencySettings.PrimaryStoreCurrencyId ? true : false;
+
+			foreach (var currency in currenciesModel)
+			{
+				currency.IsPrimaryExchangeRateCurrency = (currency.Id == _services.StoreContext.CurrentStore.PrimaryExchangeRateCurrencyId);
+			}
+
+			foreach (var currency in currenciesModel)
+			{
+				currency.IsPrimaryStoreCurrency = (currency.Id == _services.StoreContext.CurrentStore.PrimaryStoreCurrencyId);
+			}
+
             if (liveRates)
             {
                 try
@@ -153,7 +154,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult ApplyRate(string currencyCode, decimal rate)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             Currency currency = _currencyService.GetCurrencyByCode(currencyCode);
@@ -169,19 +170,19 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult Save(FormCollection formValues)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             _currencySettings.ActiveExchangeRateProviderSystemName = formValues["exchangeRateProvider"];
             _currencySettings.AutoUpdateEnabled = formValues["autoUpdateEnabled"].Equals("false") ? false : true;
-            _settingService.SaveSetting(_currencySettings);
+            _services.Settings.SaveSetting(_currencySettings);
             return RedirectToAction("List", "Currency");
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult List(GridCommand command)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var currencies = _currencyService.GetAllCurrencies(true);
@@ -198,21 +199,21 @@ namespace SmartStore.Admin.Controllers
         
         public ActionResult MarkAsPrimaryExchangeRateCurrency(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             _currencySettings.PrimaryExchangeRateCurrencyId = id;
-            _settingService.SaveSetting(_currencySettings);
+            _services.Settings.SaveSetting(_currencySettings);
             return RedirectToAction("List");
         }
 
         public ActionResult MarkAsPrimaryStoreCurrency(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
-            _currencySettings.PrimaryStoreCurrencyId = id;
-            _settingService.SaveSetting(_currencySettings);
+            //_currencySettings.PrimaryStoreCurrencyId = id;
+            //_services.Settings.SaveSetting(_currencySettings);
             return RedirectToAction("List");
         }
 
@@ -222,7 +223,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Create()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var model = new CurrencyModel();
@@ -239,7 +240,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult Create(CurrencyModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
@@ -256,7 +257,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Added"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -270,7 +271,7 @@ namespace SmartStore.Admin.Controllers
         
         public ActionResult Edit(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var currency = _currencyService.GetCurrencyById(id);
@@ -304,7 +305,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult Edit(CurrencyModel model, bool continueEditing)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var currency = _currencyService.GetCurrencyById(model.Id);
@@ -324,7 +325,7 @@ namespace SmartStore.Admin.Controllers
 				//Stores
 				_storeMappingService.SaveStoreMappings<Currency>(currency, model.SelectedStoreIds);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Updated"));
+                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Updated"));
                 return continueEditing ? RedirectToAction("Edit", new { id = currency.Id }) : RedirectToAction("List");
             }
 
@@ -340,7 +341,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ActionName("Delete")]
         public ActionResult DeleteConfirmed(int id)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCurrencies))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
             var currency = _currencyService.GetCurrencyById(id);
@@ -349,15 +350,16 @@ namespace SmartStore.Admin.Controllers
             
             try
             {
-                if (currency.Id == _currencySettings.PrimaryStoreCurrencyId)
-                    throw new SmartException(_localizationService.GetResource("Admin.Configuration.Currencies.CantDeletePrimary"));
+				// TODO
+				//if (currency.Id == _currencySettings.PrimaryStoreCurrencyId)
+				//	throw new SmartException(_services.Localization.GetResource("Admin.Configuration.Currencies.CantDeletePrimary"));
 
-                if (currency.Id == _currencySettings.PrimaryExchangeRateCurrencyId)
-                    throw new SmartException(_localizationService.GetResource("Admin.Configuration.Currencies.CantDeleteExchange"));
+				//if (currency.Id == _currencySettings.PrimaryExchangeRateCurrencyId)
+				//	throw new SmartException(_services.Localization.GetResource("Admin.Configuration.Currencies.CantDeleteExchange"));
 
                 _currencyService.DeleteCurrency(currency);
 
-                NotifySuccess(_localizationService.GetResource("Admin.Configuration.Currencies.Deleted"));
+                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Currencies.Deleted"));
                 return RedirectToAction("List");
             }
             catch (Exception exc)

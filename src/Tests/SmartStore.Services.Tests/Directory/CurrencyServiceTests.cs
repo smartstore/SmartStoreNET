@@ -14,6 +14,7 @@ using SmartStore.Tests;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Services.Stores;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tests.Directory
 {
@@ -25,6 +26,7 @@ namespace SmartStore.Services.Tests.Directory
         CurrencySettings _currencySettings;
         IEventPublisher _eventPublisher;
         ICurrencyService _currencyService;
+		IStoreContext _storeContext;
 
         Currency currencyUSD, currencyRUR, currencyEUR;
         
@@ -70,6 +72,7 @@ namespace SmartStore.Services.Tests.Directory
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc = DateTime.UtcNow,
             };
+
             _currencyRepository = MockRepository.GenerateMock<IRepository<Currency>>();
             _currencyRepository.Expect(x => x.Table).Return(new List<Currency>() { currencyUSD, currencyEUR, currencyRUR }.AsQueryable());
             _currencyRepository.Expect(x => x.GetById(currencyUSD.Id)).Return(currencyUSD);
@@ -77,20 +80,19 @@ namespace SmartStore.Services.Tests.Directory
             _currencyRepository.Expect(x => x.GetById(currencyRUR.Id)).Return(currencyRUR);
 
 			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             var cacheManager = new NullCache();
 
             _currencySettings = new CurrencySettings();
-            _currencySettings.PrimaryStoreCurrencyId = currencyUSD.Id;
             _currencySettings.PrimaryExchangeRateCurrencyId = currencyEUR.Id;
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));
             
             var pluginFinder = new PluginFinder();
-            _currencyService = new CurrencyService(cacheManager,
-				_currencyRepository, _storeMappingService, 
-                _currencySettings, pluginFinder, _eventPublisher, this.ProviderManager);
+            _currencyService = new CurrencyService(cacheManager, _currencyRepository, _storeMappingService,
+				_currencySettings, pluginFinder, _eventPublisher, this.ProviderManager, _storeContext);
         }
         
         [Test]

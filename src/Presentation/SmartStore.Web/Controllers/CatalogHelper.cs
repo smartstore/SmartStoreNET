@@ -58,7 +58,6 @@ namespace SmartStore.Web.Controllers
 		private readonly CatalogSettings _catalogSettings;
 		private readonly CustomerSettings _customerSettings;
 		private readonly CaptchaSettings _captchaSettings;
-		private readonly CurrencySettings _currencySettings;
 		private readonly TaxSettings _taxSettings;
 		private readonly IMeasureService _measureService;
         private readonly IQuantityUnitService _quantityUnitService;
@@ -91,7 +90,6 @@ namespace SmartStore.Web.Controllers
 			MediaSettings mediaSettings,
 			CatalogSettings catalogSettings,
 			CustomerSettings customerSettings,
-			CurrencySettings currencySettings,
 			CaptchaSettings captchaSettings,
 			IMeasureService measureService,
             IQuantityUnitService quantityUnitService,
@@ -131,7 +129,6 @@ namespace SmartStore.Web.Controllers
 			this._catalogSettings = catalogSettings;
 			this._customerSettings = customerSettings;
 			this._captchaSettings = captchaSettings;
-			this._currencySettings = currencySettings;
 			this._menuPublisher = _menuPublisher;
 			this._httpRequest = httpRequest;
 			this._urlHelper = urlHelper;
@@ -1314,9 +1311,8 @@ namespace SmartStore.Web.Controllers
 					model.BasePriceInfo = minPriceProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
 				}
 
-				var addShippingPrice = _currencyService.ConvertCurrency(
-					minPriceProduct.AdditionalShippingCharge,
-					_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId), _services.WorkContext.WorkingCurrency);
+				var addShippingPrice = _currencyService.ConvertCurrency(minPriceProduct.AdditionalShippingCharge,
+					_services.StoreContext.CurrentStore.PrimaryStoreCurrency, _services.WorkContext.WorkingCurrency);
 
 				if (addShippingPrice > 0 && displayPrices)
 				{

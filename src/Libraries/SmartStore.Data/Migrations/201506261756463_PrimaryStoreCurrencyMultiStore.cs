@@ -1,18 +1,17 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
-	using System.Linq;
 	using System.Data.Entity.Migrations;
+	using System.Linq;
 	using SmartStore.Core.Domain.Configuration;
-	using SmartStore.Data.Setup;
 	using SmartStore.Core.Domain.Stores;
+	using SmartStore.Data.Setup;
 
 	public partial class PrimaryStoreCurrencyMultiStore : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
-            AddColumn("dbo.Store", "PrimaryStoreCurrencyId", c => c.Int());
-            AddColumn("dbo.Store", "PrimaryExchangeRateCurrencyId", c => c.Int());
+            AddColumn("dbo.Store", "PrimaryStoreCurrencyId", c => c.Int(nullable: false));
+            AddColumn("dbo.Store", "PrimaryExchangeRateCurrencyId", c => c.Int(nullable: false));
             CreateIndex("dbo.Store", "PrimaryStoreCurrencyId");
             CreateIndex("dbo.Store", "PrimaryExchangeRateCurrencyId");
             AddForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency", "Id");

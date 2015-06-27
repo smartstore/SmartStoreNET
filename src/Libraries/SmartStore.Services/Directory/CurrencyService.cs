@@ -33,6 +33,7 @@ namespace SmartStore.Services.Directory
         private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
 		private readonly IProviderManager _providerManager;
+		private readonly IStoreContext _storeContext;
 
         #endregion
 
@@ -53,7 +54,8 @@ namespace SmartStore.Services.Directory
             CurrencySettings currencySettings,
             IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			IStoreContext storeContext)
         {
             this._cacheManager = cacheManager;
             this._currencyRepository = currencyRepository;
@@ -62,6 +64,7 @@ namespace SmartStore.Services.Directory
             this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
 			this._providerManager = providerManager;
+			this._storeContext = storeContext;
         }
 
         #endregion
@@ -268,11 +271,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary store currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode)
+        public virtual decimal ConvertToPrimaryStoreCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryStoreCurrency = GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = (store == null ? _storeContext.CurrentStore.PrimaryStoreCurrency : store.PrimaryStoreCurrency);
+
             if (result != decimal.Zero && sourceCurrencyCode.Id != primaryStoreCurrency.Id)
             {
                 decimal exchangeRate = sourceCurrencyCode.Rate;
@@ -289,10 +294,10 @@ namespace SmartStore.Services.Directory
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode)
+		public virtual decimal ConvertFromPrimaryStoreCurrency(decimal amount, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryStoreCurrency = GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = (store == null ? _storeContext.CurrentStore.PrimaryStoreCurrency : store.PrimaryStoreCurrency);
             result = ConvertCurrency(amount, primaryStoreCurrency, targetCurrencyCode);
             return result;
         }

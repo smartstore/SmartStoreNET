@@ -3,25 +3,21 @@ using System.Web.Routing;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Data.Migrations;
 using SmartStore.GoogleMerchantCenter.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Localization;
+using SmartStore.Services;
 
 namespace SmartStore.GoogleMerchantCenter
 {
     public class FroogleFeedPlugin : BasePlugin, IConfigurable
     {
         private readonly IGoogleFeedService _googleService;
-        private readonly ISettingService _settingService;
-		private readonly ILocalizationService _localizationService;
+		private readonly ICommonServices _services;
 
         public FroogleFeedPlugin(
 			IGoogleFeedService googleService,
-            ISettingService settingService,
-			ILocalizationService localizationService)
+			ICommonServices services)
         {
             _googleService = googleService;
-            _settingService = settingService;
-			_localizationService = localizationService;
+			_services = services;
         }
 
         /// <summary>
@@ -43,11 +39,11 @@ namespace SmartStore.GoogleMerchantCenter
         public override void Install()
         {
 			var settings = new FroogleSettings();
-			settings.CurrencyId = _googleService.Helper.CurrencyID;
+			settings.CurrencyId = _services.StoreContext.CurrentStore.PrimaryStoreCurrencyId;
 
-            _settingService.SaveSetting(settings);
+			_services.Settings.SaveSetting(settings);
 
-			_localizationService.ImportPluginResourcesFromXml(this.PluginDescriptor);
+			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
 
 		 	_googleService.Helper.InsertScheduleTask();
 
@@ -62,9 +58,9 @@ namespace SmartStore.GoogleMerchantCenter
 			_googleService.Helper.DeleteFeedFiles();
 			_googleService.Helper.DeleteScheduleTask();
 
-            _settingService.DeleteSetting<FroogleSettings>();
+			_services.Settings.DeleteSetting<FroogleSettings>();
 
-			_localizationService.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
+			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			var migrator = new DbMigrator(new Configuration());
 			migrator.Update(DbMigrator.InitialDatabase);

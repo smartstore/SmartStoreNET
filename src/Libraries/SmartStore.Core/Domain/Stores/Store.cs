@@ -67,13 +67,13 @@ namespace SmartStore.Core.Domain.Stores
 		/// Gets or sets the primary store currency identifier
 		/// </summary>
 		[DataMember]
-		public int? PrimaryStoreCurrencyId { get; set; }
+		public int PrimaryStoreCurrencyId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the primary exchange rate currency identifier
 		/// </summary>
 		[DataMember]
-		public int? PrimaryExchangeRateCurrencyId { get; set; }
+		public int PrimaryExchangeRateCurrencyId { get; set; }
 
 		/// <summary>
 		/// Gets or sets the primary store currency

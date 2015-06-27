@@ -364,13 +364,14 @@ namespace SmartStore.PayPal.Controllers
 				if ((_services.WorkContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
 					return RedirectToRoute("Login");
 
-				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(_services.StoreContext.CurrentStore.Id);
-				var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+				var store = _services.StoreContext.CurrentStore;
+				var settings = _services.Settings.LoadSetting<PayPalExpressPaymentSettings>(store.Id);
+				var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
 				if (cart.Count == 0)
 					return RedirectToRoute("ShoppingCart");
 
-				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+				var currency = store.PrimaryStoreCurrency.CurrencyCode;
 
                 if (String.IsNullOrEmpty(settings.ApiAccountName))
 					throw new ApplicationException("PayPal API Account Name is not set");
@@ -393,9 +394,9 @@ namespace SmartStore.PayPal.Controllers
 				Discount orderSubTotalAppliedDiscount = null;
 				decimal subTotalWithoutDiscountBase = decimal.Zero;
 				decimal subTotalWithDiscountBase = decimal.Zero;
+
 				_orderTotalCalculationService.GetShoppingCartSubTotal(cart,
-					out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
-					out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
+					out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount, out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
 
 				//order total
 				decimal resultTemp = decimal.Zero;

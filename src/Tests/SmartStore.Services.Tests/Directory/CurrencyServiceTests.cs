@@ -1,20 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using NUnit.Framework;
+using Rhino.Mocks;
+using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Customers;
-using SmartStore.Services.Directory;
 using SmartStore.Core.Events;
-using SmartStore.Tests;
-using NUnit.Framework;
-using Rhino.Mocks;
+using SmartStore.Core.Plugins;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Stores;
-using SmartStore.Core;
+using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Directory
 {
@@ -85,7 +82,6 @@ namespace SmartStore.Services.Tests.Directory
             var cacheManager = new NullCache();
 
             _currencySettings = new CurrencySettings();
-            _currencySettings.PrimaryExchangeRateCurrencyId = currencyEUR.Id;
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));

@@ -122,7 +122,7 @@ namespace SmartStore.Admin.Controllers
             {
                 try
                 {
-                    var primaryExchangeCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId);
+					var primaryExchangeCurrency = _services.StoreContext.CurrentStore.PrimaryExchangeRateCurrency;
                     if (primaryExchangeCurrency == null)
                         throw new SmartException("Primary exchange rate currency is not set");
 
@@ -202,8 +202,8 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
-            _currencySettings.PrimaryExchangeRateCurrencyId = id;
-            _services.Settings.SaveSetting(_currencySettings);
+            //_currencySettings.PrimaryExchangeRateCurrencyId = id;
+            //_services.Settings.SaveSetting(_currencySettings);
             return RedirectToAction("List");
         }
 

@@ -8,7 +8,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Customers;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Directory
@@ -231,11 +230,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode)
+		public virtual decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryExchangeRateCurrency = GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId);
+			var primaryExchangeRateCurrency = (store == null ? _storeContext.CurrentStore.PrimaryExchangeRateCurrency : store.PrimaryExchangeRateCurrency);
+
             if (result != decimal.Zero && sourceCurrencyCode.Id != primaryExchangeRateCurrency.Id)
             {
                 decimal exchangeRate = sourceCurrencyCode.Rate;
@@ -251,11 +252,13 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode)
+		public virtual decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
-            var primaryExchangeRateCurrency = GetCurrencyById(_currencySettings.PrimaryExchangeRateCurrencyId);
+            var primaryExchangeRateCurrency = (store == null ? _storeContext.CurrentStore.PrimaryExchangeRateCurrency : store.PrimaryExchangeRateCurrency);
+
             if (result != decimal.Zero && targetCurrencyCode.Id != primaryExchangeRateCurrency.Id)
             {
                 decimal exchangeRate = targetCurrencyCode.Rate;

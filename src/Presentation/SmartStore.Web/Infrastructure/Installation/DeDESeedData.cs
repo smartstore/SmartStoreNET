@@ -1,35 +1,28 @@
 ﻿using System;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Generic;
-using System.IO;
-using SmartStore.Core; 
+using System.Linq;
 using SmartStore.Core.Configuration;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Cms;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Logging;
+using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
+using SmartStore.Core.Domain.Seo;
+using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Topics;
-using SmartStore.Core.Domain.Seo;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Domain.Tasks;
-using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Stores;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Data.Setup;
 
 namespace SmartStore.Web.Infrastructure.Installation
@@ -2110,11 +2103,6 @@ namespace SmartStore.Web.Infrastructure.Installation
                 {
                     x.BaseDimensionId = base.DbContext.Set<MeasureDimension>().Where(m => m.SystemKeyword == "m").Single().Id;
                     x.BaseWeightId = base.DbContext.Set<MeasureWeight>().Where(m => m.SystemKeyword == "kg").Single().Id;
-                })
-
-                .Alter<CurrencySettings>(x =>
-                {
-                    x.PrimaryExchangeRateCurrencyId = base.DbContext.Set<Currency>().Where(c => c.CurrencyCode == "EUR").Single().Id;
                 })
 
                 .Alter<SeoSettings>(x =>

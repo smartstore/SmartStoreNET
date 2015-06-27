@@ -496,9 +496,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Warnings()
         {
             var model = new List<SystemWarningModel>();
+			var store = _services.StoreContext.CurrentStore;
             
             //store URL
-			var storeUrl = _services.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
+			var storeUrl = store.Url.EnsureEndsWith("/");
 			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
 			{
 				model.Add(new SystemWarningModel
@@ -550,7 +551,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //primary exchange rate currency
-			var perCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryExchangeRateCurrencyId);
+			var perCurrency = store.PrimaryExchangeRateCurrency;
             if (perCurrency != null)
             {
                 model.Add(new SystemWarningModel
@@ -578,7 +579,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             //primary store currency
-			var pscCurrency = _services.StoreContext.CurrentStore.PrimaryStoreCurrency;
+			var pscCurrency = store.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
                 model.Add(new SystemWarningModel

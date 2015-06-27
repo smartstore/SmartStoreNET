@@ -81,16 +81,18 @@ namespace SmartStore.Services.Directory
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode);
+		decimal ConvertToPrimaryExchangeRateCurrency(decimal amount, Currency sourceCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts from primary exchange rate currency
         /// </summary>
         /// <param name="amount">Amount</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary exchange rate currency from</param>
         /// <returns>Converted value</returns>
-        decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode);
+		decimal ConvertFromPrimaryExchangeRateCurrency(decimal amount, Currency targetCurrencyCode, Store store = null);
 
         /// <summary>
         /// Converts to primary store currency 

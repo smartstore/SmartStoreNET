@@ -17,11 +17,13 @@ namespace SmartStore.Data.Mapping.Stores
 
 			this.HasRequired(s => s.PrimaryStoreCurrency)
 				.WithMany()
-				.HasForeignKey(s => s.PrimaryStoreCurrencyId).WillCascadeOnDelete(false);
+				.HasForeignKey(s => s.PrimaryStoreCurrencyId)
+				.WillCascadeOnDelete(false);
 
 			this.HasRequired(s => s.PrimaryExchangeRateCurrency)
 				.WithMany()
-				.HasForeignKey(s => s.PrimaryExchangeRateCurrencyId).WillCascadeOnDelete(false);
+				.HasForeignKey(s => s.PrimaryExchangeRateCurrencyId)
+				.WillCascadeOnDelete(false);
 		}
 	}
 }

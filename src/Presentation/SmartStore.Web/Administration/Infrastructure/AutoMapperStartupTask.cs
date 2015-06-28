@@ -317,6 +317,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
 				.ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyStores, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrencyStores, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())			
@@ -568,7 +570,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//stores
 			Mapper.CreateMap<Store, StoreModel>()
-				.ForMember(dest => dest.AvailableCurrencies, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableCurrencies, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrency, mo => mo.Ignore());
 			Mapper.CreateMap<StoreModel, Store>();
 
             //Settings

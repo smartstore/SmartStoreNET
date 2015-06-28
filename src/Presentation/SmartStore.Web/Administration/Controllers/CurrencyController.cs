@@ -70,38 +70,66 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
-		[NonAction]
-		private void PrepareStoresMappingModel(CurrencyModel model, Currency currency, bool excludeProperties)
+		private void PrepareCurrencyModel(CurrencyModel model, Currency currency, bool excludeProperties)
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
 
-			model.AvailableStores = _services.StoreService
-				.GetAllStores()
-				.Select(s => s.ToModel())
-				.ToList();
+			var allStores = _services.StoreService.GetAllStores();
+
+			model.AvailableStores = allStores.Select(s => s.ToModel()).ToList();
+
+			if (currency != null)
+			{
+				model.PrimaryStoreCurrencyStores = allStores
+					.Where(x => x.PrimaryStoreCurrencyId == currency.Id)
+					.Select(x => new SelectListItem
+					{
+						Text = x.Name,
+						Value = Url.Action("Edit", "Store", new { id = x.Id })
+					})
+					.ToList();
+
+				model.PrimaryExchangeRateCurrencyStores = allStores
+					.Where(x => x.PrimaryExchangeRateCurrencyId == currency.Id)
+					.Select(x => new SelectListItem
+					{
+						Text = x.Name,
+						Value = Url.Action("Edit", "Store", new { id = x.Id })
+					})
+					.ToList();
+			}			
+
 			if (!excludeProperties)
 			{
-				if (currency != null)
-				{
-					model.SelectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(currency);
-				}
-				else
-				{
-					model.SelectedStoreIds = new int[0];
-				}
+				model.SelectedStoreIds = (currency == null ? new int[0] : _storeMappingService.GetStoresIdsWithAccess(currency));
 			}
 		}
 
-		private bool IsAttachedToStore(Currency currency, IList<Store> stores)
+		private bool IsAttachedToStore(Currency currency, IList<Store> stores, bool force)
 		{
-			foreach (var store in stores)
+			var attachedStore = stores.FirstOrDefault(x => x.PrimaryStoreCurrencyId == currency.Id || x.PrimaryExchangeRateCurrencyId == currency.Id);
+
+			if (attachedStore != null)
 			{
-				if (store.PrimaryStoreCurrencyId == currency.Id || store.PrimaryExchangeRateCurrencyId == currency.Id)
+				if (force || (!force && !currency.Published))
 				{
-					NotifyError(T("Admin.Configuration.Currencies.NoDeleteOrDeactivate", store.Name));
+					NotifyError(T("Admin.Configuration.Currencies.DeleteOrPublishStoreConflict", attachedStore.Name));
 					return true;
 				}
+
+				// Must store limitations include the store where the currency is attached as primary or exchange rate currency?
+				//if (currency.LimitedToStores)
+				//{
+				//	if (selectedStoreIds == null)
+				//		selectedStoreIds = _storeMappingService.GetStoreMappingsFor("Currency", currency.Id).Select(x => x.StoreId).ToArray();
+
+				//	if (!selectedStoreIds.Contains(attachedStore.Id))
+				//	{
+				//		NotifyError(T("Admin.Configuration.Currencies.StoreLimitationConflict", attachedStore.Name));
+				//		return true;
+				//	}
+				//}
 			}
 			return false;
 		}
@@ -120,17 +148,26 @@ namespace SmartStore.Admin.Controllers
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
                 return AccessDeniedView();
 
-            var currenciesModel = _currencyService.GetAllCurrencies(true).Select(x => x.ToModel()).ToList();
+			var store = _services.StoreContext.CurrentStore;
+            var models = _currencyService.GetAllCurrencies(true).Select(x => x.ToModel()).ToList();
 
-			foreach (var currency in currenciesModel)
+			foreach (var model in models)
 			{
-				currency.IsPrimaryExchangeRateCurrency = (currency.Id == _services.StoreContext.CurrentStore.PrimaryExchangeRateCurrencyId);
+				model.IsPrimaryStoreCurrency = (store.PrimaryStoreCurrencyId == model.Id);
+				model.IsPrimaryExchangeRateCurrency = (store.PrimaryExchangeRateCurrencyId == model.Id);
 			}
 
-			foreach (var currency in currenciesModel)
-			{
-				currency.IsPrimaryStoreCurrency = (currency.Id == _services.StoreContext.CurrentStore.PrimaryStoreCurrencyId);
-			}
+			//var allStores = _services.StoreService.GetAllStores();
+			//foreach (var model in models)
+			//{
+			//	var storeNames = allStores.Where(x => x.PrimaryStoreCurrencyId == model.Id).Select(x => x.Name).ToList();
+
+			//	model.IsPrimaryStoreCurrency = string.Join("<br />", storeNames);
+
+			//	storeNames = allStores.Where(x => x.PrimaryExchangeRateCurrencyId == model.Id).Select(x => x.Name).ToList();
+
+			//	model.IsPrimaryExchangeRateCurrency = string.Join("<br />", storeNames);
+			//}
 
             if (liveRates)
             {
@@ -147,21 +184,25 @@ namespace SmartStore.Admin.Controllers
                     NotifyError(exc, false);
                 }
             }
+
             ViewBag.ExchangeRateProviders = new List<SelectListItem>();
+
             foreach (var erp in _currencyService.LoadAllExchangeRateProviders())
             {
-                ViewBag.ExchangeRateProviders.Add(new SelectListItem()
+                ViewBag.ExchangeRateProviders.Add(new SelectListItem
                 {
                     Text = _pluginMediator.GetLocalizedFriendlyName(erp.Metadata),
 					Value = erp.Metadata.SystemName,
 					Selected = erp.Metadata.SystemName.Equals(_currencySettings.ActiveExchangeRateProviderSystemName, StringComparison.InvariantCultureIgnoreCase)
                 });
             }
+
             ViewBag.AutoUpdateEnabled = _currencySettings.AutoUpdateEnabled;
+
             var gridModel = new GridModel<CurrencyModel>
             {
-                Data = currenciesModel,
-                Total = currenciesModel.Count()
+                Data = models,
+                Total = models.Count()
             };
             return View(gridModel);
         }
@@ -210,26 +251,6 @@ namespace SmartStore.Admin.Controllers
                 Data = gridModel
             };
         }
-        
-        public ActionResult MarkAsPrimaryExchangeRateCurrency(int id)
-        {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
-                return AccessDeniedView();
-
-            //_currencySettings.PrimaryExchangeRateCurrencyId = id;
-            //_services.Settings.SaveSetting(_currencySettings);
-            return RedirectToAction("List");
-        }
-
-        public ActionResult MarkAsPrimaryStoreCurrency(int id)
-        {
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageCurrencies))
-                return AccessDeniedView();
-
-            //_currencySettings.PrimaryStoreCurrencyId = id;
-            //_services.Settings.SaveSetting(_currencySettings);
-            return RedirectToAction("List");
-        }
 
         #endregion
 
@@ -244,7 +265,7 @@ namespace SmartStore.Admin.Controllers
             //locales
             AddLocales(_languageService, model.Locales);
 			//Stores
-			PrepareStoresMappingModel(model, null, false);
+			PrepareCurrencyModel(model, null, false);
             //default values
             model.Published = true;
             model.Rate = 1;
@@ -278,7 +299,7 @@ namespace SmartStore.Admin.Controllers
             //If we got this far, something failed, redisplay form
 
 			//Stores
-			PrepareStoresMappingModel(model, null, true);
+			PrepareCurrencyModel(model, null, true);
 
             return View(model);
         }
@@ -311,7 +332,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			//Stores
-			PrepareStoresMappingModel(model, currency, false);
+			PrepareCurrencyModel(model, currency, false);
 
             return View(model);
         }
@@ -330,7 +351,7 @@ namespace SmartStore.Admin.Controllers
             {
                 currency = model.ToEntity(currency);
 
-				if (currency.Published || (!currency.Published && !IsAttachedToStore(currency, _services.StoreService.GetAllStores())))
+				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), false))
 				{
 					currency.UpdatedOnUtc = DateTime.UtcNow;
     
@@ -351,7 +372,7 @@ namespace SmartStore.Admin.Controllers
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(currency.CreatedOnUtc, DateTimeKind.Utc);
 
 			//Stores
-			PrepareStoresMappingModel(model, currency, true);
+			PrepareCurrencyModel(model, currency, true);
 
             return View(model);
         }
@@ -368,7 +389,7 @@ namespace SmartStore.Admin.Controllers
             
             try
             {
-				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores()))
+				if (!IsAttachedToStore(currency, _services.StoreService.GetAllStores(), true))
 				{
 					_currencyService.DeleteCurrency(currency);
 

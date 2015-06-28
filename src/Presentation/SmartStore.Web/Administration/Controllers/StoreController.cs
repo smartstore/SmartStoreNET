@@ -37,7 +37,7 @@ namespace SmartStore.Admin.Controllers
 
 		private void PrepareStoreModel(StoreModel model, Store store)
 		{
-			model.AvailableCurrencies = _currencyService.GetAllCurrencies()
+			model.AvailableCurrencies = _currencyService.GetAllCurrencies(false, store == null ? 0 : store.Id)
 				.Select(x => new SelectListItem
 				{
 					Text = x.Name,
@@ -82,7 +82,16 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var storeModels = _storeService.GetAllStores()
-				.Select(x => x.ToModel())
+				.Select(x => 
+				{
+					var model = x.ToModel();
+
+					PrepareStoreModel(model, x);
+
+					model.Hosts = model.Hosts.EmptyNull().Replace(",", "<br />");
+
+					return model;
+				})
 				.ToList();
 
 			var gridModel = new GridModel<StoreModel>

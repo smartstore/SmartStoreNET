@@ -380,16 +380,16 @@ namespace SmartStore.Web.Framework
                         }
                     }
 
+					// if there's only one currency for current store it dominates the primary currency
+					if (storeCurrenciesMap.Count == 1)
+					{
+						currency = storeCurrenciesMap[storeCurrenciesMap.Keys.First()];
+					}
+
 					// find currency by domain ending
 					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
 					{
 						currency = storeCurrenciesMap.Values.GetByDomainEnding(_httpContext.Request.Url.Authority);
-					}
-
-					// if there's only one currency for current store it dominates the primary currency
-					if (storeCurrenciesMap.Count == 1)
-					{
-						currency = storeCurrenciesMap[0];
 					}
 
                     // get PrimaryStoreCurrency

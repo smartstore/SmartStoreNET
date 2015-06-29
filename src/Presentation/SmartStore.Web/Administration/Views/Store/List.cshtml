@@ -25,8 +25,8 @@
 							.ClientTemplate("<a href=\"<#= Url #>\" target=\"_blank\"><#= Url #></a>");
 						columns.Bound(x => x.Hosts)
 							.Encoded(false);
-						columns.Bound(x => x.PrimaryStoreCurrency);
-						columns.Bound(x => x.PrimaryExchangeRateCurrency);
+						columns.Bound(x => x.PrimaryStoreCurrencyName);
+						columns.Bound(x => x.PrimaryExchangeRateCurrencyName);
 						columns.Bound(x => x.ContentDeliveryNetwork)
 							.ClientTemplate("<a href=\"<#= ContentDeliveryNetwork #>\" target=\"_blank\"><#= ContentDeliveryNetwork #></a>");
 						columns.Bound(x => x.SslEnabled)

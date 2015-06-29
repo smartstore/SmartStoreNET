@@ -655,10 +655,18 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            // shipping rate coputation methods
-			if (_shippingService.Value.LoadActiveShippingRateComputationMethods()
-				.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
-				.Count() > 1)
+			// shipping rate coputation methods
+			int activeShippingMethodCount = 0;
+
+			try
+			{
+				activeShippingMethodCount = _shippingService.Value.LoadActiveShippingRateComputationMethods()
+					.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+					.Count();
+			}
+			catch { }
+
+			if (activeShippingMethodCount > 1)
 			{
 				model.Add(new SystemWarningModel
 				{
@@ -668,7 +676,15 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //payment methods
-			if (_paymentService.Value.LoadActivePaymentMethods().Count() > 0)
+			int activePaymentMethodCount = 0;
+
+			try
+			{
+				activePaymentMethodCount = _paymentService.Value.LoadActivePaymentMethods().Count();
+			}
+			catch { }
+
+			if (activePaymentMethodCount > 0)
 			{
 				model.Add(new SystemWarningModel
 				{

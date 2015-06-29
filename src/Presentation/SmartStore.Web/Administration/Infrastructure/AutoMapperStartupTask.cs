@@ -573,10 +573,11 @@ namespace SmartStore.Admin.Infrastructure
 			//stores
 			Mapper.CreateMap<Store, StoreModel>()
 				.ForMember(dest => dest.AvailableCurrencies, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyName, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrencyName, mo => mo.Ignore());
+			Mapper.CreateMap<StoreModel, Store>()
 				.ForMember(dest => dest.PrimaryStoreCurrency, mo => mo.Ignore())
 				.ForMember(dest => dest.PrimaryExchangeRateCurrency, mo => mo.Ignore());
-			Mapper.CreateMap<StoreModel, Store>();
-
             //Settings
             Mapper.CreateMap<TaxSettings, TaxSettingsModel>()
                 .ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())

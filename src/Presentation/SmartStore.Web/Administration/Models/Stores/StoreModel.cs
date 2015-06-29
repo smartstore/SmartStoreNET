@@ -49,7 +49,7 @@ namespace SmartStore.Admin.Models.Stores
 		public int PrimaryStoreCurrencyId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.PrimaryStoreCurrencyId")]
-		public string PrimaryStoreCurrency
+		public string PrimaryStoreCurrencyName
 		{
 			get
 			{
@@ -67,7 +67,7 @@ namespace SmartStore.Admin.Models.Stores
 		public int PrimaryExchangeRateCurrencyId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Stores.Fields.PrimaryExchangeRateCurrencyId")]
-		public string PrimaryExchangeRateCurrency
+		public string PrimaryExchangeRateCurrencyName
 		{
 			get
 			{

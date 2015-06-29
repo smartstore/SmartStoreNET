@@ -394,7 +394,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				writer.WriteElementString("g", "condition", _googleNamespace, Condition());
 				writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
 
-				decimal price = Helper.GetProductPrice(product, currency);
+				decimal price = Helper.GetProductPrice(product, currency, fileCreation.Store);
 				string specialPriceDate;
 
 				if (SpecialPrice(product, out specialPriceDate))
@@ -405,7 +405,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					// get regular price ignoring any special price
 					decimal specialPrice = product.SpecialPrice.Value;
 					product.SpecialPrice = null;
-					price = Helper.GetProductPrice(product, currency);
+					price = Helper.GetProductPrice(product, currency, fileCreation.Store);
 					product.SpecialPrice = specialPrice;
 
 					_dbContext.SetToUnchanged<Product>(product);

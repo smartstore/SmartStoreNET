@@ -206,11 +206,6 @@ namespace SmartStore.Web.Framework.Plugins
 			}
 		}
 
-		public decimal ConvertFromStoreCurrency(decimal price, Currency currency)
-		{
-			return _ctx.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(price, currency);
-		}
-
 		public List<SelectListItem> AvailableCurrencies()
 		{
 			var lst = new List<SelectListItem>();

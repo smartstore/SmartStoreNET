@@ -191,7 +191,6 @@ namespace SmartStore.Services.Directory
         }
 
 
-
         /// <summary>
         /// Converts currency
         /// </summary>
@@ -211,16 +210,17 @@ namespace SmartStore.Services.Directory
         /// <param name="amount">Amount</param>
         /// <param name="sourceCurrencyCode">Source currency code</param>
         /// <param name="targetCurrencyCode">Target currency code</param>
+		/// <param name="store">Store to get the primary currencies from</param>
         /// <returns>Converted value</returns>
-        public virtual decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode)
+		public virtual decimal ConvertCurrency(decimal amount, Currency sourceCurrencyCode, Currency targetCurrencyCode, Store store = null)
         {
             decimal result = amount;
             if (sourceCurrencyCode.Id == targetCurrencyCode.Id)
                 return result;
             if (result != decimal.Zero && sourceCurrencyCode.Id != targetCurrencyCode.Id)
             {
-                result = ConvertToPrimaryExchangeRateCurrency(result, sourceCurrencyCode);
-                result = ConvertFromPrimaryExchangeRateCurrency(result, targetCurrencyCode);
+                result = ConvertToPrimaryExchangeRateCurrency(result, sourceCurrencyCode, store);
+                result = ConvertFromPrimaryExchangeRateCurrency(result, targetCurrencyCode, store);
             }
             return result;
         }
@@ -301,7 +301,7 @@ namespace SmartStore.Services.Directory
         {
             decimal result = amount;
 			var primaryStoreCurrency = (store == null ? _storeContext.CurrentStore.PrimaryStoreCurrency : store.PrimaryStoreCurrency);
-            result = ConvertCurrency(amount, primaryStoreCurrency, targetCurrencyCode);
+            result = ConvertCurrency(amount, primaryStoreCurrency, targetCurrencyCode, store);
             return result;
         }
        

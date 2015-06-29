@@ -7,6 +7,7 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
@@ -82,6 +83,15 @@ namespace SmartStore.Services.Tests.Directory
             var cacheManager = new NullCache();
 
             _currencySettings = new CurrencySettings();
+
+			_storeContext.Expect(x => x.CurrentStore).Return(new Store
+			{
+				Name = "Computer store",
+				Url = "http://www.yourStore.com",
+				Hosts = "yourStore.com,www.yourStore.com",
+				PrimaryStoreCurrency = currencyUSD,
+				PrimaryExchangeRateCurrency = currencyEUR
+			});
 
             _eventPublisher = MockRepository.GenerateMock<IEventPublisher>();
             _eventPublisher.Expect(x => x.Publish(Arg<object>.Is.Anything));

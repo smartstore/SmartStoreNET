@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net.Mail;
+using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
@@ -8,6 +10,8 @@ using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
+using SmartStore.Utilities;
+using System.Web;
 
 namespace SmartStore.Services.Messages
 {
@@ -177,6 +181,8 @@ namespace SmartStore.Services.Messages
 					msg.Bcc.AddRange(bcc.Where(x => x.HasValue()).Select(x => new EmailAddress(x)));
 				}
 
+				CreateAttachments(queuedEmail, msg);
+
 				_emailSender.SendEmail(smtpContext, msg);
 
 				queuedEmail.SentOnUtc = DateTime.UtcNow;
@@ -191,7 +197,56 @@ namespace SmartStore.Services.Messages
 				queuedEmail.SentTries = queuedEmail.SentTries + 1;
 				UpdateQueuedEmail(queuedEmail);
 			}
+
 			return result;
+		}
+
+		private void CreateAttachments(QueuedEmail qe, EmailMessage msg)
+		{
+			if (qe.Attachments == null || qe.Attachments.Count == 0)
+				return;
+
+			foreach (var qea in qe.Attachments)
+			{
+				Attachment attachment = null;
+
+				if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
+				{
+					var data = qea.Data;
+					if (data != null && data.Length > 0)
+					{
+						attachment = new Attachment(data.ToStream(), qea.Name, qea.MimeType);
+					}
+				}
+				else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
+				{
+					var path = qea.Path;
+					if (path.HasValue())
+					{
+						if (path[0] == '~' || path[0] == '/')
+						{
+							path = CommonHelper.MapPath(VirtualPathUtility.ToAppRelative(path));
+						}
+						if (File.Exists(path))
+						{
+							attachment = new Attachment(path, qea.MimeType);
+						}
+					}
+				}
+				else if (qea.StorageLocation == EmailAttachmentStorageLocation.FileReference)
+				{
+					var file = qea.File;
+					if (file != null && file.UseDownloadUrl == false && file.DownloadBinary != null && file.DownloadBinary.Length > 0)
+					{
+						attachment = new Attachment(file.DownloadBinary.ToStream(), file.Filename + file.Extension, file.ContentType);
+					}
+				}
+
+				if (attachment != null)
+				{
+					msg.Attachments.Add(attachment);
+				}
+			}
 		}
     }
 }

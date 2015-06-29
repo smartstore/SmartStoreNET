@@ -1,9 +1,10 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.2
 
 ### New Features
 * #210 Implement multi-store support for import/export
+* Added zip code to shipping by weight computation method
 
 ### Improvements
 * (Soft) deletion of SEO slug supporting entities now also deletes the corresponding url records

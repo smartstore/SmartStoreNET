@@ -56,11 +56,11 @@ namespace SmartStore.ShippingByWeight
 
         #region Utilities
 
-		private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId)
+        private decimal? GetRate(decimal subTotal, decimal weight, int shippingMethodId, int storeId, int countryId, string zip)
         {
             decimal? shippingTotal = null;
 
-			var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, storeId, countryId, weight);
+			var shippingByWeightRecord = _shippingByWeightService.FindRecord(shippingMethodId, storeId, countryId, weight, zip);
             if (shippingByWeightRecord == null)
             {
                 if (_shippingByWeightSettings.LimitMethodsToCreated)
@@ -127,10 +127,12 @@ namespace SmartStore.ShippingByWeight
 			int storeId = _storeContext.CurrentStore.Id;
 			decimal subTotal = decimal.Zero;
             int countryId = 0;
+            string zip = null;
 
 			if (getShippingOptionRequest.ShippingAddress != null)
 			{
 				countryId = getShippingOptionRequest.ShippingAddress.CountryId ?? 0;
+                zip = getShippingOptionRequest.ShippingAddress.ZipPostalCode;
 			}
             
             foreach (var shoppingCartItem in getShippingOptionRequest.Items)
@@ -144,9 +146,9 @@ namespace SmartStore.ShippingByWeight
             var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
             foreach (var shippingMethod in shippingMethods)
             {
-                var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight);
+                var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);
                 
-                decimal? rate = GetRate(subTotal, weight, shippingMethod.Id, storeId, countryId);
+                decimal? rate = GetRate(subTotal, weight, shippingMethod.Id, storeId, countryId, zip);
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();

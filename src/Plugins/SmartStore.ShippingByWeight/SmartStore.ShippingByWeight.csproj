@@ -158,6 +158,10 @@
     <Compile Include="Data\Migrations\201406041606037_SmallQuantitySurcharge.Designer.cs">
       <DependentUpon>201406041606037_SmallQuantitySurcharge.cs</DependentUpon>
     </Compile>
+    <Compile Include="Data\Migrations\201506290747117_ZipCode.cs" />
+    <Compile Include="Data\Migrations\201506290747117_ZipCode.Designer.cs">
+      <DependentUpon>201506290747117_ZipCode.cs</DependentUpon>
+    </Compile>
     <Compile Include="Data\Migrations\Configuration.cs" />
     <Compile Include="ShippingByWeightSettings.cs" />
     <Compile Include="Controllers\ShippingByWeightController.cs" />
@@ -219,6 +223,9 @@
       <SubType>Designer</SubType>
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
+    <EmbeddedResource Include="Data\Migrations\201506290747117_ZipCode.resx">
+      <DependentUpon>201506290747117_ZipCode.cs</DependentUpon>
+    </EmbeddedResource>
   </ItemGroup>
   <ItemGroup>
     <Content Include="Description.txt">

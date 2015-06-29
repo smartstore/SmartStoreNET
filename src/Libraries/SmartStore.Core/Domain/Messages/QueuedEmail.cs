@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 
 namespace SmartStore.Core.Domain.Messages
 {
@@ -8,9 +7,7 @@ namespace SmartStore.Core.Domain.Messages
     /// </summary>
     public partial class QueuedEmail : BaseEntity
     {
-		private ICollection<QueuedEmailAttachment> _attachments;
-		
-		/// <summary>
+        /// <summary>
         /// Gets or sets the priority
         /// </summary>
         public int Priority { get; set; }
@@ -94,14 +91,5 @@ namespace SmartStore.Core.Domain.Messages
         /// Gets the email account
         /// </summary>
         public virtual EmailAccount EmailAccount { get; set; }
-
-		/// <summary>
-		/// Gets or sets the collection of attachments
-		/// </summary>
-		public virtual ICollection<QueuedEmailAttachment> Attachments
-		{
-			get { return _attachments ?? (_attachments = new HashSet<QueuedEmailAttachment>()); }
-			protected set { _attachments = value; }
-		}
     }
 }

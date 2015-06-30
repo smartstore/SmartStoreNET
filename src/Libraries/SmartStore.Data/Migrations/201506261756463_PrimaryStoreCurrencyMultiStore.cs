@@ -2,7 +2,9 @@ namespace SmartStore.Data.Migrations
 {
 	using System.Data.Entity.Migrations;
 	using System.Linq;
+	using SmartStore.Core.Data;
 	using SmartStore.Core.Domain.Configuration;
+	using SmartStore.Core.Domain.Directory;
 	using SmartStore.Core.Domain.Stores;
 	using SmartStore.Data.Setup;
 
@@ -10,18 +12,27 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.Store", "PrimaryStoreCurrencyId", c => c.Int(nullable: false));
-			AddColumn("dbo.Store", "PrimaryExchangeRateCurrencyId", c => c.Int(nullable: false));
+			AddColumn("dbo.Store", "PrimaryStoreCurrencyId", c => c.Int(nullable: false, defaultValue: 1));
+			AddColumn("dbo.Store", "PrimaryExchangeRateCurrencyId", c => c.Int(nullable: false, defaultValue: 1));
 
 			// avoid conflicts with foreign key constraint
-			Sql("Update dbo.Store Set PrimaryStoreCurrencyId = (Select Top(1) [Id] From dbo.Currency)");
-			Sql("Update dbo.Store Set PrimaryExchangeRateCurrencyId = (Select Top(1) [Id] From dbo.Currency)");
+			if (DataSettings.Current.IsSqlServer)
+			{
+				// what sql-server compact does not support here:
+				// - Update Set with a select sub-query
+				// - Select in variable via declare
+				// - Alter table to check/nocheck a constraint
+				// so the the foreign key check constraint fails here (and therefore this migration) if there's no currency with id 1.
+
+				Sql("Update dbo.Store Set PrimaryStoreCurrencyId = (Select Min(Id) From dbo.Currency)");
+				Sql("Update dbo.Store Set PrimaryExchangeRateCurrencyId = (Select Min(Id) From dbo.Currency)");
+			}
 
             CreateIndex("dbo.Store", "PrimaryStoreCurrencyId");
             CreateIndex("dbo.Store", "PrimaryExchangeRateCurrencyId");
 
-            AddForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency", "Id");
-            AddForeignKey("dbo.Store", "PrimaryStoreCurrencyId", "dbo.Currency", "Id");
+			AddForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency", "Id");
+			AddForeignKey("dbo.Store", "PrimaryStoreCurrencyId", "dbo.Currency", "Id");
         }
         
         public override void Down()
@@ -46,24 +57,28 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			var settings = context.Set<Setting>();
-			var primaryStoreCurrency = settings.FirstOrDefault(x => x.Name == "CurrencySettings.PrimaryStoreCurrencyId");
-			var primaryExchangeRateCurrency = settings.FirstOrDefault(x => x.Name == "CurrencySettings.PrimaryExchangeRateCurrencyId");
+			var primaryStoreCurrencySetting = settings.FirstOrDefault(x => x.Name == "CurrencySettings.PrimaryStoreCurrencyId");
+			var primaryExchangeRateCurrencySetting = settings.FirstOrDefault(x => x.Name == "CurrencySettings.PrimaryExchangeRateCurrencyId");
+
+			int primaryStoreCurrencyId = primaryStoreCurrencySetting.Value.ToInt();
+			int primaryExchangeRateCurrencyId = primaryExchangeRateCurrencySetting.Value.ToInt();
+
+			if (primaryStoreCurrencyId == 0)
+				primaryStoreCurrencyId = context.Set<Currency>().First().Id;
+
+			if (primaryExchangeRateCurrencyId == 0)
+				primaryExchangeRateCurrencyId = primaryStoreCurrencyId;
 
 			var stores = context.Set<Store>().ToList();
 
-			foreach (var store in stores)
+			stores.ForEach(x =>
 			{
-				int id = primaryStoreCurrency.Value.ToInt();
-				if (id != 0)
-					store.PrimaryStoreCurrencyId = id;
+				x.PrimaryStoreCurrencyId = primaryStoreCurrencyId;
+				x.PrimaryExchangeRateCurrencyId = primaryExchangeRateCurrencyId;
+			});
 
-				id = primaryExchangeRateCurrency.Value.ToInt();
-				if (id != 0)
-					store.PrimaryExchangeRateCurrencyId = id;
-			}
-
-			settings.Remove(primaryStoreCurrency);
-			settings.Remove(primaryExchangeRateCurrency);
+			settings.Remove(primaryStoreCurrencySetting);
+			settings.Remove(primaryExchangeRateCurrencySetting);
 
 			context.SaveChanges();
 		}

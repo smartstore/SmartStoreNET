@@ -476,6 +476,15 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 
+			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
+			{
+				var combination = product.ProductVariantAttributeCombinations.OrderBy(x => x.Price).FirstOrDefault(x => x.Price > decimal.Zero);
+				if (combination != null)
+				{
+					lowestPrice = combination.Price ?? decimal.Zero;
+				}
+			}
+
 			return lowestPrice;
 		}
 

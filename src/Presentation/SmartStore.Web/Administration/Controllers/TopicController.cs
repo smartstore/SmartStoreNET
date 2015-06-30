@@ -121,10 +121,13 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var model = new TopicListModel();
-			//stores
+
+			// stores
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
+			{
 				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			return View(model);
         }
@@ -138,7 +141,12 @@ namespace SmartStore.Admin.Controllers
             var topics = _topicService.GetAllTopics(model.SearchStoreId);
             var gridModel = new GridModel<TopicModel>
             {
-				Data = topics.Select(x => x.ToModel()),
+				Data = topics.Select(x => { 
+					var item = x.ToModel();
+					// otherwise maxJsonLength could be exceeded
+					item.Body = "";
+					return item;
+				}),
                 Total = topics.Count
             };
             return new JsonResult

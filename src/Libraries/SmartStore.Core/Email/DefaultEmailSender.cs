@@ -68,11 +68,12 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 			
-			var msg = this.BuildMailMessage(message);
-
-			using (var client = context.ToSmtpClient())
+			using (var msg = this.BuildMailMessage(message))
 			{
-				client.Send(msg);
+				using (var client = context.ToSmtpClient())
+				{
+					client.Send(msg);
+				}
 			}
         }
 
@@ -81,12 +82,14 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 
+			var client = context.ToSmtpClient();
 			var msg = this.BuildMailMessage(message);
 
-			using (var client = context.ToSmtpClient())
+			return client.SendMailAsync(msg).ContinueWith(t => 
 			{
-				return client.SendMailAsync(msg);
-			}
+				client.Dispose();
+				msg.Dispose();
+			});
 		}
 
         #endregion

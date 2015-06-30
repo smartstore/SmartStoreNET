@@ -182,7 +182,6 @@ namespace SmartStore.Admin.Controllers
                 if (String.IsNullOrWhiteSpace(model.SendTestEmailTo))
                     throw new SmartException("Enter test email address");
 
-
 				var to = new EmailAddress(model.SendTestEmailTo);
 				var from = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
 				string subject = _storeContext.CurrentStore.Name + ". Testing email functionality.";

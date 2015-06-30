@@ -12,30 +12,28 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 using System.Web;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Messages
 {
     public partial class QueuedEmailService : IQueuedEmailService
     {
         private readonly IRepository<QueuedEmail> _queuedEmailRepository;
-        private readonly IEventPublisher _eventPublisher;
 		private readonly IEmailSender _emailSender;
-		private readonly ILogger _logger;
-		private readonly ILocalizationService _localizationService;
+		private readonly ICommonServices _services;
 
-        public QueuedEmailService(
-			IRepository<QueuedEmail> queuedEmailRepository,
-			IEventPublisher eventPublisher,
-			IEmailSender emailSender,
-			ILogger logger,
-			ILocalizationService localizationService)
+        public QueuedEmailService(IRepository<QueuedEmail> queuedEmailRepository, IEmailSender emailSender, ICommonServices services)
         {
-            _queuedEmailRepository = queuedEmailRepository;
-            _eventPublisher = eventPublisher;
-			_emailSender = emailSender;
-			_logger = logger;
-			_localizationService = localizationService;
+            this._queuedEmailRepository = queuedEmailRepository;
+			this._emailSender = emailSender;
+			this._services = services;
+
+			T = NullLocalizer.Instance;
+			Logger = NullLogger.Instance;
         }
+
+		public Localizer T { get; set; }
+		public ILogger Logger { get; set; }
      
         public virtual void InsertQueuedEmail(QueuedEmail queuedEmail)
         {
@@ -45,7 +43,7 @@ namespace SmartStore.Services.Messages
             _queuedEmailRepository.Insert(queuedEmail);
 
             //event notification
-            _eventPublisher.EntityInserted(queuedEmail);
+            _services.EventPublisher.EntityInserted(queuedEmail);
         }
 
         public virtual void UpdateQueuedEmail(QueuedEmail queuedEmail)
@@ -56,7 +54,7 @@ namespace SmartStore.Services.Messages
             _queuedEmailRepository.Update(queuedEmail);
 
             //event notification
-            _eventPublisher.EntityUpdated(queuedEmail);
+			_services.EventPublisher.EntityUpdated(queuedEmail);
         }
 
         public virtual void DeleteQueuedEmail(QueuedEmail queuedEmail)
@@ -67,7 +65,7 @@ namespace SmartStore.Services.Messages
             _queuedEmailRepository.Delete(queuedEmail);
 
             //event notification
-            _eventPublisher.EntityDeleted(queuedEmail);
+			_services.EventPublisher.EntityDeleted(queuedEmail);
         }
 
 		public virtual int DeleteAllQueuedEmails()
@@ -155,33 +153,8 @@ namespace SmartStore.Services.Messages
 
 			try
 			{
-				var bcc = String.IsNullOrWhiteSpace(queuedEmail.Bcc) ? null : queuedEmail.Bcc.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-				var cc = String.IsNullOrWhiteSpace(queuedEmail.CC) ? null : queuedEmail.CC.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
-
 				var smtpContext = new SmtpContext(queuedEmail.EmailAccount);
-
-				var msg = new EmailMessage(
-					new EmailAddress(queuedEmail.To, queuedEmail.ToName),
-					queuedEmail.Subject,
-					queuedEmail.Body,
-					new EmailAddress(queuedEmail.From, queuedEmail.FromName));
-
-				if (queuedEmail.ReplyTo.HasValue())
-				{
-					msg.ReplyTo.Add(new EmailAddress(queuedEmail.ReplyTo, queuedEmail.ReplyToName));
-				}
-
-				if (cc != null)
-				{
-					msg.Cc.AddRange(cc.Where(x => x.HasValue()).Select(x => new EmailAddress(x)));
-				}
-
-				if (bcc != null)
-				{
-					msg.Bcc.AddRange(bcc.Where(x => x.HasValue()).Select(x => new EmailAddress(x)));
-				}
-
-				CreateAttachments(queuedEmail, msg);
+				var msg = ConvertEmail(queuedEmail);
 
 				_emailSender.SendEmail(smtpContext, msg);
 
@@ -190,7 +163,7 @@ namespace SmartStore.Services.Messages
 			}
 			catch (Exception exc)
 			{
-				_logger.Error(string.Concat(_localizationService.GetResource("Admin.Common.ErrorSendingEmail"), ": ", exc.Message), exc);
+				Logger.Error(string.Concat(T("Admin.Common.ErrorSendingEmail"), ": ", exc.Message), exc);
 			}
 			finally
 			{
@@ -201,52 +174,80 @@ namespace SmartStore.Services.Messages
 			return result;
 		}
 
-		private void CreateAttachments(QueuedEmail qe, EmailMessage msg)
+		private void AddEmailAddresses(string addresses, ICollection<EmailAddress> target)
 		{
-			if (qe.Attachments == null || qe.Attachments.Count == 0)
-				return;
-
-			foreach (var qea in qe.Attachments)
+			var arr = addresses.IsEmpty() ? null : addresses.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries);
+			if (arr != null && arr.Length > 0)
 			{
-				Attachment attachment = null;
+				target.AddRange(arr.Where(x => x.Trim().HasValue()).Select(x => new EmailAddress(x)));
+			}
+		}
 
-				if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
-				{
-					var data = qea.Data;
-					if (data != null && data.Length > 0)
-					{
-						attachment = new Attachment(data.ToStream(), qea.Name, qea.MimeType);
-					}
-				}
-				else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
-				{
-					var path = qea.Path;
-					if (path.HasValue())
-					{
-						if (path[0] == '~' || path[0] == '/')
-						{
-							path = CommonHelper.MapPath(VirtualPathUtility.ToAppRelative(path));
-						}
-						if (File.Exists(path))
-						{
-							attachment = new Attachment(path, qea.MimeType);
-						}
-					}
-				}
-				else if (qea.StorageLocation == EmailAttachmentStorageLocation.FileReference)
-				{
-					var file = qea.File;
-					if (file != null && file.UseDownloadUrl == false && file.DownloadBinary != null && file.DownloadBinary.Length > 0)
-					{
-						attachment = new Attachment(file.DownloadBinary.ToStream(), file.Filename + file.Extension, file.ContentType);
-					}
-				}
+		internal EmailMessage ConvertEmail(QueuedEmail qe)
+		{
+			// 'internal' for testing purposes
 
-				if (attachment != null)
+			var msg = new EmailMessage(
+				new EmailAddress(qe.To, qe.ToName),
+				qe.Subject,
+				qe.Body,
+				new EmailAddress(qe.From, qe.FromName));
+
+			if (qe.ReplyTo.HasValue())
+			{
+				msg.ReplyTo.Add(new EmailAddress(qe.ReplyTo, qe.ReplyToName));
+			}
+
+			AddEmailAddresses(qe.CC, msg.Cc);
+			AddEmailAddresses(qe.Bcc, msg.Bcc);
+
+			if (qe.Attachments != null && qe.Attachments.Count > 0)
+			{
+				foreach (var qea in qe.Attachments)
 				{
-					msg.Attachments.Add(attachment);
+					Attachment attachment = null;
+
+					if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
+					{
+						var data = qea.Data;
+						if (data != null && data.Length > 0)
+						{
+							attachment = new Attachment(data.ToStream(), qea.Name, qea.MimeType);
+						}
+					}
+					else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
+					{
+						var path = qea.Path;
+						if (path.HasValue())
+						{
+							if (path[0] == '~' || path[0] == '/')
+							{
+								path = CommonHelper.MapPath(VirtualPathUtility.ToAppRelative(path), false);
+							}
+							if (File.Exists(path))
+							{
+								attachment = new Attachment(path, qea.MimeType);
+								attachment.Name = qea.Name;
+							}
+						}
+					}
+					else if (qea.StorageLocation == EmailAttachmentStorageLocation.FileReference)
+					{
+						var file = qea.File;
+						if (file != null && file.UseDownloadUrl == false && file.DownloadBinary != null && file.DownloadBinary.Length > 0)
+						{
+							attachment = new Attachment(file.DownloadBinary.ToStream(), file.Filename + file.Extension, file.ContentType);
+						}
+					}
+
+					if (attachment != null)
+					{
+						msg.Attachments.Add(attachment);
+					}
 				}
 			}
+
+			return msg;
 		}
     }
 }

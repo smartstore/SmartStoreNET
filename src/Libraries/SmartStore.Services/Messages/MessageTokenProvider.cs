@@ -716,15 +716,13 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Contact.ContactEmailAddress", _contactDataSettings.ContactEmailAddress));
         }
 
-        //codehint: sm-add end
-
         public virtual void AddOrderTokens(IList<Token> tokens, Order order, int languageId)
         {
-            tokens.Add(new Token("Order.OrderNumber", order.GetOrderNumber()));
+			tokens.Add(new Token("Order.ID", order.Id.ToString()));
+			tokens.Add(new Token("Order.OrderNumber", order.GetOrderNumber()));
 
             tokens.Add(new Token("Order.CustomerFullName", string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName)));
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
-
 
             tokens.Add(new Token("Order.BillingFirstName", order.BillingAddress.FirstName));
             tokens.Add(new Token("Order.BillingLastName", order.BillingAddress.LastName));
@@ -772,7 +770,7 @@ namespace SmartStore.Services.Messages
                 tokens.Add(new Token("Order.CreatedOn", order.CreatedOnUtc.ToString("D")));
             }
 
-            //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
+            // TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", languageId), true));
@@ -861,12 +859,12 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddCustomerTokens(IList<Token> tokens, Customer customer)
         {
-            tokens.Add(new Token("Customer.Email", customer.Email));
+			tokens.Add(new Token("Customer.ID", customer.Id.ToString()));
+			tokens.Add(new Token("Customer.Email", customer.Email));
             tokens.Add(new Token("Customer.Username", customer.Username));
             tokens.Add(new Token("Customer.FullName", customer.GetFullName()));
 			tokens.Add(new Token("Customer.VatNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber)));
 			tokens.Add(new Token("Customer.VatNumberStatus", ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).ToString()));
-
 
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)

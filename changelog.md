@@ -15,6 +15,7 @@
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
 * #721 Message Queue: implement "Delete all"
 * #725 Prevent LowestProductPrice being 0
+* #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 
 
 ## SmartStore.NET 2.2.2

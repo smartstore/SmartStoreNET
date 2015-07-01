@@ -1,11 +1,16 @@
 using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.News
 {
@@ -18,8 +23,10 @@ namespace SmartStore.Services.News
 
         private readonly IRepository<NewsItem> _newsItemRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly ICacheManager _cacheManager;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly ILanguageService _languageService;
+
+		private readonly NewsSettings _newsSettings;
 
         #endregion
 
@@ -27,13 +34,15 @@ namespace SmartStore.Services.News
 
         public NewsService(IRepository<NewsItem> newsItemRepository,
 			IRepository<StoreMapping> storeMappingRepository, 
-			ICacheManager cacheManager,
-			IEventPublisher eventPublisher)
+			ICommonServices services,
+			ILanguageService languageService,
+			NewsSettings newsSettings)
         {
             _newsItemRepository = newsItemRepository;
 			_storeMappingRepository = storeMappingRepository;
-            _cacheManager = cacheManager;
-            _eventPublisher = eventPublisher;
+			_services = services;
+			_languageService = languageService;
+			_newsSettings = newsSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
 		}
@@ -56,7 +65,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Delete(newsItem);
 
             //event notification
-            _eventPublisher.EntityDeleted(newsItem);
+            _services.EventPublisher.EntityDeleted(newsItem);
         }
 
         /// <summary>
@@ -98,12 +107,22 @@ namespace SmartStore.Services.News
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned news</param>
         /// <returns>News items</returns>
-		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false)
+		public virtual IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
             var query = _newsItemRepository.Table;
-            if (languageId > 0)
-                query = query.Where(n => languageId == n.LanguageId);
+
+			if (languageId > 0)
+			{
+				query = query.Where(n => languageId == n.LanguageId);
+			}
+
+			if (maxAge.HasValue)
+			{
+				query = query.Where(n => n.CreatedOnUtc >= maxAge.Value);
+			}
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -111,6 +130,7 @@ namespace SmartStore.Services.News
                 query = query.Where(n => !n.StartDateUtc.HasValue || n.StartDateUtc <= utcNow);
                 query = query.Where(n => !n.EndDateUtc.HasValue || n.EndDateUtc >= utcNow);
             }
+
 			query = query.OrderByDescending(n => n.CreatedOnUtc);
 
 			//Store mapping
@@ -128,6 +148,7 @@ namespace SmartStore.Services.News
 						group n by n.Id	into nGroup
 						orderby nGroup.Key
 						select nGroup.FirstOrDefault();
+
 				query = query.OrderByDescending(n => n.CreatedOnUtc);
 			}
 
@@ -147,7 +168,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Insert(news);
 
             //event notification
-            _eventPublisher.EntityInserted(news);
+            _services.EventPublisher.EntityInserted(news);
         }
 
         /// <summary>
@@ -162,7 +183,7 @@ namespace SmartStore.Services.News
             _newsItemRepository.Update(news);
 
             //event notification
-            _eventPublisher.EntityUpdated(news);
+            _services.EventPublisher.EntityUpdated(news);
         }
         
         /// <summary>
@@ -189,6 +210,55 @@ namespace SmartStore.Services.News
             newsItem.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateNews(newsItem);
         }
+
+		/// <summary>
+		/// Creates a RSS feed with news items
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		public virtual SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId)
+		{
+			if (urlHelper == null)
+				throw new ArgumentNullException("urlHelper");
+
+			DateTime? maxAge = null;
+			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = urlHelper.Action("rss", null, new { languageId = languageId }, protocol);
+			var newsLink = urlHelper.RouteUrl("NewsArchive", null, protocol);
+
+			var title = "{0} - News".FormatInvariant(_services.StoreContext.CurrentStore.Name);
+			
+			if (_newsSettings.MaxAgeInDays > 0)
+				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
+
+			var language = _languageService.GetLanguageById(languageId);
+			var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
+
+			feed.AddNamespaces(true);
+			feed.Init(selfLink, language);
+
+			if (!_newsSettings.Enabled)
+				return feed;
+
+			var items = new List<SyndicationItem>();
+			var newsItems = GetAllNews(languageId, _services.StoreContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
+
+			foreach (var n in newsItems)
+			{
+				var newsUrl = urlHelper.RouteUrl("NewsItem", new { SeName = n.GetSeName(n.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+
+				var item = new SyndicationItem(n.Title, n.Short, new Uri(newsUrl), newsUrl, n.CreatedOnUtc);
+
+				item.ElementExtensions.Add("encoded", SmartSyndicationFeed.UrlPurlContent, n.Full);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
+
+			return feed;
+		}
 
         #endregion
     }

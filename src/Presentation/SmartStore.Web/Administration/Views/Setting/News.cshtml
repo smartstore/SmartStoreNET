@@ -73,6 +73,15 @@
                 @Html.ValidationMessageFor(model => model.NewsArchivePageSize)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.MaxAgeInDays)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.MaxAgeInDays)
+				@Html.ValidationMessageFor(model => model.MaxAgeInDays)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ShowHeaderRssUrl)

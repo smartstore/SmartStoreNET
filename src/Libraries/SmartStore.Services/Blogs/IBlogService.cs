@@ -1,7 +1,9 @@
 using System;
 using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Blogs
 {
@@ -33,9 +35,10 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
 		IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-            DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false);
+			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
         /// Gets all blog posts
@@ -76,5 +79,13 @@ namespace SmartStore.Services.Blogs
         /// </summary>
         /// <param name="blogPost">Blog post</param>
         void UpdateCommentTotals(BlogPost blogPost);
+
+		/// <summary>
+		/// Creates a RSS feed with blog posts
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId);
     }
 }

@@ -27,6 +27,7 @@ using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Blogs;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Controllers
 {
@@ -228,28 +229,12 @@ namespace SmartStore.Web.Controllers
             return View("List", model);
         }
 
+		[Compress]
         public ActionResult ListRss(int languageId)
         {
-            var feed = new SyndicationFeed(
-									string.Format("{0}: Blog", _storeContext.CurrentStore.Name),
-                                    "Blog",
-                                    new Uri(_webHelper.GetStoreLocation(false)),
-                                    "BlogRSS",
-                                    DateTime.UtcNow);
+			var feed = _blogService.CreateRssFeed(Url, languageId);
 
-            if (!_blogSettings.Enabled)
-                return new RssActionResult() { Feed = feed };
-
-            var items = new List<SyndicationItem>();
-			var blogPosts = _blogService.GetAllBlogPosts(_storeContext.CurrentStore.Id, languageId,
-                null, null, 0, int.MaxValue);
-            foreach (var blogPost in blogPosts)
-            {
-                string blogPostUrl = Url.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
-                items.Add(new SyndicationItem(blogPost.Title, blogPost.Body, new Uri(blogPostUrl), String.Format("Blog:{0}", blogPost.Id), blogPost.CreatedOnUtc));
-            }
-            feed.Items = items;
-            return new RssActionResult() { Feed = feed };
+			return new RssActionResult { Feed = feed };
         }
 
         public ActionResult BlogPost(int blogPostId)
@@ -449,11 +434,12 @@ namespace SmartStore.Web.Controllers
             if (!_blogSettings.Enabled || !_blogSettings.ShowHeaderRssUrl)
                 return Content("");
 
-            string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: Blog\" />",
+            string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1} - Blog\" />",
 				Url.RouteUrl("BlogRSS", new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _storeContext.CurrentStore.Name);
 
 			return Content(link);
         }
+
         #endregion
     }
 }

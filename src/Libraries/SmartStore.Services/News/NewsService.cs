@@ -244,13 +244,13 @@ namespace SmartStore.Services.News
 			var items = new List<SyndicationItem>();
 			var newsItems = GetAllNews(languageId, _services.StoreContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
 
-			foreach (var n in newsItems)
+			foreach (var news in newsItems)
 			{
-				var newsUrl = urlHelper.RouteUrl("NewsItem", new { SeName = n.GetSeName(n.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+				var newsUrl = urlHelper.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
 
-				var item = new SyndicationItem(n.Title, n.Short, new Uri(newsUrl), newsUrl, n.CreatedOnUtc);
+				var item = new SyndicationItem(news.Title, news.Short.RemoveInvalidXmlChars(), new Uri(newsUrl), newsUrl, news.CreatedOnUtc);
 
-				item.ElementExtensions.Add("encoded", SmartSyndicationFeed.UrlPurlContent, n.Full);
+				item.ElementExtensions.Add("encoded", SmartSyndicationFeed.UrlPurlContent, news.Full.RemoveInvalidXmlChars());
 
 				items.Add(item);
 			}

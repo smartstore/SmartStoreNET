@@ -498,45 +498,23 @@ namespace SmartStore
         {
             Guard.ArgumentNotNull(stream, "stream");
 
-            byte[] buffer;
-
-            if (stream is MemoryStream && stream.CanRead && stream.CanSeek)
-            {
-                int len = System.Convert.ToInt32(stream.Length);
-                buffer = new byte[len];
-                stream.Read(buffer, 0, len);
-                return buffer;
-            }
-
-            MemoryStream memStream = null;
-            try
-            {
-                buffer = new byte[1024];
-                memStream = new MemoryStream();
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
-                {
-                    memStream.Write(buffer, 0, bytesRead);
-                    bytesRead = stream.Read(buffer, 0, buffer.Length);
-                }
-            }
-            finally
-            {
-                if (memStream != null)
-                    memStream.Close();
-            }
-
-            if (memStream != null)
-            {
-                return memStream.ToArray();
-            }
-
-            return null;
+			if (stream is MemoryStream)
+			{
+				return ((MemoryStream)stream).ToArray();
+			}
+			else
+			{
+				using (var ms = new MemoryStream())
+				{
+					stream.CopyTo(ms);
+					return ms.ToArray();
+				}
+			}
         }
 
         public static string AsString(this Stream stream)
         {
-            // convert memory stream to string
+            // convert stream to string
             string result;
             stream.Position = 0;
 
@@ -546,7 +524,6 @@ namespace SmartStore
             }
 
             return result;
-
         }
 
         #endregion
@@ -644,7 +621,7 @@ namespace SmartStore
             using (var stream = new MemoryStream())
             {
                 image.Save(stream, format);
-                return stream.ToByteArray();
+                return stream.ToArray();
             }
         }
 

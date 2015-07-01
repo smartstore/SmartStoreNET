@@ -224,7 +224,7 @@ namespace SmartStore.Services.News
 
 			DateTime? maxAge = null;
 			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = urlHelper.Action("rss", null, new { languageId = languageId }, protocol);
+			var selfLink = urlHelper.Action("rss", "News", new { languageId = languageId }, protocol);
 			var newsLink = urlHelper.RouteUrl("NewsArchive", null, protocol);
 
 			var title = "{0} - News".FormatInvariant(_services.StoreContext.CurrentStore.Name);
@@ -248,9 +248,7 @@ namespace SmartStore.Services.News
 			{
 				var newsUrl = urlHelper.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
 
-				var item = new SyndicationItem(news.Title, news.Short.RemoveInvalidXmlChars(), new Uri(newsUrl), newsUrl, news.CreatedOnUtc);
-
-				item.ElementExtensions.Add("encoded", SmartSyndicationFeed.UrlPurlContent, news.Full.RemoveInvalidXmlChars());
+				var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
 
 				items.Add(item);
 			}

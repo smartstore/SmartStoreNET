@@ -297,7 +297,7 @@ namespace SmartStore.Services.Blogs
 			{
 				var blogPostUrl = urlHelper.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
 
-				var item = new SyndicationItem(blogPost.Title, blogPost.Body.RemoveInvalidXmlChars(), new Uri(blogPostUrl), blogPostUrl, blogPost.CreatedOnUtc);
+				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
 
 				items.Add(item);
 			}

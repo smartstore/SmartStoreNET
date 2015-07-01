@@ -3,19 +3,24 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Linq.Expressions;
+using System.ServiceModel.Syndication;
+using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -50,12 +55,12 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
-        private readonly ICacheManager _cacheManager;
-        private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly CatalogSettings _catalogSettings;
+		private readonly MediaSettings _mediaSettings;
+		private readonly IPictureService _pictureService;
 
         #endregion
 
@@ -85,7 +90,7 @@ namespace SmartStore.Services.Catalog
         /// <param name="localizationSettings">Localization settings</param>
         /// <param name="commonSettings">Common settings</param>
         /// <param name="eventPublisher">Event published</param>
-        public ProductService(ICacheManager cacheManager,
+        public ProductService(
             IRepository<Product> productRepository,
             IRepository<RelatedProduct> relatedProductRepository,
             IRepository<CrossSellProduct> crossSellProductRepository,
@@ -101,13 +106,15 @@ namespace SmartStore.Services.Catalog
             IProductAttributeParser productAttributeParser,
             ILanguageService languageService,
             IWorkflowMessageService workflowMessageService,
-            IDataProvider dataProvider, IDbContext dbContext,
-            IWorkContext workContext,
-			IStoreContext storeContext,
-            LocalizationSettings localizationSettings, CommonSettings commonSettings,
-            IEventPublisher eventPublisher)
+            IDataProvider dataProvider,
+			IDbContext dbContext,
+            LocalizationSettings localizationSettings,
+			CommonSettings commonSettings,
+			ICommonServices services,
+			CatalogSettings catalogSettings,
+			MediaSettings mediaSettings,
+			IPictureService pictureService)
         {
-            this._cacheManager = cacheManager;
             this._productRepository = productRepository;
             this._relatedProductRepository = relatedProductRepository;
             this._crossSellProductRepository = crossSellProductRepository;
@@ -125,11 +132,12 @@ namespace SmartStore.Services.Catalog
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
-            this._workContext = workContext;
-			this._storeContext = storeContext;
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
-            this._eventPublisher = eventPublisher;
+			this._services = services;
+			this._catalogSettings = catalogSettings;
+			this._mediaSettings = mediaSettings;
+			this._pictureService = pictureService;
 
 			this.QuerySettings = DbQuerySettings.Default;
         }
@@ -264,7 +272,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            return _cacheManager.Get(key, () =>
+            return _services.Cache.Get(key, () =>
             { 
                 return _productRepository.GetById(productId); 
             });
@@ -306,10 +314,10 @@ namespace SmartStore.Services.Catalog
             _productRepository.Insert(product);
 
 			//clear cache
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
-            _eventPublisher.EntityInserted(product);
+            _services.EventPublisher.EntityInserted(product);
         }
 
         /// <summary>
@@ -331,12 +339,12 @@ namespace SmartStore.Services.Catalog
             _productRepository.Update(product);
 
 			// cache
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             // event notification
 			if (publishEvent && modified)
 			{
-				_eventPublisher.EntityUpdated(product);
+				_services.EventPublisher.EntityUpdated(product);
 			}
         }
 
@@ -355,7 +363,7 @@ namespace SmartStore.Services.Catalog
 
             ctx.FilterableSpecificationAttributeOptionIds = new List<int>();
 
-            _eventPublisher.Publish(new ProductsSearchingEvent(ctx));
+            _services.EventPublisher.Publish(new ProductsSearchingEvent(ctx));
 
 			//search by keyword
             bool searchLocalizedValue = false;
@@ -378,7 +386,7 @@ namespace SmartStore.Services.Catalog
 				ctx.CategoryIds.Remove(0);
 
             //Access control list. Allowed customer roles
-            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
+            var allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles
                 .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 
             if (_commonSettings.UseStoredProceduresIfSupported && _dataProvider.StoredProceduresSupported)
@@ -735,7 +743,7 @@ namespace SmartStore.Services.Catalog
 
 			if (allowedCustomerRolesIds == null)
 			{
-				allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+				allowedCustomerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
 			}
 
 			// products
@@ -1249,6 +1257,76 @@ namespace SmartStore.Services.Catalog
 				UpdateProduct(product);
         }
 
+		/// <summary>
+		/// Creates a RSS feed with recently added products
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		public virtual SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper)
+		{
+			if (urlHelper == null)
+				throw new ArgumentNullException("urlHelper");
+
+			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = urlHelper.RouteUrl("RecentlyAddedProductsRSS", null, protocol);
+			var recentProductsLink = urlHelper.RouteUrl("RecentlyAddedProducts", null, protocol);
+
+			var title = "{0} - {1}".FormatInvariant(_services.StoreContext.CurrentStore.Name, _services.Localization.GetResource("RSS.RecentlyAddedProducts"));
+
+			var feed = new SmartSyndicationFeed(new Uri(recentProductsLink), title, _services.Localization.GetResource("RSS.InformationAboutProducts"));
+
+			feed.AddNamespaces(true);
+			feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
+
+			if (!_catalogSettings.RecentlyAddedProductsEnabled)
+				return feed;
+
+			var items = new List<SyndicationItem>();
+			var searchContext = new ProductSearchContext
+			{
+				LanguageId = _services.WorkContext.WorkingLanguage.Id,
+				OrderBy = ProductSortingEnum.CreatedOn,
+				PageSize = _catalogSettings.RecentlyAddedProductsNumber,
+				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
+				VisibleIndividuallyOnly = true
+			};
+
+			var products = SearchProducts(searchContext);
+			var storeUrl = _services.StoreContext.CurrentStore.Url;
+
+			foreach (var product in products)
+			{
+				string productUrl = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
+				if (productUrl.HasValue())
+				{
+					var item = feed.CreateItem(
+						product.GetLocalized(x => x.Name),
+						product.GetLocalized(x => x.ShortDescription),
+						productUrl,
+						product.CreatedOnUtc,
+						product.FullDescription);
+
+					try
+					{
+						// we add only the first picture
+						var picture = product.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.Picture).FirstOrDefault();
+
+						if (picture != null)
+						{
+							feed.AddEnclosue(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
+						}
+					}
+					catch { }
+
+					items.Add(item);
+				}
+			}
+
+			feed.Items = items;
+
+			return feed;
+		}
+
         #endregion
 
         #region Related products
@@ -1265,7 +1343,7 @@ namespace SmartStore.Services.Catalog
             _relatedProductRepository.Delete(relatedProduct);
 
             //event notification
-            _eventPublisher.EntityDeleted(relatedProduct);
+            _services.EventPublisher.EntityDeleted(relatedProduct);
         }
 
         /// <summary>
@@ -1312,7 +1390,7 @@ namespace SmartStore.Services.Catalog
             _relatedProductRepository.Insert(relatedProduct);
 
             //event notification
-            _eventPublisher.EntityInserted(relatedProduct);
+            _services.EventPublisher.EntityInserted(relatedProduct);
         }
 
         /// <summary>
@@ -1327,7 +1405,7 @@ namespace SmartStore.Services.Catalog
             _relatedProductRepository.Update(relatedProduct);
 
             //event notification
-            _eventPublisher.EntityUpdated(relatedProduct);
+            _services.EventPublisher.EntityUpdated(relatedProduct);
         }
 
 		/// <summary>
@@ -1363,7 +1441,7 @@ namespace SmartStore.Services.Catalog
             _crossSellProductRepository.Delete(crossSellProduct);
 
             //event notification
-            _eventPublisher.EntityDeleted(crossSellProduct);
+            _services.EventPublisher.EntityDeleted(crossSellProduct);
         }
 
         /// <summary>
@@ -1411,7 +1489,7 @@ namespace SmartStore.Services.Catalog
             _crossSellProductRepository.Insert(crossSellProduct);
 
             //event notification
-            _eventPublisher.EntityInserted(crossSellProduct);
+            _services.EventPublisher.EntityInserted(crossSellProduct);
         }
 
         /// <summary>
@@ -1426,7 +1504,7 @@ namespace SmartStore.Services.Catalog
             _crossSellProductRepository.Update(crossSellProduct);
 
             //event notification
-            _eventPublisher.EntityUpdated(crossSellProduct);
+            _services.EventPublisher.EntityUpdated(crossSellProduct);
         }
 
         /// <summary>
@@ -1510,10 +1588,10 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityDeleted(tierPrice);
+            _services.EventPublisher.EntityDeleted(tierPrice);
         }
 
         /// <summary>
@@ -1541,10 +1619,10 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityInserted(tierPrice);
+            _services.EventPublisher.EntityInserted(tierPrice);
         }
 
         /// <summary>
@@ -1558,10 +1636,10 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
-            _eventPublisher.EntityUpdated(tierPrice);
+            _services.EventPublisher.EntityUpdated(tierPrice);
         }
 
         #endregion
@@ -1582,7 +1660,7 @@ namespace SmartStore.Services.Catalog
             _productPictureRepository.Delete(productPicture);
 
             //event notification
-            _eventPublisher.EntityDeleted(productPicture);
+            _services.EventPublisher.EntityDeleted(productPicture);
         }
 
         private void UnassignDeletedPictureFromVariantCombinations(ProductPicture productPicture)
@@ -1656,7 +1734,7 @@ namespace SmartStore.Services.Catalog
             _productPictureRepository.Insert(productPicture);
 
             //event notification
-            _eventPublisher.EntityInserted(productPicture);
+            _services.EventPublisher.EntityInserted(productPicture);
         }
 
         /// <summary>
@@ -1671,7 +1749,7 @@ namespace SmartStore.Services.Catalog
             _productPictureRepository.Update(productPicture);
 
             //event notification
-            _eventPublisher.EntityUpdated(productPicture);
+            _services.EventPublisher.EntityUpdated(productPicture);
         }
 
         #endregion
@@ -1699,7 +1777,7 @@ namespace SmartStore.Services.Catalog
 			_productBundleItemRepository.Insert(bundleItem);
 
 			//event notification
-			_eventPublisher.EntityInserted(bundleItem);
+			_services.EventPublisher.EntityInserted(bundleItem);
 		}
 
 		/// <summary>
@@ -1714,7 +1792,7 @@ namespace SmartStore.Services.Catalog
 			_productBundleItemRepository.Update(bundleItem);
 
 			//event notification
-			_eventPublisher.EntityUpdated(bundleItem);
+			_services.EventPublisher.EntityUpdated(bundleItem);
 		}
 
 		/// <summary>
@@ -1729,7 +1807,7 @@ namespace SmartStore.Services.Catalog
 			_productBundleItemRepository.Delete(bundleItem);
 
 			//event notification
-			_eventPublisher.EntityDeleted(bundleItem);
+			_services.EventPublisher.EntityDeleted(bundleItem);
 		}
 
 		/// <summary>

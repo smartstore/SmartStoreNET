@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
+using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -150,6 +152,13 @@ namespace SmartStore.Services.Catalog
         /// </summary>
 		/// <param name="product">Product</param>
         void UpdateHasDiscountsApplied(Product product);
+
+		/// <summary>
+		/// Creates a RSS feed with recently added products
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper);
 
         #endregion
 

@@ -19,12 +19,18 @@ namespace SmartStore.Services.Messages
     public partial class QueuedEmailService : IQueuedEmailService
     {
         private readonly IRepository<QueuedEmail> _queuedEmailRepository;
+		private readonly IRepository<QueuedEmailAttachment> _queuedEmailAttachmentRepository;
 		private readonly IEmailSender _emailSender;
 		private readonly ICommonServices _services;
 
-        public QueuedEmailService(IRepository<QueuedEmail> queuedEmailRepository, IEmailSender emailSender, ICommonServices services)
+        public QueuedEmailService(
+			IRepository<QueuedEmail> queuedEmailRepository,
+ 			IRepository<QueuedEmailAttachment> queuedEmailAttachmentRepository,
+			IEmailSender emailSender, 
+			ICommonServices services)
         {
             this._queuedEmailRepository = queuedEmailRepository;
+			this._queuedEmailAttachmentRepository = queuedEmailAttachmentRepository;
 			this._emailSender = emailSender;
 			this._services = services;
 
@@ -80,7 +86,6 @@ namespace SmartStore.Services.Messages
 
             var queuedEmail = _queuedEmailRepository.GetById(queuedEmailId);
             return queuedEmail;
-
         }
 
         public virtual IList<QueuedEmail> GetQueuedEmailsByIds(int[] queuedEmailIds)
@@ -106,44 +111,48 @@ namespace SmartStore.Services.Messages
             return sortedQueuedEmails;
         }
 
-        public virtual IPagedList<QueuedEmail> SearchEmails(string fromEmail, 
-            string toEmail, DateTime? startTime, DateTime? endTime, 
-            bool loadUnsentItemsOnly, int maxSendTries,
-            bool loadNewest, int pageIndex, int pageSize,
-			bool? sendManually = null)
+        public virtual IPagedList<QueuedEmail> SearchEmails(SearchEmailsQuery query)
         {
-            fromEmail = (fromEmail ?? String.Empty).Trim();
-            toEmail = (toEmail ?? String.Empty).Trim();
+			Guard.ArgumentNotNull(() => query);
             
-            var query = _queuedEmailRepository.Table.Expand(x => x.EmailAccount);
+            var q = _queuedEmailRepository.Table;
 
-            if (!String.IsNullOrEmpty(fromEmail))
-                query = query.Where(qe => qe.From.Contains(fromEmail));
+			if (query.Expand.HasValue())
+			{
+				var expands = query.Expand.Split(',');
+				foreach (var expand in expands)
+				{
+					q = q.Expand(expand.Trim());
+				}
+			}
 
-            if (!String.IsNullOrEmpty(toEmail))
-                query = query.Where(qe => qe.To.Contains(toEmail));
+            if (query.From.HasValue())
+				q = q.Where(qe => qe.From.Contains(query.From.Trim()));
 
-            if (startTime.HasValue)
-                query = query.Where(qe => qe.CreatedOnUtc >= startTime);
+			if (query.To.HasValue())
+                q = q.Where(qe => qe.To.Contains(query.To.Trim()));
 
-            if (endTime.HasValue)
-                query = query.Where(qe => qe.CreatedOnUtc <= endTime);
+            if (query.StartTime.HasValue)
+                q = q.Where(qe => qe.CreatedOnUtc >= query.StartTime);
 
-            if (loadUnsentItemsOnly)
-                query = query.Where(qe => !qe.SentOnUtc.HasValue);
+            if (query.EndTime.HasValue)
+                q = q.Where(qe => qe.CreatedOnUtc <= query.EndTime);
 
-			if (sendManually.HasValue)
-				query = query.Where(qe => qe.SendManually == sendManually.Value);
+            if (query.UnsentOnly)
+                q = q.Where(qe => !qe.SentOnUtc.HasValue);
 
-            query = query.Where(qe => qe.SentTries < maxSendTries);
+			if (query.SendManually.HasValue)
+				q = q.Where(qe => qe.SendManually == query.SendManually.Value);
+
+            q = q.Where(qe => qe.SentTries < query.MaxSendTries);
             
-			query = query.OrderByDescending(qe => qe.Priority);
+			q = q.OrderByDescending(qe => qe.Priority);
 
-            query = loadNewest ? 
-                ((IOrderedQueryable<QueuedEmail>)query).ThenByDescending(qe => qe.CreatedOnUtc) :
-                ((IOrderedQueryable<QueuedEmail>)query).ThenBy(qe => qe.CreatedOnUtc);
+            q = query.OrderByLatest ? 
+                ((IOrderedQueryable<QueuedEmail>)q).ThenByDescending(qe => qe.CreatedOnUtc) :
+                ((IOrderedQueryable<QueuedEmail>)q).ThenBy(qe => qe.CreatedOnUtc);
 
-            var queuedEmails = new PagedList<QueuedEmail>(query, pageIndex, pageSize);
+            var queuedEmails = new PagedList<QueuedEmail>(q, query.PageIndex, query.PageSize);
             return queuedEmails;
         }
 
@@ -249,5 +258,48 @@ namespace SmartStore.Services.Messages
 
 			return msg;
 		}
-    }
+
+		#region Attachments
+
+		public virtual QueuedEmailAttachment GetQueuedEmailAttachmentById(int id)
+		{
+			if (id == 0)
+				return null;
+
+			var qea = _queuedEmailAttachmentRepository.GetById(id);
+			return qea;
+		}
+
+		public virtual void DeleteQueuedEmailAttachment(QueuedEmailAttachment qea)
+		{
+			if (qea == null)
+				throw new ArgumentNullException("qea");
+
+			_queuedEmailAttachmentRepository.Delete(qea);
+
+			_services.EventPublisher.EntityDeleted(qea);
+		}
+
+		#endregion
+	}
+
+	public class SearchEmailsQuery
+	{
+		public string From { get; set; }
+		public string To { get; set; }
+		public DateTime? StartTime { get; set; }
+		public DateTime? EndTime { get; set; }
+		public bool UnsentOnly { get; set; }
+		public int MaxSendTries { get; set; }
+		public bool OrderByLatest { get; set; }
+		public int PageIndex { get; set; }
+		public int PageSize { get; set; }
+		public bool? SendManually { get; set; }
+
+		/// <summary>
+		/// Navigation properties to eager load (comma separataed)
+		/// </summary>
+		public string Expand { get; set; }
+	}
+
 }

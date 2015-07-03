@@ -13,6 +13,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Messages
 {
@@ -20,11 +21,16 @@ namespace SmartStore.Services.Messages
 	{
 		private readonly PdfSettings _pdfSettings;
 		private readonly HttpRequestBase _httpRequest;
+		private readonly Lazy<FileDownloadManager> _fileDownloadManager;
 
-		public QueuingEmailEventConsumer(PdfSettings pdfSettings, HttpRequestBase httpRequest)
+		public QueuingEmailEventConsumer(
+			PdfSettings pdfSettings, 
+			HttpRequestBase httpRequest, 
+			Lazy<FileDownloadManager> fileDownloadManager)
 		{
 			this._pdfSettings = pdfSettings;
 			this._httpRequest = httpRequest;
+			this._fileDownloadManager = fileDownloadManager;
 
 			Logger = NullLogger.Instance;
 		}
@@ -36,9 +42,14 @@ namespace SmartStore.Services.Messages
 			var qe = eventMessage.QueuedEmail;
 			var tpl = eventMessage.MessageTemplate;
 
-			// TODO: (mc) determine and apply PdfSettings
-
-			if (tpl.Name.IsCaseInsensitiveEqual("OrderPlaced.CustomerNotification"))
+			var handledTemplates = new Dictionary<string, bool>(StringComparer.OrdinalIgnoreCase)
+			{
+				{ "OrderPlaced.CustomerNotification", _pdfSettings.AttachOrderPdfToOrderPlacedEmail },
+				{ "OrderCompleted.CustomerNotification", _pdfSettings.AttachOrderPdfToOrderCompletedEmail }
+			};
+			
+			bool shouldHandle = false;
+			if (handledTemplates.TryGetValue(tpl.Name, out shouldHandle) && shouldHandle)
 			{
 				var orderId = eventMessage.Tokens.First(x => x.Key.IsCaseInsensitiveEqual("Order.ID")).Value.ToInt();
 				var qea = CreatePdfInvoiceAttachment(orderId);
@@ -51,55 +62,35 @@ namespace SmartStore.Services.Messages
 
 		private QueuedEmailAttachment CreatePdfInvoiceAttachment(int orderId)
 		{
-			// TODO: (mc) create common util function 'CreateAttachmentFromUrl()' OR 'DownloadFile()'
-
 			var urlHelper = new UrlHelper(_httpRequest.RequestContext);
-			var path = urlHelper.Action("Print", "Order", new { id = orderId, pdf = true });
-			var url = WebHelper.GetAbsoluteUrl(path, _httpRequest);
-			
-			var request = (HttpWebRequest)WebRequest.Create(url);
-			request.UserAgent = "SmartStore.NET";
-			request.Timeout = 5000;
-
-			request.SetFormsAuthenticationCookie(_httpRequest);
-
-			HttpWebResponse response = null;
+			var path = urlHelper.Action("Print", "Order", new { id = orderId, pdf = true, area = "" });
 
 			try
 			{
-				response = (HttpWebResponse)request.GetResponse();
+				var fileResponse = _fileDownloadManager.Value.DownloadFile(path, true, 5000);
 
-				using (var stream = response.GetResponseStream())
+				if (fileResponse == null)
 				{
-					if (response.StatusCode == HttpStatusCode.OK && response.ContentType == "application/pdf")
-					{
-						var pdfBinary = stream.ToByteArray();
-
-						var cd = new ContentDisposition(response.Headers["Content-Disposition"]);
-						var fileName = cd.FileName;
-
-						return new QueuedEmailAttachment
-						{
-							StorageLocation = EmailAttachmentStorageLocation.Blob,
-							Data = pdfBinary,
-							MimeType = "application/pdf",
-							Name = fileName
-						};
-					}
+					// ...
 				}
+
+				if (!fileResponse.ContentType.IsCaseInsensitiveEqual("application/pdf"))
+				{
+					// ...
+				}
+
+				return new QueuedEmailAttachment
+				{
+					StorageLocation = EmailAttachmentStorageLocation.Blob,
+					Data = fileResponse.Data,
+					MimeType = fileResponse.ContentType,
+					Name = fileResponse.FileName
+				};
 			}
 			catch (Exception ex)
 			{
 				// TODO localize
 				Logger.Error("Error occured while creating e-mail attachment", ex);
-			}
-			finally
-			{
-				if (response != null)
-				{
-					response.Close();
-					response.Dispose();
-				}
 			}
 
 			return null;

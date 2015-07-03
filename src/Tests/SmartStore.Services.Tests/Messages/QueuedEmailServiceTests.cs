@@ -21,6 +21,7 @@ namespace SmartStore.Services.Tests.Messages
 	public class QueuedEmailServiceTests : ServiceTest
     {
 		IRepository<QueuedEmail> _qeRepository;
+		IRepository<QueuedEmailAttachment> _qeaRepository;
 		IEmailSender _emailSender;
 		ICommonServices _commonServices;
 		QueuedEmailService _queuedEmailService;
@@ -29,10 +30,11 @@ namespace SmartStore.Services.Tests.Messages
 		public new void SetUp()
 		{
 			_qeRepository = MockRepository.GenerateStub<IRepository<QueuedEmail>>();
+			_qeaRepository = MockRepository.GenerateStub<IRepository<QueuedEmailAttachment>>();
 			_emailSender = MockRepository.GenerateStub<IEmailSender>();
 			_commonServices = MockRepository.GenerateStub<ICommonServices>();
 
-			_queuedEmailService = new QueuedEmailService(_qeRepository, _emailSender, _commonServices);
+			_queuedEmailService = new QueuedEmailService(_qeRepository, _qeaRepository, _emailSender, _commonServices);
 		}
 
         [Test]

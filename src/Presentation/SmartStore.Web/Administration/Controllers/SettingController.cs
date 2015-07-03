@@ -1050,6 +1050,8 @@ namespace SmartStore.Admin.Controllers
 			model.PdfSettings.Enabled = pdfSettings.Enabled;
 			model.PdfSettings.LetterPageSizeEnabled = pdfSettings.LetterPageSizeEnabled;
 			model.PdfSettings.LogoPictureId = pdfSettings.LogoPictureId;
+			model.PdfSettings.AttachOrderPdfToOrderPlacedEmail = pdfSettings.AttachOrderPdfToOrderPlacedEmail;
+			model.PdfSettings.AttachOrderPdfToOrderCompletedEmail = pdfSettings.AttachOrderPdfToOrderCompletedEmail;
 
 			StoreDependingSettings.GetOverrideKeys(pdfSettings, model.PdfSettings, storeScope, _settingService, false);
 
@@ -1233,6 +1235,8 @@ namespace SmartStore.Admin.Controllers
 			pdfSettings.Enabled = model.PdfSettings.Enabled;
 			pdfSettings.LetterPageSizeEnabled = model.PdfSettings.LetterPageSizeEnabled;
 			pdfSettings.LogoPictureId = model.PdfSettings.LogoPictureId;
+			pdfSettings.AttachOrderPdfToOrderPlacedEmail = model.PdfSettings.AttachOrderPdfToOrderPlacedEmail;
+			pdfSettings.AttachOrderPdfToOrderCompletedEmail = model.PdfSettings.AttachOrderPdfToOrderCompletedEmail;
 
 			StoreDependingSettings.UpdateSettings(pdfSettings, form, storeScope, _settingService);
 

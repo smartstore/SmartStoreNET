@@ -57,7 +57,7 @@ namespace SmartStore.Core.Domain.Messages
 		public string Name { get; set; }
 
 		/// <summary>
-		/// The attachment file's mime type, e.g. <c><application/pdfc>
+		/// The attachment file's mime type, e.g. <c>application/pdf</c>
 		/// </summary>
 		public string MimeType { get; set; }
 

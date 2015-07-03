@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Messages;
@@ -8,6 +9,7 @@ using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -53,13 +55,22 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             DateTime? startDateValue = (model.SearchStartDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchStartDate.Value, _dateTimeHelper.CurrentTimeZone);
-
             DateTime? endDateValue = (model.SearchEndDate == null) ? null : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.SearchEndDate.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
-            var queuedEmails = _queuedEmailService.SearchEmails(model.SearchFromEmail, model.SearchToEmail, 
-                startDateValue, endDateValue, 
-                model.SearchLoadNotSent, model.SearchMaxSentTries, true,
-                command.Page - 1, command.PageSize, model.SearchSendManually);
+			var q = new SearchEmailsQuery
+			{
+				EndTime = endDateValue,
+				From = model.SearchFromEmail,
+				MaxSendTries = model.SearchMaxSentTries,
+				OrderByLatest = true,
+				PageIndex = command.Page - 1,
+				PageSize = command.PageSize,
+				SendManually = model.SearchSendManually,
+				StartTime = startDateValue,
+				To = model.SearchToEmail,
+				UnsentOnly = model.SearchLoadNotSent
+			};
+            var queuedEmails = _queuedEmailService.SearchEmails(q);
 
             var gridModel = new GridModel<QueuedEmailModel>
             {
@@ -238,6 +249,40 @@ namespace SmartStore.Admin.Controllers
 			NotifySuccess(T("Admin.Common.RecordsDeleted", count));
 
 			return RedirectToAction("List");
+		}
+
+		public ActionResult DownloadAttachment(int id)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageMessageQueue))
+				return AccessDeniedView();
+
+			var qea = _queuedEmailService.GetQueuedEmailAttachmentById(id);
+			if (qea == null)
+				return HttpNotFound("List");
+
+			if (qea.StorageLocation == EmailAttachmentStorageLocation.Blob)
+			{
+				return File(qea.Data, qea.MimeType, qea.Name);
+			}
+			else if (qea.StorageLocation == EmailAttachmentStorageLocation.Path)
+			{
+				var path = qea.Path;
+				if (path[0] == '~' || path[0] == '/')
+				{
+					path = CommonHelper.MapPath(VirtualPathUtility.ToAppRelative(path), false);
+				}
+				return File(path, qea.MimeType, qea.Name);
+			}
+
+			// FileReference
+			if (qea.FileId.HasValue)
+			{
+				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.FileId.Value });
+			}
+
+			NotifyError("Could not download e-mail attachment: no data");
+			return RedirectToAction("List");
+
 		}
 	}
 }

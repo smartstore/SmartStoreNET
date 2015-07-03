@@ -30,5 +30,15 @@ namespace SmartStore.Core.Domain.Common
         /// Gets or sets a value indicating whether to render order notes in PDf reports
         /// </summary>
         public bool RenderOrderNotes { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to attach the order PDF to 'Order Placed (customer)' email
+		/// </summary>
+		public bool AttachOrderPdfToOrderPlacedEmail { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether to attach the order PDF to 'Order Completed (customer)' email
+		/// </summary>
+		public bool AttachOrderPdfToOrderCompletedEmail { get; set; }
     }
 }

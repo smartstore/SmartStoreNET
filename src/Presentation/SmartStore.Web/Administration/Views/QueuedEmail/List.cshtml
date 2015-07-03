@@ -119,15 +119,16 @@
 							.HtmlAttributes(new { style = "text-align:center" })
 							.HeaderHtmlAttributes(new { style = "text-align:center" });
 						columns.Bound(x => x.Id)
-							.Template(x => Html.ActionLink(x.Id.ToString(), "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Id #></a>");
+						columns.Bound(x => x.AttachmentsCount)
+							.HeaderTemplate("<span class='t-link'><i class='fa fa-paperclip'></i></span>")
+							.Width(20);
 						columns.Bound(x => x.Subject);
 						columns.Bound(x => x.Priority)
 							.Centered();
-						columns.Bound(x => x.From);
-						columns.Bound(x => x.FromName);
+						columns.Bound(x => x.From)
+							.ClientTemplate("<#= FromName #> (<#= From #>)");
 						columns.Bound(x => x.SendManually)
-							.Template(item => @Html.SymbolForBool(item.SendManually))
 							.ClientTemplate(@Html.SymbolForBool("SendManually"))
 							.Centered();
 						columns.Bound(x => x.SentTries)

@@ -2111,7 +2111,7 @@ namespace SmartStore.Services.Orders
             _orderService.UpdateOrder(order);
 
             //add a note
-            order.OrderNotes.Add(new OrderNote()
+            order.OrderNotes.Add(new OrderNote
             {
                 Note = TNote("OrderMarkedAsPaid"),
                 DisplayToCustomer = false,
@@ -2121,7 +2121,7 @@ namespace SmartStore.Services.Orders
 
             CheckOrderStatus(order);
 
-            //raise event         
+            // raise event         
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
                 _eventPublisher.PublishOrderPaid(order);

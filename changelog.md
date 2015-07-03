@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -16,6 +16,7 @@
 * Fixed: If currencies are limited to one for a multi-store, this currency should dominate the setting for the primary store currency
 * #563 Scheduled Tasks: ensure, that 'LastEndUtc' is ALWAYS set
 * Topics grid: fixed 'maxJsonLength exceeded' error
+* Debitoor: Fixed "The property named 'lines.0.productOrService' should be defined"
 
 
 ## SmartStore.NET 2.2.1

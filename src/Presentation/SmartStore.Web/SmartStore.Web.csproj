@@ -1596,6 +1596,7 @@
     <Content Include="Themes\Alpha\preview.png" />
     <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.css" />
     <Content Include="Themes\MobileLight\Content\jquery.mobile.theme-1.3.2.min.css" />
+    <Content Include="Themes\MobileLight\Content\user.css" />
     <Content Include="Themes\MobileLight\preview.png" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.gif" />
     <Content Include="Themes\Mobile\Content\images\ajax-loader.png" />

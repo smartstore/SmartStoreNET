@@ -67,12 +67,7 @@
 				@Html.SmartLabelFor(model => model.SearchSendManually)
 			</td>
 			<td class="adminData">
-				@Html.DropDownList("SearchSendManually", new List<SelectListItem>
-				{
-					new SelectListItem { Text = T("Common.Unspecified"), Value = "", Selected = !Model.SearchSendManually.HasValue },
-					new SelectListItem { Text = T("Admin.Common.Yes"), Value = "true", Selected = Model.SearchSendManually ?? false },
-					new SelectListItem { Text = T("Admin.Common.No"), Value = "false", Selected = !Model.SearchSendManually ?? false }
-				})
+				@Html.EditorFor(model => Model.SearchSendManually)
 			</td>
 		</tr>
 		<tr>
@@ -121,7 +116,7 @@
 						columns.Bound(x => x.Id)
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Id #></a>");
 						columns.Bound(x => x.AttachmentsCount)
-							.HeaderTemplate("<span class='t-link'><i class='fa fa-paperclip'></i></span>")
+							.HeaderTemplate(@<span class='t-link' title='@T("Admin.System.QueuedEmails.List.AttachmentsCount")'><i class='fa fa-paperclip'></i></span>)
 							.Width(20);
 						columns.Bound(x => x.Subject);
 						columns.Bound(x => x.Priority)

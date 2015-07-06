@@ -12,6 +12,7 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Events;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
@@ -33,9 +34,11 @@ namespace SmartStore.Services.Messages
 			this._fileDownloadManager = fileDownloadManager;
 
 			Logger = NullLogger.Instance;
+			T = NullLocalizer.Instance;
 		}
 
 		public ILogger Logger { get; set; }
+		public Localizer T { get; set; }
 
 		public void HandleEvent(QueuingEmailEvent eventMessage)
 		{
@@ -52,10 +55,14 @@ namespace SmartStore.Services.Messages
 			if (handledTemplates.TryGetValue(tpl.Name, out shouldHandle) && shouldHandle)
 			{
 				var orderId = eventMessage.Tokens.First(x => x.Key.IsCaseInsensitiveEqual("Order.ID")).Value.ToInt();
-				var qea = CreatePdfInvoiceAttachment(orderId);
-				if (qea != null)
+				try
 				{
+					var qea = CreatePdfInvoiceAttachment(orderId);
 					qe.Attachments.Add(qea);
+				}
+				catch (Exception ex)
+				{
+					Logger.Error(T("Admin.System.QueuedEmails.ErrorCreatingAttachment"), ex);
 				}
 			}
 		}
@@ -65,35 +72,25 @@ namespace SmartStore.Services.Messages
 			var urlHelper = new UrlHelper(_httpRequest.RequestContext);
 			var path = urlHelper.Action("Print", "Order", new { id = orderId, pdf = true, area = "" });
 
-			try
+			var fileResponse = _fileDownloadManager.Value.DownloadFile(path, true, 5000);
+
+			if (fileResponse == null)
 			{
-				var fileResponse = _fileDownloadManager.Value.DownloadFile(path, true, 5000);
-
-				if (fileResponse == null)
-				{
-					// ...
-				}
-
-				if (!fileResponse.ContentType.IsCaseInsensitiveEqual("application/pdf"))
-				{
-					// ...
-				}
-
-				return new QueuedEmailAttachment
-				{
-					StorageLocation = EmailAttachmentStorageLocation.Blob,
-					Data = fileResponse.Data,
-					MimeType = fileResponse.ContentType,
-					Name = fileResponse.FileName
-				};
-			}
-			catch (Exception ex)
-			{
-				// TODO localize
-				Logger.Error("Error occured while creating e-mail attachment", ex);
+				throw new InvalidOperationException(T("Admin.System.QueuedEmails.ErrorEmptyAttachmentResult", path));
 			}
 
-			return null;
+			if (!fileResponse.ContentType.IsCaseInsensitiveEqual("application/pdf"))
+			{
+				throw new InvalidOperationException(T("Admin.System.QueuedEmails.ErrorNoPdfAttachment"));
+			}
+
+			return new QueuedEmailAttachment
+			{
+				StorageLocation = EmailAttachmentStorageLocation.Blob,
+				Data = fileResponse.Data,
+				MimeType = fileResponse.ContentType,
+				Name = fileResponse.FileName
+			};
 		}
 
 	}

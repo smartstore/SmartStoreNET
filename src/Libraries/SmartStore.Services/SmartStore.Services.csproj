@@ -161,6 +161,7 @@
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
+    <Compile Include="Messages\QueuedMessagesClearTask.cs" />
     <Compile Include="Messages\QueuingEmailEvent.cs" />
     <Compile Include="Messages\QueuingEmailEventConsumer.cs" />
     <Compile Include="Orders\AddToCartContext.cs" />

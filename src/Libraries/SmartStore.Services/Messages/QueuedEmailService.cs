@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Mail;
 using System.IO;
 using SmartStore.Core;
@@ -76,7 +77,8 @@ namespace SmartStore.Services.Messages
 
 		public virtual int DeleteAllQueuedEmails()
 		{
-			return _queuedEmailRepository.DeleteAll();
+			// do not delete e-mails which are about to be sent
+			return _queuedEmailRepository.DeleteAll(x => x.SentOnUtc.HasValue || x.SentTries >= 3);
 		}
 
         public virtual QueuedEmail GetQueuedEmailById(int queuedEmailId)

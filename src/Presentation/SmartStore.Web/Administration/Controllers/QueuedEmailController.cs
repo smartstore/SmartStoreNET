@@ -280,7 +280,7 @@ namespace SmartStore.Admin.Controllers
 				return RedirectToAction("DownloadFile", "Download", new { downloadId = qea.FileId.Value });
 			}
 
-			NotifyError("Could not download e-mail attachment: no data");
+			NotifyError(T("Admin.System.QueuedEmails.CouldNotDownloadAttachment"));
 			return RedirectToAction("List");
 
 		}

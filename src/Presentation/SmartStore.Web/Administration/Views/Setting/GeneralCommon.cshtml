@@ -359,6 +359,29 @@
                 @Html.ValidationMessageFor(model => model.PdfSettings.LogoPictureId)
             </td>
         </tr>
+		<tr>
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+				@Html.ValidationMessageFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+				@Html.ValidationMessageFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+			</td>
+		</tr>
     </table>
 }
 @helper TabLocalizationSettings()

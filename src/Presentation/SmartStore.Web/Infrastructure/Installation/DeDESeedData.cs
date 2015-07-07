@@ -2517,6 +2517,10 @@ namespace SmartStore.Web.Infrastructure.Installation
                     {
                         x.Name = "E-Mail senden";
                     })
+				.Alter("Clear email queue", x =>
+					{
+						x.Name = "E-Mail Queue bereinigen";
+					})
                 .Alter("Keep alive", x =>
                     {
                         x.Name = "Keep alive";

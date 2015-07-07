@@ -575,6 +575,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
 			builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerRequest();
+			builder.RegisterType<FileDownloadManager>().InstancePerRequest();
 
 			builder.RegisterFilterProvider();
 

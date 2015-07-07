@@ -91,15 +91,15 @@ namespace SmartStore.Web.Framework.WebApi
 			return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName));
 		}
 
-		protected virtual IRepository<TEntity> CreateRepository()
-		{
-			var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
+		//protected virtual IRepository<TEntity> CreateRepository()
+		//{
+		//	var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
 
-			// false means not resolving navigation properties (related entities)
-			repository.Context.ProxyCreationEnabled = false;
+		//	// false means not resolving navigation properties (related entities)
+		//	repository.Context.ProxyCreationEnabled = false;
 
-			return repository;
-		}
+		//	return repository;
+		//}
 
 		/// <summary>
 		/// Auto injected by Autofac
@@ -163,7 +163,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
-			return GetEntitySet().FirstOrDefault(x => x.Id == key);
+			return this.Repository.GetById(key);
 		}
 
 		protected internal virtual TEntity GetEntityByKeyNotNull(int key)

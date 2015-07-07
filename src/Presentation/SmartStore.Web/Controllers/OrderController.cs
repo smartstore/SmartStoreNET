@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.SessionState;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -513,8 +514,9 @@ namespace SmartStore.Web.Controllers
 				return new HttpUnauthorizedResult();
 
 			var model = PrepareOrderDetailsModel(order);
+			var fileName = T("Order.PdfInvoiceFileName", order.Id);
 
-			return PrintCore(new List<OrderDetailsModel> { model }, pdf, "order-{0}.pdf".FormatWith(order.Id));
+			return PrintCore(new List<OrderDetailsModel> { model }, pdf, fileName);
 		}
 
 		[AdminAuthorize]

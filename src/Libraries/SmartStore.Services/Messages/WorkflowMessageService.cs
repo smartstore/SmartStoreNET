@@ -74,7 +74,7 @@ namespace SmartStore.Services.Messages
 			MessageTemplate messageTemplate,
             EmailAccount emailAccount, 
 			int languageId, 
-			IEnumerable<Token> tokens,
+			IList<Token> tokens,
             string toEmailAddress, 
 			string toName,
 			string replyTo = null,
@@ -90,7 +90,7 @@ namespace SmartStore.Services.Messages
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
 			
             bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
-
+			
             var email = new QueuedEmail
             {
                 Priority = 5,
@@ -109,7 +109,18 @@ namespace SmartStore.Services.Messages
 				SendManually = messageTemplate.SendManually
             };
 
+			// publish event so that integrators can add attachments, alter the email etc.
+			_eventPublisher.Publish(new QueuingEmailEvent
+			{
+				EmailAccount = emailAccount,
+				LanguageId = languageId,
+				MessageTemplate = messageTemplate,
+				QueuedEmail = email,
+				Tokens = tokens
+			});
+
             _queuedEmailService.InsertQueuedEmail(email);
+
             return email.Id;
         }
 
@@ -434,7 +445,7 @@ namespace SmartStore.Services.Messages
             _messageTokenProvider.AddBankConnectionTokens(tokens);
             _messageTokenProvider.AddContactDataTokens(tokens);
             
-            //event notification
+            // event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);

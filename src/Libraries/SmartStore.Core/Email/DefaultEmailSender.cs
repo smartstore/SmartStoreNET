@@ -14,10 +14,6 @@ namespace SmartStore.Core.Email
     public class DefaultEmailSender : IEmailSender
     {
 
-        public DefaultEmailSender() 
-		{ 
-		}
-
         /// <summary>
         /// Builds System.Net.Mail.Message
         /// </summary>
@@ -54,10 +50,7 @@ namespace SmartStore.Core.Email
 			msg.Bcc.AddRange(original.Bcc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
 			msg.ReplyToList.AddRange(original.ReplyTo.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
 
-            foreach (var attachment in original.Attachments) 
-            {
-				msg.Attachments.Add(attachment);
-            }
+			msg.Attachments.AddRange(original.Attachments);
 
             if (original.Headers != null)
 				msg.Headers.AddRange(original.Headers);
@@ -75,11 +68,12 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 			
-			var msg = this.BuildMailMessage(message);
-
-			using (var client = context.ToSmtpClient())
+			using (var msg = this.BuildMailMessage(message))
 			{
-				client.Send(msg);
+				using (var client = context.ToSmtpClient())
+				{
+					client.Send(msg);
+				}
 			}
         }
 
@@ -88,12 +82,14 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 
+			var client = context.ToSmtpClient();
 			var msg = this.BuildMailMessage(message);
 
-			using (var client = context.ToSmtpClient())
+			return client.SendMailAsync(msg).ContinueWith(t => 
 			{
-				return client.SendMailAsync(msg);
-			}
+				client.Dispose();
+				msg.Dispose();
+			});
 		}
 
         #endregion

@@ -4816,6 +4816,14 @@ namespace SmartStore.Data.Setup
 					Enabled = true,
 					StopOnError = false,
 				},
+				new ScheduleTask
+				{
+					Name = "Clear email queue",
+					Seconds = 86400, // 1 day
+					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
 			};
 			this.Alter(entities);
 			return entities;

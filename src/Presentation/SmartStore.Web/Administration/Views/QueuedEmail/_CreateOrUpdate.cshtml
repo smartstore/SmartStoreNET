@@ -79,6 +79,23 @@
             @Html.ValidationMessageFor(model => model.Subject)
         </td>
     </tr>
+	@if (Model.Attachments.Any())
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Attachments)
+			</td>
+			<td class="adminData">
+				@foreach (var attach in Model.Attachments)
+				{
+					<span style="margin-right: 12px">
+						<i class="fa fa-paperclip"></i>
+						<a href='@Url.Action("DownloadAttachment", new { id = attach.Id })'>@attach.Name</a>
+					</span>
+				}
+			</td>
+		</tr>
+	}
     <tr>
         <td class="adminTitle">
             @Html.SmartLabelFor(model => model.Body)

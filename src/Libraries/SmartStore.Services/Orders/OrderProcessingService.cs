@@ -203,7 +203,7 @@ namespace SmartStore.Services.Orders
 			return (_shoppingCartSettings.RoundPricesDuringCalculation ? Math.Round(value, 2) : value);
 		}
 
-        private string T(string resKey)
+        private string TNote(string resKey)
         {
             return _localizationService.GetResource("Admin.OrderNotice." + resKey);
         }
@@ -348,26 +348,24 @@ namespace SmartStore.Services.Orders
             _orderService.UpdateOrder(order);
 
             //order notes, notifications
-            order.OrderNotes.Add(new OrderNote()
+            order.OrderNotes.Add(new OrderNote
                 {
-                    Note = string.Format(T("OrderStatusChanged"), os.GetLocalizedEnum(_localizationService)),
+                    Note = string.Format(TNote("OrderStatusChanged"), os.GetLocalizedEnum(_localizationService)),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
             _orderService.UpdateOrder(order);
 
 
-            if (prevOrderStatus != OrderStatus.Complete &&
-                os == OrderStatus.Complete
-                && notifyCustomer)
+            if (prevOrderStatus != OrderStatus.Complete && os == OrderStatus.Complete && notifyCustomer)
             {
                 //notification
                 int orderCompletedCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderCompletedCustomerNotification(order, order.CustomerLanguageId);
                 if (orderCompletedCustomerNotificationQueuedEmailId > 0)
                 {
-                    order.OrderNotes.Add(new OrderNote()
+                    order.OrderNotes.Add(new OrderNote
                     {
-                        Note = string.Format(T("CustomerCompletedEmailQueued"), orderCompletedCustomerNotificationQueuedEmailId),
+                        Note = string.Format(TNote("CustomerCompletedEmailQueued"), orderCompletedCustomerNotificationQueuedEmailId),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -375,17 +373,15 @@ namespace SmartStore.Services.Orders
                 }
             }
 
-            if (prevOrderStatus != OrderStatus.Cancelled &&
-                os == OrderStatus.Cancelled
-                && notifyCustomer)
+            if (prevOrderStatus != OrderStatus.Cancelled && os == OrderStatus.Cancelled && notifyCustomer)
             {
                 //notification
                 int orderCancelledCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderCancelledCustomerNotification(order, order.CustomerLanguageId);
                 if (orderCancelledCustomerNotificationQueuedEmailId > 0)
                 {
-                    order.OrderNotes.Add(new OrderNote()
+                    order.OrderNotes.Add(new OrderNote
                     {
-                        Note = string.Format(T("CustomerCancelledEmailQueued"), orderCancelledCustomerNotificationQueuedEmailId),
+                        Note = string.Format(TNote("CustomerCancelledEmailQueued"), orderCancelledCustomerNotificationQueuedEmailId),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -437,8 +433,7 @@ namespace SmartStore.Services.Orders
 
             if (order.OrderStatus == OrderStatus.Pending)
             {
-                if (order.PaymentStatus == PaymentStatus.Authorized ||
-                    order.PaymentStatus == PaymentStatus.Paid)
+                if (order.PaymentStatus == PaymentStatus.Authorized || order.PaymentStatus == PaymentStatus.Paid)
                 {
                     SetOrderStatus(order, OrderStatus.Processing, false);
                 }
@@ -446,16 +441,13 @@ namespace SmartStore.Services.Orders
 
             if (order.OrderStatus == OrderStatus.Pending)
             {
-                if (order.ShippingStatus == ShippingStatus.PartiallyShipped || 
-                    order.ShippingStatus == ShippingStatus.Shipped ||
-                    order.ShippingStatus == ShippingStatus.Delivered)
+                if (order.ShippingStatus == ShippingStatus.PartiallyShipped || order.ShippingStatus == ShippingStatus.Shipped || order.ShippingStatus == ShippingStatus.Delivered)
                 {
                     SetOrderStatus(order, OrderStatus.Processing, false);
                 }
             }
 
-            if (order.OrderStatus != OrderStatus.Cancelled &&
-                order.OrderStatus != OrderStatus.Complete)
+            if (order.OrderStatus != OrderStatus.Cancelled && order.OrderStatus != OrderStatus.Complete)
             {
                 if (order.PaymentStatus == PaymentStatus.Paid)
                 {
@@ -1350,7 +1342,7 @@ namespace SmartStore.Services.Orders
                         //notes, messages
                         order.OrderNotes.Add(new OrderNote()
                             {
-                                Note = T("OrderPlaced"),
+                                Note = TNote("OrderPlaced"),
                                 DisplayToCustomer = false,
 								CreatedOnUtc = utcNow
                             });
@@ -1360,9 +1352,9 @@ namespace SmartStore.Services.Orders
                         int orderPlacedStoreOwnerNotificationQueuedEmailId = _workflowMessageService.SendOrderPlacedStoreOwnerNotification(order, _localizationSettings.DefaultAdminLanguageId);
                         if (orderPlacedStoreOwnerNotificationQueuedEmailId > 0)
                         {
-                            order.OrderNotes.Add(new OrderNote()
+                            order.OrderNotes.Add(new OrderNote
                             {
-                                Note = string.Format(T("MerchantEmailQueued"), orderPlacedStoreOwnerNotificationQueuedEmailId),
+                                Note = string.Format(TNote("MerchantEmailQueued"), orderPlacedStoreOwnerNotificationQueuedEmailId),
                                 DisplayToCustomer = false,
 								CreatedOnUtc = utcNow
                             });
@@ -1372,9 +1364,9 @@ namespace SmartStore.Services.Orders
                         int orderPlacedCustomerNotificationQueuedEmailId = _workflowMessageService.SendOrderPlacedCustomerNotification(order, order.CustomerLanguageId);
                         if (orderPlacedCustomerNotificationQueuedEmailId > 0)
                         {
-                            order.OrderNotes.Add(new OrderNote()
+                            order.OrderNotes.Add(new OrderNote
                             {
-                                Note = string.Format(T("CustomerEmailQueued"), orderPlacedCustomerNotificationQueuedEmailId),
+                                Note = string.Format(TNote("CustomerEmailQueued"), orderPlacedCustomerNotificationQueuedEmailId),
                                 DisplayToCustomer = false,
 								CreatedOnUtc = utcNow
                             });
@@ -1407,7 +1399,7 @@ namespace SmartStore.Services.Orders
                                 _localizationService.GetResource("ActivityLog.PublicStore.PlaceOrder"),
                                 order.GetOrderNumber());
                         }
-
+						
                         //raise event         
                         if (order.PaymentStatus == PaymentStatus.Paid)
                         {
@@ -1465,7 +1457,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = T("OrderDeleted"),
+                Note = TNote("OrderDeleted"),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -1579,7 +1571,7 @@ namespace SmartStore.Services.Orders
                     //add a note
                     initialOrder.OrderNotes.Add(new OrderNote()
                     {
-                        Note = T("RecurringPaymentCancelled"),
+                        Note = TNote("RecurringPaymentCancelled"),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -1612,7 +1604,7 @@ namespace SmartStore.Services.Orders
                 //add a note
                 initialOrder.OrderNotes.Add(new OrderNote()
                 {
-                    Note = string.Format(T("RecurringPaymentCancellationError"), error),
+                    Note = string.Format(TNote("RecurringPaymentCancellationError"), error),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
@@ -1694,7 +1686,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
                 {
-                    Note = string.Format(T("ShipmentSent"), shipment.Id),
+                    Note = string.Format(TNote("ShipmentSent"), shipment.Id),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
@@ -1708,7 +1700,7 @@ namespace SmartStore.Services.Orders
                 {
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = string.Format(T("CustomerShippedEmailQueued"), queuedEmailId),
+                        Note = string.Format(TNote("CustomerShippedEmailQueued"), queuedEmailId),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -1747,7 +1739,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = string.Format(T("ShipmentDelivered"), shipment.Id),
+                Note = string.Format(TNote("ShipmentDelivered"), shipment.Id),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -1761,7 +1753,7 @@ namespace SmartStore.Services.Orders
                 {
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = string.Format(T("CustomerDeliveredEmailQueued"), queuedEmailId),
+                        Note = string.Format(TNote("CustomerDeliveredEmailQueued"), queuedEmailId),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -1810,7 +1802,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = T("OrderCancelled"),
+                Note = TNote("OrderCancelled"),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -1928,7 +1920,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = T("OrderMarkedAsAuthorized"),
+                Note = TNote("OrderMarkedAsAuthorized"),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -2034,7 +2026,7 @@ namespace SmartStore.Services.Orders
                     //add a note
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = T("OrderCaptured"),
+                        Note = TNote("OrderCaptured"),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -2077,7 +2069,7 @@ namespace SmartStore.Services.Orders
                 _orderService.UpdateOrder(order);
 
                 //log it
-                string logError = string.Format(T("OrderCaptureError"), order.GetOrderNumber(), error);
+                string logError = string.Format(TNote("OrderCaptureError"), order.GetOrderNumber(), error);
                 _logger.InsertLog(LogLevel.Error, logError, logError);
             }
             return result.Errors;
@@ -2121,9 +2113,9 @@ namespace SmartStore.Services.Orders
             _orderService.UpdateOrder(order);
 
             //add a note
-            order.OrderNotes.Add(new OrderNote()
+            order.OrderNotes.Add(new OrderNote
             {
-                Note = T("OrderMarkedAsPaid"),
+                Note = TNote("OrderMarkedAsPaid"),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -2131,7 +2123,7 @@ namespace SmartStore.Services.Orders
 
             CheckOrderStatus(order);
 
-            //raise event         
+            // raise event         
             if (order.PaymentStatus == PaymentStatus.Paid)
             {
                 _eventPublisher.PublishOrderPaid(order);
@@ -2198,7 +2190,7 @@ namespace SmartStore.Services.Orders
                     //add a note
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = string.Format(T("OrderRefunded"), _priceFormatter.FormatPrice(request.AmountToRefund, true, false)),
+                        Note = string.Format(TNote("OrderRefunded"), _priceFormatter.FormatPrice(request.AmountToRefund, true, false)),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -2229,7 +2221,7 @@ namespace SmartStore.Services.Orders
                 //add a note
                 order.OrderNotes.Add(new OrderNote()
                 {
-                    Note = string.Format(T("OrderRefundError"), error),
+                    Note = string.Format(TNote("OrderRefundError"), error),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
@@ -2291,7 +2283,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = string.Format(T("OrderMarkedAsRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
+                Note = string.Format(TNote("OrderMarkedAsRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -2372,7 +2364,7 @@ namespace SmartStore.Services.Orders
                     //add a note
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = string.Format(T("OrderPartiallyRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
+                        Note = string.Format(TNote("OrderPartiallyRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -2402,7 +2394,7 @@ namespace SmartStore.Services.Orders
                 //add a note
                 order.OrderNotes.Add(new OrderNote()
                 {
-                    Note = string.Format(T("OrderPartiallyRefundError"), error),
+                    Note = string.Format(TNote("OrderPartiallyRefundError"), error),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
@@ -2472,7 +2464,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = string.Format(T("OrderMarkedAsPartiallyRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
+                Note = string.Format(TNote("OrderMarkedAsPartiallyRefunded"), _priceFormatter.FormatPrice(amountToRefund, true, false)),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });
@@ -2537,7 +2529,7 @@ namespace SmartStore.Services.Orders
                     //add a note
                     order.OrderNotes.Add(new OrderNote()
                     {
-                        Note = T("OrderVoided"),
+                        Note = TNote("OrderVoided"),
                         DisplayToCustomer = false,
                         CreatedOnUtc = DateTime.UtcNow
                     });
@@ -2567,7 +2559,7 @@ namespace SmartStore.Services.Orders
                 //add a note
                 order.OrderNotes.Add(new OrderNote()
                 {
-                    Note = string.Format(T("OrderVoidError"), error),
+                    Note = string.Format(TNote("OrderVoidError"), error),
                     DisplayToCustomer = false,
                     CreatedOnUtc = DateTime.UtcNow
                 });
@@ -2621,7 +2613,7 @@ namespace SmartStore.Services.Orders
             //add a note
             order.OrderNotes.Add(new OrderNote()
             {
-                Note = T("OrderMarkedAsVoided"),
+                Note = TNote("OrderMarkedAsVoided"),
                 DisplayToCustomer = false,
                 CreatedOnUtc = DateTime.UtcNow
             });

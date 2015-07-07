@@ -1,4 +1,5 @@
 ﻿using System.Reflection;
+using System.Linq;
 using AutoMapper;
 using SmartStore.Admin.Models.Blogs;
 using SmartStore.Admin.Models.Catalog;
@@ -147,17 +148,20 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore());
             Mapper.CreateMap<MessageTemplateModel, MessageTemplate>();
             //queued email
-            Mapper.CreateMap<QueuedEmail, QueuedEmailModel>()
-                .ForMember(dest => dest.EmailAccountName, mo => mo.MapFrom(src => src.EmailAccount != null ? src.EmailAccount.FriendlyName : string.Empty))
-                .ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
-                .ForMember(dest => dest.SentOn, mo => mo.Ignore());
+			Mapper.CreateMap<QueuedEmail, QueuedEmailModel>()
+				.ForMember(dest => dest.EmailAccountName, mo => mo.MapFrom(src => src.EmailAccount != null ? src.EmailAccount.FriendlyName : string.Empty))
+				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
+				.ForMember(dest => dest.SentOn, mo => mo.Ignore())
+				.ForMember(dest => dest.AttachmentsCount, mo => mo.MapFrom(src => src.Attachments.Count))
+				.ForMember(dest => dest.Attachments, mo => mo.MapFrom(src => src.Attachments.Select(x => new QueuedEmailModel.QueuedEmailAttachmentModel { Id = x.Id, Name = x.Name, MimeType = x.MimeType } )));
             Mapper.CreateMap<QueuedEmailModel, QueuedEmail>()
                 .ForMember(dest=> dest.CreatedOnUtc, dt=> dt.Ignore())
                 .ForMember(dest => dest.SentOnUtc, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailAccount, mo => mo.Ignore())
                 .ForMember(dest => dest.EmailAccountId, mo => mo.Ignore())
 				.ForMember(dest => dest.ReplyTo, mo => mo.Ignore())
-				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore());
+				.ForMember(dest => dest.ReplyToName, mo => mo.Ignore())
+				.ForMember(dest => dest.Attachments, mo => mo.Ignore());
             //campaign
 			Mapper.CreateMap<Campaign, CampaignModel>()
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())

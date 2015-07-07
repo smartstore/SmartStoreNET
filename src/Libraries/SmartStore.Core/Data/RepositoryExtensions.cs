@@ -52,15 +52,53 @@ namespace SmartStore.Core.Data
         }
 
 		/// <summary>
-		/// Truncates the whole table
+		/// Truncates the table
 		/// </summary>
 		/// <typeparam name="T">Entity type</typeparam>
-		/// <param name="rs"></param>
+		/// <param name="rs">The repository</param>
+		/// <param name="predicate">An optional filter</param>
 		/// <returns>The total number of affected entities</returns>
 		/// <remarks>
 		/// This method turns off auto detection, validation and hooking.
 		/// </remarks>
-		public static int DeleteAll<T>(this IRepository<T> rs) where T : BaseEntity
+		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null) where T : BaseEntity
+		{
+			var autoCommit = rs.AutoCommitEnabled;
+			rs.AutoCommitEnabled = false;
+
+			var count = 0;
+
+			try
+			{
+				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
+				{
+					var query = rs.Table;
+					if (predicate != null)
+					{
+						query = query.Where(predicate);
+					}
+
+					var records = query.ToList();
+					foreach (var chunk in records.Chunk(500))
+					{
+						rs.DeleteRange(chunk.ToList());
+						count += rs.Context.SaveChanges();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				throw ex;
+			}
+			finally
+			{
+				rs.AutoCommitEnabled = autoCommit;
+			}	
+
+			return count;
+		}
+
+		private static int DeleteAllInternal<T>(IRepository<T> rs, Expression<Func<T, bool>> predicate) where T : BaseEntity
 		{
 			var autoCommit = rs.AutoCommitEnabled;
 			rs.AutoCommitEnabled = false;
@@ -86,7 +124,7 @@ namespace SmartStore.Core.Data
 			finally
 			{
 				rs.AutoCommitEnabled = autoCommit;
-			}	
+			}
 
 			return count;
 		}

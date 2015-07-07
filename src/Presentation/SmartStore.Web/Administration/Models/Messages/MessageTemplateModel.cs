@@ -52,6 +52,15 @@ namespace SmartStore.Admin.Models.Messages
 		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.SendManually")]
 		public bool SendManually { get; set; }
 
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
+		public int? Attachment1FileId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
+		public int? Attachment2FileId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
+		public int? Attachment3FileId { get; set; }
+
 		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
@@ -81,5 +90,14 @@ namespace SmartStore.Admin.Models.Messages
 
         [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.EmailAccount")]
         public int EmailAccountId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId")]
+		public int? Attachment1FileId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId")]
+		public int? Attachment2FileId { get; set; }
+
+		[SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId")]
+		public int? Attachment3FileId { get; set; }
     }
 }

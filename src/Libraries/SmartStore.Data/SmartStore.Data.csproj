@@ -286,6 +286,10 @@
     <Compile Include="Migrations\201506262044329_QueuedEmailAttachments.Designer.cs">
       <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.cs" />
+    <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.Designer.cs">
+      <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -551,6 +555,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506262044329_QueuedEmailAttachments.resx">
       <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507072138058_MessageTemplateAttachments.resx">
+      <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

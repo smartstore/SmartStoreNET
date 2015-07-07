@@ -163,6 +163,7 @@ namespace SmartStore.Services.Catalog
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
 			var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
 			var selectedAttributes = new NameValueCollection();
+			var clearDataMerging = false;
 			List<ProductVariantAttributeValue> selectedAttributeValues = null;
 
 			foreach (var attribute in attributes)
@@ -222,7 +223,10 @@ namespace SmartStore.Services.Catalog
 				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
 				if (selectedCombination != null && selectedCombination.IsActive)
+				{
+					clearDataMerging = true;
 					product.MergeWithCombination(selectedCombination);
+				}
 			}
 
 			if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
@@ -243,6 +247,13 @@ namespace SmartStore.Services.Catalog
 			}
 
 			var result = GetFinalPrice(product, bundleItems, _commonServices.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
+
+			if (clearDataMerging && product.MergedDataValues != null)
+			{
+				// GetPreselectedPrice should not leave product with merged values.
+				product.MergedDataValues.Clear();
+			}
+
 			return result;
 		}
 

@@ -21,6 +21,8 @@ namespace SmartStore.AmazonPay.Api
 		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, decimal? orderTotalAmount,
 			string currencyCode, string orderGuid = null, string storeName = null);
 
+		OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, Customer customer, List<OrganizedShoppingCartItem> cart);
+
 		void ConfirmOrderReference(AmazonPayClient client, string orderReferenceId);
 
 		void CancelOrderReference(AmazonPayClient client, string orderReferenceId);

@@ -17,6 +17,7 @@
 * #563 Scheduled Tasks: ensure, that 'LastEndUtc' is ALWAYS set
 * Topics grid: fixed 'maxJsonLength exceeded' error
 * Debitoor: Fixed "The property named 'lines.0.productOrService' should be defined"
+* Send currency code of primary store currency (not of working currency) to payment gateway
 
 
 ## SmartStore.NET 2.2.1

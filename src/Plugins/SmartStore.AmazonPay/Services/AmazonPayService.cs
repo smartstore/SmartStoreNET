@@ -18,6 +18,7 @@ using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Orders;
@@ -48,6 +49,7 @@ namespace SmartStore.AmazonPay.Services
 		private readonly IGenericAttributeService _genericAttributeService;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ICurrencyService _currencyService;
+		private readonly CurrencySettings _currencySettings;
 		private readonly ICustomerService _customerService;
 		private readonly IStoreService _storeService;
 		private readonly IPriceFormatter _priceFormatter;
@@ -67,6 +69,7 @@ namespace SmartStore.AmazonPay.Services
 			IGenericAttributeService genericAttributeService,
 			IOrderTotalCalculationService orderTotalCalculationService,
 			ICurrencyService currencyService,
+			CurrencySettings currencySettings,
 			ICustomerService customerService,
 			IStoreService storeService,
 			IPriceFormatter priceFormatter,
@@ -85,6 +88,7 @@ namespace SmartStore.AmazonPay.Services
 			_genericAttributeService = genericAttributeService;
 			_orderTotalCalculationService = orderTotalCalculationService;
 			_currencyService = currencyService;
+			_currencySettings = currencySettings;
 			_customerService = customerService;
 			_storeService = storeService;
 			_priceFormatter = priceFormatter;
@@ -109,27 +113,27 @@ namespace SmartStore.AmazonPay.Services
 			return pluginUrl;
 		}
 
-		private decimal? GetOrderTotal()
-		{
-			decimal orderTotalDiscountAmountBase = decimal.Zero;
-			Discount orderTotalAppliedDiscount = null;
-			List<AppliedGiftCard> appliedGiftCards = null;
-			int redeemedRewardPoints = 0;
-			decimal redeemedRewardPointsAmount = decimal.Zero;
+		//private decimal? GetOrderTotal()
+		//{
+		//	decimal orderTotalDiscountAmountBase = decimal.Zero;
+		//	Discount orderTotalAppliedDiscount = null;
+		//	List<AppliedGiftCard> appliedGiftCards = null;
+		//	int redeemedRewardPoints = 0;
+		//	decimal redeemedRewardPointsAmount = decimal.Zero;
 
-			var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
+		//	var cart = _services.WorkContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _services.StoreContext.CurrentStore.Id);
 
-			decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
-				out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
+		//	decimal? shoppingCartTotalBase = _orderTotalCalculationService.GetShoppingCartTotal(cart,
+		//		out orderTotalDiscountAmountBase, out orderTotalAppliedDiscount, out appliedGiftCards, out redeemedRewardPoints, out redeemedRewardPointsAmount);
 
-			if (shoppingCartTotalBase.HasValue)		// shipping method needs to be selected here!
-			{
-				decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _services.WorkContext.WorkingCurrency);
+		//	if (shoppingCartTotalBase.HasValue)		// shipping method needs to be selected here!
+		//	{
+		//		decimal shoppingCartTotal = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartTotalBase.Value, _services.WorkContext.WorkingCurrency);
 
-				return shoppingCartTotal;
-			}
-			return null;
-		}
+		//		return shoppingCartTotal;
+		//	}
+		//	return null;
+		//}
 
 		private void SerializeOrderAttribute(AmazonPayOrderAttribute attribute, Order order)
 		{
@@ -530,7 +534,7 @@ namespace SmartStore.AmazonPay.Services
 					_genericAttributeService.SaveAttribute<string>(customer, SystemCustomerAttributeNames.SelectedPaymentMethod, AmazonPayCore.SystemName, store.Id);
 
 					var client = new AmazonPayClient(settings);
-					var details = _api.SetOrderReferenceDetails(client, model.OrderReferenceId, GetOrderTotal(), currency.CurrencyCode);
+					var unused = _api.SetOrderReferenceDetails(client, model.OrderReferenceId, customer, cart);
 
 					// this is ugly...
 					var paymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
@@ -899,7 +903,7 @@ namespace SmartStore.AmazonPay.Services
 				var orderGuid = request.OrderGuid.ToString();
 				var store = _storeService.GetStoreById(request.StoreId);
 				var customer = _customerService.GetCustomerById(request.CustomerId);
-				var currency = _services.WorkContext.WorkingCurrency;
+				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);
@@ -968,7 +972,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var orderGuid = request.OrderGuid.ToString();
 				var store = _storeService.GetStoreById(request.StoreId);
-				var currency = _services.WorkContext.WorkingCurrency;
+				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);

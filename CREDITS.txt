@@ -13,7 +13,7 @@ copyright notices, and licenses.
 
 51Degrees
 ---------------------------------------------
-WebSite:      http://http://51degrees.mobi/
+WebSite:      http://51degrees.mobi/
 Copyright:    Copyright 2010 - 2013 51Degrees.mobi Limited
 License:      Mozilla Public License 2.0 (MPL-2.0)
 
@@ -44,7 +44,7 @@ License:      MIT
 
 AutoMapper
 ---------------------------------------------
-WebSite:      http://http://www.automapper.org
+WebSite:      http://www.automapper.org
 Copyright:    Copyright © 2008-2013 Jimmy Bogard and other contributors
 License:      MIT
 
@@ -58,7 +58,7 @@ License:      Apache License 2.0 (Apache)
 
 DotNetOpenAuth
 ---------------------------------------------
-Website:      http://http://dotnetopenauth.net/
+Website:      http://dotnetopenauth.net/
 Copyright:    Copyright (c) 2011, Outercurve Foundation
 License:      MS-PL
 
@@ -143,12 +143,6 @@ JSON.NET
 Website:      http://james.newtonking.com/
 Copyright:    Copyright (c) 2007 James Newton-King
 License:      MIT
-
-
-LESS CSS for .NET
----------------------------------------------
-Website:      http://www.dotlesscss.org/
-License:      Apache License v2.0
 
 
 GeoLite Free by MaxMind

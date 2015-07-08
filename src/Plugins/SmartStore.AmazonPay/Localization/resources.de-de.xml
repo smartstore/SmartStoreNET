@@ -8,7 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Registrieren Sie sich bei <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a> an.</p>
+			<![CDATA[<p>Registrieren Sie sich bei <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a>.</p>
 <p>So richten Sie "Bezahlen mit Amazon" ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter Einstellungen - Integrationseinstellungen.</li>

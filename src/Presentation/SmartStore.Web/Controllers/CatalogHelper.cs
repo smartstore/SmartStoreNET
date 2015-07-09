@@ -845,6 +845,7 @@ namespace SmartStore.Web.Controllers
 						if (isBundle && product.BundlePerItemPricing && !string.IsNullOrWhiteSpace(model.ProductPrice.PriceWithDiscount))
 						{
 							model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
+                            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - finalPriceWithDiscount) * (-1));
 						}
 					}
 				}

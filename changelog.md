@@ -21,6 +21,7 @@
 * Send currency code of primary store currency (not of working currency) to payment gateway
 * #691 Product quantity not added to cart on mobile theme
 * #186 Mobile: variant images do not refresh 
+* #671 Bundle products: display base price according to applied discount 
 
 
 ## SmartStore.NET 2.2.1

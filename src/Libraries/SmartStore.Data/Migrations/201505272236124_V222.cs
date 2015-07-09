@@ -48,6 +48,9 @@ namespace SmartStore.Data.Migrations
                 "* Input elements with asterisk are required and have to be filled out.",
                 "* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.");
 
+            builder.AddOrUpdate("Admin.Products.BasePrice.Hint",
+                "Please keep in mind, the base price is depending on several factors and will therefore only be calculated reliable in the front end.",
+                "Bitte beachten Sie, dass der tatsächliche Grundpreis von verschiedenen Faktoren abhängig ist und erst im Shop zuverlässig berechnet werden kann.");
         }
     }
 }

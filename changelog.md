@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -18,6 +18,8 @@
 * Topics grid: fixed 'maxJsonLength exceeded' error
 * Debitoor: Fixed "The property named 'lines.0.productOrService' should be defined"
 * Send currency code of primary store currency (not of working currency) to payment gateway
+* #691 Product quantity not added to cart on mobile theme
+* #186 Mobile: variant images do not refresh 
 
 
 ## SmartStore.NET 2.2.1

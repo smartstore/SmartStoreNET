@@ -237,7 +237,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (string formKey in form.AllKeys)
 			{
-				if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+                if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					int.TryParse(form[formKey], out quantity);
 					break;

@@ -44,6 +44,10 @@ namespace SmartStore.Data.Migrations
                 "Not in assortment",
                 "Nicht im Sortiment");
 
+            builder.AddOrUpdate("Address.Fields.Required.Hint",
+                "* Input elements with asterisk are required and have to be filled out.",
+                "* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.");
+
         }
     }
 }

@@ -75,7 +75,7 @@
                                         @foreach (var sm in Model.AvailableShippingMethods)
                                         {
                                             var restricted = Model.Restricted.ContainsKey(c.Id) && Model.Restricted[c.Id][sm.Id];
-                                            <td class="ac">
+                                            <td class="al">
                                                 <input id="restrict_@(sm.Id)" class="restrict_@(sm.Id)" type="checkbox" value="@(c.Id)" name="restrict_@(sm.Id)" @(restricted ? " checked=checked" : null) />
                                             </td>
                                         }

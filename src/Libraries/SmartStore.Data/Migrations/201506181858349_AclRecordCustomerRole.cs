@@ -61,7 +61,40 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Configuration.Acl.NoRolesDefined",
                 "No customer roles defined",
                 "Es sind keine Kundengruppen definiert");
-            
+
+			builder.AddOrUpdate("Admin.Orders.Fields.OrderGuid",
+				"Order reference number",
+				"Bestellreferenznummer",
+				"The internal order reference number. In contrast to the order number it already exists during checkout that is before order creation.",
+				"Die interne Bestellreferenznummer. Im Gegensatz zur Auftragsnummer existiert diese bereits im Kassenbereich, d.h. vor der eigentlichen Erstelllung des Auftrags.");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.CannotActivatePaymentMethod")
+				.Value("de", "Das Plugin erlaubt keine Aktivierung dieser Zahlungsart.");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.PaymentMethod")
+				.Value("de", "Zahlungsart");
+
+			builder.AddOrUpdate("Admin.Orders.Fields.PaymentMethod.Hint")
+				.Value("de", "Die Zahlungsart für diese Transaktion");
+
+			builder.AddOrUpdate("Admin.System.Warnings.PaymentMethods.NoActive")
+				.Value("de", "Es existieren keine aktiven Zahlungsarten.");
+
+			builder.AddOrUpdate("Admin.System.Warnings.PaymentMethods.OK")
+				.Value("de", "Die Zahlungsarten sind OK.");
+
+			builder.AddOrUpdate("Checkout.NoPaymentMethods")
+				.Value("de", "Es sind keine Zahlungsarten verfügbar.");
+
+			builder.AddOrUpdate("Checkout.PaymentMethod")
+				.Value("de", "Zahlungsarten");
+
+			builder.AddOrUpdate("Order.PaymentMethod")
+				.Value("de", "Zahlungsart");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.CannotActivatePaymentMethod")
+				.Value("de", "Das Plugin erlaubt keine Aktivierung dieser Zahlungsart.");
+
         }
     }
 }

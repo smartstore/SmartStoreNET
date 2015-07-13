@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Domain.Media;
+﻿using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Core.Domain.Messages
 {

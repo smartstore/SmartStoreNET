@@ -116,6 +116,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
+    <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
     <Compile Include="Migrations\201403112331027_Initial.Designer.cs">
@@ -288,6 +289,10 @@
     <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.cs" />
     <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.Designer.cs">
       <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.cs" />
+    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.Designer.cs">
+      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -557,6 +562,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.resx">
       <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507132241575_QueuedEmailAttachments.resx">
+      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

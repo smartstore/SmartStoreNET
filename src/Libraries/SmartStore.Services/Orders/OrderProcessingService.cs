@@ -808,12 +808,9 @@ namespace SmartStore.Services.Orders
 
 				if (!preProcessPaymentResult.Success)
 				{
-					foreach (var paymentError in preProcessPaymentResult.Errors)
-					{
-						result.AddError(string.Format("Payment error: {0}", paymentError));
-					}
-
-					throw new SmartException("Error while pre-processing the payment");
+					result.Errors.AddRange(preProcessPaymentResult.Errors);
+					result.Errors.Add(T("Common.Error.PreProcessPayment"));
+					return result;					
 				}
 
 				Address billingAddress = null;

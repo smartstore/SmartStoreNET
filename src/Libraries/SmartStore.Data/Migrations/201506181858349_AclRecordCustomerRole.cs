@@ -30,6 +30,10 @@ namespace SmartStore.Data.Migrations
 
         public void MigrateLocaleResources(LocaleResourcesBuilder builder)
         {
+			builder.AddOrUpdate("Common.Error.PreProcessPayment",
+				"Unfortunately the selected payment method caused an error. Please correct your entries, try it again or select another payment method.",
+				"Die gewählte Zahlungsart verursachte leider einen Fehler. Bitte korrigieren Sie Ihre Eingaben, versuchen Sie es erneut oder wählen Sie eine andere Zahlungsart.");
+
             builder.AddOrUpdate("Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts",
                 "Transfer this ACL configuration to children",
                 "Diese Konfiguration für Kindelemente übernehmen");

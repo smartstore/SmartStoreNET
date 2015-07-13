@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -11,7 +11,8 @@
 * (Soft) deletion of SEO slug supporting entities now also deletes the corresponding url records
 * License checker now supports IDN mapping for domain names
 * #716 Supporting of paged google-product data query for SQL-Server Compact Edition
-* #648 Add hint for * at mandatory form fields at address creation 
+* #648 Add hint for * at mandatory form fields at address creation
+* Added link to imprint and disclaimer to footer in mobile theme 
 
 ### Bugfixes
 * #694 Product variant attribute in product page should not be preselected implicitly

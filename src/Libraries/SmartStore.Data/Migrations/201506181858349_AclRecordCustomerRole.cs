@@ -99,6 +99,26 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Payment.CannotActivatePaymentMethod")
 				.Value("de", "Das Plugin erlaubt keine Aktivierung dieser Zahlungsart.");
 
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.SupportCapture",
+				"Supports capture",
+				"Buchung möglich");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.SupportPartiallyRefund",
+				"Supports partial refund",
+				"Teilerstattung möglich");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.SupportRefund",
+				"Supports refund",
+				"Erstattung möglich");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.SupportVoid",
+				"Supports void",
+				"Stornierung möglich");
+
+			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType",
+				"Recurring payments",
+				"Wiederkehrende Zahlungen");
         }
     }
 }

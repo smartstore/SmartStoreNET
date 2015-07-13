@@ -51,7 +51,7 @@
 							}
                             @foreach (var pvaValue in attribute.Values)
                             {
-                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@(pvaValue.Name)@(pvaValue.GetAttributeValueInfo())</option>
+                                <option selected="@pvaValue.IsPreSelected" value="@pvaValue.Id">@Html.Raw(pvaValue.Name + pvaValue.GetAttributeValueInfo())</option>
                             }
                         </select>
                             }

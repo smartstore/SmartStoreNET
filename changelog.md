@@ -23,6 +23,7 @@
 * #691 Product quantity not added to cart on mobile theme
 * #186 Mobile: variant images do not refresh 
 * #671 Bundle products: display base price according to applied discount 
+* Weight adjustment of attributes weren't applied in shopping cart overview
 
 
 ## SmartStore.NET 2.2.1

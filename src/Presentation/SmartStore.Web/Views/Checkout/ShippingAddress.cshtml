@@ -45,8 +45,8 @@
                                              @item.PhoneNumber
                                         </div>
                                     }
-                                    @if (item.FaxEnabled)
-                                    {
+                                    @if (item.FaxEnabled && !String.IsNullOrEmpty(item.FaxNumber))
+{
                                         <div class="fax">
                                             @T("Address.Fields.FaxNumber"):
                                              @item.FaxNumber

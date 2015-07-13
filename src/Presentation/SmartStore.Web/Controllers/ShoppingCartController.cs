@@ -271,6 +271,13 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml);
+
+                var selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(item.AttributesXml).ToList();
+                if (selectedAttributeValues != null)
+                {
+                    foreach (var attributeValue in selectedAttributeValues)
+                        model.Weight = decimal.Add(model.Weight, attributeValue.WeightAdjustment);
+                }
 			}
 
 			if (product.DisplayDeliveryTimeAccordingToStock(_catalogSettings))

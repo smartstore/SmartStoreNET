@@ -750,6 +750,8 @@ namespace SmartStore.Services.Catalog
 				}
                 else
                 {
+					product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
+
 					decimal attributesTotalPrice = decimal.Zero;
 					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
 

@@ -1,10 +1,11 @@
 ﻿using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
-using System.Collections;
-using System.Linq;
-using System.Linq.Expressions;
 using System.Collections.Specialized;
+using System.Linq;
+using System.Text;
+using System.Web;
 using SmartStore.Collections;
 
 namespace SmartStore
@@ -185,6 +186,42 @@ namespace SmartStore
                 initial.Add(item, other[item]);
             }
         }
+
+		/// <summary>
+		/// Builds an URL query string
+		/// </summary>
+		/// <param name="nvc">Namer value collection</param>
+		/// <param name="encoding">Encoding type. Can be null.</param>
+		/// <param name="encode">Whether to encode keys and values</param>
+		/// <returns>The query string without leading a question mark</returns>
+		public static string BuildQueryString(this NameValueCollection nvc, Encoding encoding, bool encode = true)
+		{
+			var sb = new StringBuilder();
+
+			foreach (string str in nvc)
+			{
+				if (sb.Length > 0)
+					sb.Append('&');
+
+				if (!encode)
+					sb.Append(str);
+				else if (encoding == null)
+					sb.Append(HttpUtility.UrlEncode(str));
+				else
+					sb.Append(HttpUtility.UrlEncode(str, encoding));
+
+				sb.Append('=');
+
+				if (!encode)
+					sb.Append(nvc[str]);
+				else if (encoding == null)
+					sb.Append(HttpUtility.UrlEncode(nvc[str]));
+				else
+					sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+			}
+
+			return sb.ToString();
+		}
 
         #endregion
 

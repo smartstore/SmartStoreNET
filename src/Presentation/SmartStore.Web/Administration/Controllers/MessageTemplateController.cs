@@ -5,6 +5,7 @@ using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
@@ -91,13 +92,19 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(mt, x => x.BccEmailAddresses, localized.BccEmailAddresses, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(mt, x => x.Subject, localized.Subject, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(mt,x => x.Body, localized.Body, localized.LanguageId);
-                _localizedEntityService.SaveLocalizedValue(mt, x => x.EmailAccountId, localized.EmailAccountId, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment1FileId, localized.Attachment1FileId, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment2FileId, localized.Attachment2FileId, localized.LanguageId);
-				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment3FileId, localized.Attachment3FileId, localized.LanguageId);
+				int lid = localized.LanguageId;
+
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment1FileId, lid, false, false), localized.Attachment1FileId, true);
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment2FileId, lid, false, false), localized.Attachment2FileId, true);
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment3FileId, lid, false, false), localized.Attachment3FileId, true);
+
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.BccEmailAddresses, localized.BccEmailAddresses, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Subject, localized.Subject, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Body, localized.Body, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.EmailAccountId, localized.EmailAccountId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment1FileId, localized.Attachment1FileId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment2FileId, localized.Attachment2FileId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment3FileId, localized.Attachment3FileId, lid);
             }
         }
 
@@ -221,6 +228,11 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 messageTemplate = model.ToEntity(messageTemplate);
+
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment1FileId);
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment2FileId);
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment3FileId);
+
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 				
 				// Stores

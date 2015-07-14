@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Drawing;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Collections;
 using System.Reflection;
@@ -512,13 +510,20 @@ namespace SmartStore
 			}
         }
 
-        public static string AsString(this Stream stream)
+		public static string AsString(this Stream stream)
+		{
+			return stream.AsString(Encoding.UTF8);
+		}
+
+        public static string AsString(this Stream stream, Encoding encoding)
         {
-            // convert stream to string
+			Guard.ArgumentNotNull(() => encoding);
+			
+			// convert stream to string
             string result;
             stream.Position = 0;
 
-            using (StreamReader sr = new StreamReader(stream))
+            using (StreamReader sr = new StreamReader(stream, encoding))
             {
                 result = sr.ReadToEnd();
             }
@@ -543,14 +548,6 @@ namespace SmartStore
             using (MemoryStream stream = new MemoryStream(bytes))
             {
                 return new BinaryFormatter().Deserialize(stream);
-            }
-        }
-
-        public static Image ToImage(this byte[] bytes)
-        {
-            using (var stream = new MemoryStream(bytes))
-            {
-                return Image.FromStream(stream);
             }
         }
 
@@ -595,45 +592,6 @@ namespace SmartStore
 
                     return sb.ToString();
                 }
-            }
-        }
-
-        #endregion
-
-        #region Image/Bitmap
-
-        public static byte[] ToByteArray(this Image image)
-        {
-            Guard.ArgumentNotNull(() => image);
-
-            byte[] bytes;
-
-            ImageConverter converter = new ImageConverter();
-            bytes = (byte[])converter.ConvertTo(image, typeof(byte[]));
-            return bytes;
-        }
-
-        internal static byte[] ToByteArray(this Image image, ImageFormat format)
-        {
-            Guard.ArgumentNotNull(() => image);
-            Guard.ArgumentNotNull(() => format);
-
-            using (var stream = new MemoryStream())
-            {
-                image.Save(stream, format);
-                return stream.ToArray();
-            }
-        }
-
-        internal static Image ConvertTo(this Image image, ImageFormat format)
-        {
-            Guard.ArgumentNotNull(() => image);
-            Guard.ArgumentNotNull(() => format);
-
-            using (var stream = new MemoryStream())
-            {
-                image.Save(stream, format);
-                return Image.FromStream(stream);
             }
         }
 

@@ -564,11 +564,13 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Empty;
 		}
 
-		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper,
-			Expression<Func<TModel, TValue>> expression, string parentSelector = null)
+		public static MvcHtmlString SettingEditorFor<TModel, TValue>(this HtmlHelper<TModel> helper, 
+			Expression<Func<TModel, TValue>> expression, 
+			string parentSelector = null,
+			object additionalViewData = null)
 		{
 			var checkbox = helper.SettingOverrideCheckbox(expression, parentSelector);
-			var editor = helper.EditorFor(expression);
+			var editor = helper.EditorFor(expression, additionalViewData);
 
 			return MvcHtmlString.Create(checkbox.ToString() + editor.ToString());
 		}

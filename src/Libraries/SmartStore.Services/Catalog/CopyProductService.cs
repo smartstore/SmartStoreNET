@@ -91,7 +91,7 @@ namespace SmartStore.Services.Catalog
 				var download = _downloadService.GetDownloadById(product.DownloadId);
 				if (download != null)
 				{
-					var downloadCopy = new Download()
+					var downloadCopy = new Download
 					{
 						DownloadGuid = Guid.NewGuid(),
 						UseDownloadUrl = download.UseDownloadUrl,
@@ -111,7 +111,7 @@ namespace SmartStore.Services.Catalog
 					var sampleDownload = _downloadService.GetDownloadById(product.SampleDownloadId.GetValueOrDefault());
 					if (sampleDownload != null)
 					{
-						var sampleDownloadCopy = new Download()
+						var sampleDownloadCopy = new Download
 						{
 							DownloadGuid = Guid.NewGuid(),
 							UseDownloadUrl = sampleDownload.UseDownloadUrl,
@@ -275,8 +275,10 @@ namespace SmartStore.Services.Catalog
                         _pictureService.LoadPictureBinary(picture),
                         picture.MimeType, 
                         _pictureService.GetPictureSeName(newName), 
-                        true);
-                    _productService.InsertProductPicture(new ProductPicture()
+                        true,
+						false,
+						false);
+                    _productService.InsertProductPicture(new ProductPicture
                     {
                         ProductId = productCopy.Id,
                         PictureId = pictureCopy.Id,

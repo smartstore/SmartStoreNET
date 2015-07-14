@@ -1084,11 +1084,11 @@ namespace SmartStore.Web.Controllers
                         break;
                     case AttributeControlType.FileUpload:
                         {
-                            var httpPostedFile = this.Request.Files[controlId];
-                            if ((httpPostedFile != null) && (!String.IsNullOrEmpty(httpPostedFile.FileName)))
+                            var postedFile = this.Request.Files[controlId].ToPostedFileResult();
+                            if (postedFile != null && postedFile.FileName.HasValue())
                             {
                                 int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-                                if (httpPostedFile.ContentLength > fileMaxSize)
+                                if (postedFile.Size > fileMaxSize)
                                 {
                                     //TODO display warning
                                     //warnings.Add(string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)));
@@ -1096,21 +1096,20 @@ namespace SmartStore.Web.Controllers
                                 else
                                 {
                                     //save an uploaded file
-                                    var download = new Download()
+                                    var download = new Download
                                     {
                                         DownloadGuid = Guid.NewGuid(),
                                         UseDownloadUrl = false,
                                         DownloadUrl = "",
-                                        DownloadBinary = httpPostedFile.GetDownloadBits(),
-                                        ContentType = httpPostedFile.ContentType,
-                                        Filename = System.IO.Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-                                        Extension = System.IO.Path.GetExtension(httpPostedFile.FileName),
+                                        DownloadBinary = postedFile.Buffer,
+                                        ContentType = postedFile.ContentType,
+                                        Filename = postedFile.FileTitle,
+                                        Extension = postedFile.FileExtension,
                                         IsNew = true
                                     };
                                     _downloadService.InsertDownload(download);
                                     //save attribute
-                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes,
-                                        attribute, download.DownloadGuid.ToString());
+                                    selectedAttributes = _checkoutAttributeParser.AddCheckoutAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
                                 }
                             }
                         }
@@ -1369,86 +1368,62 @@ namespace SmartStore.Web.Controllers
                 {
                     success = false,
                     downloadGuid = Guid.Empty,
-                }, "text/plain");
+                });
             }
-            //ensure that this attribute belong to this product and has "file upload" type
+
+            // ensure that this attribute belong to this product and has "file upload" type
             var pva = _productAttributeService
                 .GetProductVariantAttributesByProductId(productId)
                 .Where(pa => pa.ProductAttributeId == productAttributeId)
                 .FirstOrDefault();
+
             if (pva == null || pva.AttributeControlType != AttributeControlType.FileUpload)
             {
                 return Json(new
                 {
                     success = false,
                     downloadGuid = Guid.Empty,
-                }, "text/plain");
+                });
             }
 
-            //we process it distinct ways based on a browser
-            //find more info here http://stackoverflow.com/questions/4884920/mvc3-valums-ajax-file-upload
-            Stream stream = null;
-            var fileName = "";
-            var contentType = "";
-            if (String.IsNullOrEmpty(Request["qqfile"]))
-            {
-                // IE
-                HttpPostedFileBase httpPostedFile = Request.Files[0];
-                if (httpPostedFile == null)
-                    throw new ArgumentException("No file uploaded");
-                stream = httpPostedFile.InputStream;
-                fileName = Path.GetFileName(httpPostedFile.FileName);
-                contentType = httpPostedFile.ContentType;
-            }
-            else
-            {
-                //Webkit, Mozilla
-                stream = Request.InputStream;
-                fileName = Request["qqfile"];
-            }
-
-            var fileBinary = new byte[stream.Length];
-            stream.Read(fileBinary, 0, fileBinary.Length);
-
-            var fileExtension = Path.GetExtension(fileName);
-            if (!String.IsNullOrEmpty(fileExtension))
-                fileExtension = fileExtension.ToLowerInvariant();
+			var postedFile = Request.ToPostedFileResult();
+			if (postedFile == null)
+			{
+				throw new ArgumentException("No file uploaded");
+			}
 
             int fileMaxSize = _catalogSettings.FileUploadMaximumSizeBytes;
-            if (fileBinary.Length > fileMaxSize)
+			if (postedFile.Size > fileMaxSize)
             {
-                //when returning JSON the mime-type must be set to text/plain
-                //otherwise some browsers will pop-up a "Save As" dialog.
                 return Json(new
                 {
                     success = false,
                     message = string.Format(_localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)),
                     downloadGuid = Guid.Empty,
-                }, "text/plain");
+                });
             }
 
-            var download = new Download()
+            var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = fileBinary,
-                ContentType = contentType,
-                //we store filename without extension for downloads
-                Filename = Path.GetFileNameWithoutExtension(fileName),
-                Extension = fileExtension,
-                IsNew = true
+                DownloadBinary = postedFile.Buffer,
+                ContentType = postedFile.ContentType,
+                // we store filename without extension for downloads
+                Filename = postedFile.FileTitle,
+                Extension = postedFile.FileExtension,
+                IsNew = true,
+				IsTransient = true
             };
             _downloadService.InsertDownload(download);
 
-            //when returning JSON the mime-type must be set to text/plain
-            //otherwise some browsers will pop-up a "Save As" dialog.
             return Json(new
             {
                 success = true,
                 message = _localizationService.GetResource("ShoppingCart.FileUploaded"),
                 downloadGuid = download.DownloadGuid,
-            }, "text/plain");
+            });
         }
 
 

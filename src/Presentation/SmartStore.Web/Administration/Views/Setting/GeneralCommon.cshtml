@@ -355,7 +355,7 @@
                 @Html.SmartLabelFor(model => model.PdfSettings.LogoPictureId)
             </td>
             <td class="adminData" id="pdf-logo-picture">
-                @Html.SettingEditorFor(model => model.PdfSettings.LogoPictureId, "#pdf-logo-picture")
+                @Html.SettingEditorFor(model => model.PdfSettings.LogoPictureId, "#pdf-logo-picture", new { transientUpload = true })
                 @Html.ValidationMessageFor(model => model.PdfSettings.LogoPictureId)
             </td>
         </tr>

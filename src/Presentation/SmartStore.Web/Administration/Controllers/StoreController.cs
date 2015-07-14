@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
@@ -103,6 +104,7 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				var store = model.ToEntity();
+				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.InsertStore(store);
@@ -144,6 +146,9 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				store = model.ToEntity(store);
+
+				MediaHelper.UpdatePictureTransientStateFor(store, s => s.LogoPictureId);
+
 				//ensure we have "/" at the end
 				store.Url = store.Url.EnsureEndsWith("/");
 				_storeService.UpdateStore(store);

@@ -393,11 +393,7 @@ namespace SmartStore.Admin.Controllers
                 if (file != null && file.ContentLength > 0)
                 {
                     int importedCount = 0;
-                    using (var sr = new StreamReader(file.InputStream, Encoding.UTF8))
-                    {
-                        string content = sr.ReadToEnd();
-                        importedCount = _themeVarService.ImportVariables(theme, storeId, content);
-                    }
+					importedCount = _themeVarService.ImportVariables(theme, storeId, file.InputStream.AsString());
 
                     // activity log
                     try

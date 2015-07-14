@@ -290,6 +290,18 @@
     <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.Designer.cs">
       <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507092146153_DownloadGuidIndex.cs" />
+    <Compile Include="Migrations\201507092146153_DownloadGuidIndex.Designer.cs">
+      <DependentUpon>201507092146153_DownloadGuidIndex.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507102159496_TransientMedia.cs" />
+    <Compile Include="Migrations\201507102159496_TransientMedia.Designer.cs">
+      <DependentUpon>201507102159496_TransientMedia.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507141647299_CustomerTablePerf.cs" />
+    <Compile Include="Migrations\201507141647299_CustomerTablePerf.Designer.cs">
+      <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -558,6 +570,15 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507072138058_MessageTemplateAttachments.resx">
       <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507092146153_DownloadGuidIndex.resx">
+      <DependentUpon>201507092146153_DownloadGuidIndex.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507102159496_TransientMedia.resx">
+      <DependentUpon>201507102159496_TransientMedia.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507141647299_CustomerTablePerf.resx">
+      <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

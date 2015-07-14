@@ -466,6 +466,9 @@
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.download.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\smartstore.discountrules.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -494,6 +497,7 @@
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
     <Content Include="Views\Common\CheckUpdate.cshtml" />
     <Content Include="Views\Payment\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Download2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

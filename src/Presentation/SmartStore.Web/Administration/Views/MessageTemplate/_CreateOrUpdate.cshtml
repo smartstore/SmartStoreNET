@@ -131,7 +131,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment1FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment1FileId)
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment1FileId, "Download")
 	 			@Html.ValidationMessageFor(model => model.Locales[item].Attachment1FileId)
 			</td>
 		 </tr>
@@ -140,7 +140,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment2FileId)
 			</td>
 			<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment2FileId)
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment2FileId, "Download")
 				@Html.ValidationMessageFor(model => model.Locales[item].Attachment2FileId)
 			</td>
 		 </tr>
@@ -149,7 +149,7 @@
 	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment3FileId)
 			</td>
 			<td class="adminData">
-	 			@Html.EditorFor(model => Model.Locales[item].Attachment3FileId)
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment3FileId, "Download")
 				@Html.ValidationMessageFor(model => model.Locales[item].Attachment3FileId)
 			</td>
 		</tr>
@@ -202,7 +202,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment1FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment1FileId)
+	 			@Html.EditorFor(model => Model.Attachment1FileId, "Download2")
 	 			@Html.ValidationMessageFor(model => model.Attachment1FileId)
 			</td>
 		</tr>
@@ -211,7 +211,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment2FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment2FileId)
+	 			@Html.EditorFor(model => Model.Attachment2FileId, "Download2")
 	 			@Html.ValidationMessageFor(model => model.Attachment2FileId)
 			</td>
 		</tr>
@@ -220,7 +220,7 @@
 	 			@Html.SmartLabelFor(model => model.Attachment3FileId)
 	 		</td>
 	 		<td class="adminData">
-	 			@Html.EditorFor(model => Model.Attachment3FileId)
+	 			@Html.EditorFor(model => Model.Attachment3FileId, "Download2", new { minimalMode = false })
 	 			@Html.ValidationMessageFor(model => model.Attachment3FileId)
 			</td>
 		</tr>

@@ -239,10 +239,11 @@
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\TabStripCreated.cs" />
-    <Compile Include="Extensions\HttpContextExtensions.cs" />
+    <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
+    <Compile Include="Extensions\PostedFileResult.cs" />
     <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Mvc\ErrorMessageProvider.cs" />
     <Compile Include="Mvc\CompressAttribute.cs" />

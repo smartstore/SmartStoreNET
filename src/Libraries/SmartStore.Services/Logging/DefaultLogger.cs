@@ -7,6 +7,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Logging;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Logging
 {
@@ -93,14 +94,7 @@ namespace SmartStore.Services.Logging
 				}
 			}
 
-			if (DataSettings.Current.IsSqlServer)
-			{
-				try
-				{
-					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
-				}
-				catch { }
-			}
+			_dbContext.ShrinkDatabase();
         }
 
 		public virtual void ClearLog(DateTime toUtc, LogLevel logLevel)
@@ -115,10 +109,7 @@ namespace SmartStore.Services.Logging
 						break;
 				}
 
-				if (DataSettings.Current.IsSqlServer)
-				{
-					_dbContext.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
-				}
+				_dbContext.ShrinkDatabase();
 			}
 			catch { }
 		}

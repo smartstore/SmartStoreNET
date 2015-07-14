@@ -718,10 +718,10 @@ namespace SmartStore.Services.ExportImport
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
 							// no equal picture found in sequence
-							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, true);
+							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false);
 							if (newPicture != null)
 							{
-								var mapping = new ProductPicture()
+								var mapping = new ProductPicture
 								{
 									ProductId = row.Entity.Id,
 									PictureId = newPicture.Id,

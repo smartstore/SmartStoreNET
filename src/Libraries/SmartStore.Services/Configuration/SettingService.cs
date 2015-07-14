@@ -384,7 +384,7 @@ namespace SmartStore.Services.Configuration
 			else
 			{
 				//insert
-				var setting = new Setting()
+				var setting = new Setting
 				{
 					Name = key,
 					Value = valueStr,

@@ -117,20 +117,20 @@
                     case AttributeControlType.Datepicker:
                         {
 							@Html.DatePickerDropDowns(controlId + "_day", controlId + "_month", controlId + "_year", attribute.BeginYear, attribute.EndYear, attribute.SelectedDay, attribute.SelectedMonth, attribute.SelectedYear, true, attribute.IsDisabled)
-                        }
-                        break;
-                    case AttributeControlType.FileUpload:
+						}
+						break;
+					case AttributeControlType.FileUpload:
 						{
 							Html.AddScriptParts("~/bundles/fileupload");
 							Html.AddCssFileParts("~/css/fileupload");
 
-                            var random = CommonHelper.GenerateRandomInteger();
-                            var clientId = "upload" + CommonHelper.GenerateRandomInteger();
+							var random = CommonHelper.GenerateRandomInteger();
+							var clientId = "upload" + CommonHelper.GenerateRandomInteger();
 
-                            //ex. ['jpg', 'jpeg', 'png', 'gif'] or []
-                            var allowedFileExtensions = string.Join("|", attribute.AllowedFileExtensions.Select(x => x.Trim()).ToList());
+							//ex. ['jpg', 'jpeg', 'png', 'gif'] or []
+							var allowedFileExtensions = string.Join("|", attribute.AllowedFileExtensions.Select(x => x.Trim()).ToList());
 
-                                    
+
                             <div id="@clientId" class="fileupload">
     
                                 <input id="@(controlId)" name="@(controlId)" type="hidden" class="hidden" />

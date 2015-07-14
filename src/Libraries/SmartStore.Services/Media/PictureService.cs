@@ -15,6 +15,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Configuration;
 using SmartStore.Utilities;
+using SmartStore.Data;
 
 namespace SmartStore.Services.Media
 {   
@@ -51,16 +52,7 @@ namespace SmartStore.Services.Media
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="pictureRepository">Picture repository</param>
-        /// <param name="productPictureRepository">Product picture repository</param>
-        /// <param name="settingService">Setting service</param>
-        /// <param name="webHelper">Web helper</param>
-        /// <param name="logger">Logger</param>
-        /// <param name="eventPublisher">Event publisher</param>
-        /// <param name="mediaSettings">Media settings</param>
+
         public PictureService(
             IRepository<Picture> pictureRepository,
             IRepository<ProductPicture> productPictureRepository,
@@ -147,12 +139,6 @@ namespace SmartStore.Services.Media
 			return defaultImageFileName;
 		}
 
-        /// <summary>
-        /// Validates input picture dimensions and prevents that the image size exceeds global max size
-        /// </summary>
-        /// <param name="pictureBinary">Picture binary</param>
-        /// <param name="mimeType">MIME type</param>
-        /// <returns>Picture binary or throws an exception</returns>
         public virtual byte[] ValidatePicture(byte[] pictureBinary)
         {
             Size originalSize = this.GetPictureSize(pictureBinary);
@@ -169,25 +155,11 @@ namespace SmartStore.Services.Media
             }
         }
 
-		/// <summary>
-		/// Finds an equal picture by comparing the binary buffer
-		/// </summary>
-		/// <param name="path">The picture to find a duplicate for</param>
-		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
-		/// <param name="equalPictureId">Id of equal picture if any</param>
-		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
 		public byte[] FindEqualPicture(string path, IEnumerable<Picture> productPictures, out int equalPictureId)
 		{
 			return FindEqualPicture(File.ReadAllBytes(path), productPictures, out equalPictureId);
 		}
 
-		/// <summary>
-		/// Finds an equal picture by comparing the binary buffer
-		/// </summary>
-		/// <param name="pictureBinary">Binary picture data</param>
-		/// <param name="productPictures">The sequence of product pictures to seek within for duplicates</param>
-		/// <param name="equalPictureId">Id of equal picture if any</param>
-		/// <returns>The picture binary for <c>path</c> when no picture equals in the sequence, <c>null</c> otherwise.</returns>
 		public byte[] FindEqualPicture(byte[] pictureBinary, IEnumerable<Picture> productPictures, out int equalPictureId)
 		{
 			equalPictureId = 0;
@@ -220,23 +192,11 @@ namespace SmartStore.Services.Media
 
         #region Methods
 
-        /// <summary>
-        /// Get picture SEO friendly name
-        /// </summary>
-        /// <param name="name">Name</param>
-        /// <returns>Result</returns>
         public virtual string GetPictureSeName(string name)
         {
             return SeoHelper.GetSeName(name, true, false);
         }
 
-        /// <summary>
-        /// Get a picture local path
-        /// </summary>
-        /// <param name="picture">Picture instance</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-        /// <returns></returns>
         public virtual string GetThumbLocalPath(Picture picture, int targetSize = 0, bool showDefaultPicture = true)
         {
             // 'GetPictureUrl' takes care of creating the thumb when not created already
@@ -271,13 +231,6 @@ namespace SmartStore.Services.Media
 
         }
 
-        /// <summary>
-        /// Gets the default picture URL
-        /// </summary>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <returns>Picture URL</returns>
         public virtual string GetDefaultPictureUrl(int targetSize = 0, PictureType defaultPictureType = PictureType.Entity, string storeLocation = null)
         {
             string defaultImageFileName = GetDefaultImageFileName(defaultPictureType);
@@ -387,22 +340,11 @@ namespace SmartStore.Services.Media
 			return File.ReadAllBytes(filePath);
 		}
 
-        /// <summary>
-        /// Gets the loaded picture binary depending on picture storage settings
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        /// <returns>Picture binary</returns>
         public virtual byte[] LoadPictureBinary(Picture picture)
         {
             return LoadPictureBinary(picture, this.StoreInDb);
         }
 
-        /// <summary>
-        /// Gets the loaded picture binary depending on picture storage settings
-        /// </summary>
-        /// <param name="picture">Picture</param>
-        /// <param name="fromDb">Load from database; otherwise, from file system</param>
-        /// <returns>Picture binary</returns>
         public virtual byte[] LoadPictureBinary(Picture picture, bool fromDb)
         {
             if (picture == null)
@@ -462,15 +404,6 @@ namespace SmartStore.Services.Media
             return size;
         }
 
-        /// <summary>
-        /// Get a picture URL
-        /// </summary>
-        /// <param name="pictureId">Picture identifier</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <returns>Picture URL</returns>
         public virtual string GetPictureUrl(
             int pictureId,
             int targetSize = 0,
@@ -482,15 +415,6 @@ namespace SmartStore.Services.Media
             return GetPictureUrl(picture, targetSize, showDefaultPicture, storeLocation, defaultPictureType);
         }
 
-        /// <summary>
-        /// Get a picture URL
-        /// </summary>
-        /// <param name="picture">Picture instance</param>
-        /// <param name="targetSize">The target picture size (longest side)</param>
-        /// <param name="showDefaultPicture">A value indicating whether the default picture is shown</param>
-        /// <param name="storeLocation">Store location URL; null to use determine the current store location automatically</param>
-        /// <param name="defaultPictureType">Default picture type</param>
-        /// <returns>Picture URL</returns>
         public virtual string GetPictureUrl(
             Picture picture,
             int targetSize = 0,
@@ -580,37 +504,27 @@ namespace SmartStore.Services.Media
             return picture;
         }
 
-        /// <summary>
-        /// Deletes a picture
-        /// </summary>
-        /// <param name="picture">Picture</param>
         public virtual void DeletePicture(Picture picture)
         {
             if (picture == null)
                 throw new ArgumentNullException("picture");
 
-            //delete thumbs
+            // delete thumbs
             _imageCache.DeleteCachedImages(picture);
 
-            //delete from file system
+            // delete from file system
             if (!this.StoreInDb)
             {
                 DeletePictureOnFileSystem(picture);
             }
 
-            //delete from database
+            // delete from database
             _pictureRepository.Delete(picture);
 
-            //event notification
+            // event notification
             _eventPublisher.EntityDeleted(picture);
         }
 
-        /// <summary>
-        /// Gets a collection of pictures
-        /// </summary>
-        /// <param name="pageIndex">Current page</param>
-        /// <param name="pageSize">Items on each page</param>
-        /// <returns>Paged list of pictures</returns>
         public virtual IPagedList<Picture> GetPictures(int pageIndex, int pageSize)
         {
             var query = from p in _pictureRepository.Table
@@ -620,12 +534,6 @@ namespace SmartStore.Services.Media
             return pics;
         }
 
-        /// <summary>
-        /// Gets pictures by product identifier
-        /// </summary>
-        /// <param name="productId">Product identifier</param>
-        /// <param name="recordsToReturn">Number of records to return. 0 if you want to get all items</param>
-        /// <returns>Pictures</returns>
         public virtual IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0)
         {
             if (productId == 0)
@@ -644,16 +552,7 @@ namespace SmartStore.Services.Media
             return pics;
         }
 
-        /// <summary>
-        /// Inserts a picture
-        /// </summary>
-        /// <param name="pictureBinary">The picture binary</param>
-        /// <param name="mimeType">The picture MIME type</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <param name="isNew">A value indicating whether the picture is new</param>
-        /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-        /// <returns>Picture</returns>
-        public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true)
+        public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true)
         {
 			mimeType = mimeType.EmptyNull();
 			mimeType = mimeType.Truncate(20);
@@ -670,6 +569,8 @@ namespace SmartStore.Services.Media
             picture.MimeType = mimeType;
             picture.SeoFilename = seoFilename;
             picture.IsNew = isNew;
+			picture.IsTransient = isTransient;
+			picture.UpdatedOnUtc = DateTime.UtcNow;
 
             _pictureRepository.Insert(picture);
 
@@ -684,16 +585,6 @@ namespace SmartStore.Services.Media
             return picture;
         }
 
-        /// <summary>
-        /// Updates the picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="pictureBinary">The picture binary</param>
-        /// <param name="mimeType">The picture MIME type</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <param name="isNew">A value indicating whether the picture is new</param>
-        /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-        /// <returns>Picture</returns>
         public virtual Picture UpdatePicture(int pictureId, byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true)
         {
             mimeType = mimeType.EmptyNull().Truncate(20);
@@ -718,6 +609,7 @@ namespace SmartStore.Services.Media
             picture.MimeType = mimeType;
             picture.SeoFilename = seoFilename;
             picture.IsNew = isNew;
+			picture.UpdatedOnUtc = DateTime.UtcNow;
 
             _pictureRepository.Update(picture);
 
@@ -732,22 +624,15 @@ namespace SmartStore.Services.Media
             return picture;
         }
 
-        /// <summary>
-        /// Updates a SEO filename of a picture
-        /// </summary>
-        /// <param name="pictureId">The picture identifier</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <returns>Picture</returns>
         public virtual Picture SetSeoFilename(int pictureId, string seoFilename)
         {
             var picture = GetPictureById(pictureId);
             if (picture == null)
                 throw new ArgumentException("No picture found with the specified id");
 
-            //update if it has been changed
+            // update if it has been changed
             if (seoFilename != picture.SeoFilename)
             {
-                //update picture
                 picture = UpdatePicture(picture.Id, LoadPictureBinary(picture), picture.MimeType, seoFilename, true, false);
             }
             return picture;
@@ -757,10 +642,6 @@ namespace SmartStore.Services.Media
 
         #region Properties
 
-
-        /// <summary>
-        /// Gets or sets a value indicating whether the images should be stored in data base.
-        /// </summary>
         public virtual bool StoreInDb
         {
             get
@@ -854,6 +735,7 @@ namespace SmartStore.Services.Media
 								}		
 
 								// explicitly attach modified entity to context, because we disabled AutoCommit
+								picture.UpdatedOnUtc = DateTime.UtcNow;
 								_pictureRepository.Update(picture);
 
 								i++;
@@ -898,13 +780,9 @@ namespace SmartStore.Services.Media
 				}
 
 				// shrink database (only when DB > FS and success)
-				if (!toDb && !failed && DataSettings.Current.IsSqlServer)
+				if (!toDb && !failed)
 				{
-					try
-					{
-						ctx.ExecuteSqlCommand("DBCC SHRINKDATABASE(0)", true);
-					}
-					catch { }
+					ctx.ShrinkDatabase();
 				}
 			}
 

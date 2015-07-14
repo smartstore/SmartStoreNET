@@ -486,12 +486,7 @@ namespace SmartStore.Admin.Controllers
                 var file = Request.Files["importxmlfile"];
                 if (file != null && file.ContentLength > 0)
                 {
-                    using (var sr = new StreamReader(file.InputStream, Encoding.UTF8))
-                    {
-                        string content = sr.ReadToEnd();
-                        _localizationService.ImportResourcesFromXml(language, content, mode: mode, updateTouchedResources: updateTouched);
-                    }
-
+					_localizationService.ImportResourcesFromXml(language, file.InputStream.AsString(), mode: mode, updateTouchedResources: updateTouched);
                 }
                 else
                 {

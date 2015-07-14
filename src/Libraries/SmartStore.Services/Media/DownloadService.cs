@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
@@ -89,6 +91,7 @@ namespace SmartStore.Services.Media
             if (download == null)
                 throw new ArgumentNullException("download");
 
+			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Insert(download);
 
             _eventPubisher.EntityInserted(download);
@@ -99,6 +102,7 @@ namespace SmartStore.Services.Media
             if (download == null)
                 throw new ArgumentNullException("download");
 
+			download.UpdatedOnUtc = DateTime.UtcNow;
             _downloadRepository.Update(download);
 
             _eventPubisher.EntityUpdated(download);

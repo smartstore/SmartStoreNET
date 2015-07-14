@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Linq.Expressions;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 

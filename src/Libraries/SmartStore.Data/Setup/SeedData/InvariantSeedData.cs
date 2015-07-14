@@ -4814,6 +4814,14 @@ namespace SmartStore.Data.Setup
 				},
 				new ScheduleTask
 				{
+					Name = "Clear transient uploads",
+					Seconds = 43200, // 12 hours
+					Type = "SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
+				new ScheduleTask
+				{
 					Name = "Clear email queue",
 					Seconds = 86400, // 1 day
 					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",

@@ -311,6 +311,8 @@ namespace SmartStore.Admin.Controllers
                 var manufacturer = model.ToEntity();
                 manufacturer.CreatedOnUtc = DateTime.UtcNow;
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
+
+				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
                 
 				_manufacturerService.InsertManufacturer(manufacturer);
                 
@@ -381,10 +383,9 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				int prevPictureId = manufacturer.PictureId.GetValueOrDefault();
                 manufacturer = model.ToEntity(manufacturer);
+				MediaHelper.UpdatePictureTransientStateFor(manufacturer, m => m.PictureId);
                 manufacturer.UpdatedOnUtc = DateTime.UtcNow;
-
                 _manufacturerService.UpdateManufacturer(manufacturer);
                 
 				//search engine name
@@ -393,14 +394,6 @@ namespace SmartStore.Admin.Controllers
                 
 				//locales
                 UpdateLocales(manufacturer, model);
-                
-				//delete an old picture (if deleted or updated)
-				if (prevPictureId > 0 && prevPictureId != manufacturer.PictureId.GetValueOrDefault())
-                {
-                    var prevPicture = _pictureService.GetPictureById(prevPictureId);
-                    if (prevPicture != null)
-                        _pictureService.DeletePicture(prevPicture);
-                }
                 
 				//update picture seo file name
                 UpdatePictureSeoNames(manufacturer);

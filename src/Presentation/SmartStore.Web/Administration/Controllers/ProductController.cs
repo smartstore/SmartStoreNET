@@ -228,7 +228,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsGiftCard = m.IsGiftCard;
 			p.GiftCardTypeId = m.GiftCardTypeId;
-
+			
 			p.IsDownload = m.IsDownload;
 			p.DownloadId = m.DownloadId;
 			p.UnlimitedDownloads = m.UnlimitedDownloads;
@@ -552,6 +552,10 @@ namespace SmartStore.Admin.Controllers
 
 			var nameChanged = modifiedProperties.ContainsKey("Name");
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
+
+			// Handle Download transiency
+			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.DownloadId);
+			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
 
 			// SEO
 			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
@@ -2457,12 +2461,16 @@ namespace SmartStore.Admin.Controllers
             if (product == null)
                 throw new ArgumentException("No product found with the specified id");
 
-            _productService.InsertProductPicture(new ProductPicture()
+			var productPicture = new ProductPicture
             {
                 PictureId = pictureId,
                 ProductId = productId,
                 DisplayOrder = displayOrder,
-            });
+            };
+
+			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.PictureId);
+
+            _productService.InsertProductPicture(productPicture);
 
             _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
 

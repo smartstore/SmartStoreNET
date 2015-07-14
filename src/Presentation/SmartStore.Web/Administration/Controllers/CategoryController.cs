@@ -519,6 +519,9 @@ namespace SmartStore.Admin.Controllers
                 var category = model.ToEntity();
                 category.CreatedOnUtc = DateTime.UtcNow;
                 category.UpdatedOnUtc = DateTime.UtcNow;
+
+				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
+
                 _categoryService.InsertCategory(category);
                 
 				//search engine name
@@ -634,15 +637,20 @@ namespace SmartStore.Admin.Controllers
 
             if (ModelState.IsValid)
             {
-				int prevPictureId = category.PictureId.GetValueOrDefault();
                 category = model.ToEntity(category);
+
+				MediaHelper.UpdatePictureTransientStateFor(category, c => c.PictureId);
+
                 category.UpdatedOnUtc = DateTime.UtcNow;
                 _categoryService.UpdateCategory(category);
+
                 //search engine name
                 model.SeName = category.ValidateSeName(model.SeName, category.Name, true);
                 _urlRecordService.SaveSlug(category, model.SeName, 0);
+
                 //locales
                 UpdateLocales(category, model);
+
                 //discounts
                 var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToCategories, null, true);
                 foreach (var discount in allDiscounts)
@@ -664,14 +672,6 @@ namespace SmartStore.Admin.Controllers
 
                 //update "HasDiscountsApplied" property
                 _categoryService.UpdateHasDiscountsApplied(category);
-
-                //delete an old picture (if deleted or updated)
-                if (prevPictureId > 0 && prevPictureId != category.PictureId)
-                {
-                    var prevPicture = _pictureService.GetPictureById(prevPictureId);
-                    if (prevPicture != null)
-                        _pictureService.DeletePicture(prevPicture);
-                }
 
                 //update picture seo file name
                 UpdatePictureSeoNames(category);
@@ -718,7 +718,7 @@ namespace SmartStore.Admin.Controllers
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
-
+			
             var category = _categoryService.GetCategoryById(id);
             if (category == null)
                 return RedirectToAction("List");

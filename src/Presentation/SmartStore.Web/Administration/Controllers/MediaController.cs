@@ -12,7 +12,6 @@ namespace SmartStore.Admin.Controllers
 
 	public partial class MediaController : AdminControllerBase
     {
-		private static readonly Regex s_allowedImageTypes = new Regex(@"(.*?)\.(gif|jpg|jpeg|png|bmp|ico|svg)", RegexOptions.Compiled | RegexOptions.IgnoreCase);
 		private readonly IPermissionService _permissionService;
         private readonly IWebHelper _webHelper;
 
@@ -51,44 +50,32 @@ namespace SmartStore.Admin.Controllers
 
 		private UploadFileResult UploadImageInternal()
 		{
-			if (Request.Files.Count == 0)
+			var postedFile = Request.ToPostedFileResult();
+			if (postedFile == null)
 			{
 				return new UploadFileResult { Message = "No file uploaded" };
 			}
 
-			var uploadFile = Request.Files[0];
-			if (uploadFile == null)
-			{
-				return new UploadFileResult { Message = "No file name provided" };
-			}
-
-			var fileName = Path.GetFileName(uploadFile.FileName);
-			if (fileName.IsEmpty())
+			if (postedFile.FileName.IsEmpty())
 			{
 				return new UploadFileResult { Message = "No file name provided" };
 			}
 
 			var directory = "~/Media/Uploaded/";
-			var filePath = Path.Combine(_webHelper.MapPath(directory), fileName);
+			var filePath = Path.Combine(_webHelper.MapPath(directory), postedFile.FileName);
 
-			if (!IsAllowedImageType(fileName))
+			if (!!postedFile.IsImage)
 			{
-				return new UploadFileResult { Message = "Files with extension '{0}' cannot be uploaded".FormatInvariant(Path.GetExtension(filePath)) };
+				return new UploadFileResult { Message = "Files with extension '{0}' cannot be uploaded".FormatInvariant(postedFile.FileExtension) };
 			}
 
-			uploadFile.SaveAs(filePath);
+			postedFile.File.SaveAs(filePath);
 
 			return new UploadFileResult
 			{
 				Success = true,
-				Url = this.Url.Content(string.Format("{0}{1}", directory, fileName))
+				Url = this.Url.Content(string.Format("{0}{1}", directory, postedFile.FileName))
 			};
-		}
-
-		[NonAction]
-		protected virtual bool IsAllowedImageType(string path)
-		{
-			return s_allowedImageTypes.IsMatch(path);
 		}
 
 		public class UploadFileResult

@@ -78,7 +78,7 @@
                 @Html.SmartLabelFor(model => model.AddPictureModel.PictureId)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.AddPictureModel.PictureId)
+                @Html.EditorFor(model => model.AddPictureModel.PictureId, new { transientUpload = true })
                 @Html.ValidationMessageFor(model => model.AddPictureModel.PictureId)
             </td>
         </tr>

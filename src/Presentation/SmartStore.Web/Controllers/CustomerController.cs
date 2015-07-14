@@ -1349,7 +1349,7 @@ namespace SmartStore.Web.Controllers
                 null, null, null, true);
             foreach (var item in items)
             {
-                var itemModel = new CustomerDownloadableProductsModel.DownloadableProductsModel()
+                var itemModel = new CustomerDownloadableProductsModel.DownloadableProductsModel
                 {
                     OrderItemGuid = item.OrderItemGuid,
                     OrderId = item.OrderId,
@@ -1532,11 +1532,11 @@ namespace SmartStore.Web.Controllers
                         if (uploadedFile.ContentLength > avatarMaxSize)
                             throw new SmartException(string.Format(_localizationService.GetResource("Account.Avatar.MaximumUploadedFileSize"), Prettifier.BytesToString(avatarMaxSize)));
 
-                        byte[] customerPictureBinary = uploadedFile.GetPictureBits();
+                        byte[] customerPictureBinary = uploadedFile.InputStream.ToByteArray();
                         if (customerAvatar != null)
                             customerAvatar = _pictureService.UpdatePicture(customerAvatar.Id, customerPictureBinary, uploadedFile.ContentType, null, true);
                         else
-                            customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true);
+                            customerAvatar = _pictureService.InsertPicture(customerPictureBinary, uploadedFile.ContentType, null, true, false);
                     }
 
                     int customerAvatarId = 0;

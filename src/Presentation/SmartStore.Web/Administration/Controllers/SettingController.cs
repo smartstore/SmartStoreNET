@@ -1230,10 +1230,11 @@ namespace SmartStore.Admin.Controllers
 				NotifyError(_localizationService.GetResource("Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys"));
 			}
 
-			//PDF settings
+			// PDF settings
 			var pdfSettings = _settingService.LoadSetting<PdfSettings>(storeScope);
 			pdfSettings.Enabled = model.PdfSettings.Enabled;
 			pdfSettings.LetterPageSizeEnabled = model.PdfSettings.LetterPageSizeEnabled;
+			MediaHelper.UpdatePictureTransientState(pdfSettings.LogoPictureId, model.PdfSettings.LogoPictureId, true);
 			pdfSettings.LogoPictureId = model.PdfSettings.LogoPictureId;
 			pdfSettings.AttachOrderPdfToOrderPlacedEmail = model.PdfSettings.AttachOrderPdfToOrderPlacedEmail;
 			pdfSettings.AttachOrderPdfToOrderCompletedEmail = model.PdfSettings.AttachOrderPdfToOrderCompletedEmail;

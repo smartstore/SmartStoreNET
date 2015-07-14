@@ -3,6 +3,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
+using SmartStore.Data;
 using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.Messages
@@ -23,6 +24,8 @@ namespace SmartStore.Services.Messages
         {
 			var olderThan = DateTime.UtcNow.AddDays(-14);
 			_qeRepository.DeleteAll(x => x.SentOnUtc.HasValue && x.CreatedOnUtc < olderThan);
+
+			_qeRepository.Context.ShrinkDatabase();
         }
     }
 }

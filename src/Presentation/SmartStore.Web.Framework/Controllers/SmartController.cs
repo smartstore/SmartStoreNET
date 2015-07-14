@@ -77,7 +77,7 @@ namespace SmartStore.Web.Framework.Controllers
 				LogException(exception);
 			}
 
-			_notifier.Value.Error(exception.Message, durable);
+			_notifier.Value.Error(exception.ToAllMessages(), durable);
 		}
 
 		protected virtual ActionResult RedirectToReferrer()

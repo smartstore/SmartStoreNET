@@ -9,10 +9,12 @@
 * #526 Min\max amount option for which the payment method should be offered during checkout
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
 * #702 Facebook and Twitter external authentication suitable for multi-stores
+* New scheduled task: clear e-mail queue
+* New scheduled task: clear uploadeded transient media files
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
-* #721 Message Queue: implement "Delete all"
+* #721 Message Queue: implemented "Delete all"
 
 
 ## SmartStore.NET 2.2.2

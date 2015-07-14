@@ -1096,7 +1096,7 @@ namespace SmartStore.Services.Orders
                                 var itemWeight = _shippingService.GetShoppingCartItemWeight(sc);
 
                                 //save order item
-                                var orderItem = new OrderItem()
+                                var orderItem = new OrderItem
                                 {
                                     OrderItemGuid = Guid.NewGuid(),
                                     Order = order,
@@ -1149,7 +1149,7 @@ namespace SmartStore.Services.Orders
 
                                     for (int i = 0; i < sc.Item.Quantity; i++)
                                     {
-                                        var gc = new GiftCard()
+                                        var gc = new GiftCard
                                         {
                                             GiftCardType = sc.Item.Product.GiftCardType,
                                             PurchasedWithOrderItem = orderItem,

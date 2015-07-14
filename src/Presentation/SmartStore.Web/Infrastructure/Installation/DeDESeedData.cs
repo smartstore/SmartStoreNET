@@ -2525,32 +2525,36 @@ namespace SmartStore.Web.Infrastructure.Installation
         {
             base.Alter(entities);
 
-            entities.WithKey(x => x.Name)
-                .Alter("Send emails", x =>
+            entities.WithKey(x => x.Type)
+				.Alter("SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services", x =>
                     {
                         x.Name = "E-Mail senden";
                     })
-				.Alter("Clear email queue", x =>
+				.Alter("SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services", x =>
 					{
 						x.Name = "E-Mail Queue bereinigen";
 					})
-                .Alter("Keep alive", x =>
+				.Alter("SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services", x =>
+				{
+					x.Name = "Temporäre Uploads bereinigen";
+				})
+				.Alter("SmartStore.Services.Common.KeepAliveTask, SmartStore.Services", x =>
                     {
                         x.Name = "Keep alive";
                     })
-                .Alter("Delete guests", x =>
+				.Alter("SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services", x =>
                     {
                         x.Name = "Gastbenutzer löschen";
                     })
-                .Alter("Clear cache", x =>
+				.Alter("SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services", x =>
                     {
                         x.Name = "Cache bereinigen";
                     })
-                .Alter("Send emails", x =>
+				.Alter("SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services", x =>
                     {
                         x.Name = "E-Mail senden";
                     })
-                .Alter("Update currency exchange rates", x =>
+				.Alter("SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services", x =>
                     {
                         x.Name = "Wechselkurse aktualisieren";
                     });

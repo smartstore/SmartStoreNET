@@ -303,7 +303,7 @@ namespace SmartStore.Data.Tests.Catalog
                     new ProductPicture
                     {
                         DisplayOrder = 1,
-                        Picture = new Picture()
+                        Picture = new Picture
                         {
                             PictureBinary = new byte[] { 1, 2, 3 },
                             MimeType = "image/pjpeg",

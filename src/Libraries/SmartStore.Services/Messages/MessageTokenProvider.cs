@@ -554,7 +554,7 @@ namespace SmartStore.Services.Messages
             sb.AppendLine("<table border=\"0\" class=\"supplier-identification\">");
             sb.AppendLine("<tr valign=\"top\">");
 			
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
 
             sb.AppendLine(String.Format("{0} <br>", _companyInfoSettings.CompanyName ));
 
@@ -597,7 +597,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
             
             if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
             {
@@ -618,7 +618,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"34%\">");
 
             if (!String.IsNullOrEmpty(_bankConnectionSettings.Bankname)) 
             {

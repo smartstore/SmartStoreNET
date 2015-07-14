@@ -35,6 +35,12 @@
 	<LocaleResource Name="LogUnauthorized.Hint">
 		<Value>Each unauthorized access will be saved in the log list.</Value>
 	</LocaleResource>
+  <LocaleResource Name="NoRequestTimestampValidation">
+    <Value>No timestamp validation</Value>
+  </LocaleResource>
+  <LocaleResource Name="NoRequestTimestampValidation.Hint">
+    <Value>Specifies whether to validate that the timestamp of the previous request is less or equal than the one of the current. Prevents the occurrence of HmacResult.TimestampOlderThanLastRequest.</Value>
+  </LocaleResource>
 	<LocaleResource Name="PublicKey">
 		<Value>Public key</Value>
 	</LocaleResource>

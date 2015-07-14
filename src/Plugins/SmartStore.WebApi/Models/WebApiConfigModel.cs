@@ -15,6 +15,9 @@ namespace SmartStore.WebApi.Models
         [SmartResourceDisplayName("Plugins.Api.WebApi.ValidMinutePeriod")]
 		public int ValidMinutePeriod { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Api.WebApi.NoRequestTimestampValidation")]
+		public bool NoRequestTimestampValidation { get; set; }
+
         [SmartResourceDisplayName("Plugins.Api.WebApi.LogUnauthorized")]
 		public bool LogUnauthorized { get; set; }
 
@@ -25,11 +28,13 @@ namespace SmartStore.WebApi.Models
 			if (fromSettings)
 			{
 				ValidMinutePeriod = settings.ValidMinutePeriod;
+				NoRequestTimestampValidation = settings.NoRequestTimestampValidation;
 				LogUnauthorized = settings.LogUnauthorized;
 			}
 			else
 			{
 				settings.ValidMinutePeriod = ValidMinutePeriod;
+				settings.NoRequestTimestampValidation = NoRequestTimestampValidation;
 				settings.LogUnauthorized = LogUnauthorized;
 			}
 		}

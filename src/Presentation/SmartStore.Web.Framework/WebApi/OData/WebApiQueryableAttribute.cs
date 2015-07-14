@@ -21,7 +21,7 @@ namespace SmartStore.Web.Framework.WebApi.OData
 				bool singleResult = (responseContent != null && responseContent.Value is SingleResult);
 
 				if (singleResult)
-					return false;
+					return false;	// 'true' would result in a 500 'internal server error'
 
 				var query = actionExecutedContext.Request.RequestUri.Query;
 

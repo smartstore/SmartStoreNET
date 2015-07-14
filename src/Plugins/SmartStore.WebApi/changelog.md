@@ -3,6 +3,9 @@
 ##Web Api 2.2.0.3
 ###New Features
 * Added OData endpoint for payment method
+* #727 Option to deactivate TimestampOlderThanLastRequest validation
+###Improvements
+* Using header timestamp as last user request date rather than API server date
 
 ##Web Api 2.2.0.2
 ###Improvements
@@ -27,7 +30,7 @@
 
 ##Web Api 1.22
 ###New Features
-* #393 Implement OData actions for simpler working with product attributes -> added ProductsController.ManageAttributes and ProductsController.CreateAttributeCombinations.
+* #393 Implement OData actions for simpler working with product attributes -> added ProductsController.ManageAttributes and ProductsController.CreateAttributeCombinations
 
 ##Web Api 1.21
 ###Improvements

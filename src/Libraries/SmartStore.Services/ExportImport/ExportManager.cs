@@ -1342,7 +1342,9 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
 				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
-				xmlWriter.WriteElementString("RewardPointsRemaining", null, order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
+                xmlWriter.WriteElementString("RewardPointsUsed", null, order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
+                var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
+                xmlWriter.WriteElementString("RewardPointsRemaining", null, remainingRewardPoints > 0 ? remainingRewardPoints.ToString() : "");
 				xmlWriter.WriteElementString("HasNewPaymentNotification", null, order.HasNewPaymentNotification.ToString());
 
                 //products
@@ -1458,6 +1460,7 @@ namespace SmartStore.Services.ExportImport
                         "VatNumber",
                         "CreatedOnUtc",
 						"UpdatedOnUtc",
+                        "RewardPointsUsed",
 						"RewardPointsRemaining",
 						"HasNewPaymentNotification",
                         //billing address
@@ -1589,7 +1592,11 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
 					col++;
 
-					worksheet.Cells[row, col].Value = (order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
+                    worksheet.Cells[row, col].Value = (order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
+                    col++;
+
+                    var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
+                    worksheet.Cells[row, col].Value = (remainingRewardPoints > 0 ? remainingRewardPoints.ToString() : "");
 					col++;
 
 					worksheet.Cells[row, col].Value = order.HasNewPaymentNotification;

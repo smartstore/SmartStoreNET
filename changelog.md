@@ -13,6 +13,7 @@
 * #716 Supporting of paged google-product data query for SQL-Server Compact Edition
 * #648 Add hint for * at mandatory form fields at address creation
 * Added link to imprint and disclaimer to footer in mobile theme 
+* #521 Display bonus points in order export 
 
 ### Bugfixes
 * #694 Product variant attribute in product page should not be preselected implicitly

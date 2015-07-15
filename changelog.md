@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -24,6 +24,7 @@
 * #691 Product quantity not added to cart on mobile theme
 * #186 Mobile: variant images do not refresh 
 * #671 Bundle products: display base price according to applied discount 
+* #619 Display base price according to applied tier price
 * Weight adjustment of attributes weren't applied in shopping cart overview
 * Shipping by weight calculates wrong surcharge if attribute combination prices are set
 

@@ -2,6 +2,7 @@ namespace SmartStore.Data.Migrations
 {
 	using System.Data.Entity.Migrations;
 	using System.Linq;
+	using System.Web.Hosting;
 	using SmartStore.Core.Data;
 	using SmartStore.Core.Domain.Configuration;
 	using SmartStore.Core.Domain.Directory;
@@ -16,7 +17,7 @@ namespace SmartStore.Data.Migrations
 			AddColumn("dbo.Store", "PrimaryExchangeRateCurrencyId", c => c.Int(nullable: false, defaultValue: 1));
 
 			// avoid conflicts with foreign key constraint
-			if (DataSettings.Current.IsSqlServer)
+			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
 				// what sql-server compact does not support here:
 				// - Update Set with a select sub-query
@@ -28,8 +29,8 @@ namespace SmartStore.Data.Migrations
 				Sql("Update dbo.Store Set PrimaryExchangeRateCurrencyId = (Select Min(Id) From dbo.Currency)");
 			}
 
-            CreateIndex("dbo.Store", "PrimaryStoreCurrencyId");
-            CreateIndex("dbo.Store", "PrimaryExchangeRateCurrencyId");
+			CreateIndex("dbo.Store", "PrimaryStoreCurrencyId");
+			CreateIndex("dbo.Store", "PrimaryExchangeRateCurrencyId");
 
 			AddForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency", "Id");
 			AddForeignKey("dbo.Store", "PrimaryStoreCurrencyId", "dbo.Currency", "Id");
@@ -37,14 +38,14 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
-            DropForeignKey("dbo.Store", "PrimaryStoreCurrencyId", "dbo.Currency");
-            DropForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency");
+			DropForeignKey("dbo.Store", "PrimaryStoreCurrencyId", "dbo.Currency");
+			DropForeignKey("dbo.Store", "PrimaryExchangeRateCurrencyId", "dbo.Currency");
 
-            DropIndex("dbo.Store", new[] { "PrimaryExchangeRateCurrencyId" });
-            DropIndex("dbo.Store", new[] { "PrimaryStoreCurrencyId" });
+			DropIndex("dbo.Store", new[] { "PrimaryExchangeRateCurrencyId" });
+			DropIndex("dbo.Store", new[] { "PrimaryStoreCurrencyId" });
 
-            DropColumn("dbo.Store", "PrimaryExchangeRateCurrencyId");
-            DropColumn("dbo.Store", "PrimaryStoreCurrencyId");
+			DropColumn("dbo.Store", "PrimaryExchangeRateCurrencyId");
+			DropColumn("dbo.Store", "PrimaryStoreCurrencyId");
         }
 
 		public bool RollbackOnFailure

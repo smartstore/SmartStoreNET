@@ -686,16 +686,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (product != null)
 			{
-				var result = new StringBuilder();
-				var tags = product.ProductTags.ToList();
-				for (int i = 0; i < product.ProductTags.Count; i++)
-				{
-					var pt = tags[i];
-					result.Append(pt.Name);
-					if (i != product.ProductTags.Count - 1)
-						result.Append(", ");
-				}
-				model.ProductTags = result.ToString();
+				//var tags = product.ProductTags;
+				model.ProductTags = string.Join(", ", product.ProductTags.Select(x => x.Name));
 			}
 
 			//tax categories

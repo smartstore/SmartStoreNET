@@ -22,6 +22,9 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.NewsArchivePageSize")]
         public int NewsArchivePageSize { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.News.MaxAgeInDays")]
+		public int MaxAgeInDays { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.News.ShowHeaderRSSUrl")]
         public bool ShowHeaderRssUrl { get; set; }
     }

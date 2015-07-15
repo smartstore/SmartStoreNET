@@ -74,7 +74,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
 
-				var logContext = new LogContext()
+				var logContext = new LogContext
 				{
 					ShortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
 					FullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()),
@@ -146,10 +146,10 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!apiUser.Enabled)
 				return HmacResult.UserDisabled;
 
-			if (apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
+			if (!cacheControllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
 				return HmacResult.TimestampOlderThanLastRequest;
 
-			var context = new WebApiRequestContext()
+			var context = new WebApiRequestContext
 			{
 				HttpMethod = request.HttpMethod,
 				HttpAcceptType = request.Headers["Accept"],
@@ -183,7 +183,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			//var headers = HttpContext.Current.Response.Headers;
 			//headers.Add(ApiHeaderName.LastRequest, apiUser.LastRequest.HasValue ? apiUser.LastRequest.Value.ToString("o") : "");
 
-			apiUser.LastRequest = now;
+			apiUser.LastRequest = headDateTime;
 
 			return HmacResult.Success;
 		}

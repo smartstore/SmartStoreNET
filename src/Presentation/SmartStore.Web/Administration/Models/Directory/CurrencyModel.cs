@@ -17,12 +17,12 @@ namespace SmartStore.Admin.Models.Directory
         {
             Locales = new List<CurrencyLocalizedModel>();
 
-			AvailableDomainEndings = new List<SelectListItem>()
+			AvailableDomainEndings = new List<SelectListItem>
 			{
-				new SelectListItem() { Text = ".com", Value = ".com" },
-				new SelectListItem() { Text = ".uk", Value = ".uk" },
-				new SelectListItem() { Text = ".de", Value = ".de" },
-				new SelectListItem() { Text = ".ch", Value = ".ch" }
+				new SelectListItem { Text = ".com", Value = ".com" },
+				new SelectListItem { Text = ".uk", Value = ".uk" },
+				new SelectListItem { Text = ".de", Value = ".de" },
+				new SelectListItem { Text = ".ch", Value = ".ch" }
 			};
         }
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.Name")]
@@ -53,11 +53,14 @@ namespace SmartStore.Admin.Models.Directory
         [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.CreatedOn")]
         public DateTime CreatedOn { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency")]
+		public bool IsPrimaryStoreCurrency { get; set; }
         public bool IsPrimaryExchangeRateCurrency { get; set; }
 
-        [SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency")]
-        public bool IsPrimaryStoreCurrency { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.PrimaryStoreCurrencyStores")]
+		public IList<SelectListItem> PrimaryStoreCurrencyStores { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.PrimaryExchangeRateCurrencyStores")]
+		public IList<SelectListItem> PrimaryExchangeRateCurrencyStores { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Currencies.Fields.DomainEndings")]
 		public string DomainEndings { get; set; }
@@ -68,6 +71,7 @@ namespace SmartStore.Admin.Models.Directory
 		//Store mapping
 		[SmartResourceDisplayName("Admin.Common.Store.LimitedTo")]
 		public bool LimitedToStores { get; set; }
+
 		[SmartResourceDisplayName("Admin.Common.Store.AvailableFor")]
 		public List<StoreModel> AvailableStores { get; set; }
 		public int[] SelectedStoreIds { get; set; }

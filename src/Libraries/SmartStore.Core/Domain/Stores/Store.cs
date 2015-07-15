@@ -1,4 +1,5 @@
 ﻿using System.Runtime.Serialization;
+using SmartStore.Core.Domain.Directory;
 
 namespace SmartStore.Core.Domain.Stores
 {
@@ -59,7 +60,33 @@ namespace SmartStore.Core.Domain.Stores
 		/// <summary>
 		/// Gets or sets the CDN host name, if static media content should be served through a CDN.
 	    /// </summary>
+		[DataMember]
 	    public string ContentDeliveryNetwork { get; set; }
+
+		/// <summary>
+		/// Gets or sets the primary store currency identifier
+		/// </summary>
+		[DataMember]
+		public int PrimaryStoreCurrencyId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the primary exchange rate currency identifier
+		/// </summary>
+		[DataMember]
+		public int PrimaryExchangeRateCurrencyId { get; set; }
+
+		/// <summary>
+		/// Gets or sets the primary store currency
+		/// </summary>
+		[DataMember]
+		public virtual Currency PrimaryStoreCurrency { get; set; }
+
+		/// <summary>
+		/// Gets or sets the primary exchange rate currency
+		/// </summary>
+		[DataMember]
+		public virtual Currency PrimaryExchangeRateCurrency { get; set; }
+
 
 		/// <summary>
 		/// Gets the security mode for the store

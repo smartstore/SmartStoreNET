@@ -24,7 +24,6 @@ namespace SmartStore.Web.Framework.Plugins
 		private string _pluginResRootKey;
 		private string _providerResRootKey;
 		private Language _language;
-		private int? _currencyID;
 		private string _currencyCode;
 		private Currency _euroCurrency;
 		private Dictionary<string, string> _resMap = new Dictionary<string, string>();
@@ -98,18 +97,6 @@ namespace SmartStore.Web.Framework.Plugins
 			get
 			{
 				return Language.UniqueSeoCode.IsCaseInsensitiveEqual("DE");
-			}
-		}
-
-		public int CurrencyID
-		{
-			get
-			{
-				if (!_currencyID.HasValue)
-				{
-					_currencyID = _ctx.Resolve<CurrencySettings>().PrimaryStoreCurrencyId;
-				}
-				return _currencyID ?? 1;
 			}
 		}
 
@@ -217,24 +204,6 @@ namespace SmartStore.Web.Framework.Plugins
 					return doc;
 				}
 			}
-		}
-
-		public Currency GetUsedCurrency(int currencyId)
-		{
-			var currencyService = _ctx.Resolve<ICurrencyService>();
-			var currency = currencyService.GetCurrencyById(currencyId);
-
-			if (currency == null || !currency.Published)
-			{
-				currency = currencyService.GetCurrencyById(CurrencyID);
-			}
-
-			return currency;
-		}
-
-		public decimal ConvertFromStoreCurrency(decimal price, Currency currency)
-		{
-			return _ctx.Resolve<ICurrencyService>().ConvertFromPrimaryStoreCurrency(price, currency);
 		}
 
 		public List<SelectListItem> AvailableCurrencies()

@@ -11,10 +11,13 @@
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 * New scheduled task: clear e-mail queue
 * New scheduled task: clear uploadeded transient media files
+* #704 Make primary store currency suitable for multi-stores
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
 * #721 Message Queue: implemented "Delete all"
+* #725 Prevent LowestProductPrice being 0
+* #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 
 
 ## SmartStore.NET 2.2.2

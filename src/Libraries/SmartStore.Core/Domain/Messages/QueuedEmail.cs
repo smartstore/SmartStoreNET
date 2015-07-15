@@ -9,8 +9,8 @@ namespace SmartStore.Core.Domain.Messages
     public partial class QueuedEmail : BaseEntity
     {
 		private ICollection<QueuedEmailAttachment> _attachments;
-		
-		/// <summary>
+
+        /// <summary>
         /// Gets or sets the priority
         /// </summary>
         public int Priority { get; set; }

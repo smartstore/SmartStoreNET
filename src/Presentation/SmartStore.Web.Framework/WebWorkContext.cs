@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Fakes;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Common;
-using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -35,11 +34,9 @@ namespace SmartStore.Web.Framework
         private readonly ICurrencyService _currencyService;
 		private readonly IGenericAttributeService _attrService;
         private readonly TaxSettings _taxSettings;
-        private readonly CurrencySettings _currencySettings;
         private readonly LocalizationSettings _localizationSettings;
         private readonly ICacheManager _cacheManager;
         private readonly IStoreService _storeService;
-        private readonly ISettingService _settingService;
 		private readonly Lazy<ITaxService> _taxService;
 		private readonly IUserAgent _userAgent;
 
@@ -58,9 +55,10 @@ namespace SmartStore.Web.Framework
             ILanguageService languageService,
             ICurrencyService currencyService,
 			IGenericAttributeService attrService,
-            TaxSettings taxSettings, CurrencySettings currencySettings,
-            LocalizationSettings localizationSettings, Lazy<ITaxService> taxService,
-            IStoreService storeService, ISettingService settingService,
+            TaxSettings taxSettings,
+            LocalizationSettings localizationSettings,
+			Lazy<ITaxService> taxService,
+            IStoreService storeService,
 			IUserAgent userAgent)
         {
 			this._cacheManager = cacheManager("static");
@@ -73,10 +71,8 @@ namespace SmartStore.Web.Framework
             this._currencyService = currencyService;
             this._taxSettings = taxSettings;
 			this._taxService = taxService;
-            this._currencySettings = currencySettings;
             this._localizationSettings = localizationSettings;
             this._storeService = storeService;
-            this._settingService = settingService;
 			this._userAgent = userAgent;
         }
 
@@ -353,13 +349,12 @@ namespace SmartStore.Web.Framework
                 if (_cachedCurrency != null)
                     return _cachedCurrency;
 
-                bool fixPrimaryStoreCurrency = false;
                 Currency currency = null;
 
                 // return primary store currency when we're in admin area/mode
                 if (this.IsAdmin)
                 {
-                    currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+                    currency = _storeContext.CurrentStore.PrimaryStoreCurrency;
                 }
 
                 if (currency == null)
@@ -385,26 +380,22 @@ namespace SmartStore.Web.Framework
                         }
                     }
 
+					// if there's only one currency for current store it dominates the primary currency
+					if (storeCurrenciesMap.Count == 1)
+					{
+						currency = storeCurrenciesMap[storeCurrenciesMap.Keys.First()];
+					}
+
 					// find currency by domain ending
 					if (currency == null && _httpContext != null && _httpContext.Request != null && _httpContext.Request.Url != null)
 					{
 						currency = storeCurrenciesMap.Values.GetByDomainEnding(_httpContext.Request.Url.Authority);
 					}
 
-					// if there's only one currency for current store it dominates the primary currency
-					if (storeCurrenciesMap.Count == 1)
-					{
-						currency = storeCurrenciesMap[0];
-					}
-
                     // get PrimaryStoreCurrency
                     if (currency == null)
                     {
-						if (storeCurrenciesMap.TryGetValue(_currencySettings.PrimaryStoreCurrencyId, out currency))
-						{
-							currency = VerifyCurrency(currency);
-							fixPrimaryStoreCurrency = (currency == null);
-						}
+						currency = VerifyCurrency(_storeContext.CurrentStore.PrimaryStoreCurrency);
                     }
 
                     // get the first published currency for current store
@@ -429,12 +420,6 @@ namespace SmartStore.Web.Framework
                         currency.Published = true;
                         _currencyService.UpdateCurrency(currency);
                     }
-                }
-
-                if (fixPrimaryStoreCurrency)
-                {
-                    _currencySettings.PrimaryStoreCurrencyId = currency.Id;
-                    _settingService.UpdateSetting(_currencySettings, x => x.PrimaryStoreCurrencyId, true, _storeContext.CurrentStore.Id);
                 }
 
                 _cachedCurrency = currency;

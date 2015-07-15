@@ -188,7 +188,7 @@ namespace SmartStore.Admin.Controllers
                 string body = "Email works fine.";
 
 				var msg = new EmailMessage(to, subject, body, from);
-
+				
 				_emailSender.SendEmail(new SmtpContext(emailAccount), msg);
 
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.EmailAccounts.SendTestEmail.Success"), false);

@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
@@ -108,6 +109,12 @@ namespace SmartStore.Web.Framework.Plugins
 		private IWorkContext WorkContext
 		{
 			get { return _workContext ?? (_workContext = _ctx.Resolve<IWorkContext>()); }
+		}
+
+		private ICurrencyService _currencyService;
+		private ICurrencyService CurrencyService
+		{
+			get { return _currencyService ?? (_currencyService = _ctx.Resolve<ICurrencyService>()); }
 		}
 
 		#endregion
@@ -266,7 +273,7 @@ namespace SmartStore.Web.Framework.Plugins
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));
 		}
 
-		public decimal GetProductPrice(Product product, Currency currency)
+		public decimal GetProductPrice(Product product, Currency currency, Store store)
 		{
 			decimal priceBase = PriceCalculationService.GetPreselectedPrice(product);
 
@@ -276,11 +283,11 @@ namespace SmartStore.Web.Framework.Plugins
 				priceBase = TaxService.GetProductPrice(product, priceBase, true, WorkContext.CurrentCustomer, out taxRate);
 			}
 			
-			decimal price = ConvertFromStoreCurrency(priceBase, currency);
+			decimal price = CurrencyService.ConvertFromPrimaryStoreCurrency(priceBase, currency, store);
 			return price;
 		}
 
-		public decimal? GetOldPrice(Product product, Currency currency)
+		public decimal? GetOldPrice(Product product, Currency currency, Store store)
 		{
 			if (!decimal.Equals(product.OldPrice, decimal.Zero) && !decimal.Equals(product.OldPrice, product.Price) &&
 				!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
@@ -293,7 +300,7 @@ namespace SmartStore.Web.Framework.Plugins
 					price = TaxService.GetProductPrice(product, price, true, WorkContext.CurrentCustomer, out taxRate);
 				}
 
-				return ConvertFromStoreCurrency(price, currency);
+				return CurrencyService.ConvertFromPrimaryStoreCurrency(price, currency, store);
 			}
 			return null;
 		}

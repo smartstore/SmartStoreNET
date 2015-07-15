@@ -549,12 +549,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
 
 			Populate("PopulatePictures", _data.Pictures());
+			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateStores", PopulateStores);
 			Populate("InstallLanguages", () => PopulateLanguage(_config.Language));
 			Populate("PopulateMeasureDimensions", _data.MeasureDimensions());
 			Populate("PopulateMeasureWeights", _data.MeasureWeights());
 			Populate("PopulateTaxCategories", PopulateTaxCategories);
-			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());

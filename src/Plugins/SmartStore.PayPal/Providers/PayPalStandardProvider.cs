@@ -9,7 +9,6 @@ using System.Text;
 using System.Web;
 using System.Web.Routing;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
@@ -34,22 +33,17 @@ namespace SmartStore.PayPal
     [DisplayOrder(2)]
 	public partial class PayPalStandardProvider : PaymentPluginBase, IConfigurable
 	{
-		private readonly ICurrencyService _currencyService;
-		private readonly CurrencySettings _currencySettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
         private readonly HttpContextBase _httpContext;
         private readonly ICommonServices _services;
         private readonly ILogger _logger;
 
-        public PayPalStandardProvider(ICurrencyService currencyService, 
+        public PayPalStandardProvider(
             HttpContextBase httpContext,
-			CurrencySettings currencySettings,
 			IOrderTotalCalculationService orderTotalCalculationService,
             ICommonServices services, 
             ILogger logger)
 		{
-			_currencyService = currencyService;
-			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
             _httpContext = httpContext;
             _services = services;
@@ -85,6 +79,7 @@ namespace SmartStore.PayPal
 			if (postProcessPaymentRequest.Order.PaymentStatus == PaymentStatus.Paid)
 				return;
 
+			var store = _services.StoreService.GetStoreById(postProcessPaymentRequest.Order.StoreId);
 			var settings = _services.Settings.LoadSetting<PayPalStandardPaymentSettings>(postProcessPaymentRequest.Order.StoreId);
 
 			var builder = new StringBuilder();
@@ -220,7 +215,7 @@ namespace SmartStore.PayPal
 
 			builder.AppendFormat("&custom={0}", postProcessPaymentRequest.Order.OrderGuid);
 			builder.AppendFormat("&charset={0}", "utf-8");
-			builder.Append(string.Format("&no_note=1&currency_code={0}", HttpUtility.UrlEncode(_currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode)));
+			builder.Append(string.Format("&no_note=1&currency_code={0}", HttpUtility.UrlEncode(store.PrimaryStoreCurrency.CurrencyCode)));
 			builder.AppendFormat("&invoice={0}", HttpUtility.UrlEncode(orderNumber));
 			builder.AppendFormat("&rm=2", new object[0]);
 

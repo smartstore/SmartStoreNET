@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
 	using System.Data.Entity.Migrations;
 	using SmartStore.Core.Domain.Tasks;
 	using SmartStore.Data.Setup;
@@ -26,7 +25,8 @@ namespace SmartStore.Data.Migrations
                 .ForeignKey("dbo.Download", t => t.FileId, cascadeDelete: true)
                 .ForeignKey("dbo.QueuedEmail", t => t.QueuedEmailId, cascadeDelete: true)
                 .Index(t => t.QueuedEmailId)
-                .Index(t => t.FileId); 
+                .Index(t => t.FileId);
+            
         }
         
         public override void Down()
@@ -46,7 +46,7 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
-			
+
 			context.Set<ScheduleTask>().AddOrUpdate(x => x.Type,
 				new ScheduleTask
 				{
@@ -60,7 +60,6 @@ namespace SmartStore.Data.Migrations
 
 			context.SaveChanges();
 		}
-
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
@@ -104,5 +103,5 @@ namespace SmartStore.Data.Migrations
 				"order-{0}.pdf",
 				"bestellung-{0}.pdf");
 		}
-	}
+    }
 }

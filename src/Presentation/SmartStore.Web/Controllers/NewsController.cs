@@ -1,27 +1,24 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.News;
+using SmartStore.Core.Logging;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;
 using SmartStore.Web.Infrastructure.Cache;
@@ -208,28 +205,12 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
-		[ActionName("rss")]
+		[ActionName("rss"), Compress]
         public ActionResult ListRss(int languageId)
         {
-            var feed = new SyndicationFeed(
-									string.Format("{0}: News", _storeContext.CurrentStore.Name),
-                                    "News",
-                                    new Uri(_webHelper.GetStoreLocation(false)),
-                                    "NewsRSS",
-                                    DateTime.UtcNow);
+			var feed = _newsService.CreateRssFeed(Url, languageId);
 
-            if (!_newsSettings.Enabled)
-                return new RssActionResult() { Feed = feed };
-
-            var items = new List<SyndicationItem>();
-			var newsItems = _newsService.GetAllNews(languageId, _storeContext.CurrentStore.Id, 0, int.MaxValue);
-            foreach (var n in newsItems)
-            {
-                string newsUrl = Url.RouteUrl("NewsItem", new { SeName = n.GetSeName(n.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
-                items.Add(new SyndicationItem(n.Title, n.Short, new Uri(newsUrl), String.Format("Blog:{0}", n.Id), n.CreatedOnUtc));
-            }
-            feed.Items = items;
-            return new RssActionResult() { Feed = feed };
+            return new RssActionResult { Feed = feed };
         }
 
         public ActionResult NewsItem(int newsItemId)
@@ -319,7 +300,8 @@ namespace SmartStore.Web.Controllers
                 return Content("");
 
             string link = string.Format("<link href=\"{0}\" rel=\"alternate\" type=\"application/rss+xml\" title=\"{1}: News\" />",
-				Url.Action("rss", null, new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"), _storeContext.CurrentStore.Name);
+				Url.Action("rss", null, new { languageId = _workContext.WorkingLanguage.Id }, _webHelper.IsCurrentConnectionSecured() ? "https" : "http"),
+				_storeContext.CurrentStore.Name);
 
             return Content(link);
         }

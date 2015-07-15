@@ -282,9 +282,17 @@
     <Compile Include="Migrations\201506211043073_PaymentShippingRestrictions.Designer.cs">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201506262044329_QueuedEmailAttachments.cs" />
-    <Compile Include="Migrations\201506262044329_QueuedEmailAttachments.Designer.cs">
-      <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
+    <Compile Include="Migrations\201506261018157_Merge.cs" />
+    <Compile Include="Migrations\201506261018157_Merge.Designer.cs">
+      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.cs" />
+    <Compile Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.Designer.cs">
+      <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.cs" />
+    <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.Designer.cs">
+      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
     </Compile>
     <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.cs" />
     <Compile Include="Migrations\201507072138058_MessageTemplateAttachments.Designer.cs">
@@ -565,8 +573,14 @@
     <EmbeddedResource Include="Migrations\201506211043073_PaymentShippingRestrictions.resx">
       <DependentUpon>201506211043073_PaymentShippingRestrictions.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201506262044329_QueuedEmailAttachments.resx">
-      <DependentUpon>201506262044329_QueuedEmailAttachments.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201506261018157_Merge.resx">
+      <DependentUpon>201506261018157_Merge.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201506261756463_PrimaryStoreCurrencyMultiStore.resx">
+      <DependentUpon>201506261756463_PrimaryStoreCurrencyMultiStore.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507132241575_QueuedEmailAttachments.resx">
+      <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507072138058_MessageTemplateAttachments.resx">
       <DependentUpon>201507072138058_MessageTemplateAttachments.cs</DependentUpon>

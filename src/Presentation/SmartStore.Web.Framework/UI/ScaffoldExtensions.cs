@@ -1,10 +1,11 @@
-﻿using System.Web.Mvc;
+﻿using System.Text;
+using System.Web.Mvc;
 using System.Web.WebPages;
-using Telerik.Web.Mvc.UI.Fluent;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Localization;
+using Telerik.Web.Mvc.UI.Fluent;
 
 namespace SmartStore.Web.Framework.UI
 {
@@ -71,6 +72,28 @@ namespace SmartStore.Web.Framework.UI
 				localize.GetResource("Admin.Orders.Payments.NewIpn"));
 
 			return "<# if(HasNewPaymentNotification) {{ #>{0}<# }} #>{1}".FormatInvariant(label, link);
+		}
+
+		public static HelperResult LabeledCurrencyName<T>(this HtmlHelper<T> helper, int id, string name, bool isPrimaryStoreCurrency, bool isPrimaryExchangeRateCurrency)
+		{
+			var localize = EngineContext.Current.Resolve<ILocalizationService>();
+			var sb = new StringBuilder();
+
+			if (isPrimaryStoreCurrency)
+			{
+				sb.AppendFormat("<span class='label label-smnet label-warning'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryStoreCurrency"));
+			}
+
+			if (isPrimaryExchangeRateCurrency)
+			{
+				sb.AppendFormat("<span class='label label-smnet label-info'>{0}</span>", localize.GetResource("Admin.Configuration.Currencies.Fields.IsPrimaryExchangeRateCurrency"));
+			}
+
+			string url = UrlHelper.GenerateContentUrl("~/Admin/Currency/Edit/", helper.ViewContext.RequestContext.HttpContext);
+
+			sb.AppendFormat("<a href=\"{0}{1}\" title=\"{2}\">{2}</a>", url, id, helper.Encode(name.NaIfEmpty()));
+
+			return new HelperResult(writer => writer.Write(sb.ToString()));
 		}
 
         public static string RichEditorFlavor(this HtmlHelper helper)

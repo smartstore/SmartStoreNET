@@ -496,9 +496,10 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Warnings()
         {
             var model = new List<SystemWarningModel>();
+			var store = _services.StoreContext.CurrentStore;
             
             //store URL
-			var storeUrl = _services.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
+			var storeUrl = store.Url.EnsureEndsWith("/");
 			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
 			{
 				model.Add(new SystemWarningModel
@@ -550,7 +551,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //primary exchange rate currency
-			var perCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryExchangeRateCurrencyId);
+			var perCurrency = store.PrimaryExchangeRateCurrency;
             if (perCurrency != null)
             {
                 model.Add(new SystemWarningModel
@@ -578,7 +579,7 @@ namespace SmartStore.Admin.Controllers
             }
 
             //primary store currency
-			var pscCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryStoreCurrencyId);
+			var pscCurrency = store.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
                 model.Add(new SystemWarningModel
@@ -654,10 +655,18 @@ namespace SmartStore.Admin.Controllers
                 });
             }
 
-            // shipping rate coputation methods
-			if (_shippingService.Value.LoadActiveShippingRateComputationMethods()
-				.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
-				.Count() > 1)
+			// shipping rate coputation methods
+			int activeShippingMethodCount = 0;
+
+			try
+			{
+				activeShippingMethodCount = _shippingService.Value.LoadActiveShippingRateComputationMethods()
+					.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+					.Count();
+			}
+			catch { }
+
+			if (activeShippingMethodCount > 1)
 			{
 				model.Add(new SystemWarningModel
 				{
@@ -667,7 +676,15 @@ namespace SmartStore.Admin.Controllers
 			}
 
             //payment methods
-			if (_paymentService.Value.LoadActivePaymentMethods().Count() > 0)
+			int activePaymentMethodCount = 0;
+
+			try
+			{
+				activePaymentMethodCount = _paymentService.Value.LoadActivePaymentMethods().Count();
+			}
+			catch { }
+
+			if (activePaymentMethodCount > 0)
 			{
 				model.Add(new SystemWarningModel
 				{

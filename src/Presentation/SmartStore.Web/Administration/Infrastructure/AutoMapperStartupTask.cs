@@ -321,6 +321,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.CreatedOn, mo => mo.Ignore())
 				.ForMember(dest => dest.IsPrimaryExchangeRateCurrency, mo => mo.Ignore())
 				.ForMember(dest => dest.IsPrimaryStoreCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyStores, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrencyStores, mo => mo.Ignore())
 				.ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableStores, mo => mo.Ignore())
 				.ForMember(dest => dest.SelectedStoreIds, mo => mo.Ignore())			
@@ -391,12 +393,14 @@ namespace SmartStore.Admin.Infrastructure
             //shipping methods
             Mapper.CreateMap<ShippingMethod, ShippingMethodModel>()
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
+				.ForMember(dest => dest.ExcludedCountryIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountryExclusionContextTypes, mo => mo.Ignore());
-            Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
-                .ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore())
-				.ForMember(dest => dest.ExcludedCustomerRoleIds, mo => mo.Ignore());
+			Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
+				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore())
+				.ForMember(dest => dest.ExcludedCustomerRoleIds, mo => mo.Ignore())
+				.ForMember(dest => dest.CountryExclusionContextId, mo => mo.Ignore());
             //plugins
             Mapper.CreateMap<PluginDescriptor, PluginModel>()
                 .ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())
@@ -571,9 +575,13 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.IsRecipientNotified, mo => mo.Ignore())
                 .ForMember(dest => dest.CreatedOnUtc, mo => mo.Ignore());
 			//stores
-			Mapper.CreateMap<Store, StoreModel>();
-			Mapper.CreateMap<StoreModel, Store>();
-
+			Mapper.CreateMap<Store, StoreModel>()
+				.ForMember(dest => dest.AvailableCurrencies, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryStoreCurrencyName, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrencyName, mo => mo.Ignore());
+			Mapper.CreateMap<StoreModel, Store>()
+				.ForMember(dest => dest.PrimaryStoreCurrency, mo => mo.Ignore())
+				.ForMember(dest => dest.PrimaryExchangeRateCurrency, mo => mo.Ignore());
             //Settings
             Mapper.CreateMap<TaxSettings, TaxSettingsModel>()
                 .ForMember(dest => dest.DefaultTaxAddress, mo => mo.Ignore())

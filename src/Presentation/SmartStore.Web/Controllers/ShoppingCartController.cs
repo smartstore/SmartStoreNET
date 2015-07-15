@@ -367,6 +367,8 @@ namespace SmartStore.Web.Controllers
 					decimal shoppingCartItemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemDiscountBase, _workContext.WorkingCurrency);
 					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
 				}
+
+                model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - shoppingCartItemSubTotalWithDiscount) * (-1));
 			}
 
 			//picture

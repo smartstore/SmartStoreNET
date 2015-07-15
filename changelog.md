@@ -25,6 +25,7 @@
 * #186 Mobile: variant images do not refresh 
 * #671 Bundle products: display base price according to applied discount 
 * #619 Display base price according to applied tier price
+* #726 PAngV: basket displays wrong base price when attribute price adjustment has been set 
 * Weight adjustment of attributes weren't applied in shopping cart overview
 * Shipping by weight calculates wrong surcharge if attribute combination prices are set
 

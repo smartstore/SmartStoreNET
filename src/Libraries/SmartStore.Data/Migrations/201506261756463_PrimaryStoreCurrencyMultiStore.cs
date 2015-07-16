@@ -144,6 +144,12 @@ namespace SmartStore.Data.Migrations
 				"Specifies the maximum news age in days. Older blog posts are not exported in the RSS feed.",
 				"Legt das maximale Blog-Alter in Tagen fest. Ältere Blog-Einträge werden im RSS-Feed nicht exportiert.");
 
+
+			builder.AddOrUpdate("Admin.Common.Deleted",
+				"Deleted",
+				"Gelöscht");
+
+
 			builder.Delete("Admin.Configuration.Currencies.CantDeletePrimary");
 			builder.Delete("Admin.Configuration.Currencies.CantDeleteExchange");
 			builder.Delete("Admin.Configuration.Currencies.Fields.MarkAsPrimaryStoreCurrency");

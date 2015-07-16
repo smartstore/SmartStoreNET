@@ -3394,34 +3394,49 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product variant found with the specified id");
 
+			var allStores = _services.StoreService.GetAllStores();
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			string allRolesString = T("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles");
+			string allStoresString = T("Admin.Common.StoresAll");
+			string deletedString = "[{0}]".FormatInvariant(T("Admin.Common.Deleted"));
+
 			var tierPricesModel = product.TierPrices
 				.OrderBy(x => x.StoreId)
 				.ThenBy(x => x.Quantity)
 				.ThenBy(x => x.CustomerRoleId)
 				.Select(x =>
 				{
-					var storeName = "";
-					if (x.StoreId > 0)
-					{
-						var store = _storeService.GetStoreById(x.StoreId);
-						storeName = store != null ? store.Name : "[Deleted]";
-					}
-					else
-					{
-						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
-					}
-					return new ProductModel.TierPriceModel()
+					var tierPriceModel = new ProductModel.TierPriceModel
 					{
 						Id = x.Id,
 						StoreId = x.StoreId,
-						Store = storeName,
-						CustomerRole = x.CustomerRoleId.HasValue ? _customerService.GetCustomerRoleById(x.CustomerRoleId.Value).Name : 
-							_localizationService.GetResource("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles"),
 						ProductId = x.ProductId,
-						CustomerRoleId = x.CustomerRoleId.HasValue ? x.CustomerRoleId.Value : 0,
+						CustomerRoleId = x.CustomerRoleId ?? 0,
 						Quantity = x.Quantity,
 						Price1 = x.Price
 					};
+
+					if (x.CustomerRoleId.HasValue)
+					{
+						var role = allCustomerRoles.FirstOrDefault(r => r.Id == x.CustomerRoleId.Value);
+						tierPriceModel.CustomerRole = (role == null ? allRolesString : role.Name);
+					}
+					else
+					{
+						tierPriceModel.CustomerRole = allRolesString;
+					}
+
+					if (x.StoreId > 0)
+					{
+						var store = allStores.FirstOrDefault(s => s.Id == x.StoreId);
+						tierPriceModel.Store = (store == null ? deletedString : store.Name);
+					}
+					else
+					{
+						tierPriceModel.Store = allStoresString;
+					}
+
+					return tierPriceModel;
 				})
 				.ToList();
 

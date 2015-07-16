@@ -1,6 +1,5 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -66,7 +65,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute mappings by their keys
         /// </summary>
@@ -110,7 +108,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute value</returns>
         ProductVariantAttributeValue GetProductVariantAttributeValueById(int productVariantAttributeValueId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute value
         /// </summary>
@@ -129,6 +126,13 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productVariantAttributeValue">The product variant attribute value</param>
         void UpdateProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
+
+		/// <summary>
+		/// Gets a list of product identifiers which have price adjustments
+		/// </summary>
+		/// <param name="productIds">Array of product identifiers</param>
+		/// <returns>List of product identifiers</returns>
+		IList<int> GetProductIdsWithPriceAdjustments(int[] productIds);
 
         #endregion
 

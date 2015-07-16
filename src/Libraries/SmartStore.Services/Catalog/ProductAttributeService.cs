@@ -6,11 +6,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
 using SmartStore.Services.Media;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Data;
-using System.Text;
-using System.Linq.Expressions;
-using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -234,7 +229,6 @@ namespace SmartStore.Services.Catalog
             });
         }
 
-        // codehint: sm-add
         public virtual IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids)
         {
             if (ids == null || ids.Length == 0)
@@ -245,7 +239,6 @@ namespace SmartStore.Services.Catalog
             return _productVariantAttributeRepository.GetMany(ids);
         }
 
-        // codehint: sm-add
         public virtual IEnumerable<ProductVariantAttributeValue> GetProductVariantAttributeValuesByIds(params int[] productVariantAttributeValueIds)
         {
             if (productVariantAttributeValueIds == null || productVariantAttributeValueIds.Length == 0)
@@ -391,6 +384,30 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productVariantAttributeValue);
         }
 
+		/// <summary>
+		/// Gets a list of product identifiers which have price adjustments
+		/// </summary>
+		/// <param name="productIds">Array of product identifiers</param>
+		/// <returns>List of product identifiers</returns>
+		public virtual IList<int> GetProductIdsWithPriceAdjustments(int[] productIds)
+		{
+			var queryMappings =
+				from m in _productVariantAttributeRepository.TableUntracked
+				where productIds.Contains(m.ProductId)
+				select new { m.Id, m.ProductId };
+		
+			var query = 
+				from v in _productVariantAttributeValueRepository.TableUntracked
+				join m in queryMappings on v.ProductVariantAttributeId equals m.Id
+				where v.PriceAdjustment != 0
+				group v by m.ProductId into grp
+				select grp.Key;
+
+			var result = query.ToList();
+
+			return result;
+		}
+
         #endregion
 
         #region Product variant attribute combinations (ProductVariantAttributeCombination)
@@ -488,7 +505,6 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-			// codehint: sm-add
 			//if (combination.IsDefaultCombination)
 			//{
 			//	EnsureSingleDefaultVariant(combination);
@@ -509,7 +525,6 @@ namespace SmartStore.Services.Catalog
             if (combination == null)
                 throw new ArgumentNullException("combination");
 
-            // codehint: sm-add
 			//if (combination.IsDefaultCombination)
 			//{
 			//	EnsureSingleDefaultVariant(combination);

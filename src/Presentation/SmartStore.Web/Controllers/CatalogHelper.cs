@@ -1004,6 +1004,9 @@ namespace SmartStore.Web.Controllers
 				{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
 			};
 
+			int[] productIds = products.Select(x => x.Id).ToArray();
+			IList<int> productIdsWithPriceAdjustments = null;
+
 			var models = new List<ProductOverviewModel>();
 
 			foreach (var product in products)
@@ -1133,6 +1136,14 @@ namespace SmartStore.Web.Controllers
 
 											bool displayFromMessage = false;
 											decimal minPossiblePrice = _priceCalculationService.GetLowestPrice(product, out displayFromMessage);
+
+											if (!displayFromMessage)
+											{
+												if (productIdsWithPriceAdjustments == null)
+													productIdsWithPriceAdjustments = _productAttributeService.GetProductIdsWithPriceAdjustments(productIds);
+
+												displayFromMessage = productIdsWithPriceAdjustments.Contains(product.Id);
+											}
 
 											decimal taxRate = decimal.Zero;
 											decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);

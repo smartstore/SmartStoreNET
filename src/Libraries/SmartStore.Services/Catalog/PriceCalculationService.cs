@@ -464,18 +464,6 @@ namespace SmartStore.Services.Catalog
 				displayFromMessage = true;
 			}
 
-			if (!displayFromMessage)
-			{
-				foreach (var attribute in product.ProductVariantAttributes)
-				{
-					if (attribute.ProductVariantAttributeValues.Any(x => x.PriceAdjustment != decimal.Zero))
-					{
-						displayFromMessage = true;
-						break;
-					}
-				}
-			}
-
 			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
 			{
 				lowestPrice = product.LowestAttributeCombinationPrice ?? decimal.Zero;

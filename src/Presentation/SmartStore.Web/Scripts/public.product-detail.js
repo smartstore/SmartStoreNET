@@ -169,7 +169,7 @@
                     zoomType: opts.zoomType
 				},
 				box: {
-					enabled: true	
+					enabled: true
 				}
 			});
 		}

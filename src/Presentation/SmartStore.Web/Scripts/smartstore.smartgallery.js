@@ -410,6 +410,7 @@
 		
 		initBox: function() {
 			var self = this;
+			var gov;
 
 			var getWidget = function (id) {
 				var widget = $('#' + id);
@@ -462,10 +463,18 @@
 						widget = getWidget(id == 'default' ? 'image-gallery-default' : id),
 						container = (widget.length && widget) || $(Gallery.prototype.options.container),
 						callbacks = {
-						    onopen: function () {
-						        container.data('gallery', this).trigger('open');
+							onopen: function () {
+								if (!gov || (gov = $('.smartgallery-overlay')).length == 0) {
+									gov = $('<div class="smartgallery-overlay" style="display: none"></div>').insertBefore(widget[0]);
+									gov.on('click', function (e) {
+										widget.data('gallery').close();
+									});
+								}
+
+								gov.show().addClass("in");
+								container.data('gallery', this).trigger('open');
 						    },
-						    onopened: function () {
+							onopened: function () {
 						        container.trigger('opened');
 						    },
 						    onslide: function () {
@@ -478,9 +487,11 @@
 						        container.trigger('slidecomplete', arguments);
 						    },
 						    onclose: function () {
-						        container.trigger('close');
+						    	gov.removeClass("in");
+						    	container.trigger('close');
 						    },
 						    onclosed: function () {
+						    	gov.css('display', 'none');
 						        container.trigger('closed').removeData('gallery');
 						    }
 						},
@@ -494,7 +505,7 @@
                 				event: e
 							},
 							callbacks,
-							self.options
+							self.options.box || {}
 						),
 						// Select all links with the same data-gallery attribute:
 						links = $('[data-gallery="' + id + '"]').not($(this));
@@ -862,6 +873,7 @@
 		// full size image box options
 		box: {
 			enabled: true,
+			closeOnSlideClick: false
 			/* {...} blueimp image gallery options are passed through */
 		},
 		callbacks: {

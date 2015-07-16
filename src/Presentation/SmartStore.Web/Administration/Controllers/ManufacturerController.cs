@@ -641,16 +641,16 @@ namespace SmartStore.Admin.Controllers
                     if (product != null)
                     {
                         var existingProductmanufacturers = _manufacturerService.GetProductManufacturersByManufacturerId(model.ManufacturerId, 0, int.MaxValue, true);
-                        if (existingProductmanufacturers.FindProductManufacturer(id, model.ManufacturerId) == null)
+
+						if (!existingProductmanufacturers.Any(x => x.ProductId == id && x.ManufacturerId == model.ManufacturerId))
                         {
-                            _manufacturerService.InsertProductManufacturer(
-                                new ProductManufacturer()
-                                {
-                                    ManufacturerId = model.ManufacturerId,
-                                    ProductId = id,
-                                    IsFeaturedProduct = false,
-                                    DisplayOrder = 1
-                                });
+                            _manufacturerService.InsertProductManufacturer(new ProductManufacturer
+							{
+								ManufacturerId = model.ManufacturerId,
+								ProductId = id,
+								IsFeaturedProduct = false,
+								DisplayOrder = 1
+							});
                         }
                     }
                 }

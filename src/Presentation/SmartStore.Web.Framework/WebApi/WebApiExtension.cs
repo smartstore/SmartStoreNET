@@ -25,6 +25,13 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			return _createResponse.MakeGenericMethod(type).Invoke(null, new[] { request, status, value }) as HttpResponseMessage;
 		}
+		public static HttpResponseMessage CreateResponseForEntity(this HttpRequestMessage request, object entity, int key)
+		{
+			if (entity == null)
+				return request.CreateResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
+
+			return request.CreateResponse(HttpStatusCode.OK, entity.GetType(), entity);
+		}
 
 		public static HttpResponseException ExceptionInvalidModelState(this ApiController apiController)
 		{
@@ -96,6 +103,17 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			key = 0;
 			return false;
+		}
+
+		public static string GetNavigation(this ODataPath odataPath, int segmentIndex)
+		{
+			if (odataPath.Segments.Count > segmentIndex)
+			{
+				string navigationProperty = (odataPath.Segments[segmentIndex] as NavigationPathSegment).NavigationPropertyName;
+
+				return navigationProperty;
+			}
+			return null;
 		}
 
 		public static void DeleteLocalFiles(this MultipartFormDataStreamProvider provider)

@@ -10,6 +10,8 @@
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 * #704 Make primary store currency suitable for multi-stores
+* #727 Web-API: Option to deactivate TimestampOlderThanLastRequest validation
+* #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

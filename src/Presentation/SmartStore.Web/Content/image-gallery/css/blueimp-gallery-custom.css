@@ -29,7 +29,6 @@
 	border: 1px solid rgba(0,0,0, 0.25);
 	border-radius: 4px;
 	border-top-right-radius: 0;
-	xtransition-delay: 0.2s;
 	-webkit-box-shadow: 0px 4px 20px rgba(0,0,0, 0.35);
 	        box-shadow: 0px 4px 20px rgba(0,0,0, 0.35);
 	-webkit-transform: translate(0, -75px) scale(0.9, 0.9);

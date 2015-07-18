@@ -474,29 +474,6 @@ namespace SmartStore.Core
 			}
 		}
 
-        public virtual bool IsRequestBeingRedirected
-        {
-            get
-            {
-                var response = _httpContext.Response;
-                return response.IsRequestBeingRedirected;   
-            }
-        }
-
-        public virtual bool IsPostBeingDone
-        {
-            get
-            {
-                if (_httpContext.Items["sm.IsPOSTBeingDone"] == null)
-                    return false;
-                return Convert.ToBoolean(_httpContext.Items["sm.IsPOSTBeingDone"]);
-            }
-            set
-            {
-                _httpContext.Items["sm.IsPOSTBeingDone"] = value;
-            }
-        }
-
 		/// <summary>
 		/// Finds the trust level of the running application (http://blogs.msdn.com/dmitryr/archive/2007/01/23/finding-out-the-current-trust-level-in-asp-net.aspx)
 		/// </summary>

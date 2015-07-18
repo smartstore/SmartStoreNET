@@ -19,6 +19,9 @@
 * #725 Prevent LowestProductPrice being 0
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 
+### Bugfixes
+* #523 Redirecting to payment provider performed by core instead of plugin
+
 
 ## SmartStore.NET 2.2.2
 

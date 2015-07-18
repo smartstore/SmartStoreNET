@@ -18,7 +18,6 @@ using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
 using SmartStore.Services;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
@@ -34,18 +33,15 @@ namespace SmartStore.PayPal
 	public partial class PayPalStandardProvider : PaymentPluginBase, IConfigurable
 	{
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
-        private readonly HttpContextBase _httpContext;
         private readonly ICommonServices _services;
         private readonly ILogger _logger;
 
         public PayPalStandardProvider(
-            HttpContextBase httpContext,
 			IOrderTotalCalculationService orderTotalCalculationService,
             ICommonServices services, 
             ILogger logger)
 		{
 			_orderTotalCalculationService = orderTotalCalculationService;
-            _httpContext = httpContext;
             _services = services;
             _logger = logger;
 		}
@@ -280,7 +276,7 @@ namespace SmartStore.PayPal
 			builder.AppendFormat("&zip={0}", HttpUtility.UrlEncode(address.ZipPostalCode));
 			builder.AppendFormat("&email={0}", HttpUtility.UrlEncode(address.Email));
 
-			_httpContext.Response.Redirect(builder.ToString());
+			postProcessPaymentRequest.RedirectUrl = builder.ToString();
 		}
 
 		/// <summary>

@@ -1,7 +1,9 @@
 ﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Forums
 {
@@ -344,5 +346,12 @@ namespace SmartStore.Services.Forums
         /// <param name="postId">Post identifier</param>
         /// <returns>Page index</returns>
         int CalculateTopicPageIndex(int forumTopicId, int pageSize, int postId);
+
+		/// <summary>
+		/// Creates a RSS feed with active discussions
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		SmartSyndicationFeed CreateActiveDiscussionsRssFeed(UrlHelper urlHelper, int forumId);
     }
 }

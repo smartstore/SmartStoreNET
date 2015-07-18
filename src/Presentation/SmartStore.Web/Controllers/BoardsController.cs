@@ -266,45 +266,11 @@ namespace SmartStore.Web.Controllers
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)
-            {
 				return HttpNotFound();
-            }
 
-            if (!_forumSettings.ActiveDiscussionsFeedEnabled)
-            {
-				return HttpNotFound();
-            }
+			var feed = _forumService.CreateActiveDiscussionsRssFeed(Url, forumId);
 
-            int topicLimit = _forumSettings.ActiveDiscussionsFeedCount;
-            var topics = _forumService.GetActiveTopics(forumId, topicLimit);
-            string url = Url.Action("ActiveDiscussionsRSS", null, (object)null, "http");
-
-            var feedTitle = _localizationService.GetResource("Forum.ActiveDiscussionsFeedTitle");
-            var feedDescription = _localizationService.GetResource("Forum.ActiveDiscussionsFeedDescription");
-
-            var feed = new SyndicationFeed(
-				string.Format(feedTitle, _storeContext.CurrentStore.Name),
-				feedDescription,
-				new Uri(url),
-				"ActiveDiscussionsRSS",
-				DateTime.UtcNow);
-
-            var items = new List<SyndicationItem>();
-
-            var viewsText = _localizationService.GetResource("Forum.Views");
-            var repliesText = _localizationService.GetResource("Forum.Replies");
-
-            foreach (var topic in topics)
-            {
-                string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
-                string content = String.Format("{2}: {0}, {3}: {1}", topic.NumReplies.ToString(), topic.Views.ToString(), repliesText, viewsText);
-
-                items.Add(new SyndicationItem(topic.Subject, content, new Uri(topicUrl),
-                    String.Format("Topic:{0}", topic.Id), (topic.LastPostTime ?? topic.UpdatedOnUtc)));
-            }
-            feed.Items = items;
-
-            return new RssActionResult() { Feed = feed };
+            return new RssActionResult { Feed = feed };
         }
 
         public ActionResult ForumGroup(int id)

@@ -1028,8 +1028,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from p in _productRepository.Table
 						orderby p.DisplayOrder, p.Id
-						where !p.Deleted &&
-						p.Sku == sku
+						where !p.Deleted && p.Sku == sku
 						select p;
 			var product = query.FirstOrDefault();
 			return product;

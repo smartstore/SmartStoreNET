@@ -18,6 +18,7 @@
 * #721 Message Queue: implement "Delete all"
 * #725 Prevent LowestProductPrice being 0
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
+* #735 Include SKUs of attribute combinations when filtering the backend product list
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

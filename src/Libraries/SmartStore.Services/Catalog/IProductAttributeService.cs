@@ -159,11 +159,18 @@ namespace SmartStore.Services.Catalog
 		decimal? GetLowestCombinationPrice(int productId);
 
         /// <summary>
-        /// Gets a product variant attribute combination
+		/// Gets a product variant attribute combination by identifier
         /// </summary>
         /// <param name="productVariantAttributeCombinationId">Product variant attribute combination identifier</param>
         /// <returns>Product variant attribute combination</returns>
         ProductVariantAttributeCombination GetProductVariantAttributeCombinationById(int productVariantAttributeCombinationId);
+
+		/// <summary>
+		/// /// Gets a product variant attribute combination by SKU
+		/// </summary>
+		/// <param name="sku">SKU</param>
+		/// <returns>Product variant attribute combination</returns>
+		ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku);
 
         /// <summary>
         /// Inserts a product variant attribute combination

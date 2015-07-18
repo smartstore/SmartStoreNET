@@ -948,9 +948,17 @@ namespace SmartStore.Admin.Controllers
         public ActionResult GoToSku(ProductListModel model)
         {
             string sku = model.GoDirectlyToSku;
-            var product = _productService.GetProductBySku(sku);
-            if (product != null)
-                return RedirectToAction("Edit", "Product", new { id = product.Id });
+
+			if (sku.HasValue())
+			{
+				var product = _productService.GetProductBySku(sku);
+				if (product != null)
+					return RedirectToAction("Edit", "Product", new { id = product.Id });
+
+				var combination = _productAttributeService.GetProductVariantAttributeCombinationBySku(sku);
+				if (combination != null && combination.Product != null && !combination.Product.Deleted)
+					return RedirectToAction("Edit", "Product", new { id = combination.Product.Id });
+			}
 
             //not found
             return List(model);

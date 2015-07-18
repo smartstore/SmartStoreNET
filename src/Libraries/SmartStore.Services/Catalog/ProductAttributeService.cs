@@ -483,7 +483,7 @@ namespace SmartStore.Services.Catalog
 		}
 
         /// <summary>
-        /// Gets a product variant attribute combination
+        /// Gets a product variant attribute combination by identifier
         /// </summary>
         /// <param name="productVariantAttributeCombinationId">Product variant attribute combination identifier</param>
         /// <returns>Product variant attribute combination</returns>
@@ -495,6 +495,21 @@ namespace SmartStore.Services.Catalog
             var combination = _productVariantAttributeCombinationRepository.GetById(productVariantAttributeCombinationId);
             return combination;
         }
+
+
+		/// <summary>
+		/// /// Gets a product variant attribute combination by SKU
+		/// </summary>
+		/// <param name="sku">SKU</param>
+		/// <returns>Product variant attribute combination</returns>
+		public virtual ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku)
+		{
+			if (sku.IsEmpty())
+				return null;
+
+			var combination = _productVariantAttributeCombinationRepository.Table.FirstOrDefault(x => x.Sku == sku);
+			return combination;
+		}
 
         /// <summary>
         /// Inserts a product variant attribute combination

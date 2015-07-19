@@ -353,5 +353,12 @@ namespace SmartStore.Services.Forums
 		/// <param name="urlHelper">UrlHelper to generate URLs</param>
 		/// <returns>SmartSyndicationFeed object</returns>
 		SmartSyndicationFeed CreateActiveDiscussionsRssFeed(UrlHelper urlHelper, int forumId);
+
+		/// <summary>
+		/// Creates a RSS feed with forum topics
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		SmartSyndicationFeed CreateForumRssFeed(UrlHelper urlHelper, int forumId);
     }
 }

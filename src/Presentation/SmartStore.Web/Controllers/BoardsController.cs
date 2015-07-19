@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
@@ -18,6 +17,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Boards;
 
@@ -34,7 +34,6 @@ namespace SmartStore.Web.Controllers
         private readonly ICountryService _countryService;
         private readonly IWebHelper _webHelper;
         private readonly IWorkContext _workContext;
-		private readonly IStoreContext _storeContext;
         private readonly ForumSettings _forumSettings;
         private readonly CustomerSettings _customerSettings;
         private readonly MediaSettings _mediaSettings;
@@ -50,7 +49,6 @@ namespace SmartStore.Web.Controllers
             ICountryService countryService,
             IWebHelper webHelper,
             IWorkContext workContext,
-			IStoreContext storeContext,
             ForumSettings forumSettings,
             CustomerSettings customerSettings,
             MediaSettings mediaSettings,
@@ -62,7 +60,6 @@ namespace SmartStore.Web.Controllers
             this._countryService = countryService;
             this._webHelper = webHelper;
             this._workContext = workContext;
-			this._storeContext = storeContext;
             this._forumSettings = forumSettings;
             this._customerSettings = customerSettings;
             this._mediaSettings = mediaSettings;
@@ -263,6 +260,7 @@ namespace SmartStore.Web.Controllers
             return View(model);
         }
 
+		[Compress]
         public ActionResult ActiveDiscussionsRss(int forumId = 0)
         {
             if (!_forumSettings.ForumsEnabled)
@@ -345,58 +343,15 @@ namespace SmartStore.Web.Controllers
             return RedirectToRoute("Boards");
         }
 
+		[Compress]
         public ActionResult ForumRss(int id)
         {
             if (!_forumSettings.ForumsEnabled)
-            {
 				return HttpNotFound();
-            }
 
-            if (!_forumSettings.ForumFeedsEnabled)
-            {
-				return HttpNotFound();
-            }
+			var feed = _forumService.CreateForumRssFeed(Url, id);
 
-            int topicLimit = _forumSettings.ForumFeedCount;
-            var forum = _forumService.GetForumById(id);
-
-            if (forum != null)
-            {
-                //Order by newest topic posts & limit the number of topics to return
-                var topics = _forumService.GetAllTopics(forum.Id, 0, string.Empty, ForumSearchType.All, 0, 0, topicLimit);
-
-                string url = Url.Action("ForumRSS", null, new { id = forum.Id }, "http");
-
-                var feedTitle = _localizationService.GetResource("Forum.ForumFeedTitle");
-                var feedDescription = _localizationService.GetResource("Forum.ForumFeedDescription");
-
-                var feed = new SyndicationFeed(
-					string.Format(feedTitle, _storeContext.CurrentStore.Name, forum.GetLocalized(x => x.Name)),
-					feedDescription,
-					new Uri(url),
-					string.Format("ForumRSS:{0}", forum.Id),
-					DateTime.UtcNow);
-
-                var items = new List<SyndicationItem>();
-
-                var viewsText = _localizationService.GetResource("Forum.Views");
-                var repliesText = _localizationService.GetResource("Forum.Replies");
-
-                foreach (var topic in topics)
-                {
-                    string topicUrl = Url.RouteUrl("TopicSlug", new { id = topic.Id, slug = topic.GetSeName() }, "http");
-                    string content = string.Format("{2}: {0}, {3}: {1}", topic.NumReplies.ToString(), topic.Views.ToString(), repliesText, viewsText);
-
-                    items.Add(new SyndicationItem(topic.Subject, content, new Uri(topicUrl), String.Format("Topic:{0}", topic.Id),
-                        (topic.LastPostTime ?? topic.UpdatedOnUtc)));
-                }
-
-                feed.Items = items;
-
-                return new RssActionResult() { Feed = feed };
-            }
-
-            return new RssActionResult() { Feed = new SyndicationFeed() };
+			return new RssActionResult { Feed = feed };
         }
 
         [HttpPost]

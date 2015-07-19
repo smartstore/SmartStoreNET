@@ -154,6 +154,7 @@ namespace SmartStore.Data.Migrations
 			builder.Delete("Admin.Configuration.Currencies.CantDeleteExchange");
 			builder.Delete("Admin.Configuration.Currencies.Fields.MarkAsPrimaryStoreCurrency");
 			builder.Delete("Admin.Configuration.Currencies.Fields.MarkAsPrimaryExchangeRateCurrency");
+			builder.Delete("Forum.ForumFeedTitle");
 		}
     }
 }

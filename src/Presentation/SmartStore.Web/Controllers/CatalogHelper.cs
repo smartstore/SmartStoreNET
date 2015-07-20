@@ -1242,38 +1242,8 @@ namespace SmartStore.Web.Controllers
 				{
 					model.SpecificationAttributeModels = PrepareProductSpecificationModel(product);
 				}
-
-				// available colors
-				if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
-				{
-					#region Prepare color attributes
-
-					// get the FIRST color type attribute
-					var colorAttr = _productAttributeService.GetProductVariantAttributesByProductId(minPriceProduct.Id)
-						.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
-
-					if (colorAttr != null)
-					{
-						var colorValues =
-							from a in colorAttr.ProductVariantAttributeValues.Take(50)
-							where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
-							select new ProductOverviewModel.ColorAttributeModel
-							{
-								Color = a.ColorSquaresRgb,
-								Alias = a.Alias,
-								FriendlyName = a.GetLocalized(l => l.Name)
-							};
-
-						if (colorValues.Any())
-						{
-							model.ColorAttributes.AddRange(colorValues.Distinct());
-						}
-					}
-
-					#endregion
-				}
 				
-				model.ProductMinPriceId = minPriceProduct.Id;
+				model.MinPriceProductId = minPriceProduct.Id;
 				model.ShowSku = _catalogSettings.ShowProductSku;
 				model.ShowWeight = _catalogSettings.ShowWeight;
 				model.ShowDimensions = _catalogSettings.ShowDimensions;
@@ -1342,6 +1312,47 @@ namespace SmartStore.Web.Controllers
 
 				models.Add(model);
 			}
+
+			// Color squares
+			// Perf: Loading all applicable attributes in one go is definitely faster
+			//		 than fetching them one by one withing the above loop.
+			if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
+			{
+				#region Prepare color attributes
+
+				var minPriceProductIds = models.Select(x => x.MinPriceProductId).ToArray();
+				var allAttrs = _productAttributeService.GetProductVariantAttributesByProductIds(minPriceProductIds, AttributeControlType.ColorSquares);
+
+				foreach (var model in models)
+				{
+					if (!allAttrs.ContainsKey(model.MinPriceProductId))
+						continue;
+					
+					// get the FIRST color type attribute
+					ProductVariantAttribute colorAttr = allAttrs[model.MinPriceProductId].FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
+
+					if (colorAttr != null)
+					{
+						var colorValues =
+							from a in colorAttr.ProductVariantAttributeValues.Take(50)
+							where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+							select new ProductOverviewModel.ColorAttributeModel
+							{
+								Color = a.ColorSquaresRgb,
+								Alias = a.Alias,
+								FriendlyName = a.GetLocalized(l => l.Name)
+							};
+
+						if (colorValues.Any())
+						{
+							model.ColorAttributes.AddRange(colorValues.Distinct());
+						}
+					}
+				}
+
+				#endregion
+			}
+
 			return models;
 		}
 

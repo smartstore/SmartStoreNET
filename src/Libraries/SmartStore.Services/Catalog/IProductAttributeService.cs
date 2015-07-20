@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
@@ -57,6 +58,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="productId">The product identifier</param>
         /// <returns>Product variant attribute mapping collection</returns>
 		IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId);
+
+		/// <summary>
+		/// Gets product variant attribute mappings by multiple product identifiers
+		/// </summary>
+		/// <param name="productIds">The product identifiers</param>
+		/// <param name="controlType">An optional control type filter. <c>null</c> loads all controls regardless of type.</param>
+		/// <returns>A map with product id as key and a collection of variant attributes as value.</returns>
+		Multimap<int, ProductVariantAttribute> GetProductVariantAttributesByProductIds(int[] productIds, AttributeControlType? controlType);
 
         /// <summary>
         /// Gets a product variant attribute mapping

@@ -9,6 +9,7 @@
 @{
     var trueTemplate = "#if (Published) {# <img src='" + Url.Content("~/Administration/Themes/SmartStore/Content/images/checkmark.png") + "' /> #} #";
 	var allString = T("Admin.Common.All").Text;
+	var unspecifiedString = T("Common.Unspecified").Text;
     
     ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
 }
@@ -127,7 +128,7 @@
 				@Html.SmartLabelFor(model => model.SearchWithoutCategories)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchWithoutCategories)
+				@Html.DropDownList("SearchWithoutCategories", Model.AvailableWithoutCategories, unspecifiedString)
 			</td>
 		</tr>
 		<tr id="SearchCategoryIdContainer">
@@ -143,7 +144,7 @@
 				@Html.SmartLabelFor(model => model.SearchWithoutManufacturers)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(model => Model.SearchWithoutManufacturers)
+				@Html.DropDownList("SearchWithoutManufacturers", Model.AvailableWithoutManufacturers, unspecifiedString)
 			</td>
 		</tr>
 		<tr id="SearchManufacturerIdContainer">
@@ -152,6 +153,22 @@
 			</td>
 			<td class="adminData">
 				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, allString)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchIsPublished)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchIsPublished", Model.AvailableIsPublished, unspecifiedString)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchHomePageProducts)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchHomePageProducts", Model.AvailableHomePageProducts, unspecifiedString)
 			</td>
 		</tr>
 		<tr>
@@ -276,12 +293,12 @@
 
         	// show/hide category filter
         	$('#SearchWithoutCategories').change(function () {
-        		$('#SearchCategoryIdContainer').toggle(!$(this).is(':checked'));
+        		$('#SearchCategoryIdContainer').toggle(_.isEmpty($(this).val()));
         	}).trigger('change');
 
         	// show/hide manufacturer filter
         	$('#SearchWithoutManufacturers').change(function () {
-        		$('#SearchManufacturerIdContainer').toggle(!$(this).is(':checked'));
+        		$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
         	}).trigger('change');
 
         	// export selected to pdf, xml, xls...
@@ -336,8 +353,10 @@
                 SearchManufacturerId: $('#SearchManufacturerId').val(),
                 SearchStoreId: $('#SearchStoreId').val(),
                 SearchProductTypeId: $('#SearchProductTypeId').val(),
-                SearchWithoutCategories: $('#SearchWithoutCategories').is(':checked'),
-                SearchWithoutManufacturers: $('#SearchWithoutManufacturers').is(':checked')
+                SearchWithoutCategories: $('#SearchWithoutCategories').val(),
+                SearchWithoutManufacturers: $('#SearchWithoutManufacturers').val(),
+                SearchIsPublished: $('#SearchIsPublished').val(),
+                SearchHomePageProducts: $('#SearchHomePageProducts').val()
             };
             e.data = searchModel;
         }

@@ -299,6 +299,10 @@
     <Compile Include="Migrations\201507132241575_QueuedEmailAttachments.Designer.cs">
       <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.cs" />
+    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.Designer.cs">
+      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -570,6 +574,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507132241575_QueuedEmailAttachments.resx">
       <DependentUpon>201507132241575_QueuedEmailAttachments.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507200832223_SortFilterHomepageProducts.resx">
+      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

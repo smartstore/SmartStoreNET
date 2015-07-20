@@ -300,6 +300,7 @@ namespace SmartStore.Services.ExportImport
 			writer.Write("ProductTemplateId", product.ProductTemplateId.ToString());
 			writer.Write("ProductTemplateViewPath", productTemplate == null ? "" : productTemplate.ViewPath);
 			writer.Write("ShowOnHomePage", product.ShowOnHomePage.ToString());
+			writer.Write("HomePageDisplayOrder", product.HomePageDisplayOrder.ToString());
 			writer.Write("MetaKeywords", product.MetaKeywords);
 			writer.Write("MetaDescription", product.MetaDescription);
 			writer.Write("MetaTitle", product.MetaTitle);
@@ -805,6 +806,7 @@ namespace SmartStore.Services.ExportImport
                     "FullDescription",
                     "ProductTemplateId",
                     "ShowOnHomePage",
+					"HomePageDisplayOrder",
                     "MetaKeywords",
                     "MetaDescription",
                     "MetaTitle",
@@ -943,6 +945,9 @@ namespace SmartStore.Services.ExportImport
 					col++;
 
 					cells[row, col].Value = p.ShowOnHomePage;
+					col++;
+
+					cells[row, col].Value = p.HomePageDisplayOrder;
 					col++;
 
 					cells[row, col].Value = p.MetaKeywords;

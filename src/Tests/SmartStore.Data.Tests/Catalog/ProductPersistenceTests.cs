@@ -24,6 +24,7 @@ namespace SmartStore.Data.Tests.Catalog
                 AdminComment = "AdminComment 1",
                 ProductTemplateId = 1,
                 ShowOnHomePage = false,
+				HomePageDisplayOrder = 3,
                 MetaKeywords = "Meta keywords",
                 MetaDescription = "Meta description",
                 MetaTitle = "Meta title",
@@ -112,6 +113,7 @@ namespace SmartStore.Data.Tests.Catalog
             fromDb.AdminComment.ShouldEqual("AdminComment 1");
             fromDb.ProductTemplateId.ShouldEqual(1);
             fromDb.ShowOnHomePage.ShouldEqual(false);
+			fromDb.HomePageDisplayOrder.ShouldEqual(3);
             fromDb.MetaKeywords.ShouldEqual("Meta keywords");
             fromDb.MetaDescription.ShouldEqual("Meta description");
             fromDb.AllowCustomerReviews.ShouldEqual(true);

@@ -221,6 +221,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.AllowCustomerReviews = m.AllowCustomerReviews;
 			p.ShowOnHomePage = m.ShowOnHomePage;
+			p.HomePageDisplayOrder = m.HomePageDisplayOrder;
 			p.Published = m.Published;
 			p.RequireOtherProducts = m.RequireOtherProducts;
 			p.RequiredProductIds = m.RequiredProductIds;
@@ -861,6 +862,8 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var allStores = _storeService.GetAllStores();
+			var yes = T("Admin.Common.Yes").Text;
+			var no = T("Admin.Common.No").Text;
 
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
             model.DisplayPdfExport = _pdfSettings.Enabled;
@@ -886,6 +889,18 @@ namespace SmartStore.Admin.Controllers
 
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
 
+			model.AvailableWithoutCategories.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableWithoutCategories.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableIsPublished.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableIsPublished.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableHomePageProducts.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableHomePageProducts.Add(new SelectListItem { Text = no, Value = "false" });
+
             return View(model);
         }
 
@@ -907,9 +922,11 @@ namespace SmartStore.Admin.Controllers
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
-				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null,
+				ProductType = (model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null),
 				WithoutCategories = model.SearchWithoutCategories,
-				WithoutManufacturers = model.SearchWithoutManufacturers
+				WithoutManufacturers = model.SearchWithoutManufacturers,
+				IsPublished = model.SearchIsPublished,
+				HomePageProducts = model.SearchHomePageProducts
 			};
 
 			if (model.SearchCategoryId > 0)

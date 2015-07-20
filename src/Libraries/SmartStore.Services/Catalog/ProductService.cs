@@ -255,12 +255,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product collection</returns>
         public virtual IList<Product> GetAllProductsDisplayedOnHomePage()
         {
-            var query = from p in _productRepository.Table
-                        orderby p.Name
-                        where p.Published &&
-                        !p.Deleted &&
-                        p.ShowOnHomePage
-                        select p;
+            var query = 
+				from p in _productRepository.Table
+				orderby p.HomePageDisplayOrder
+				where p.Published && !p.Deleted && p.ShowOnHomePage
+				select p;
+
             var products = query.ToList();
             return products;
         }
@@ -402,7 +402,7 @@ namespace SmartStore.Services.Catalog
 
                 //pass categry identifiers as comma-delimited string
                 string commaSeparatedCategoryIds = "";
-                if (ctx.CategoryIds != null && !ctx.WithoutCategories)
+                if (ctx.CategoryIds != null && !(ctx.WithoutCategories ?? false))
                 {
                     for (int i = 0; i < ctx.CategoryIds.Count; i++)
                     {
@@ -452,7 +452,7 @@ namespace SmartStore.Services.Catalog
 
                 var pManufacturerId = _dataProvider.GetParameter();
                 pManufacturerId.ParameterName = "ManufacturerId";
-                pManufacturerId.Value = (ctx.WithoutManufacturers ? 0 : ctx.ManufacturerId);
+				pManufacturerId.Value = (ctx.WithoutManufacturers ?? false) ? 0 : ctx.ManufacturerId;
                 pManufacturerId.DbType = DbType.Int32;
 
 				var pStoreId = _dataProvider.GetParameter();
@@ -567,13 +567,23 @@ namespace SmartStore.Services.Catalog
 
 				var pWithoutCategories = _dataProvider.GetParameter();
 				pWithoutCategories.ParameterName = "WithoutCategories";
-				pWithoutCategories.Value = ctx.WithoutCategories;
+				pWithoutCategories.Value = (ctx.WithoutCategories.HasValue ? (object)ctx.WithoutCategories.Value : DBNull.Value);
 				pWithoutCategories.DbType = DbType.Boolean;
 
 				var pWithoutManufacturers = _dataProvider.GetParameter();
 				pWithoutManufacturers.ParameterName = "WithoutManufacturers";
-				pWithoutManufacturers.Value = ctx.WithoutManufacturers;
+				pWithoutManufacturers.Value = (ctx.WithoutManufacturers.HasValue ? (object)ctx.WithoutManufacturers.Value : DBNull.Value);
 				pWithoutManufacturers.DbType = DbType.Boolean;
+
+				var pIsPublished = _dataProvider.GetParameter();
+				pIsPublished.ParameterName = "OverridePublished";
+				pIsPublished.Value = (ctx.IsPublished.HasValue ? (object)ctx.IsPublished.Value : DBNull.Value);
+				pIsPublished.DbType = DbType.Boolean;
+
+				var pHomePageProducts = _dataProvider.GetParameter();
+				pHomePageProducts.ParameterName = "HomePageProducts";
+				pHomePageProducts.Value = (ctx.HomePageProducts.HasValue ? (object)ctx.HomePageProducts.Value : DBNull.Value);
+				pHomePageProducts.DbType = DbType.Boolean;
 
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
@@ -615,6 +625,8 @@ namespace SmartStore.Services.Catalog
                     pLoadFilterableSpecificationAttributeOptionIds,
 					pWithoutCategories,
 					pWithoutManufacturers,
+					pIsPublished,
+					pHomePageProducts,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
 
@@ -754,9 +766,14 @@ namespace SmartStore.Services.Catalog
 			var query = ctx.Query ?? _productRepository.Table;
 			query = query.Where(p => !p.Deleted);
 
-			if (!ctx.ShowHidden)
+			if (!ctx.IsPublished.HasValue)
 			{
-				query = query.Where(p => p.Published);
+				if (!ctx.ShowHidden)
+					query = query.Where(p => p.Published);
+			}
+			else
+			{
+				query = query.Where(p => p.Published == ctx.IsPublished.Value);
 			}
 
 			if (ctx.ParentGroupedProductId > 0)
@@ -767,6 +784,11 @@ namespace SmartStore.Services.Catalog
 			if (ctx.VisibleIndividuallyOnly)
 			{
 				query = query.Where(p => p.VisibleIndividually);
+			}
+
+			if (ctx.HomePageProducts.HasValue)
+			{
+				query = query.Where(p => p.ShowOnHomePage == ctx.HomePageProducts.Value);
 			}
 
 			if (ctx.ProductType.HasValue)
@@ -887,9 +909,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// category filtering
-			if (ctx.WithoutCategories)
+			if (ctx.WithoutCategories.HasValue)
 			{
-				query = query.Where(x => x.ProductCategories.Count == 0);
+				if (ctx.WithoutCategories.Value)
+					query = query.Where(x => x.ProductCategories.Count == 0);
+				else
+					query = query.Where(x => x.ProductCategories.Count > 0);
 			}
 			else if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
 			{
@@ -912,9 +937,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// manufacturer filtering
-			if (ctx.WithoutManufacturers)
+			if (ctx.WithoutManufacturers.HasValue)
 			{
-				query = query.Where(x => x.ProductManufacturers.Count == 0);
+				if (ctx.WithoutManufacturers.Value)
+					query = query.Where(x => x.ProductManufacturers.Count == 0);
+				else
+					query = query.Where(x => x.ProductManufacturers.Count > 0);
 			}
 			else if (ctx.ManufacturerId > 0)
 			{

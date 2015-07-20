@@ -12,6 +12,7 @@
 * #704 Make primary store currency suitable for multi-stores
 * #727 Web-API: Option to deactivate TimestampOlderThanLastRequest validation
 * #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
+* #733 Option to set a display order for homepage products
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
@@ -19,6 +20,7 @@
 * #725 Prevent LowestProductPrice being 0
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 * #735 Include SKUs of attribute combinations when filtering the backend product list
+* Filter for homepage and published\unpublished products in backend product list
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

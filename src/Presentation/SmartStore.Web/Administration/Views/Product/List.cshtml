@@ -8,6 +8,7 @@
 
 @{
     var trueTemplate = "#if (Published) {# <img src='" + Url.Content("~/Administration/Themes/SmartStore/Content/images/checkmark.png") + "' /> #} #";
+	var allString = T("Admin.Common.All").Text;
     
     ViewBag.Title = T("Admin.Catalog.Products.Manage").Text;
 }
@@ -93,7 +94,7 @@
         </div>
     </div>
 
-	<table style="width:100%">
+	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.SearchProductName)
@@ -107,17 +108,20 @@
 				@Html.SmartLabelFor(model => model.SearchProductTypeId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
+				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, allString)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.SearchStoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownList("SearchStoreId", Model.AvailableStores)
-			</td>
-		</tr>
+		@if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SearchStoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownList("SearchStoreId", Model.AvailableStores, allString)
+				</td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.SearchWithoutCategories)
@@ -131,7 +135,7 @@
 				@Html.SmartLabelFor(model => model.SearchCategoryId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
+				@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, allString)
 			</td>
 		</tr>
 		<tr>
@@ -147,7 +151,7 @@
 				@Html.SmartLabelFor(model => model.SearchManufacturerId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
+				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, allString)
 			</td>
 		</tr>
 		<tr>
@@ -170,7 +174,7 @@
 			</td>
 		</tr>
 	</table>
-	
+
     <p></p>
 	
     <table class="adminContent">

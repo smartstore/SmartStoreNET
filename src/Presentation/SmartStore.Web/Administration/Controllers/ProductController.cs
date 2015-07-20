@@ -867,7 +867,6 @@ namespace SmartStore.Admin.Controllers
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 			model.StoreCount = allStores.Count;
 
-            //categories
             var allCategories = _categoryService.GetAllCategories(showHidden: true);
             var mappedCategories = allCategories.ToDictionary(x => x.Id);
             foreach (var c in allCategories)
@@ -875,22 +874,17 @@ namespace SmartStore.Admin.Controllers
                 model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
             }
 
-            //manufacturers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
             {
                 model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
             }
 
-			//stores
-			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             foreach (var s in allStores)
             {
                 model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
             }
 
-			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
             return View(model);
         }
@@ -3277,25 +3271,30 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var model = new BulkEditListModel();
+			var allStores = _services.StoreService.GetAllStores();
 
-			//categories
+			var model = new BulkEditListModel();
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.StoreCount = allStores.Count;
+
 			var allCategories = _categoryService.GetAllCategories(showHidden: true);
 			var mappedCategories = allCategories.ToDictionary(x => x.Id);
 			foreach (var c in allCategories)
 			{
-				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
 			}
 
-			//manufacturers
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))
 			{
-				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+				model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
 			}
 
-			//product types
+			foreach (var s in allStores)
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
+			}
+
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
 			return View(model);
 		}
@@ -3306,9 +3305,9 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var searchContext = new ProductSearchContext()
+			var searchContext = new ProductSearchContext
 			{
-				CategoryIds = new List<int>() { model.SearchCategoryId },
+				StoreId = model.SearchStoreId,
 				ManufacturerId = model.SearchManufacturerId,
 				Keywords = model.SearchProductName,
 				SearchSku = !_catalogSettings.SuppressSkuSearch,
@@ -3317,6 +3316,9 @@ namespace SmartStore.Admin.Controllers
 				ShowHidden = true,
 				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
 			};
+
+			if (model.SearchCategoryId > 0)
+				searchContext.CategoryIds.Add(model.SearchCategoryId);
 
 			var products = _productService.SearchProducts(searchContext);
 			var gridModel = new GridModel();
@@ -3339,7 +3341,9 @@ namespace SmartStore.Admin.Controllers
 
 				return productModel;
 			});
+
 			gridModel.Total = products.TotalCount;
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -3369,15 +3373,16 @@ namespace SmartStore.Admin.Controllers
 						product.OldPrice = pModel.OldPrice;
 						product.StockQuantity = pModel.StockQuantity;
 						product.Published = pModel.Published;
+
 						_productService.UpdateProduct(product);
 					}
 				}
 			}
+
 			if (deletedProducts != null)
 			{
 				foreach (var pModel in deletedProducts)
 				{
-					//delete
 					var product = _productService.GetProductById(pModel.Id);
 					if (product != null)
 					{

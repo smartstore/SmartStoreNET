@@ -51,6 +51,18 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Admin.Products.BasePrice.Hint",
                 "Please keep in mind, the base price is depending on several factors and will therefore only be calculated reliable in the front end.",
                 "Bitte beachten Sie, dass der tatsächliche Grundpreis von verschiedenen Faktoren abhängig ist und erst im Shop zuverlässig berechnet werden kann.");
+
+			builder.AddOrUpdate("Admin.Help.Forums",
+                "Community",
+				"Community");
+
+			builder.AddOrUpdate("Admin.Help.Documentation",
+				"Documentation",
+				"Dokumentation");
+
+			builder.AddOrUpdate("Admin.Common.About",
+				"About SmartStore.NET",
+				"Über SmartStore.NET");
         }
     }
 }

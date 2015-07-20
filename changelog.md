@@ -16,7 +16,9 @@
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
-* #721 Message Queue: implement "Delete all"
+* (Perf) Significantly reduced number of database reads during product list rendering. Increases request speed by up to 10%.
+* (Perf) Implemented 2nd level cache for infrequently changed entities. Increases request speed by up to 10%.
+* #721 Message Queue: implemented "Delete all"
 * #725 Prevent LowestProductPrice being 0
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 * #735 Include SKUs of attribute combinations when filtering the backend product list

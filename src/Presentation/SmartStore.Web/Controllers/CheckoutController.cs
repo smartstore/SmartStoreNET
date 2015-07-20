@@ -793,7 +793,6 @@ namespace SmartStore.Web.Controllers
             if ((_workContext.CurrentCustomer.IsGuest() && !_orderSettings.AnonymousCheckoutAllowed))
                 return new HttpUnauthorizedResult();
 
-
             //model
             var model = new CheckoutConfirmModel();
             try
@@ -827,12 +826,13 @@ namespace SmartStore.Web.Controllers
 
                 if (placeOrderResult.Success)
                 {
+					var postProcessPaymentRequest = new PostProcessPaymentRequest
+					{
+						Order = placeOrderResult.PlacedOrder
+					};
+
 					if (isPaymentPaymentWorkflowRequired)
 					{
-						var postProcessPaymentRequest = new PostProcessPaymentRequest()
-						{
-							Order = placeOrderResult.PlacedOrder
-						};
 						_paymentService.PostProcessPayment(postProcessPaymentRequest);
 					}
 
@@ -840,22 +840,16 @@ namespace SmartStore.Web.Controllers
 					_httpContext.Session["OrderPaymentInfo"] = null;
 					_httpContext.RemoveCheckoutState();
 
-                    if (_webHelper.IsRequestBeingRedirected || _webHelper.IsPostBeingDone)
-                    {
-                        //redirection or POST has been done in PostProcessPayment
-                        return Content("Redirected");
-                    }
-                    else
-                    {
-                        //if no redirection has been done (to a third-party payment page)
-                        //theoretically it's not possible
-                        return RedirectToAction("Completed");
-                    }
+					if (postProcessPaymentRequest.RedirectUrl.HasValue())
+					{
+						return Redirect(postProcessPaymentRequest.RedirectUrl);
+					}
+
+					return RedirectToAction("Completed");
                 }
                 else
                 {
-                    foreach (var error in placeOrderResult.Errors)
-                        model.Warnings.Add(error);
+					model.Warnings.AddRange(placeOrderResult.Errors);
                 }
             }
             catch (Exception exc)
@@ -864,12 +858,6 @@ namespace SmartStore.Web.Controllers
                 model.Warnings.Add(exc.Message);
             }
 
-            //If we got this far, something failed, redisplay form
-
-			//if (model.Warnings.Count > 0)
-			//	TempData["ConfirmOrderWarnings"] = model.Warnings;
-
-			//return RedirectToRoute("CheckoutConfirm");
             return View(model);
         }
 

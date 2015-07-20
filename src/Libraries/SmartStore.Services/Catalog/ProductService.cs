@@ -6,6 +6,7 @@ using System.Linq.Expressions;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -55,6 +56,7 @@ namespace SmartStore.Services.Catalog
         private readonly IWorkflowMessageService _workflowMessageService;
         private readonly IDataProvider _dataProvider;
         private readonly IDbContext _dbContext;
+		private readonly ICacheManager _cacheManager;
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
@@ -108,6 +110,7 @@ namespace SmartStore.Services.Catalog
             IWorkflowMessageService workflowMessageService,
             IDataProvider dataProvider,
 			IDbContext dbContext,
+			ICacheManager cacheManager,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
 			ICommonServices services,
@@ -132,6 +135,7 @@ namespace SmartStore.Services.Catalog
             this._workflowMessageService = workflowMessageService;
             this._dataProvider = dataProvider;
             this._dbContext = dbContext;
+			this._cacheManager = cacheManager;
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
 			this._services = services;
@@ -251,12 +255,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product collection</returns>
         public virtual IList<Product> GetAllProductsDisplayedOnHomePage()
         {
-            var query = from p in _productRepository.Table
-                        orderby p.Name
-                        where p.Published &&
-                        !p.Deleted &&
-                        p.ShowOnHomePage
-                        select p;
+            var query = 
+				from p in _productRepository.Table
+				orderby p.HomePageDisplayOrder
+				where p.Published && !p.Deleted && p.ShowOnHomePage
+				select p;
+
             var products = query.ToList();
             return products;
         }
@@ -272,7 +276,7 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTS_BY_ID_KEY, productId);
-            return _services.Cache.Get(key, () =>
+            return _cacheManager.Get(key, () =>
             { 
                 return _productRepository.GetById(productId); 
             });
@@ -314,7 +318,7 @@ namespace SmartStore.Services.Catalog
             _productRepository.Insert(product);
 
 			//clear cache
-			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
             
             //event notification
             _services.EventPublisher.EntityInserted(product);
@@ -339,7 +343,7 @@ namespace SmartStore.Services.Catalog
             _productRepository.Update(product);
 
 			// cache
-			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             // event notification
 			if (publishEvent && modified)
@@ -398,7 +402,7 @@ namespace SmartStore.Services.Catalog
 
                 //pass categry identifiers as comma-delimited string
                 string commaSeparatedCategoryIds = "";
-                if (ctx.CategoryIds != null && !ctx.WithoutCategories)
+                if (ctx.CategoryIds != null && !(ctx.WithoutCategories ?? false))
                 {
                     for (int i = 0; i < ctx.CategoryIds.Count; i++)
                     {
@@ -448,7 +452,7 @@ namespace SmartStore.Services.Catalog
 
                 var pManufacturerId = _dataProvider.GetParameter();
                 pManufacturerId.ParameterName = "ManufacturerId";
-                pManufacturerId.Value = (ctx.WithoutManufacturers ? 0 : ctx.ManufacturerId);
+				pManufacturerId.Value = (ctx.WithoutManufacturers ?? false) ? 0 : ctx.ManufacturerId;
                 pManufacturerId.DbType = DbType.Int32;
 
 				var pStoreId = _dataProvider.GetParameter();
@@ -563,13 +567,23 @@ namespace SmartStore.Services.Catalog
 
 				var pWithoutCategories = _dataProvider.GetParameter();
 				pWithoutCategories.ParameterName = "WithoutCategories";
-				pWithoutCategories.Value = ctx.WithoutCategories;
+				pWithoutCategories.Value = (ctx.WithoutCategories.HasValue ? (object)ctx.WithoutCategories.Value : DBNull.Value);
 				pWithoutCategories.DbType = DbType.Boolean;
 
 				var pWithoutManufacturers = _dataProvider.GetParameter();
 				pWithoutManufacturers.ParameterName = "WithoutManufacturers";
-				pWithoutManufacturers.Value = ctx.WithoutManufacturers;
+				pWithoutManufacturers.Value = (ctx.WithoutManufacturers.HasValue ? (object)ctx.WithoutManufacturers.Value : DBNull.Value);
 				pWithoutManufacturers.DbType = DbType.Boolean;
+
+				var pIsPublished = _dataProvider.GetParameter();
+				pIsPublished.ParameterName = "OverridePublished";
+				pIsPublished.Value = (ctx.IsPublished.HasValue ? (object)ctx.IsPublished.Value : DBNull.Value);
+				pIsPublished.DbType = DbType.Boolean;
+
+				var pHomePageProducts = _dataProvider.GetParameter();
+				pHomePageProducts.ParameterName = "HomePageProducts";
+				pHomePageProducts.Value = (ctx.HomePageProducts.HasValue ? (object)ctx.HomePageProducts.Value : DBNull.Value);
+				pHomePageProducts.DbType = DbType.Boolean;
 
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
@@ -611,6 +625,8 @@ namespace SmartStore.Services.Catalog
                     pLoadFilterableSpecificationAttributeOptionIds,
 					pWithoutCategories,
 					pWithoutManufacturers,
+					pIsPublished,
+					pHomePageProducts,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
 
@@ -750,9 +766,14 @@ namespace SmartStore.Services.Catalog
 			var query = ctx.Query ?? _productRepository.Table;
 			query = query.Where(p => !p.Deleted);
 
-			if (!ctx.ShowHidden)
+			if (!ctx.IsPublished.HasValue)
 			{
-				query = query.Where(p => p.Published);
+				if (!ctx.ShowHidden)
+					query = query.Where(p => p.Published);
+			}
+			else
+			{
+				query = query.Where(p => p.Published == ctx.IsPublished.Value);
 			}
 
 			if (ctx.ParentGroupedProductId > 0)
@@ -763,6 +784,11 @@ namespace SmartStore.Services.Catalog
 			if (ctx.VisibleIndividuallyOnly)
 			{
 				query = query.Where(p => p.VisibleIndividually);
+			}
+
+			if (ctx.HomePageProducts.HasValue)
+			{
+				query = query.Where(p => p.ShowOnHomePage == ctx.HomePageProducts.Value);
 			}
 
 			if (ctx.ProductType.HasValue)
@@ -883,9 +909,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// category filtering
-			if (ctx.WithoutCategories)
+			if (ctx.WithoutCategories.HasValue)
 			{
-				query = query.Where(x => x.ProductCategories.Count == 0);
+				if (ctx.WithoutCategories.Value)
+					query = query.Where(x => x.ProductCategories.Count == 0);
+				else
+					query = query.Where(x => x.ProductCategories.Count > 0);
 			}
 			else if (ctx.CategoryIds != null && ctx.CategoryIds.Count > 0)
 			{
@@ -908,9 +937,12 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// manufacturer filtering
-			if (ctx.WithoutManufacturers)
+			if (ctx.WithoutManufacturers.HasValue)
 			{
-				query = query.Where(x => x.ProductManufacturers.Count == 0);
+				if (ctx.WithoutManufacturers.Value)
+					query = query.Where(x => x.ProductManufacturers.Count == 0);
+				else
+					query = query.Where(x => x.ProductManufacturers.Count > 0);
 			}
 			else if (ctx.ManufacturerId > 0)
 			{
@@ -1024,8 +1056,7 @@ namespace SmartStore.Services.Catalog
 
 			var query = from p in _productRepository.Table
 						orderby p.DisplayOrder, p.Id
-						where !p.Deleted &&
-						p.Sku == sku
+						where !p.Deleted && p.Sku == sku
 						select p;
 			var product = query.FirstOrDefault();
 			return product;
@@ -1588,7 +1619,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Delete(tierPrice);
 
-			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityDeleted(tierPrice);
@@ -1619,7 +1650,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Insert(tierPrice);
 
-			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityInserted(tierPrice);
@@ -1636,7 +1667,7 @@ namespace SmartStore.Services.Catalog
 
             _tierPriceRepository.Update(tierPrice);
 
-			_services.Cache.RemoveByPattern(PRODUCTS_PATTERN_KEY);
+			_cacheManager.RemoveByPattern(PRODUCTS_PATTERN_KEY);
 
             //event notification
             _services.EventPublisher.EntityUpdated(tierPrice);

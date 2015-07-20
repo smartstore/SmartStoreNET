@@ -104,6 +104,12 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public bool ShowOnHomePage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the display order for homepage products
+		/// </summary>
+		[DataMember]
+		public int HomePageDisplayOrder { get; set; }
+
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>

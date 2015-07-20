@@ -4,6 +4,7 @@
 ###New Features
 * Added OData endpoint for payment method
 * #727 Option to deactivate TimestampOlderThanLastRequest validation
+* #731 Allow deletion and inserting of product category and manufacturer assignments
 ###Improvements
 * Using header timestamp as last user request date rather than API server date
 

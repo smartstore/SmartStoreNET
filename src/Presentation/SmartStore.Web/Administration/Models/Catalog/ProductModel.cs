@@ -84,6 +84,9 @@ namespace SmartStore.Admin.Models.Catalog
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.ShowOnHomePage")]
         public bool ShowOnHomePage { get; set; }
 
+		[SmartResourceDisplayName("Admin.Catalog.Products.Fields.HomePageDisplayOrder")]
+		public int HomePageDisplayOrder { get; set; }
+
         [SmartResourceDisplayName("Admin.Catalog.Products.Fields.MetaKeywords")]
         [AllowHtml]
         public string MetaKeywords { get; set; }

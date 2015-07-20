@@ -4803,7 +4803,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					Seconds = 600,
+					Seconds = 14400, // 4 hrs
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,

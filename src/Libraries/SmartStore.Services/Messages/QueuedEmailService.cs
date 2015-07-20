@@ -95,7 +95,7 @@ namespace SmartStore.Services.Messages
             if (queuedEmailIds == null || queuedEmailIds.Length == 0)
                 return new List<QueuedEmail>();
 
-            var query = from qe in _queuedEmailRepository.Table.Expand(x => x.EmailAccount)
+            var query = from qe in _queuedEmailRepository.Table
                         where queuedEmailIds.Contains(qe.Id)
                         select qe;
 

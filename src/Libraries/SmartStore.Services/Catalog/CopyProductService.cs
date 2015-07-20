@@ -129,7 +129,7 @@ namespace SmartStore.Services.Catalog
 			}
 
             // product
-            productCopy = new Product()
+            productCopy = new Product
             {
 				ProductTypeId = product.ProductTypeId,
 				ParentGroupedProductId = product.ParentGroupedProductId,
@@ -140,6 +140,7 @@ namespace SmartStore.Services.Catalog
                 ProductTemplateId = product.ProductTemplateId,
                 AdminComment = product.AdminComment,
                 ShowOnHomePage = product.ShowOnHomePage,
+				HomePageDisplayOrder = product.HomePageDisplayOrder,
                 MetaKeywords = product.MetaKeywords,
                 MetaDescription = product.MetaDescription,
                 MetaTitle = product.MetaTitle,

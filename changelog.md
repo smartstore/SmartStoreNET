@@ -12,12 +12,23 @@
 * New scheduled task: clear e-mail queue
 * New scheduled task: clear uploadeded transient media files
 * #704 Make primary store currency suitable for multi-stores
+* #727 Web-API: Option to deactivate TimestampOlderThanLastRequest validation
+* #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
+* #733 Option to set a display order for homepage products
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
+* (Perf) Significantly reduced number of database reads during product list rendering. Increases request speed by up to 10%.
+* (Perf) Implemented 2nd level cache for infrequently changed entities. Increases request speed by up to 10%.
+* #721 Message Queue: implemented "Delete all"
 * #721 Message Queue: implemented "Delete all"
 * #725 Prevent LowestProductPrice being 0
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
+* #735 Include SKUs of attribute combinations when filtering the backend product list
+* Filter for homepage and published\unpublished products in backend product list
+
+### Bugfixes
+* #523 Redirecting to payment provider performed by core instead of plugin
 
 
 ## SmartStore.NET 2.2.2

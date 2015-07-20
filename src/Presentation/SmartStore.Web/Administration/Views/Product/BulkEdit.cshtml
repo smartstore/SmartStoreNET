@@ -1,7 +1,7 @@
 ﻿@model BulkEditListModel
 @using Telerik.Web.Mvc.UI
 @{
-    var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
+	var allString = T("Admin.Common.All").Text;
     
     //page title
     ViewBag.Title = T("Admin.Catalog.BulkEdit").Text;
@@ -20,51 +20,63 @@
     <div class="alert alert-info">
         @T("Admin.Catalog.BulkEdit.Info")
     </div>
-    
-    <table width="100%">
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchProductName)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => Model.SearchProductName)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchCategoryId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchCategoryId", Model.AvailableCategories, T("Admin.Common.All").Text)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchManufacturerId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, T("Admin.Common.All").Text)
-            </td>
-        </tr>
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.SearchProductTypeId)
-            </td>
-            <td class="adminData">
-                @Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes)
-            </td>
-        </tr>
-        <tr>
+
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchProductName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.SearchProductName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchProductTypeId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchProductTypeId", Model.AvailableProductTypes, allString)
+			</td>
+		</tr>
+		@if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SearchStoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownList("SearchStoreId", Model.AvailableStores, allString)
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchCategoryId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchCategoryId", Model.AvailableCategories, allString)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SearchManufacturerId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownList("SearchManufacturerId", Model.AvailableManufacturers, allString)
+			</td>
+		</tr>
+		<tr>
 			<td class="adminTitle">
 				&nbsp;
 			</td>
-            <td class="adminData">
-                <button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
-            </td>
-        </tr>
-    </table>
-    <p>
-    </p>
+			<td class="adminData">
+				<button type="submit" id="search-products" value="search-products" class="btn"><i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")</button>
+			</td>
+		</tr>
+	</table>
+	
+    <p></p>
+	
     <table class="adminContent">
         <tr>
             <td>
@@ -121,8 +133,9 @@
                     })
                     .ClientEvents(events => events.OnDataBinding("Grid_onDataBinding").OnError("Grid_onError").OnSubmitChanges("Grid_onSubmitChanges"))
                     .Editable(editing => editing.Mode(GridEditMode.InCell))
-                    .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                 )
+
                 <script type="text/javascript">
 
                     $(document).ready(function () {
@@ -155,6 +168,7 @@
                             alert(message);
                         }
                     }
+
                     function Grid_onDataBinding(e) {
                         var loadData = true;
                         var grid = $(this).data('tGrid');
@@ -167,7 +181,8 @@
         
                         if (loadData) {
                             var searchModel = {
-                                SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+                            	SearchProductName: $('#@Html.FieldIdFor(model => model.SearchProductName)').val(),
+                            	SearchStoreId: $('#SearchStoreId').val(),
                                 SearchCategoryId: $('#SearchCategoryId').val(),
                                 SearchManufacturerId: $('#SearchManufacturerId').val(),
                                 SearchProductTypeId: $('#SearchProductTypeId').val()
@@ -175,10 +190,11 @@
                             e.data = searchModel;
                         }
                     }
+
                     function Grid_onSubmitChanges(e) {
                         //Pass search parameters
-
-                        e.values["SearchProductName"] = $('#@Html.FieldIdFor(model => model.SearchProductName)').val();
+                    	e.values["SearchProductName"] = $('#@Html.FieldIdFor(model => model.SearchProductName)').val();
+						e.values["SearchStoreId"] = $('#SearchStoreId').val();
                         e.values["SearchCategoryId"] = $('#SearchCategoryId').val();
                         e.values["SearchManufacturerId"] = $('#SearchManufacturerId').val();
                         e.values["SearchProductTypeId"] = $('#SearchProductTypeId').val();

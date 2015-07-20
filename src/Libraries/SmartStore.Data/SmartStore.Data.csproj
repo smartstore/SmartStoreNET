@@ -65,17 +65,20 @@
     <Reference Include="Autofac">
       <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
     </Reference>
+    <Reference Include="EFCache">
+      <HintPath>..\..\packages\EntityFramework.Cache.1.0.0\lib\net45\EFCache.dll</HintPath>
+    </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServerCompact, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.0\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
     <Reference Include="Microsoft.SqlServer.ConnectionInfo, Version=11.0.0.0, Culture=neutral, PublicKeyToken=89845dcd8080cc91, processorArchitecture=MSIL">
       <Private>True</Private>
@@ -115,6 +118,8 @@
     <Compile Include="..\..\AssemblyVersionInfo.cs">
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
+    <Compile Include="Caching\EfCacheImpl.cs" />
+    <Compile Include="Caching\EfCachingPolicy.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
@@ -309,6 +314,10 @@
     <Compile Include="Migrations\201507141647299_CustomerTablePerf.cs" />
     <Compile Include="Migrations\201507141647299_CustomerTablePerf.Designer.cs">
       <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.cs" />
+    <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.Designer.cs">
+      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -594,6 +603,9 @@
     <EmbeddedResource Include="Migrations\201507141647299_CustomerTablePerf.resx">
       <DependentUpon>201507141647299_CustomerTablePerf.cs</DependentUpon>
     </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507200832223_SortFilterHomepageProducts.resx">
+      <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
+    </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />
   </ItemGroup>
@@ -612,6 +624,7 @@
   <ItemGroup>
     <EmbeddedResource Include="Sql\LatestProductLoadAllPaged.sql" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <PropertyGroup>
     <PostBuildEvent>

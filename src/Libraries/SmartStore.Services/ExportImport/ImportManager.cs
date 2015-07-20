@@ -360,6 +360,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.FullDescription);
 				row.SetProperty(result, product, (x) => x.ProductTemplateId);
 				row.SetProperty(result, product, (x) => x.ShowOnHomePage);
+				row.SetProperty(result, product, (x) => x.HomePageDisplayOrder);
 				row.SetProperty(result, product, (x) => x.MetaKeywords);
 				row.SetProperty(result, product, (x) => x.MetaDescription);
 				row.SetProperty(result, product, (x) => x.MetaTitle);

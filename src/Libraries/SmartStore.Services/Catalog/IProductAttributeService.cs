@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -59,6 +59,14 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping collection</returns>
 		IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId);
 
+		/// <summary>
+		/// Gets product variant attribute mappings by multiple product identifiers
+		/// </summary>
+		/// <param name="productIds">The product identifiers</param>
+		/// <param name="controlType">An optional control type filter. <c>null</c> loads all controls regardless of type.</param>
+		/// <returns>A map with product id as key and a collection of variant attributes as value.</returns>
+		Multimap<int, ProductVariantAttribute> GetProductVariantAttributesByProductIds(int[] productIds, AttributeControlType? controlType);
+
         /// <summary>
         /// Gets a product variant attribute mapping
         /// </summary>
@@ -66,7 +74,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute mappings by their keys
         /// </summary>
@@ -110,7 +117,6 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute value</returns>
         ProductVariantAttributeValue GetProductVariantAttributeValueById(int productVariantAttributeValueId);
 
-        // codehint: sm-add
         /// <summary>
         /// Gets multiple product variant attribute value
         /// </summary>
@@ -129,6 +135,13 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productVariantAttributeValue">The product variant attribute value</param>
         void UpdateProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
+
+		/// <summary>
+		/// Gets a list of product identifiers which have price adjustments
+		/// </summary>
+		/// <param name="productIds">Array of product identifiers</param>
+		/// <returns>List of product identifiers</returns>
+		IList<int> GetProductIdsWithPriceAdjustments(int[] productIds);
 
         #endregion
 
@@ -155,11 +168,18 @@ namespace SmartStore.Services.Catalog
 		decimal? GetLowestCombinationPrice(int productId);
 
         /// <summary>
-        /// Gets a product variant attribute combination
+		/// Gets a product variant attribute combination by identifier
         /// </summary>
         /// <param name="productVariantAttributeCombinationId">Product variant attribute combination identifier</param>
         /// <returns>Product variant attribute combination</returns>
         ProductVariantAttributeCombination GetProductVariantAttributeCombinationById(int productVariantAttributeCombinationId);
+
+		/// <summary>
+		/// /// Gets a product variant attribute combination by SKU
+		/// </summary>
+		/// <param name="sku">SKU</param>
+		/// <returns>Product variant attribute combination</returns>
+		ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku);
 
         /// <summary>
         /// Inserts a product variant attribute combination

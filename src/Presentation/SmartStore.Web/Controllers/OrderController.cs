@@ -611,27 +611,22 @@ namespace SmartStore.Web.Controllers
 			if (IsUnauthorizedOrder(order))
 				return new HttpUnauthorizedResult();
 
-            if (!_paymentService.CanRePostProcessPayment(order))
-				return RedirectToAction("Details", "Order", new { id = order.Id });
+			if (_paymentService.CanRePostProcessPayment(order))
+			{
+				var postProcessPaymentRequest = new PostProcessPaymentRequest
+				{
+					Order = order,
+					IsRePostProcessPayment = true
+				};
 
-            var postProcessPaymentRequest = new PostProcessPaymentRequest()
-            {
-                Order = order,
-				IsRePostProcessPayment = true
-            };
-            _paymentService.PostProcessPayment(postProcessPaymentRequest);
+				_paymentService.PostProcessPayment(postProcessPaymentRequest);
 
-            if (_services.WebHelper.IsRequestBeingRedirected || _services.WebHelper.IsPostBeingDone)
-            {
-                //redirection or POST has been done in PostProcessPayment
-                return Content("Redirected");
-            }
-            else
-            {
-                //if no redirection has been done (to a third-party payment page)
-                //theoretically it's not possible
-				return RedirectToAction("Details", "Order", new { id = order.Id });
-            }
+				if (postProcessPaymentRequest.RedirectUrl.HasValue())
+				{
+					return Redirect(postProcessPaymentRequest.RedirectUrl);
+				}
+			}
+			return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]

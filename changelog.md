@@ -3,22 +3,28 @@
 ## SmartStore.NET 2.2.2
 
 ### New Features
+* SmartStore.NET User Guide
 * #210 Implement multi-store support for import/export
 * Added zip code to shipping by weight computation method
-* Skrill payment plugin
+* Skrill payment plugin (distributed via Marketplace)
+* (Dev) DevTool plugin: added option to display all widget zones in public store
 
 ### Improvements
+* (Perf) several minor optimizations for faster app startup and page rendering
+* UI: optimized image gallery widget (white background & nicer animations) + enhanced modal dialog fade animations
 * (Soft) deletion of SEO slug supporting entities now also deletes the corresponding url records
 * License checker now supports IDN mapping for domain names
 * #716 Supporting of paged google-product data query for SQL-Server Compact Edition
 * #648 Add hint for * at mandatory form fields at address creation
 * Added link to imprint and disclaimer to footer in mobile theme 
-* #521 Display bonus points in order export 
+* #521 Display bonus points in order export
+* Updated GMC taxonomy files
+* MsieJsEngine now is the default LESS script engine
 
 ### Bugfixes
 * #694 Product variant attribute in product page should not be preselected implicitly
 * Fixed: If currencies are limited to one for a multi-store, this currency should dominate the setting for the primary store currency
-* #563 Scheduled Tasks: ensure, that 'LastEndUtc' is ALWAYS set
+* #563 Scheduled Tasks: ensure that 'LastEndUtc' is ALWAYS set
 * Topics grid: fixed 'maxJsonLength exceeded' error
 * Debitoor: Fixed "The property named 'lines.0.productOrService' should be defined"
 * Send currency code of primary store currency (not of working currency) to payment gateway
@@ -29,6 +35,7 @@
 * #726 PAngV: basket displays wrong base price when attribute price adjustment has been set 
 * Weight adjustment of attributes weren't applied in shopping cart overview
 * Shipping by weight calculates wrong surcharge if attribute combination prices are set
+* Don't let database hooks call other hooks.
 
 
 ## SmartStore.NET 2.2.1

@@ -1,5 +1,6 @@
 ﻿using System.Runtime.Serialization;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Localization;
 
 namespace SmartStore.Core.Domain.Payments
 {
@@ -7,7 +8,7 @@ namespace SmartStore.Core.Domain.Payments
 	/// Represents a payment method
 	/// </summary>
 	[DataContract]
-	public partial class PaymentMethod : BaseEntity
+	public partial class PaymentMethod : BaseEntity, ILocalizedEntity
 	{
 		/// <summary>
 		/// Gets or sets the payment method system name
@@ -88,5 +89,11 @@ namespace SmartStore.Core.Domain.Payments
 				this.AmountRestrictionContextId = (int)value;
 			}
 		}
+
+		/// <summary>
+		/// Gets or sets the full description
+		/// </summary>
+		[DataMember]
+		public string FullDescription { get; set; }
 	}
 }

@@ -19,6 +19,8 @@ namespace SmartStore.Data.Mapping.Payments
 			this.Property(x => x.MinimumOrderAmount).HasPrecision(18, 4);
 			this.Property(x => x.MaximumOrderAmount).HasPrecision(18, 4);
 
+			this.Property(x => x.FullDescription).HasMaxLength(4000);
+
 			this.Ignore(x => x.CountryExclusionContext);
 			this.Ignore(x => x.AmountRestrictionContext);
 		}

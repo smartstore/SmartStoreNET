@@ -303,6 +303,10 @@
     <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.Designer.cs">
       <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201507210952098_PaymentMethodDescription.cs" />
+    <Compile Include="Migrations\201507210952098_PaymentMethodDescription.Designer.cs">
+      <DependentUpon>201507210952098_PaymentMethodDescription.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -577,6 +581,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201507200832223_SortFilterHomepageProducts.resx">
       <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201507210952098_PaymentMethodDescription.resx">
+      <DependentUpon>201507210952098_PaymentMethodDescription.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

@@ -440,6 +440,7 @@
     <Compile Include="Stores\IStoreService.cs" />
     <Compile Include="Stores\StoreMappingService.cs" />
     <Compile Include="Stores\StoreService.cs" />
+    <Compile Include="Tasks\InitializeSchedulerFilter.cs" />
     <Compile Include="Tasks\ScheduleTaskService.cs" />
     <Compile Include="Tasks\IScheduleTaskService.cs" />
     <Compile Include="Tasks\ITask.cs" />

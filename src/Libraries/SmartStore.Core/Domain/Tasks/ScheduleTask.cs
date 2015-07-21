@@ -1,8 +1,11 @@
 ﻿
 using System;
+using System.ComponentModel.DataAnnotations.Schema;
+using System.Diagnostics;
 
 namespace SmartStore.Core.Domain.Tasks
 {
+    [DebuggerDisplay("{Name} (Type: {Type})")]
     public class ScheduleTask : BaseEntity
     {
         /// <summary>
@@ -23,12 +26,16 @@ namespace SmartStore.Core.Domain.Tasks
         /// <summary>
         /// Gets or sets the value indicating whether a task is enabled
         /// </summary>
+        [Index("IX_NextRun_Enabled", 1)]
         public bool Enabled { get; set; }
 
         /// <summary>
         /// Gets or sets the value indicating whether a task should be stopped on some error
         /// </summary>
         public bool StopOnError { get; set; }
+
+        [Index("IX_NextRun_Enabled", 0)]
+        public DateTime? NextRunUtc { get; set; }
 
         public DateTime? LastStartUtc { get; set; }
 
@@ -46,7 +53,6 @@ namespace SmartStore.Core.Domain.Tasks
 			get
 			{
 				var result = (LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault());
-
 				return result;
 			}
 		}

@@ -118,6 +118,9 @@ namespace SmartStore.Web
 				// start scheduled tasks
 				TaskManager.Instance.Initialize();
 				TaskManager.Instance.Start();
+
+                // Install filter
+                GlobalFilters.Filters.Add(new InitializeSchedulerFilter());
 			}
 			else
 			{

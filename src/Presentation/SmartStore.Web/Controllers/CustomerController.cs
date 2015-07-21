@@ -1548,7 +1548,7 @@ namespace SmartStore.Web.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
                     model.AvatarUrl = _pictureService.GetPictureUrl(
-                        customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId),
+                        customerAvatarId,
                         _mediaSettings.AvatarPictureSize,
                         false);
                     return View(model);

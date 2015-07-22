@@ -9,9 +9,9 @@ namespace SmartStore.Web.Controllers
     public partial class WidgetController : PublicControllerBase
     {
         [ChildActionOnly]
-        public ActionResult WidgetsByZone(IEnumerable<WidgetRouteInfo> widgets)
+        public ActionResult WidgetsByZone(WidgetZoneModel zoneModel)
         {
-            return PartialView(widgets);
+			return PartialView(zoneModel);
         }
 
     }

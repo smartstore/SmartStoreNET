@@ -82,7 +82,6 @@ namespace SmartStore.Web.Infrastructure
 
             #endregion
 
-
             #region Topic Widgets
 
             // add special "topic widgets" to the list

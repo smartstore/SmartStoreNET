@@ -235,7 +235,6 @@
     <Compile Include="Models\Catalog\ProductReviewListModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\CopyProductModel.cs" />
-    <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Cms\WidgetModel.cs" />
     <Compile Include="Models\Common\CheckUpdateResult.cs" />
     <Compile Include="Models\Common\FeedItemModel.cs" />
@@ -1088,9 +1087,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductTag.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Widget\WidgetsByZone.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

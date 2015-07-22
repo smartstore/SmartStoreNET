@@ -406,7 +406,8 @@ namespace SmartStore.Web.Framework
 				var widgets = widgetSelector.GetWidgets(widgetZone, model).ToArray();
 				if (widgets.Any())
 				{
-					var result = helper.Action("WidgetsByZone", "Widget", new { widgets = widgets, model = model, area = "" });
+					var zoneModel = new WidgetZoneModel { Widgets = widgets, WidgetZone = widgetZone, Model = model };
+					var result = helper.Action("WidgetsByZone", "Widget", new { zoneModel = zoneModel, model = model, area = "" });
 					return result;
 				}
 			}

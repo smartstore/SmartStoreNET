@@ -3,10 +3,11 @@ using System.Web;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Services.Stores;
+using System.Web.Hosting;
 
 namespace SmartStore.Services.Tasks
 {
-    public interface ITaskSweeper
+    public interface ITaskSweeper : IRegisteredObject
     {
         TimeSpan Interval { get; set; }
         string BaseUrl { get; set; }

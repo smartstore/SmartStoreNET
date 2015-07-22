@@ -5,13 +5,17 @@ using SmartStore.Services.Tasks;
 namespace SmartStore.GoogleMerchantCenter
 {
     public class StaticFileGenerationTask : ITask
-    {	
-		public void Execute(TaskExecutionContext context)
+    {
+        private readonly IGoogleFeedService _feedService;
+        
+        public StaticFileGenerationTask(IGoogleFeedService feedService)
+        {
+            this._feedService = feedService;
+        }
+        
+        public void Execute(TaskExecutionContext context)
 		{
-			var scope = context.LifetimeScope as ILifetimeScope;
-			var googleService = scope.Resolve<IGoogleFeedService>();
-			
-			googleService.CreateFeed(context);
+            _feedService.CreateFeed(context);
 		}
     }
 }

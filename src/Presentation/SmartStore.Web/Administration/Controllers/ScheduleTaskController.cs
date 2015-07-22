@@ -30,6 +30,7 @@ namespace SmartStore.Admin.Controllers
         #region Fields
 
 		private readonly IScheduleTaskService _scheduleTaskService;
+        private readonly ITaskSweeper _taskSweeper;
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
 
@@ -37,9 +38,14 @@ namespace SmartStore.Admin.Controllers
 
         #region Constructors
 
-		public ScheduleTaskController(IScheduleTaskService scheduleTaskService, IPermissionService permissionService, IDateTimeHelper dateTimeHelper)
+		public ScheduleTaskController(
+            IScheduleTaskService scheduleTaskService, 
+            ITaskSweeper taskSweeper, 
+            IPermissionService permissionService, 
+            IDateTimeHelper dateTimeHelper)
         {
             this._scheduleTaskService = scheduleTaskService;
+            this._taskSweeper = taskSweeper;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
         }
@@ -61,7 +67,7 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected ScheduleTaskModel PrepareScheduleTaskModel(ScheduleTask task)
         {
-            var model = new ScheduleTaskModel()
+            var model = new ScheduleTaskModel
             {
                 Id = task.Id,
                 Name = task.Name,
@@ -71,6 +77,7 @@ namespace SmartStore.Admin.Controllers
                 LastStartUtc = task.LastStartUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastStartUtc.Value, DateTimeKind.Utc).ToString("G") : "",
                 LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
                 LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
+                NextRunUtc = task.NextRunUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc).ToString("G") : "",
 				LastError = task.LastError.EmptyNull(),
 				IsRunning =	task.IsRunning,
 				Duration = ""
@@ -163,45 +170,9 @@ namespace SmartStore.Admin.Controllers
 
 			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
 
-			var t = AsyncRunner.Run((c, ct) =>
-			{
-				var svc = c.Resolve<IScheduleTaskService>();
+            _taskSweeper.ExecuteSingleTask(id);
 
-				try
-				{
-					var scheduleTask = svc.GetTaskById(id);
-					if (scheduleTask == null)
-						throw new Exception("Schedule task cannot be loaded");
-
-					var job = new Job(scheduleTask);
-					job.Enabled = true;
-					job.Execute(ct, c, false);
-				}
-				catch
-				{
-					svc.EnsureTaskIsNotRunning(id);
-				}
-			});
-
-			// wait only 100 ms.
-			t.Wait(100);
-
-			if (t.IsCompleted)
-			{
-				if (!t.IsFaulted)
-				{
-					NotifySuccess(T("Admin.System.ScheduleTasks.RunNow.Completed"));
-				}
-				else
-				{
-					NotifyError(t.Exception.Flatten().InnerException);
-				}
-			}
-			else
-			{
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
+            NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
 			return Redirect(returnUrl);
 		}
 

@@ -609,53 +609,12 @@ namespace SmartStore.Web.Framework.Plugins
 				return true;
 			}
 
-			string scheduleTaskType = ScheduleTaskType;
+            var taskSweeper = _ctx.Resolve<ITaskSweeper>();
+            taskSweeper.ExecuteSingleTask(ScheduleTask.Id);
 
-			var task = AsyncRunner.Run((container, ct) =>
-			{
-				int taskId = 0;
-				try
-				{
-					var svc = container.Resolve<IScheduleTaskService>();
+            Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
 
-					var scheduleTask = svc.GetTaskByType(scheduleTaskType);
-
-					if (scheduleTask == null)
-						throw new Exception("Schedule task cannot be loaded");
-
-					taskId = scheduleTask.Id;
-
-					var job = new Job(scheduleTask);
-					job.Enabled = true;
-					job.Execute(ct, container, false);
-				}
-				catch (Exception)
-				{
-					_scheduleTaskService.EnsureTaskIsNotRunning(taskId);
-				}
-			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-
-			task.Wait(100);
-
-			if (task.IsCompleted)
-			{
-				if (!task.IsFaulted)
-				{
-					Notifier.Success(GetResource("Admin.System.ScheduleTasks.RunNow.Completed"));
-				}
-				else
-				{
-					var exc = task.Exception.Flatten().InnerException;
-					Notifier.Error(exc.Message);
-					Logger.Error(exc.Message, exc);					
-				}
-			}
-			else
-			{
-				Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
-				return true;
-			}
-			return false;
+            return true;
 		}
 
 		public string GetProgressInfo(bool checkIfRunnning = false)

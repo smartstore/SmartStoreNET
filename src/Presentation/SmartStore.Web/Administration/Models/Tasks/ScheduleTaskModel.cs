@@ -31,6 +31,9 @@ namespace SmartStore.Admin.Models.Tasks
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastSuccess")]
         public string LastSuccessUtc { get; set; }
 
+        [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
+        public string NextRunUtc { get; set; }
+
 		[SmartResourceDisplayName("Common.Error")]
 		public string LastError { get; set; }
 

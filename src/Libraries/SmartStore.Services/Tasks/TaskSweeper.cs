@@ -6,6 +6,7 @@ using System.Net;
 using System.Text;
 using System.Threading.Tasks;
 using System.Timers;
+using System.Web.Hosting;
 
 namespace SmartStore.Services.Tasks
 {
@@ -14,12 +15,15 @@ namespace SmartStore.Services.Tasks
     {
         private string _baseUrl;
         private Timer _timer;
+        private bool _shuttingDown;
         private readonly ConcurrentDictionary<string, bool> _authTokens = new ConcurrentDictionary<string, bool>();
 
         public TaskSweeper()
         {
             _timer = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
             _timer.Elapsed += Elapsed;
+
+            HostingEnvironment.RegisterObject(this);
         }
 
         public TimeSpan Interval
@@ -94,6 +98,9 @@ namespace SmartStore.Services.Tasks
 
         private void CallEndpoint(string url)
         {
+            if (_shuttingDown)
+                return;
+            
             var req = (HttpWebRequest)WebRequest.Create(url);
             req.UserAgent = "SmartStore.NET";
             req.Method = "POST";
@@ -130,6 +137,11 @@ namespace SmartStore.Services.Tasks
             }
         }
 
+        void IRegisteredObject.Stop(bool immediate)
+        {
+            _shuttingDown = true;
+            HostingEnvironment.UnregisterObject(this); 
+        }
     }
 
 }

@@ -447,12 +447,9 @@
     <Compile Include="Tasks\ScheduleTaskService.cs" />
     <Compile Include="Tasks\IScheduleTaskService.cs" />
     <Compile Include="Tasks\ITask.cs" />
-    <Compile Include="Tasks\Job.cs" />
     <Compile Include="Tasks\TaskExecutionContext.cs" />
     <Compile Include="Tasks\TaskExecutor.cs" />
-    <Compile Include="Tasks\TaskManager.cs" />
     <Compile Include="Tasks\TaskSweeper.cs" />
-    <Compile Include="Tasks\TaskThread.cs" />
     <Compile Include="Tax\CalculateTaxRequest.cs" />
     <Compile Include="Tax\CalculateTaxResult.cs" />
     <Compile Include="Tax\FreeTaxProvider.cs" />

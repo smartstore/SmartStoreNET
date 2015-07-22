@@ -115,10 +115,6 @@ namespace SmartStore.Web
 					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
 				}
 
-				// start scheduled tasks
-				TaskManager.Instance.Initialize();
-				TaskManager.Instance.Start();
-
                 // Install filter
                 GlobalFilters.Filters.Add(new InitializeSchedulerFilter());
 			}

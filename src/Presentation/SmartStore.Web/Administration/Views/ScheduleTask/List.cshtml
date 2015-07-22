@@ -40,11 +40,9 @@
                             .ClientTemplate(@Html.SymbolForBool("StopOnError"))
                             .Centered()
                             .Width(100);
-						//columns.Bound(x => x.LastStartUtc).ReadOnly();
-						//columns.Bound(x => x.LastEndUtc).ReadOnly();
-						//columns.Bound(x => x.LastSuccessUtc).ReadOnly();
 						columns.Bound(x => x.Id)
 							.ClientTemplate("<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'><#= LastStartUtc #></span></div><# } #>" +
+                                            //"<# if (NextRunUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.NextRun") + ":</span> <span class='muted'><#= NextRunUtc #></span></div><# } #>" +
 											"<# if (!LastEndUtc && !IsRunning) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'>" + @T("Common.Never") + "</span></div><# } #>" +
 											"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='muted'><#= Duration #></span></div><# } #>" +
 											"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								

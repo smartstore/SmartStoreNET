@@ -52,9 +52,6 @@ namespace SmartStore.Web.Controllers
         {
             if (!_taskSweeper.VerifyAuthToken(Request.Headers["X-AUTH-TOKEN"]))
                 return new HttpUnauthorizedResult();
-            
-            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-                return new HttpUnauthorizedResult();
 
             var task = _scheduledTaskService.GetTaskById(id);
             if (task == null)

@@ -37,8 +37,6 @@ namespace SmartStore.Services.Tasks
                     var taskSweeper = EngineContext.Current.Resolve<ITaskSweeper>();
 
                     taskSweeper.SetBaseUrl(EngineContext.Current.Resolve<IStoreService>(), filterContext.HttpContext);
-
-                    taskSweeper.Interval = TimeSpan.FromSeconds(10);
                     taskSweeper.Start();
 
                     var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();

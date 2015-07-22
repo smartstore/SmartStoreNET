@@ -62,11 +62,7 @@ namespace SmartStore.Core.Data
 		/// Gets or sets a value indicating whether database write operations
 		/// originating from repositories should be committed immediately.
 		/// </summary>
-		/// <remarks>
-		/// Set this to <c>true</c> or <c>false</c> to supersede <c>AutoCommitEnabled</c>
-		/// on repository level globally for ALL repository instances.
-		/// </remarks>
-		bool? AutoCommitEnabled { get; set; }
+		bool AutoCommitEnabled { get; set; }
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity

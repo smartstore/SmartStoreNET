@@ -23,7 +23,6 @@ namespace SmartStore.Data
         public EfRepository(IDbContext context)
         {
             this._context = context;
-            this.AutoCommitEnabled = true;
         }
 
         #region interface members
@@ -249,13 +248,13 @@ namespace SmartStore.Data
             get { return _context; }
         }
 
-        public bool AutoCommitEnabled { get; set; }
+        public bool? AutoCommitEnabled { get; set; }
 
 		private bool AutoCommitEnabledInternal
 		{
 			get
 			{
-				return _context.AutoCommitEnabled ?? this.AutoCommitEnabled;
+				return this.AutoCommitEnabled ?? _context.AutoCommitEnabled;
 			}
 		}
 

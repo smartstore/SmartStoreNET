@@ -789,14 +789,10 @@ namespace SmartStore.Services.Media
 			var affectedFiles = new List<string>(1000);
 
 			var ctx = _pictureRepository.Context;
-
-			_pictureRepository.AutoCommitEnabled = false;
-
 			var failed = false;
-
 			int i = 0;
 
-			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				using (var tx = ctx.BeginTransaction())
 				{
@@ -877,8 +873,6 @@ namespace SmartStore.Services.Media
 					}
 				}		
 			}
-
-			_pictureRepository.AutoCommitEnabled = true;
 
 			if (affectedFiles.Count > 0)
 			{

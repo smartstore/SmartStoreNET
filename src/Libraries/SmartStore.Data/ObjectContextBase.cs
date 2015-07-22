@@ -44,6 +44,7 @@ namespace SmartStore.Data
             : base(nameOrConnectionString)
         {
 			this.HooksEnabled = true;
+			this.AutoCommitEnabled = true;
             this.Alias = null;
 			this.EventPublisher = NullEventPublisher.Instance;
         }
@@ -425,7 +426,7 @@ namespace SmartStore.Data
 
 		public bool ForceNoTracking { get; set; }
 
-		bool? AutoCommitEnabled { get; set; }
+		public bool AutoCommitEnabled { get; set; }
 
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
 		{

@@ -123,6 +123,24 @@ namespace SmartStore.Services.Tasks
 			}
 		}
 
+		public void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks)
+		{
+			Guard.ArgumentNotNull(() => tasks);
+			
+			using (var scope = new DbContextScope(autoCommit: false))
+			{
+				var now = DateTime.UtcNow;
+				foreach (var task in tasks)
+				{
+					task.NextRunUtc = now.AddSeconds(task.Seconds);
+					this.UpdateTask(task);
+				}
+
+				scope.Commit();
+			}
+		}
+
         #endregion
-    }
+
+	}
 }

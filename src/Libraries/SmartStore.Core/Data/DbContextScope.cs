@@ -10,7 +10,7 @@ namespace SmartStore.Core.Data
         private readonly bool _validateOnSaveEnabled;
 		private readonly bool _forceNoTracking;
 		private readonly bool _hooksEnabled;
-		private readonly bool? _autoCommit;
+		private readonly bool _autoCommit;
 		private readonly IDbContext _ctx;
 
 		public DbContextScope(IDbContext ctx = null, 
@@ -45,7 +45,7 @@ namespace SmartStore.Core.Data
 				_ctx.HooksEnabled = hooksEnabled.Value;
 
 			if (autoCommit.HasValue)
-				_ctx.AutoCommitEnabled = autoCommit;
+				_ctx.AutoCommitEnabled = autoCommit.Value;
         }
 
 		public int Commit()

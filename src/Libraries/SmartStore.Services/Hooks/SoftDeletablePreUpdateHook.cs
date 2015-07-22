@@ -27,7 +27,6 @@ namespace SmartStore.Services.Hooks
 				return;
 
 			var dbContext = _ctx.Resolve<IDbContext>();
-			var autoCommitEnabled = false;
 			var modifiedProps = dbContext.GetModifiedProperties(baseEntity);
 
 			if (!modifiedProps.ContainsKey("Deleted"))
@@ -35,47 +34,41 @@ namespace SmartStore.Services.Hooks
 
 			var entityType = baseEntity.GetUnproxiedType();
 
-			// mark orphaned ACL records as idle
-			var aclSupported = baseEntity as IAclSupported;
-			if (aclSupported != null && aclSupported.SubjectToAcl)
+			using (var scope = new DbContextScope(ctx: dbContext, autoCommit: false))
 			{
-				var shouldSetIdle = entity.Deleted;
-
-				var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
-				autoCommitEnabled = rsAclRecord.AutoCommitEnabled;
-				rsAclRecord.AutoCommitEnabled = false;
-
-				var aclService = _ctx.Resolve<IAclService>();
-				var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
-				foreach (var record in records)
+				// mark orphaned ACL records as idle
+				var aclSupported = baseEntity as IAclSupported;
+				if (aclSupported != null && aclSupported.SubjectToAcl)
 				{
-					record.IsIdle = shouldSetIdle;
-					aclService.UpdateAclRecord(record);
-				}
+					var shouldSetIdle = entity.Deleted;
+					var rsAclRecord = _ctx.Resolve<IRepository<AclRecord>>();
 
-				rsAclRecord.AutoCommitEnabled = autoCommitEnabled;
-			}
-
-			// Delete orphaned inactive UrlRecords.
-			// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
-			var slugSupported = baseEntity as ISlugSupported;
-			if (slugSupported != null && entity.Deleted)
-			{
-				var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
-				autoCommitEnabled = rsUrlRecord.AutoCommitEnabled;
-				rsUrlRecord.AutoCommitEnabled = false;
-				
-				var urlRecordService = _ctx.Resolve<IUrlRecordService>();
-				var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
-				foreach (var record in activeRecords)
-				{
-					if (!record.IsActive)
+					var aclService = _ctx.Resolve<IAclService>();
+					var records = aclService.GetAclRecordsFor(entityType.Name, baseEntity.Id);
+					foreach (var record in records)
 					{
-						urlRecordService.DeleteUrlRecord(record);
+						record.IsIdle = shouldSetIdle;
+						aclService.UpdateAclRecord(record);
 					}
 				}
 
-				rsUrlRecord.AutoCommitEnabled = autoCommitEnabled;
+				// Delete orphaned inactive UrlRecords.
+				// We keep the active ones on purpose in order to be able to fully restore a soft deletable entity once we implemented the "recycle bin" feature
+				var slugSupported = baseEntity as ISlugSupported;
+				if (slugSupported != null && entity.Deleted)
+				{
+					var rsUrlRecord = _ctx.Resolve<IRepository<UrlRecord>>();
+
+					var urlRecordService = _ctx.Resolve<IUrlRecordService>();
+					var activeRecords = urlRecordService.GetUrlRecordsFor(entityType.Name, baseEntity.Id);
+					foreach (var record in activeRecords)
+					{
+						if (!record.IsActive)
+						{
+							urlRecordService.DeleteUrlRecord(record);
+						}
+					}
+				}
 			}
 		}
 

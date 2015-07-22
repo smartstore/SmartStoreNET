@@ -544,7 +544,7 @@ namespace SmartStore.Services.Customers
         {
 			var ctx = _customerRepository.Context;
 
-			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true, autoCommit: false))
 			{
 				var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
 				if (guestRole == null)
@@ -586,12 +586,7 @@ namespace SmartStore.Services.Customers
 				query = query.OrderBy(c => c.Id);
 
 				var customers = query.Take(maxItemsToDelete).ToList();
-				
-				var crAutoCommit = _customerRepository.AutoCommitEnabled;
-				var gaAutoCommit = _gaRepository.AutoCommitEnabled;
-				_customerRepository.AutoCommitEnabled = false;
-				_gaRepository.AutoCommitEnabled = false;
-				
+
 				int numberOfDeletedCustomers = 0;
 				foreach (var c in customers)
 				{
@@ -604,10 +599,7 @@ namespace SmartStore.Services.Customers
 									  select ga;
 						var attributes = gaQuery.ToList();
 
-						foreach (var attribute in attributes)
-						{
-							_gaRepository.Delete(attribute);
-						}
+						_gaRepository.DeleteRange(attributes);
 						
 						// delete customer
 						_customerRepository.Delete(c);
@@ -634,9 +626,6 @@ namespace SmartStore.Services.Customers
 
 				// save the rest
 				scope.Commit();
-
-				_customerRepository.AutoCommitEnabled = crAutoCommit;
-				_gaRepository.AutoCommitEnabled = gaAutoCommit;
 
 				return numberOfDeletedCustomers;
 			}

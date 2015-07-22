@@ -35,7 +35,7 @@ namespace SmartStore.Services.Tasks
             this.StopOnError = task.StopOnError;
             this.Name = task.Name;
 			this.LastError = task.LastError;
-			this.IsRunning = task.IsRunning;		//task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault();
+			this.IsRunning = task.IsRunning;
         }
 
         private ITask CreateTask(ILifetimeScope scope)
@@ -101,7 +101,7 @@ namespace SmartStore.Services.Tasks
 						scheduleTaskService.UpdateTask(scheduleTask);
 					}
 
-					//execute task
+					// execute task
 					var ctx = new TaskExecutionContext
 					{
 						LifetimeScope = scope,

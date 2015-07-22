@@ -28,10 +28,6 @@ namespace SmartStore.Services.Tasks
 
         #region Methods
 
-        /// <summary>
-        /// Deletes a task
-        /// </summary>
-        /// <param name="task">Task</param>
         public virtual void DeleteTask(ScheduleTask task)
         {
             if (task == null)
@@ -40,11 +36,6 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Delete(task);
         }
 
-        /// <summary>
-        /// Gets a task
-        /// </summary>
-        /// <param name="taskId">Task identifier</param>
-        /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskById(int taskId)
         {
             if (taskId == 0)
@@ -53,11 +44,6 @@ namespace SmartStore.Services.Tasks
             return _taskRepository.GetById(taskId);
         }
 
-        /// <summary>
-        /// Gets a task by its type
-        /// </summary>
-        /// <param name="type">Task type</param>
-        /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskByType(string type)
         {
 			try
@@ -80,11 +66,6 @@ namespace SmartStore.Services.Tasks
 			return null;
         }
 
-        /// <summary>
-        /// Gets all tasks
-        /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Tasks</returns>
         public virtual IList<ScheduleTask> GetAllTasks(bool showHidden = false)
         {
             var query = _taskRepository.Table;
@@ -98,10 +79,18 @@ namespace SmartStore.Services.Tasks
             return tasks;
         }
 
-        /// <summary>
-        /// Inserts a task
-        /// </summary>
-        /// <param name="task">Task</param>
+        public virtual IList<ScheduleTask> GetPendingTasks()
+        {
+            var now = DateTime.UtcNow;
+
+            var query = from t in _taskRepository.Table
+                        where t.Enabled && t.NextRunUtc.HasValue && t.NextRunUtc <= now
+                        orderby t.Seconds
+                        select t;
+
+            return query.ToList();
+        }
+
         public virtual void InsertTask(ScheduleTask task)
         {
             if (task == null)
@@ -110,10 +99,6 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Insert(task);
         }
 
-        /// <summary>
-        /// Updates the task
-        /// </summary>
-        /// <param name="task">Task</param>
         public virtual void UpdateTask(ScheduleTask task)
         {
             if (task == null)
@@ -122,11 +107,6 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Update(task);
         }
 
-		/// <summary>
-		/// Ensures that a task is not marked as running (normalize last start and end date).
-		/// </summary>
-		/// <param name="taskId">Task identifier</param>
-		/// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
 		public virtual void EnsureTaskIsNotRunning(int taskId)
 		{
 			try

@@ -6,6 +6,8 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Tasks;
+using SmartStore.Services.Stores;
 
 namespace SmartStore.Services
 {
@@ -20,7 +22,7 @@ namespace SmartStore.Services
 
 		private readonly ICacheManager _cacheManager;
 
-		public ServiceCacheConsumer(Func<string, ICacheManager> cache)
+        public ServiceCacheConsumer(Func<string, ICacheManager> cache)
         {
 			this._cacheManager = cache("static");
         }
@@ -49,5 +51,5 @@ namespace SmartStore.Services
 		{
 			_cacheManager.Remove(STORE_LANGUAGE_MAP_KEY);
 		}
-	}
+    }
 }

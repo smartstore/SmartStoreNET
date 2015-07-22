@@ -303,9 +303,9 @@
     <Compile Include="Migrations\201507200832223_SortFilterHomepageProducts.Designer.cs">
       <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201507210153338_WebScheduler.cs" />
-    <Compile Include="Migrations\201507210153338_WebScheduler.Designer.cs">
-      <DependentUpon>201507210153338_WebScheduler.cs</DependentUpon>
+    <Compile Include="Migrations\201507211743009_WebScheduler.cs" />
+    <Compile Include="Migrations\201507211743009_WebScheduler.Designer.cs">
+      <DependentUpon>201507211743009_WebScheduler.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -582,8 +582,8 @@
     <EmbeddedResource Include="Migrations\201507200832223_SortFilterHomepageProducts.resx">
       <DependentUpon>201507200832223_SortFilterHomepageProducts.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201507210153338_WebScheduler.resx">
-      <DependentUpon>201507210153338_WebScheduler.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201507211743009_WebScheduler.resx">
+      <DependentUpon>201507211743009_WebScheduler.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

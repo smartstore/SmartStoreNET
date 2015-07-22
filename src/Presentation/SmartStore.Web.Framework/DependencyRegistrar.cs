@@ -939,7 +939,8 @@ namespace SmartStore.Web.Framework
             if (!DataSettings.DatabaseIsInstalled())
                 return;
 
-            builder.RegisterInstance(new DefaultTaskManager()).SingleInstance();
+            builder.RegisterType<TaskSweeper>().As<ITaskSweeper>().SingleInstance();
+            builder.RegisterType<TaskExecutor>().As<ITaskExecutor>().InstancePerRequest();
 
             var taskTypes = _typeFinder.FindClassesOfType<ITask>(ignoreInactivePlugins: true).ToList();
 

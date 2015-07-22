@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Autofac;
+using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
 {
@@ -22,5 +23,7 @@ namespace SmartStore.Services.Tasks
 		/// You can use ThrowIfCancellationRequested() for a hard or IsCancellationRequested for a soft break.
 		/// </summary>
 		public CancellationToken CancellationToken { get; internal set; }
+
+        public ScheduleTask ScheduleTask { get; set; }
 	}
 }

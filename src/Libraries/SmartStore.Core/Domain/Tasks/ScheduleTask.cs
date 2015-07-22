@@ -14,6 +14,11 @@ namespace SmartStore.Core.Domain.Tasks
         public string Name { get; set; }
 
         /// <summary>
+        /// Gets or sets the task alias (an optional key for advanced customization)
+        /// </summary>
+        public string Alias { get; set; }
+
+        /// <summary>
         /// Gets or sets the run period (in seconds)
         /// </summary>
         public int Seconds { get; set; }
@@ -45,8 +50,10 @@ namespace SmartStore.Core.Domain.Tasks
 
 		public string LastError { get; set; }
 
+        public bool IsHidden { get; set; }
+
 		/// <summary>
-		/// Gets the value indicating whether a task is running
+		/// Gets a value indicating whether a task is running
 		/// </summary>
 		public bool IsRunning
 		{

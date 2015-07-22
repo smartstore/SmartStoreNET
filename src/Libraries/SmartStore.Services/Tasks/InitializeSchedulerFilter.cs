@@ -34,20 +34,12 @@ namespace SmartStore.Services.Tasks
                         taskService.UpdateTask(task);
                     }
 
-                    var urlHelper = new UrlHelper(filterContext.RequestContext);
-                    var path = urlHelper.Action("Sweep", "TaskScheduler");
+                    var taskSweeper = EngineContext.Current.Resolve<ITaskSweeper>();
 
-                    var request = filterContext.HttpContext.Request;
+                    taskSweeper.SetBaseUrl(EngineContext.Current.Resolve<IStoreService>(), filterContext.HttpContext);
 
-                    var taskManager = EngineContext.Current.Resolve<DefaultTaskManager>();
-                    var url = WebHelper.GetAbsoluteUrl(path, request);
-
-                    if (!request.IsLocal)
-                    {
-                        // TODO: get default store url
-                    }
-
-                    taskManager.Start(url, 15 /* seconds */);
+                    taskSweeper.Interval = TimeSpan.FromSeconds(10);
+                    taskSweeper.Start();
 
                     var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
                     eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });

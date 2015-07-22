@@ -36,6 +36,12 @@ namespace SmartStore.Services.Tasks
         IList<ScheduleTask> GetAllTasks(bool showHidden = false);
 
         /// <summary>
+        /// Gets all pending tasks
+        /// </summary>
+        /// <returns>Tasks</returns>
+        IList<ScheduleTask> GetPendingTasks();
+
+        /// <summary>
         /// Inserts a task
         /// </summary>
         /// <param name="task">Task</param>
@@ -47,10 +53,11 @@ namespace SmartStore.Services.Tasks
         /// <param name="task">Task</param>
         void UpdateTask(ScheduleTask task);
 
-		/// <summary>
-		/// Ensures that a task is not marked as running
-		/// </summary>
-		/// <param name="taskId">Task identifier</param>
+        /// <summary>
+        /// Ensures that a task is not marked as running (normalize last start and end date).
+        /// </summary>
+        /// <param name="taskId">Task identifier</param>
+        /// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
 		void EnsureTaskIsNotRunning(int taskId);
     }
 }

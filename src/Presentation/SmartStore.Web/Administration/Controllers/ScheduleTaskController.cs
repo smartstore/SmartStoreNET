@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Controllers
                 LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
                 LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
 				LastError = task.LastError.EmptyNull(),
-				IsRunning =	task.IsRunning,		//task.LastStartUtc.GetValueOrDefault() > task.LastEndUtc.GetValueOrDefault(),
+				IsRunning =	task.IsRunning,
 				Duration = ""
             };
 

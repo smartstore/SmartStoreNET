@@ -425,6 +425,8 @@ namespace SmartStore.Data
 
 		public bool ForceNoTracking { get; set; }
 
+		bool? AutoCommitEnabled { get; set; }
+
 		public ITransaction BeginTransaction(IsolationLevel isolationLevel = IsolationLevel.Unspecified)
 		{
 			var dbContextTransaction = this.Database.BeginTransaction(isolationLevel);

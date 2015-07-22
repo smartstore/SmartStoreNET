@@ -39,7 +39,6 @@ namespace SmartStore.Core.Data
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		int ExecuteSqlThroughSmo(string sql);
 
-        // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 
         // increasing performance on bulk operations
@@ -58,6 +57,16 @@ namespace SmartStore.Core.Data
 		/// Set this to <c>true</c> only during long running processes (like export)
 		/// </remarks>
 		bool ForceNoTracking { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether database write operations
+		/// originating from repositories should be committed immediately.
+		/// </summary>
+		/// <remarks>
+		/// Set this to <c>true</c> or <c>false</c> to supersede <c>AutoCommitEnabled</c>
+		/// on repository level globally for ALL repository instances.
+		/// </remarks>
+		bool? AutoCommitEnabled { get; set; }
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity

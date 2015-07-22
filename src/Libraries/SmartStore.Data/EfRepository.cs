@@ -72,8 +72,8 @@ namespace SmartStore.Data
                 throw new ArgumentNullException("entity");
 
             this.Entities.Add(entity);
-			
-            if (this.AutoCommitEnabled)
+
+			if (this.AutoCommitEnabledInternal)
                 _context.SaveChanges();
         }
 
@@ -90,7 +90,7 @@ namespace SmartStore.Data
                     {
                         // insert all in one step
                         entities.Each(x => this.Entities.Add(x));
-                        if (this.AutoCommitEnabled)
+						if (this.AutoCommitEnabledInternal)
                             _context.SaveChanges();
                     }
                     else
@@ -103,7 +103,7 @@ namespace SmartStore.Data
                             saved = false;
                             if (i % batchSize == 0)
                             {
-                                if (this.AutoCommitEnabled)
+								if (this.AutoCommitEnabledInternal)
                                     _context.SaveChanges();
                                 i = 0;
                                 saved = true;
@@ -113,7 +113,7 @@ namespace SmartStore.Data
 
                         if (!saved)
                         {
-                            if (this.AutoCommitEnabled)
+							if (this.AutoCommitEnabledInternal)
                                 _context.SaveChanges();
                         }
                     }
@@ -130,7 +130,7 @@ namespace SmartStore.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
-            if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
             {
 				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
 				{
@@ -154,7 +154,7 @@ namespace SmartStore.Data
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
-			if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
 			{
 				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
 				{
@@ -191,7 +191,7 @@ namespace SmartStore.Data
 			
             this.Entities.Remove(entity);
 
-            if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
                 _context.SaveChanges();
         }
 
@@ -202,7 +202,7 @@ namespace SmartStore.Data
 
 			this.Entities.RemoveRange(entities);
 
-			if (this.AutoCommitEnabled)
+			if (this.AutoCommitEnabledInternal)
 				_context.SaveChanges();
 		}
 
@@ -250,6 +250,14 @@ namespace SmartStore.Data
         }
 
         public bool AutoCommitEnabled { get; set; }
+
+		private bool AutoCommitEnabledInternal
+		{
+			get
+			{
+				return _context.AutoCommitEnabled ?? this.AutoCommitEnabled;
+			}
+		}
 
         #endregion
 

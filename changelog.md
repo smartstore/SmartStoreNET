@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -36,6 +36,7 @@
 * Weight adjustment of attributes weren't applied in shopping cart overview
 * Shipping by weight calculates wrong surcharge if attribute combination prices are set
 * Don't let database hooks call other hooks.
+* There was no payment redirect if only one payment method is available in checkout
 
 
 ## SmartStore.NET 2.2.1

@@ -8,6 +8,8 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web.Mvc;
+using SmartStore.Core.Data;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Tasks
 {
@@ -24,25 +26,30 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
-                    var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
-                    var tasks = taskService.GetAllTasks();
+					try
+					{
+						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
+						var storeService = EngineContext.Current.Resolve<IStoreService>();
+						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
+						var taskManager = EngineContext.Current.Resolve<ITaskSweeper>();
 
-                    var now = DateTime.UtcNow;
-                    foreach (var task in tasks)
-                    {
-                        task.NextRunUtc = now.AddSeconds(task.Seconds);
-                        taskService.UpdateTask(task);
-                    }
+						var tasks = taskService.GetAllTasks();
+						taskService.CalculateNextRunTimes(tasks);
 
-                    var taskSweeper = EngineContext.Current.Resolve<ITaskSweeper>();
+						taskManager.SetBaseUrl(storeService, filterContext.HttpContext);
+						taskManager.Start();
 
-                    taskSweeper.SetBaseUrl(EngineContext.Current.Resolve<IStoreService>(), filterContext.HttpContext);
-                    taskSweeper.Start();
-
-                    var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-                    eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });
-
-                    GlobalFilters.Filters.Remove(this);
+						eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });
+					}
+					catch (Exception ex)
+					{
+						var logger = EngineContext.Current.Resolve<ILogger>();
+						logger.Error("Error while initializing Task Scheduler", ex);
+					}
+					finally
+					{
+						GlobalFilters.Filters.Remove(this);
+					}
                 }
             }
         }

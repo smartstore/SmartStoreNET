@@ -14,11 +14,6 @@
     </div>
 </div>
 
-<div class="alert alert-info fade in">
-    <button type="button" class="close" data-dismiss="alert">&times;</button>
-    @T("Admin.System.ScheduleTasks.RestartApplication")
-</div>
-
 <table class="adminContent">
     <tr>
         <td>
@@ -42,7 +37,7 @@
                             .Width(100);
 						columns.Bound(x => x.Id)
 							.ClientTemplate("<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'><#= LastStartUtc #></span></div><# } #>" +
-                                            //"<# if (NextRunUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.NextRun") + ":</span> <span class='muted'><#= NextRunUtc #></span></div><# } #>" +
+                                            "<# if (NextRunUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.NextRun") + ":</span> <span class='muted'><#= NextRunUtc #></span></div><# } #>" +
 											"<# if (!LastEndUtc && !IsRunning) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'>" + @T("Common.Never") + "</span></div><# } #>" +
 											"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='muted'><#= Duration #></span></div><# } #>" +
 											"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
@@ -63,8 +58,7 @@
                     })
                     .DataBinding(dataBinding =>
                     {
-                        dataBinding.Ajax().Select("List", "ScheduleTask")
-                            .Update("TaskUpdate", "ScheduleTask");
+                        dataBinding.Ajax().Select("List", "ScheduleTask").Update("TaskUpdate", "ScheduleTask");
                     })
                     .ClientEvents(x => x.OnError("grid_onError"))
                     .EnableCustomBinding(true))

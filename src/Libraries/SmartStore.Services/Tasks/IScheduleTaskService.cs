@@ -59,5 +59,11 @@ namespace SmartStore.Services.Tasks
         /// <param name="taskId">Task identifier</param>
         /// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
 		void EnsureTaskIsNotRunning(int taskId);
+
+		/// <summary>
+		/// Calculates - according to their intervals - all task next run times
+		/// and saves them to the database.
+		/// </summary>
+		void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks);
     }
 }

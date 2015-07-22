@@ -73,7 +73,7 @@ namespace SmartStore.Services.Tasks
             {
                 query = query.Where(t => t.Enabled);
             }
-            query = query.OrderBy(t => t.Seconds);
+            query = query.OrderByDescending(t => t.Enabled).ThenBy(t => t.Seconds);
 
             var tasks = query.ToList();
             return tasks;

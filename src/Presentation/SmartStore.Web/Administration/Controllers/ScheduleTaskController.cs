@@ -74,10 +74,10 @@ namespace SmartStore.Admin.Controllers
                 Seconds = task.Seconds,
                 Enabled = task.Enabled,
                 StopOnError = task.StopOnError,
-                LastStartUtc = task.LastStartUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastStartUtc.Value, DateTimeKind.Utc).ToString("G") : "",
+				LastStartUtc = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
                 LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
                 LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
-                NextRunUtc = task.NextRunUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc).ToString("G") : "",
+				NextRunUtc = task.NextRunUtc.HasValue ? (task.NextRunUtc.Value - DateTime.UtcNow).Prettify() : "",
 				LastError = task.LastError.EmptyNull(),
 				IsRunning =	task.IsRunning,
 				Duration = ""
@@ -153,6 +153,15 @@ namespace SmartStore.Admin.Controllers
             scheduleTask.Seconds = model.Seconds;
             scheduleTask.Enabled = model.Enabled;
             scheduleTask.StopOnError = model.StopOnError;
+
+			if (model.Enabled)
+			{
+				scheduleTask.NextRunUtc = DateTime.UtcNow.AddSeconds(scheduleTask.Seconds);
+			}
+			else
+			{
+				scheduleTask.NextRunUtc = null;
+			}
 
 			int max = Int32.MaxValue / 1000;
 

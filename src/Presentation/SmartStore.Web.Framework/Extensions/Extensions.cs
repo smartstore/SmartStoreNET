@@ -2,16 +2,16 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
-using System.Web.Routing;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Localization;
 using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.Extensions;
 using Telerik.Web.Mvc.UI.Fluent;
@@ -312,11 +312,10 @@ namespace SmartStore.Web.Framework
         /// <param name="convertToUserTime">A value indicating whether we should convet DateTime instance to user local time (in case relative formatting is not applied)</param>
         /// <param name="defaultFormat">Default format string (in case relative formatting is not applied)</param>
         /// <returns>Formatted date and time string</returns>
-        public static string RelativeFormat(this DateTime source,
-            bool convertToUserTime, string defaultFormat)
+        public static string RelativeFormat(this DateTime source, bool convertToUserTime, string defaultFormat)
         {
             string result = "";
-            var localizer = EngineContext.Current.Resolve<ILocalizationService>();
+			Localizer T = EngineContext.Current.Resolve<IText>().Get;
             
             var ts = new TimeSpan(DateTime.UtcNow.Ticks - source.Ticks);
             double delta = ts.TotalSeconds;
@@ -325,44 +324,44 @@ namespace SmartStore.Web.Framework
             {
                 if (delta < 60) // 60 (seconds)
                 {
-                    result = ts.Seconds == 1 ? localizer.GetResource("Time.OneSecondAgo") : String.Format(localizer.GetResource("Time.SecondsAgo"), ts.Seconds);
+					result = ts.Seconds == 1 ? T("Time.OneSecondAgo") : T("Time.SecondsAgo", ts.Seconds);
                 }
                 else if (delta < 120) //2 (minutes) * 60 (seconds)
                 {
-                    result = localizer.GetResource("Time.OneMinuteAgo");
+					result = T("Time.OneMinuteAgo");
                 }
                 else if (delta < 2700) // 45 (minutes) * 60 (seconds)
                 {
-                    result = String.Format(localizer.GetResource("Time.MinutesAgo"),  ts.Minutes);
+					result = String.Format(T("Time.MinutesAgo"), ts.Minutes);
                 }
                 else if (delta < 5400) // 90 (minutes) * 60 (seconds)
                 {
-                    result = localizer.GetResource("Time.OneHourAgo");
+					result = T("Time.OneHourAgo");
                 }
                 else if (delta < 86400) // 24 (hours) * 60 (minutes) * 60 (seconds)
                 {
                     int hours = ts.Hours;
                     if (hours == 1)
                         hours = 2;
-                    result = String.Format(localizer.GetResource("Time.HoursAgo"),  hours);
+					result = T("Time.HoursAgo", hours);
                 }
                 else if (delta < 172800) // 48 (hours) * 60 (minutes) * 60 (seconds)
                 {
-                    result = localizer.GetResource("Time.Yesterday");
+					result = T("Time.Yesterday");
                 }
                 else if (delta < 2592000) // 30 (days) * 24 (hours) * 60 (minutes) * 60 (seconds)
                 {
-                    result = String.Format(localizer.GetResource("Time.DaysAgo"), ts.Days);
+					result = String.Format(T("Time.DaysAgo"), ts.Days);
                 }
                 else if (delta < 31104000) // 12 (months) * 30 (days) * 24 (hours) * 60 (minutes) * 60 (seconds)
                 {
                     int months = Convert.ToInt32(Math.Floor((double)ts.Days / 30));
-                    result = months <= 1 ? localizer.GetResource("Time.OneMonthAgo") : String.Format(localizer.GetResource("Time.MonthsAgo"), months);
+					result = months <= 1 ? T("Time.OneMonthAgo") : T("Time.MonthsAgo", months);
                 }
                 else
                 {
                     int years = Convert.ToInt32(Math.Floor((double)ts.Days / 365));
-                    result = years <= 1 ? localizer.GetResource("Time.OneYearAgo") : String.Format(localizer.GetResource("Time.YearsAgo"), years);
+					result = years <= 1 ? T("Time.OneYearAgo") : T("Time.YearsAgo", years);
                 }
             }
             else
@@ -384,6 +383,49 @@ namespace SmartStore.Web.Framework
             }
             return result;
         }
+
+		public static string Prettify(this TimeSpan ts)
+		{
+			Localizer T = EngineContext.Current.Resolve<IText>().Get;
+			double seconds = ts.TotalSeconds;
+
+			try
+			{
+				int secsTemp = Convert.ToInt32(seconds);
+				string label = T("Time.SecondsAbbr");
+				int remainder = 0;
+				string remainderLabel = "";
+
+				if (secsTemp > 59)
+				{
+					remainder = secsTemp % 60;
+					secsTemp /= 60;
+					label = T("Time.MinutesAbbr");
+					remainderLabel = T("Time.SecondsAbbr");
+				}
+
+				if (secsTemp > 59)
+				{
+					remainder = secsTemp % 60;
+					secsTemp /= 60;
+					label = (secsTemp == 1) ? T("Time.HourAbbr") : T("Time.HoursAbbr");
+					remainderLabel = T("Time.MinutesAbbr");
+				}
+
+				if (remainder == 0)
+				{
+					return string.Format("{0:#,##0.#} {1}", secsTemp, label);
+				}
+				else
+				{
+					return string.Format("{0:#,##0} {1} {2} {3}", secsTemp, label, remainder, remainderLabel);
+				}
+			}
+			catch
+			{
+				return "(-)";
+			}
+		}
 
 		/// <summary>
 		/// Get a list of all stores

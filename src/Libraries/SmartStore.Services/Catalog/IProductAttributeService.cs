@@ -161,6 +161,13 @@ namespace SmartStore.Services.Catalog
         IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId);
 
 		/// <summary>
+		/// Gets product variant attribute combinations by multiple product identifiers
+		/// </summary>
+		/// <param name="productIds">The product identifiers</param>
+		/// <returns>A map with product id as key and a collection of product variant attribute combinations as value.</returns>
+		Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds);
+
+		/// <summary>
 		/// Get the lowest price of all combinations for a product
 		/// </summary>
 		/// <param name="productId">Product identifier</param>

@@ -271,7 +271,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetPreselectedPrice(entity);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity, null);
 				}
 				return null;
 			});

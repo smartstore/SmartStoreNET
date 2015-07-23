@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
@@ -152,7 +153,7 @@ namespace SmartStore.Services.Catalog
             return previousPrice;
         }
 
-		protected virtual decimal GetPreselectedPrice(Product product, ProductBundleItemData bundleItem, IList<ProductBundleItemData> bundleItems)
+		protected virtual decimal GetPreselectedPrice(Product product, PriceCalculationContext context, ProductBundleItemData bundleItem, IEnumerable<ProductBundleItemData> bundleItems)
 		{
 			var taxRate = decimal.Zero;
 			var attributesTotalPriceBase = decimal.Zero;
@@ -161,55 +162,49 @@ namespace SmartStore.Services.Catalog
 			var isBundleItemPricing = (bundleItem != null && bundleItem.Item.BundleProduct.BundlePerItemPricing);
 			var isBundlePricing = (bundleItem != null && !bundleItem.Item.BundleProduct.BundlePerItemPricing);
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
-			var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
+
 			var selectedAttributes = new NameValueCollection();
 			List<ProductVariantAttributeValue> selectedAttributeValues = null;
+			var attributes = context.Attributes.Ensure(product.Id);
 
-			foreach (var attribute in attributes)
+			// 1. fill selectedAttributes with initially selected attributes
+			foreach (var attribute in attributes.Where(x => x.ProductVariantAttributeValues.Count > 0 && x.ShouldHaveValues()))
 			{
 				int preSelectedValueId = 0;
 				ProductVariantAttributeValue defaultValue = null;
-
-				if (attribute.ShouldHaveValues())
+				var pvaValues = attribute.ProductVariantAttributeValues;
+					
+				foreach (var pvaValue in pvaValues)
 				{
-					var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
-					if (pvaValues.Count == 0)
+					ProductBundleItemAttributeFilter attributeFilter = null;
+
+					if (bundleItem.FilterOut(pvaValue, out attributeFilter))
 						continue;
 
-					foreach (var pvaValue in pvaValues)
+					if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+						preSelectedValueId = attributeFilter.AttributeValueId;
+
+					if (!isBundlePricing && pvaValue.IsPreSelected)
 					{
-						ProductBundleItemAttributeFilter attributeFilter = null;
+						decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 
-						if (bundleItem.FilterOut(pvaValue, out attributeFilter))
-							continue;
-
-						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-							preSelectedValueId = attributeFilter.AttributeValueId;
-
-						if (!isBundlePricing && pvaValue.IsPreSelected)
-						{
-							decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-
-							preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-						}
+						preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
 					}
-
-					// value pre-selected by a bundle item filter discards the default pre-selection
-					if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
-						defaultValue.IsPreSelected = true;
-
-					if (defaultValue == null)
-						defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
-
-					if (defaultValue == null && attribute.IsRequired)
-						defaultValue = pvaValues.First();
-
-					if (defaultValue != null)
-						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 				}
+
+				// value pre-selected by a bundle item filter discards the default pre-selection
+				if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
+					defaultValue.IsPreSelected = true;
+
+				if (defaultValue == null)
+					defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
+
+				if (defaultValue != null)
+					selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 			}
 
+			// 2. find attribute combination for selected attributes and merge it
 			if (!isBundle && selectedAttributes.Count > 0)
 			{
 				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
@@ -217,12 +212,14 @@ namespace SmartStore.Services.Catalog
 
 				selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
 
-				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
+				var combinations = context.AttributeCombinations.Ensure(product.Id);
 
 				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
-				if (selectedCombination != null && selectedCombination.IsActive)
-					product.MergeWithCombination(selectedCombination);
+				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
+				{
+					product.MergedDataValues = new Dictionary<string, object> { { "Price", selectedCombination.Price.Value } };
+				}
 			}
 
 			if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
@@ -244,6 +241,121 @@ namespace SmartStore.Services.Catalog
 
 			var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
 			return result;
+		}
+
+		//protected virtual decimal GetPreselectedPriceOld(Product product, ProductBundleItemData bundleItem, IList<ProductBundleItemData> bundleItems)
+		//{
+		//	var taxRate = decimal.Zero;
+		//	var attributesTotalPriceBase = decimal.Zero;
+		//	var preSelectedPriceAdjustmentBase = decimal.Zero;
+		//	var isBundle = (product.ProductType == ProductType.BundledProduct);
+		//	var isBundleItemPricing = (bundleItem != null && bundleItem.Item.BundleProduct.BundlePerItemPricing);
+		//	var isBundlePricing = (bundleItem != null && !bundleItem.Item.BundleProduct.BundlePerItemPricing);
+		//	var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
+		//	var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
+		//	var selectedAttributes = new NameValueCollection();
+		//	List<ProductVariantAttributeValue> selectedAttributeValues = null;
+
+		//	foreach (var attribute in attributes)
+		//	{
+		//		int preSelectedValueId = 0;
+		//		ProductVariantAttributeValue defaultValue = null;
+
+		//		if (attribute.ShouldHaveValues())
+		//		{
+		//			var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
+		//			if (pvaValues.Count == 0)
+		//				continue;
+
+		//			foreach (var pvaValue in pvaValues)
+		//			{
+		//				ProductBundleItemAttributeFilter attributeFilter = null;
+
+		//				if (bundleItem.FilterOut(pvaValue, out attributeFilter))
+		//					continue;
+
+		//				if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+		//					preSelectedValueId = attributeFilter.AttributeValueId;
+
+		//				if (!isBundlePricing && pvaValue.IsPreSelected)
+		//				{
+		//					decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+		//					decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
+
+		//					preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
+		//				}
+		//			}
+
+		//			// value pre-selected by a bundle item filter discards the default pre-selection
+		//			if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
+		//				defaultValue.IsPreSelected = true;
+
+		//			if (defaultValue == null)
+		//				defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
+
+		//			if (defaultValue == null && attribute.IsRequired)
+		//				defaultValue = pvaValues.First();
+
+		//			if (defaultValue != null)
+		//				selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+		//		}
+		//	}
+
+		//	if (!isBundle && selectedAttributes.Count > 0)
+		//	{
+		//		string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
+		//			_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
+
+		//		selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
+
+		//		var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
+
+		//		var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
+
+		//		if (selectedCombination != null && selectedCombination.IsActive)
+		//			product.MergeWithCombination(selectedCombination);
+		//	}
+
+		//	if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
+		//	{
+		//		if (selectedAttributeValues != null)
+		//		{
+		//			selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x));
+		//		}
+		//		else
+		//		{
+		//			attributesTotalPriceBase = preSelectedPriceAdjustmentBase;
+		//		}
+		//	}
+
+		//	if (bundleItem != null)
+		//	{
+		//		bundleItem.AdditionalCharge = attributesTotalPriceBase;
+		//	}
+
+		//	var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
+		//	return result;
+		//}
+
+		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<int> productIds = null)
+		{
+			var context = new PriceCalculationContext();
+
+			context.Attributes = new LazyMultimap<ProductVariantAttribute>(x => 
+			{
+				"load {0}".FormatInvariant(string.Join(";", x)).Dump();
+						
+				var result = _productAttributeService.GetProductVariantAttributesByProductIds(x, null);
+				return result;
+			}, productIds);
+
+			context.AttributeCombinations = new LazyMultimap<ProductVariantAttributeCombination>(x =>
+			{
+				var result = _productAttributeService.GetProductVariantAttributeCombinations(x);
+				return result;
+			}, productIds);
+
+			return context;
 		}
 
         #endregion
@@ -387,7 +499,7 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Final price</returns>
 		public virtual decimal GetFinalPrice(
 			Product product, 
-			IList<ProductBundleItemData> bundleItems,
+			IEnumerable<ProductBundleItemData> bundleItems,
 			Customer customer, 
 			decimal additionalCharge, 
 			bool includeDiscounts, 
@@ -515,8 +627,9 @@ namespace SmartStore.Services.Catalog
 		/// Get the initial price including preselected attributes
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Preselected price</returns>
-		public virtual decimal GetPreselectedPrice(Product product)
+		public virtual decimal GetPreselectedPrice(Product product, PriceCalculationContext context)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -527,20 +640,46 @@ namespace SmartStore.Services.Catalog
 			{
 				var bundleItems = _productService.GetBundleItems(product.Id);
 
+				var ids = bundleItems.Select(x => x.Item.ProductId).ToList();
+				ids.Add(product.Id);
+				var bundleContext = CreatePriceCalculationContext(ids);
+
 				foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					// fetch bundleItems.AdditionalCharge for all bundle items
-					var unused = GetPreselectedPrice(bundleItem.Item.Product, bundleItem, bundleItems);
+					var unused = GetPreselectedPrice(bundleItem.Item.Product, bundleContext, bundleItem, bundleItems);
 				}
 
-				result = GetPreselectedPrice(product, null, bundleItems);
+				result = GetPreselectedPrice(product, bundleContext, null, bundleItems);
 			}
 			else
 			{
-				result = GetPreselectedPrice(product, null, null);
+				if (context == null)
+					context = CreatePriceCalculationContext(null);
+
+				result = GetPreselectedPrice(product, context, null, null);
 			}
+
+			//if (product.ProductType == ProductType.BundledProduct)
+			//{
+			//	var bundleItems = _productService.GetBundleItems(product.Id);
+
+			//	foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
+			//	{
+			//		// fetch bundleItems.AdditionalCharge for all bundle items
+			//		var unused = GetPreselectedPriceOld(bundleItem.Item.Product, bundleItem, bundleItems);
+			//	}
+
+			//	result = GetPreselectedPriceOld(product, null, bundleItems);
+			//}
+			//else
+			//{
+			//	result = GetPreselectedPriceOld(product, null, null);
+			//}
+
 			return result;
 		}
+
 
 		/// <summary>
 		/// Gets the product cost

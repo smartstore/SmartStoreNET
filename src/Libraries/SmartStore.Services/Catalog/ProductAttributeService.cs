@@ -404,6 +404,23 @@ namespace SmartStore.Services.Catalog
             return combinations;
         }
 
+		public virtual Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pvac in _productVariantAttributeCombinationRepository.TableUntracked
+				where productIds.Contains(pvac.ProductId)
+				select pvac;
+
+			var map = query
+				.OrderBy(x => x.ProductId)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
+
 		public virtual decimal? GetLowestCombinationPrice(int productId)
 		{
 			if (productId == 0)

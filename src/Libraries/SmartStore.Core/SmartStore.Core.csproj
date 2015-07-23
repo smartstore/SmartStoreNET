@@ -153,6 +153,7 @@
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
+    <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Data\ITransaction.cs" />

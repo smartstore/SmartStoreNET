@@ -6,7 +6,7 @@ using System.Diagnostics;
 namespace SmartStore.Core.Domain.Tasks
 {
     [DebuggerDisplay("{Name} (Type: {Type})")]
-    public class ScheduleTask : BaseEntity
+	public class ScheduleTask : BaseEntity, ICloneable<ScheduleTask>
     {
         /// <summary>
         /// Gets or sets the name
@@ -63,5 +63,15 @@ namespace SmartStore.Core.Domain.Tasks
 				return result;
 			}
 		}
-    }
+
+		public ScheduleTask Clone()
+		{
+			return (ScheduleTask)this.MemberwiseClone();
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.MemberwiseClone();
+		}
+	}
 }

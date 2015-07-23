@@ -519,11 +519,6 @@ namespace SmartStore.Data
 			}
         }
 
-		public void Detach(object entity)
-		{
-			((IObjectContextAdapter)this).ObjectContext.Detach(entity);
-		}
-
 		public int DetachAll() 
 		{
 			var attachedEntities = this.ChangeTracker.Entries()

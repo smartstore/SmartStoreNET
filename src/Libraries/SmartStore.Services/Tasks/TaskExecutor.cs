@@ -13,11 +13,13 @@ namespace SmartStore.Services.Tasks
     public class TaskExecutor : ITaskExecutor
     {
         private readonly IScheduleTaskService _scheduledTaskService;
+		private readonly IDbContext _dbContext;
         private readonly Func<Type, ITask> _taskResolver;
 
-        public TaskExecutor(IScheduleTaskService scheduledTaskService, Func<Type, ITask> taskResolver)
+        public TaskExecutor(IScheduleTaskService scheduledTaskService, IDbContext dbContext, Func<Type, ITask> taskResolver)
         {
             this._scheduledTaskService = scheduledTaskService;
+			this._dbContext = dbContext;
             this._taskResolver = taskResolver;
 
             Logger = NullLogger.Instance;
@@ -45,7 +47,7 @@ namespace SmartStore.Services.Tasks
 
                 var ctx = new TaskExecutionContext
                 {
-                    ScheduleTask = task
+                    ScheduleTask = task.Clone()
                     // TODO: Remove obsolete properties
                 };
 

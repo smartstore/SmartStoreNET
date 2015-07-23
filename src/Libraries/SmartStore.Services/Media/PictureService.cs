@@ -807,7 +807,7 @@ namespace SmartStore.Services.Media
 							if (pictures != null)
 							{
 								// detach all entities from previous page to save memory
-								pictures.Each(x => ctx.Detach(x));
+								pictures.Each(x => ctx.DetachEntity(x));
 
 								// breathe
 								pictures.Clear();

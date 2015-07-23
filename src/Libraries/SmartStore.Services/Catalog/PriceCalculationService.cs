@@ -163,7 +163,6 @@ namespace SmartStore.Services.Catalog
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
 			var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
 			var selectedAttributes = new NameValueCollection();
-			var clearDataMerging = false;
 			List<ProductVariantAttributeValue> selectedAttributeValues = null;
 
 			foreach (var attribute in attributes)
@@ -203,9 +202,6 @@ namespace SmartStore.Services.Catalog
 					if (defaultValue == null)
 						defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
 
-					if (defaultValue == null && attribute.IsRequired)
-						defaultValue = pvaValues.First();
-
 					if (defaultValue != null)
 						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 				}
@@ -222,10 +218,9 @@ namespace SmartStore.Services.Catalog
 
 				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
-				if (selectedCombination != null && selectedCombination.IsActive)
+				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
 				{
-					clearDataMerging = true;
-					product.MergeWithCombination(selectedCombination);
+					product.MergedDataValues = new Dictionary<string, object> { { "Price", selectedCombination.Price.Value } };
 				}
 			}
 
@@ -247,13 +242,6 @@ namespace SmartStore.Services.Catalog
 			}
 
 			var result = GetFinalPrice(product, bundleItems, _commonServices.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
-
-			if (clearDataMerging && product.MergedDataValues != null)
-			{
-				// GetPreselectedPrice should not leave product with merged values.
-				product.MergedDataValues.Clear();
-			}
-
 			return result;
 		}
 

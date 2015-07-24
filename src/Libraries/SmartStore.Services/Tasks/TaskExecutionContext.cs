@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Threading;
 using Autofac;
+using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
@@ -25,5 +26,19 @@ namespace SmartStore.Services.Tasks
         public CancellationToken CancellationToken { get; internal set; }
 
         public ScheduleTask ScheduleTask { get; set; }
+
+		public void SetProgress(float? progress, string message)
+		{
+			if (progress.HasValue)
+				Guard.ArgumentInRange(progress.Value, 0, 100, "progress");
+
+			var stateName = ScheduleTask.Id.ToString();
+
+			AsyncState.Current.Update<TaskProgressInfo>(x => 
+			{ 
+				x.Progress = progress; 
+				x.Message = message; 
+			}, stateName);
+		}
 	}
 }

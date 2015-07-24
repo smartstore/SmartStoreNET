@@ -506,16 +506,19 @@ namespace SmartStore.Data
 
         public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
-            Guard.ArgumentNotNull(() => entity);
-            return Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault() != null;
+			if (entity != null)
+			{
+				return Set<TEntity>().Local.Any(x => x == entity);
+			}
+
+			return false;
         }
 
         public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
-            Guard.ArgumentNotNull(() => entity);
 			if (this.IsAttached(entity))
 			{
-				((IObjectContextAdapter)this).ObjectContext.Detach(entity);
+				this.Entry(entity).State = System.Data.Entity.EntityState.Detached;
 			}
         }
 
@@ -528,23 +531,14 @@ namespace SmartStore.Data
 			return attachedEntities.Count;
 		}
 
-		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState)
+		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity, new()
 		{
-			((IObjectContextAdapter)this).ObjectContext.ObjectStateManager.ChangeObjectState(entity, newState);
+			this.Entry(entity).State = newState;
 		}
 
-		public bool SetToUnchanged<TEntity>(TEntity entity)
+		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
 		{
-			try
-			{
-				ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
-				return true;
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
-				return false;
-			}
+			this.Entry(entity).Reload();
 		}
 
         private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)

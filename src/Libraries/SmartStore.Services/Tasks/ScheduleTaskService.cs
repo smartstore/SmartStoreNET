@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Tasks
 {
@@ -22,7 +23,11 @@ namespace SmartStore.Services.Tasks
         public ScheduleTaskService(IRepository<ScheduleTask> taskRepository)
         {
             this._taskRepository = taskRepository;
+
+			T = NullLocalizer.Instance;
         }
+
+		public Localizer T { get; set; }
 
         #endregion
 
@@ -66,10 +71,10 @@ namespace SmartStore.Services.Tasks
 			return null;
         }
 
-        public virtual IList<ScheduleTask> GetAllTasks(bool showHidden = false)
+		public virtual IList<ScheduleTask> GetAllTasks(bool includeDisabled = false)
         {
             var query = _taskRepository.Table;
-            if (!showHidden)
+			if (!includeDisabled)
             {
                 query = query.Where(t => t.Enabled);
             }
@@ -85,7 +90,7 @@ namespace SmartStore.Services.Tasks
 
             var query = from t in _taskRepository.Table
                         where t.Enabled && t.NextRunUtc.HasValue && t.NextRunUtc <= now
-                        orderby t.Seconds
+                        orderby t.NextRunUtc, t.Seconds
                         select t;
 
             return query.ToList();
@@ -107,23 +112,7 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Update(task);
         }
 
-		public virtual void EnsureTaskIsNotRunning(int taskId)
-		{
-			try
-			{
-				if (taskId != 0)
-				{
-					_taskRepository.Context.ExecuteSqlCommand("Update [dbo].[ScheduleTask] Set [LastEndUtc] = [LastStartUtc] Where Id = {0} And [LastEndUtc] < [LastStartUtc]",
-						true, null, taskId);
-				}
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
-			}
-		}
-
-		public void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks)
+		public void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
 			Guard.ArgumentNotNull(() => tasks);
 			
@@ -132,7 +121,12 @@ namespace SmartStore.Services.Tasks
 				var now = DateTime.UtcNow;
 				foreach (var task in tasks)
 				{
-					task.NextRunUtc = now.AddSeconds(task.Seconds);
+					task.NextRunUtc = task.Enabled ? now.AddSeconds(task.Seconds) : (DateTime?)null;
+					if (isAppStart && task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
+					{
+						task.LastEndUtc = task.LastStartUtc;
+						task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
+					}
 					this.UpdateTask(task);
 				}
 

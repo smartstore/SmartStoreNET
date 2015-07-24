@@ -31,9 +31,9 @@ namespace SmartStore.Services.Tasks
         /// <summary>
         /// Gets all tasks
         /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="includeDisabled">A value indicating whether to load disabled tasks also</param>
         /// <returns>Tasks</returns>
-        IList<ScheduleTask> GetAllTasks(bool showHidden = false);
+        IList<ScheduleTask> GetAllTasks(bool includeDisabled = false);
 
         /// <summary>
         /// Gets all pending tasks
@@ -53,17 +53,11 @@ namespace SmartStore.Services.Tasks
         /// <param name="task">Task</param>
         void UpdateTask(ScheduleTask task);
 
-        /// <summary>
-        /// Ensures that a task is not marked as running (normalize last start and end date).
-        /// </summary>
-        /// <param name="taskId">Task identifier</param>
-        /// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
-		void EnsureTaskIsNotRunning(int taskId);
-
 		/// <summary>
 		/// Calculates - according to their intervals - all task next run times
 		/// and saves them to the database.
 		/// </summary>
-		void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks);
+		/// <param name="isAppStart">When <c>true</c>, determines stale tasks and fixes their states to idle.</param>
+		void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks, bool isAppStart = false);
     }
 }

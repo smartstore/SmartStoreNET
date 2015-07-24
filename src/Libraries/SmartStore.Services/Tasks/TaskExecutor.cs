@@ -6,6 +6,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Async;
+using System.Threading;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Tasks
 {
@@ -29,27 +32,60 @@ namespace SmartStore.Services.Tasks
 
         public void Execute(ScheduleTask task, bool throwOnError = false)
         {
-            if (task.IsRunning)
-                return; // TODO: Really?
+			if (task.IsRunning)
+                return;
+
+			if (AsyncRunner.AppShutdownCancellationToken.IsCancellationRequested)
+				return;
 
             bool faulted = false;
             string lastError = null;
             ITask instance = null;
+			string stateName = null;
+
+			Type taskType = null;
+
+			try
+			{
+				taskType = Type.GetType(task.Type);
+				if (!PluginManager.IsActivePluginAssembly(taskType.Assembly))
+					return;
+			}
+			catch
+			{
+				return;
+			}
 
             try
             {
-                instance = CreateTaskInstance(task);
+                // create task instance
+				instance = _taskResolver(taskType);
+				stateName = task.Id.ToString();
                 
+				// prepare and save entity
                 task.LastStartUtc = DateTime.UtcNow;
                 task.LastEndUtc = null;
                 task.NextRunUtc = null;
                 _scheduledTaskService.UpdateTask(task);
 
-                var ctx = new TaskExecutionContext
-                {
-                    ScheduleTask = task.Clone()
-                    // TODO: Remove obsolete properties
-                };
+				// create & set a composite CancellationTokenSource which also contains the global app shoutdown token
+				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
+				AsyncState.Current.SetCancelTokenSource<TaskProgressInfo>(cts, stateName);
+
+				// tell AsyncState about a new running task
+				var taskProgressInfo = new TaskProgressInfo
+				{
+					ScheduleTaskId = task.Id,
+					TaskType = instance.GetType()
+				};
+				AsyncState.Current.Set(taskProgressInfo, stateName, true);
+
+				var ctx = new TaskExecutionContext
+				{
+					ScheduleTask = task.Clone(),
+					CancellationToken = cts.Token
+					// TODO: Remove LifetimeScope
+				};
 
                 instance.Execute(ctx);
             }
@@ -65,7 +101,13 @@ namespace SmartStore.Services.Tasks
             }
             finally
             {
-                var now = DateTime.UtcNow;
+				// remove from AsyncState
+				if (stateName.HasValue())
+				{
+					AsyncState.Current.Remove<TaskProgressInfo>(stateName);
+				}
+				
+				var now = DateTime.UtcNow;
                 task.LastError = lastError;
                 task.LastEndUtc = now;
 
@@ -83,18 +125,17 @@ namespace SmartStore.Services.Tasks
 
                 if (task.Enabled)
                 {
-                    task.NextRunUtc = task.LastStartUtc.Value.AddSeconds(task.Seconds);
+					task.NextRunUtc = now.AddSeconds(task.Seconds);
                 }
 
                 _scheduledTaskService.UpdateTask(task);
             }
         }
 
-        private ITask CreateTaskInstance(ScheduleTask task)
-        {
-            var type = Type.GetType(task.Type);
-            return _taskResolver(type);
-        }
+		private CancellationTokenSource CreateCompositeCancellationTokenSource(CancellationToken userCancellationToken)
+		{
+			return CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, userCancellationToken);
+		}
     }
 
 }

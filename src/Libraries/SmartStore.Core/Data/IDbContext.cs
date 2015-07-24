@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
@@ -103,15 +104,15 @@ namespace SmartStore.Core.Data
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
 		/// <param name="newState">The new state</param>
-		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState);
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity, new();
 
 		/// <summary>
-		/// Changes the object state to unchanged
+		/// Reloads the entity from the database overwriting any property values with values from the database. 
+		/// The entity will be in the Unchanged state after calling this method. 
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
-		/// <returns>true on success, false on failure</returns>
-		bool SetToUnchanged<TEntity>(TEntity entity);
+		void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
 
 		/// <summary>
 		/// Begins a transaction on the underlying store connection using the specified isolation level 
@@ -126,4 +127,29 @@ namespace SmartStore.Core.Data
 		/// <param name="transaction">the external transaction</param>
 		void UseTransaction(DbTransaction transaction);
     }
+
+	public static class IDbContextExtensions
+	{
+
+		/// <summary>
+		/// Changes the object state to unchanged
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <returns>true on success, false on failure</returns>
+		public static bool SetToUnchanged<TEntity>(this IDbContext ctx, TEntity entity) where TEntity : BaseEntity, new()
+		{
+			try
+			{
+				ctx.ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				ex.Dump();
+				return false;
+			}
+		}
+
+	}
 }

@@ -4,29 +4,30 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Net;
 using System.Text;
+using System.Threading;
 using System.Threading.Tasks;
-using System.Timers;
 using System.Web.Hosting;
+using SmartStore.Core.Async;
 
 namespace SmartStore.Services.Tasks
 {
-    
-    public class TaskSweeper : DisposableObject, ITaskSweeper
+
+	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
         private string _baseUrl;
-        private Timer _timer;
+        private System.Timers.Timer _timer;
         private bool _shuttingDown;
         private readonly ConcurrentDictionary<string, bool> _authTokens = new ConcurrentDictionary<string, bool>();
 
-        public TaskSweeper()
+        public DefaultTaskScheduler()
         {
-            _timer = new Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
+			_timer = new System.Timers.Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
             _timer.Elapsed += Elapsed;
 
             HostingEnvironment.RegisterObject(this);
         }
 
-        public TimeSpan Interval
+        public TimeSpan SweepInterval
         {
             get { return TimeSpan.FromMilliseconds(_timer.Interval); }
             set { _timer.Interval = value.TotalMilliseconds; }
@@ -34,7 +35,8 @@ namespace SmartStore.Services.Tasks
 
         public string BaseUrl
         {
-            get { return _baseUrl; }
+            // TODO: HTTPS?
+			get { return _baseUrl; }
             set
             {
                 CheckUrl(value);
@@ -59,10 +61,37 @@ namespace SmartStore.Services.Tasks
             }
         }
 
-        public bool IsRunning
+        public bool IsActive
         {
             get { return _timer.Enabled; }
         }
+
+		public IEnumerable<TaskProgressInfo> GetAllRunningTasks()
+		{
+			var tasks = AsyncState.Current.GetAll<TaskProgressInfo>();
+			return tasks.Select(x => x.Clone());
+		}
+
+		public bool IsTaskRunning(int scheduleTaskId)
+		{
+			var exists = AsyncState.Current.Exists<TaskProgressInfo>(scheduleTaskId.ToString());
+			return exists;
+		}
+
+		public TaskProgressInfo GetRunningTask(int scheduleTaskId)
+		{
+			var info = AsyncState.Current.Get<TaskProgressInfo>(scheduleTaskId.ToString());
+			if (info != null)
+				return info.Clone();
+
+			return null;
+		}
+
+		public CancellationTokenSource GetCancelTokenSourceFor(int scheduleTaskId)
+		{
+			var cts = AsyncState.Current.GetCancelTokenSource<TaskProgressInfo>(scheduleTaskId.ToString());
+			return cts;
+		}
 
         public bool VerifyAuthToken(string authToken)
         {
@@ -73,12 +102,12 @@ namespace SmartStore.Services.Tasks
             return _authTokens.TryRemove(authToken, out val);
         }
 
-        public void ExecuteSingleTask(int scheduleTaskId)
+        public void RunSingleTask(int scheduleTaskId)
         {
             CallEndpoint(_baseUrl + "/Execute/{0}".FormatInvariant(scheduleTaskId));
         }
 
-        private void Elapsed(object sender, ElapsedEventArgs e)
+		private void Elapsed(object sender, System.Timers.ElapsedEventArgs e)
         {
             if (!System.Threading.Monitor.TryEnter(_timer))
                 return;
@@ -96,7 +125,7 @@ namespace SmartStore.Services.Tasks
             }
         }
 
-        private void CallEndpoint(string url)
+        protected internal virtual void CallEndpoint(string url)
         {
             if (_shuttingDown)
                 return;

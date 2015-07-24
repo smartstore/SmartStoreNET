@@ -15,6 +15,7 @@ namespace SmartStore.Data.Mapping.Tasks
 			this.Property(t => t.LastError).HasMaxLength(1000);
 
 			this.Ignore(t => t.IsRunning);
+			this.Ignore(t => t.IsPending);
         }
     }
 }

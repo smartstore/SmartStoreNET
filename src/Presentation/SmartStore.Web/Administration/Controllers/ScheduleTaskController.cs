@@ -21,6 +21,7 @@ using SmartStore.Core.Async;
 using Autofac;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
+using System.Collections.Generic;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -30,7 +31,7 @@ namespace SmartStore.Admin.Controllers
         #region Fields
 
 		private readonly IScheduleTaskService _scheduleTaskService;
-        private readonly ITaskSweeper _taskSweeper;
+        private readonly ITaskScheduler _taskScheduler;
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
 
@@ -40,12 +41,12 @@ namespace SmartStore.Admin.Controllers
 
 		public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
-            ITaskSweeper taskSweeper, 
+            ITaskScheduler taskScheduler, 
             IPermissionService permissionService, 
             IDateTimeHelper dateTimeHelper)
         {
             this._scheduleTaskService = scheduleTaskService;
-            this._taskSweeper = taskSweeper;
+			this._taskScheduler = taskScheduler;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
         }
@@ -54,8 +55,11 @@ namespace SmartStore.Admin.Controllers
 
         #region Utility
 
-		private bool IsTaskInstalled(ScheduleTask task)
+		private bool IsTaskVisible(ScheduleTask task)
 		{
+			if (task.IsHidden)
+				return false;
+
 			var type = Type.GetType(task.Type);
 			if (type != null)
 			{
@@ -67,26 +71,49 @@ namespace SmartStore.Admin.Controllers
         [NonAction]
         protected ScheduleTaskModel PrepareScheduleTaskModel(ScheduleTask task)
         {
-            var model = new ScheduleTaskModel
-            {
-                Id = task.Id,
-                Name = task.Name,
-                Seconds = task.Seconds,
-                Enabled = task.Enabled,
-                StopOnError = task.StopOnError,
+			var now = DateTime.UtcNow;
+			
+			TimeSpan? dueIn = null;
+			if (task.NextRunUtc.HasValue)
+			{
+				dueIn = task.NextRunUtc.Value - now;
+			}
+
+			var nextRunStr = "";
+			if (dueIn.HasValue)
+			{
+				if (dueIn.Value.TotalSeconds > 0)
+				{
+					nextRunStr = dueIn.Value.Prettify();
+				}
+				else
+				{
+					nextRunStr = T("Common.Waiting") + "...";
+				}
+			}
+
+			var model = new ScheduleTaskModel
+			{
+				Id = task.Id,
+				Name = task.Name,
+				Seconds = task.Seconds,
+				Enabled = task.Enabled,
+				StopOnError = task.StopOnError,
 				LastStartUtc = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
-                LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
-                LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
-				NextRunUtc = task.NextRunUtc.HasValue ? (task.NextRunUtc.Value - DateTime.UtcNow).Prettify() : "",
+				LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
+				LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
+				NextRunUtc = nextRunStr,
 				LastError = task.LastError.EmptyNull(),
-				IsRunning =	task.IsRunning,
+				IsRunning = task.IsRunning,
+				CancelUrl = task.IsRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
+				ProgressInfo = task.IsRunning ? T("Admin.System.ScheduleTasks.RunNow.IsRunning").Text : "",
 				Duration = ""
-            };
+			};
 
 			var span = TimeSpan.Zero;
 			if (task.LastStartUtc.HasValue)
 			{
-				span = model.IsRunning ? DateTime.UtcNow - task.LastStartUtc.Value : task.LastEndUtc.Value - task.LastStartUtc.Value;
+				span = model.IsRunning ? now - task.LastStartUtc.Value : task.LastEndUtc.Value - task.LastStartUtc.Value;
 				model.Duration = span.ToString("g");
 			}
 
@@ -117,9 +144,32 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 			
             var models = _scheduleTaskService.GetAllTasks(true)
-				.Where(IsTaskInstalled)
+				.Where(IsTaskVisible)
                 .Select(PrepareScheduleTaskModel)
                 .ToList();
+
+			foreach (var item in models)
+			{
+				if (!item.IsRunning)
+					continue;
+
+				TaskProgressInfo info;
+				info = _taskScheduler.GetRunningTask(item.Id);
+				if (info == null)
+					continue;
+
+				if (info.Progress.HasValue || info.Message.HasValue())
+				{
+					var tokens = new List<string>();
+					if (info.Progress.HasValue)
+						tokens.Add(string.Format("{0:p0}", (info.Progress.Value / 100)));
+					if (info.Message.HasValue())
+						tokens.Add(info.Message.ToString());
+
+					item.ProgressInfo += " ({0})".FormatCurrent(string.Join(" - ", tokens));
+				}
+			}
+
             var model = new GridModel<ScheduleTaskModel>
             {
                 Data = models,
@@ -142,12 +192,22 @@ namespace SmartStore.Admin.Controllers
             {
                 //display the first model error
                 var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+				NotifyError(modelStateErrors.FirstOrDefault());
                 return Content(modelStateErrors.FirstOrDefault());
             }
 
             var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
-            if (scheduleTask == null)
-                return Content("Schedule task cannot be loaded");
+			if (scheduleTask == null)
+			{
+				NotifyError("Schedule task cannot be loaded");
+				return Content("");
+			}
+
+			if (scheduleTask.IsRunning)
+			{
+				NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
+				return Content("");
+			}
 
             scheduleTask.Name = model.Name;
             scheduleTask.Seconds = model.Seconds;
@@ -179,9 +239,25 @@ namespace SmartStore.Admin.Controllers
 
 			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
 
-            _taskSweeper.ExecuteSingleTask(id);
+            _taskScheduler.RunSingleTask(id);
 
             NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			return Redirect(returnUrl);
+		}
+
+		public ActionResult CancelJob(int id /* scheduleTaskId */, string returnUrl = "")
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+				return AccessDeniedView();
+
+			var cts = _taskScheduler.GetCancelTokenSourceFor(id);
+			if (cts != null)
+			{
+				cts.Cancel();
+				NotifyWarning(T("Admin.System.ScheduleTasks.CancellationRequested"));
+			}
+
+			returnUrl = returnUrl.NullEmpty() ?? Request.UrlReferrer.ToString();
 			return Redirect(returnUrl);
 		}
 

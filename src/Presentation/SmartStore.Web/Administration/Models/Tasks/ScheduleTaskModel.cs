@@ -40,5 +40,8 @@ namespace SmartStore.Admin.Models.Tasks
 		public string Duration { get; set; }
 
 		public bool IsRunning { get; set; }
+		public string CancelUrl { get; set; }
+		public string ProgressInfo { get; set; }
+
     }
 }

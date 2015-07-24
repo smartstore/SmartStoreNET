@@ -609,8 +609,8 @@ namespace SmartStore.Web.Framework.Plugins
 				return true;
 			}
 
-            var taskSweeper = _ctx.Resolve<ITaskSweeper>();
-            taskSweeper.ExecuteSingleTask(ScheduleTask.Id);
+            var taskScheduler = _ctx.Resolve<ITaskScheduler>();
+			taskScheduler.RunSingleTask(ScheduleTask.Id);
 
             Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
 

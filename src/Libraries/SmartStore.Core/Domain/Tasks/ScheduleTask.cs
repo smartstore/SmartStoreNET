@@ -64,6 +64,18 @@ namespace SmartStore.Core.Domain.Tasks
 			}
 		}
 
+		/// <summary>
+		/// Gets a value indicating whether a task is scheduled for execution (Enabled = true and NextRunUtc &lt;= UtcNow )
+		/// </summary>
+		public bool IsPending
+		{
+			get
+			{
+				var result = Enabled && NextRunUtc.HasValue && NextRunUtc <= DateTime.UtcNow;
+				return result;
+			}
+		}
+
 		public ScheduleTask Clone()
 		{
 			return (ScheduleTask)this.MemberwiseClone();

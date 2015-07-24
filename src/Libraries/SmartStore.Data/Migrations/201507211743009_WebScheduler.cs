@@ -42,6 +42,19 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.ScheduleTasks.LastStart",
 				"Last Run",
 				"Letzte Ausführung");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.AbnormalAbort",
+				"Abnormally aborted due to application shutdown",
+				"Abbruch erzwungen durch Herunterfahren der Anwendung");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.UpdateLocked",
+				"The task can not be edited while it is running.",
+				"Die Aufgabe kann nicht bearbeitet werden, während sie ausgeführt wird.");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.CancellationRequested",
+				"Cancellation request has been submitted.",
+				"Abbruchanforderung wurde übermittelt.");
+
+			builder.AddOrUpdate("Common.Waiting",
+				"Waiting",
+				"Wartend");
 
 			builder.AddOrUpdate("Time.Year", "Year", "Jahr");
 			builder.AddOrUpdate("Time.Years", "Years", "Jahre");

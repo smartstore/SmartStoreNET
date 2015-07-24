@@ -10,35 +10,35 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Tasks
 {
-    public class ChangeTaskSweeperBaseUrlConsumer :
+    public class ChangeTaskSchedulerBaseUrlConsumer :
         IConsumer<EntityInserted<Store>>,
         IConsumer<EntityUpdated<Store>>,
         IConsumer<EntityDeleted<Store>>
     {
-        private readonly ITaskSweeper _taskSweeper;
+        private readonly ITaskScheduler _taskScheduler;
         private readonly IStoreService _storeService;
         private readonly HttpContextBase _httpContext;
 
-        public ChangeTaskSweeperBaseUrlConsumer(ITaskSweeper taskSweeper, IStoreService storeService, HttpContextBase httpContext)
+		public ChangeTaskSchedulerBaseUrlConsumer(ITaskScheduler taskScheduler, IStoreService storeService, HttpContextBase httpContext)
         {
-            this._taskSweeper = taskSweeper;
+			this._taskScheduler = taskScheduler;
             this._storeService = storeService;
             this._httpContext = httpContext;
         }
 
         public void HandleEvent(EntityInserted<Store> eventMessage)
         {
-            _taskSweeper.SetBaseUrl(_storeService, _httpContext);
+            _taskScheduler.SetBaseUrl(_storeService, _httpContext);
         }
 
         public void HandleEvent(EntityUpdated<Store> eventMessage)
         {
-            _taskSweeper.SetBaseUrl(_storeService, _httpContext);
+            _taskScheduler.SetBaseUrl(_storeService, _httpContext);
         }
 
         public void HandleEvent(EntityDeleted<Store> eventMessage)
         {
-            _taskSweeper.SetBaseUrl(_storeService, _httpContext);
+            _taskScheduler.SetBaseUrl(_storeService, _httpContext);
         }
     }
 }

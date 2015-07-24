@@ -31,10 +31,10 @@ namespace SmartStore.Services.Tasks
 						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
 						var storeService = EngineContext.Current.Resolve<IStoreService>();
 						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-						var taskManager = EngineContext.Current.Resolve<ITaskSweeper>();
+						var taskManager = EngineContext.Current.Resolve<ITaskScheduler>();
 
-						var tasks = taskService.GetAllTasks();
-						taskService.CalculateNextRunTimes(tasks);
+						var tasks = taskService.GetAllTasks(true);
+						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
 
 						taskManager.SetBaseUrl(storeService, filterContext.HttpContext);
 						taskManager.Start();

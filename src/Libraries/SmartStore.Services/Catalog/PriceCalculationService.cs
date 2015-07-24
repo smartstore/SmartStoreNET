@@ -243,103 +243,12 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		//protected virtual decimal GetPreselectedPriceOld(Product product, ProductBundleItemData bundleItem, IList<ProductBundleItemData> bundleItems)
-		//{
-		//	var taxRate = decimal.Zero;
-		//	var attributesTotalPriceBase = decimal.Zero;
-		//	var preSelectedPriceAdjustmentBase = decimal.Zero;
-		//	var isBundle = (product.ProductType == ProductType.BundledProduct);
-		//	var isBundleItemPricing = (bundleItem != null && bundleItem.Item.BundleProduct.BundlePerItemPricing);
-		//	var isBundlePricing = (bundleItem != null && !bundleItem.Item.BundleProduct.BundlePerItemPricing);
-		//	var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
-		//	var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
-		//	var selectedAttributes = new NameValueCollection();
-		//	List<ProductVariantAttributeValue> selectedAttributeValues = null;
-
-		//	foreach (var attribute in attributes)
-		//	{
-		//		int preSelectedValueId = 0;
-		//		ProductVariantAttributeValue defaultValue = null;
-
-		//		if (attribute.ShouldHaveValues())
-		//		{
-		//			var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
-		//			if (pvaValues.Count == 0)
-		//				continue;
-
-		//			foreach (var pvaValue in pvaValues)
-		//			{
-		//				ProductBundleItemAttributeFilter attributeFilter = null;
-
-		//				if (bundleItem.FilterOut(pvaValue, out attributeFilter))
-		//					continue;
-
-		//				if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-		//					preSelectedValueId = attributeFilter.AttributeValueId;
-
-		//				if (!isBundlePricing && pvaValue.IsPreSelected)
-		//				{
-		//					decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-		//					decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-
-		//					preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-		//				}
-		//			}
-
-		//			// value pre-selected by a bundle item filter discards the default pre-selection
-		//			if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
-		//				defaultValue.IsPreSelected = true;
-
-		//			if (defaultValue == null)
-		//				defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
-
-		//			if (defaultValue == null && attribute.IsRequired)
-		//				defaultValue = pvaValues.First();
-
-		//			if (defaultValue != null)
-		//				selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
-		//		}
-		//	}
-
-		//	if (!isBundle && selectedAttributes.Count > 0)
-		//	{
-		//		string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
-		//			_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
-
-		//		selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
-
-		//		var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
-
-		//		var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
-
-		//		if (selectedCombination != null && selectedCombination.IsActive)
-		//			product.MergeWithCombination(selectedCombination);
-		//	}
-
-		//	if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
-		//	{
-		//		if (selectedAttributeValues != null)
-		//		{
-		//			selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x));
-		//		}
-		//		else
-		//		{
-		//			attributesTotalPriceBase = preSelectedPriceAdjustmentBase;
-		//		}
-		//	}
-
-		//	if (bundleItem != null)
-		//	{
-		//		bundleItem.AdditionalCharge = attributesTotalPriceBase;
-		//	}
-
-		//	var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
-		//	return result;
-		//}
-
 		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<int> productIds = null)
 		{
 			var context = new PriceCalculationContext();
+
+			if (_catalogSettings.PriceDisplayType == PriceDisplayType.Hide || _catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+				return context;
 
 			context.Attributes = new LazyMultimap<ProductVariantAttribute>(x => 
 			{
@@ -349,11 +258,14 @@ namespace SmartStore.Services.Catalog
 				return result;
 			}, productIds);
 
-			context.AttributeCombinations = new LazyMultimap<ProductVariantAttributeCombination>(x =>
+			if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 			{
-				var result = _productAttributeService.GetProductVariantAttributeCombinations(x);
-				return result;
-			}, productIds);
+				context.AttributeCombinations = new LazyMultimap<ProductVariantAttributeCombination>(x =>
+				{
+					var result = _productAttributeService.GetProductVariantAttributeCombinations(x);
+					return result;
+				}, productIds);
+			}
 
 			return context;
 		}
@@ -527,9 +439,10 @@ namespace SmartStore.Services.Catalog
 		/// Get the lowest possible price for a product.
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="displayFromMessage">Whether to display the from message.</param>
 		/// <returns>The lowest price.</returns>
-		public virtual decimal GetLowestPrice(Product product, out bool displayFromMessage)
+		public virtual decimal GetLowestPrice(Product product, PriceCalculationContext context, out bool displayFromMessage)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -537,38 +450,16 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType == ProductType.GroupedProduct)
 				throw Error.InvalidOperation("Choose the other override for products of type grouped product.");
 
-			displayFromMessage = false;
+			if (context == null)
+				context = CreatePriceCalculationContext(null);
 
-			IList<ProductBundleItemData> bundleItems = null;
 			bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
-			if (isBundlePerItemPricing)
-			{
-				bundleItems = _productService.GetBundleItems(product.Id);
+			displayFromMessage = isBundlePerItemPricing;
 
-				// sepcial case: one bundle item with one attribute and one attribute value and one attribute combination
-				if (bundleItems.Count == 1)
-				{
-					var firstBundleItem = bundleItems.First();
-					if (firstBundleItem.Item.Product.ProductVariantAttributes.Count == 1)
-					{
-						var firstAttribute = firstBundleItem.Item.Product.ProductVariantAttributes.First();
-						if (firstAttribute.ProductVariantAttributeValues.Count == 1)
-						{
-							var firstAttributeValue = firstAttribute.ProductVariantAttributeValues.First();
-							firstBundleItem.AdditionalCharge = firstAttributeValue.PriceAdjustment;
+			// TODO(?): attribute price adjustments were not regarded here cause of performance
 
-							var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(firstBundleItem.Item.ProductId);
-							if (combinations.Count == 1)
-							{
-								firstBundleItem.Item.Product.MergeWithCombination(combinations.First());
-							}
-						}
-					}
-				}
-			}
-
-			decimal lowestPrice = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+			decimal lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 
 			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
 			{
@@ -579,6 +470,24 @@ namespace SmartStore.Services.Catalog
 			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
 			{
 				lowestPrice = product.LowestAttributeCombinationPrice ?? decimal.Zero;
+			}
+
+			if (!displayFromMessage && product.ProductType != ProductType.BundledProduct)
+			{
+				var attributes = context.Attributes.Ensure(product.Id);
+				displayFromMessage = attributes.Any(x => x.ProductVariantAttributeValues.Any(y => y.PriceAdjustment != decimal.Zero));
+			}
+
+			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
+			{
+				var tierPrices = product.TierPrices
+					.OrderBy(tp => tp.Quantity)
+					.FilterByStore(_services.StoreContext.CurrentStore.Id)
+					.FilterForCustomer(_services.WorkContext.CurrentCustomer)
+					.ToList()
+					.RemoveDuplicatedQuantities();
+
+				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
 			}
 
 			return lowestPrice;
@@ -602,7 +511,7 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType != ProductType.GroupedProduct)
 				throw Error.InvalidOperation("Choose the other override for products not of type grouped product.");
 
-			lowestPriceProduct = product;
+			lowestPriceProduct = null;
 			decimal? lowestPrice = null;
 
 			foreach (var associatedProduct in associatedProducts)
@@ -620,6 +529,10 @@ namespace SmartStore.Services.Catalog
 					lowestPriceProduct = associatedProduct;
 				}
 			}
+
+			if (lowestPriceProduct == null)
+				lowestPriceProduct = associatedProducts.FirstOrDefault();
+
 			return lowestPrice;
 		}
 
@@ -659,23 +572,6 @@ namespace SmartStore.Services.Catalog
 
 				result = GetPreselectedPrice(product, context, null, null);
 			}
-
-			//if (product.ProductType == ProductType.BundledProduct)
-			//{
-			//	var bundleItems = _productService.GetBundleItems(product.Id);
-
-			//	foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
-			//	{
-			//		// fetch bundleItems.AdditionalCharge for all bundle items
-			//		var unused = GetPreselectedPriceOld(bundleItem.Item.Product, bundleItem, bundleItems);
-			//	}
-
-			//	result = GetPreselectedPriceOld(product, null, bundleItems);
-			//}
-			//else
-			//{
-			//	result = GetPreselectedPriceOld(product, null, null);
-			//}
 
 			return result;
 		}

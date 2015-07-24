@@ -92,9 +92,10 @@ namespace SmartStore.Services.Catalog
 		/// Get the lowest possible price for a product.
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="displayFromMessage">Whether to display the from message.</param>
 		/// <returns>The lowest price.</returns>
-		decimal GetLowestPrice(Product product, out bool displayFromMessage);
+		decimal GetLowestPrice(Product product, PriceCalculationContext context, out bool displayFromMessage);
 
 		/// <summary>
 		/// Get the lowest price of a grouped product.

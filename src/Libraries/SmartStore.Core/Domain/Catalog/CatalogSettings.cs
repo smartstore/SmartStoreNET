@@ -353,6 +353,11 @@ namespace SmartStore.Core.Domain.Catalog
         /// </summary>
         public string DefaultPageSizeOptions { get; set; }
 
+		/// <summary>
+		/// Gets or sets the price display type for prices in product lists
+		/// </summary>
+		public PriceDisplayType PriceDisplayType { get; set; }
+
         /// <summary>
         /// Gets or sets a value indicating whether to include "Short description" in compare products
         /// </summary>

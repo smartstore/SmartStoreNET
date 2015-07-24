@@ -618,6 +618,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
             Mapper.CreateMap<CatalogSettings, CatalogSettingsModel>()
 				.ForMember(dest => dest.AvailableSubCategoryDisplayTypes, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailablePriceDisplayTypes, mo => mo.Ignore())
                 .ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
             Mapper.CreateMap<CatalogSettingsModel, CatalogSettings>()

@@ -266,7 +266,7 @@ namespace SmartStore.WebApi.Controllers.OData
 					else
 					{
 						bool displayFromMessage;
-						result = _priceCalculationService.Value.GetLowestPrice(entity, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, out displayFromMessage);
 					}
 				}
 				else

@@ -558,6 +558,7 @@ namespace SmartStore.Admin.Controllers
 			StoreDependingSettings.GetOverrideKeys(catalogSettings, model, storeScope, _services.Settings);
 
 			model.AvailableSubCategoryDisplayTypes = catalogSettings.SubCategoryDisplayType.ToSelectList();
+			model.AvailablePriceDisplayTypes = catalogSettings.PriceDisplayType.ToSelectList();
 
             model.AvailableDefaultViewModes.Add(
 				new SelectListItem { Value = "grid", Text = _services.Localization.GetResource("Common.Grid"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("grid") }

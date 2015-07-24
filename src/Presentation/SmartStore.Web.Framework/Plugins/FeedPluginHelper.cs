@@ -395,7 +395,7 @@ namespace SmartStore.Web.Framework.Plugins
 						stores.AddRange(storeService.GetAllStores());
 					}
 
-					var context = new FeedFileCreationContext()
+					var context = new FeedFileCreationContext
 					{
 						StoreCount = stores.Count,
 						Progress = new Progress<FeedFileCreationProgress>(x =>

@@ -76,6 +76,7 @@ namespace SmartStore.Core.Async
 
 		public void Set<T>(T state, string name = null, bool neverExpires = false)
 		{
+			Guard.ArgumentNotNull(() => state);
 			this.Set(state, null, name, neverExpires);
 		}
 
@@ -112,14 +113,17 @@ namespace SmartStore.Core.Async
 			if (value != null)
 			{
 				// exists already, so update
-				value.Progress = state;
+				if (state != null)
+				{
+					value.Progress = state;
+				}
 				if (cancelTokenSource != null && value.CancellationTokenSource == null)
 				{
 					value.CancellationTokenSource = cancelTokenSource;
 				}
 			}
 
-			var policy = new CacheItemPolicy { SlidingExpiration = neverExpires ? TimeSpan.FromHours(24) : TimeSpan.FromMinutes(15) };
+			var policy = new CacheItemPolicy { SlidingExpiration = neverExpires ? TimeSpan.Zero : TimeSpan.FromMinutes(15) };
 
 			_cache.Set(
 				key, 

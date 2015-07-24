@@ -34,6 +34,8 @@ namespace SmartStore.Admin.Models.Tasks
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
         public string NextRunUtc { get; set; }
 
+		public bool IsOverdue { get; set; }
+
 		[SmartResourceDisplayName("Common.Error")]
 		public string LastError { get; set; }
 

@@ -80,15 +80,17 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var nextRunStr = "";
+			bool isOverdue = false;
 			if (dueIn.HasValue)
 			{
 				if (dueIn.Value.TotalSeconds > 0)
 				{
-					nextRunStr = dueIn.Value.Prettify();
+					nextRunStr = "<span class='muted'>{0}</span>".FormatCurrent(dueIn.Value.Prettify());
 				}
 				else
 				{
-					nextRunStr = T("Common.Waiting") + "...";
+					nextRunStr = "<span class='text-success'><strong>{0}</strong></span>".FormatCurrent(T("Common.Waiting") + "...");
+					isOverdue = true;
 				}
 			}
 
@@ -107,6 +109,7 @@ namespace SmartStore.Admin.Controllers
 				IsRunning = task.IsRunning,
 				CancelUrl = task.IsRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
 				ProgressInfo = task.IsRunning ? T("Admin.System.ScheduleTasks.RunNow.IsRunning").Text : "",
+				IsOverdue = isOverdue,
 				Duration = ""
 			};
 

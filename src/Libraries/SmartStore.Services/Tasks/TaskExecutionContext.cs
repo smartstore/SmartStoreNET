@@ -13,11 +13,26 @@ namespace SmartStore.Services.Tasks
 	/// </summary>
 	public class TaskExecutionContext
 	{
-        /// <summary>
-        /// The shared <see cref="ILifetimeScope"/> instance created
-        /// before the execution of the task's background thread.
-        /// </summary>
-        public object LifetimeScope { get; internal set; }
+		private readonly IComponentContext _componentContext;
+
+		internal TaskExecutionContext(IComponentContext componentContext)
+		{
+			this._componentContext = componentContext;
+		}
+
+		public T Resolve<T>(object key = null) where T : class
+		{
+			if (key == null)
+			{
+				return _componentContext.Resolve<T>();
+			}
+			return _componentContext.ResolveKeyed<T>(key);
+		}
+
+		public T ResolveNamed<T>(string name) where T : class
+		{
+			return _componentContext.ResolveNamed<T>(name);
+		}
 
         /// <summary>
         /// A cancellation token for the running task.

@@ -21,9 +21,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
             get { return _container; }
         }
 
-		public T Resolve<T>(string key = "", ILifetimeScope scope = null) where T : class
+		public T Resolve<T>(object key = null, ILifetimeScope scope = null) where T : class
         {
-            if (string.IsNullOrEmpty(key))
+            if (key == null)
             {
 				return (scope ?? Scope()).Resolve<T>();
             }
@@ -45,9 +45,9 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 			return (scope ?? Scope()).ResolveNamed(name, type);
         }
 
-		public T[] ResolveAll<T>(string key = "", ILifetimeScope scope = null)
+		public T[] ResolveAll<T>(object key = null, ILifetimeScope scope = null)
         {
-            if (string.IsNullOrEmpty(key))
+            if (key == null)
             {
 				return (scope ?? Scope()).Resolve<IEnumerable<T>>().ToArray();
             }

@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using SmartStore.Core.Async;
 using System.Threading;
 using SmartStore.Core.Plugins;
+using Autofac;
 
 namespace SmartStore.Services.Tasks
 {
@@ -18,11 +19,13 @@ namespace SmartStore.Services.Tasks
         private readonly IScheduleTaskService _scheduledTaskService;
 		private readonly IDbContext _dbContext;
         private readonly Func<Type, ITask> _taskResolver;
+		private readonly IComponentContext _componentContext;
 
-        public TaskExecutor(IScheduleTaskService scheduledTaskService, IDbContext dbContext, Func<Type, ITask> taskResolver)
+        public TaskExecutor(IScheduleTaskService scheduledTaskService, IDbContext dbContext, IComponentContext componentContext, Func<Type, ITask> taskResolver)
         {
             this._scheduledTaskService = scheduledTaskService;
 			this._dbContext = dbContext;
+			this._componentContext = componentContext;
             this._taskResolver = taskResolver;
 
             Logger = NullLogger.Instance;
@@ -80,7 +83,7 @@ namespace SmartStore.Services.Tasks
 				};
 				AsyncState.Current.Set(taskProgressInfo, stateName, true);
 
-				var ctx = new TaskExecutionContext
+				var ctx = new TaskExecutionContext(_componentContext)
 				{
 					ScheduleTask = task.Clone(),
 					CancellationToken = cts.Token

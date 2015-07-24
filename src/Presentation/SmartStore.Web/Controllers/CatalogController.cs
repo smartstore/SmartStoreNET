@@ -606,7 +606,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
-			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0)
+			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
 				return Content("");
 
 			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
@@ -617,7 +617,9 @@ namespace SmartStore.Web.Controllers
                 var manufacturers = _manufacturerService.GetAllManufacturers();
                 var model = new ManufacturerNavigationModel()
                 {
-                    TotalManufacturers = manufacturers.Count
+                    TotalManufacturers = manufacturers.Count,
+                    DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
+                    DisplayImages = _catalogSettings.ShowManufacturerPictures
                 };
 
                 foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
@@ -627,6 +629,7 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize),
                         IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
                     };
                     model.Manufacturers.Add(modelMan);

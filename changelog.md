@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.2.2
 
@@ -8,6 +8,7 @@
 * Added zip code to shipping by weight computation method
 * Skrill payment plugin (distributed via Marketplace)
 * (Dev) DevTool plugin: added option to display all widget zones in public store
+* New options for manufacturer display on the homepage
 
 ### Improvements
 * (Perf) several minor optimizations for faster app startup and page rendering

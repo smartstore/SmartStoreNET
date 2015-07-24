@@ -13,10 +13,28 @@
             <ul>
                 @foreach (var manufacturer in Model.Manufacturers)
                 {
-                    <li class="@(manufacturer.IsActive ? "active" : "inactive")"><a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">@manufacturer.Name</a>
+                    <li class="@(manufacturer.IsActive ? "active" : "inactive") @(Model.DisplayImages ? "manufacturer-pic" : "")">
+
+                        @if (Model.DisplayImages)
+                        {
+                            <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">
+                                <img src="@manufacturer.PictureUrl" alt="@manufacturer.Name" title="@manufacturer.Name" />
+                            </a>
+                        }
+                        else
+                        {
+                            <a href="@Url.RouteUrl("Manufacturer", new { SeName = manufacturer.SeName })">@manufacturer.Name</a>
+                        }
+
                     </li>
                 }
             </ul>
+            
+            @if (Model.DisplayImages)
+            {
+                <div class="clearfix">&nbsp;</div>
+            }
+            
             @if (Model.TotalManufacturers > Model.Manufacturers.Count)
             {
                 <div class="view-all">

@@ -63,67 +63,22 @@ namespace SmartStore.Core.Data
 		/// </remarks>
 		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null) where T : BaseEntity
 		{
-			var autoCommit = rs.AutoCommitEnabled;
-			rs.AutoCommitEnabled = false;
-
 			var count = 0;
 
-			try
+			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
 			{
-				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
+				var query = rs.Table;
+				if (predicate != null)
 				{
-					var query = rs.Table;
-					if (predicate != null)
-					{
-						query = query.Where(predicate);
-					}
-
-					var records = query.ToList();
-					foreach (var chunk in records.Chunk(500))
-					{
-						rs.DeleteRange(chunk.ToList());
-						count += rs.Context.SaveChanges();
-					}
+					query = query.Where(predicate);
 				}
-			}
-			catch (Exception ex)
-			{
-				throw ex;
-			}
-			finally
-			{
-				rs.AutoCommitEnabled = autoCommit;
-			}	
 
-			return count;
-		}
-
-		private static int DeleteAllInternal<T>(IRepository<T> rs, Expression<Func<T, bool>> predicate) where T : BaseEntity
-		{
-			var autoCommit = rs.AutoCommitEnabled;
-			rs.AutoCommitEnabled = false;
-
-			var count = 0;
-
-			try
-			{
-				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false))
+				var records = query.ToList();
+				foreach (var chunk in records.Chunk(500))
 				{
-					var records = rs.Table.ToList();
-					foreach (var chunk in records.Chunk(500))
-					{
-						rs.DeleteRange(chunk.ToList());
-						count += rs.Context.SaveChanges();
-					}
+					rs.DeleteRange(chunk.ToList());
+					count += rs.Context.SaveChanges();
 				}
-			}
-			catch (Exception ex)
-			{
-				throw ex;
-			}
-			finally
-			{
-				rs.AutoCommitEnabled = autoCommit;
 			}
 
 			return count;

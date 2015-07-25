@@ -15,6 +15,7 @@
 * #727 Web-API: Option to deactivate TimestampOlderThanLastRequest validation
 * #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
 * #733 Option to set a display order for homepage products
+* #607 HTML capable full description for payment methods displayed in checkout
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

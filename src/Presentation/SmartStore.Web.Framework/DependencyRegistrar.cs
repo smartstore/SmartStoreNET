@@ -98,6 +98,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new IOModule());
 			builder.RegisterModule(new PackagingModule());
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
+            builder.RegisterModule(new TasksModule(typeFinder));
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
@@ -923,6 +924,48 @@ namespace SmartStore.Web.Framework
 		#endregion
 
 	}
+
+    public class TasksModule : Module
+    {
+        private readonly ITypeFinder _typeFinder;
+
+        public TasksModule(ITypeFinder typeFinder)
+        {
+            _typeFinder = typeFinder;
+        }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
+
+            builder.RegisterType<DefaultTaskScheduler>().As<ITaskScheduler>().SingleInstance();
+            builder.RegisterType<TaskExecutor>().As<ITaskExecutor>().InstancePerRequest();
+
+            var taskTypes = _typeFinder.FindClassesOfType<ITask>(ignoreInactivePlugins: true).ToList();
+
+            foreach (var type in taskTypes)
+            {
+                var typeName = type.FullName;
+                builder.RegisterType(type).Named<ITask>(typeName).Keyed<ITask>(type).InstancePerRequest();
+            }
+
+            // Register resolving delegate
+            builder.Register<Func<Type, ITask>>(c =>
+            {
+                var cc = c.Resolve<IComponentContext>();
+                return keyed => cc.ResolveKeyed<ITask>(keyed);
+            });
+
+            builder.Register<Func<string, ITask>>(c =>
+            {
+                var cc = c.Resolve<IComponentContext>();
+                return named => cc.ResolveNamed<ITask>(named);
+            });
+
+        }
+
+    }
 
 	#endregion
 

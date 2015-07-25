@@ -12,7 +12,7 @@ namespace SmartStore.Core.Async
 	public class AsyncState
 	{
 		private readonly static AsyncState s_instance = new AsyncState();
-		private readonly MemoryCache _cache = MemoryCache.Default;
+		private readonly MemoryCache _cache = new MemoryCache("SmartStore.AsyncState");
 
 		private AsyncState()
 		{
@@ -35,6 +35,22 @@ namespace SmartStore.Core.Async
 			return Get<T>(out cancelTokenSource, name);
 		}
 
+		public IEnumerable<T> GetAll<T>()
+		{
+			var keyPrefix = BuildKey<T>(null);
+			foreach (var kvp in _cache)
+			{
+				if (kvp.Key.StartsWith(keyPrefix))
+				{
+					var value = kvp.Value as StateInfo;
+					if (value != null && value.Progress != null)
+					{
+						yield return (T)(value.Progress);
+					}
+				}
+			}
+		}
+
 		public CancellationTokenSource GetCancelTokenSource<T>(string name = null)
 		{
 			CancellationTokenSource cancelTokenSource;
@@ -46,7 +62,7 @@ namespace SmartStore.Core.Async
 		{
 			cancelTokenSource = null;
 			var key = BuildKey<T>(name);
-
+			
 			var value = _cache.Get(key) as StateInfo;
 
 			if (value != null)
@@ -60,7 +76,25 @@ namespace SmartStore.Core.Async
 
 		public void Set<T>(T state, string name = null, bool neverExpires = false)
 		{
+			Guard.ArgumentNotNull(() => state);
 			this.Set(state, null, name, neverExpires);
+		}
+
+		public void Update<T>(Action<T> update, string name = null)
+		{
+			Guard.ArgumentNotNull(() => update);
+
+			var key = BuildKey(typeof(T), name);
+
+			var value = _cache.Get(key) as StateInfo;
+			if (value != null)
+			{
+				var state = (T)value.Progress;
+				if (state != null)
+				{
+					update(state);
+				}
+			}
 		}
 
 		public void SetCancelTokenSource<T>(CancellationTokenSource cancelTokenSource, string name = null)
@@ -79,7 +113,10 @@ namespace SmartStore.Core.Async
 			if (value != null)
 			{
 				// exists already, so update
-				value.Progress = state;
+				if (state != null)
+				{
+					value.Progress = state;
+				}
 				if (cancelTokenSource != null && value.CancellationTokenSource == null)
 				{
 					value.CancellationTokenSource = cancelTokenSource;
@@ -88,7 +125,12 @@ namespace SmartStore.Core.Async
 
 			var policy = new CacheItemPolicy { SlidingExpiration = neverExpires ? TimeSpan.Zero : TimeSpan.FromMinutes(15) };
 
-			_cache.Set(key, value ?? new StateInfo { Progress = state, CancellationTokenSource = cancelTokenSource }, policy);
+			_cache.Set(
+				key, 
+				value ?? new StateInfo { Progress = state, CancellationTokenSource = cancelTokenSource }, 
+				policy);
+
+			var xx = _cache.Get(key);
 		}
 
 		public bool Remove<T>(string name = null)

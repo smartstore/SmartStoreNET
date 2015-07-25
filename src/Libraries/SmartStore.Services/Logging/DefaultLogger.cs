@@ -208,9 +208,7 @@ namespace SmartStore.Services.Logging
 			}
 			catch { }
 
-			_logRepository.AutoCommitEnabled = false;
-
-			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
+			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
 			{
 				foreach (var context in _entries)
 				{
@@ -285,8 +283,6 @@ namespace SmartStore.Services.Logging
 				}
 				catch { }
 			}
-
-			_logRepository.AutoCommitEnabled = true;
 
 			_entries.Clear();
 		}

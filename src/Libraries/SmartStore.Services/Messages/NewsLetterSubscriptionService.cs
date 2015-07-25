@@ -37,44 +37,36 @@ namespace SmartStore.Services.Messages
             var result = new ImportResult();
             var toAdd = new List<NewsLetterSubscription>();
             var toUpdate = new List<NewsLetterSubscription>();
-            var autoCommit = _subscriptionRepository.AutoCommitEnabled;
-            var validateOnSave = _subscriptionRepository.Context.ValidateOnSaveEnabled;
-            var autoDetectChanges = _subscriptionRepository.Context.AutoDetectChangesEnabled;
-            var proxyCreation = _subscriptionRepository.Context.ProxyCreationEnabled;
 
-            try
-            {
-                using (var reader = new StreamReader(stream))
-                {
-                    _subscriptionRepository.Context.ValidateOnSaveEnabled = false;
-                    _subscriptionRepository.Context.AutoDetectChangesEnabled = false;
-                    _subscriptionRepository.Context.ProxyCreationEnabled = false;
-                    
-                    while (!reader.EndOfStream)
-                    {
-                        string line = reader.ReadLine();
-                        if (line.IsEmpty())
-                        {
-                            continue;
-                        }
-                        string[] tmp = line.Split(',');
+			using (var scope = new DbContextScope(ctx: _context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			{
+				using (var reader = new StreamReader(stream))
+				{
+					while (!reader.EndOfStream)
+					{
+						string line = reader.ReadLine();
+						if (line.IsEmpty())
+						{
+							continue;
+						}
+						string[] tmp = line.Split(',');
 
-                        var email = "";
-                        bool isActive = true;
+						var email = "";
+						bool isActive = true;
 						int storeId = 0;
 
-                        // parse
-                        if (tmp.Length == 1)
-                        {
-                            // "email" only
-                            email = tmp[0].Trim();
-                        }
-                        else if (tmp.Length == 2)
-                        {
-                            // "email" and "active" fields specified
-                            email = tmp[0].Trim();
-                            isActive = Boolean.Parse(tmp[1].Trim());
-                        }
+						// parse
+						if (tmp.Length == 1)
+						{
+							// "email" only
+							email = tmp[0].Trim();
+						}
+						else if (tmp.Length == 2)
+						{
+							// "email" and "active" fields specified
+							email = tmp[0].Trim();
+							isActive = Boolean.Parse(tmp[1].Trim());
+						}
 						else if (tmp.Length == 3)
 						{
 							email = tmp[0].Trim();
@@ -86,80 +78,69 @@ namespace SmartStore.Services.Messages
 							throw new SmartException("Wrong file format (expected comma separated entries 'Email' and optionally 'IsActive')");
 						}
 
-                        result.TotalRecords++;
+						result.TotalRecords++;
 
-                        if (email.Length > 255)
-                        {
-                            result.AddWarning("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
-                            continue;
-                        }
+						if (email.Length > 255)
+						{
+							result.AddWarning("The emal address '{0}' exceeds the maximun allowed length of 255.".FormatInvariant(email));
+							continue;
+						}
 
-                        if (!email.IsEmail())
-                        {
+						if (!email.IsEmail())
+						{
 							result.AddWarning("'{0}' is not a valid email address.".FormatInvariant(email));
-                            continue;
-                        }
+							continue;
+						}
 
 						if (storeId == 0)
 						{
 							storeId = _storeService.GetAllStores().First().Id;
 						}
 
-                        // import
-                        var subscription = (from nls in _subscriptionRepository.Table
-                                            where nls.Email == email && nls.StoreId == storeId
-                                            orderby nls.Id
-                                            select nls).FirstOrDefault();
+						// import
+						var subscription = (from nls in _subscriptionRepository.Table
+											where nls.Email == email && nls.StoreId == storeId
+											orderby nls.Id
+											select nls).FirstOrDefault();
 
-                        if (subscription != null)
-                        {
-                            subscription.Active = isActive;
+						if (subscription != null)
+						{
+							subscription.Active = isActive;
 
-                            toUpdate.Add(subscription);
-                            result.ModifiedRecords++;
-                        }
-                        else
-                        {
-                            subscription = new NewsLetterSubscription()
-                            {
-                                Active = isActive,
-                                CreatedOnUtc = DateTime.UtcNow,
-                                Email = email,
-                                NewsLetterSubscriptionGuid = Guid.NewGuid(),
+							toUpdate.Add(subscription);
+							result.ModifiedRecords++;
+						}
+						else
+						{
+							subscription = new NewsLetterSubscription
+							{
+								Active = isActive,
+								CreatedOnUtc = DateTime.UtcNow,
+								Email = email,
+								NewsLetterSubscriptionGuid = Guid.NewGuid(),
 								StoreId = storeId
-                            };
+							};
 
-                            toAdd.Add(subscription);
-                            result.NewRecords++;
-                        }
-                    }
-                }
+							toAdd.Add(subscription);
+							result.NewRecords++;
+						}
+					}
+				}
 
-                // insert new subscribers
-                _subscriptionRepository.AutoCommitEnabled = true;
-                _subscriptionRepository.InsertRange(toAdd, 500);
-                toAdd.Clear();
+				// insert new subscribers
+				_subscriptionRepository.AutoCommitEnabled = true;
+				_subscriptionRepository.InsertRange(toAdd, 500);
+				toAdd.Clear();
 
-                // update modified subscribers
-                _subscriptionRepository.AutoCommitEnabled = false;
-                toUpdate.Each(x => 
-                {
-                    _subscriptionRepository.Update(x);
-                });
-                _subscriptionRepository.Context.SaveChanges();
-                toUpdate.Clear();
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _subscriptionRepository.AutoCommitEnabled = autoCommit;
-                _subscriptionRepository.Context.ValidateOnSaveEnabled = validateOnSave;
-                _subscriptionRepository.Context.AutoDetectChangesEnabled = autoDetectChanges;
-                _subscriptionRepository.Context.ProxyCreationEnabled = proxyCreation;
-            }
+				// update modified subscribers
+				_subscriptionRepository.AutoCommitEnabled = null;
+				toUpdate.Each(x =>
+				{
+					_subscriptionRepository.Update(x);
+				});
+				_subscriptionRepository.Context.SaveChanges();
+				toUpdate.Clear();
+			}
 
             return result;
         }

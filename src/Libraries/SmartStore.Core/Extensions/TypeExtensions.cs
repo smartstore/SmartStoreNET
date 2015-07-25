@@ -23,7 +23,7 @@ namespace SmartStore
         public static string AssemblyQualifiedNameWithoutVersion(this Type type)
         {
             string[] strArray = type.AssemblyQualifiedName.Split(new char[] { ',' });
-            return string.Format("{0},{1}", strArray[0], strArray[1]);
+            return string.Format("{0}, {1}", strArray[0], strArray[1]);
         }
 
         public static bool IsSequenceType(this Type seqType)

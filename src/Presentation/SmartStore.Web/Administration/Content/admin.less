@@ -326,6 +326,41 @@ header {
     to {left: 0; width: 100%;}
 }
 
+.loading-bar {
+	height: 4px;
+	width: 100%;
+	position: relative;
+	overflow: hidden;
+	background-color: #ddd;
+}
+.loading-bar:before {
+	display: block;
+	position: absolute;
+	content: "";
+	left: -200px;
+	width: 200px;
+	height: 4px;
+	background-color: #2980b9;
+	        animation: loadingbar 2s linear infinite;
+	-webkit-animation: loadingbar 2s linear infinite;
+}
+@keyframes loadingbar {
+	from {left: -200px; width: 30%;}
+	50% {width: 30%;}
+	70% {width: 70%;}
+	80% { left: 50%;}
+	95% {left: 120%;}
+	to {left: 100%;}
+}
+@-webkit-keyframes loadingbar {
+	from {left: -200px; width: 30%;}
+	50% {width: 30%;}
+	70% {width: 70%;}
+	80% { left: 50%;}
+	95% {left: 120%;}
+	to {left: 100%;}
+}
+
 #content {
     position: relative;
     height: auto;

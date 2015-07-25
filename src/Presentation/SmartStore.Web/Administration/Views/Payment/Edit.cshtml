@@ -35,7 +35,7 @@
 
 @helper TabGeneral()
 {
-	@(Html.LocalizedEditor<PaymentMethodEditModel, ProviderLocalizedModel>("paymentmethod-general-localized",
+	@(Html.LocalizedEditor<PaymentMethodEditModel, PaymentMethodLocalizedModel>("paymentmethod-general-localized",
 	@<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
@@ -53,6 +53,15 @@
 			<td class="adminData">
 				@Html.TextAreaFor(model => Model.Locales[item].Description, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].FullDescription)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
 			</td>
 		</tr>
 		<tr>
@@ -79,6 +88,15 @@
 			<td class="adminData">
 				@Html.TextAreaFor(model => model.Description, new { @class = "input-large" })
 				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FullDescription)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.FullDescription, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.FullDescription)
 			</td>
 		</tr>
 	</table>

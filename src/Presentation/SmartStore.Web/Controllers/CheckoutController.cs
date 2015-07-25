@@ -282,12 +282,16 @@ namespace SmartStore.Web.Controllers
 				.LoadActivePaymentMethods(_workContext.CurrentCustomer, cart, _storeContext.CurrentStore.Id, paymentTypes)
                 .ToList();
 
+			var allPaymentMethods = _paymentService.GetAllPaymentMethods();
+
             foreach (var pm in boundPaymentMethods)
             {
 				if (cart.IsRecurring() && pm.Value.RecurringPaymentType == RecurringPaymentType.NotSupported)
                     continue;
+
+				var paymentMethod = allPaymentMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(pm.Metadata.SystemName));
                 
-                var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel()
+                var pmModel = new CheckoutPaymentMethodModel.PaymentMethodModel
                 {
 					Name = _pluginMediator.GetLocalizedFriendlyName(pm.Metadata),
 					Description = _pluginMediator.GetLocalizedDescription(pm.Metadata),
@@ -295,6 +299,11 @@ namespace SmartStore.Web.Controllers
 					PaymentInfoRoute = pm.Value.GetPaymentInfoRoute(),
 					RequiresInteraction = pm.Value.RequiresInteraction
                 };
+
+				if (paymentMethod != null)
+				{
+					pmModel.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, _workContext.WorkingLanguage.Id);
+				}
 				
 				pmModel.BrandUrl = _pluginMediator.GetBrandImageUrl(pm.Metadata);
 
@@ -797,13 +806,11 @@ namespace SmartStore.Web.Controllers
             var model = new CheckoutConfirmModel();
             try
             {
-				bool isPaymentPaymentWorkflowRequired = IsPaymentWorkflowRequired(cart);
-
                 var processPaymentRequest = _httpContext.Session["OrderPaymentInfo"] as ProcessPaymentRequest;
                 if (processPaymentRequest == null)
                 {
                     //Check whether payment workflow is required
-					if (isPaymentPaymentWorkflowRequired)
+					if (IsPaymentWorkflowRequired(cart))
 						return RedirectToAction("PaymentMethod");
 
 					processPaymentRequest = new ProcessPaymentRequest();
@@ -831,10 +838,7 @@ namespace SmartStore.Web.Controllers
 						Order = placeOrderResult.PlacedOrder
 					};
 
-					if (isPaymentPaymentWorkflowRequired)
-					{
-						_paymentService.PostProcessPayment(postProcessPaymentRequest);
-					}
+					_paymentService.PostProcessPayment(postProcessPaymentRequest);
 
 					_httpContext.Session["PaymentData"] = null;
 					_httpContext.Session["OrderPaymentInfo"] = null;

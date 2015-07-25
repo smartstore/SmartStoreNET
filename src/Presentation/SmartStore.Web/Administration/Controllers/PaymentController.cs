@@ -14,6 +14,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Controllers
@@ -32,6 +33,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly IShippingService _shippingService;
 		private readonly ICountryService _countryService;
+		private readonly ILocalizedEntityService _localizedEntityService;
 
 		#endregion
 
@@ -46,7 +48,8 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
 			ICustomerService customerService,
 			IShippingService shippingService,
-			ICountryService countryService)
+			ICountryService countryService,
+			ILocalizedEntityService localizedEntityService)
 		{
 			this._services = services;
             this._paymentService = paymentService;
@@ -57,6 +60,7 @@ namespace SmartStore.Admin.Controllers
 			this._customerService = customerService;
 			this._shippingService = shippingService;
 			this._countryService = countryService;
+			this._localizedEntityService = localizedEntityService;
 		}
 
 		#endregion
@@ -102,6 +106,8 @@ namespace SmartStore.Admin.Controllers
 
 				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
 				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
+
+				model.FullDescription = paymentMethod.FullDescription;
 			}
 		}
 
@@ -165,12 +171,23 @@ namespace SmartStore.Admin.Controllers
 			var provider = _paymentService.LoadPaymentMethodBySystemName(systemName);
 			var paymentMethod = _paymentService.GetPaymentMethodBySystemName(systemName);
 
-			var model = _pluginMediator.ToProviderModel<IPaymentMethod, PaymentMethodEditModel>(provider, true);
+			var model = new PaymentMethodEditModel();
+			var providerModel = _pluginMediator.ToProviderModel<IPaymentMethod, ProviderModel>(provider, true);
+
+			model.SystemName = providerModel.SystemName;
+			model.IconUrl = providerModel.IconUrl;
+			model.FriendlyName = providerModel.FriendlyName;
+			model.Description = providerModel.Description;
 
 			AddLocales(_languageService, model.Locales, (locale, languageId) =>
 			{
 				locale.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata, languageId, false);
 				locale.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata, languageId, false);
+
+				if (paymentMethod != null)
+				{
+					locale.FullDescription = paymentMethod.GetLocalized(x => x.FullDescription, languageId, false, false);
+				}
 			});
 
 			PreparePaymentMethodEditModel(model, paymentMethod);
@@ -191,12 +208,6 @@ namespace SmartStore.Admin.Controllers
 			_pluginMediator.SetSetting(provider.Metadata, "FriendlyName", model.FriendlyName);
 			_pluginMediator.SetSetting(provider.Metadata, "Description", model.Description);
 
-			foreach (var localized in model.Locales)
-			{
-				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "FriendlyName", localized.FriendlyName);
-				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "Description", localized.Description);
-			}
-
 			var paymentMethod = _paymentService.GetPaymentMethodBySystemName(systemName);
 
 			if (paymentMethod == null)
@@ -212,10 +223,20 @@ namespace SmartStore.Admin.Controllers
 			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
 			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
 
+			paymentMethod.FullDescription = model.FullDescription;
+
 			if (paymentMethod.Id == 0)
 				_paymentService.InsertPaymentMethod(paymentMethod);
 			else
 				_paymentService.UpdatePaymentMethod(paymentMethod);
+
+			foreach (var localized in model.Locales)
+			{
+				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "FriendlyName", localized.FriendlyName);
+				_pluginMediator.SaveLocalizedValue(provider.Metadata, localized.LanguageId, "Description", localized.Description);
+
+				_localizedEntityService.SaveLocalizedValue(paymentMethod, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
+			}
 
 			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataEditSuccess"));
 

@@ -443,9 +443,7 @@ namespace SmartStore.Web.Controllers
 			{
 				foreach (var attribute in variantAttributes)
 				{
-					int preSelectedValueId = 0;
-
-					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
+					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel
 					{
 						Id = attribute.Id,
 						ProductId = attribute.ProductId,
@@ -470,76 +468,74 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
-					if (attribute.ShouldHaveValues())
+					int preSelectedValueId = 0;
+					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
+
+					foreach (var pvaValue in pvaValues)
 					{
-						var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
+						ProductBundleItemAttributeFilter attributeFilter = null;
 
-						foreach (var pvaValue in pvaValues)
+						if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
+							continue;
+
+						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+							preSelectedValueId = attributeFilter.AttributeValueId;
+
+						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+
+						var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
+						pvaValueModel.Id = pvaValue.Id;
+						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
+						pvaValueModel.Alias = pvaValue.Alias;
+						pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
+						pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
+
+						if (linkedProduct != null && linkedProduct.VisibleIndividually)
+							pvaValueModel.SeName = linkedProduct.GetSeName();
+
+						if (hasSelectedAttributes)
+							pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
+
+						// display price if allowed
+						if (displayPrices && !isBundlePricing)
 						{
-							ProductBundleItemAttributeFilter attributeFilter = null;
+							decimal taxRate = decimal.Zero;
+							decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
+							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
 
-							if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
-								continue;
+							if (priceAdjustmentBase > decimal.Zero)
+								pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
+							else if (priceAdjustmentBase < decimal.Zero)
+								pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
 
-							if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-								preSelectedValueId = attributeFilter.AttributeValueId;
-
-							var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
-
-							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
-							pvaValueModel.Id = pvaValue.Id;
-							pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
-							pvaValueModel.Alias = pvaValue.Alias;
-							pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
-							pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
-
-							if (linkedProduct != null && linkedProduct.VisibleIndividually)
-								pvaValueModel.SeName = linkedProduct.GetSeName();
-
-							if (hasSelectedAttributes)
-								pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
-
-							// display price if allowed
-							if (displayPrices && !isBundlePricing)
+							if (pvaValueModel.IsPreSelected)
 							{
-								decimal taxRate = decimal.Zero;
-								decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-								decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
-
-								if (priceAdjustmentBase > decimal.Zero)
-									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
-								else if (priceAdjustmentBase < decimal.Zero)
-									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
-
-								if (pvaValueModel.IsPreSelected)
-								{
-									preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-									preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
-								}
-
-								if (_catalogSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
-								{
-									pvaValueModel.QuantityInfo = pvaValue.Quantity;
-								}
-
-								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
+								preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
+								preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
 							}
 
-							if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							if (_catalogSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
 							{
-								pvaValueModel.PriceAdjustment = "";
+								pvaValueModel.QuantityInfo = pvaValue.Quantity;
 							}
 
-							if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
-							{
-								var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
-								if (linkagePicture != null)
-									pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
-							}
-
-							pvaModel.Values.Add(pvaValueModel);
+							pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 						}
+
+						if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+						{
+							pvaValueModel.PriceAdjustment = "";
+						}
+
+						if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+						{
+							var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
+							if (linkagePicture != null)
+								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
+						}
+
+						pvaModel.Values.Add(pvaValueModel);
 					}
 
 					// we need selected attributes to get initially displayed combination images
@@ -552,14 +548,25 @@ namespace SmartStore.Web.Controllers
 							pvaModel.Values.Each(x => x.IsPreSelected = false);
 
 							if ((defaultValue = pvaModel.Values.FirstOrDefault(v => v.Id == preSelectedValueId)) != null)
+							{
 								defaultValue.IsPreSelected = true;
+								selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+							}
 						}
 
 						if (defaultValue == null)
-							defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+						{
+							foreach (var value in pvaModel.Values.Where(x => x.IsPreSelected))
+							{
+								selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, value.Id, product.Id, bundleItemId);
+							}
+						}
 
-						if (defaultValue != null)
-							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+						//if (defaultValue == null)
+						//	defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+
+						//if (defaultValue != null)
+						//	selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 					}
 
 					model.ProductVariantAttributes.Add(pvaModel);
@@ -591,7 +598,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					model.CombinationSelected = model.Combinations
-						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
+						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, variantAttributes));
 
 					if (model.CombinationSelected != null && model.CombinationSelected.IsActive == false)
 					{
@@ -985,14 +992,18 @@ namespace SmartStore.Web.Controllers
 				throw new ArgumentNullException("products");
 
 			// PERF!!
+			var currentStore = _services.StoreContext.CurrentStore;
+			var currentCustomer = _services.WorkContext.CurrentCustomer;
+			var workingCurrency = _services.WorkContext.WorkingCurrency;
 			var displayPrices = _services.Permissions.Authorize(StandardPermissionProvider.DisplayPrices);
 			var enableShoppingCart = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart);
 			var enableWishlist = _services.Permissions.Authorize(StandardPermissionProvider.EnableWishlist);
-			var currentCustomer = _services.WorkContext.CurrentCustomer;
-			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(currentCustomer, _services.StoreContext.CurrentStore.Id);
+			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(currentCustomer, currentStore.Id);
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
 			var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
+			PriceCalculationContext priceCalculationContext = null;
+
 			var res = new Dictionary<string, LocalizedString>(StringComparer.OrdinalIgnoreCase)
 			{
 				{ "Products.CallForPrice", T("Products.CallForPrice") },
@@ -1004,14 +1015,13 @@ namespace SmartStore.Web.Controllers
 				{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
 			};
 
-			int[] productIds = products.Select(x => x.Id).ToArray();
-			IList<int> productIdsWithPriceAdjustments = null;
+			int[] productIds = products.Select(x => x.Id).ToArray();				
 
 			var models = new List<ProductOverviewModel>();
 
 			foreach (var product in products)
 			{
-				var minPriceProduct = product;
+				var contextProduct = product;
 
 				var model = new ProductOverviewModel
 				{
@@ -1026,181 +1036,156 @@ namespace SmartStore.Web.Controllers
 				{
 					#region Prepare product price
 
+					if (priceCalculationContext == null)
+						priceCalculationContext = _priceCalculationService.CreatePriceCalculationContext(productIds);
+
 					var priceModel = new ProductOverviewModel.ProductPriceModel
 					{
 						ForceRedirectionAfterAddingToCart = forceRedirectionAfterAddingToCart,
 						ShowDiscountSign = _catalogSettings.ShowDiscountSign
 					};
 
-					switch (product.ProductType)
+					if (product.ProductType == ProductType.GroupedProduct)
 					{
-						case ProductType.GroupedProduct:
+						#region Grouped product
+
+						priceModel.DisableBuyButton = true;
+						priceModel.DisableWishListButton = true;
+						priceModel.AvailableForPreOrder = false;
+
+						var searchContext = new ProductSearchContext
+						{
+							StoreId = currentStore.Id,
+							ParentGroupedProductId = product.Id,
+							PageSize = (_catalogSettings.PriceDisplayType == PriceDisplayType.LowestPrice ? int.MaxValue : 1),
+							VisibleIndividuallyOnly = false
+						};
+
+						var associatedProducts = _productService.SearchProducts(searchContext);
+
+						if (associatedProducts.Count > 0)
+						{
+							contextProduct = associatedProducts.First();
+
+							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
-								#region Grouped product
+								decimal? displayPrice = null;
 
-								var searchContext = new ProductSearchContext
+								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									StoreId = _services.StoreContext.CurrentStore.Id,
-									ParentGroupedProductId = product.Id,
-									PageSize = int.MaxValue,
-									VisibleIndividuallyOnly = false
-								};
-
-								var associatedProducts = _productService.SearchProducts(searchContext);
-
-								if (associatedProducts.Count <= 0)
+									displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, null);
+								}
+								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 								{
-									priceModel.OldPrice = null;
-									priceModel.Price = null;
-									priceModel.DisableBuyButton = true;
-									priceModel.DisableWishListButton = true;
-									priceModel.AvailableForPreOrder = false;
+									displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, currentCustomer, decimal.Zero, false, 1, null);
 								}
 								else
 								{
-									priceModel.DisableBuyButton = true;
-									priceModel.DisableWishListButton = true;
-									priceModel.AvailableForPreOrder = false;
+									displayPrice = _priceCalculationService.GetLowestPrice(product, associatedProducts, out contextProduct);
+								}	
 
-									if (displayPrices)
+								if (contextProduct != null && !contextProduct.CustomerEntersPrice)
+								{
+									if (contextProduct.CallForPrice)
 									{
-										decimal? minPossiblePrice = _priceCalculationService.GetLowestPrice(product, associatedProducts, out minPriceProduct);
+										priceModel.OldPrice = null;
+										priceModel.Price = res["Products.CallForPrice"];
+									}
+									else if (displayPrice.HasValue)
+									{
+										//calculate prices
+										decimal taxRate = decimal.Zero;
+										decimal oldPriceBase = _taxService.GetProductPrice(contextProduct, contextProduct.OldPrice, out taxRate);
+										decimal finalPriceBase = _taxService.GetProductPrice(contextProduct, displayPrice.Value, out taxRate);
+										decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
-										if (minPriceProduct != null && !minPriceProduct.CustomerEntersPrice)
-										{
-											if (minPriceProduct.CallForPrice)
-											{
-												priceModel.OldPrice = null;
-												priceModel.Price = res["Products.CallForPrice"];
-											}
-											else if (minPossiblePrice.HasValue)
-											{
-												//calculate prices
-												decimal taxRate = decimal.Zero;
-												decimal oldPriceBase = _taxService.GetProductPrice(minPriceProduct, minPriceProduct.OldPrice, out taxRate);
-												decimal finalPriceBase = _taxService.GetProductPrice(minPriceProduct, minPossiblePrice.Value, out taxRate);
-												decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, _services.WorkContext.WorkingCurrency);
-
-												priceModel.OldPrice = null;
-												priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
-												priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero;
-											}
-											else
-											{
-												//Actually it's not possible (we presume that minimalPrice always has a value)
-												//We never should get here
-												Debug.WriteLine(string.Format("Cannot calculate minPrice for product #{0}", product.Id));
-											}
-										}
+										priceModel.OldPrice = null;
+										priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+										priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero;
 									}
 									else
 									{
-										//hide prices
-										priceModel.OldPrice = null;
-										priceModel.Price = null;
+										// Actually it's not possible (we presume that displayPrice always has a value). We never should get here
+										Debug.WriteLine(string.Format("Cannot calculate displayPrice for product #{0}", product.Id));
 									}
 								}
-
-								#endregion
 							}
-							break;
-						case ProductType.SimpleProduct:
-						default:
+						}
+
+						#endregion
+					}
+					else
+					{
+						#region Simple product
+
+						//add to cart button
+						priceModel.DisableBuyButton = product.DisableBuyButton || !enableShoppingCart || !displayPrices;
+
+						//add to wishlist button
+						priceModel.DisableWishListButton = product.DisableWishlistButton || !enableWishlist || !displayPrices;
+
+						//pre-order
+						priceModel.AvailableForPreOrder = product.AvailableForPreOrder;
+
+						//prices
+						if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide && !product.CustomerEntersPrice)
+						{
+							if (product.CallForPrice)
 							{
-								#region Simple product
+								//call for price
+								priceModel.OldPrice = null;
+								priceModel.Price = res["Products.CallForPrice"];
+							}
+							else
+							{
+								//calculate prices
+								bool displayFromMessage = false;
+								decimal displayPrice = decimal.Zero;
 
-								//add to cart button
-								priceModel.DisableBuyButton = product.DisableBuyButton || !enableShoppingCart || !displayPrices;
-
-								//add to wishlist button
-								priceModel.DisableWishListButton = product.DisableWishlistButton || !enableWishlist || !displayPrices;
-
-								//pre-order
-								priceModel.AvailableForPreOrder = product.AvailableForPreOrder;
-
-								//prices
-								if (displayPrices)
+								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									if (!product.CustomerEntersPrice)
-									{
-										if (product.CallForPrice)
-										{
-											//call for price
-											priceModel.OldPrice = null;
-											priceModel.Price = res["Products.CallForPrice"];
-										}
-										else
-										{
-											//calculate prices
-											bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
-
-											bool displayFromMessage = false;
-											decimal minPossiblePrice = _priceCalculationService.GetLowestPrice(product, out displayFromMessage);
-
-											if (!displayFromMessage)
-											{
-												if (productIdsWithPriceAdjustments == null)
-													productIdsWithPriceAdjustments = _productAttributeService.GetProductIdsWithPriceAdjustments(productIds);
-
-												displayFromMessage = productIdsWithPriceAdjustments.Contains(product.Id);
-											}
-
-											decimal taxRate = decimal.Zero;
-											decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
-											decimal finalPriceBase = _taxService.GetProductPrice(product, minPossiblePrice, out taxRate);
-
-											decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, _services.WorkContext.WorkingCurrency);
-											decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, _services.WorkContext.WorkingCurrency);
-
-											priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
-
-											// check tier prices
-											if (product.HasTierPrices && !isBundlePerItemPricing && !displayFromMessage)
-											{
-												var tierPrices = new List<TierPrice>();
-
-												tierPrices.AddRange(product.TierPrices
-													.OrderBy(tp => tp.Quantity)
-													.FilterByStore(_services.StoreContext.CurrentStore.Id)
-													.FilterForCustomer(_services.WorkContext.CurrentCustomer)
-													.ToList()
-													.RemoveDuplicatedQuantities());
-
-												// When there is just one tier (with  qty 1), there are no actual savings in the list.
-												displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices[0].Quantity <= 1));
-											}
-
-											if (displayFromMessage)
-											{
-												priceModel.OldPrice = null;
-												priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
-											}
-											else
-											{
-												if (priceModel.HasDiscount)
-												{
-													priceModel.OldPrice = _priceFormatter.FormatPrice(oldPrice);
-													priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
-												}
-												else
-												{
-													priceModel.OldPrice = null;
-													priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
-												}
-											}
-										}
-									}
+									displayPrice = _priceCalculationService.GetPreselectedPrice(product, priceCalculationContext);
+								}
+								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+								{
+									displayPrice = _priceCalculationService.GetFinalPrice(product, null, currentCustomer, decimal.Zero, false, 1, null);
 								}
 								else
 								{
-									//hide prices
-									priceModel.OldPrice = null;
-									priceModel.Price = null;
+									displayPrice = _priceCalculationService.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
 								}
 
-								#endregion
+								decimal taxRate = decimal.Zero;
+								decimal oldPriceBase = _taxService.GetProductPrice(product, product.OldPrice, out taxRate);
+								decimal finalPriceBase = _taxService.GetProductPrice(product, displayPrice, out taxRate);
+
+								decimal oldPrice = _currencyService.ConvertFromPrimaryStoreCurrency(oldPriceBase, workingCurrency);
+								decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
+
+								priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
+
+								if (displayFromMessage)
+								{
+									priceModel.OldPrice = null;
+									priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+								}
+								else
+								{
+									if (priceModel.HasDiscount)
+									{
+										priceModel.OldPrice = _priceFormatter.FormatPrice(oldPrice);
+										priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+									}
+									else
+									{
+										priceModel.OldPrice = null;
+										priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+									}
+								}
 							}
-							break;
+						}
+
+						#endregion
 					}
 
 					model.ProductPrice = priceModel;
@@ -1219,7 +1204,7 @@ namespace SmartStore.Web.Controllers
 
 					//prepare picture model
 					var defaultProductPictureCacheKey = string.Format(ModelCacheEventConsumer.PRODUCT_DEFAULTPICTURE_MODEL_KEY, product.Id, pictureSize, true,
-						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), _services.StoreContext.CurrentStore.Id);
+						_services.WorkContext.WorkingLanguage.Id, _services.WebHelper.IsCurrentConnectionSecured(), currentStore.Id);
 
 					model.DefaultPictureModel = _services.Cache.Get(defaultProductPictureCacheKey, () =>
 					{
@@ -1243,15 +1228,15 @@ namespace SmartStore.Web.Controllers
 					model.SpecificationAttributeModels = PrepareProductSpecificationModel(product);
 				}
 				
-				model.MinPriceProductId = minPriceProduct.Id;
+				model.MinPriceProductId = contextProduct.Id;
 				model.ShowSku = _catalogSettings.ShowProductSku;
 				model.ShowWeight = _catalogSettings.ShowWeight;
 				model.ShowDimensions = _catalogSettings.ShowDimensions;
-				model.Sku = minPriceProduct.Sku;
+				model.Sku = contextProduct.Sku;
 				model.Dimensions = res["Products.DimensionsValue"].Text.FormatCurrent(
-					minPriceProduct.Width.ToString("F2"),
-					minPriceProduct.Height.ToString("F2"),
-					minPriceProduct.Length.ToString("F2")
+					contextProduct.Width.ToString("F2"),
+					contextProduct.Height.ToString("F2"),
+					contextProduct.Length.ToString("F2")
 				);
                 model.DimensionMeasureUnit = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 				model.ThumbDimension = _mediaSettings.ProductThumbPictureSize;
@@ -1263,9 +1248,9 @@ namespace SmartStore.Web.Controllers
 				model.ShowDeliveryTimes = _catalogSettings.ShowDeliveryTimesInProductLists;
 				model.InvisibleDeliveryTime = (product.ProductType == ProductType.GroupedProduct);
 
-				model.IsShipEnabled = minPriceProduct.IsShipEnabled;
-				model.DisplayDeliveryTimeAccordingToStock = minPriceProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
-				model.StockAvailablity = minPriceProduct.FormatStockMessage(_localizationService);
+				model.IsShipEnabled = contextProduct.IsShipEnabled;
+				model.DisplayDeliveryTimeAccordingToStock = contextProduct.DisplayDeliveryTimeAccordingToStock(_catalogSettings);
+				model.StockAvailablity = contextProduct.FormatStockMessage(_localizationService);
 
 				model.DisplayBasePrice = _catalogSettings.ShowBasePriceInProductLists;
 				model.CompareEnabled = _catalogSettings.CompareProductsEnabled;
@@ -1273,7 +1258,7 @@ namespace SmartStore.Web.Controllers
 
 				if (model.ShowDeliveryTimes)
 				{
-					var deliveryTime = _deliveryTimeService.GetDeliveryTime(minPriceProduct);
+					var deliveryTime = _deliveryTimeService.GetDeliveryTime(contextProduct);
 					if (deliveryTime != null)
 					{
 						model.DeliveryTimeName = deliveryTime.GetLocalized(x => x.Name);
@@ -1288,20 +1273,19 @@ namespace SmartStore.Web.Controllers
 
 				if (_catalogSettings.ShowBasePriceInProductLists)
 				{
-					model.BasePriceInfo = minPriceProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
+					model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
 				}
 
-				var addShippingPrice = _currencyService.ConvertCurrency(minPriceProduct.AdditionalShippingCharge,
-					_services.StoreContext.CurrentStore.PrimaryStoreCurrency, _services.WorkContext.WorkingCurrency);
+				var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);
 
 				if (addShippingPrice > 0 && displayPrices)
 				{
 					model.TransportSurcharge = res["Common.AdditionalShippingSurcharge"].Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false));
 				}
 
-				if (minPriceProduct.Weight > 0)
+				if (contextProduct.Weight > 0)
 				{
-					model.Weight = "{0} {1}".FormatCurrent(minPriceProduct.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name);
+					model.Weight = "{0} {1}".FormatCurrent(contextProduct.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name);
 				}
 
 				// IsNew

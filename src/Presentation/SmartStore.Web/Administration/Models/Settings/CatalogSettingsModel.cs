@@ -115,6 +115,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions")]
         public string DefaultPageSizeOptions { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.PriceDisplayType")]
+		public PriceDisplayType PriceDisplayType { get; set; }
+		public SelectList AvailablePriceDisplayTypes { get; set; }
+
         #endregion
 
         #region Products

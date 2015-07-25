@@ -548,7 +548,7 @@ namespace SmartStore.Services.Orders
 			{
 				var combination = product
 					.ProductVariantAttributeCombinations
-					.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
+					.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes, pva1Collection));
 
 				if (combination != null && !combination.IsActive)
 				{

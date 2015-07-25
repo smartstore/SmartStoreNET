@@ -12,6 +12,13 @@ namespace SmartStore.Services.Catalog
     public partial interface IPriceCalculationService
     {
 		/// <summary>
+		/// Creates a price calculation context
+		/// </summary>
+		/// <param name="productIds">Product identifieres. <c>null</c> to lazy load data if required.</param>
+		/// <returns></returns>
+		PriceCalculationContext CreatePriceCalculationContext(IEnumerable<int> productIds = null);
+
+		/// <summary>
 		/// Get product special price (is valid)
 		/// </summary>
 		/// <param name="product">Product</param>
@@ -78,16 +85,17 @@ namespace SmartStore.Services.Catalog
 		/// <param name="quantity">Shopping cart item quantity</param>
 		/// <param name="bundleItem">A product bundle item</param>
 		/// <returns>Final price</returns>
-		decimal GetFinalPrice(Product product, IList<ProductBundleItemData> bundleItems,
+		decimal GetFinalPrice(Product product, IEnumerable<ProductBundleItemData> bundleItems,
 			Customer customer, decimal additionalCharge, bool includeDiscounts, int quantity, ProductBundleItemData bundleItem = null);
 
 		/// <summary>
 		/// Get the lowest possible price for a product.
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="displayFromMessage">Whether to display the from message.</param>
 		/// <returns>The lowest price.</returns>
-		decimal GetLowestPrice(Product product, out bool displayFromMessage);
+		decimal GetLowestPrice(Product product, PriceCalculationContext context, out bool displayFromMessage);
 
 		/// <summary>
 		/// Get the lowest price of a grouped product.
@@ -102,8 +110,9 @@ namespace SmartStore.Services.Catalog
 		/// Get the initial price including preselected attributes
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Preselected price</returns>
-		decimal GetPreselectedPrice(Product product);
+		decimal GetPreselectedPrice(Product product, PriceCalculationContext context);
 
 		/// <summary>
 		/// Gets the product cost

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
@@ -152,7 +153,7 @@ namespace SmartStore.Services.Catalog
             return previousPrice;
         }
 
-		protected virtual decimal GetPreselectedPrice(Product product, ProductBundleItemData bundleItem, IList<ProductBundleItemData> bundleItems)
+		protected virtual decimal GetPreselectedPrice(Product product, PriceCalculationContext context, ProductBundleItemData bundleItem, IEnumerable<ProductBundleItemData> bundleItems)
 		{
 			var taxRate = decimal.Zero;
 			var attributesTotalPriceBase = decimal.Zero;
@@ -161,73 +162,83 @@ namespace SmartStore.Services.Catalog
 			var isBundleItemPricing = (bundleItem != null && bundleItem.Item.BundleProduct.BundlePerItemPricing);
 			var isBundlePricing = (bundleItem != null && !bundleItem.Item.BundleProduct.BundlePerItemPricing);
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
-			var attributes = (isBundle ? new List<ProductVariantAttribute>() : _productAttributeService.GetProductVariantAttributesByProductId(product.Id));
-			var selectedAttributes = new NameValueCollection();
-			List<ProductVariantAttributeValue> selectedAttributeValues = null;
 
-			foreach (var attribute in attributes)
+			var selectedAttributes = new NameValueCollection();
+			var selectedAttributeValues = new List<ProductVariantAttributeValue>();
+			var attributes = context.Attributes.Ensure(product.Id);
+
+			// 1. fill selectedAttributes with initially selected attributes
+			foreach (var attribute in attributes.Where(x => x.ProductVariantAttributeValues.Count > 0 && x.ShouldHaveValues()))
 			{
 				int preSelectedValueId = 0;
 				ProductVariantAttributeValue defaultValue = null;
-
-				if (attribute.ShouldHaveValues())
+				var selectedValueIds = new List<int>();
+				var pvaValues = attribute.ProductVariantAttributeValues;
+					
+				foreach (var pvaValue in pvaValues)
 				{
-					var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
-					if (pvaValues.Count == 0)
+					ProductBundleItemAttributeFilter attributeFilter = null;
+
+					if (bundleItem.FilterOut(pvaValue, out attributeFilter))
 						continue;
 
-					foreach (var pvaValue in pvaValues)
+					if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+						preSelectedValueId = attributeFilter.AttributeValueId;
+
+					if (!isBundlePricing && pvaValue.IsPreSelected)
 					{
-						ProductBundleItemAttributeFilter attributeFilter = null;
+						decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+						decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
 
-						if (bundleItem.FilterOut(pvaValue, out attributeFilter))
-							continue;
-
-						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-							preSelectedValueId = attributeFilter.AttributeValueId;
-
-						if (!isBundlePricing && pvaValue.IsPreSelected)
-						{
-							decimal attributeValuePriceAdjustment = GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-
-							preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-						}
+						preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
 					}
+				}
 
-					// value pre-selected by a bundle item filter discards the default pre-selection
-					if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
-						defaultValue.IsPreSelected = true;
+				//if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
+				//	defaultValue.IsPreSelected = true;
 
-					if (defaultValue == null)
-						defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
+				//if (defaultValue == null)
+				//	defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
 
-					if (defaultValue == null && attribute.IsRequired)
-						defaultValue = pvaValues.First();
+				//if (defaultValue != null)
+				//	selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 
-					if (defaultValue != null)
-						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+				// value pre-selected by a bundle item filter discards the default pre-selection
+				if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
+				{
+					//defaultValue.IsPreSelected = true;
+					selectedAttributeValues.Add(defaultValue);
+					selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+				}
+				else
+				{
+					foreach (var value in pvaValues.Where(x => x.IsPreSelected))
+					{
+						selectedAttributeValues.Add(value);
+						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, value.Id, product.Id, bundleItemId);
+					}
 				}
 			}
 
+			// 2. find attribute combination for selected attributes and merge it
 			if (!isBundle && selectedAttributes.Count > 0)
 			{
 				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
-				selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
+				var combinations = context.AttributeCombinations.Ensure(product.Id);
 
-				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id);
+				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, attributes));
 
-				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
-
-				if (selectedCombination != null && selectedCombination.IsActive)
-					product.MergeWithCombination(selectedCombination);
+				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
+				{
+					product.MergedDataValues = new Dictionary<string, object> { { "Price", selectedCombination.Price.Value } };
+				}
 			}
 
 			if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
 			{
-				if (selectedAttributeValues != null)
+				if (selectedAttributeValues.Count > 0)
 				{
 					selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x));
 				}
@@ -244,6 +255,33 @@ namespace SmartStore.Services.Catalog
 
 			var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
 			return result;
+		}
+
+		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<int> productIds = null)
+		{
+			var context = new PriceCalculationContext();
+
+			if (_catalogSettings.PriceDisplayType == PriceDisplayType.Hide || _catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+				return context;
+
+			context.Attributes = new LazyMultimap<ProductVariantAttribute>(x => 
+			{
+				"load {0}".FormatInvariant(string.Join(";", x)).Dump();
+						
+				var result = _productAttributeService.GetProductVariantAttributesByProductIds(x, null);
+				return result;
+			}, productIds);
+
+			if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
+			{
+				context.AttributeCombinations = new LazyMultimap<ProductVariantAttributeCombination>(x =>
+				{
+					var result = _productAttributeService.GetProductVariantAttributeCombinations(x);
+					return result;
+				}, productIds);
+			}
+
+			return context;
 		}
 
         #endregion
@@ -387,7 +425,7 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Final price</returns>
 		public virtual decimal GetFinalPrice(
 			Product product, 
-			IList<ProductBundleItemData> bundleItems,
+			IEnumerable<ProductBundleItemData> bundleItems,
 			Customer customer, 
 			decimal additionalCharge, 
 			bool includeDiscounts, 
@@ -415,9 +453,10 @@ namespace SmartStore.Services.Catalog
 		/// Get the lowest possible price for a product.
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <param name="displayFromMessage">Whether to display the from message.</param>
 		/// <returns>The lowest price.</returns>
-		public virtual decimal GetLowestPrice(Product product, out bool displayFromMessage)
+		public virtual decimal GetLowestPrice(Product product, PriceCalculationContext context, out bool displayFromMessage)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -425,38 +464,16 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType == ProductType.GroupedProduct)
 				throw Error.InvalidOperation("Choose the other override for products of type grouped product.");
 
-			displayFromMessage = false;
+			if (context == null)
+				context = CreatePriceCalculationContext(null);
 
-			IList<ProductBundleItemData> bundleItems = null;
 			bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
-			if (isBundlePerItemPricing)
-			{
-				bundleItems = _productService.GetBundleItems(product.Id);
+			displayFromMessage = isBundlePerItemPricing;
 
-				// sepcial case: one bundle item with one attribute and one attribute value and one attribute combination
-				if (bundleItems.Count == 1)
-				{
-					var firstBundleItem = bundleItems.First();
-					if (firstBundleItem.Item.Product.ProductVariantAttributes.Count == 1)
-					{
-						var firstAttribute = firstBundleItem.Item.Product.ProductVariantAttributes.First();
-						if (firstAttribute.ProductVariantAttributeValues.Count == 1)
-						{
-							var firstAttributeValue = firstAttribute.ProductVariantAttributeValues.First();
-							firstBundleItem.AdditionalCharge = firstAttributeValue.PriceAdjustment;
+			// TODO(?): attribute price adjustments were not regarded here cause of performance
 
-							var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(firstBundleItem.Item.ProductId);
-							if (combinations.Count == 1)
-							{
-								firstBundleItem.Item.Product.MergeWithCombination(combinations.First());
-							}
-						}
-					}
-				}
-			}
-
-			decimal lowestPrice = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+			decimal lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
 
 			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
 			{
@@ -467,6 +484,24 @@ namespace SmartStore.Services.Catalog
 			if (lowestPrice == decimal.Zero && product.Price == decimal.Zero)
 			{
 				lowestPrice = product.LowestAttributeCombinationPrice ?? decimal.Zero;
+			}
+
+			if (!displayFromMessage && product.ProductType != ProductType.BundledProduct)
+			{
+				var attributes = context.Attributes.Ensure(product.Id);
+				displayFromMessage = attributes.Any(x => x.ProductVariantAttributeValues.Any(y => y.PriceAdjustment != decimal.Zero));
+			}
+
+			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
+			{
+				var tierPrices = product.TierPrices
+					.OrderBy(tp => tp.Quantity)
+					.FilterByStore(_services.StoreContext.CurrentStore.Id)
+					.FilterForCustomer(_services.WorkContext.CurrentCustomer)
+					.ToList()
+					.RemoveDuplicatedQuantities();
+
+				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
 			}
 
 			return lowestPrice;
@@ -490,7 +525,7 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType != ProductType.GroupedProduct)
 				throw Error.InvalidOperation("Choose the other override for products not of type grouped product.");
 
-			lowestPriceProduct = product;
+			lowestPriceProduct = null;
 			decimal? lowestPrice = null;
 
 			foreach (var associatedProduct in associatedProducts)
@@ -508,6 +543,10 @@ namespace SmartStore.Services.Catalog
 					lowestPriceProduct = associatedProduct;
 				}
 			}
+
+			if (lowestPriceProduct == null)
+				lowestPriceProduct = associatedProducts.FirstOrDefault();
+
 			return lowestPrice;
 		}
 
@@ -515,8 +554,9 @@ namespace SmartStore.Services.Catalog
 		/// Get the initial price including preselected attributes
 		/// </summary>
 		/// <param name="product">Product</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Preselected price</returns>
-		public virtual decimal GetPreselectedPrice(Product product)
+		public virtual decimal GetPreselectedPrice(Product product, PriceCalculationContext context)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -527,20 +567,29 @@ namespace SmartStore.Services.Catalog
 			{
 				var bundleItems = _productService.GetBundleItems(product.Id);
 
+				var ids = bundleItems.Select(x => x.Item.ProductId).ToList();
+				ids.Add(product.Id);
+				var bundleContext = CreatePriceCalculationContext(ids);
+
 				foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					// fetch bundleItems.AdditionalCharge for all bundle items
-					var unused = GetPreselectedPrice(bundleItem.Item.Product, bundleItem, bundleItems);
+					var unused = GetPreselectedPrice(bundleItem.Item.Product, bundleContext, bundleItem, bundleItems);
 				}
 
-				result = GetPreselectedPrice(product, null, bundleItems);
+				result = GetPreselectedPrice(product, bundleContext, null, bundleItems);
 			}
 			else
 			{
-				result = GetPreselectedPrice(product, null, null);
+				if (context == null)
+					context = CreatePriceCalculationContext(null);
+
+				result = GetPreselectedPrice(product, context, null, null);
 			}
+
 			return result;
 		}
+
 
 		/// <summary>
 		/// Gets the product cost

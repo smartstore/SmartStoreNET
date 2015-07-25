@@ -39,6 +39,28 @@ namespace SmartStore.Data.Migrations
 				"Langtext",
 				"Specifies a full description of the payment method. It appears in the payment list in checkout.",
 				"Legt eine vollständige Beschreibung der Zahlungsmethode fest. Sie erscheint in der Zahlungsliste im Kassenbereich.");
+
+			builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.PriceDisplayType",
+				"Price display",
+				"Preisanzeige",
+				"Specifies whether or what type of price to be displayed in product lists.",
+				"Legt fest, ob bzw. welcher Typ von Preis in Produktlisten angezeigt werden soll.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.LowestPrice",
+				"Minimum feasible price",
+				"Minimal realisierbarer Preis");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.PreSelectedPrice",
+				"Price preselected on detail page",
+				"Auf der Detailseite vorgewählter Preis");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.PriceWithoutDiscountsAndAttributes",
+				"Price without discounts and attributes",
+				"Preis ohne Rabatte und Attribute");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.Hide",
+				"No price indication",
+				"Keine Preisanzeige");
 		}
     }
 }

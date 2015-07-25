@@ -59,7 +59,7 @@ namespace SmartStore
 		/// <param name="formatWithProductId">how the name of the controls are formatted. frontend includes productId, backend does not.</param>
 		public static string CreateSelectedAttributesXml(this NameValueCollection collection, 
 			int productId, 
-			IList<ProductVariantAttribute> variantAttributes,
+			IEnumerable<ProductVariantAttribute> variantAttributes,
 			IProductAttributeParser productAttributeParser, 
 			ILocalizationService localizationService, 
 			IDownloadService downloadService, 
@@ -67,6 +67,9 @@ namespace SmartStore
 			HttpRequestBase request, List<string> warnings, 
 			bool formatWithProductId = true, 
 			int bundleItemId = 0)
+		public static string CreateSelectedAttributesXml(this NameValueCollection collection, int productId, IEnumerable<ProductVariantAttribute> variantAttributes,
+			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings,
+			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true, int bundleItemId = 0)
 		{
 			if (collection == null)
 				return "";

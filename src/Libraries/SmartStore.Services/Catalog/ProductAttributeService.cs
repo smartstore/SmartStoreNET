@@ -71,14 +71,36 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-		//// Autowired Dependency (is a proptery dependency to avoid circularity)
-		//public virtual IProductAttributeParser AttributeParser { get; set; }
+		#region Utilities
 
-        #region Methods
+		private IList<ProductVariantAttribute> GetSwitchedLoadedAttributeMappings(ICollection<int> productVariantAttributeIds)
+		{
+			if (productVariantAttributeIds != null && productVariantAttributeIds.Count > 0)
+			{
+				if (productVariantAttributeIds.Count == 1)
+				{
+					var pva = GetProductVariantAttributeById(productVariantAttributeIds.ElementAt(0));
+					if (pva != null)
+					{
+						return new List<ProductVariantAttribute> { pva };
+					}
+				}
+				else
+				{
+					return _productVariantAttributeRepository.GetMany(productVariantAttributeIds).ToList();
+				}
+			}
 
-        #region Product attributes
+			return new List<ProductVariantAttribute>();
+		}
 
-        public virtual void DeleteProductAttribute(ProductAttribute productAttribute)
+		#endregion
+
+		#region Methods
+
+		#region Product attributes
+
+		public virtual void DeleteProductAttribute(ProductAttribute productAttribute)
         {
             if (productAttribute == null)
                 throw new ArgumentNullException("productAttribute");
@@ -210,20 +232,43 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTVARIANTATTRIBUTES_BY_ID_KEY, productVariantAttributeId);
-            return _cacheManager.Get(key, () => { 
+
+            return _cacheManager.Get(key, () =>
+			{ 
                 return _productVariantAttributeRepository.GetById(productVariantAttributeId); 
             });
         }
 
-        public virtual IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids)
-        {
-            if (ids == null || ids.Length == 0)
-            {
-                return Enumerable.Empty<ProductVariantAttribute>();
-            }
+		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null)
+		{
+			if (productVariantAttributeIds != null)
+			{
+				if (attributes != null)
+				{
+					var ids = new List<int>();
+					var result = new List<ProductVariantAttribute>();
 
-            return _productVariantAttributeRepository.GetMany(ids);
-        }
+					foreach (var id in productVariantAttributeIds)
+					{
+						var pva = attributes.FirstOrDefault(x => x.Id == id);
+						if (pva == null)
+							ids.Add(id);
+						else
+							result.Add(pva);
+					}
+
+					var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
+
+					result.AddRange(newLoadedMappings);
+
+					return result;
+				}
+
+				return GetSwitchedLoadedAttributeMappings(productVariantAttributeIds.ToList());
+			}
+
+			return new List<ProductVariantAttribute>();
+		}
 
         public virtual IEnumerable<ProductVariantAttributeValue> GetProductVariantAttributeValuesByIds(params int[] productVariantAttributeValueIds)
         {
@@ -340,25 +385,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productVariantAttributeValue);
         }
 
-		public virtual IList<int> GetProductIdsWithPriceAdjustments(int[] productIds)
-		{
-			var queryMappings =
-				from m in _productVariantAttributeRepository.TableUntracked
-				where productIds.Contains(m.ProductId)
-				select new { m.Id, m.ProductId };
-		
-			var query = 
-				from v in _productVariantAttributeValueRepository.TableUntracked
-				join m in queryMappings on v.ProductVariantAttributeId equals m.Id
-				where v.PriceAdjustment != 0
-				group v by m.ProductId into grp
-				select grp.Key;
-
-			var result = query.ToList();
-
-			return result;
-		}
-
         #endregion
 
         #region Product variant attribute combinations (ProductVariantAttributeCombination)
@@ -403,6 +429,23 @@ namespace SmartStore.Services.Catalog
             var combinations = query.ToList();
             return combinations;
         }
+
+		public virtual Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pvac in _productVariantAttributeCombinationRepository.TableUntracked
+				where productIds.Contains(pvac.ProductId)
+				select pvac;
+
+			var map = query
+				.OrderBy(x => x.ProductId)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
 
 		public virtual decimal? GetLowestCombinationPrice(int productId)
 		{

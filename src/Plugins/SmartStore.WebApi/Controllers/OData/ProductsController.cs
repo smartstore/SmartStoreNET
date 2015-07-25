@@ -266,12 +266,12 @@ namespace SmartStore.WebApi.Controllers.OData
 					else
 					{
 						bool displayFromMessage;
-						result = _priceCalculationService.Value.GetLowestPrice(entity, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, out displayFromMessage);
 					}
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetPreselectedPrice(entity);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity, null);
 				}
 				return null;
 			});

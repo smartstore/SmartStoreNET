@@ -210,20 +210,36 @@ namespace SmartStore.Services.Catalog
                 return null;
 
             string key = string.Format(PRODUCTVARIANTATTRIBUTES_BY_ID_KEY, productVariantAttributeId);
-            return _cacheManager.Get(key, () => { 
+
+            return _cacheManager.Get(key, () =>
+			{ 
                 return _productVariantAttributeRepository.GetById(productVariantAttributeId); 
             });
         }
 
-        public virtual IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids)
-        {
-            if (ids == null || ids.Length == 0)
-            {
-                return Enumerable.Empty<ProductVariantAttribute>();
-            }
+		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null)
+		{
+			var result = new List<ProductVariantAttribute>();
 
-            return _productVariantAttributeRepository.GetMany(ids);
-        }
+			if (productVariantAttributeIds != null)
+			{
+				foreach (var id in productVariantAttributeIds)
+				{
+					ProductVariantAttribute pva = null;
+
+					if (attributes != null)
+						pva = attributes.FirstOrDefault(x => x.Id == id);
+
+					if (pva == null)
+						pva = GetProductVariantAttributeById(id);
+
+					if (pva != null)
+						result.Add(pva);
+				}
+			}
+
+			return result;
+		}
 
         public virtual IEnumerable<ProductVariantAttributeValue> GetProductVariantAttributeValuesByIds(params int[] productVariantAttributeValueIds)
         {
@@ -339,25 +355,6 @@ namespace SmartStore.Services.Catalog
             //event notification
             _eventPublisher.EntityUpdated(productVariantAttributeValue);
         }
-
-		public virtual IList<int> GetProductIdsWithPriceAdjustments(int[] productIds)
-		{
-			var queryMappings =
-				from m in _productVariantAttributeRepository.TableUntracked
-				where productIds.Contains(m.ProductId)
-				select new { m.Id, m.ProductId };
-		
-			var query = 
-				from v in _productVariantAttributeValueRepository.TableUntracked
-				join m in queryMappings on v.ProductVariantAttributeId equals m.Id
-				where v.PriceAdjustment != 0
-				group v by m.ProductId into grp
-				select grp.Key;
-
-			var result = query.ToList();
-
-			return result;
-		}
 
         #endregion
 

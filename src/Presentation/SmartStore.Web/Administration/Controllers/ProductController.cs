@@ -4280,7 +4280,7 @@ namespace SmartStore.Admin.Controllers
 
 			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 
-			if (null != _productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml))
+			if (null != _productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml, variantAttributes))
 			{
 				warnings.Add(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists"));
 			}
@@ -4411,7 +4411,7 @@ namespace SmartStore.Admin.Controllers
 			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
 				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, false);
 
-			bool exists = (null != _productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml));
+			bool exists = (null != _productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml, attributes));
 
 			if (!exists)
 			{

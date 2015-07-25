@@ -51,8 +51,8 @@ namespace SmartStore.Data.Migrations
 				"Minimal realisierbarer Preis");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.PreSelectedPrice",
-				"Preselected price",
-				"Vorgewählter Preis");
+				"Price preselected on detail page",
+				"Auf der Detailseite vorgewählter Preis");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Catalog.PriceDisplayType.PriceWithoutDiscountsAndAttributes",
 				"Price without discounts and attributes",

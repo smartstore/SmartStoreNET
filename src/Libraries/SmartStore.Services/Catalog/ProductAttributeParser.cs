@@ -1,12 +1,12 @@
 using System;
-using System.Linq;
 using System.Collections.Generic;
 using System.Diagnostics;
-using System.Xml;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Collections;
-using Newtonsoft.Json;
+using System.Linq;
 using System.Web;
+using System.Xml;
+using Newtonsoft.Json;
+using SmartStore.Collections;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
@@ -104,33 +104,9 @@ namespace SmartStore.Services.Catalog
         /// <returns>Selected product variant attributes</returns>
         public virtual IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributes)
         {
-            var pvaCollection = new List<ProductVariantAttribute>();
-
-            // codehint: sm-edit
             var ids = ParseProductVariantAttributeIds(attributes);
-            return this.ParseProductVariantAttributes(ids.ToList()).ToList();
-        }
 
-        public virtual IEnumerable<ProductVariantAttribute> ParseProductVariantAttributes(ICollection<int> ids)
-        {
-
-            if (ids != null)
-            {
-                if (ids.Count == 1)
-                {
-                    var pva = _productAttributeService.GetProductVariantAttributeById(ids.ElementAt(0));
-                    if (pva != null)
-                    {
-                        return new ProductVariantAttribute[] { pva };
-                    }
-                }
-                else
-                {
-                    return _productAttributeService.GetProductVariantAttributesByIds(ids.ToArray()).ToList();
-                }
-            }
-
-            return Enumerable.Empty<ProductVariantAttribute>();
+			return _productAttributeService.GetProductVariantAttributesByIds(ids);
         }
 
         /// <summary>
@@ -143,17 +119,20 @@ namespace SmartStore.Services.Catalog
             var pvaValues = Enumerable.Empty<ProductVariantAttributeValue>();
 
             var attrs = DeserializeProductVariantAttributes(attributes);
-            var pvaCollection = ParseProductVariantAttributes(attrs.Keys);
+            var pvaCollection = _productAttributeService.GetProductVariantAttributesByIds(attrs.Keys);
 
             foreach (var pva in pvaCollection)
             {
                 if (!pva.ShouldHaveValues())
                     continue;
 
-                var pvaValuesStr = attrs[pva.Id]; //ParseValues(attributes, pva.Id);
-                var ids = from id in pvaValuesStr
-                          where id.HasValue()
-                          select id.ToInt();
+                var pvaValuesStr = attrs[pva.Id];
+
+                var ids =
+					from id in pvaValuesStr
+					where id.HasValue()
+					select id.ToInt();
+
                 var values = _productAttributeService.GetProductVariantAttributeValuesByIds(ids.ToArray());
 
                 pvaValues = pvaValues.Concat(values);
@@ -218,82 +197,72 @@ namespace SmartStore.Services.Catalog
 			return pva.AddProductAttribute(attributes, value);
         }
 
-        /// <summary>
-        /// Are attributes equal
-        /// </summary>
-        /// <param name="attributes1">The attributes of the first product</param>
-        /// <param name="attributes2">The attributes of the second product</param>
-        /// <returns>Result</returns>
-        public virtual bool AreProductAttributesEqual(string attributes1, string attributes2)
+		public virtual bool AreProductAttributesEqual(string attributeXml1, string attributeXml2, IEnumerable<ProductVariantAttribute> attributes = null)
         {
-            var attrs1 = DeserializeProductVariantAttributes(attributes1);
-            var attrs2 = DeserializeProductVariantAttributes(attributes2);
+			if (attributeXml1.IsCaseInsensitiveEqual(attributeXml2))
+				return true;
 
-            if (attrs1.Count == attrs2.Count)
-            {
-                var pva1Collection = ParseProductVariantAttributes(attrs2.Keys);
-                var pva2Collection = ParseProductVariantAttributes(attrs1.Keys);
-                foreach (var pva1 in pva1Collection)
-                {
-                    foreach (var pva2 in pva2Collection)
-                    {
-                        if (pva1.Id == pva2.Id)
-                        {
-                            var pvaValues1Str = attrs2[pva1.Id]; // ParseValues(attributes2, pva1.Id);
-                            var pvaValues2Str = attrs1[pva2.Id]; // ParseValues(attributes1, pva2.Id);
-                            if (pvaValues1Str.Count == pvaValues2Str.Count)
-                            {
-                                foreach (string str1 in pvaValues1Str)
-                                {
-                                    bool hasAttribute = pvaValues2Str.Any(x => x.IsCaseInsensitiveEqual(str1));
-                                    if (!hasAttribute)
-                                    {
-                                        return false;
-                                    }
-                                }
-                            }
-                            else
-                            {
-                                return false;
-                            }
-                        }
-                    }
-                }
-            }
-            else
-            {
-                return false;
-            }
+            var attributes1 = DeserializeProductVariantAttributes(attributeXml1);
+            var attributes2 = DeserializeProductVariantAttributes(attributeXml2);
+
+			if (attributes1.Count != attributes2.Count)
+				return false;
+
+			IEnumerable<ProductVariantAttribute> pvaCollection1 = null;
+			IEnumerable<ProductVariantAttribute> pvaCollection2 = null;
+
+			pvaCollection1 = _productAttributeService.GetProductVariantAttributesByIds(attributes2.Keys, attributes);
+
+			if (attributes2.Keys.SequenceEqual(attributes1.Keys))	// often the case
+				pvaCollection2 = pvaCollection1;
+			else
+				pvaCollection2 = _productAttributeService.GetProductVariantAttributesByIds(attributes1.Keys, attributes);
+
+			foreach (var pva1 in pvaCollection1)
+			{
+				foreach (var pva2 in pvaCollection2)
+				{
+					if (pva1.Id == pva2.Id)
+					{
+						var pvaValues1 = attributes2[pva1.Id];
+						var pvaValues2 = attributes1[pva2.Id];
+
+						if (pvaValues1.Count != pvaValues2.Count)
+							return false;
+
+						foreach (string value1 in pvaValues1)
+						{
+							string str1 = value1.TrimSafe();
+
+							if (!pvaValues2.Any(x => x.TrimSafe().IsCaseInsensitiveEqual(str1)))
+								return false;
+						}
+					}
+				}
+			}
 
             return true;
         }
 
-        /// <summary>
-        /// Finds a product variant attribute combination by attributes stored in XML 
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="attributesXml">Attributes in XML format</param>
-        /// <returns>Found product variant attribute combination</returns>
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml, IEnumerable<ProductVariantAttribute> attributes = null)
         {
 			if (product == null)
 				throw new ArgumentNullException("product");
 
-            return FindProductVariantAttributeCombination(product.Id, attributesXml);
+            return FindProductVariantAttributeCombination(product.Id, attributesXml, attributes);
         }
 
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml, IEnumerable<ProductVariantAttribute> attributes = null)
 		{
 			if (attributesXml.HasValue())
 			{
-				//existing combinations
 				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productId);
 				if (combinations.Count == 0)
 					return null;
 
 				foreach (var combination in combinations)
 				{
-					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml);
+					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml, attributes);
 					if (attributesEqual)
 						return combination;
 				}

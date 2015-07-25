@@ -26,13 +26,6 @@ namespace SmartStore.Services.Catalog
         IList<ProductVariantAttribute> ParseProductVariantAttributes(string attributes);
 
         /// <summary>
-        /// Gets selected product variant attributes
-        /// </summary>
-        /// <param name="ids">The attribute ids</param>
-        /// <returns>Selected product variant attributes</returns>
-        IEnumerable<ProductVariantAttribute> ParseProductVariantAttributes(ICollection<int> ids);
-
-        /// <summary>
         /// Get product variant attribute values
         /// </summary>
         /// <param name="attributes">Attributes</param>
@@ -59,19 +52,29 @@ namespace SmartStore.Services.Catalog
         /// <summary>
         /// Are attributes equal
         /// </summary>
-        /// <param name="attributes1">The attributes of the first product</param>
-        /// <param name="attributes2">The attributes of the second product</param>
+        /// <param name="attributeXml1">The attributes of the first product</param>
+        /// <param name="attributeXml2">The attributes of the second product</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database rountrips</param>
         /// <returns>Result</returns>
-        bool AreProductAttributesEqual(string attributes1, string attributes2);
+		bool AreProductAttributesEqual(string attributeXml1, string attributeXml2, IEnumerable<ProductVariantAttribute> attributes = null);
 
         /// <summary>
         /// Finds a product variant attribute combination by attributes stored in XML 
         /// </summary>
 		/// <param name="product">Product</param>
         /// <param name="attributesXml">Attributes in XML format</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database rountrips</param>
         /// <returns>Found product variant attribute combination</returns>
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml);
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
+		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml, IEnumerable<ProductVariantAttribute> attributes = null);
+
+		/// <summary>
+		/// Finds a product variant attribute combination by attributes stored in XML 
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="attributesXml">Attributes in XML format</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database rountrips</param>
+		/// <returns>Found product variant attribute combination</returns>
+		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml, IEnumerable<ProductVariantAttribute> attributes = null);
 
 		/// <summary>
 		/// Deserializes attribute data from an URL query string

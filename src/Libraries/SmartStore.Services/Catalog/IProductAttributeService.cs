@@ -74,12 +74,14 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-        /// <summary>
-        /// Gets multiple product variant attribute mappings by their keys
-        /// </summary>
-        /// <param name="ids">a list of keys</param>
-        /// <returns>Product variant attribute mappings</returns>
-        IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids);
+
+		/// <summary>
+		/// Gets a product variant attribute mappings
+		/// </summary>
+		/// <param name="productVariantAttributeIds">Enumerable of product variant attribute mapping identifiers</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database rountrips</param>
+		/// <returns>List of product variant attribute mapping</returns>
+		IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null);
 
         /// <summary>
         /// Inserts a product variant attribute mapping
@@ -135,13 +137,6 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="productVariantAttributeValue">The product variant attribute value</param>
         void UpdateProductVariantAttributeValue(ProductVariantAttributeValue productVariantAttributeValue);
-
-		/// <summary>
-		/// Gets a list of product identifiers which have price adjustments
-		/// </summary>
-		/// <param name="productIds">Array of product identifiers</param>
-		/// <returns>List of product identifiers</returns>
-		IList<int> GetProductIdsWithPriceAdjustments(int[] productIds);
 
         #endregion
 

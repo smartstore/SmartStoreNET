@@ -591,7 +591,7 @@ namespace SmartStore.Web.Controllers
 					}
 
 					model.CombinationSelected = model.Combinations
-						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
+						.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, variantAttributes));
 
 					if (model.CombinationSelected != null && model.CombinationSelected.IsActive == false)
 					{
@@ -1050,7 +1050,7 @@ namespace SmartStore.Web.Controllers
 						{
 							StoreId = currentStore.Id,
 							ParentGroupedProductId = product.Id,
-							PageSize = int.MaxValue,
+							PageSize = (_catalogSettings.PriceDisplayType == PriceDisplayType.LowestPrice ? int.MaxValue : 1),
 							VisibleIndividuallyOnly = false
 						};
 

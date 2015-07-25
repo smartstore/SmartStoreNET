@@ -67,9 +67,6 @@ namespace SmartStore
 			HttpRequestBase request, List<string> warnings, 
 			bool formatWithProductId = true, 
 			int bundleItemId = 0)
-		public static string CreateSelectedAttributesXml(this NameValueCollection collection, int productId, IEnumerable<ProductVariantAttribute> variantAttributes,
-			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings,
-			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true, int bundleItemId = 0)
 		{
 			if (collection == null)
 				return "";

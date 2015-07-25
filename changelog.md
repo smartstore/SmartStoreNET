@@ -16,6 +16,7 @@
 * #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
 * #733 Option to set a display order for homepage products
 * #607 HTML capable full description for payment methods displayed in checkout
+* #732 Product list: Option to display the pre-selected price instead of the lowest price
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
@@ -30,6 +31,7 @@
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin
+* Preselected price was wrong for product attributes with multiple preselected values (same on product detail page)
 
 
 ## SmartStore.NET 2.2.2

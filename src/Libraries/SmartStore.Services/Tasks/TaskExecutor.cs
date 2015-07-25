@@ -42,6 +42,7 @@ namespace SmartStore.Services.Tasks
 				return;
 
             bool faulted = false;
+			bool canceled = false;
             string lastError = null;
             ITask instance = null;
 			string stateName = null;
@@ -73,21 +74,12 @@ namespace SmartStore.Services.Tasks
 
 				// create & set a composite CancellationTokenSource which also contains the global app shoutdown token
 				var cts = CancellationTokenSource.CreateLinkedTokenSource(AsyncRunner.AppShutdownCancellationToken, new CancellationTokenSource().Token);
-				AsyncState.Current.SetCancelTokenSource<TaskProgressInfo>(cts, stateName);
+				AsyncState.Current.SetCancelTokenSource<ScheduleTask>(cts, stateName);
 
-				// tell AsyncState about a new running task
-				var taskProgressInfo = new TaskProgressInfo
-				{
-					ScheduleTaskId = task.Id,
-					TaskType = instance.GetType()
-				};
-				AsyncState.Current.Set(taskProgressInfo, stateName, true);
-
-				var ctx = new TaskExecutionContext(_componentContext)
+				var ctx = new TaskExecutionContext(_componentContext, task)
 				{
 					ScheduleTask = task.Clone(),
 					CancellationToken = cts.Token
-					// TODO: Remove LifetimeScope
 				};
 
                 instance.Execute(ctx);
@@ -95,6 +87,7 @@ namespace SmartStore.Services.Tasks
             catch (Exception ex)
             {
                 faulted = true;
+				canceled = ex is OperationCanceledException;
                 Logger.Error(string.Format("Error while running scheduled task '{0}'. {1}", task.Name, ex.Message), ex);
                 lastError = ex.Message.Truncate(995, "...");
                 if (throwOnError)
@@ -107,16 +100,19 @@ namespace SmartStore.Services.Tasks
 				// remove from AsyncState
 				if (stateName.HasValue())
 				{
-					AsyncState.Current.Remove<TaskProgressInfo>(stateName);
+					AsyncState.Current.Remove<ScheduleTask>(stateName);
 				}
-				
+
+				task.ProgressPercent = null;
+				task.ProgressMessage = null;
+
 				var now = DateTime.UtcNow;
                 task.LastError = lastError;
                 task.LastEndUtc = now;
 
                 if (faulted)
                 {
-                    if (task.StopOnError || instance == null)
+                    if ((!canceled && task.StopOnError) || instance == null)
                     {
                         task.Enabled = false;
                     }

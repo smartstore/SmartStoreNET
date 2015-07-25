@@ -94,6 +94,8 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
+			var isRunning = task.IsRunning;
+
 			var model = new ScheduleTaskModel
 			{
 				Id = task.Id,
@@ -106,9 +108,10 @@ namespace SmartStore.Admin.Controllers
 				LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
 				NextRunUtc = nextRunStr,
 				LastError = task.LastError.EmptyNull(),
-				IsRunning = task.IsRunning,
-				CancelUrl = task.IsRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
-				ProgressInfo = task.IsRunning ? T("Admin.System.ScheduleTasks.RunNow.IsRunning").Text : "",
+				IsRunning = isRunning,
+				CancelUrl = isRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
+				ProgressPercent = task.ProgressPercent,
+				ProgressMessage = task.ProgressMessage,
 				IsOverdue = isOverdue,
 				Duration = ""
 			};
@@ -149,29 +152,10 @@ namespace SmartStore.Admin.Controllers
             var models = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
                 .Select(PrepareScheduleTaskModel)
+				.OrderByDescending(x => x.IsRunning)
+				.ThenByDescending(x => x.IsOverdue)
+				.ThenBy(x => x.Seconds)
                 .ToList();
-
-			foreach (var item in models)
-			{
-				if (!item.IsRunning)
-					continue;
-
-				TaskProgressInfo info;
-				info = _taskScheduler.GetRunningTask(item.Id);
-				if (info == null)
-					continue;
-
-				if (info.Progress.HasValue || info.Message.HasValue())
-				{
-					var tokens = new List<string>();
-					if (info.Progress.HasValue)
-						tokens.Add(string.Format("{0:p0}", (info.Progress.Value / 100)));
-					if (info.Message.HasValue())
-						tokens.Add(info.Message.ToString());
-
-					item.ProgressInfo += " ({0})".FormatCurrent(string.Join(" - ", tokens));
-				}
-			}
 
             var model = new GridModel<ScheduleTaskModel>
             {
@@ -234,6 +218,23 @@ namespace SmartStore.Admin.Controllers
 
             return List(command);
         }
+
+		[HttpPost]
+		public ActionResult GetRunningTasks()
+		{
+			if (!_scheduleTaskService.HasRunningTasks())
+				return Json(null);
+
+			var runningTasks = from t in _scheduleTaskService.GetRunningTasks()
+							   select new 
+							   {
+ 								   id = t.Id,
+								   percent = t.ProgressPercent,
+								   message = t.ProgressMessage,
+							   };
+
+			return Json(runningTasks.ToArray());
+		}
 
 		public ActionResult RunJob(int id, string returnUrl = "")
 		{

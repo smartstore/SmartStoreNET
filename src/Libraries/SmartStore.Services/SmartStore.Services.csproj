@@ -449,7 +449,6 @@
     <Compile Include="Tasks\ITask.cs" />
     <Compile Include="Tasks\TaskExecutionContext.cs" />
     <Compile Include="Tasks\TaskExecutor.cs" />
-    <Compile Include="Tasks\TaskProgressInfo.cs" />
     <Compile Include="Tasks\TaskScheduler.cs" />
     <Compile Include="Tax\CalculateTaxRequest.cs" />
     <Compile Include="Tax\CalculateTaxResult.cs" />

@@ -37,14 +37,15 @@
                             .Width(100);
 						columns.Bound(x => x.Id)
 							.ClientTemplate(
-								"<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'><#= LastStartUtc #></span></div><# } #>" +
-								"<# if (NextRunUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.NextRun") + ":</span> <span class='muted'><#= NextRunUtc #></span></div><# } #>" +
+								"<# if (LastStartUtc.length) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='task-last-start muted'><#= LastStartUtc #></span></div><# } #>" +
+								"<# if (NextRunUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.NextRun") + ":</span> <span class='task-next-run muted'><#= NextRunUtc #></span></div><# } #>" +
 								"<# if (!LastEndUtc && !IsRunning) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastStart") + ":</span> <span class='muted'>" + @T("Common.Never") + "</span></div><# } #>" +
-								"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='muted'><#= Duration #></span></div><# } #>" +
+								"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='task-duration muted'><#= Duration #></span></div><# } #>" +
 								"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
-								"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='muted'><#= LastSuccessUtc #></span></div><# } #>" +
-								"<# if (!IsRunning) {#><a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a><# } #>" +
-								"<# if (IsRunning) {#><div style='margin-top: 12px'><i class='fa fa-refresh fa-spin'></i>&nbsp;<#= ProgressInfo #><a href='<#= CancelUrl #>' class='btn-cancel-job' style='margin-left: 12px'>" + @T("Common.Cancel") + "</a></div><# } #>")
+								"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='task-last-success muted'><#= LastSuccessUtc #></span></div><# } #>" +
+								"<a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success btn-run-task <#= (IsRunning ? 'hide' : '') #>' data-task-id='<#= Id #>' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a>" +
+								"<a href='<#= CancelUrl #>' class='btn btn-danger btn-cancel-task <#= (IsRunning ? '' : 'hide') #>' data-task-id='<#= Id #>' style='margin-top: 12px'>" + @T("Common.Cancel") + "</a>" +
+								"<div class='task-progress text-success hide' data-task-id='<#= Id #>' data-running='false'></div>")
 							.Title(T("Common.Execution").Text)
 							.ReadOnly();
                         columns.Command(commands =>
@@ -75,10 +76,28 @@
 
 <script>
 	$(function () {
-		$('#schedule-tasks-grid').on('click', '.btn-cancel-job', function (e) {
+		$('#schedule-tasks-grid').on('click', '.btn-cancel-task', function (e) {
 			if (!confirm('@T("Common.AreYouSure")')) {
 				e.preventDefault();
 				return false;
+			}
+		});
+
+		function refreshGrid() {
+			var grid = $("#schedule-tasks-grid").data("tGrid");
+			grid.ajaxRequest();
+		}
+
+		Admin.TaskWatcher.startWatching({
+			context: $('#schedule-tasks-grid'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks")',
+			onTaskStarted: function (task, el) {
+				el.parent().find('.btn-run-task').addClass('hide').next().removeClass('hide');
+			},
+			onTaskCompleted: function (taskId, el) {
+				el.parent().find('.btn-run-task').removeClass('hide').next().addClass('hide');
 			}
 		});
 	});

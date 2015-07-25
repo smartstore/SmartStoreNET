@@ -8,15 +8,27 @@ namespace SmartStore.Data.Migrations
     {
         public override void Up()
         {
-            AddColumn("dbo.ScheduleTask", "Alias", c => c.String(maxLength: 4000));
+            AddColumn("dbo.ScheduleTask", "Alias", c => c.String(maxLength: 500));
             AddColumn("dbo.ScheduleTask", "NextRunUtc", c => c.DateTime());
             AddColumn("dbo.ScheduleTask", "IsHidden", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ScheduleTask", "ProgressPercent", c => c.Int());
+            AddColumn("dbo.ScheduleTask", "ProgressMessage", c => c.String(maxLength: 1000));
+            AlterColumn("dbo.ScheduleTask", "Name", c => c.String(nullable: false, maxLength: 500));
+            AlterColumn("dbo.ScheduleTask", "Type", c => c.String(nullable: false, maxLength: 800));
+            CreateIndex("dbo.ScheduleTask", "Type");
             CreateIndex("dbo.ScheduleTask", new[] { "NextRunUtc", "Enabled" }, name: "IX_NextRun_Enabled");
+            CreateIndex("dbo.ScheduleTask", new[] { "LastStartUtc", "LastEndUtc" }, name: "IX_LastStart_LastEnd");
         }
         
         public override void Down()
         {
+            DropIndex("dbo.ScheduleTask", "IX_LastStart_LastEnd");
             DropIndex("dbo.ScheduleTask", "IX_NextRun_Enabled");
+            DropIndex("dbo.ScheduleTask", new[] { "Type" });
+			//AlterColumn("dbo.ScheduleTask", "Type", c => c.String(nullable: false));
+			//AlterColumn("dbo.ScheduleTask", "Name", c => c.String(nullable: false));
+            DropColumn("dbo.ScheduleTask", "ProgressMessage");
+            DropColumn("dbo.ScheduleTask", "ProgressPercent");
             DropColumn("dbo.ScheduleTask", "IsHidden");
             DropColumn("dbo.ScheduleTask", "NextRunUtc");
             DropColumn("dbo.ScheduleTask", "Alias");

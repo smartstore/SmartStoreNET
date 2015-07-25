@@ -89,12 +89,44 @@ namespace SmartStore.Services.Tasks
             var now = DateTime.UtcNow;
 
             var query = from t in _taskRepository.Table
-                        where t.Enabled && t.NextRunUtc.HasValue && t.NextRunUtc <= now
+						where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
                         orderby t.NextRunUtc, t.Seconds
                         select t;
 
             return query.ToList();
         }
+
+		public virtual bool HasRunningTasks()
+		{
+			var query = GetRunningTasksQuery();
+			return query.Any();
+		}
+
+		public virtual bool IsTaskRunning(int taskId)
+		{
+			if (taskId <= 0)
+				return false;
+
+			var query = GetRunningTasksQuery();
+			query.Where(t => t.Id == taskId);
+			return query.Any();
+		}
+
+		public virtual IList<ScheduleTask> GetRunningTasks()
+		{
+			return GetRunningTasksQuery().ToList();
+		}
+
+		private IQueryable<ScheduleTask> GetRunningTasksQuery()
+		{
+			var query = from t in _taskRepository.Table
+						where t.LastStartUtc.HasValue && t.LastStartUtc.Value > (t.LastEndUtc ?? DateTime.MinValue)
+						orderby t.LastStartUtc
+						select t;
+
+			return query;
+		}
+
 
         public virtual void InsertTask(ScheduleTask task)
         {
@@ -122,10 +154,15 @@ namespace SmartStore.Services.Tasks
 				foreach (var task in tasks)
 				{
 					task.NextRunUtc = task.Enabled ? now.AddSeconds(task.Seconds) : (DateTime?)null;
-					if (isAppStart && task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
+					if (isAppStart)
 					{
-						task.LastEndUtc = task.LastStartUtc;
-						task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
+						task.ProgressPercent = null;
+						task.ProgressMessage = null;
+						if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
+						{
+							task.LastEndUtc = task.LastStartUtc;
+							task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
+						}
 					}
 					this.UpdateTask(task);
 				}

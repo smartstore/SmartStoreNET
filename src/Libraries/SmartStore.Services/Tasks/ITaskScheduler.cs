@@ -32,28 +32,6 @@ namespace SmartStore.Services.Tasks
         bool IsActive { get; }
 
 		/// <summary>
-		/// Gets a value indicating whether a task is currently running
-		/// </summary>
-		/// <param name="scheduleTaskId">A <see cref="ScheduleTask"/> identifier</param>
-		/// <returns><c>true</c> if the task is running, <c>false</c> otherwise</returns>
-		bool IsTaskRunning(int scheduleTaskId);
-
-		/// <summary>
-		/// Gets a sequence of <see cref="TaskProgressInfo"/> instances containing 
-		/// metadata and progress information about currently running tasks.
-		/// </summary>
-		/// <returns>A sequence of task info objects if any task is running, an empty enumerable otherwise.</returns>
-		IEnumerable<TaskProgressInfo> GetAllRunningTasks();
-
-		/// <summary>
-		/// Gets a <see cref="TaskProgressInfo"/> instance containing 
-		/// metadata and progress information about a currently running task.
-		/// </summary>
-		/// <param name="scheduleTaskId">A <see cref="ScheduleTask"/> identifier</param>
-		/// <returns>A task info object if the task is running, <c>null</c> otherwise</returns>
-		TaskProgressInfo GetRunningTask(int scheduleTaskId);
-
-		/// <summary>
 		/// Gets a <see cref="CancellationTokenSource"/> instance used 
 		/// to signal a task cancellation request.
 		/// </summary>
@@ -93,22 +71,7 @@ namespace SmartStore.Services.Tasks
 
     public static class ITaskSchedulerExtensions
     {
-		///// <param name="taskType">The type of the task (must implement <see cref="ITask"/>)</param>
-		//public static bool IsTaskRunning<TTask>(this ITaskScheduler scheduler) where TTask : ITask
-		//{
-		//	return scheduler.IsTaskRunning(typeof(TTask));
-		//}
 
-		//public static TaskProgressInfo GetRunningTask<TTask>(this ITaskScheduler scheduler) where TTask : ITask
-		//{
-		//	return scheduler.GetRunningTask(typeof(TTask));
-		//}
-
-		//public static CancellationTokenSource GetCancelTokenSourceFor<TTask>(this ITaskScheduler scheduler) where TTask : ITask
-		//{
-		//	return scheduler.GetCancelTokenSourceFor(typeof(TTask));
-		//}
-		
 		internal static void SetBaseUrl(this ITaskScheduler scheduler, IStoreService storeService, HttpContextBase httpContext)
         {
             var path = VirtualPathUtility.ToAbsolute("~/TaskScheduler");
@@ -130,5 +93,6 @@ namespace SmartStore.Services.Tasks
 
             scheduler.BaseUrl = url;
         }
+
     }
 }

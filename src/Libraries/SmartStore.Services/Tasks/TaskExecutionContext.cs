@@ -4,6 +4,7 @@ using System.Linq;
 using System.Threading;
 using Autofac;
 using SmartStore.Core.Async;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
@@ -14,10 +15,12 @@ namespace SmartStore.Services.Tasks
 	public class TaskExecutionContext
 	{
 		private readonly IComponentContext _componentContext;
+		private readonly ScheduleTask _originalTask;
 
-		internal TaskExecutionContext(IComponentContext componentContext)
+		internal TaskExecutionContext(IComponentContext componentContext, ScheduleTask originalTask)
 		{
 			this._componentContext = componentContext;
+			this._originalTask = originalTask;
 		}
 
 		public T Resolve<T>(object key = null) where T : class
@@ -42,18 +45,35 @@ namespace SmartStore.Services.Tasks
 
         public ScheduleTask ScheduleTask { get; set; }
 
-		public void SetProgress(float? progress, string message)
+		/// <summary>
+		/// Persists a task's progress information information to the database
+		/// </summary>
+		/// <param name="progress">Percentual progress. Can be <c>null</c> or a value between 0 and 100.</param>
+		/// <param name="message">Progress message. Can be <c>null</c>.</param>
+		/// <param name="immediately">if <c>true</c>, saves the updated task entity immediately, or lazily with the next database commit otherwise.</param>
+		public void SetProgress(int? progress, string message, bool immediately =  false)
 		{
 			if (progress.HasValue)
 				Guard.ArgumentInRange(progress.Value, 0, 100, "progress");
 
-			var stateName = ScheduleTask.Id.ToString();
+			// update cloned entity
+			ScheduleTask.ProgressPercent = progress;
+			ScheduleTask.ProgressMessage = message;
 
-			AsyncState.Current.Update<TaskProgressInfo>(x => 
-			{ 
-				x.Progress = progress; 
-				x.Message = message; 
-			}, stateName);
+			// update attached entity
+			_originalTask.ProgressPercent = progress;
+			_originalTask.ProgressMessage = message;
+
+			if (immediately)
+			{
+				try // dont't let this abort the task on failure
+				{
+					var dbContext = _componentContext.Resolve<IDbContext>();
+					dbContext.ChangeState(_originalTask, System.Data.Entity.EntityState.Modified);
+					dbContext.SaveChanges();
+				}
+				catch { }
+			}
 		}
 	}
 }

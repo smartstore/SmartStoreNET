@@ -41,6 +41,25 @@ namespace SmartStore.Services.Tasks
         /// <returns>Tasks</returns>
         IList<ScheduleTask> GetPendingTasks();
 
+		/// <summary>
+		/// Gets a value indicating whether at least one task is running currently.
+		/// </summary>
+		/// <returns></returns>
+		bool HasRunningTasks();
+
+		/// <summary>
+		/// Gets a value indicating whether a task is currently running
+		/// </summary>
+		/// <param name="taskId">A <see cref="ScheduleTask"/> identifier</param>
+		/// <returns><c>true</c> if the task is running, <c>false</c> otherwise</returns>
+		bool IsTaskRunning(int taskId);
+
+		/// <summary>
+		/// Gets a list of currently running <see cref="ScheduleTask"/> instances.
+		/// </summary>
+		/// <returns>Tasks</returns>
+		IList<ScheduleTask> GetRunningTasks();
+
         /// <summary>
         /// Inserts a task
         /// </summary>

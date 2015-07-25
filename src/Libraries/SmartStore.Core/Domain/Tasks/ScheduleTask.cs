@@ -26,6 +26,7 @@ namespace SmartStore.Core.Domain.Tasks
         /// <summary>
         /// Gets or sets the type of appropriate ITask class
         /// </summary>
+		[Index("IX_Type")]
         public string Type { get; set; }
 
         /// <summary>
@@ -42,8 +43,10 @@ namespace SmartStore.Core.Domain.Tasks
         [Index("IX_NextRun_Enabled", 0)]
         public DateTime? NextRunUtc { get; set; }
 
+		[Index("IX_LastStart_LastEnd", 0)]
         public DateTime? LastStartUtc { get; set; }
 
+		[Index("IX_LastStart_LastEnd", 1)]
         public DateTime? LastEndUtc { get; set; }
 
         public DateTime? LastSuccessUtc { get; set; }
@@ -53,13 +56,23 @@ namespace SmartStore.Core.Domain.Tasks
         public bool IsHidden { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating the current percentual progress for a running task
+		/// </summary>
+		public int? ProgressPercent { get; set; }
+
+		/// <summary>
+		/// Gets or sets the current progress message for a running task
+		/// </summary>
+		public string ProgressMessage { get; set; }
+
+		/// <summary>
 		/// Gets a value indicating whether a task is running
 		/// </summary>
 		public bool IsRunning
 		{
 			get
 			{
-				var result = (LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault());
+				var result = LastStartUtc.HasValue && LastStartUtc.Value > LastEndUtc.GetValueOrDefault();
 				return result;
 			}
 		}

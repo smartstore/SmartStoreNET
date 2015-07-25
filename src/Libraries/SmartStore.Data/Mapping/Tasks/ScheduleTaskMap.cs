@@ -10,9 +10,10 @@ namespace SmartStore.Data.Mapping.Tasks
             this.ToTable("ScheduleTask");
             this.HasKey(t => t.Id);
             this.Property(t => t.Name).HasMaxLength(500).IsRequired();
-            this.Property(t => t.Type).HasMaxLength(1000).IsRequired();
+            this.Property(t => t.Type).HasMaxLength(800).IsRequired();
 			this.Property(t => t.Alias).HasMaxLength(500);
 			this.Property(t => t.LastError).HasMaxLength(1000);
+			this.Property(t => t.ProgressMessage).HasMaxLength(1000).IsOptional();
 
 			this.Ignore(t => t.IsRunning);
 			this.Ignore(t => t.IsPending);

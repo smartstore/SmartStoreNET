@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Hosting;
 using SmartStore.Core.Async;
+using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Services.Tasks
 {
@@ -66,30 +67,9 @@ namespace SmartStore.Services.Tasks
             get { return _timer.Enabled; }
         }
 
-		public IEnumerable<TaskProgressInfo> GetAllRunningTasks()
-		{
-			var tasks = AsyncState.Current.GetAll<TaskProgressInfo>();
-			return tasks.Select(x => x.Clone());
-		}
-
-		public bool IsTaskRunning(int scheduleTaskId)
-		{
-			var exists = AsyncState.Current.Exists<TaskProgressInfo>(scheduleTaskId.ToString());
-			return exists;
-		}
-
-		public TaskProgressInfo GetRunningTask(int scheduleTaskId)
-		{
-			var info = AsyncState.Current.Get<TaskProgressInfo>(scheduleTaskId.ToString());
-			if (info != null)
-				return info.Clone();
-
-			return null;
-		}
-
 		public CancellationTokenSource GetCancelTokenSourceFor(int scheduleTaskId)
 		{
-			var cts = AsyncState.Current.GetCancelTokenSource<TaskProgressInfo>(scheduleTaskId.ToString());
+			var cts = AsyncState.Current.GetCancelTokenSource<ScheduleTask>(scheduleTaskId.ToString());
 			return cts;
 		}
 

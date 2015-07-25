@@ -19,12 +19,12 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
-            DropIndex("dbo.Picture", "IX_UpdatedOn_IsTransient");
-            DropIndex("dbo.Download", "IX_UpdatedOn_IsTransient");
-            DropColumn("dbo.Picture", "UpdatedOnUtc");
-            DropColumn("dbo.Picture", "IsTransient");
-            DropColumn("dbo.Download", "UpdatedOnUtc");
-            DropColumn("dbo.Download", "IsTransient");
+			DropIndex("dbo.Picture", "IX_UpdatedOn_IsTransient");
+			DropIndex("dbo.Download", "IX_UpdatedOn_IsTransient");
+			DropColumn("dbo.Picture", "UpdatedOnUtc");
+			DropColumn("dbo.Picture", "IsTransient");
+			DropColumn("dbo.Download", "UpdatedOnUtc");
+			DropColumn("dbo.Download", "IsTransient");
         }
 
 		public bool RollbackOnFailure

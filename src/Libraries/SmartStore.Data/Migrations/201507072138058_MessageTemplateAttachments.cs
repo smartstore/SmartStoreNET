@@ -15,9 +15,9 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
-            DropColumn("dbo.MessageTemplate", "Attachment3FileId");
-            DropColumn("dbo.MessageTemplate", "Attachment2FileId");
-            DropColumn("dbo.MessageTemplate", "Attachment1FileId");
+			DropColumn("dbo.MessageTemplate", "Attachment3FileId");
+			DropColumn("dbo.MessageTemplate", "Attachment2FileId");
+			DropColumn("dbo.MessageTemplate", "Attachment1FileId");
         }
 
 		public bool RollbackOnFailure

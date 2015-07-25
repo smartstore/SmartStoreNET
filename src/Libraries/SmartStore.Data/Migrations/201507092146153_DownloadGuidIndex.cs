@@ -12,7 +12,7 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
-            DropIndex("dbo.Download", new[] { "DownloadGuid" });
+			DropIndex("dbo.Download", new[] { "DownloadGuid" });
         }
     }
 }

@@ -74,13 +74,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-
 		/// <summary>
-		/// Gets a product variant attribute mappings
+		/// Gets product variant attribute mappings
 		/// </summary>
 		/// <param name="productVariantAttributeIds">Enumerable of product variant attribute mapping identifiers</param>
-		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database rountrips</param>
-		/// <returns>List of product variant attribute mapping</returns>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database round trips</param>
+		/// <returns></returns>
 		IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null);
 
         /// <summary>

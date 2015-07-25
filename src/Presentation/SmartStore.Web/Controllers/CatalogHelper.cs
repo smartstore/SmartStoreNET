@@ -443,9 +443,7 @@ namespace SmartStore.Web.Controllers
 			{
 				foreach (var attribute in variantAttributes)
 				{
-					int preSelectedValueId = 0;
-
-					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel()
+					var pvaModel = new ProductDetailsModel.ProductVariantAttributeModel
 					{
 						Id = attribute.Id,
 						ProductId = attribute.ProductId,
@@ -470,76 +468,74 @@ namespace SmartStore.Web.Controllers
 						}
 					}
 
-					if (attribute.ShouldHaveValues())
+					int preSelectedValueId = 0;
+					var pvaValues = (attribute.ShouldHaveValues() ? _productAttributeService.GetProductVariantAttributeValues(attribute.Id) : new List<ProductVariantAttributeValue>());
+
+					foreach (var pvaValue in pvaValues)
 					{
-						var pvaValues = _productAttributeService.GetProductVariantAttributeValues(attribute.Id);
+						ProductBundleItemAttributeFilter attributeFilter = null;
 
-						foreach (var pvaValue in pvaValues)
+						if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
+							continue;
+
+						if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
+							preSelectedValueId = attributeFilter.AttributeValueId;
+
+						var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
+
+						var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
+						pvaValueModel.Id = pvaValue.Id;
+						pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
+						pvaValueModel.Alias = pvaValue.Alias;
+						pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
+						pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
+
+						if (linkedProduct != null && linkedProduct.VisibleIndividually)
+							pvaValueModel.SeName = linkedProduct.GetSeName();
+
+						if (hasSelectedAttributes)
+							pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
+
+						// display price if allowed
+						if (displayPrices && !isBundlePricing)
 						{
-							ProductBundleItemAttributeFilter attributeFilter = null;
+							decimal taxRate = decimal.Zero;
+							decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
+							decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
+							decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
 
-							if (productBundleItem.FilterOut(pvaValue, out attributeFilter))
-								continue;
+							if (priceAdjustmentBase > decimal.Zero)
+								pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
+							else if (priceAdjustmentBase < decimal.Zero)
+								pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
 
-							if (preSelectedValueId == 0 && attributeFilter != null && attributeFilter.IsPreSelected)
-								preSelectedValueId = attributeFilter.AttributeValueId;
-
-							var linkedProduct = _productService.GetProductById(pvaValue.LinkedProductId);
-
-							var pvaValueModel = new ProductDetailsModel.ProductVariantAttributeValueModel();
-							pvaValueModel.Id = pvaValue.Id;
-							pvaValueModel.Name = pvaValue.GetLocalized(x => x.Name);
-							pvaValueModel.Alias = pvaValue.Alias;
-							pvaValueModel.ColorSquaresRgb = pvaValue.ColorSquaresRgb; //used with "Color squares" attribute type
-							pvaValueModel.IsPreSelected = pvaValue.IsPreSelected;
-
-							if (linkedProduct != null && linkedProduct.VisibleIndividually)
-								pvaValueModel.SeName = linkedProduct.GetSeName();
-
-							if (hasSelectedAttributes)
-								pvaValueModel.IsPreSelected = false;	// explicitly selected always discards pre-selected by merchant
-
-							// display price if allowed
-							if (displayPrices && !isBundlePricing)
+							if (pvaValueModel.IsPreSelected)
 							{
-								decimal taxRate = decimal.Zero;
-								decimal attributeValuePriceAdjustment = _priceCalculationService.GetProductVariantAttributeValuePriceAdjustment(pvaValue);
-								decimal priceAdjustmentBase = _taxService.GetProductPrice(product, attributeValuePriceAdjustment, out taxRate);
-								decimal priceAdjustment = _currencyService.ConvertFromPrimaryStoreCurrency(priceAdjustmentBase, _services.WorkContext.WorkingCurrency);
-
-								if (priceAdjustmentBase > decimal.Zero)
-									pvaValueModel.PriceAdjustment = "+" + _priceFormatter.FormatPrice(priceAdjustment, true, false);
-								else if (priceAdjustmentBase < decimal.Zero)
-									pvaValueModel.PriceAdjustment = "-" + _priceFormatter.FormatPrice(-priceAdjustment, true, false);
-
-								if (pvaValueModel.IsPreSelected)
-								{
-									preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
-									preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
-								}
-
-								if (_catalogSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
-								{
-									pvaValueModel.QuantityInfo = pvaValue.Quantity;
-								}
-
-								pvaValueModel.PriceAdjustmentValue = priceAdjustment;
+								preSelectedPriceAdjustmentBase = decimal.Add(preSelectedPriceAdjustmentBase, priceAdjustmentBase);
+								preSelectedWeightAdjustment = decimal.Add(preSelectedWeightAdjustment, pvaValue.WeightAdjustment);
 							}
 
-							if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+							if (_catalogSettings.ShowLinkedAttributeValueQuantity && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
 							{
-								pvaValueModel.PriceAdjustment = "";
+								pvaValueModel.QuantityInfo = pvaValue.Quantity;
 							}
 
-							if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
-							{
-								var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
-								if (linkagePicture != null)
-									pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
-							}
-
-							pvaModel.Values.Add(pvaValueModel);
+							pvaValueModel.PriceAdjustmentValue = priceAdjustment;
 						}
+
+						if (!_catalogSettings.ShowVariantCombinationPriceAdjustment)
+						{
+							pvaValueModel.PriceAdjustment = "";
+						}
+
+						if (_catalogSettings.ShowLinkedAttributeValueImage && pvaValue.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+						{
+							var linkagePicture = _pictureService.GetPicturesByProductId(pvaValue.LinkedProductId, 1).FirstOrDefault();
+							if (linkagePicture != null)
+								pvaValueModel.ImageUrl = _pictureService.GetPictureUrl(linkagePicture, _mediaSettings.AutoCompleteSearchThumbPictureSize, false);
+						}
+
+						pvaModel.Values.Add(pvaValueModel);
 					}
 
 					// we need selected attributes to get initially displayed combination images
@@ -552,14 +548,25 @@ namespace SmartStore.Web.Controllers
 							pvaModel.Values.Each(x => x.IsPreSelected = false);
 
 							if ((defaultValue = pvaModel.Values.FirstOrDefault(v => v.Id == preSelectedValueId)) != null)
+							{
 								defaultValue.IsPreSelected = true;
+								selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+							}
 						}
 
 						if (defaultValue == null)
-							defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+						{
+							foreach (var value in pvaModel.Values.Where(x => x.IsPreSelected))
+							{
+								selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, value.Id, product.Id, bundleItemId);
+							}
+						}
 
-						if (defaultValue != null)
-							selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+						//if (defaultValue == null)
+						//	defaultValue = pvaModel.Values.FirstOrDefault(v => v.IsPreSelected);
+
+						//if (defaultValue != null)
+						//	selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
 					}
 
 					model.ProductVariantAttributes.Add(pvaModel);

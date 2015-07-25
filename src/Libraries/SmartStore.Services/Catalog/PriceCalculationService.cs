@@ -164,7 +164,7 @@ namespace SmartStore.Services.Catalog
 			var bundleItemId = (bundleItem == null ? 0 : bundleItem.Item.Id);
 
 			var selectedAttributes = new NameValueCollection();
-			List<ProductVariantAttributeValue> selectedAttributeValues = null;
+			var selectedAttributeValues = new List<ProductVariantAttributeValue>();
 			var attributes = context.Attributes.Ensure(product.Id);
 
 			// 1. fill selectedAttributes with initially selected attributes
@@ -172,6 +172,7 @@ namespace SmartStore.Services.Catalog
 			{
 				int preSelectedValueId = 0;
 				ProductVariantAttributeValue defaultValue = null;
+				var selectedValueIds = new List<int>();
 				var pvaValues = attribute.ProductVariantAttributeValues;
 					
 				foreach (var pvaValue in pvaValues)
@@ -193,15 +194,30 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 
+				//if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
+				//	defaultValue.IsPreSelected = true;
+
+				//if (defaultValue == null)
+				//	defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
+
+				//if (defaultValue != null)
+				//	selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+
 				// value pre-selected by a bundle item filter discards the default pre-selection
 				if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
-					defaultValue.IsPreSelected = true;
-
-				if (defaultValue == null)
-					defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
-
-				if (defaultValue != null)
+				{
+					//defaultValue.IsPreSelected = true;
+					selectedAttributeValues.Add(defaultValue);
 					selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
+				}
+				else
+				{
+					foreach (var value in pvaValues.Where(x => x.IsPreSelected))
+					{
+						selectedAttributeValues.Add(value);
+						selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, value.Id, product.Id, bundleItemId);
+					}
+				}
 			}
 
 			// 2. find attribute combination for selected attributes and merge it
@@ -209,8 +225,6 @@ namespace SmartStore.Services.Catalog
 			{
 				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
-
-				selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(attributeXml).ToList();
 
 				var combinations = context.AttributeCombinations.Ensure(product.Id);
 
@@ -224,7 +238,7 @@ namespace SmartStore.Services.Catalog
 
 			if (_catalogSettings.EnableDynamicPriceUpdate && !isBundlePricing)
 			{
-				if (selectedAttributeValues != null)
+				if (selectedAttributeValues.Count > 0)
 				{
 					selectedAttributeValues.Each(x => attributesTotalPriceBase += GetProductVariantAttributeValuePriceAdjustment(x));
 				}

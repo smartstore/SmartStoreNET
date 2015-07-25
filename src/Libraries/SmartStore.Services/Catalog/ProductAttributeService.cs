@@ -71,14 +71,36 @@ namespace SmartStore.Services.Catalog
 
         #endregion
 
-		//// Autowired Dependency (is a proptery dependency to avoid circularity)
-		//public virtual IProductAttributeParser AttributeParser { get; set; }
+		#region Utilities
 
-        #region Methods
+		private IList<ProductVariantAttribute> GetSwitchedLoadedAttributeMappings(ICollection<int> productVariantAttributeIds)
+		{
+			if (productVariantAttributeIds != null && productVariantAttributeIds.Count > 0)
+			{
+				if (productVariantAttributeIds.Count == 1)
+				{
+					var pva = GetProductVariantAttributeById(productVariantAttributeIds.ElementAt(0));
+					if (pva != null)
+					{
+						return new List<ProductVariantAttribute> { pva };
+					}
+				}
+				else
+				{
+					return _productVariantAttributeRepository.GetMany(productVariantAttributeIds).ToList();
+				}
+			}
 
-        #region Product attributes
+			return new List<ProductVariantAttribute>();
+		}
 
-        public virtual void DeleteProductAttribute(ProductAttribute productAttribute)
+		#endregion
+
+		#region Methods
+
+		#region Product attributes
+
+		public virtual void DeleteProductAttribute(ProductAttribute productAttribute)
         {
             if (productAttribute == null)
                 throw new ArgumentNullException("productAttribute");
@@ -219,26 +241,33 @@ namespace SmartStore.Services.Catalog
 
 		public virtual IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null)
 		{
-			var result = new List<ProductVariantAttribute>();
-
 			if (productVariantAttributeIds != null)
 			{
-				foreach (var id in productVariantAttributeIds)
+				if (attributes != null)
 				{
-					ProductVariantAttribute pva = null;
+					var ids = new List<int>();
+					var result = new List<ProductVariantAttribute>();
 
-					if (attributes != null)
-						pva = attributes.FirstOrDefault(x => x.Id == id);
+					foreach (var id in productVariantAttributeIds)
+					{
+						var pva = attributes.FirstOrDefault(x => x.Id == id);
+						if (pva == null)
+							ids.Add(id);
+						else
+							result.Add(pva);
+					}
 
-					if (pva == null)
-						pva = GetProductVariantAttributeById(id);
+					var newLoadedMappings = GetSwitchedLoadedAttributeMappings(ids);
 
-					if (pva != null)
-						result.Add(pva);
+					result.AddRange(newLoadedMappings);
+
+					return result;
 				}
+
+				return GetSwitchedLoadedAttributeMappings(productVariantAttributeIds.ToList());
 			}
 
-			return result;
+			return new List<ProductVariantAttribute>();
 		}
 
         public virtual IEnumerable<ProductVariantAttributeValue> GetProductVariantAttributeValuesByIds(params int[] productVariantAttributeValueIds)

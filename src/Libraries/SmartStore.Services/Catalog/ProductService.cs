@@ -5,11 +5,13 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.ServiceModel.Syndication;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
@@ -1638,6 +1640,32 @@ namespace SmartStore.Services.Catalog
             var tierPrice = _tierPriceRepository.GetById(tierPriceId);
             return tierPrice;
         }
+
+		public virtual Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from x in _tierPriceRepository.TableUntracked
+				where productIds.Contains(x.ProductId)
+				select x;
+
+			if (storeId != 0)
+				query = query.Where(x => x.StoreId == 0 || x.StoreId == storeId);
+
+			query = query.OrderBy(x => x.ProductId).ThenBy(x => x.Quantity);
+
+			var list = query.ToList();
+
+			if (customer != null)
+				list = list.FilterForCustomer(customer).ToList();
+
+			var map = list
+				.RemoveDuplicatedQuantities()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
 
         /// <summary>
         /// Inserts a tier price

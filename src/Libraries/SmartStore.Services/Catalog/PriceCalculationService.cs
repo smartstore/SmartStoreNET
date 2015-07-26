@@ -123,20 +123,33 @@ namespace SmartStore.Services.Catalog
         /// <param name="customer">Customer</param>
         /// <param name="quantity">Quantity</param>
         /// <returns>Price</returns>
-        protected virtual decimal? GetMinimumTierPrice(Product product, Customer customer, int quantity)
+		protected virtual decimal? GetMinimumTierPrice(Product product, Customer customer, int quantity, PriceCalculationContext context = null)
         {
 			if (!product.HasTierPrices)
                 return decimal.Zero;
 
-            var tierPrices = product.TierPrices
-                .OrderBy(tp => tp.Quantity)
-				.FilterByStore(_services.StoreContext.CurrentStore.Id)
-                .FilterForCustomer(customer)
-                .ToList()
-                .RemoveDuplicatedQuantities();
+			IEnumerable<TierPrice> tierPrices = null;
+
+			if (context == null)
+			{
+				tierPrices = product.TierPrices
+					.OrderBy(tp => tp.Quantity)
+					.FilterByStore(_services.StoreContext.CurrentStore.Id)
+					.FilterForCustomer(customer)
+					.ToList()
+					.RemoveDuplicatedQuantities();
+			}
+			else
+			{
+				tierPrices = context.TierPrices.Load(product.Id);
+			}
+
+			if (tierPrices == null)
+				return decimal.Zero;
 
             int previousQty = 1;
             decimal? previousPrice = null;
+
             foreach (var tierPrice in tierPrices)
             {
                 //check quantity
@@ -165,7 +178,7 @@ namespace SmartStore.Services.Catalog
 
 			var selectedAttributes = new NameValueCollection();
 			var selectedAttributeValues = new List<ProductVariantAttributeValue>();
-			var attributes = context.Attributes.Ensure(product.Id);
+			var attributes = context.Attributes.Load(product.Id);
 
 			// 1. fill selectedAttributes with initially selected attributes
 			foreach (var attribute in attributes.Where(x => x.ProductVariantAttributeValues.Count > 0 && x.ShouldHaveValues()))
@@ -226,7 +239,7 @@ namespace SmartStore.Services.Catalog
 				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
-				var combinations = context.AttributeCombinations.Ensure(product.Id);
+				var combinations = context.AttributeCombinations.Load(product.Id);
 
 				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, attributes));
 
@@ -253,33 +266,17 @@ namespace SmartStore.Services.Catalog
 				bundleItem.AdditionalCharge = attributesTotalPriceBase;
 			}
 
-			var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem);
+			var result = GetFinalPrice(product, bundleItems, _services.WorkContext.CurrentCustomer, attributesTotalPriceBase, true, 1, bundleItem, context);
 			return result;
 		}
 
-		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<int> productIds = null)
+		public virtual PriceCalculationContext CreatePriceCalculationContext(IEnumerable<Product> products = null)
 		{
-			var context = new PriceCalculationContext();
-
-			if (_catalogSettings.PriceDisplayType == PriceDisplayType.Hide || _catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
-				return context;
-
-			context.Attributes = new LazyMultimap<ProductVariantAttribute>(x => 
-			{
-				"load {0}".FormatInvariant(string.Join(";", x)).Dump();
-						
-				var result = _productAttributeService.GetProductVariantAttributesByProductIds(x, null);
-				return result;
-			}, productIds);
-
-			if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
-			{
-				context.AttributeCombinations = new LazyMultimap<ProductVariantAttributeCombination>(x =>
-				{
-					var result = _productAttributeService.GetProductVariantAttributeCombinations(x);
-					return result;
-				}, productIds);
-			}
+			var context = new PriceCalculationContext(products,
+				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
+				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
+				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id)
+			);
 
 			return context;
 		}
@@ -362,23 +359,14 @@ namespace SmartStore.Services.Catalog
             return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, 1);
         }
 
-        /// <summary>
-        /// Gets the final price
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="customer">The customer</param>
-        /// <param name="additionalCharge">Additional charge</param>
-        /// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
-        /// <param name="quantity">Shopping cart item quantity</param>
-		/// <param name="bundleItem">A product bundle item</param>
-        /// <returns>Final price</returns>
 		public virtual decimal GetFinalPrice(
 			Product product, 
             Customer customer,
             decimal additionalCharge, 
             bool includeDiscounts, 
             int quantity,
-			ProductBundleItemData bundleItem = null)
+			ProductBundleItemData bundleItem = null,
+			PriceCalculationContext context = null)
         {
             //initial price
 			decimal result = product.Price;
@@ -391,7 +379,7 @@ namespace SmartStore.Services.Catalog
             //tier prices
 			if (product.HasTierPrices && !bundleItem.IsValid())
             {
-				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity);
+				decimal? tierPrice = GetMinimumTierPrice(product, customer, quantity, context);
 				if (tierPrice.HasValue)
 					result = Math.Min(result, tierPrice.Value);
             }
@@ -407,22 +395,13 @@ namespace SmartStore.Services.Catalog
             {
                 result = result + additionalCharge;
             }
+
             if (result < decimal.Zero)
                 result = decimal.Zero;
+
             return result;
         }
 
-		/// <summary>
-		/// Gets the final price including bundle per-item pricing
-		/// </summary>
-		/// <param name="product">Product</param>
-		/// <param name="bundleItems">Bundle items</param>
-		/// <param name="customer">The customer</param>
-		/// <param name="additionalCharge">Additional charge</param>
-		/// <param name="includeDiscounts">A value indicating whether include discounts or not for final price computation</param>
-		/// <param name="quantity">Shopping cart item quantity</param>
-		/// <param name="bundleItem">A product bundle item</param>
-		/// <returns>Final price</returns>
 		public virtual decimal GetFinalPrice(
 			Product product, 
 			IEnumerable<ProductBundleItemData> bundleItems,
@@ -430,7 +409,8 @@ namespace SmartStore.Services.Catalog
 			decimal additionalCharge, 
 			bool includeDiscounts, 
 			int quantity, 
-			ProductBundleItemData bundleItem = null)
+			ProductBundleItemData bundleItem = null,
+			PriceCalculationContext context = null)
 		{
 			if (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing)
 			{
@@ -439,14 +419,14 @@ namespace SmartStore.Services.Catalog
 
 				foreach (var itemData in items.Where(x => x.IsValid()))
 				{
-					decimal itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData);
+					decimal itemPrice = GetFinalPrice(itemData.Item.Product, customer, itemData.AdditionalCharge, includeDiscounts, 1, itemData, context);
 
 					result = result + decimal.Multiply(itemPrice, itemData.Item.Quantity);
 				}
 
 				return (result < decimal.Zero ? decimal.Zero : result);
 			}
-			return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem);
+			return GetFinalPrice(product, customer, additionalCharge, includeDiscounts, quantity, bundleItem, context);
 		}
 
 		/// <summary>
@@ -465,7 +445,7 @@ namespace SmartStore.Services.Catalog
 				throw Error.InvalidOperation("Choose the other override for products of type grouped product.");
 
 			if (context == null)
-				context = CreatePriceCalculationContext(null);
+				context = CreatePriceCalculationContext();
 
 			bool isBundlePerItemPricing = (product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing);
 
@@ -473,7 +453,7 @@ namespace SmartStore.Services.Catalog
 
 			// TODO(?): attribute price adjustments were not regarded here cause of performance
 
-			decimal lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+			decimal lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue, null, context);
 
 			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
 			{
@@ -488,18 +468,20 @@ namespace SmartStore.Services.Catalog
 
 			if (!displayFromMessage && product.ProductType != ProductType.BundledProduct)
 			{
-				var attributes = context.Attributes.Ensure(product.Id);
+				var attributes = context.Attributes.Load(product.Id);
 				displayFromMessage = attributes.Any(x => x.ProductVariantAttributeValues.Any(y => y.PriceAdjustment != decimal.Zero));
 			}
 
 			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
 			{
-				var tierPrices = product.TierPrices
-					.OrderBy(tp => tp.Quantity)
-					.FilterByStore(_services.StoreContext.CurrentStore.Id)
-					.FilterForCustomer(_services.WorkContext.CurrentCustomer)
-					.ToList()
-					.RemoveDuplicatedQuantities();
+				//var tierPrices = product.TierPrices
+				//	.OrderBy(tp => tp.Quantity)
+				//	.FilterByStore(_services.StoreContext.CurrentStore.Id)
+				//	.FilterForCustomer(_services.WorkContext.CurrentCustomer)
+				//	.ToList()
+				//	.RemoveDuplicatedQuantities();
+
+				var tierPrices = context.TierPrices.Load(product.Id);
 
 				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
 			}
@@ -507,14 +489,7 @@ namespace SmartStore.Services.Catalog
 			return lowestPrice;
 		}
 
-		/// <summary>
-		/// Get the lowest price of a grouped product.
-		/// </summary>
-		/// <param name="product">Grouped product.</param>
-		/// <param name="associatedProducts">Products associated to product.</param>
-		/// <param name="lowestPriceProduct">The associated product with the lowest price.</param>
-		/// <returns>The lowest price.</returns>
-		public virtual decimal? GetLowestPrice(Product product, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct)
+		public virtual decimal? GetLowestPrice(Product product, PriceCalculationContext context, IEnumerable<Product> associatedProducts, out Product lowestPriceProduct)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -527,10 +502,14 @@ namespace SmartStore.Services.Catalog
 
 			lowestPriceProduct = null;
 			decimal? lowestPrice = null;
+			var customer = _services.WorkContext.CurrentCustomer;
+
+			if (context == null)
+				context = CreatePriceCalculationContext();
 
 			foreach (var associatedProduct in associatedProducts)
 			{
-				var tmpPrice = GetFinalPrice(associatedProduct, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue);
+				var tmpPrice = GetFinalPrice(associatedProduct, customer, decimal.Zero, true, int.MaxValue, null, context);
 
 				if (associatedProduct.LowestAttributeCombinationPrice.HasValue && associatedProduct.LowestAttributeCombinationPrice.Value < tmpPrice)
 				{
@@ -563,27 +542,28 @@ namespace SmartStore.Services.Catalog
 
 			var result = decimal.Zero;
 
+			if (context == null)
+				context = CreatePriceCalculationContext();
+
 			if (product.ProductType == ProductType.BundledProduct)
 			{
 				var bundleItems = _productService.GetBundleItems(product.Id);
 
-				var ids = bundleItems.Select(x => x.Item.ProductId).ToList();
-				ids.Add(product.Id);
-				var bundleContext = CreatePriceCalculationContext(ids);
+				var productIds = bundleItems.Select(x => x.Item.ProductId).ToList();
+				productIds.Add(product.Id);
+
+				context.Collect(productIds);
 
 				foreach (var bundleItem in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					// fetch bundleItems.AdditionalCharge for all bundle items
-					var unused = GetPreselectedPrice(bundleItem.Item.Product, bundleContext, bundleItem, bundleItems);
+					var unused = GetPreselectedPrice(bundleItem.Item.Product, context, bundleItem, bundleItems);
 				}
 
-				result = GetPreselectedPrice(product, bundleContext, null, bundleItems);
+				result = GetPreselectedPrice(product, context, null, bundleItems);
 			}
 			else
 			{
-				if (context == null)
-					context = CreatePriceCalculationContext(null);
-
 				result = GetPreselectedPrice(product, context, null, null);
 			}
 

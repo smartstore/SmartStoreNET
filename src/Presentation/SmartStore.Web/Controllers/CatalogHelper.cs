@@ -1002,7 +1002,6 @@ namespace SmartStore.Web.Controllers
 			string taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
 			var cachedManufacturerModels = new Dictionary<int, ManufacturerOverviewModel>();
-			PriceCalculationContext priceCalculationContext = null;
 
 			var res = new Dictionary<string, LocalizedString>(StringComparer.OrdinalIgnoreCase)
 			{
@@ -1015,7 +1014,7 @@ namespace SmartStore.Web.Controllers
 				{ "Common.AdditionalShippingSurcharge", T("Common.AdditionalShippingSurcharge") }
 			};
 
-			int[] productIds = products.Select(x => x.Id).ToArray();				
+			var cargoData = _priceCalculationService.CreatePriceCalculationContext(products);
 
 			var models = new List<ProductOverviewModel>();
 
@@ -1036,9 +1035,6 @@ namespace SmartStore.Web.Controllers
 				{
 					#region Prepare product price
 
-					if (priceCalculationContext == null)
-						priceCalculationContext = _priceCalculationService.CreatePriceCalculationContext(productIds);
-
 					var priceModel = new ProductOverviewModel.ProductPriceModel
 					{
 						ForceRedirectionAfterAddingToCart = forceRedirectionAfterAddingToCart,
@@ -1057,7 +1053,7 @@ namespace SmartStore.Web.Controllers
 						{
 							StoreId = currentStore.Id,
 							ParentGroupedProductId = product.Id,
-							PageSize = (_catalogSettings.PriceDisplayType == PriceDisplayType.LowestPrice ? int.MaxValue : 1),
+							PageSize = int.MaxValue,
 							VisibleIndividuallyOnly = false
 						};
 
@@ -1065,23 +1061,25 @@ namespace SmartStore.Web.Controllers
 
 						if (associatedProducts.Count > 0)
 						{
-							contextProduct = associatedProducts.First();
+							contextProduct = associatedProducts.OrderBy(x => x.DisplayOrder).First();
 
 							if (displayPrices && _catalogSettings.PriceDisplayType != PriceDisplayType.Hide)
 							{
 								decimal? displayPrice = null;
+								bool displayFromMessage = false;
 
 								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, null);
+									displayPrice = _priceCalculationService.GetPreselectedPrice(contextProduct, cargoData);
 								}
 								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 								{
-									displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, currentCustomer, decimal.Zero, false, 1, null);
+									displayPrice = _priceCalculationService.GetFinalPrice(contextProduct, null, currentCustomer, decimal.Zero, false, 1, null, cargoData);
 								}
 								else
 								{
-									displayPrice = _priceCalculationService.GetLowestPrice(product, associatedProducts, out contextProduct);
+									displayFromMessage = true;
+									displayPrice = _priceCalculationService.GetLowestPrice(product, cargoData, associatedProducts, out contextProduct);
 								}	
 
 								if (contextProduct != null && !contextProduct.CustomerEntersPrice)
@@ -1100,8 +1098,13 @@ namespace SmartStore.Web.Controllers
 										decimal finalPrice = _currencyService.ConvertFromPrimaryStoreCurrency(finalPriceBase, workingCurrency);
 
 										priceModel.OldPrice = null;
-										priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
-										priceModel.HasDiscount = finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero;
+
+										if (displayFromMessage)
+											priceModel.Price = String.Format(res["Products.PriceRangeFrom"], _priceFormatter.FormatPrice(finalPrice));
+										else
+											priceModel.Price = _priceFormatter.FormatPrice(finalPrice);
+
+										priceModel.HasDiscount = (finalPriceBase != oldPriceBase && oldPriceBase != decimal.Zero);
 									}
 									else
 									{
@@ -1144,15 +1147,15 @@ namespace SmartStore.Web.Controllers
 
 								if (_catalogSettings.PriceDisplayType == PriceDisplayType.PreSelectedPrice)
 								{
-									displayPrice = _priceCalculationService.GetPreselectedPrice(product, priceCalculationContext);
+									displayPrice = _priceCalculationService.GetPreselectedPrice(product, cargoData);
 								}
 								else if (_catalogSettings.PriceDisplayType == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 								{
-									displayPrice = _priceCalculationService.GetFinalPrice(product, null, currentCustomer, decimal.Zero, false, 1, null);
+									displayPrice = _priceCalculationService.GetFinalPrice(product, null, currentCustomer, decimal.Zero, false, 1, null, cargoData);
 								}
 								else
 								{
-									displayPrice = _priceCalculationService.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
+									displayPrice = _priceCalculationService.GetLowestPrice(product, cargoData, out displayFromMessage);
 								}
 
 								decimal taxRate = decimal.Zero;
@@ -1190,6 +1193,35 @@ namespace SmartStore.Web.Controllers
 
 					model.ProductPrice = priceModel;
                     model.ProductPrice.CallForPrice = product.CallForPrice;
+
+					#endregion
+				}
+
+				// color squares
+				if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
+				{
+					#region Prepare color attributes
+
+					var attributes = cargoData.Attributes.Load(contextProduct.Id);
+					var colorAttribute = attributes.FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
+
+					if (colorAttribute != null)
+					{
+						var colorValues =
+							from a in colorAttribute.ProductVariantAttributeValues.Take(50)
+							where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
+							select new ProductOverviewModel.ColorAttributeModel
+							{
+								Color = a.ColorSquaresRgb,
+								Alias = a.Alias,
+								FriendlyName = a.GetLocalized(l => l.Name)
+							};
+
+						if (colorValues.Any())
+						{
+							model.ColorAttributes.AddRange(colorValues.Distinct());
+						}
+					}
 
 					#endregion
 				}
@@ -1295,46 +1327,6 @@ namespace SmartStore.Web.Controllers
 				}
 
 				models.Add(model);
-			}
-
-			// Color squares
-			// Perf: Loading all applicable attributes in one go is definitely faster
-			//		 than fetching them one by one withing the above loop.
-			if (prepareColorAttributes && _catalogSettings.ShowColorSquaresInLists)
-			{
-				#region Prepare color attributes
-
-				var minPriceProductIds = models.Select(x => x.MinPriceProductId).ToArray();
-				var allAttrs = _productAttributeService.GetProductVariantAttributesByProductIds(minPriceProductIds, AttributeControlType.ColorSquares);
-
-				foreach (var model in models)
-				{
-					if (!allAttrs.ContainsKey(model.MinPriceProductId))
-						continue;
-					
-					// get the FIRST color type attribute
-					ProductVariantAttribute colorAttr = allAttrs[model.MinPriceProductId].FirstOrDefault(x => x.AttributeControlType == AttributeControlType.ColorSquares);
-
-					if (colorAttr != null)
-					{
-						var colorValues =
-							from a in colorAttr.ProductVariantAttributeValues.Take(50)
-							where (a.ColorSquaresRgb.HasValue() && !a.ColorSquaresRgb.IsCaseInsensitiveEqual("transparent"))
-							select new ProductOverviewModel.ColorAttributeModel
-							{
-								Color = a.ColorSquaresRgb,
-								Alias = a.Alias,
-								FriendlyName = a.GetLocalized(l => l.Name)
-							};
-
-						if (colorValues.Any())
-						{
-							model.ColorAttributes.AddRange(colorValues.Distinct());
-						}
-					}
-				}
-
-				#endregion
 			}
 
 			return models;

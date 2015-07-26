@@ -3,8 +3,10 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Web.Mvc;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Utilities;
 
@@ -272,6 +274,15 @@ namespace SmartStore.Services.Catalog
         /// <param name="tierPriceId">Tier price identifier</param>
         /// <returns>Tier price</returns>
         TierPrice GetTierPriceById(int tierPriceId);
+
+		/// <summary>
+		/// Gets tier prices by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <param name="customer">Filter tier prices by customer</param>
+		/// <param name="storeId">Filter tier prices by store</param>
+		/// <returns>Map of tier prices</returns>
+		Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0);
 
         /// <summary>
         /// Inserts a tier price

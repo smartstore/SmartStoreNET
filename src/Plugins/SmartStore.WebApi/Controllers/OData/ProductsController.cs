@@ -261,7 +261,7 @@ namespace SmartStore.WebApi.Controllers.OData
 						Product lowestPriceProduct;
 						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
 
-						result = _priceCalculationService.Value.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, associatedProducts, out lowestPriceProduct);
 					}
 					else
 					{

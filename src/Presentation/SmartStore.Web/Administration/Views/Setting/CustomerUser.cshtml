@@ -77,6 +77,15 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberEnabled)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNumberEnabled)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberEnabled)
+            </td>
+        </tr>
         <tr id="pnlAllowUsersToChangeUsernames">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)

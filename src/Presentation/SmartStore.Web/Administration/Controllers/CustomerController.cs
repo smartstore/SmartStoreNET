@@ -234,6 +234,7 @@ namespace SmartStore.Admin.Controllers
                 Username = customer.Username,
                 FullName = customer.GetFullName(),
                 Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company),
+                CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber),
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                 CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
@@ -281,7 +282,8 @@ namespace SmartStore.Admin.Controllers
 			model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
 			model.PhoneEnabled = _customerSettings.PhoneEnabled;
 			model.FaxEnabled = _customerSettings.FaxEnabled;
-
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberEnabled;
+            
 			if (_customerSettings.CountryEnabled)
 			{
 				model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
@@ -607,6 +609,7 @@ namespace SmartStore.Admin.Controllers
             model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
             model.DateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
             model.Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company);
+            model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
             model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
             model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
             model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
@@ -619,6 +622,7 @@ namespace SmartStore.Admin.Controllers
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberEnabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
             model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
@@ -765,6 +769,8 @@ namespace SmartStore.Admin.Controllers
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.DateOfBirth, model.DateOfBirth);
                     if (_customerSettings.CompanyEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.Company);
+                    if (_customerSettings.CustomerNumberEnabled)
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.CustomerNumber);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)
@@ -835,6 +841,7 @@ namespace SmartStore.Admin.Controllers
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;

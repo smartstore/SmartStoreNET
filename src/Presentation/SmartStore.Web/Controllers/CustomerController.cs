@@ -241,6 +241,7 @@ namespace SmartStore.Web.Controllers
                 model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
+                model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
 
                 //newsletter
                 var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
@@ -311,6 +312,7 @@ namespace SmartStore.Web.Controllers
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberEnabled;
 
             //external authentication
             foreach (var ear in _openAuthenticationService.GetExternalIdentifiersFor(customer))
@@ -1002,9 +1004,18 @@ namespace SmartStore.Web.Controllers
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
+                    {
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                    }
+
+                    if (_customerSettings.CustomerNumberEnabled)
+                    {
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                    }
+
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
+
                     if (_customerSettings.DateOfBirthEnabled)
                     {
                         DateTime? dateOfBirth = null;

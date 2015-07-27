@@ -9,6 +9,7 @@
 * Skrill payment plugin (distributed via Marketplace)
 * (Dev) DevTool plugin: added option to display all widget zones in public store
 * New options for manufacturer display on the homepage
+* Added optional customer number field
 
 ### Improvements
 * (Perf) several minor optimizations for faster app startup and page rendering

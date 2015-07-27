@@ -8,6 +8,7 @@ namespace SmartStore.Core.Domain.Customers
 		public CustomerSettings()
 		{
 			UsernamesEnabled = true;
+            CustomerNumberEnabled = true;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
 			HashedPasswordFormat = "SHA1";
 			PasswordMinLength = 6;
@@ -28,6 +29,11 @@ namespace SmartStore.Core.Domain.Customers
         /// Gets or sets a value indicating whether usernames are used instead of emails
         /// </summary>
         public bool UsernamesEnabled { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether customers can enter a customer id
+        /// </summary>
+        public bool CustomerNumberEnabled { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether users can check the availability of usernames (when registering or changing in 'My Account')

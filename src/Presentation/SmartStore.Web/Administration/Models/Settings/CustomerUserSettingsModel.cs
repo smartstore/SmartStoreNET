@@ -25,6 +25,9 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
             public bool UsernamesEnabled { get; set; }
 
+            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled")]
+            public bool CustomerNumberEnabled { get; set; }
+
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowUsersToChangeUsernames")]
             public bool AllowUsersToChangeUsernames { get; set; }
 

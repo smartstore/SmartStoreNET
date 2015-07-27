@@ -62,6 +62,12 @@ namespace SmartStore.Admin.Models.Customers
         [AllowHtml]
         public string Company { get; set; }
 
+        public bool CustomerNumberEnabled { get; set; }
+        [SmartResourceDisplayName("Account.Fields.CustomerNumber")]
+        [AllowHtml]
+        public string CustomerNumber { get; set; }
+
+
         public bool StreetAddressEnabled { get; set; }
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.StreetAddress")]
         [AllowHtml]

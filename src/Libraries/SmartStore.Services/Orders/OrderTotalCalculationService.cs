@@ -355,8 +355,7 @@ namespace SmartStore.Services.Orders
 			{
 				foreach (var discount in allDiscounts)
 				{
-					if (_discountService.IsDiscountValid(discount, customer) && discount.DiscountType == DiscountType.AssignedToOrderSubTotal &&
-						!allowedDiscounts.ContainsDiscount(discount))
+					if (discount.DiscountType == DiscountType.AssignedToOrderSubTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
 					{
 						allowedDiscounts.Add(discount);
 					}
@@ -668,12 +667,17 @@ namespace SmartStore.Services.Orders
 
             var allDiscounts = _discountService.GetAllDiscounts(DiscountType.AssignedToShipping);
             var allowedDiscounts = new List<Discount>();
-            if (allDiscounts != null)
-                foreach (var discount in allDiscounts)
-                    if (_discountService.IsDiscountValid(discount, customer) &&
-                               discount.DiscountType == DiscountType.AssignedToShipping &&
-                               !allowedDiscounts.ContainsDiscount(discount))
-                        allowedDiscounts.Add(discount);
+
+			if (allDiscounts != null)
+			{
+				foreach (var discount in allDiscounts)
+				{
+					if (discount.DiscountType == DiscountType.AssignedToShipping && !allowedDiscounts.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+					{
+						allowedDiscounts.Add(discount);
+					}
+				}
+			}
 
             appliedDiscount = allowedDiscounts.GetPreferredDiscount(shippingTotal);
             if (appliedDiscount != null)
@@ -1068,8 +1072,7 @@ namespace SmartStore.Services.Orders
 			{
 				foreach (var discount in allDiscounts)
 				{
-					if (_discountService.IsDiscountValid(discount, customer) && discount.DiscountType == DiscountType.AssignedToOrderTotal &&
-						!allowedDiscounts.ContainsDiscount(discount))
+					if (discount.DiscountType == DiscountType.AssignedToOrderTotal && !allowedDiscounts.Any(x => x.Id == discount.Id) &&_discountService.IsDiscountValid(discount, customer))
 					{
 						allowedDiscounts.Add(discount);
 					}

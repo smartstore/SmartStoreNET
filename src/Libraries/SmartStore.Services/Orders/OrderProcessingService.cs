@@ -649,7 +649,7 @@ namespace SmartStore.Services.Orders
                     orderSubTotalDiscountInclTax = orderSubTotalDiscountAmount1;
 
                     //discount history
-                    if (orderSubTotalAppliedDiscount1 != null && !appliedDiscounts.ContainsDiscount(orderSubTotalAppliedDiscount1))
+                    if (orderSubTotalAppliedDiscount1 != null && !appliedDiscounts.Any(x => x.Id == orderSubTotalAppliedDiscount1.Id))
                         appliedDiscounts.Add(orderSubTotalAppliedDiscount1);
 
                     //sub total (excl tax)
@@ -712,7 +712,7 @@ namespace SmartStore.Services.Orders
                     if (!orderShippingTotalInclTax.HasValue || !orderShippingTotalExclTax.HasValue)
                         throw new SmartException("Shipping total couldn't be calculated");
 
-                    if (shippingTotalDiscount != null && !appliedDiscounts.ContainsDiscount(shippingTotalDiscount))
+                    if (shippingTotalDiscount != null && !appliedDiscounts.Any(x => x.Id == shippingTotalDiscount.Id))
                         appliedDiscounts.Add(shippingTotalDiscount);
                 }
                 else
@@ -783,7 +783,7 @@ namespace SmartStore.Services.Orders
                         throw new SmartException("Order total couldn't be calculated");
 
                     //discount history
-                    if (orderAppliedDiscount != null && !appliedDiscounts.ContainsDiscount(orderAppliedDiscount))
+                    if (orderAppliedDiscount != null && !appliedDiscounts.Any(x => x.Id == orderAppliedDiscount.Id))
                         appliedDiscounts.Add(orderAppliedDiscount);
                 }
                 else
@@ -1089,7 +1089,8 @@ namespace SmartStore.Services.Orders
                                 decimal discountAmount = _priceCalculationService.GetDiscountAmount(sc, out scDiscount);
                                 decimal discountAmountInclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, true, customer, out taxRate);
                                 decimal discountAmountExclTax = _taxService.GetProductPrice(sc.Item.Product, discountAmount, false, customer, out taxRate);
-                                if (scDiscount != null && !appliedDiscounts.ContainsDiscount(scDiscount))
+                                
+								if (scDiscount != null && !appliedDiscounts.Any(x => x.Id == scDiscount.Id))
                                     appliedDiscounts.Add(scDiscount);
 
                                 //attributes

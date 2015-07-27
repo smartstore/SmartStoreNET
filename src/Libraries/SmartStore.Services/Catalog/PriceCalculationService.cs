@@ -67,26 +67,23 @@ namespace SmartStore.Services.Catalog
         /// <returns>Discounts</returns>
         protected virtual IList<Discount> GetAllowedDiscounts(Product product, Customer customer)
         {
-            var allowedDiscounts = new List<Discount>();
+            var result = new List<Discount>();
             if (_catalogSettings.IgnoreDiscounts)
-                return allowedDiscounts;
+                return result;
 
 			if (product.HasDiscountsApplied)
             {
                 //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
 				foreach (var discount in product.AppliedDiscounts)
                 {
-					if (_discountService.IsDiscountValid(discount, customer) &&
-						discount.DiscountType == DiscountType.AssignedToSkus &&
-						!allowedDiscounts.ContainsDiscount(discount))
+					if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
 					{
-						allowedDiscounts.Add(discount);
+						result.Add(discount);
 					}
                 }
             }
 
-            //performance optimization
-            //load all category discounts just to ensure that we have at least one
+            //performance optimization. load all category discounts just to ensure that we have at least one
             if (_discountService.GetAllDiscounts(DiscountType.AssignedToCategories).Any())
             {
 				var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
@@ -100,20 +97,20 @@ namespace SmartStore.Services.Catalog
                         {
                             //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
                             var categoryDiscounts = category.AppliedDiscounts;
+
                             foreach (var discount in categoryDiscounts)
                             {
-								if (_discountService.IsDiscountValid(discount, customer) &&
-									discount.DiscountType == DiscountType.AssignedToCategories &&
-									!allowedDiscounts.ContainsDiscount(discount))
+								if (discount.DiscountType == DiscountType.AssignedToCategories && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
 								{
-									allowedDiscounts.Add(discount);
+									result.Add(discount);
 								}
                             }
                         }
                     }
                 }
             }
-            return allowedDiscounts;
+
+            return result;
         }
 
         /// <summary>

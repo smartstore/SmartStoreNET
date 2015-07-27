@@ -144,6 +144,7 @@
     <Compile Include="Controllers\DevToolsController.cs" />
     <Compile Include="Controllers\MyCheckoutController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Filters\WidgetZoneFilter.cs" />
     <Compile Include="Filters\Samples\SampleCheckoutFilter.cs" />
     <Compile Include="Filters\ProfilerFilter.cs" />
     <Compile Include="Filters\Samples\SampleResultFilter.cs" />
@@ -155,7 +156,6 @@
     <Compile Include="Services\IProfilerService.cs" />
     <Compile Include="Services\ProfilerService.cs" />
     <Compile Include="Settings\ProfilerSettings.cs" />
-    <Compile Include="Widgets\ShowZonesWidget.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">

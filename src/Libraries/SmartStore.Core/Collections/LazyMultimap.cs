@@ -46,7 +46,7 @@ namespace SmartStore.Collections
 				{
 					++_roundTripCount;
 
-					Debug.WriteLine("Round trip {0} of {1}: {2}", _roundTripCount, typeof(T).Name, string.Join(",", loadKeys.OrderBy(x => x)));
+					//Debug.WriteLine("Round trip {0} of {1}: {2}", _roundTripCount, typeof(T).Name, string.Join(",", loadKeys.OrderBy(x => x)));
 
 					var items = _load(loadKeys);
 

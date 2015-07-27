@@ -210,15 +210,6 @@ namespace SmartStore.Services.Catalog
 					}
 				}
 
-				//if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
-				//	defaultValue.IsPreSelected = true;
-
-				//if (defaultValue == null)
-				//	defaultValue = pvaValues.FirstOrDefault(x => x.IsPreSelected);
-
-				//if (defaultValue != null)
-				//	selectedAttributes.AddProductAttribute(attribute.ProductAttributeId, attribute.Id, defaultValue.Id, product.Id, bundleItemId);
-
 				// value pre-selected by a bundle item filter discards the default pre-selection
 				if (preSelectedValueId != 0 && (defaultValue = pvaValues.FirstOrDefault(x => x.Id == preSelectedValueId)) != null)
 				{
@@ -448,6 +439,8 @@ namespace SmartStore.Services.Catalog
 			if (product.ProductType == ProductType.GroupedProduct)
 				throw Error.InvalidOperation("Choose the other override for products of type grouped product.");
 
+			// note: attribute price adjustments were never regarded here cause of many reasons
+
 			if (context == null)
 				context = CreatePriceCalculationContext();
 
@@ -455,9 +448,7 @@ namespace SmartStore.Services.Catalog
 
 			displayFromMessage = isBundlePerItemPricing;
 
-			// TODO(?): attribute price adjustments were not regarded here cause of performance
-
-			decimal lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue, null, context);
+			var lowestPrice = GetFinalPrice(product, null, _services.WorkContext.CurrentCustomer, decimal.Zero, true, int.MaxValue, null, context);
 
 			if (product.LowestAttributeCombinationPrice.HasValue && product.LowestAttributeCombinationPrice.Value < lowestPrice)
 			{

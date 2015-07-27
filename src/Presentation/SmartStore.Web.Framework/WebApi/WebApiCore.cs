@@ -1,5 +1,4 @@
 ﻿using System.Text;
-using Microsoft.Data.OData;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -13,8 +12,6 @@ namespace SmartStore.Web.Framework.WebApi
 		public static string MostRecentOdataPath { get { return "odata/v1"; } }
 		public static string PluginSystemName { get { return "SmartStore.WebApi"; } }
 
-		public static ODataVersion ODataVersion { get { return ODataVersion.V3; } }
-
 		/// <remarks>see http://tools.ietf.org/html/rfc6648</remarks>
 		public static class Header
 		{
@@ -24,6 +21,7 @@ namespace SmartStore.Web.Framework.WebApi
 			public static string PublicKey { get { return Prefix + "PublicKey"; } }
 			public static string MaxTop { get { return Prefix + "MaxTop"; } }
 			public static string Version { get { return Prefix + "Version"; } }
+			public static string CustomerId { get { return Prefix + "CustomerId"; } }
 			public static string HmacResultId { get { return Prefix + "HmacResultId"; } }
 			public static string HmacResultDescription { get { return Prefix + "HmacResultDesc"; } }
 			//public static string LastRequest { get { return Prefix + "LastRequest"; } }

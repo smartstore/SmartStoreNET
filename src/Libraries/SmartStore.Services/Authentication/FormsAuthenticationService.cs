@@ -1,6 +1,7 @@
 using System;
 using System.Web;
 using System.Web.Security;
+using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Services.Customers;
 
@@ -77,18 +78,29 @@ namespace SmartStore.Services.Authentication
             if (_cachedCustomer != null)
                 return _cachedCustomer;
 
-            if (_httpContext == null ||
-                _httpContext.Request == null ||
-                !_httpContext.Request.IsAuthenticated ||
-                !(_httpContext.User.Identity is FormsIdentity))
+            if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated)
             {
                 return null;
             }
 
-            var formsIdentity = (FormsIdentity)_httpContext.User.Identity;
-            var customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
-            if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
-                _cachedCustomer = customer;
+			Customer customer = null;
+			FormsIdentity formsIdentity = null;
+			SmartNetPrincipal smartNetPrincipal = null;
+
+			if ((formsIdentity = _httpContext.User.Identity as FormsIdentity) != null)
+			{
+				customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
+			}
+			else if ((smartNetPrincipal = _httpContext.User as SmartNetPrincipal) != null)
+			{
+				customer = _customerService.GetCustomerById(smartNetPrincipal.CustomerId);
+			}
+
+			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())
+			{
+				_cachedCustomer = customer;
+			}
+
             return _cachedCustomer;
         }
 

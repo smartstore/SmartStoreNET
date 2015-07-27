@@ -764,29 +764,35 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
             
-            var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId,
-                command.Page - 1, command.PageSize, true);
+            var productCategories = _categoryService.GetProductCategoriesByCategoryId(categoryId, command.Page - 1, command.PageSize, true);
+
+			var products = _productService.GetProductsByIds(productCategories.Select(x => x.ProductId).ToArray());
 
             var model = new GridModel<CategoryModel.CategoryProductModel>
             {
-                Data = productCategories
-                .Select(x =>
+                Data = productCategories.Select(x =>
                 {
-					var product = _productService.GetProductById(x.ProductId);
+					var productModel = new CategoryModel.CategoryProductModel
+					{
+						Id = x.Id,
+						CategoryId = x.CategoryId,
+						ProductId = x.ProductId,
+						IsFeaturedProduct = x.IsFeaturedProduct,
+						DisplayOrder1 = x.DisplayOrder
+					};
 
-                    return new CategoryModel.CategoryProductModel()
-                    {
-                        Id = x.Id,
-                        CategoryId = x.CategoryId,
-                        ProductId = x.ProductId,
-                        ProductName = product.Name,
-						Sku = product.Sku,
-						ProductTypeName = product.GetProductTypeLabel(_localizationService),
-						ProductTypeLabelHint = product.ProductTypeLabelHint,
-						Published = product.Published,
-                        IsFeaturedProduct = x.IsFeaturedProduct,
-                        DisplayOrder1 = x.DisplayOrder
-                    };
+					var product = products.FirstOrDefault(y => y.Id == x.ProductId);
+
+					if (product != null)
+					{
+						productModel.ProductName = product.Name;
+						productModel.Sku = product.Sku;
+						productModel.ProductTypeName = product.GetProductTypeLabel(_localizationService);
+						productModel.ProductTypeLabelHint = product.ProductTypeLabelHint;
+						productModel.Published = product.Published;
+					}
+					
+					return productModel;
                 }),
                 Total = productCategories.TotalCount
             };

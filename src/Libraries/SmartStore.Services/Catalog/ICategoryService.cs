@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 
@@ -95,6 +96,15 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product category mapping collection</returns>
         IList<ProductCategory> GetProductCategoriesByProductId(int productId, bool showHidden = false);
+
+		/// <summary>
+		/// Gets product category mappings
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <param name="hasDiscountsApplied">A value indicating whether to filter categories with applied discounts</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Map with product category mappings</returns>
+		Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false);
 
         /// <summary>
         /// Gets a product category mapping 

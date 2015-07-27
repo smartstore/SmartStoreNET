@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -467,6 +468,34 @@ namespace SmartStore.Services.Catalog
 				return result;
             });
         }
+
+		public virtual Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query = 
+				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category)
+				join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+				where productIds.Contains(pc.ProductId) && !c.Deleted && (showHidden || c.Published)
+				orderby pc.DisplayOrder
+				select pc;
+
+			if (hasDiscountsApplied.HasValue)
+			{
+				query = query.Where(x => x.Category.HasDiscountsApplied == hasDiscountsApplied);
+			}
+
+			var list = query.ToList();
+
+			if (!showHidden)
+			{
+				list = list.Where(x => _aclService.Authorize(x.Category) && _storeMappingService.Authorize(x.Category)).ToList();
+			}
+
+			var map = list.ToMultimap(x => x.ProductId, x => x);
+				
+			return map;
+		}
 
 		protected virtual IQueryable<ProductCategory> ApplyHiddenProductCategoriesFilter(IQueryable<ProductCategory> query, int storeId = 0)
         {

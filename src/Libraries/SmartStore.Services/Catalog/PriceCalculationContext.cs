@@ -17,15 +17,18 @@ namespace SmartStore.Services.Catalog
 		private Func<int[], Multimap<int, ProductVariantAttribute>> _funcAttributes;
 		private Func<int[], Multimap<int, ProductVariantAttributeCombination>> _funcAttributeCombinations;
 		private Func<int[], Multimap<int, TierPrice>> _funcTierPrices;
+		private Func<int[], Multimap<int, ProductCategory>> _funcProductCategories;
 
 		private LazyMultimap<ProductVariantAttribute> _attributes;
 		private LazyMultimap<ProductVariantAttributeCombination> _attributeCombinations;
 		private LazyMultimap<TierPrice> _tierPrices;
+		private LazyMultimap<ProductCategory> _productCategories;
 
 		public PriceCalculationContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,
-			Func<int[], Multimap<int, TierPrice>> tierPrices)
+			Func<int[], Multimap<int, TierPrice>> tierPrices,
+			Func<int[], Multimap<int, ProductCategory>> productCategories)
 		{
 			if (products == null)
 			{
@@ -41,6 +44,7 @@ namespace SmartStore.Services.Catalog
 			_funcAttributes = attributes;
 			_funcAttributeCombinations = attributeCombinations;
 			_funcTierPrices = tierPrices;
+			_funcProductCategories = productCategories;
 		}
 
 		public LazyMultimap<ProductVariantAttribute> Attributes
@@ -79,11 +83,24 @@ namespace SmartStore.Services.Catalog
 			}
 		}
 
+		public LazyMultimap<ProductCategory> ProductCategories
+		{
+			get
+			{
+				if (_productCategories == null)
+				{
+					_productCategories = new LazyMultimap<ProductCategory>(keys => _funcProductCategories(keys), _productIds);
+				}
+				return _productCategories;
+			}
+		}
+
 		public void Collect(IEnumerable<int> productIds)
 		{
 			Attributes.Collect(productIds);
 			AttributeCombinations.Collect(productIds);
 			TierPrices.Collect(productIds);
+			ProductCategories.Collect(productIds);
 		}
 	}
 }

@@ -181,13 +181,15 @@ namespace SmartStore.Services.Catalog
 		/// <param name="quantity">Product quantity</param>
 		/// <param name="appliedDiscount">Applied discount</param>
 		/// <param name="bundleItem">A product bundle item</param>
+		/// <param name="context">Object with cargo data for better performance</param>
 		/// <returns>Discount amount</returns>
 		decimal GetDiscountAmount(Product product,
 			Customer customer,
 			decimal additionalCharge,
 			int quantity,
 			out Discount appliedDiscount,
-			ProductBundleItemData bundleItem = null);
+			ProductBundleItemData bundleItem = null,
+			PriceCalculationContext context = null);
 
 
         /// <summary>

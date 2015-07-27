@@ -28,6 +28,7 @@
 * #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
 * #735 Include SKUs of attribute combinations when filtering the backend product list
 * Filter for homepage and published\unpublished products in backend product list
+* Reduce database round trips initiated by price calculation
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

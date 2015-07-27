@@ -1,9 +1,9 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Linq;
 using System.Web;
-using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
@@ -65,7 +65,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="product">Product</param>
         /// <param name="customer">Customer</param>
         /// <returns>Discounts</returns>
-        protected virtual IList<Discount> GetAllowedDiscounts(Product product, Customer customer)
+        protected virtual IList<Discount> GetAllowedDiscounts(Product product, Customer customer, PriceCalculationContext context = null)
         {
             var result = new List<Discount>();
             if (_catalogSettings.IgnoreDiscounts)
@@ -86,7 +86,13 @@ namespace SmartStore.Services.Catalog
             //performance optimization. load all category discounts just to ensure that we have at least one
             if (_discountService.GetAllDiscounts(DiscountType.AssignedToCategories).Any())
             {
-				var productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
+				IEnumerable<ProductCategory> productCategories = null;
+				
+				if (context == null)
+					productCategories = _categoryService.GetProductCategoriesByProductId(product.Id);
+				else
+					productCategories = context.ProductCategories.Load(product.Id);
+
                 if (productCategories != null)
                 {
                     foreach (var productCategory in productCategories)
@@ -272,7 +278,8 @@ namespace SmartStore.Services.Catalog
 			var context = new PriceCalculationContext(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
-				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id)
+				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
+				x => _categoryService.GetProductCategoriesByProductIds(x, true)
 			);
 
 			return context;
@@ -385,7 +392,7 @@ namespace SmartStore.Services.Catalog
             if (includeDiscounts)
             {
                 Discount appliedDiscount = null;
-				decimal discountAmount = GetDiscountAmount(product, customer, additionalCharge, quantity, out appliedDiscount, bundleItem);
+				decimal discountAmount = GetDiscountAmount(product, customer, additionalCharge, quantity, out appliedDiscount, bundleItem, context);
                 result = result + additionalCharge - discountAmount;
             }
             else
@@ -471,13 +478,6 @@ namespace SmartStore.Services.Catalog
 
 			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
 			{
-				//var tierPrices = product.TierPrices
-				//	.OrderBy(tp => tp.Quantity)
-				//	.FilterByStore(_services.StoreContext.CurrentStore.Id)
-				//	.FilterForCustomer(_services.WorkContext.CurrentCustomer)
-				//	.ToList()
-				//	.RemoveDuplicatedQuantities();
-
 				var tierPrices = context.TierPrices.Load(product.Id);
 
 				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
@@ -649,23 +649,14 @@ namespace SmartStore.Services.Catalog
             return GetDiscountAmount(product, customer, additionalCharge, 1, out appliedDiscount);
         }
 
-        /// <summary>
-        /// Gets discount amount
-        /// </summary>
-		/// <param name="product">Product</param>
-        /// <param name="customer">The customer</param>
-        /// <param name="additionalCharge">Additional charge</param>
-        /// <param name="quantity">Product quantity</param>
-        /// <param name="appliedDiscount">Applied discount</param>
-		/// <param name="bundleItem">A product bundle item</param>
-        /// <returns>Discount amount</returns>
         public virtual decimal GetDiscountAmount(
 			Product product,
             Customer customer,
             decimal additionalCharge,
             int quantity,
             out Discount appliedDiscount,
-			ProductBundleItemData bundleItem = null)
+			ProductBundleItemData bundleItem = null,
+			PriceCalculationContext context = null)
         {
             appliedDiscount = null;
             decimal appliedDiscountAmount = decimal.Zero;
@@ -675,14 +666,14 @@ namespace SmartStore.Services.Catalog
 			{
 				if (bundleItem.Item.Discount.HasValue && bundleItem.Item.BundleProduct.BundlePerItemPricing)
 				{
-					appliedDiscount = new Discount()
+					appliedDiscount = new Discount
 					{
 						UsePercentage = bundleItem.Item.DiscountPercentage,
 						DiscountPercentage = bundleItem.Item.Discount.Value,
 						DiscountAmount = bundleItem.Item.Discount.Value
 					};
 
-					finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
+					finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
 					appliedDiscountAmount = appliedDiscount.GetDiscountAmount(finalPriceWithoutDiscount);
 				}
 			}
@@ -694,13 +685,13 @@ namespace SmartStore.Services.Catalog
 					return appliedDiscountAmount;
 				}
 
-				var allowedDiscounts = GetAllowedDiscounts(product, customer);
+				var allowedDiscounts = GetAllowedDiscounts(product, customer, context);
 				if (allowedDiscounts.Count == 0)
 				{
 					return appliedDiscountAmount;
 				}
 
-				finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem);
+				finalPriceWithoutDiscount = GetFinalPrice(product, customer, additionalCharge, false, quantity, bundleItem, context);
 				appliedDiscount = allowedDiscounts.GetPreferredDiscount(finalPriceWithoutDiscount);
 
 				if (appliedDiscount != null)

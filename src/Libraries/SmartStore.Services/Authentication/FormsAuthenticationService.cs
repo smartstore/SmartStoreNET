@@ -25,8 +25,7 @@ namespace SmartStore.Services.Authentication
         /// <param name="httpContext">HTTP context</param>
         /// <param name="customerService">Customer service</param>
         /// <param name="customerSettings">Customer settings</param>
-        public FormsAuthenticationService(HttpContextBase httpContext,
-            ICustomerService customerService, CustomerSettings customerSettings)
+        public FormsAuthenticationService(HttpContextBase httpContext, ICustomerService customerService, CustomerSettings customerSettings)
         {
             this._httpContext = httpContext;
             this._customerService = customerService;
@@ -78,22 +77,20 @@ namespace SmartStore.Services.Authentication
             if (_cachedCustomer != null)
                 return _cachedCustomer;
 
-            if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated)
-            {
+            if (_httpContext == null || _httpContext.Request == null || !_httpContext.Request.IsAuthenticated || _httpContext.User == null)
                 return null;
-            }
 
 			Customer customer = null;
 			FormsIdentity formsIdentity = null;
-			SmartNetPrincipal smartNetPrincipal = null;
+			SmartNetIdentity smartNetIdentity = null;
 
 			if ((formsIdentity = _httpContext.User.Identity as FormsIdentity) != null)
 			{
 				customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
 			}
-			else if ((smartNetPrincipal = _httpContext.User as SmartNetPrincipal) != null)
+			else if ((smartNetIdentity = _httpContext.User.Identity as SmartNetIdentity) != null)
 			{
-				customer = _customerService.GetCustomerById(smartNetPrincipal.CustomerId);
+				customer = _customerService.GetCustomerById(smartNetIdentity.CustomerId);
 			}
 
 			if (customer != null && customer.Active && !customer.Deleted && customer.IsRegistered())

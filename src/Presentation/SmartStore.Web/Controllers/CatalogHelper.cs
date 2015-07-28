@@ -986,7 +986,8 @@ namespace SmartStore.Web.Controllers
 			bool prepareSpecificationAttributes = false,
 			bool forceRedirectionAfterAddingToCart = false, 
 			bool prepareColorAttributes = false,
-			bool prepareManufacturers = false)
+			bool prepareManufacturers = false,
+            bool isCompact = false)
 		{
 			if (products == null)
 				throw new ArgumentNullException("products");
@@ -1315,7 +1316,7 @@ namespace SmartStore.Web.Controllers
 
 				if (_catalogSettings.ShowBasePriceInProductLists)
 				{
-					model.BasePriceInfo = minPriceProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
+                    model.BasePriceInfo = minPriceProduct.GetBasePriceInfo(_localizationService, _priceFormatter, 0, isCompact);
 				}
 
 				var addShippingPrice = _currencyService.ConvertCurrency(

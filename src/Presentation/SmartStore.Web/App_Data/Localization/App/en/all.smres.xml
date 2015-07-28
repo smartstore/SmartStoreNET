@@ -240,6 +240,9 @@
 	<LocaleResource Name="Account.Fields.Country">
 		<Value>Country</Value>
 	</LocaleResource>
+	<LocaleResource Name="Account.Fields.CustomerNumber">
+		<Value>Customer number</Value>
+	</LocaleResource>
 	<LocaleResource Name="Account.Fields.DateOfBirth">
 		<Value>Date of birth</Value>
 	</LocaleResource>
@@ -782,6 +785,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.PhoneNumber.Required">
 		<Value>Phone number is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Address.Fields.Required.Hint">
+		<Value>* Input elements with asterisk are required and have to be filled out.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.StateProvince">
 		<Value>State / province</Value>
@@ -3025,6 +3031,15 @@
 	<LocaleResource Name="Admin.CheckUpdate">
 		<Value>Check for update</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
+		<Value>Unknown error during package download. Please try again later.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
+		<Value>AutoUpdate possible</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
+		<Value>&lt;p&gt;This update can be installed automatically. For this SmartStore.NET downloads an installation package to your webserver, executes it and restarts the application. Before the installation your shop directory is backed up, except the folders &lt;i&gt;App_Data&lt;/i&gt; and &lt;i&gt;Media&lt;/i&gt;, as well as the SQL Server database file. &lt;/p&gt;&lt;p&gt;Click the &lt;b&gt;Update now&lt;/b&gt; button to download and install the package. As an alternative to this, you can download the package to your local PC further below and perform the installation at a later time manually.&lt;/p&gt;</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.CheckUpdate.CurrentVersion">
 		<Value>Current version</Value>
 	</LocaleResource>
@@ -3040,26 +3055,17 @@
 	<LocaleResource Name="Admin.CheckUpdate.UpdateAvailable">
 		<Value>Update available</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
-		<Value>Your version</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.CheckUpdate.UpdateNow">
 		<Value>Update now</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
-		<Value>AutoUpdate possible</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
-		<Value>Unknown error during package download. Please try again later.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
-		<Value>&lt;p&gt;This update can be installed automatically. For this SmartStore.NET downloads an installation package to your webserver, executes it and restarts the application. Before the installation your shop directory is backed up, except the folders &lt;i&gt;App_Data&lt;/i&gt; and &lt;i&gt;Media&lt;/i&gt;, as well as the SQL Server database file. &lt;/p&gt;&lt;p&gt;Click the &lt;b&gt;Update now&lt;/b&gt; button to download and install the package. As an alternative to this, you can download the package to your local PC further below and perform the installation at a later time manually.&lt;/p&gt;</Value>
+	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
+		<Value>Your version</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common">
 		<Value>Actions</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.About">
-		<Value>About</Value>
+		<Value>About SmartStore.NET</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Actions">
 		<Value>Actions</Value>
@@ -3159,6 +3165,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Entity.Fields.Id.Hint">
 		<Value>The unique numeric id of the entity</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.ErrorSendingEmail">
+		<Value>Error sending an email</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExcelFile">
 		<Value>Excel file</Value>
@@ -3310,6 +3319,9 @@
 	<LocaleResource Name="Admin.Common.Search">
 		<Value>Search</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.SendNow">
+		<Value>Send now</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.SEO">
 		<Value>Search engines (SEO)</Value>
 	</LocaleResource>
@@ -3382,6 +3394,9 @@
 	<LocaleResource Name="Admin.Configuration.ACL">
 		<Value>Access control list</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Acl.NoRolesDefined">
+		<Value>No customer roles defined</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ACL.Permission">
 		<Value>Permission name</Value>
 	</LocaleResource>
@@ -3444,6 +3459,24 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ActivityLog.ActivityLogType.Updated">
 		<Value>The types have been updated successfully.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts">
+		<Value>Transfer this ACL configuration to children</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint">
+		<Value>This function assigns the ACL configuration of this category to all subcategories and products included in this category.&lt;br /&gt;
+                    Please keep in mind you have to save changes in the ACL configuration &lt;br/&gt; 
+                    before you can assign them to all subcategories and products. &lt;br/&gt;
+                    &lt;b&gt;Attention:&lt;/b&gt; Please keep in mind that &lt;b&gt;existing ACL records will be deleted&lt;/b&gt;</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts">
+		<Value>Transfer this store configuration to children</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint">
+		<Value>This function assigns the store configuration of this category to all subcategories and products included in this category.&lt;br /&gt;
+                    Please keep in mind you have to save changes in the store configuration &lt;br/&gt; 
+                    before you can assign them to all subcategories and products. &lt;br/&gt;
+                    &lt;b&gt;Attention:&lt;/b&gt; Please keep in mind that &lt;b&gt;existing store mappings will be deleted&lt;/b&gt;</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ContentSlider">
 		<Value>Content Slider</Value>
@@ -4271,19 +4304,19 @@
 		<Value>Display order</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType">
-		<Value>Recurring support</Value>
+		<Value>Recurring payments</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportCapture">
 		<Value>Supports capture</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportPartiallyRefund">
-		<Value>Partial refund</Value>
+		<Value>Supports partial refund</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportRefund">
-		<Value>Refund</Value>
+		<Value>Supports refund</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportVoid">
-		<Value>Void</Value>
+		<Value>Supports void</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins">
 		<Value>Plugins</Value>
@@ -4912,6 +4945,18 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPartNumber.Hint">
 		<Value>Check to show manufacturer part numbers in public store.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures">
+		<Value>Show manufacturer pictures on homepage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures.Hint">
+		<Value>Specifies whether manufacturers will be displayed as images or textual links on the homepage.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage">
+		<Value>Show manufacturers on homepage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage.Hint">
+		<Value>Specifies whether manufacturers will be displayed on the homepage.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete">
 		<Value>Show product images in autocomplete box</Value>
 	</LocaleResource>
@@ -4959,6 +5004,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowWeight.Hint">
 		<Value>Check to display the weight. When enabled, customers will see the weight of the product.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SubCategoryDisplayType">
+		<Value>Show subcategories</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SubCategoryDisplayType.Hint">
+		<Value>Indicates whether and where to show subcategories on a category page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SuppressSkuSearch">
 		<Value>Suppress SKU search</Value>
@@ -5151,6 +5202,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNameFormatMaxLength.Hint">
 		<Value>Determines the maximum length of the displayed customer name.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled">
+		<Value>Customers can enter a customer number</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled.Hint">
+		<Value>Specifies whether customers can enter a customer number.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerSettings">
 		<Value>Customer settings</Value>
@@ -7235,6 +7292,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.Name.Required">
 		<Value>Forum group name is required.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName">
+		<Value>URL-Alias</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName.Hint">
+		<Value>Set a search engine friendly page name e.g. 'the-best-forum' to make your page URL 'http://www.yourStore.com/the-best-forum'. Leave empty to generate it automatically based on the name of the forum.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Updated">
 		<Value>The forum has been updated successfully.</Value>
 	</LocaleResource>
@@ -7282,6 +7345,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.Name.Required">
 		<Value>Forum Group Name is required.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName">
+		<Value>URL-Alias</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName.Hint">
+		<Value>Set a search engine friendly page name e.g. 'the-best-forumgroup' to make your page URL 'http://www.yourStore.com/the-best-forumgroup'. Leave empty to generate it automatically based on the name of the forum group.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Updated">
 		<Value>The forum group has been updated successfully.</Value>
@@ -7345,6 +7414,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Name.Hint">
 		<Value>The name of this template (read only).</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.SendManually">
+		<Value>Only send manually</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.SendManually.Hint">
+		<Value>Indicates whether emails derived from this message template should only be send manually.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Subject">
 		<Value>Subject</Value>
@@ -8657,8 +8732,11 @@
 	<LocaleResource Name="Admin.Help">
 		<Value>Help</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Help.Documentation">
+		<Value>Documentation</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Help.Forums">
-		<Value>Community forums</Value>
+		<Value>Community</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Help.NopCommerceNote">
 		<Value>SmartStore.NET is a fork of the ASP.NET open source e-commerce solution {0}.</Value>
@@ -9042,10 +9120,10 @@
 		<Value>Sets the payment status to 'paid' without contacting the payment provider.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderGuid">
-		<Value>Order GUID</Value>
+		<Value>Order reference number</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderGuid.Hint">
-		<Value>Internal reference for order.</Value>
+		<Value>The internal order reference number. In contrast to the order number it already exists during checkout that is before order creation.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderNumber">
 		<Value>Order Number</Value>
@@ -9388,6 +9466,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.OrderNotes.Fields.Note">
 		<Value>Note</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Payments.NewIpn">
+		<Value>New IPN</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Payments.NewIpn.Hint">
+		<Value>A new notification from the payment provider has arrived in the order notes.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.PdfInvoice">
 		<Value>Order as PDF</Value>
@@ -9799,6 +9883,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.Manage">
 		<Value>Manage plugins</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Products.BasePrice.Hint">
+		<Value>Please keep in mind, the base price is depending on several factors and will therefore only be calculated reliable in the front end.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.PromotionFeeds">
 		<Value>Promotion feeds</Value>
@@ -10691,6 +10778,12 @@
 	<LocaleResource Name="Admin.System.QueuedEmails.Fields.Priority.Required">
 		<Value>Enter priority.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SendManually">
+		<Value>Only send manually</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SendManually.Hint">
+		<Value>Indicates whether the email should only be send manually.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SentOn">
 		<Value>Sent on</Value>
 	</LocaleResource>
@@ -10755,13 +10848,19 @@
 		<Value>Load not sent emails only</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.LoadNotSent.Hint">
-		<Value>Only load emails into queue that have not yet been sent.</Value>
+		<Value>Load not sent emails only.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.MaxSentTries">
 		<Value>Maximum send attempts</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.MaxSentTries.Hint">
 		<Value>The maximum number of attempts to send a message.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.List.SendManually">
+		<Value>Load emails manually send only</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.List.SendManually.Hint">
+		<Value>Load emails manually send only.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.StartDate">
 		<Value>Start date</Value>
@@ -11762,6 +11861,9 @@
 	<LocaleResource Name="Common.Error">
 		<Value>Error</Value>
 	</LocaleResource>
+	<LocaleResource Name="Common.Error.PreProcessPayment">
+		<Value>Unfortunately the selected payment method caused an error. Please correct your entries, try it again or select another payment method.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Common.Error.SendMail">
 		<Value>Error while sending the email. Please try again later.</Value>
 	</LocaleResource>
@@ -12187,6 +12289,15 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.RecurringProductCyclePeriod.Years">
 		<Value>Years</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.AboveProductList">
+		<Value>Above product list</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Bottom">
+		<Value>At bottom of page</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Hide">
+		<Value>Do not display</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Common.FulltextSearchMode.And">
 		<Value>Using CONTAINS and AND with prefix_term</Value>
@@ -13719,6 +13830,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Availability.InStockWithQuantity">
 		<Value>{0} in stock</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Availability.IsNotActive">
+		<Value>Not in assortment</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Availability.OutOfStock">
 		<Value>Out of stock</Value>

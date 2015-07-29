@@ -20,6 +20,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -97,6 +98,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
+		private readonly SeoSettings _seoSettings;
 
         #endregion
 
@@ -147,7 +149,8 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
             IPdfConverter pdfConverter,
-            ICommonServices services)
+            ICommonServices services,
+			SeoSettings seoSettings)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -193,6 +196,7 @@ namespace SmartStore.Admin.Controllers
 			this._genericAttributeService = genericAttributeService;
             _pdfConverter = pdfConverter;
             _services = services;
+			_seoSettings = seoSettings;
         }
 
         #endregion
@@ -559,7 +563,7 @@ namespace SmartStore.Admin.Controllers
 			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
 
 			// SEO
-			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
+			m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
 			foreach (var localized in model.Locales)
@@ -569,7 +573,7 @@ namespace SmartStore.Admin.Controllers
 				_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 
 				// search engine name
-				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, _urlRecordService, _seoSettings, localized.LanguageId);
 				_urlRecordService.SaveSlug(p, localizedSeName, localized.LanguageId);
 			}
 

@@ -19,6 +19,7 @@ using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
+using System.Data.Entity.Core.Objects;
 
 namespace SmartStore.Data
 {
@@ -532,7 +533,12 @@ namespace SmartStore.Data
 
 		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState)
 		{
-			((IObjectContextAdapter)this).ObjectContext.ObjectStateManager.ChangeObjectState(entity, newState);
+			var objectStateManager = ((IObjectContextAdapter)this).ObjectContext.ObjectStateManager;
+
+			ObjectStateEntry entry;
+
+			if (objectStateManager.TryGetObjectStateEntry(entity, out entry))
+				objectStateManager.ChangeObjectState(entity, newState);
 		}
 
 		public bool SetToUnchanged<TEntity>(TEntity entity)

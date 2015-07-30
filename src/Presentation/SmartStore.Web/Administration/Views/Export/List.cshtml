@@ -1,0 +1,59 @@
+﻿@using SmartStore.Admin.Models.Export
+@using Telerik.Web.Mvc.UI
+@{
+	ViewBag.Title = T("Common.Export").Text;
+}
+
+<div class="section-header">
+    <div class="title">
+		<i class="fa fa-sign-out"></i>
+        @T("Common.Export")
+    </div>
+    <div class="options">
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+    </div>
+</div>
+
+<script type="text/javascript">
+	function onRowDataBound_ExportProfiles(e) {
+		if (!e.dataItem.Enabled) {
+			$(e.row).find('td').wrapInner('<span class="muted" />');
+		}
+	}
+</script>
+
+<div>
+	<table class="adminContent">
+		<tr>
+			<td>
+				@(Html.Telerik().Grid<ExportProfileModel>()
+					.Name("export-profile-grid")
+					.DataKeys(x =>
+					{
+						x.Add(y => y.Id).RouteKey("Id");
+					})
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Name)
+							.Width(400)
+							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
+							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
+						columns.Bound(x => x.ProviderSystemName);
+						columns.Bound(x => x.EntityType);
+						columns.Bound(x => x.Enabled)
+							.Width(100)
+							.Template(item => @Html.SymbolForBool(item.Enabled))
+							.ClientTemplate(@Html.SymbolForBool("Enabled"))
+							.Centered();
+						columns.Bound(x => x.FileType);
+						columns.Bound(x => x.SchedulingHours);
+						columns.Bound(x => x.LastExecution)
+							.ReadOnly();
+					})
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Export"))
+					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportProfiles"))
+					.EnableCustomBinding(true))
+			</td>
+		</tr>
+	</table>
+</div>

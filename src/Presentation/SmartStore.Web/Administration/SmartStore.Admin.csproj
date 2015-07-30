@@ -175,6 +175,7 @@
     <Compile Include="Controllers\CurrencyController.cs" />
     <Compile Include="Controllers\CustomerController.cs" />
     <Compile Include="Controllers\CustomerRoleController.cs" />
+    <Compile Include="Controllers\ExportController.cs" />
     <Compile Include="Controllers\QuantityUnitController.cs" />
     <Compile Include="Controllers\DeliveryTimeController.cs" />
     <Compile Include="Controllers\DiscountController.cs" />
@@ -247,6 +248,7 @@
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
+    <Compile Include="Models\Export\ExportProfileModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
@@ -498,6 +500,7 @@
     <Content Include="Views\Common\CheckUpdate.cshtml" />
     <Content Include="Views\Payment\Edit.cshtml" />
     <Content Include="Views\Shared\EditorTemplates\Download2.cshtml" />
+    <Content Include="Views\Export\List.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

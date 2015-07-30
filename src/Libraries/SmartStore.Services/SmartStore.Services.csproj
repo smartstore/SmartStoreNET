@@ -162,6 +162,8 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
+    <Compile Include="ExportImport\ExportService.cs" />
+    <Compile Include="ExportImport\IExportService.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />

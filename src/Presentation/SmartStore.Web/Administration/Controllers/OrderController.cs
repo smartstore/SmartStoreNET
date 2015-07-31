@@ -346,7 +346,7 @@ namespace SmartStore.Admin.Controllers
             var pm = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
 			if (pm != null)
 			{
-				if (pm.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+                if (pm.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
 				{
 					model.DisplayPurchaseOrderNumber = true;
 					model.PurchaseOrderNumber = order.PurchaseOrderNumber;

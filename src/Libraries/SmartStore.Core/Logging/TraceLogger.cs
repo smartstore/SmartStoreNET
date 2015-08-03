@@ -13,7 +13,7 @@ namespace SmartStore.Core.Logging
 	{
 		private readonly TraceSource _traceSource;
 
-		public TraceLogger() : this(CommonHelper.MapPath("~/SmartStore.log"))
+		public TraceLogger() : this(CommonHelper.MapPath("~/App_Data/SmartStore.log"))
 		{
 		}
 

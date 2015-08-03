@@ -41,6 +41,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
+using SmartStore.Services.Export;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;
@@ -794,6 +795,7 @@ namespace SmartStore.Web.Framework
 				RegisterAsSpecificProvider<IWidget>(type, systemName, registration);
 				RegisterAsSpecificProvider<IExternalAuthenticationMethod>(type, systemName, registration);
 				RegisterAsSpecificProvider<IPaymentMethod>(type, systemName, registration);
+				RegisterAsSpecificProvider<IExportProvider>(type, systemName, registration);
 			}
 
 		}
@@ -918,6 +920,10 @@ namespace SmartStore.Web.Framework
 			else if (typeof(IWidget).IsAssignableFrom(implType))
 			{
 				return "CMS";
+			}
+			else if (typeof(IExportProvider).IsAssignableFrom(implType))
+			{
+				return "Exporting";
 			}
 
 			return null;

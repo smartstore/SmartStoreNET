@@ -1,4 +1,5 @@
 ﻿using System;
+using SmartStore.Core.Domain.Export;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Core.Domain
@@ -11,24 +12,34 @@ namespace SmartStore.Core.Domain
 		public string Name { get; set; }
 
 		/// <summary>
-		/// Whether the export profile is enabled
-		/// </summary>
-		public bool Enabled { get; set; }
-
-		/// <summary>
 		/// The system name of the export provider
 		/// </summary>
 		public string ProviderSystemName { get; set; }
 
 		/// <summary>
-		/// The entity type to be exported
+		/// Whether the export profile is enabled
 		/// </summary>
-		public string EntityType { get; set; }
+		public bool Enabled { get; set; }
 
 		/// <summary>
-		/// Number of hours after the profile is automatically executed by scheduling
+		/// The export file type identifier
 		/// </summary>
-		public int SchedulingHours { get; set; }
+		public int FileTypeId { get; set; }
+
+		/// <summary>
+		/// The export file type
+		/// </summary>
+		public ExportFileType FileType
+		{
+			get
+			{
+				return (ExportFileType)FileTypeId;
+			}
+			set
+			{
+				FileTypeId = (int)value;
+			}
+		}
 
 		/// <summary>
 		/// The scheduling task identifier

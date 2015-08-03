@@ -1,16 +1,17 @@
-﻿@using SmartStore.Admin.Models.Export
-@using Telerik.Web.Mvc.UI
+﻿@using SmartStore.Core.Domain.Export;
+@using SmartStore.Admin.Models.Export;
+@using Telerik.Web.Mvc.UI;
 @{
 	ViewBag.Title = T("Common.Export").Text;
 }
 
 <div class="section-header">
     <div class="title">
-		<i class="fa fa-sign-out"></i>
+		<i class="fa fa-arrow-circle-o-down"></i>
         @T("Common.Export")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
+        <a href="@Url.Action("Create")" class="btn btn-primary export-profile-button"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
     </div>
 </div>
 
@@ -34,26 +35,118 @@
 					})
 					.Columns(columns =>
 					{
+						columns.Bound(x => x.ThumbnailUrl)
+							.Width(70)
+							.Centered()
+							.Template(
+								@<text>
+									<img alt="@item.Id" src="@item.ThumbnailUrl" />
+								</text>
+							)
+							.ClientTemplate("<img alt='<#= Id #>' src='<#= ThumbnailUrl #>' />");
 						columns.Bound(x => x.Name)
 							.Width(400)
 							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.ProviderSystemName);
-						columns.Bound(x => x.EntityType);
+						columns.Bound(x => x.ProviderSystemName)
+							.Template(x => "{0} ({1})".FormatInvariant(x.ProviderFriendlyName, x.ProviderSystemName))
+							.ClientTemplate("<#= ProviderFriendlyName #> <span class='muted'>(<#= ProviderSystemName #>)</span>");
 						columns.Bound(x => x.Enabled)
 							.Width(100)
 							.Template(item => @Html.SymbolForBool(item.Enabled))
 							.ClientTemplate(@Html.SymbolForBool("Enabled"))
 							.Centered();
-						columns.Bound(x => x.FileType);
-						columns.Bound(x => x.SchedulingHours);
+						columns.Bound(x => x.EntityType);
+						columns.Bound(x => x.FileTypeName)
+							.Centered();
+						columns.Bound(x => x.SchedulingHours)
+							.Centered();
 						columns.Bound(x => x.LastExecution)
 							.ReadOnly();
 					})
-					.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Export"))
-					.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportProfiles"))
-					.EnableCustomBinding(true))
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Export"))
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportProfiles"))
+			.EnableCustomBinding(true))
 			</td>
 		</tr>
 	</table>
 </div>
+
+<div id="export-profile-dialog" class="modal hide fade" tabindex="-1" data-urldelete="@Url.Action("Delete")" data-profile="@T("Common.Profile")">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
+		<h4 class="caption"></h4>
+	</div>
+	<div class="modal-body"></div>
+	<div class="modal-ask-delete hide">@T("Admin.Common.DeleteConfirmation")</div>
+	<div class="modal-footer">
+		<button class="btn btn-primary">@T("Common.OK")</button>
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+	</div>
+</div>
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+		var dialog = $('#export-profile-dialog');
+
+		// show profile dialog
+		$(document).on('click', '.export-profile-button', function (e) {
+			e.preventDefault();
+			var isDelete = $(this).hasClass('export-profile-delete');
+
+			if (isDelete) {
+				$({}).doAjax({
+					type: 'POST',
+					url: dialog.attr('data-urldelete'),
+					ask: dialog.find('.modal-ask-delete').text(),
+					callbackSuccess: function (resp) {
+						refreshGrid(forExport);
+					}
+				});
+				return false;
+			}
+
+			dialog.find('.modal-body').empty();
+			dialog.find('.caption').text(dialog.attr('data-profile') + ' - ' + $.trim($(this).text()));
+			showPrimaryButton(false);
+
+			$(this).doAjax({
+				type: 'GET',
+				smallIcon: dialog.find('.modal-body'),
+				callbackSuccess: function (resp) {
+					dialog.find('.modal-body').html(resp);
+					$('#ProviderSystemName').selectWrapper();
+				},
+				callbackComplete: function () {
+					showPrimaryButton(true);
+				}
+			});
+
+			dialog.modal('show');
+			return false;
+		});
+
+		// submit dialog form
+		dialog.on('click', '.btn-primary', function () {
+			var form = dialog.find('.export-profile-form');
+
+			if (!form.length) {
+				dialog.modal('hide');
+				return;
+			}
+
+			form.submit();
+		});
+
+
+		function refreshGrid() {
+			setTimeout(function () {
+				$('#export-profile-grid').data('tGrid').ajaxRequest();
+			}, 500);
+		}
+
+		function showPrimaryButton(display) {
+			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);
+		}
+	});
+</script>

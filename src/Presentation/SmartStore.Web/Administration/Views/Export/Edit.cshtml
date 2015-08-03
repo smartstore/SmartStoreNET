@@ -1,0 +1,135 @@
+﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.Export;
+@using SmartStore.Admin.Models.Export;
+@{
+	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));
+	ViewBag.Title = title;
+}
+
+@using (Html.BeginForm())
+{
+	<div class="section-header">
+		<div class="title">
+			<i class="fa fa-arrow-circle-o-down"></i>
+			@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+			<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+			</button>
+		</div>
+	</div>
+	
+	<div>
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ProviderFriendlyName)
+				</td>
+				<td class="adminData">
+					@Model.ProviderFriendlyName.NaIfEmpty() <span class="muted">(@(Model.ProviderSystemName.NaIfEmpty()))</span>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Name)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Name)
+					@Html.ValidationMessageFor(model => model.Name)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Enabled)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Enabled)
+					@Html.ValidationMessageFor(model => model.Enabled)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.EntityType)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.EntityType)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.FileType)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.FileType, Model.AvailableFileTypes)
+					@Html.ValidationMessageFor(model => model.FileType)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.SchedulingHours)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.SchedulingHours)
+					@Html.ValidationMessageFor(model => model.SchedulingHours)
+				</td>
+			</tr>
+
+			<tr>
+				<td colspan="2">
+					<div class="admin-config-group">
+						<div class="title">
+							@T("Common.Partition")
+						</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Offset)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Offset)
+					@Html.ValidationMessageFor(model => model.Offset)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Limit)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Limit)
+					@Html.ValidationMessageFor(model => model.Limit)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.BatchSize)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.BatchSize)
+					@Html.ValidationMessageFor(model => model.BatchSize)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PerStore)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.PerStore)
+					@Html.ValidationMessageFor(model => model.PerStore)
+				</td>
+			</tr>
+
+		</table>
+	</div>
+}
+
+@Html.DeleteConfirmation("export-profile-delete")
+
+<script type="text/javascript">
+	jQuery(document).ready(function () {
+	});
+</script>

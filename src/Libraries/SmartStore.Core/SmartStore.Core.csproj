@@ -159,6 +159,7 @@
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
     <Compile Include="Domain\Common\RestrictionContextTypes.cs" />
+    <Compile Include="Domain\Export\ExportCore.cs" />
     <Compile Include="Domain\Export\ExportProfile.cs" />
     <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
     <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />

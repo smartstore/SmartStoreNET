@@ -115,6 +115,47 @@ namespace SmartStore.Core
 			}
 		}
 
+		/// <summary>
+		/// Serializes an object instance to a XML formatted string
+		/// </summary>
+		/// <typeparam name="T">Object type</typeparam>
+		/// <param name="instance">Object instance</param>
+		/// <returns>XML</returns>
+		public static string Serialize<T>(T instance)
+		{
+			if (instance != null)
+			{
+				using (var writer = new StringWriter())
+				{
+					var xmlSerializer = new XmlSerializer(typeof(T));
+
+					xmlSerializer.Serialize(writer, instance);
+					return writer.ToString();
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Deserializes a XML formatted string to an object instance
+		/// </summary>
+		/// <typeparam name="T">Object type</typeparam>
+		/// <param name="xml">XML</param>
+		/// <returns>Object instance</returns>
+		public static T Deserialize<T>(string xml)
+		{
+			if (xml.HasValue())
+			{
+				using (var reader = new StringReader(xml))
+				{
+					var serializer = new XmlSerializer(typeof(T));
+
+					return (T)serializer.Deserialize(reader);
+				}
+			}
+			return (T)Activator.CreateInstance(typeof(T));
+		}
+
 		#endregion
 	}
 }

@@ -1,0 +1,27 @@
+﻿@using SmartStore.Admin.Models.Export
+@model ExportProfileModel
+@{
+	Layout = null;
+}
+
+<div style="padding-bottom: 5px;">
+	@if(Model.AvailableExportProviders.Count > 0)
+	{
+		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
+			<table class="adminContent">
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.ProviderSystemName)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.ProviderSystemName, Model.AvailableExportProviders)
+					</td>
+				</tr>
+			</table>
+		</form>
+	}
+	else
+	{
+		@T("Admin.Configuration.Export.NoProfiles")
+	}
+</div>

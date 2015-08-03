@@ -453,7 +453,7 @@ namespace SmartStore.AmazonPay.Services
 					//model.IsOrderConfirmed = state.IsOrderConfirmed;
 				}
 
-				var currency = _services.WorkContext.WorkingCurrency;
+				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 
 				model.SellerId = settings.SellerId;
@@ -903,7 +903,7 @@ namespace SmartStore.AmazonPay.Services
 				var orderGuid = request.OrderGuid.ToString();
 				var store = _storeService.GetStoreById(request.StoreId);
 				var customer = _customerService.GetCustomerById(request.CustomerId);
-				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);
@@ -972,7 +972,7 @@ namespace SmartStore.AmazonPay.Services
 			{
 				var orderGuid = request.OrderGuid.ToString();
 				var store = _storeService.GetStoreById(request.StoreId);
-				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+				var currency = store.PrimaryStoreCurrency;
 				var settings = _services.Settings.LoadSetting<AmazonPaySettings>(store.Id);
 				var state = _httpContext.GetAmazonPayState(_services.Localization);
 				var client = new AmazonPayClient(settings);

@@ -122,6 +122,8 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
+			this._downloadService = downloadService;
+			this._localizationService = localizationService;
         }
         
         #endregion

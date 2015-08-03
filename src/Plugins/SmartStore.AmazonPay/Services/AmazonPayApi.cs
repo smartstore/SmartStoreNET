@@ -23,6 +23,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
+using SmartStore.Core.Domain.Stores;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -221,7 +222,7 @@ namespace SmartStore.AmazonPay.Api
 
 			if (orderTotalAmount.HasValue)
 			{
-				attributes.OrderTotal = new OrderTotal()
+				attributes.OrderTotal = new OrderTotal
 				{
 					Amount = orderTotalAmount.Value.ToString("0.00", CultureInfo.InvariantCulture),
 					CurrencyCode = currencyCode ?? "EUR"
@@ -230,7 +231,7 @@ namespace SmartStore.AmazonPay.Api
 
 			if (orderGuid.HasValue())
 			{
-				attributes.SellerOrderAttributes = new SellerOrderAttributes()
+				attributes.SellerOrderAttributes = new SellerOrderAttributes
 				{
 					SellerOrderId = orderGuid,
 					StoreName = storeName
@@ -264,10 +265,10 @@ namespace SmartStore.AmazonPay.Api
 
 			if (shoppingCartTotalBase.HasValue)
 			{
-				var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-
+				var currency = (Currency)null; // TODO: Merge _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 				return SetOrderReferenceDetails(client, orderReferenceId, shoppingCartTotalBase, currency.CurrencyCode);
 			}
+
 			return null;
 		}
 
@@ -435,14 +436,15 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = capture.Order.PaymentStatus;
 
 			var request = new CaptureRequest();
-			var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var store = (Store)null; // TODO: MERGE _storeService.GetStoreById(capture.Order.StoreId);
+			var currency = _currencyService.GetCurrencyById(store.PrimaryStoreCurrencyId);
 
 			request.SellerId = client.Settings.SellerId;
 			request.AmazonAuthorizationId = capture.Order.AuthorizationTransactionId;
 			request.CaptureReferenceId = GetRandomId("Capture");
 			//request.SellerCaptureNote = client.Settings.SellerNoteCapture.Truncate(255);
 
-			request.CaptureAmount = new Price()
+			request.CaptureAmount = new Price
 			{
 				Amount = capture.Order.OrderTotal.ToString("0.00", CultureInfo.InvariantCulture),
 				CurrencyCode = currency.CurrencyCode
@@ -532,7 +534,7 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = refund.Order.PaymentStatus;
 
 			string amazonRefundId = null;
-			var currency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var currency = (Currency)null; // TODO: MERGE _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
 
 			var request = new RefundRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -540,7 +542,7 @@ namespace SmartStore.AmazonPay.Api
 			request.RefundReferenceId = GetRandomId("Refund");
 			//request.SellerRefundNote = client.Settings.SellerNoteRefund.Truncate(255);
 
-			request.RefundAmount = new Price()
+			request.RefundAmount = new Price
 			{
 				Amount = refund.AmountToRefund.ToString("0.00", CultureInfo.InvariantCulture),
 				CurrencyCode = currency.CurrencyCode

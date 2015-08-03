@@ -545,7 +545,7 @@ namespace SmartStore.Web.Controllers
 					var pluginsCount = plugins.Count;
 					var idx = 0;
 
-					using (var dbScope = new DbContextScope(autoDetectChanges: false)) {
+					using (var dbScope = new DbContextScope(autoDetectChanges: false, hooksEnabled: false)) {
 						foreach (var plugin in plugins)
 						{
 							try

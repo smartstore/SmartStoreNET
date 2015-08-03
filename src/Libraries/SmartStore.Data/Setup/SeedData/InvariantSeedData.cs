@@ -56,7 +56,7 @@ namespace SmartStore.Data.Setup
 
 		public IList<Picture> Pictures()
 		{
-			var entities = new List<Picture>() 
+			var entities = new List<Picture> 
 			{ 
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
  				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "clouds.png"), "image/png", GetSeName("slider-bg")),
@@ -7914,7 +7914,7 @@ namespace SmartStore.Data.Setup
 
 			#region Antonio Vivaldi: then spring
 
-			var productInstantDownloadVivaldi = new Product()
+			var productInstantDownloadVivaldi = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -7938,7 +7938,7 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false,
 				IsDownload = true,
 				HasSampleDownload = true,
-				SampleDownload = new Download()
+				SampleDownload = new Download
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",

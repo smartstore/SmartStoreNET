@@ -9,6 +9,7 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Tasks
 {
@@ -122,11 +123,21 @@ namespace SmartStore.Services.Tasks
 
             req.GetResponseAsync().ContinueWith(t =>
             {
-                if (t.IsFaulted)
-                {
-                    // TODO: Now what?! Disable timer?
-                }
-                t.Result.Dispose();
+				if (t.IsFaulted)
+				{
+					// TODO: Now what?! Disable timer?
+					using (var logger = new TraceLogger())
+					{
+						foreach (var ex in t.Exception.InnerExceptions)
+						{
+							logger.Error("Error while calling TaskScheduler endpoint (URL: {0})".FormatInvariant(url), ex);
+						}
+					}
+				}
+				else
+				{
+					t.Result.Dispose();
+				}
             });
         }
 

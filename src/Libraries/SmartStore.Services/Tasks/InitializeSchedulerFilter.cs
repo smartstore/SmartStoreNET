@@ -26,24 +26,27 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
+					var logger = EngineContext.Current.Resolve<ILogger>();
+
 					try
 					{
 						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
 						var storeService = EngineContext.Current.Resolve<IStoreService>();
 						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-						var taskManager = EngineContext.Current.Resolve<ITaskScheduler>();
+						var taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 						var tasks = taskService.GetAllTasks(true);
 						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
 
-						taskManager.SetBaseUrl(storeService, filterContext.HttpContext);
-						taskManager.Start();
+						taskScheduler.SetBaseUrl(storeService, filterContext.HttpContext);
+						taskScheduler.Start();
+
+						logger.Information("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));
 
 						eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });
 					}
 					catch (Exception ex)
 					{
-						var logger = EngineContext.Current.Resolve<ILogger>();
 						logger.Error("Error while initializing Task Scheduler", ex);
 					}
 					finally

@@ -182,70 +182,59 @@ namespace SmartStore.Services.Security
         /// <param name="permissionProvider">Permission provider</param>
         public virtual void InstallPermissions(IPermissionProvider permissionProvider)
         {
-			using (var scope = new DbContextScope(_permissionRecordRepository.Context, autoDetectChanges: false))
+			using (var scope = new DbContextScope(_permissionRecordRepository.Context, autoDetectChanges: false, autoCommit: false))
 			{
-				try
+				//install new permissions
+				var permissions = permissionProvider.GetPermissions();
+				foreach (var permission in permissions)
 				{
-					_permissionRecordRepository.AutoCommitEnabled = false;
-					_customerRoleRepository.AutoCommitEnabled = false;
-
-					//install new permissions
-					var permissions = permissionProvider.GetPermissions();
-					foreach (var permission in permissions)
+					var permission1 = GetPermissionRecordBySystemName(permission.SystemName);
+					if (permission1 == null)
 					{
-						var permission1 = GetPermissionRecordBySystemName(permission.SystemName);
-						if (permission1 == null)
+						//new permission (install it)
+						permission1 = new PermissionRecord()
 						{
-							//new permission (install it)
-							permission1 = new PermissionRecord()
+							Name = permission.Name,
+							SystemName = permission.SystemName,
+							Category = permission.Category,
+						};
+
+						// default customer role mappings
+						var defaultPermissions = permissionProvider.GetDefaultPermissions();
+						foreach (var defaultPermission in defaultPermissions)
+						{
+							var customerRole = _customerService.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
+							if (customerRole == null)
 							{
-								Name = permission.Name,
-								SystemName = permission.SystemName,
-								Category = permission.Category,
-							};
-
-							// default customer role mappings
-							var defaultPermissions = permissionProvider.GetDefaultPermissions();
-							foreach (var defaultPermission in defaultPermissions)
-							{
-								var customerRole = _customerService.GetCustomerRoleBySystemName(defaultPermission.CustomerRoleSystemName);
-								if (customerRole == null)
+								//new role (save it)
+								customerRole = new CustomerRole()
 								{
-									//new role (save it)
-									customerRole = new CustomerRole()
-									{
-										Name = defaultPermission.CustomerRoleSystemName,
-										Active = true,
-										SystemName = defaultPermission.CustomerRoleSystemName
-									};
-									_customerService.InsertCustomerRole(customerRole);
-								}
-
-
-								var defaultMappingProvided = (from p in defaultPermission.PermissionRecords
-															  where p.SystemName == permission1.SystemName
-															  select p).Any();
-								var mappingExists = (from p in customerRole.PermissionRecords
-													 where p.SystemName == permission1.SystemName
-													 select p).Any();
-								if (defaultMappingProvided && !mappingExists)
-								{
-									permission1.CustomerRoles.Add(customerRole);
-								}
+									Name = defaultPermission.CustomerRoleSystemName,
+									Active = true,
+									SystemName = defaultPermission.CustomerRoleSystemName
+								};
+								_customerService.InsertCustomerRole(customerRole);
 							}
 
-							//save new permission
-							InsertPermissionRecord(permission1);
-						}
-					}
 
-					scope.Commit();
+							var defaultMappingProvided = (from p in defaultPermission.PermissionRecords
+															where p.SystemName == permission1.SystemName
+															select p).Any();
+							var mappingExists = (from p in customerRole.PermissionRecords
+													where p.SystemName == permission1.SystemName
+													select p).Any();
+							if (defaultMappingProvided && !mappingExists)
+							{
+								permission1.CustomerRoles.Add(customerRole);
+							}
+						}
+
+						//save new permission
+						InsertPermissionRecord(permission1);
+					}
 				}
-				finally
-				{
-					_permissionRecordRepository.AutoCommitEnabled = true;
-					_customerRoleRepository.AutoCommitEnabled = true;
-				}
+
+				scope.Commit();
 			}
         }
 

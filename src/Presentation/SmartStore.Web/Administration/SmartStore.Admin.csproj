@@ -250,6 +250,7 @@
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />
     <Compile Include="Models\Orders\ReturnRequestListModel.cs" />
+    <Compile Include="Models\Payments\PaymentMethodEditModel.cs" />
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
@@ -307,7 +308,6 @@
     <Compile Include="Models\Themes\ThemeManifestModel.cs" />
     <Compile Include="Models\Topics\TopicListModel.cs" />
     <Compile Include="Models\Topics\TopicModel.cs" />
-    <Compile Include="Models\Shipping\ShippingMethodRestrictionModel.cs" />
     <Compile Include="Models\News\NewsCommentModel.cs" />
     <Compile Include="Models\News\NewsItemModel.cs" />
     <Compile Include="Models\Settings\NewsSettingsModel.cs" />
@@ -465,6 +465,9 @@
     <Content Include="Scripts\jquery-1.8.3.min.js" />
     <Content Include="Scripts\jquery.tmpl.min.js" />
     <Content Include="Scripts\admin.globalinit.js" />
+    <Content Include="Scripts\smartstore.download.js">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Scripts\smartstore.discountrules.js">
       <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
@@ -492,6 +495,8 @@
     <Content Include="Views\Home\UaTester.cshtml" />
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
     <Content Include="Views\Common\CheckUpdate.cshtml" />
+    <Content Include="Views\Payment\Edit.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Download2.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -889,9 +894,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\News\Comments.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shipping\Restrictions.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Topic\_CreateOrUpdate.cshtml" />

@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using net = System.Net.Mail;
+using System.Net.Mail;
 using System.Net.Mime;
 using System.Net;
 using System.IO;
@@ -14,18 +14,14 @@ namespace SmartStore.Core.Email
     public class DefaultEmailSender : IEmailSender
     {
 
-        public DefaultEmailSender() 
-		{ 
-		}
-
         /// <summary>
         /// Builds System.Net.Mail.Message
         /// </summary>
         /// <param name="original">SmartStore.Email.Message</param>
         /// <returns>System.Net.Mail.Message</returns>        
-        protected virtual net.MailMessage BuildMailMessage(EmailMessage original)
+        protected virtual MailMessage BuildMailMessage(EmailMessage original)
         {
-            net.MailMessage msg = new net.MailMessage();
+            MailMessage msg = new MailMessage();
 
 			if (String.IsNullOrEmpty(original.Subject))
 			{
@@ -37,15 +33,15 @@ namespace SmartStore.Core.Email
 
             if (original.AltText.HasValue())
             {
-                msg.AlternateViews.Add(net.AlternateView.CreateAlternateViewFromString(original.AltText, new ContentType("text/html")));
-                msg.AlternateViews.Add(net.AlternateView.CreateAlternateViewFromString(original.Body, new ContentType("text/plain")));
+                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.AltText, new ContentType("text/html")));
+                msg.AlternateViews.Add(AlternateView.CreateAlternateViewFromString(original.Body, new ContentType("text/plain")));
             }
             else
             {
                 msg.Body = original.Body;
             }
 
-            msg.DeliveryNotificationOptions = net.DeliveryNotificationOptions.None;
+            msg.DeliveryNotificationOptions = DeliveryNotificationOptions.None;
 
             msg.From = original.From.ToMailAddress();
 
@@ -54,31 +50,7 @@ namespace SmartStore.Core.Email
 			msg.Bcc.AddRange(original.Bcc.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
 			msg.ReplyToList.AddRange(original.ReplyTo.Where(x => x.Address.HasValue()).Select(x => x.ToMailAddress()));
 
-            foreach (Attachment attachment in original.Attachments) 
-            {
-                byte[] byteData;
-
-                if (attachment.ContentTransferEncoding == TransferEncoding.Base64)
-                {
-					using (var sr = new StreamReader(attachment.Stream))
-					{
-						byteData = Convert.FromBase64String(sr.ReadToEnd());
-					}
-                }
-                else
-                {
-                    byteData = attachment.Stream.ToByteArray();
-                }
-
-                MemoryStream s = new MemoryStream(byteData);
-                net.Attachment att = new net.Attachment(s, attachment.Name, attachment.ContentType.MediaType);
-
-                att.ContentType.MediaType = attachment.MediaType;
-                att.TransferEncoding = attachment.ContentTransferEncoding;
-                att.ContentDisposition.DispositionType = attachment.ContentDisposition.DispositionType;
- 
-                msg.Attachments.Add(att);
-            }
+			msg.Attachments.AddRange(original.Attachments);
 
             if (original.Headers != null)
 				msg.Headers.AddRange(original.Headers);
@@ -96,11 +68,12 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 			
-			var msg = this.BuildMailMessage(message);
-
-			using (var client = context.ToSmtpClient())
+			using (var msg = this.BuildMailMessage(message))
 			{
-				client.Send(msg);
+				using (var client = context.ToSmtpClient())
+				{
+					client.Send(msg);
+				}
 			}
         }
 
@@ -109,12 +82,14 @@ namespace SmartStore.Core.Email
 			Guard.ArgumentNotNull(() => context);
 			Guard.ArgumentNotNull(() => message);
 
+			var client = context.ToSmtpClient();
 			var msg = this.BuildMailMessage(message);
 
-			using (var client = context.ToSmtpClient())
+			return client.SendMailAsync(msg).ContinueWith(t => 
 			{
-				return client.SendMailAsync(msg);
-			}
+				client.Dispose();
+				msg.Dispose();
+			});
 		}
 
         #endregion

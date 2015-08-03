@@ -13,12 +13,22 @@ using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
+using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Infrastructure.DependencyManagement;
+using SmartStore.Core.IO.Media;
+using SmartStore.Core.IO.VirtualPath;
+using SmartStore.Core.IO.WebSite;
+using SmartStore.Core.Localization;
+using SmartStore.Core.Logging;
+using SmartStore.Core.Packaging;
 using SmartStore.Core.Plugins;
+using SmartStore.Core.Themes;
 using SmartStore.Data;
+using SmartStore.Services;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Authentication;
 using SmartStore.Services.Authentication.External;
@@ -30,49 +40,39 @@ using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
+using SmartStore.Services.Events;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Core.Logging;
+using SmartStore.Services.Logging;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.News;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
+using SmartStore.Services.Pdf;
 using SmartStore.Services.Polls;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Themes;
 using SmartStore.Services.Topics;
-using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Utilities;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc.Bundles;
+using SmartStore.Web.Framework.Mvc.Routes;
+using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
-using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Services.Filter;
-using SmartStore.Core.Data.Hooks;
-using SmartStore.Core.Themes;
-using SmartStore.Services.Themes;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using SmartStore.Services;
 using Module = Autofac.Module;
-using SmartStore.Core.Localization;
-using SmartStore.Web.Framework.Localization;
-using SmartStore.Core.Email;
-using SmartStore.Services.Events;
-using SmartStore.Services.Logging;
-using SmartStore.Core.Packaging;
-using SmartStore.Core.IO.Media;
-using SmartStore.Core.IO.VirtualPath;
-using SmartStore.Core.IO.WebSite;
-using SmartStore.Utilities;
-using SmartStore.Services.Pdf;
 
 namespace SmartStore.Web.Framework
 {
@@ -98,6 +98,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterModule(new IOModule());
 			builder.RegisterModule(new PackagingModule());
 			builder.RegisterModule(new ProvidersModule(typeFinder, pluginFinder));
+            builder.RegisterModule(new TasksModule(typeFinder));
 
 			// sources
 			builder.RegisterSource(new SettingsSource());
@@ -575,6 +576,7 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<RoutePublisher>().As<IRoutePublisher>().SingleInstance();
 			builder.RegisterType<BundlePublisher>().As<IBundlePublisher>().SingleInstance();
 			builder.RegisterType<BundleBuilder>().As<IBundleBuilder>().InstancePerRequest();
+			builder.RegisterType<FileDownloadManager>().InstancePerRequest();
 
 			builder.RegisterFilterProvider();
 
@@ -922,6 +924,48 @@ namespace SmartStore.Web.Framework
 		#endregion
 
 	}
+
+    public class TasksModule : Module
+    {
+        private readonly ITypeFinder _typeFinder;
+
+        public TasksModule(ITypeFinder typeFinder)
+        {
+            _typeFinder = typeFinder;
+        }
+
+        protected override void Load(ContainerBuilder builder)
+        {
+            if (!DataSettings.DatabaseIsInstalled())
+                return;
+
+            builder.RegisterType<DefaultTaskScheduler>().As<ITaskScheduler>().SingleInstance();
+            builder.RegisterType<TaskExecutor>().As<ITaskExecutor>().InstancePerRequest();
+
+            var taskTypes = _typeFinder.FindClassesOfType<ITask>(ignoreInactivePlugins: true).ToList();
+
+            foreach (var type in taskTypes)
+            {
+                var typeName = type.FullName;
+                builder.RegisterType(type).Named<ITask>(typeName).Keyed<ITask>(type).InstancePerRequest();
+            }
+
+            // Register resolving delegate
+            builder.Register<Func<Type, ITask>>(c =>
+            {
+                var cc = c.Resolve<IComponentContext>();
+                return keyed => cc.ResolveKeyed<ITask>(keyed);
+            });
+
+            builder.Register<Func<string, ITask>>(c =>
+            {
+                var cc = c.Resolve<IComponentContext>();
+                return named => cc.ResolveNamed<ITask>(named);
+            });
+
+        }
+
+    }
 
 	#endregion
 

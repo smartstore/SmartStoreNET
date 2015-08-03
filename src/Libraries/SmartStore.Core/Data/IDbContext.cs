@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
@@ -39,7 +40,6 @@ namespace SmartStore.Core.Data
 		/// <summary>Executes sql by using SQL-Server Management Objects which supports GO statements.</summary>
 		int ExecuteSqlThroughSmo(string sql);
 
-        // codehint: sm-add (required for UoW implementation)
         string Alias { get; }
 
         // increasing performance on bulk operations
@@ -58,6 +58,12 @@ namespace SmartStore.Core.Data
 		/// Set this to <c>true</c> only during long running processes (like export)
 		/// </remarks>
 		bool ForceNoTracking { get; set; }
+
+		/// <summary>
+		/// Gets or sets a value indicating whether database write operations
+		/// originating from repositories should be committed immediately.
+		/// </summary>
+		bool AutoCommitEnabled { get; set; }
 
 		/// <summary>
 		/// Gets a list of modified properties for the specified entity
@@ -87,12 +93,6 @@ namespace SmartStore.Core.Data
         void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
 
 		/// <summary>
-		/// Detaches an entity from the current object context
-		/// </summary>
-		/// <param name="entity">The entity instance to detach</param>
-		void Detach(object entity);
-
-		/// <summary>
 		/// Detaches all entities from the current object context
 		/// </summary>
 		/// <returns>The count of detached entities</returns>
@@ -104,15 +104,15 @@ namespace SmartStore.Core.Data
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
 		/// <param name="newState">The new state</param>
-		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState);
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity, new();
 
 		/// <summary>
-		/// Changes the object state to unchanged
+		/// Reloads the entity from the database overwriting any property values with values from the database. 
+		/// The entity will be in the Unchanged state after calling this method. 
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
-		/// <returns>true on success, false on failure</returns>
-		bool SetToUnchanged<TEntity>(TEntity entity);
+		void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
 
 		/// <summary>
 		/// Begins a transaction on the underlying store connection using the specified isolation level 
@@ -127,4 +127,29 @@ namespace SmartStore.Core.Data
 		/// <param name="transaction">the external transaction</param>
 		void UseTransaction(DbTransaction transaction);
     }
+
+	public static class IDbContextExtensions
+	{
+
+		/// <summary>
+		/// Changes the object state to unchanged
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance</param>
+		/// <returns>true on success, false on failure</returns>
+		public static bool SetToUnchanged<TEntity>(this IDbContext ctx, TEntity entity) where TEntity : BaseEntity, new()
+		{
+			try
+			{
+				ctx.ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
+				return true;
+			}
+			catch (Exception ex)
+			{
+				ex.Dump();
+				return false;
+			}
+		}
+
+	}
 }

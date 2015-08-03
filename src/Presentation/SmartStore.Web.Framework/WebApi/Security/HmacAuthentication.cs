@@ -150,6 +150,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		UserUnknown,
 		UserDisabled,
 		UserInvalid,
-		UserHasNoPermission
+		UserHasNoPermission,
+		UserIsInactive
 	}
 }

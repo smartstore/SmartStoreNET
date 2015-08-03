@@ -366,6 +366,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.FullDescription);
 				row.SetProperty(result, product, (x) => x.ProductTemplateId);
 				row.SetProperty(result, product, (x) => x.ShowOnHomePage);
+				row.SetProperty(result, product, (x) => x.HomePageDisplayOrder);
 				row.SetProperty(result, product, (x) => x.MetaKeywords);
 				row.SetProperty(result, product, (x) => x.MetaDescription);
 				row.SetProperty(result, product, (x) => x.MetaTitle);
@@ -724,10 +725,10 @@ namespace SmartStore.Services.ExportImport
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
 							// no equal picture found in sequence
-							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, true);
+							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false);
 							if (newPicture != null)
 							{
-								var mapping = new ProductPicture()
+								var mapping = new ProductPicture
 								{
 									ProductId = row.Entity.Id,
 									PictureId = newPicture.Id,

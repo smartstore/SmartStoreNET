@@ -20,6 +20,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
@@ -97,6 +98,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
+		private readonly SeoSettings _seoSettings;
 
         #endregion
 
@@ -147,7 +149,8 @@ namespace SmartStore.Admin.Controllers
 			IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
             IPdfConverter pdfConverter,
-            ICommonServices services)
+            ICommonServices services,
+			SeoSettings seoSettings)
         {
             this._productService = productService;
             this._productTemplateService = productTemplateService;
@@ -193,13 +196,10 @@ namespace SmartStore.Admin.Controllers
 			this._genericAttributeService = genericAttributeService;
             _pdfConverter = pdfConverter;
             _services = services;
-
-			T = NullLocalizer.Instance;
+			_seoSettings = seoSettings;
         }
 
         #endregion
-
-		public Localizer T { get; set; }
 
 		#region Update[...]
 
@@ -225,6 +225,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.AllowCustomerReviews = m.AllowCustomerReviews;
 			p.ShowOnHomePage = m.ShowOnHomePage;
+			p.HomePageDisplayOrder = m.HomePageDisplayOrder;
 			p.Published = m.Published;
 			p.RequireOtherProducts = m.RequireOtherProducts;
 			p.RequiredProductIds = m.RequiredProductIds;
@@ -232,7 +233,7 @@ namespace SmartStore.Admin.Controllers
 
 			p.IsGiftCard = m.IsGiftCard;
 			p.GiftCardTypeId = m.GiftCardTypeId;
-
+			
 			p.IsDownload = m.IsDownload;
 			p.DownloadId = m.DownloadId;
 			p.UnlimitedDownloads = m.UnlimitedDownloads;
@@ -557,8 +558,12 @@ namespace SmartStore.Admin.Controllers
 			var nameChanged = modifiedProperties.ContainsKey("Name");
 			var seoTabLoaded = m.LoadedTabs.Contains("SEO", StringComparer.OrdinalIgnoreCase);
 
+			// Handle Download transiency
+			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.DownloadId);
+			MediaHelper.UpdateDownloadTransientStateFor(p, x => x.SampleDownloadId);
+
 			// SEO
-			m.SeName = p.ValidateSeName(m.SeName, p.Name, true);
+			m.SeName = p.ValidateSeName(m.SeName, p.Name, true, _urlRecordService, _seoSettings);
 			_urlRecordService.SaveSlug(p, m.SeName, 0);
 
 			foreach (var localized in model.Locales)
@@ -568,7 +573,7 @@ namespace SmartStore.Admin.Controllers
 				_localizedEntityService.SaveLocalizedValue(product, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 
 				// search engine name
-				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, localized.LanguageId);
+				var localizedSeName = p.ValidateSeName(localized.SeName, localized.Name, false, _urlRecordService, _seoSettings, localized.LanguageId);
 				_urlRecordService.SaveSlug(p, localizedSeName, localized.LanguageId);
 			}
 
@@ -653,7 +658,7 @@ namespace SmartStore.Admin.Controllers
 				model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
 			}
 
-			model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
 			model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
 			model.BaseDimensionIn = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
 
@@ -690,16 +695,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (product != null)
 			{
-				var result = new StringBuilder();
-				var tags = product.ProductTags.ToList();
-				for (int i = 0; i < product.ProductTags.Count; i++)
-				{
-					var pt = tags[i];
-					result.Append(pt.Name);
-					if (i != product.ProductTags.Count - 1)
-						result.Append(", ");
-				}
-				model.ProductTags = result.ToString();
+				//var tags = product.ProductTags;
+				model.ProductTags = string.Join(", ", product.ProductTags.Select(x => x.Name));
 			}
 
 			//tax categories
@@ -873,13 +870,14 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var allStores = _storeService.GetAllStores();
+			var yes = T("Admin.Common.Yes").Text;
+			var no = T("Admin.Common.No").Text;
 
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
             model.DisplayPdfExport = _pdfSettings.Enabled;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 			model.StoreCount = allStores.Count;
 
-            //categories
             var allCategories = _categoryService.GetAllCategories(showHidden: true);
             var mappedCategories = allCategories.ToDictionary(x => x.Id);
             foreach (var c in allCategories)
@@ -887,22 +885,29 @@ namespace SmartStore.Admin.Controllers
                 model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
             }
 
-            //manufacturers
             foreach (var m in _manufacturerService.GetAllManufacturers(true))
             {
                 model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
             }
 
-			//stores
-			model.AvailableStores.Add(new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
             foreach (var s in allStores)
             {
                 model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
             }
 
-			//product types
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+
+			model.AvailableWithoutCategories.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableWithoutCategories.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableIsPublished.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableIsPublished.Add(new SelectListItem { Text = no, Value = "false" });
+
+			model.AvailableHomePageProducts.Add(new SelectListItem { Text = yes, Value = "true" });
+			model.AvailableHomePageProducts.Add(new SelectListItem { Text = no, Value = "false" });
 
             return View(model);
         }
@@ -925,9 +930,11 @@ namespace SmartStore.Admin.Controllers
 				PageIndex = command.Page - 1,
 				PageSize = command.PageSize,
 				ShowHidden = true,
-				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null,
+				ProductType = (model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null),
 				WithoutCategories = model.SearchWithoutCategories,
-				WithoutManufacturers = model.SearchWithoutManufacturers
+				WithoutManufacturers = model.SearchWithoutManufacturers,
+				IsPublished = model.SearchIsPublished,
+				HomePageProducts = model.SearchHomePageProducts
 			};
 
 			if (model.SearchCategoryId > 0)
@@ -960,9 +967,17 @@ namespace SmartStore.Admin.Controllers
         public ActionResult GoToSku(ProductListModel model)
         {
             string sku = model.GoDirectlyToSku;
-            var product = _productService.GetProductBySku(sku);
-            if (product != null)
-                return RedirectToAction("Edit", "Product", new { id = product.Id });
+
+			if (sku.HasValue())
+			{
+				var product = _productService.GetProductBySku(sku);
+				if (product != null)
+					return RedirectToAction("Edit", "Product", new { id = product.Id });
+
+				var combination = _productAttributeService.GetProductVariantAttributeCombinationBySku(sku);
+				if (combination != null && combination.Product != null && !combination.Product.Deleted)
+					return RedirectToAction("Edit", "Product", new { id = combination.Product.Id });
+			}
 
             //not found
             return List(model);
@@ -2461,12 +2476,16 @@ namespace SmartStore.Admin.Controllers
             if (product == null)
                 throw new ArgumentException("No product found with the specified id");
 
-            _productService.InsertProductPicture(new ProductPicture()
+			var productPicture = new ProductPicture
             {
                 PictureId = pictureId,
                 ProductId = productId,
                 DisplayOrder = displayOrder,
-            });
+            };
+
+			MediaHelper.UpdatePictureTransientStateFor(productPicture, pp => pp.PictureId);
+
+            _productService.InsertProductPicture(productPicture);
 
             _pictureService.SetSeoFilename(pictureId, _pictureService.GetPictureSeName(product.Name));
 
@@ -3008,7 +3027,7 @@ namespace SmartStore.Admin.Controllers
             model.MerchantContactData = contactSettings;
 
             string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
-            string currencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+			string currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
 
             foreach (var product in products) 
             {
@@ -3281,25 +3300,30 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var model = new BulkEditListModel();
+			var allStores = _services.StoreService.GetAllStores();
 
-			//categories
+			var model = new BulkEditListModel();
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
+			model.StoreCount = allStores.Count;
+
 			var allCategories = _categoryService.GetAllCategories(showHidden: true);
 			var mappedCategories = allCategories.ToDictionary(x => x.Id);
 			foreach (var c in allCategories)
 			{
-				model.AvailableCategories.Add(new SelectListItem() { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
+				model.AvailableCategories.Add(new SelectListItem { Text = c.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = c.Id.ToString() });
 			}
 
-			//manufacturers
 			foreach (var m in _manufacturerService.GetAllManufacturers(true))
 			{
-				model.AvailableManufacturers.Add(new SelectListItem() { Text = m.Name, Value = m.Id.ToString() });
+				model.AvailableManufacturers.Add(new SelectListItem { Text = m.Name, Value = m.Id.ToString() });
 			}
 
-			//product types
+			foreach (var s in allStores)
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = s.Name, Value = s.Id.ToString() });
+			}
+
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-			model.AvailableProductTypes.Insert(0, new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 
 			return View(model);
 		}
@@ -3310,9 +3334,9 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
 				return AccessDeniedView();
 
-			var searchContext = new ProductSearchContext()
+			var searchContext = new ProductSearchContext
 			{
-				CategoryIds = new List<int>() { model.SearchCategoryId },
+				StoreId = model.SearchStoreId,
 				ManufacturerId = model.SearchManufacturerId,
 				Keywords = model.SearchProductName,
 				SearchSku = !_catalogSettings.SuppressSkuSearch,
@@ -3321,6 +3345,9 @@ namespace SmartStore.Admin.Controllers
 				ShowHidden = true,
 				ProductType = model.SearchProductTypeId > 0 ? (ProductType?)model.SearchProductTypeId : null
 			};
+
+			if (model.SearchCategoryId > 0)
+				searchContext.CategoryIds.Add(model.SearchCategoryId);
 
 			var products = _productService.SearchProducts(searchContext);
 			var gridModel = new GridModel();
@@ -3343,7 +3370,9 @@ namespace SmartStore.Admin.Controllers
 
 				return productModel;
 			});
+
 			gridModel.Total = products.TotalCount;
+
 			return new JsonResult
 			{
 				Data = gridModel
@@ -3373,15 +3402,16 @@ namespace SmartStore.Admin.Controllers
 						product.OldPrice = pModel.OldPrice;
 						product.StockQuantity = pModel.StockQuantity;
 						product.Published = pModel.Published;
+
 						_productService.UpdateProduct(product);
 					}
 				}
 			}
+
 			if (deletedProducts != null)
 			{
 				foreach (var pModel in deletedProducts)
 				{
-					//delete
 					var product = _productService.GetProductById(pModel.Id);
 					if (product != null)
 					{
@@ -3406,34 +3436,49 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product variant found with the specified id");
 
+			var allStores = _services.StoreService.GetAllStores();
+			var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+			string allRolesString = T("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles");
+			string allStoresString = T("Admin.Common.StoresAll");
+			string deletedString = "[{0}]".FormatInvariant(T("Admin.Common.Deleted"));
+
 			var tierPricesModel = product.TierPrices
 				.OrderBy(x => x.StoreId)
 				.ThenBy(x => x.Quantity)
 				.ThenBy(x => x.CustomerRoleId)
 				.Select(x =>
 				{
-					var storeName = "";
-					if (x.StoreId > 0)
-					{
-						var store = _storeService.GetStoreById(x.StoreId);
-						storeName = store != null ? store.Name : "[Deleted]";
-					}
-					else
-					{
-						storeName = _localizationService.GetResource("Admin.Common.StoresAll");
-					}
-					return new ProductModel.TierPriceModel()
+					var tierPriceModel = new ProductModel.TierPriceModel
 					{
 						Id = x.Id,
 						StoreId = x.StoreId,
-						Store = storeName,
-						CustomerRole = x.CustomerRoleId.HasValue ? _customerService.GetCustomerRoleById(x.CustomerRoleId.Value).Name : 
-							_localizationService.GetResource("Admin.Catalog.Products.TierPrices.Fields.CustomerRole.AllRoles"),
 						ProductId = x.ProductId,
-						CustomerRoleId = x.CustomerRoleId.HasValue ? x.CustomerRoleId.Value : 0,
+						CustomerRoleId = x.CustomerRoleId ?? 0,
 						Quantity = x.Quantity,
 						Price1 = x.Price
 					};
+
+					if (x.CustomerRoleId.HasValue)
+					{
+						var role = allCustomerRoles.FirstOrDefault(r => r.Id == x.CustomerRoleId.Value);
+						tierPriceModel.CustomerRole = (role == null ? allRolesString : role.Name);
+					}
+					else
+					{
+						tierPriceModel.CustomerRole = allRolesString;
+					}
+
+					if (x.StoreId > 0)
+					{
+						var store = allStores.FirstOrDefault(s => s.Id == x.StoreId);
+						tierPriceModel.Store = (store == null ? deletedString : store.Name);
+					}
+					else
+					{
+						tierPriceModel.Store = allStoresString;
+					}
+
+					return tierPriceModel;
 				})
 				.ToList();
 

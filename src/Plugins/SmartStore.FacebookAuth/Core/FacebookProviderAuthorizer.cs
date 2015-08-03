@@ -8,8 +8,8 @@ using System.Web;
 using System.Web.Mvc;
 using DotNetOpenAuth.AspNet;
 using DotNetOpenAuth.AspNet.Clients;
-using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Services;
 using SmartStore.Services.Authentication.External;
 
 namespace SmartStore.FacebookAuth.Core
@@ -21,9 +21,9 @@ namespace SmartStore.FacebookAuth.Core
 		private readonly IExternalAuthorizer _authorizer;
         private readonly IOpenAuthenticationService _openAuthenticationService;
         private readonly ExternalAuthenticationSettings _externalAuthenticationSettings;
-        private readonly FacebookExternalAuthSettings _facebookExternalAuthSettings;
         private readonly HttpContextBase _httpContext;
-		private readonly IWebHelper _webHelper;
+		private readonly ICommonServices _services;
+
 		private FacebookClient _facebookApplication;
 
 		#endregion
@@ -33,16 +33,14 @@ namespace SmartStore.FacebookAuth.Core
         public FacebookProviderAuthorizer(IExternalAuthorizer authorizer,
             IOpenAuthenticationService openAuthenticationService,
             ExternalAuthenticationSettings externalAuthenticationSettings,
-            FacebookExternalAuthSettings facebookExternalAuthSettings,
             HttpContextBase httpContext,
-			IWebHelper webHelper)
+			ICommonServices services)
         {
             this._authorizer = authorizer;
             this._openAuthenticationService = openAuthenticationService;
             this._externalAuthenticationSettings = externalAuthenticationSettings;
-            this._facebookExternalAuthSettings = facebookExternalAuthSettings;
             this._httpContext = httpContext;
-			this._webHelper = webHelper;
+			this._services = services;
         }
 
 		#endregion
@@ -51,7 +49,17 @@ namespace SmartStore.FacebookAuth.Core
 
 		private FacebookClient FacebookApplication
         {
-			get { return _facebookApplication ?? (_facebookApplication = new FacebookClient(_facebookExternalAuthSettings.ClientKeyIdentifier, _facebookExternalAuthSettings.ClientSecret)); }
+			get
+			{
+				if (_facebookApplication == null)
+				{
+					var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
+
+					_facebookApplication = new FacebookClient(settings.ClientKeyIdentifier, settings.ClientSecret);
+				}
+
+				return _facebookApplication;
+			}
         }
 
 		private AuthorizeState VerifyAuthentication(string returnUrl)
@@ -91,9 +99,12 @@ namespace SmartStore.FacebookAuth.Core
         {
 			var claims = new UserClaims();
 			claims.Contact = new ContactClaims();
+			
 			if (authenticationResult.ExtraData.ContainsKey("username"))
 				claims.Contact.Email = authenticationResult.ExtraData["username"];
+
 			claims.Name = new NameClaims();
+
 			if (authenticationResult.ExtraData.ContainsKey("name"))
 			{
 				var name = authenticationResult.ExtraData["name"];
@@ -122,7 +133,7 @@ namespace SmartStore.FacebookAuth.Core
 
 		private Uri GenerateLocalCallbackUri()
 		{
-			string url = string.Format("{0}Plugins/SmartStore.FacebookAuth/logincallback/", _webHelper.GetStoreLocation());
+			string url = string.Format("{0}Plugins/SmartStore.FacebookAuth/logincallback/", _services.WebHelper.GetStoreLocation());
 			return new Uri(url);
 		}
 
@@ -131,10 +142,14 @@ namespace SmartStore.FacebookAuth.Core
 			//code copied from DotNetOpenAuth.AspNet.Clients.FacebookClient file
 			var builder = new UriBuilder("https://www.facebook.com/dialog/oauth");
 			var args = new Dictionary<string, string>();
-			args.Add("client_id", _facebookExternalAuthSettings.ClientKeyIdentifier);
+			var settings = _services.Settings.LoadSetting<FacebookExternalAuthSettings>(_services.StoreContext.CurrentStore.Id);
+
+			args.Add("client_id", settings.ClientKeyIdentifier);
 			args.Add("redirect_uri", GenerateLocalCallbackUri().AbsoluteUri);
 			args.Add("scope", "email");
+
 			AppendQueryArgs(builder, args);
+
 			return builder.Uri;
 		}
 
@@ -152,6 +167,7 @@ namespace SmartStore.FacebookAuth.Core
 				builder.Query = builder2.ToString();
 			}
 		}
+
 		private string CreateQueryString(IEnumerable<KeyValuePair<string, string>> args)
 		{
 			if (!args.Any<KeyValuePair<string, string>>())
@@ -169,7 +185,9 @@ namespace SmartStore.FacebookAuth.Core
 			builder.Length--;
 			return builder.ToString();
 		}
+
 		private readonly string[] UriRfc3986CharsToEscape = new string[] { "!", "*", "'", "(", ")" };
+
 		private string EscapeUriDataStringRfc3986(string value)
 		{
 			StringBuilder builder = new StringBuilder(Uri.EscapeDataString(value));

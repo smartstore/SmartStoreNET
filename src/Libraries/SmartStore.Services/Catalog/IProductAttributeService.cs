@@ -1,6 +1,6 @@
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Media;
 
 namespace SmartStore.Services.Catalog
 {
@@ -59,6 +59,14 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping collection</returns>
 		IList<ProductVariantAttribute> GetProductVariantAttributesByProductId(int productId);
 
+		/// <summary>
+		/// Gets product variant attribute mappings by multiple product identifiers
+		/// </summary>
+		/// <param name="productIds">The product identifiers</param>
+		/// <param name="controlType">An optional control type filter. <c>null</c> loads all controls regardless of type.</param>
+		/// <returns>A map with product id as key and a collection of variant attributes as value.</returns>
+		Multimap<int, ProductVariantAttribute> GetProductVariantAttributesByProductIds(int[] productIds, AttributeControlType? controlType);
+
         /// <summary>
         /// Gets a product variant attribute mapping
         /// </summary>
@@ -66,12 +74,13 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product variant attribute mapping</returns>
         ProductVariantAttribute GetProductVariantAttributeById(int productVariantAttributeId);
 
-        /// <summary>
-        /// Gets multiple product variant attribute mappings by their keys
-        /// </summary>
-        /// <param name="ids">a list of keys</param>
-        /// <returns>Product variant attribute mappings</returns>
-        IEnumerable<ProductVariantAttribute> GetProductVariantAttributesByIds(params int[] ids);
+		/// <summary>
+		/// Gets product variant attribute mappings
+		/// </summary>
+		/// <param name="productVariantAttributeIds">Enumerable of product variant attribute mapping identifiers</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database round trips</param>
+		/// <returns></returns>
+		IList<ProductVariantAttribute> GetProductVariantAttributesByIds(IEnumerable<int> productVariantAttributeIds, IEnumerable<ProductVariantAttribute> attributes = null);
 
         /// <summary>
         /// Inserts a product variant attribute mapping
@@ -146,6 +155,13 @@ namespace SmartStore.Services.Catalog
         IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId);
 
 		/// <summary>
+		/// Gets product variant attribute combinations by multiple product identifiers
+		/// </summary>
+		/// <param name="productIds">The product identifiers</param>
+		/// <returns>A map with product id as key and a collection of product variant attribute combinations as value.</returns>
+		Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds);
+
+		/// <summary>
 		/// Get the lowest price of all combinations for a product
 		/// </summary>
 		/// <param name="productId">Product identifier</param>
@@ -153,11 +169,18 @@ namespace SmartStore.Services.Catalog
 		decimal? GetLowestCombinationPrice(int productId);
 
         /// <summary>
-        /// Gets a product variant attribute combination
+		/// Gets a product variant attribute combination by identifier
         /// </summary>
         /// <param name="productVariantAttributeCombinationId">Product variant attribute combination identifier</param>
         /// <returns>Product variant attribute combination</returns>
         ProductVariantAttributeCombination GetProductVariantAttributeCombinationById(int productVariantAttributeCombinationId);
+
+		/// <summary>
+		/// /// Gets a product variant attribute combination by SKU
+		/// </summary>
+		/// <param name="sku">SKU</param>
+		/// <returns>Product variant attribute combination</returns>
+		ProductVariantAttributeCombination GetProductVariantAttributeCombinationBySku(string sku);
 
         /// <summary>
         /// Inserts a product variant attribute combination

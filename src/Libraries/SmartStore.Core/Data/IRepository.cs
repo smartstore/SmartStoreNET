@@ -119,6 +119,10 @@ namespace SmartStore.Core.Data
         /// Gets or sets a value indicating whether database write operations
         /// such as insert, delete or update should be committed immediately.
         /// </summary>
-        bool AutoCommitEnabled { get; set; }
+		/// <remarks>
+		/// Set this to <c>true</c> or <c>false</c> to supersede the global <c>AutoCommitEnabled</c>
+		/// on <see cref="IDbContext"/> level for this repository instance only.
+		/// </remarks>
+        bool? AutoCommitEnabled { get; set; }
     }
 }

@@ -35,7 +35,7 @@ namespace SmartStore.Services.Tests.ExportImport
         IExportManager _exportManager;
         ILanguageService _languageService;
 		MediaSettings _mediaSettings;
-		ICommonServices _commonServices;
+		ICommonServices _services;
         IStoreMappingService _storeMapping;
 
         [SetUp]
@@ -49,11 +49,11 @@ namespace SmartStore.Services.Tests.ExportImport
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
             _languageService = MockRepository.GenerateMock<ILanguageService>();
 			_mediaSettings = MockRepository.GenerateMock<MediaSettings>();
-			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
             _storeMapping = MockRepository.GenerateMock<IStoreMappingService>();
 
             _exportManager = new ExportManager(_categoryService, _manufacturerService, _productService, _productTemplateService, _pictureService,
-                _newsLetterSubscriptionService, _languageService, _mediaSettings, _commonServices, _storeMapping);
+                _newsLetterSubscriptionService, _languageService, _mediaSettings, _services, _storeMapping);
         }
 
 		//[Test]

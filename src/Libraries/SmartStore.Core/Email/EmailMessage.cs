@@ -78,11 +78,6 @@ namespace SmartStore.Core.Email
 
         public NameValueCollection Headers { get; private set; }
 
-        public void AddAttachment(Attachment attachment)
-        {
-            this.Attachments.Add(attachment);
-        }
-
         public async void BodyFromFile(string filePathOrUrl)
         {
             StreamReader sr = null;

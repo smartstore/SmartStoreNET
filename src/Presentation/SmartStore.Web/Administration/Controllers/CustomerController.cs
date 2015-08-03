@@ -1042,13 +1042,11 @@ namespace SmartStore.Admin.Controllers
                 if (String.IsNullOrWhiteSpace(model.SendEmail.Body))
                     throw new SmartException("Email body is empty");
 
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-                if (emailAccount == null)
-                    emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account can't be loaded");
 
-                var email = new QueuedEmail()
+                var email = new QueuedEmail
                 {
                     EmailAccountId = emailAccount.Id,
                     FromName = emailAccount.DisplayName,

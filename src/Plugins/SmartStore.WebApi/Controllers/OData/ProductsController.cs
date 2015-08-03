@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
 using SmartStore.Core;
@@ -24,17 +26,23 @@ namespace SmartStore.WebApi.Controllers.OData
 		private readonly Lazy<IPriceCalculationService> _priceCalculationService;
 		private readonly Lazy<IUrlRecordService> _urlRecordService;
 		private readonly Lazy<IProductAttributeService> _productAttributeService;
+		private readonly Lazy<ICategoryService> _categoryService;
+		private readonly Lazy<IManufacturerService> _manufacturerService;
 
 		public ProductsController(
 			Lazy<IWorkContext> workContext,
 			Lazy<IPriceCalculationService> priceCalculationService,
 			Lazy<IUrlRecordService> urlRecordService,
-			Lazy<IProductAttributeService> productAttributeService)
+			Lazy<IProductAttributeService> productAttributeService,
+			Lazy<ICategoryService> categoryService,
+			Lazy<IManufacturerService> manufacturerService)
 		{
 			_workContext = workContext;
 			_priceCalculationService = priceCalculationService;
 			_urlRecordService = urlRecordService;
 			_productAttributeService = productAttributeService;
+			_categoryService = categoryService;
+			_manufacturerService = manufacturerService;
 		}
 
 		protected override IQueryable<Product> GetEntitySet()
@@ -78,6 +86,60 @@ namespace SmartStore.WebApi.Controllers.OData
 		}		
 
 		// navigation properties
+
+		public HttpResponseMessage NavigationProductCategories(int key, int relatedKey)
+		{
+			var productCategories = _categoryService.Value.GetProductCategoriesByProductId(key, true);
+			var productCategory = productCategories.FirstOrDefault(x => x.CategoryId == relatedKey);
+
+			if (Request.Method == HttpMethod.Post)
+			{
+				if (productCategory == null)
+				{
+					productCategory = new ProductCategory { ProductId = key, CategoryId = relatedKey };
+
+					_categoryService.Value.InsertProductCategory(productCategory);
+
+					return Request.CreateResponse(HttpStatusCode.Created, productCategory);
+				}
+			}
+			else if (Request.Method == HttpMethod.Delete)
+			{
+				if (productCategory != null)
+					_categoryService.Value.DeleteProductCategory(productCategory);
+
+				return Request.CreateResponse(HttpStatusCode.NoContent);
+			}
+
+			return Request.CreateResponseForEntity(productCategory, relatedKey);
+		}
+
+		public HttpResponseMessage NavigationProductManufacturers(int key, int relatedKey)
+		{
+			var productManufacturers = _manufacturerService.Value.GetProductManufacturersByProductId(key, true);
+			var productManufacturer = productManufacturers.FirstOrDefault(x => x.ManufacturerId == relatedKey);
+
+			if (Request.Method == HttpMethod.Post)
+			{
+				if (productManufacturer == null)
+				{
+					productManufacturer = new ProductManufacturer { ProductId = key, ManufacturerId = relatedKey };
+
+					_manufacturerService.Value.InsertProductManufacturer(productManufacturer);
+
+					return Request.CreateResponse(HttpStatusCode.Created, productManufacturer);
+				}
+			}
+			else if (Request.Method == HttpMethod.Delete)
+			{
+				if (productManufacturer != null)
+					_manufacturerService.Value.DeleteProductManufacturer(productManufacturer);
+
+				return Request.CreateResponse(HttpStatusCode.NoContent);
+			}
+
+			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
+		}
 
 		public DeliveryTime GetDeliveryTime(int key)
 		{
@@ -199,17 +261,17 @@ namespace SmartStore.WebApi.Controllers.OData
 						Product lowestPriceProduct;
 						var associatedProducts = Service.PrepareProductSearchQuery(searchContext);
 
-						result = _priceCalculationService.Value.GetLowestPrice(entity, associatedProducts, out lowestPriceProduct);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, associatedProducts, out lowestPriceProduct);
 					}
 					else
 					{
 						bool displayFromMessage;
-						result = _priceCalculationService.Value.GetLowestPrice(entity, out displayFromMessage);
+						result = _priceCalculationService.Value.GetLowestPrice(entity, null, out displayFromMessage);
 					}
 				}
 				else
 				{
-					result = _priceCalculationService.Value.GetPreselectedPrice(entity);
+					result = _priceCalculationService.Value.GetPreselectedPrice(entity, null);
 				}
 				return null;
 			});
@@ -345,22 +407,5 @@ namespace SmartStore.WebApi.Controllers.OData
 
 			return entity.ProductVariantAttributes.AsQueryable();
 		}
-
-
-		//[HttpGet, WebApiQueryable]
-		//public IQueryable<RelatedProduct> GetRelatedProducts(int key)
-		//{
-		//	if (!ModelState.IsValid)
-		//		throw this.ExceptionInvalidModelState();
-
-		//	var repository = EngineContext.Current.Resolve<IRepository<RelatedProduct>>();
-
-		//	var query =
-		//		from x in repository.Table
-		//		where x.ProductId1 == key
-		//		select x;
-
-		//	return query;
-		//}
 	}
 }

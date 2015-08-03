@@ -5,8 +5,11 @@ using System.Linq;
 using System.Net;
 using System.Net.Http;
 using System.Net.Http.Headers;
+using System.Net.Mime;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Web;
+using SmartStore.Core;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Utilities
@@ -15,8 +18,57 @@ namespace SmartStore.Utilities
 	{
 		private const int _bufferSize = 16384;
 
+		private readonly HttpRequestBase _httpRequest;
+
+		public FileDownloadManager(HttpRequestBase httpRequest)
+		{
+			this._httpRequest = httpRequest;
+		}
+
 		/// <summary>
-		/// Start asynchronous download of files
+		/// Downloads a single file synchronously
+		/// </summary>
+		/// <param name="url">The URL to download the file from (either a fully qualified URL or an app relative/absolute path)</param>
+		/// <param name="sendAuthCookie">Specifies whether the FormsAuthenticationCookie should be sent</param>
+		/// <param name="timeout">Timeout in milliseconds</param>
+		public FileDownloadResponse DownloadFile(string url, bool sendAuthCookie = false, int? timeout = null)
+		{
+			Guard.ArgumentNotEmpty(() => url);
+			
+			url = WebHelper.GetAbsoluteUrl(url, _httpRequest);
+
+			var req = (HttpWebRequest)WebRequest.Create(url);
+			req.UserAgent = "SmartStore.NET";
+
+			if (timeout.HasValue)
+			{
+				req.Timeout = timeout.Value;
+			}
+
+			if (sendAuthCookie)
+			{
+				req.SetFormsAuthenticationCookie(_httpRequest);
+			}
+
+			using (var resp = (HttpWebResponse)req.GetResponse())
+			{
+				using (var stream = resp.GetResponseStream())
+				{
+					if (resp.StatusCode == HttpStatusCode.OK)
+					{
+						var data = stream.ToByteArray();
+						var cd = new ContentDisposition(resp.Headers["Content-Disposition"]);
+						var fileName = cd.FileName;
+						return new FileDownloadResponse(data, fileName, resp.ContentType);
+					}
+				}
+			}
+
+			return null;
+		}
+
+		/// <summary>
+		/// Starts asynchronous download of files and saves them to disk
 		/// </summary>
 		/// <param name="context">Download context</param>
 		/// <param name="items">Items to be downloaded</param>
@@ -96,6 +148,34 @@ namespace SmartStore.Utilities
 
 	}
 
+	public class FileDownloadResponse
+	{
+		public FileDownloadResponse(byte[] data, string fileName, string contentType)
+		{
+			Guard.ArgumentNotNull(() => data);
+			Guard.ArgumentNotEmpty(() => fileName);
+			Guard.ArgumentNotEmpty(() => contentType);
+
+			this.Data = data;
+			this.FileName = fileName;
+			this.ContentType = contentType;
+		}
+		
+		/// <summary>
+		/// The downloaded file's byte array
+		/// </summary>
+		public byte[] Data { get; private set; }
+
+		/// <summary>
+		/// The file name
+		/// </summary>
+		public string FileName { get; private set; }
+
+		/// <summary>
+		/// The mime type opf the downloaded file
+		/// </summary>
+		public string ContentType { get; private set; }
+	}
 
 	public class FileDownloadManagerContext
 	{

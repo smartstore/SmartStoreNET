@@ -1,19 +1,19 @@
-﻿using SmartStore.Core;
-using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Localization;
-using System;
+﻿using System;
+using System.Data.Entity.Core.Metadata.Edm;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
-using System.Reflection;
-using System.Data.Entity.Infrastructure;
-using System.Data.Entity.Core.Metadata.Edm;
+using SmartStore.Core;
+using SmartStore.Core.Data;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -24,7 +24,7 @@ namespace SmartStore.Web.Framework.WebApi
 		protected internal HttpResponseException ExceptionEntityNotFound<TKey>(TKey key)
 		{
 			var response = Request.CreateErrorResponse(HttpStatusCode.NotFound,
-				WebApiGlobal.Error.EntityNotFound.FormatWith(key));
+				WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
 
 			return new HttpResponseException(response);
 		}
@@ -33,20 +33,30 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			// NotFound cause of nullable properties
 			var response = Request.CreateErrorResponse(HttpStatusCode.NotFound,
-				WebApiGlobal.Error.PropertyNotExpanded.FormatWith(path.ToString()));
+				WebApiGlobal.Error.PropertyNotExpanded.FormatInvariant(path.ToString()));
 
 			return new HttpResponseException(response);
 		}
 
 		public override HttpResponseMessage HandleUnmappedRequest(ODataPath odataPath)
 		{
-			if (Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post)
+			if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
+				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property") ||
+				odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/unresolved"))
 			{
-				if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/property") ||
-					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/cast/property") ||
-					odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/unresolved"))
+				if (Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post)
 				{
 					return UnmappedGetProperty(odataPath);
+				}
+			}
+			else if (odataPath.PathTemplate.IsCaseInsensitiveEqual("~/entityset/key/navigation/key"))
+			{
+				if (Request.Method == HttpMethod.Get || Request.Method == HttpMethod.Post || Request.Method == HttpMethod.Delete)
+				{
+					// we ignore standard odata path cause they differ:
+					// ~/entityset/key/$links/navigation (odata 3 "link"), ~/entityset/key/navigation/$ref (odata 4 "reference")
+
+					return UnmappedGetNavigation(odataPath);
 				}
 			}
 
@@ -63,7 +73,7 @@ namespace SmartStore.Web.Framework.WebApi
 			var entity = GetEntityByKey(key);
 
 			if (entity == null)
-				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatWith(key));
+				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
 
 			PropertyInfo pi = null;
 			string propertyName = null;
@@ -88,18 +98,51 @@ namespace SmartStore.Web.Framework.WebApi
 
 		protected virtual internal HttpResponseMessage UnmappedGetProperty(TEntity entity, string propertyName)
 		{
-			return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatWith(propertyName));
+			return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.PropertyNotFound.FormatInvariant(propertyName));
 		}
 
-		protected virtual IRepository<TEntity> CreateRepository()
+		protected virtual internal HttpResponseMessage UnmappedGetNavigation(ODataPath odataPath)
 		{
-			var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
+			int key, relatedKey;
 
-			// false means not resolving navigation properties (related entities)
-			repository.Context.ProxyCreationEnabled = false;
+			if (!odataPath.GetNormalizedKey(1, out key))
+				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoKeyFromPath);
 
-			return repository;
+			var navigationProperty = odataPath.GetNavigation(2);
+
+			if (navigationProperty.IsEmpty())
+				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoNavigationFromPath);
+
+			if (!odataPath.GetNormalizedKey(3, out relatedKey))
+				return Request.CreateErrorResponse(HttpStatusCode.BadRequest, WebApiGlobal.Error.NoRelatedKeyFromPath);
+
+			var methodName = string.Concat("Navigation", navigationProperty);
+			var methodInfo = this.GetType().GetMethods().FirstOrDefault(x => x.Name == methodName);
+
+			if (methodInfo != null)
+			{
+				HttpResponseMessage response = null;
+
+				this.ProcessEntity(() =>
+				{
+					response = (HttpResponseMessage)methodInfo.Invoke(this, new object[] { key, relatedKey });
+					return null;
+				});
+
+				return response;
+			}
+			return base.HandleUnmappedRequest(odataPath);
 		}
+
+		//protected virtual IRepository<TEntity> CreateRepository()
+		//{
+		//	var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
+
+		//	// false means not resolving navigation properties (related entities)
+		//	repository.Context.ProxyCreationEnabled = false;
+
+		//	return repository;
+		//}
 
 		/// <summary>
 		/// Auto injected by Autofac
@@ -163,7 +206,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
 
-			return GetEntitySet().FirstOrDefault(x => x.Id == key);
+			return this.Repository.GetById(key);
 		}
 
 		protected internal virtual TEntity GetEntityByKeyNotNull(int key)
@@ -378,20 +421,5 @@ namespace SmartStore.Web.Framework.WebApi
 			}
 			return entity;
 		}
-
-		//protected internal IQueryable<GenericAttribute> GenericAttributes(int key, string keyGroup)
-		//{
-		//	if (!ModelState.IsValid)
-		//		throw this.ExceptionInvalidModelState();
-
-		//	var repository = EngineContext.Current.Resolve<IRepository<GenericAttribute>>();
-
-		//	var query =
-		//		from x in repository.Table
-		//		where x.EntityId == key && x.KeyGroup == keyGroup && x.Key != WebApiUserCacheData.Key
-		//		select x;
-
-		//	return query;
-		//}
 	}
 }

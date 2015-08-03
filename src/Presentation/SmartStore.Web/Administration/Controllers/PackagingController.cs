@@ -30,8 +30,6 @@ namespace SmartStore.Admin.Controllers
 			this._themeRegistry = themeRegistry;
 		}
 
-		public Localizer T { get; set; }
-
 		[ChildActionOnly]
 		public ActionResult UploadPackage(bool isTheme)
 		{
@@ -54,8 +52,8 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				var file = Request.Files["packagefile"];
-				if (file != null && file.ContentLength > 0)
+				var file = Request.Files["packagefile"].ToPostedFileResult();
+				if (file != null)
 				{
 					var requiredPermission = (isTheme = PackagingUtils.IsTheme(file.FileName))
 						? StandardPermissionProvider.ManageThemes
@@ -66,7 +64,7 @@ namespace SmartStore.Admin.Controllers
 						return AccessDeniedView();
 					}
 
-					if (!Path.GetExtension(file.FileName).IsCaseInsensitiveEqual(".nupkg"))
+					if (!file.FileExtension.IsCaseInsensitiveEqual(".nupkg"))
 					{
 						NotifyError(T("Admin.Packaging.NotAPackage"));
 						return Redirect(returnUrl);
@@ -81,7 +79,7 @@ namespace SmartStore.Admin.Controllers
 						_themeRegistry.Value.StopMonitoring();
 					}
 
-					var packageInfo = _packageManager.Install(file.InputStream, location, appPath);
+					var packageInfo = _packageManager.Install(file.Stream, location, appPath);
 
 					if (isTheme)
 					{

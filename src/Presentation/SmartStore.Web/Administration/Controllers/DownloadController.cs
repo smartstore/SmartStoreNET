@@ -45,14 +45,14 @@ namespace SmartStore.Admin.Controllers
         [ValidateInput(false)]
         public ActionResult SaveDownloadUrl(string downloadUrl)
         {
-            //insert
-            var download = new Download()
-            {
-                DownloadGuid = Guid.NewGuid(),
-                UseDownloadUrl = true,
-                DownloadUrl = downloadUrl,
-                IsNew = true
-              };
+			var download = new Download
+			{
+				DownloadGuid = Guid.NewGuid(),
+				UseDownloadUrl = true,
+				DownloadUrl = downloadUrl,
+				IsNew = true,
+				IsTransient = true
+			};
             _downloadService.InsertDownload(download);
 
             return Json(new { downloadId = download.Id }, JsonRequestBehavior.AllowGet);
@@ -61,59 +61,48 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult AsyncUpload()
         {
-            //we process it distinct ways based on a browser
-            //find more info here http://stackoverflow.com/questions/4884920/mvc3-valums-ajax-file-upload
-            Stream stream = null;
-            var fileName = "";
-            var contentType = "";
-            if (String.IsNullOrEmpty(Request["qqfile"]))
-            {
-                // IE
-                HttpPostedFileBase httpPostedFile = Request.Files[0];
-                if (httpPostedFile == null)
-                    throw new ArgumentException("No file uploaded");
-                stream = httpPostedFile.InputStream;
-                fileName = Path.GetFileName(httpPostedFile.FileName);
-                contentType = httpPostedFile.ContentType;
-            }
-            else
-            {
-                //Webkit, Mozilla
-                stream = Request.InputStream;
-                fileName = Request["qqfile"];
-            }
+			var postedFile = Request.ToPostedFileResult();
+			if (postedFile == null)
+			{
+				throw new ArgumentException("No file uploaded");
+			}
 
-            var fileBinary = new byte[stream.Length];
-            stream.Read(fileBinary, 0, fileBinary.Length);
-
-            var fileExtension = Path.GetExtension(fileName);
-            if (!String.IsNullOrEmpty(fileExtension))
-                fileExtension = fileExtension.ToLowerInvariant();
-
-            var download = new Download()
+            var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = fileBinary,
-                ContentType = contentType,
+                DownloadBinary = postedFile.Buffer,
+                ContentType = postedFile.ContentType,
                 //we store filename without extension for downloads
-                Filename = Path.GetFileNameWithoutExtension(fileName),
-                Extension = fileExtension,
-                IsNew = true
+                Filename = postedFile.FileTitle,
+                Extension = postedFile.FileExtension,
+                IsNew = true,
+				IsTransient = true
             };
             _downloadService.InsertDownload(download);
 
-            //when returning JSON the mime-type must be set to text/plain
-            //otherwise some browsers will pop-up a "Save As" dialog.
             return Json(new 
             { 
                 success = true, 
                 downloadId = download.Id,
-                fileName = download.Filename + download.Extension,
+                fileName = download.Filename.Truncate(50, "...") + download.Extension,
                 downloadUrl = Url.Action("DownloadFile", new { downloadId = download.Id }) 
-            },
-            "text/plain");
+            });
         }
+
+		[HttpPost]
+		public ActionResult DeleteDownload(int downloadId)
+		{
+			var download = _downloadService.GetDownloadById(downloadId);
+			if (download == null)
+			{
+				NotifyError("No download record found with the specified id");
+				return Json(new { success = false });
+			}
+
+			_downloadService.DeleteDownload(download);
+			return Json(new { success = true });
+		}
     }
 }

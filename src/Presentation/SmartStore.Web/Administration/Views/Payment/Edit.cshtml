@@ -1,0 +1,185 @@
+﻿@using SmartStore.Core.Domain.Payments;
+
+@model PaymentMethodEditModel
+
+@{
+	ViewBag.Title = T("Common.Edit").Text + " - " + Model.FriendlyName;
+}
+
+@using (Html.BeginForm(null, null, FormMethod.Post, new { id = "payment-method-form" }))
+{
+	<div class="section-header">
+		<div class="title">
+			<img src="@Url.Content(Model.IconUrl)" alt="@Model.FriendlyName" />
+			@ViewBag.Title <span class="subtitle muted">(@(Model.SystemName))</span>
+			<a href="@Url.Action("Providers", "Payment")">(@T("Admin.Common.BackToList"))</a>
+		</div>
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+		</div>
+	</div>
+	
+	@Html.ValidationSummary(false)
+	@Html.HiddenFor(model => model.SystemName)
+
+	
+	@Html.SmartStore().TabStrip().Name("payment-method-edit").Items(x =>
+	{
+		x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
+		x.Add().Text(T("Admin.Common.Restrictions").Text).Content(TabRestrictions());
+
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "payment-method-edit", this.Html, this.Model));
+	})
+}
+
+@helper TabGeneral()
+{
+	@(Html.LocalizedEditor<PaymentMethodEditModel, PaymentMethodLocalizedModel>("paymentmethod-general-localized",
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.Locales[item].FriendlyName)
+				@Html.ValidationMessageFor(model => model.Locales[item].FriendlyName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => Model.Locales[item].Description, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.Locales[item].Description)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Locales[item].FullDescription)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Locales[item].FullDescription, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.Locales[item].FullDescription)
+			</td>
+		</tr>
+		<tr>
+			<td colspan="2">
+				@Html.HiddenFor(model => model.Locales[item].LanguageId)
+			</td>
+		</tr>
+	</table>
+	,
+	@<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FriendlyName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.FriendlyName)
+				@Html.ValidationMessageFor(model => model.FriendlyName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Description)
+			</td>
+			<td class="adminData">
+				@Html.TextAreaFor(model => model.Description, new { @class = "input-large" })
+				@Html.ValidationMessageFor(model => model.Description)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.FullDescription)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.FullDescription, Html.RichEditorFlavor())
+				@Html.ValidationMessageFor(model => model.FullDescription)
+			</td>
+		</tr>
+	</table>
+	))
+}
+
+@helper TabRestrictions()
+{
+	<div class="alert alert-info">
+		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
+	</div>
+
+	<div>
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedCustomerRoleIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedCustomerRoleIds,
+						new MultiSelectList(Model.AvailableCustomerRoles, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedCustomerRoleIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedShippingMethodIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedShippingMethodIds,
+						new MultiSelectList(Model.AvailableShippingMethods, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedShippingMethodIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ExcludedCountryIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ExcludedCountryIds,
+						new MultiSelectList(Model.AvailableCountries, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ExcludedCountryIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.CountryExclusionContext)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.CountryExclusionContext, Model.AvailableCountryExclusionContextTypes)
+					@Html.ValidationMessageFor(model => model.CountryExclusionContext)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MinimumOrderAmount)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.MinimumOrderAmount)
+					@Html.ValidationMessageFor(model => model.MinimumOrderAmount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.MaximumOrderAmount)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.MaximumOrderAmount)
+					@Html.ValidationMessageFor(model => model.MaximumOrderAmount)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.AmountRestrictionContext)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.AmountRestrictionContext, Model.AvailableAmountRestrictionContextTypes)
+					@Html.ValidationMessageFor(model => model.AmountRestrictionContext)
+				</td>
+			</tr>
+		</table>
+	</div>
+}

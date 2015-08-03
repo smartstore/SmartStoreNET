@@ -31,6 +31,7 @@ namespace SmartStore.Services.Tests.Catalog
         ILocalizationService _localizationService;
         TaxSettings _taxSettings;
         IPriceFormatter _priceFormatter;
+		IStoreContext _storeContext;
         
         [SetUp]
         public new void SetUp()
@@ -64,14 +65,16 @@ namespace SmartStore.Services.Tests.Catalog
                 CreatedOnUtc = DateTime.UtcNow,
                 UpdatedOnUtc= DateTime.UtcNow
             };            
+
             _currencyRepo = MockRepository.GenerateMock<IRepository<Currency>>();
             _currencyRepo.Expect(x => x.Table).Return(new List<Currency>() { currency1, currency2 }.AsQueryable());
 
 			_storeMappingService = MockRepository.GenerateMock<IStoreMappingService>();
+			_storeContext = MockRepository.GenerateMock<IStoreContext>();
 
             var pluginFinder = new PluginFinder();
 			_currencyService = new CurrencyService(cacheManager, _currencyRepo, _storeMappingService,
-                _currencySettings, pluginFinder, null, this.ProviderManager);
+                _currencySettings, pluginFinder, null, this.ProviderManager, _storeContext);
             
             _taxSettings = new TaxSettings();
 

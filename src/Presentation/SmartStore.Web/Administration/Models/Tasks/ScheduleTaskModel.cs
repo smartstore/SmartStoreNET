@@ -31,11 +31,20 @@ namespace SmartStore.Admin.Models.Tasks
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastSuccess")]
         public string LastSuccessUtc { get; set; }
 
+        [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
+        public string NextRunUtc { get; set; }
+
+		public bool IsOverdue { get; set; }
+
 		[SmartResourceDisplayName("Common.Error")]
 		public string LastError { get; set; }
 
 		public string Duration { get; set; }
 
 		public bool IsRunning { get; set; }
+		public int? ProgressPercent { get; set; }
+		public string ProgressMessage { get; set; }
+		public string CancelUrl { get; set; }
+
     }
 }

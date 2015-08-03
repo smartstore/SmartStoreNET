@@ -30,11 +30,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			_googleService = googleService;
 			_settingService = settingService;
 			_permissionService = permissionService;
-
-			T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		private ActionResult RedirectToConfig()
 		{

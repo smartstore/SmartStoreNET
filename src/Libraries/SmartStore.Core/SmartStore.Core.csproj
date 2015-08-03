@@ -71,11 +71,11 @@
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.dll</HintPath>
     </Reference>
     <Reference Include="EntityFramework.SqlServer, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\EntityFramework.6.1.0\lib\net45\EntityFramework.SqlServer.dll</HintPath>
+      <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
     <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -101,7 +101,6 @@
     <Reference Include="System.ComponentModel.DataAnnotations" />
     <Reference Include="System.configuration" />
     <Reference Include="System.Core" />
-    <Reference Include="System.Drawing" />
     <Reference Include="System.Linq.Dynamic">
       <HintPath>..\..\packages\System.Linq.Dynamic.1.0.0\lib\net40\System.Linq.Dynamic.dll</HintPath>
     </Reference>
@@ -153,10 +152,16 @@
     <Compile Include="Caching\RequestCache.cs" />
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
+    <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Data\ITransaction.cs" />
+    <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
+    <Compile Include="Domain\Common\RestrictionContextTypes.cs" />
+    <Compile Include="Domain\Messages\EmailAttachmentStorageLocation.cs" />
+    <Compile Include="Domain\Messages\QueuedEmailAttachment.cs" />
+    <Compile Include="Domain\Payments\PaymentMethod.cs" />
     <Compile Include="Domain\Seo\CanonicalHostNameRule.cs" />
     <Compile Include="Extensions\IOExtensions.cs" />
     <Compile Include="Extensions\DecimalExtensions.cs" />
@@ -167,6 +172,7 @@
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
+    <Compile Include="ITransient.cs" />
     <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
@@ -222,7 +228,6 @@
     <Compile Include="Domain\Stores\StoreMapping.cs" />
     <Compile Include="Domain\Themes\ThemeSettings.cs" />
     <Compile Include="Domain\Themes\ThemeVariable.cs" />
-    <Compile Include="Email\Attachment.cs" />
     <Compile Include="Email\DefaultEmailSender.cs" />
     <Compile Include="Email\EmailAddress.cs" />
     <Compile Include="Email\EmailException.cs" />
@@ -352,6 +357,7 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
+    <Compile Include="SmartNetPrincipal.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
@@ -559,6 +565,7 @@
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
+    <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />

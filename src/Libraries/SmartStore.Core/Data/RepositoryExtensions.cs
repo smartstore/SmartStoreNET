@@ -51,6 +51,39 @@ namespace SmartStore.Core.Data
             }
         }
 
+		/// <summary>
+		/// Truncates the table
+		/// </summary>
+		/// <typeparam name="T">Entity type</typeparam>
+		/// <param name="rs">The repository</param>
+		/// <param name="predicate">An optional filter</param>
+		/// <returns>The total number of affected entities</returns>
+		/// <remarks>
+		/// This method turns off auto detection, validation and hooking.
+		/// </remarks>
+		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null) where T : BaseEntity
+		{
+			var count = 0;
+
+			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+			{
+				var query = rs.Table;
+				if (predicate != null)
+				{
+					query = query.Where(predicate);
+				}
+
+				var records = query.ToList();
+				foreach (var chunk in records.Chunk(500))
+				{
+					rs.DeleteRange(chunk.ToList());
+					count += rs.Context.SaveChanges();
+				}
+			}
+
+			return count;
+		}
+
         public static IQueryable<T> Get<T>(
             this IRepository<T> rs,
             Expression<Func<T, bool>> predicate = null,

@@ -176,8 +176,8 @@
 	{
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.MiscSettings").Text).Content(@TabMiscSettings()).Selected(true);
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductListSettings").Text).Content(@TabProductListSettings());
-		x.Add().Text(T("Admin.Configuration.Settings.Catalog.UserSettings").Text).Content(@TabUserSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductDetailSettings").Text).Content(@TabProductDetailSettings());
+		x.Add().Text(T("Admin.Configuration.Settings.Catalog.UserSettings").Text).Content(@TabUserSettings());
 		x.Add().Text(T("Admin.Configuration.Settings.Catalog.ProductSearchSettings").Text).Content(@TabProductSearchSettings());
 	}))
     
@@ -496,6 +496,16 @@
                     @Html.ValidationMessageFor(model => model.DefaultPageSizeOptions)
                 </td>
             </tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.PriceDisplayType)
+				</td>
+				<td class="adminData">
+					@Html.SettingOverrideCheckbox(model => Model.PriceDisplayType)
+					@Html.DropDownListFor(model => model.PriceDisplayType, Model.AvailablePriceDisplayTypes)
+					@Html.ValidationMessageFor(model => model.PriceDisplayType)
+				</td>
+			</tr>
         </table>
     </fieldset>
     

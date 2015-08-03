@@ -24,11 +24,15 @@
 
 <div class="page recently-added-products-page">
     <div class="page-title">
-        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">@T("Products.NewProducts.RSS")</a>
+        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">
+			<i class="fa fa-rss muted"></i>
+			@T("Products.NewProducts.RSS")
+		</a>
         <h1>@T("Products.NewProducts")</h1>
     </div>
-    <div class="clear">
-    </div>
+
+    <div class="clear"></div>
+
     <div class="page-body">
         
         @*@if (ShowListOptions()) {

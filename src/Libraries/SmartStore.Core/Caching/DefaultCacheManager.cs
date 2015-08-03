@@ -34,21 +34,19 @@ namespace SmartStore.Core.Caching
 			{
 				return (T)_cache.Get(key);
 			}
-			else
+
+			using (EnterReadLock())
 			{
-				using (EnterReadLock())
+				if (!_cache.Contains(key))
 				{
-					if (!_cache.Contains(key))
-					{
-						var value = acquirer();
-						this.Set(key, value, cacheTime);
+					var value = acquirer();
+					this.Set(key, value, cacheTime);
 
-						return value;
-					}
+					return value;
 				}
-
-				return (T)_cache.Get(key);
 			}
+
+			return (T)_cache.Get(key);
         }
 
 		public void Set(string key, object value, int? cacheTime = null)

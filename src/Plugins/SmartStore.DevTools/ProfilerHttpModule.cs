@@ -1,24 +1,10 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 using System.Web;
-using Microsoft.Web.Infrastructure.DynamicModuleHelper;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
-using SmartStore.Web.Framework;
 using StackExchange.Profiling;
 
 namespace SmartStore.DevTools
 {
-
-	public class ProfilerStarter : IPreApplicationStart
-	{
-		public void Start()
-		{
-			DynamicModuleUtility.RegisterModule(typeof(ProfilerHttpModule));
-			SmartUrlRoutingModule.RegisterRoutablePath("/mini-profiler-resources/(.*)");
-		}
-	}
 
 	public class ProfilerHttpModule : IHttpModule
 	{

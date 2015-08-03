@@ -134,6 +134,8 @@ namespace SmartStore.Admin.Controllers
             _contentSliderSettings.AutoPlay = model.AutoPlay;
             _contentSliderSettings.AutoPlayDelay = model.AutoPlayDelay;
 
+			MediaHelper.UpdatePictureTransientState(0, model.BackgroundPictureId, true);
+
             _settingService.SaveSetting(_contentSliderSettings);
 
 			var viewModel = PrepareContentSliderSettingsModel(model);
@@ -174,6 +176,7 @@ namespace SmartStore.Admin.Controllers
                 model.PictureUrl = _pictureService.GetPictureUrl(model.PictureId);
                 model.LanguageName = _languageService.GetLanguageByCulture(model.LanguageCulture).Name;
                 _contentSliderSettings.Slides.Add(model.ToEntity());
+				MediaHelper.UpdatePictureTransientState(0, model.PictureId, true);
                 _settingService.SaveSetting(_contentSliderSettings);
                 
                 NotifySuccess(_localizationService.GetResource("Admin.Configuration.ContentSlider.Slide.Added"));

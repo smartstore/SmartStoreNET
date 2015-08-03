@@ -72,7 +72,7 @@ namespace SmartStore.Utilities
 			{
 				if (Directory.Exists(path))
 				{
-					throw new MemberAccessException("Deleting folders cause of security reasons not possible: {0}".FormatWith(path));
+					throw new MemberAccessException("Deleting folders due to security reasons not possible: {0}".FormatWith(path));
 				}
 
 				File.Delete(path);	// no exception, if file doesn't exists

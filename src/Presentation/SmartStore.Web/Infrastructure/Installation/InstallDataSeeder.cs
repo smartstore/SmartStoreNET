@@ -549,12 +549,12 @@ namespace SmartStore.Web.Infrastructure.Installation
 			});
 
 			Populate("PopulatePictures", _data.Pictures());
+			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateStores", PopulateStores);
 			Populate("InstallLanguages", () => PopulateLanguage(_config.Language));
 			Populate("PopulateMeasureDimensions", _data.MeasureDimensions());
 			Populate("PopulateMeasureWeights", _data.MeasureWeights());
 			Populate("PopulateTaxCategories", PopulateTaxCategories);
-			Populate("PopulateCurrencies", PopulateCurrencies);
 			Populate("PopulateCountriesAndStates", PopulateCountriesAndStates);
 			Populate("PopulateShippingMethods", PopulateShippingMethods);
 			Populate("PopulateDeliveryTimes", _data.DeliveryTimes());
@@ -614,9 +614,11 @@ namespace SmartStore.Web.Infrastructure.Installation
 		private string ValidateSeName<TEntity>(TEntity entity, string name)
 			where TEntity : BaseEntity, ISlugSupported
 		{
+			var seoSettings = new SeoSettings { LoadAllUrlAliasesOnStartup = false };
+			
 			if (_urlRecordService == null)
 			{
-				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false });
+				_urlRecordService = new UrlRecordService(NullCache.Instance, new EfRepository<UrlRecord>(_ctx) { AutoCommitEnabled = false }, seoSettings);
 			}
 
 			return entity.ValidateSeName<TEntity>("", name, true, _urlRecordService, new SeoSettings());

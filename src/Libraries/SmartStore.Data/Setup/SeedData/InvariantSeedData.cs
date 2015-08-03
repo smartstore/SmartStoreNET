@@ -73,6 +73,10 @@ namespace SmartStore.Data.Setup
 			var seName = GetSeName("company-logo");
 			var imgCompanyLogo = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
 			
+			var currency = _ctx.Set<Currency>().FirstOrDefault(x => x.CurrencyCode == "EUR");
+			if (currency == null)
+				currency = _ctx.Set<Currency>().First();
+			
 			var entities = new List<Store>()
 			{
 				new Store()
@@ -82,7 +86,9 @@ namespace SmartStore.Data.Setup
 					Hosts = "yourstore.com,www.yourstore.com",
 					SslEnabled = false,
 					DisplayOrder = 1,
-					LogoPictureId = imgCompanyLogo.Id
+					LogoPictureId = imgCompanyLogo.Id,
+					PrimaryStoreCurrencyId = currency.Id,
+					PrimaryExchangeRateCurrencyId = currency.Id
 				}
 			};
 			this.Alter(entities);
@@ -4244,8 +4250,6 @@ namespace SmartStore.Data.Setup
 				},
 				new CurrencySettings()
 				{
-					PrimaryStoreCurrencyId = _ctx.Set<Currency>().First().Id,
-					PrimaryExchangeRateCurrencyId = _ctx.Set<Currency>().First().Id,
 				},
 				new MeasureSettings()
 				{
@@ -4799,7 +4803,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					Seconds = 600,
+					Seconds = 14400, // 4 hrs
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,
@@ -4809,6 +4813,22 @@ namespace SmartStore.Data.Setup
 					Name = "Update currency exchange rates",
 					Seconds = 900,
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
+				new ScheduleTask
+				{
+					Name = "Clear transient uploads",
+					Seconds = 43200, // 12 hours
+					Type = "SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
+				new ScheduleTask
+				{
+					Name = "Clear email queue",
+					Seconds = 86400, // 1 day
+					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
 				},

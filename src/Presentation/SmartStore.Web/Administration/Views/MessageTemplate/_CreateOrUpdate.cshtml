@@ -13,7 +13,7 @@
 	x.Add().Text(T("Admin.Common.Info").Text).Content(TabInfo()).Selected(true);
 	x.Add().Text(T("Admin.Common.Stores").Text).Content(TabStores());
     
-    //generate an event
+    // generate an event
 	EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "template-edit", this.Html, this.Model));
 })
 
@@ -126,6 +126,33 @@
                 @Html.ValidationMessageFor(model => model.Locales[item].Subject)
             </td>
         </tr>
+	 	<tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment1FileId)
+	 		</td>
+	 		<td class="adminData">
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment1FileId, "Download")
+	 			@Html.ValidationMessageFor(model => model.Locales[item].Attachment1FileId)
+			</td>
+		 </tr>
+		 <tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment2FileId)
+			</td>
+			<td class="adminData">
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment2FileId, "Download")
+				@Html.ValidationMessageFor(model => model.Locales[item].Attachment2FileId)
+			</td>
+		 </tr>
+		 <tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Locales[item].Attachment3FileId)
+			</td>
+			<td class="adminData">
+	 			@Html.EditorFor(model => Model.Locales[item].Attachment3FileId, "Download")
+				@Html.ValidationMessageFor(model => model.Locales[item].Attachment3FileId)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Locales[item].Body)
@@ -170,6 +197,33 @@
                 @Html.ValidationMessageFor(model => model.Subject)
             </td>
         </tr>
+	 	<tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Attachment1FileId)
+	 		</td>
+	 		<td class="adminData">
+	 			@Html.EditorFor(model => Model.Attachment1FileId, "Download2")
+	 			@Html.ValidationMessageFor(model => model.Attachment1FileId)
+			</td>
+		</tr>
+	 	<tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Attachment2FileId)
+	 		</td>
+	 		<td class="adminData">
+	 			@Html.EditorFor(model => Model.Attachment2FileId, "Download2")
+	 			@Html.ValidationMessageFor(model => model.Attachment2FileId)
+			</td>
+		</tr>
+	 	<tr>
+	 		<td class="adminTitle">
+	 			@Html.SmartLabelFor(model => model.Attachment3FileId)
+	 		</td>
+	 		<td class="adminData">
+	 			@Html.EditorFor(model => Model.Attachment3FileId, "Download2", new { minimalMode = false })
+	 			@Html.ValidationMessageFor(model => model.Attachment3FileId)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.Body)
@@ -246,7 +300,8 @@
                 else
                 {
                     <div>@T("Admin.Configuration.Stores.NoStoresDefined")</div>
-                }</td>
+                }
+			</td>
         </tr>
     </table>
 }

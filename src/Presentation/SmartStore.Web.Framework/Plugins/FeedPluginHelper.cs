@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
@@ -108,6 +109,12 @@ namespace SmartStore.Web.Framework.Plugins
 		private IWorkContext WorkContext
 		{
 			get { return _workContext ?? (_workContext = _ctx.Resolve<IWorkContext>()); }
+		}
+
+		private ICurrencyService _currencyService;
+		private ICurrencyService CurrencyService
+		{
+			get { return _currencyService ?? (_currencyService = _ctx.Resolve<ICurrencyService>()); }
 		}
 
 		#endregion
@@ -266,9 +273,9 @@ namespace SmartStore.Web.Framework.Plugins
 			return "{0}{1}".FormatWith(store.Url, product.GetSeName(Language.Id, UrlRecordService, LanguageService));
 		}
 
-		public decimal GetProductPrice(Product product, Currency currency)
+		public decimal GetProductPrice(Product product, Currency currency, Store store)
 		{
-			decimal priceBase = PriceCalculationService.GetPreselectedPrice(product);
+			decimal priceBase = PriceCalculationService.GetPreselectedPrice(product, null);
 
 			if (BaseSettings.ConvertNetToGrossPrices)
 			{
@@ -276,11 +283,11 @@ namespace SmartStore.Web.Framework.Plugins
 				priceBase = TaxService.GetProductPrice(product, priceBase, true, WorkContext.CurrentCustomer, out taxRate);
 			}
 			
-			decimal price = ConvertFromStoreCurrency(priceBase, currency);
+			decimal price = CurrencyService.ConvertFromPrimaryStoreCurrency(priceBase, currency, store);
 			return price;
 		}
 
-		public decimal? GetOldPrice(Product product, Currency currency)
+		public decimal? GetOldPrice(Product product, Currency currency, Store store)
 		{
 			if (!decimal.Equals(product.OldPrice, decimal.Zero) && !decimal.Equals(product.OldPrice, product.Price) &&
 				!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
@@ -293,7 +300,7 @@ namespace SmartStore.Web.Framework.Plugins
 					price = TaxService.GetProductPrice(product, price, true, WorkContext.CurrentCustomer, out taxRate);
 				}
 
-				return ConvertFromStoreCurrency(price, currency);
+				return CurrencyService.ConvertFromPrimaryStoreCurrency(price, currency, store);
 			}
 			return null;
 		}
@@ -388,7 +395,7 @@ namespace SmartStore.Web.Framework.Plugins
 						stores.AddRange(storeService.GetAllStores());
 					}
 
-					var context = new FeedFileCreationContext()
+					var context = new FeedFileCreationContext
 					{
 						StoreCount = stores.Count,
 						Progress = new Progress<FeedFileCreationProgress>(x =>
@@ -602,53 +609,12 @@ namespace SmartStore.Web.Framework.Plugins
 				return true;
 			}
 
-			string scheduleTaskType = ScheduleTaskType;
+            var taskScheduler = _ctx.Resolve<ITaskScheduler>();
+			taskScheduler.RunSingleTask(ScheduleTask.Id);
 
-			var task = AsyncRunner.Run((container, ct) =>
-			{
-				int taskId = 0;
-				try
-				{
-					var svc = container.Resolve<IScheduleTaskService>();
+            Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
 
-					var scheduleTask = svc.GetTaskByType(scheduleTaskType);
-
-					if (scheduleTask == null)
-						throw new Exception("Schedule task cannot be loaded");
-
-					taskId = scheduleTask.Id;
-
-					var job = new Job(scheduleTask);
-					job.Enabled = true;
-					job.Execute(ct, container, false);
-				}
-				catch (Exception)
-				{
-					_scheduleTaskService.EnsureTaskIsNotRunning(taskId);
-				}
-			}, CancellationToken.None, TaskCreationOptions.LongRunning, TaskScheduler.Default);
-
-			task.Wait(100);
-
-			if (task.IsCompleted)
-			{
-				if (!task.IsFaulted)
-				{
-					Notifier.Success(GetResource("Admin.System.ScheduleTasks.RunNow.Completed"));
-				}
-				else
-				{
-					var exc = task.Exception.Flatten().InnerException;
-					Notifier.Error(exc.Message);
-					Logger.Error(exc.Message, exc);					
-				}
-			}
-			else
-			{
-				Notifier.Information(GetResource("Admin.System.ScheduleTasks.RunNow.Progress"));
-				return true;
-			}
-			return false;
+            return true;
 		}
 
 		public string GetProgressInfo(bool checkIfRunnning = false)

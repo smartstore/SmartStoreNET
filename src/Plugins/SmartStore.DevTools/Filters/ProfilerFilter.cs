@@ -54,7 +54,10 @@ namespace SmartStore.DevTools.Filters
 			if (!_profilerSettings.EnableMiniProfilerInPublicStore)
 				return;
 
-			this._profiler.Value.StepStop("ActionFilter");
+			if (!(filterContext.Result is ViewResultBase))
+			{
+				this._profiler.Value.StepStop("ActionFilter");
+			}
 		}
 
 		public void OnResultExecuting(ResultExecutingContext filterContext)
@@ -74,15 +77,6 @@ namespace SmartStore.DevTools.Filters
 				return;
 			}
 
-			if (!filterContext.IsChildAction)
-			{
-				_widgetProvider.Value.RegisterAction(
-					"head_html_tag",
-					"MiniProfiler",
-					"DevTools",
-					new { area = "SmartStore.DevTools" });
-			}
-
 			var viewName = result.ViewName;
 			if (viewName.IsEmpty())
 			{
@@ -91,6 +85,15 @@ namespace SmartStore.DevTools.Filters
 			}
 
 			this._profiler.Value.StepStart("ResultFilter", string.Format("{0}: {1}", result is PartialViewResult ? "Partial" : "View", viewName));
+
+			if (!filterContext.IsChildAction)
+			{
+				_widgetProvider.Value.RegisterAction(
+					"head_html_tag",
+					"MiniProfiler",
+					"DevTools",
+					new { area = "SmartStore.DevTools" });
+			}
 		}
 
 		public void OnResultExecuted(ResultExecutedContext filterContext)
@@ -110,6 +113,7 @@ namespace SmartStore.DevTools.Filters
 			}
 
 			this._profiler.Value.StepStop("ResultFilter");
+			this._profiler.Value.StepStop("ActionFilter");
 		}
 
 		private bool ShouldProfile(HttpContextBase ctx)

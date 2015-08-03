@@ -153,6 +153,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PdfLogo")]
             [UIHint("Picture")]
             public int LogoPictureId { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderPlacedEmail")]
+			public bool AttachOrderPdfToOrderPlacedEmail { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderCompletedEmail")]
+			public bool AttachOrderPdfToOrderCompletedEmail { get; set; }
         }
 
 		public partial class LocalizationSettingsModel

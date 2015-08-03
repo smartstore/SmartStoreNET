@@ -31,7 +31,7 @@ namespace SmartStore.PayPal
 
 		public ILogger Logger { get; set; }
 
-		public ICommonServices CommonServices { get; set; }
+		public ICommonServices Services { get; set; }
 
 		public IOrderService OrderService { get; set; }
 
@@ -63,7 +63,7 @@ namespace SmartStore.PayPal
         public bool VerifyIPN(string formString, out Dictionary<string, string> values)
         {
 			// settings: multistore context not possible here. we need the custom value to determine what store it is.
-			var settings = CommonServices.Settings.LoadSetting<TSetting>();
+			var settings = Services.Settings.LoadSetting<TSetting>();
             var req = (HttpWebRequest)WebRequest.Create(PayPalHelper.GetPaypalUrl(settings));
 
             req.Method = "POST";
@@ -107,7 +107,7 @@ namespace SmartStore.PayPal
 			var result = decimal.Zero;
 			try
 			{
-				var settings = CommonServices.Settings.LoadSetting<TSetting>();
+				var settings = Services.Settings.LoadSetting<TSetting>();
 
 				result = this.CalculateAdditionalFee(OrderTotalCalculationService, cart, settings.AdditionalFee, settings.AdditionalFeePercentage);
 			}
@@ -129,7 +129,7 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = capturePaymentRequest.Order.PaymentStatus
 			};
 
-			var settings = CommonServices.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
+			var settings = Services.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
             string authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
 
             var req = new DoCaptureReq();
@@ -175,7 +175,7 @@ namespace SmartStore.PayPal
 				NewPaymentStatus = request.Order.PaymentStatus
 			};
 
-			var settings = CommonServices.Settings.LoadSetting<TSetting>(request.Order.StoreId);
+			var settings = Services.Settings.LoadSetting<TSetting>(request.Order.StoreId);
             string transactionId = request.Order.CaptureTransactionId;
 
             var req = new RefundTransactionReq();
@@ -221,7 +221,7 @@ namespace SmartStore.PayPal
 			};
 
             string transactionId = request.Order.AuthorizationTransactionId;
-			var settings = CommonServices.Settings.LoadSetting<TSetting>(request.Order.StoreId);
+			var settings = Services.Settings.LoadSetting<TSetting>(request.Order.StoreId);
 
             if (String.IsNullOrEmpty(transactionId))
                 transactionId = request.Order.CaptureTransactionId;
@@ -262,7 +262,7 @@ namespace SmartStore.PayPal
         {
             var result = new CancelRecurringPaymentResult();
             var order = request.Order;
-			var settings = CommonServices.Settings.LoadSetting<TSetting>(order.StoreId);
+			var settings = Services.Settings.LoadSetting<TSetting>(order.StoreId);
 
             var req = new ManageRecurringPaymentsProfileStatusReq();
             req.ManageRecurringPaymentsProfileStatusRequest = new ManageRecurringPaymentsProfileStatusRequestType();

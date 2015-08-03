@@ -1,6 +1,9 @@
+using System;
 using System.Linq;
+using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.News;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.News
 {
@@ -37,8 +40,9 @@ namespace SmartStore.Services.News
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned news</param>
         /// <returns>News items</returns>
-		IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false);
+		IPagedList<NewsItem> GetAllNews(int languageId, int storeId, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null);
 
         /// <summary>
         /// Inserts a news item
@@ -57,5 +61,13 @@ namespace SmartStore.Services.News
         /// </summary>
         /// <param name="newsItem">News item</param>
         void UpdateCommentTotals(NewsItem newsItem);
+
+		/// <summary>
+		/// Creates a RSS feed with news items
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId);
     }
 }

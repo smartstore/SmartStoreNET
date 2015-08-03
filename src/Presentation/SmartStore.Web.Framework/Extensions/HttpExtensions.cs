@@ -1,4 +1,6 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Linq;
 using System.IO;
 using System.Web;
 using System.Web.Mvc;
@@ -8,7 +10,7 @@ using SmartStore.Utilities;
 
 namespace SmartStore
 {
-    public static class HttpContextExtensions
+	public static class HttpExtensions
 	{
 
 		public static bool IsAdminArea(this HttpRequest request)
@@ -70,31 +72,63 @@ namespace SmartStore
 			}
 		}
 
-		public static Stream ToFileStream(this HttpRequestBase request, out string fileName, out string contentType, string paramName = "qqfile") {
-			fileName = contentType = "";
-			Stream stream = null;
+		public static PostedFileResult ToPostedFileResult(this HttpRequestBase httpRequest)
+		{
+			if (httpRequest != null && httpRequest.Files.Count > 0)
+			{
+				return httpRequest.Files[0].ToPostedFileResult();
+			}
 
-            if (request[paramName].HasValue())
-            {
-                stream = request.InputStream;
-                fileName = request[paramName];
-            }
-            else
-            {
-                if (request.Files.Count > 0)
-                {
-                    stream = request.Files[0].InputStream;
-                    contentType = request.Files[0].ContentType;
-                    fileName = Path.GetFileName(request.Files[0].FileName);
-                }
-            }
+			return null;
+		}
 
-			if (contentType.IsEmpty())
-            {
-                contentType = SmartStore.Core.IO.MimeTypes.MapNameToMimeType(fileName);
-            }
+		public static PostedFileResult ToPostedFileResult(this HttpPostedFile httpFile)
+		{
+			if (httpFile != null && httpFile.ContentLength > 0)
+			{
+				return new PostedFileResult(new HttpPostedFileWrapper(httpFile));
+			}
 
-			return stream;
+			return null;
+		}
+
+		public static PostedFileResult ToPostedFileResult(this HttpPostedFileBase httpFile)
+		{
+			if (httpFile != null && httpFile.ContentLength > 0)
+			{
+				return new PostedFileResult(httpFile);
+			}
+
+			return null;
+		}
+
+		public static IEnumerable<PostedFileResult> ToPostedFileResults(this HttpFileCollection httpFileCollection)
+		{
+			if (httpFileCollection != null && httpFileCollection.Count > 0)
+			{
+				return new HttpFileCollectionWrapper(httpFileCollection).ToPostedFileResults();
+			}
+
+			return Enumerable.Empty<PostedFileResult>();
+		}
+
+		public static IEnumerable<PostedFileResult> ToPostedFileResults(this HttpFileCollectionBase httpFileCollection)
+		{
+			if (httpFileCollection == null)
+				yield break;
+
+			var batchId = Guid.NewGuid();
+
+			for (var i = 0; i < httpFileCollection.Count; i++) 
+			{
+				var httpFile = httpFileCollection[i];
+				var result = httpFile.ToPostedFileResult();
+				if (result != null)
+				{
+					result.BatchId = batchId;
+					yield return result;
+				}
+			}
 		}
 
         public static RouteData GetRouteData(this HttpContextBase httpContext)

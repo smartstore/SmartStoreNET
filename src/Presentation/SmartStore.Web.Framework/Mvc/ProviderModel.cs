@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Mvc
@@ -12,6 +10,8 @@ namespace SmartStore.Web.Framework.Mvc
 	public class ProviderModel : ModelBase, ILocalizedModel<ProviderLocalizedModel>
 	{
 		private IList<ProviderLocalizedModel> _locales;
+
+		public Type ProviderType { get; set; }
 		
 		[SmartResourceDisplayName("Common.SystemName")]
 		public string SystemName { get; set; }
@@ -59,6 +59,14 @@ namespace SmartStore.Web.Framework.Mvc
 			set
 			{
 				_locales = value;
+			}
+		}
+
+		public bool IsPaymentMethod
+		{
+			get
+			{
+				return ProviderType.Equals(typeof(IPaymentMethod));
 			}
 		}
 	}

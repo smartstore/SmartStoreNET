@@ -21,20 +21,11 @@ namespace SmartStore.Web.Framework.WebApi.Security
 	[AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, AllowMultiple = false)]
 	public class WebApiAuthenticateAttribute : System.Web.Http.AuthorizeAttribute
 	{
-		private readonly IWorkContext _workContext;
-		private readonly IPermissionService _permissionService;
-
 		protected HmacAuthentication _hmac = new HmacAuthentication();
 
-		public WebApiAuthenticateAttribute()
-		{
-			var engine = EngineContext.Current;
-
-			_workContext = engine.Resolve<IWorkContext>();
-			_permissionService = engine.Resolve<IPermissionService>();
-		}
-
-		/// <summary>The system name of the permission</summary>
+		/// <summary>
+		/// The system name of the permission
+		/// </summary>
 		public string Permission { get; set; }
 
 		protected string CreateContentMd5Hash(HttpRequestMessage request)
@@ -54,14 +45,18 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			try
 			{
-				if (Permission.HasValue() && _permissionService.GetPermissionRecordBySystemName(Permission) != null)
+				if (Permission.HasValue())
 				{
-					result = _permissionService.Authorize(Permission, customer);
+					var permissionService = EngineContext.Current.Resolve<IPermissionService>();
+
+					if (permissionService.GetPermissionRecordBySystemName(Permission) != null)
+					{
+						result = permissionService.Authorize(Permission, customer);
+					}
 				}
 			}
-			catch (Exception)
-			{
-			}
+			catch {	}
+
 			return result;
 		}
 		protected virtual void LogUnauthorized(HttpActionContext actionContext, HmacResult result, Customer customer)
@@ -74,7 +69,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 				string strResult = result.ToString();
 				string description = localization.GetResource("Admin.WebApi.AuthResult." + strResult, 0, false, strResult);
 
-				var logContext = new LogContext()
+				var logContext = new LogContext
 				{
 					ShortMessage = localization.GetResource("Admin.WebApi.UnauthorizedRequest").FormatWith(strResult),
 					FullMessage = "{0}\r\n{1}".FormatWith(description, actionContext.Request.Headers.ToString()),
@@ -146,10 +141,10 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (!apiUser.Enabled)
 				return HmacResult.UserDisabled;
 
-			if (apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
+			if (!cacheControllingData.NoRequestTimestampValidation && apiUser.LastRequest.HasValue && headDateTime <= apiUser.LastRequest.Value)
 				return HmacResult.TimestampOlderThanLastRequest;
 
-			var context = new WebApiRequestContext()
+			var context = new WebApiRequestContext
 			{
 				HttpMethod = request.HttpMethod,
 				HttpAcceptType = request.Headers["Accept"],
@@ -177,13 +172,16 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (customer == null)
 				return HmacResult.UserUnknown;
 
+			if (!customer.Active || customer.Deleted)
+				return HmacResult.UserIsInactive;
+
 			if (!HasPermission(actionContext, customer))
 				return HmacResult.UserHasNoPermission;
 
 			//var headers = HttpContext.Current.Response.Headers;
 			//headers.Add(ApiHeaderName.LastRequest, apiUser.LastRequest.HasValue ? apiUser.LastRequest.Value.ToString("o") : "");
 
-			apiUser.LastRequest = now;
+			apiUser.LastRequest = headDateTime;
 
 			return HmacResult.Success;
 		}
@@ -206,13 +204,15 @@ namespace SmartStore.Web.Framework.WebApi.Security
 
 			if (result == HmacResult.Success)
 			{
-				_workContext.CurrentCustomer = customer;
+				// inform core about the authentication. note you cannot use IWorkContext.set_CurrentCustomer here.
+				HttpContext.Current.User = new SmartNetPrincipal(customer, HmacAuthentication.Scheme1);
 
 				var response = HttpContext.Current.Response;
 
 				response.AddHeader(WebApiGlobal.Header.Version, cacheControllingData.Version);
 				response.AddHeader(WebApiGlobal.Header.MaxTop, WebApiGlobal.MaxTop.ToString());
 				response.AddHeader(WebApiGlobal.Header.Date, now.ToString("o"));
+				response.AddHeader(WebApiGlobal.Header.CustomerId, customer.Id.ToString());
 
 				response.Cache.SetCacheability(HttpCacheability.NoCache);
 			}

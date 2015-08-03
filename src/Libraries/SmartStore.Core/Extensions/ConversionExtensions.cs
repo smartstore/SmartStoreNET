@@ -3,9 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.IO;
-using System.Drawing;
 using System.ComponentModel;
-using System.Drawing.Imaging;
 using System.Globalization;
 using System.Collections;
 using System.Reflection;
@@ -498,55 +496,39 @@ namespace SmartStore
         {
             Guard.ArgumentNotNull(stream, "stream");
 
-            byte[] buffer;
-
-            if (stream is MemoryStream && stream.CanRead && stream.CanSeek)
-            {
-                int len = System.Convert.ToInt32(stream.Length);
-                buffer = new byte[len];
-                stream.Read(buffer, 0, len);
-                return buffer;
-            }
-
-            MemoryStream memStream = null;
-            try
-            {
-                buffer = new byte[1024];
-                memStream = new MemoryStream();
-                int bytesRead = stream.Read(buffer, 0, buffer.Length);
-                if (bytesRead > 0)
-                {
-                    memStream.Write(buffer, 0, bytesRead);
-                    bytesRead = stream.Read(buffer, 0, buffer.Length);
-                }
-            }
-            finally
-            {
-                if (memStream != null)
-                    memStream.Close();
-            }
-
-            if (memStream != null)
-            {
-                return memStream.ToArray();
-            }
-
-            return null;
+			if (stream is MemoryStream)
+			{
+				return ((MemoryStream)stream).ToArray();
+			}
+			else
+			{
+				using (var ms = new MemoryStream())
+				{
+					stream.CopyTo(ms);
+					return ms.ToArray();
+				}
+			}
         }
 
-        public static string AsString(this Stream stream)
+		public static string AsString(this Stream stream)
+		{
+			return stream.AsString(Encoding.UTF8);
+		}
+
+        public static string AsString(this Stream stream, Encoding encoding)
         {
-            // convert memory stream to string
+			Guard.ArgumentNotNull(() => encoding);
+			
+			// convert stream to string
             string result;
             stream.Position = 0;
 
-            using (StreamReader sr = new StreamReader(stream))
+            using (StreamReader sr = new StreamReader(stream, encoding))
             {
                 result = sr.ReadToEnd();
             }
 
             return result;
-
         }
 
         #endregion
@@ -566,14 +548,6 @@ namespace SmartStore
             using (MemoryStream stream = new MemoryStream(bytes))
             {
                 return new BinaryFormatter().Deserialize(stream);
-            }
-        }
-
-        public static Image ToImage(this byte[] bytes)
-        {
-            using (var stream = new MemoryStream(bytes))
-            {
-                return Image.FromStream(stream);
             }
         }
 
@@ -618,45 +592,6 @@ namespace SmartStore
 
                     return sb.ToString();
                 }
-            }
-        }
-
-        #endregion
-
-        #region Image/Bitmap
-
-        public static byte[] ToByteArray(this Image image)
-        {
-            Guard.ArgumentNotNull(() => image);
-
-            byte[] bytes;
-
-            ImageConverter converter = new ImageConverter();
-            bytes = (byte[])converter.ConvertTo(image, typeof(byte[]));
-            return bytes;
-        }
-
-        internal static byte[] ToByteArray(this Image image, ImageFormat format)
-        {
-            Guard.ArgumentNotNull(() => image);
-            Guard.ArgumentNotNull(() => format);
-
-            using (var stream = new MemoryStream())
-            {
-                image.Save(stream, format);
-                return stream.ToByteArray();
-            }
-        }
-
-        internal static Image ConvertTo(this Image image, ImageFormat format)
-        {
-            Guard.ArgumentNotNull(() => image);
-            Guard.ArgumentNotNull(() => format);
-
-            using (var stream = new MemoryStream())
-            {
-                image.Save(stream, format);
-                return Image.FromStream(stream);
             }
         }
 

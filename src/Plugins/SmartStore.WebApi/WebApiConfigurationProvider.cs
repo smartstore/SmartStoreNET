@@ -8,6 +8,7 @@ using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
@@ -72,6 +73,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<OrderNote>(WebApiOdataEntitySet.OrderNotes);
 			m.EntitySet<Order>(WebApiOdataEntitySet.Orders);
 			m.EntitySet<OrderItem>(WebApiOdataEntitySet.OrderItems);
+			m.EntitySet<PaymentMethod>(WebApiOdataEntitySet.PaymentMethods);
 			m.EntitySet<Picture>(WebApiOdataEntitySet.Pictures);
 			m.EntitySet<ProductAttribute>(WebApiOdataEntitySet.ProductAttributes);
 			m.EntitySet<ProductBundleItem>(WebApiOdataEntitySet.ProductBundleItems);
@@ -123,6 +125,7 @@ namespace SmartStore.WebApi
 		public static string OrderNotes { get { return "OrderNotes"; } }
 		public static string Orders { get { return "Orders"; } }
 		public static string OrderItems { get { return "OrderItems"; } }
+		public static string PaymentMethods { get { return "PaymentMethods"; } }
 		public static string Pictures { get { return "Pictures"; } }
 		public static string ProductAttributes { get { return "ProductAttributes"; } }
 		public static string ProductBundleItems { get { return "ProductBundleItems"; } }

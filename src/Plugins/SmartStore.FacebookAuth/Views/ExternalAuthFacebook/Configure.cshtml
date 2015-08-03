@@ -3,23 +3,29 @@
 }
 @model SmartStore.FacebookAuth.Models.ConfigurationModel
 @using SmartStore.Web.Framework;
+
+<div class="debitoor-instructions alert alert-info">
+	<button class="close" data-dismiss="alert">×</button>
+	@Html.Raw(T("Plugins.ExternalAuth.Facebook.AdminInstruction"))
+</div>
+
+<div class="clear"></div>
+
+@Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
+
+@Html.ValidationSummary(false)
+
+<div class="clear"></div>
+
 @using (Html.BeginForm())
 {
     <table class="adminContent">
-		<tr>
-			<td colspan="2">
-				<div class="alert alert-info">
-					<button class="close" data-dismiss="alert">x</button>
-					@Html.Raw(T("Plugins.ExternalAuth.Facebook.AdminInstruction"))
-				</div>
-			</td>
-		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.ClientKeyIdentifier)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ClientKeyIdentifier)
+                @Html.SettingEditorFor(model => model.ClientKeyIdentifier)
                 @Html.ValidationMessageFor(model => model.ClientKeyIdentifier)
             </td>
         </tr>
@@ -28,7 +34,7 @@
                 @Html.SmartLabelFor(model => model.ClientSecret)
             </td>
             <td class="adminData">
-                @Html.EditorFor(model => model.ClientSecret)
+                @Html.SettingEditorFor(model => model.ClientSecret)
                 @Html.ValidationMessageFor(model => model.ClientSecret)
             </td>
         </tr>
@@ -43,5 +49,4 @@
             </td>
         </tr>
     </table>
-    
 }

@@ -1,12 +1,11 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Directory;
 using SmartStore.Admin.Models.Shipping;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Shipping;
-using SmartStore.Core.Plugins;
 using SmartStore.Services;
+using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
@@ -28,9 +27,9 @@ namespace SmartStore.Admin.Controllers
         private readonly ICountryService _countryService;
         private readonly ILocalizedEntityService _localizedEntityService;
         private readonly ILanguageService _languageService;
-        private readonly IPluginFinder _pluginFinder;
 		private readonly PluginMediator _pluginMediator;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
+		private readonly ICustomerService _customerService;
 
 		#endregion
 
@@ -41,18 +40,18 @@ namespace SmartStore.Admin.Controllers
             ICountryService countryService,
             ILocalizedEntityService localizedEntityService,
 			ILanguageService languageService,
-            IPluginFinder pluginFinder,
 			PluginMediator pluginMediator,
-			ICommonServices commonServices)
+			ICommonServices services,
+			ICustomerService customerService)
 		{
             this._shippingService = shippingService;
             this._shippingSettings = shippingSettings;
             this._countryService = countryService;
             this._localizedEntityService = localizedEntityService;
             this._languageService = languageService;
-            this._pluginFinder = pluginFinder;
 			this._pluginMediator = pluginMediator;
-			this._commonServices = commonServices;
+			this._services = services;
+			this._customerService = customerService;
 		}
 
 		#endregion 
@@ -76,13 +75,72 @@ namespace SmartStore.Admin.Controllers
             }
         }
 
+		private void PrepareShippingMethodModel(ShippingMethodModel model, ShippingMethod shippingMethod)
+		{
+			var customerRoles = _customerService.GetAllCustomerRoles(true);
+			var countries = _countryService.GetAllCountries(true);
+
+			model.AvailableCustomerRoles = new List<SelectListItem>();
+			model.AvailableCountries = new List<SelectListItem>();
+
+			model.AvailableCountryExclusionContextTypes = CountryRestrictionContextType.BillingAddress.ToSelectList(false).ToList();
+
+			foreach (var role in customerRoles.OrderBy(x => x.Name))
+			{
+				model.AvailableCustomerRoles.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
+			}
+
+			foreach (var country in countries.OrderBy(x => x.Name))
+			{
+				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
+			}
+
+			if (shippingMethod != null)
+			{
+				model.ExcludedCustomerRoleIds = shippingMethod.ExcludedCustomerRoleIds.SplitSafe(",");
+				model.ExcludedCountryIds = shippingMethod.RestrictedCountries.Select(x => x.Id.ToString()).ToArray();
+
+				model.CountryExclusionContext = shippingMethod.CountryExclusionContext;
+			}
+		}
+
+		private void ApplyRestrictions(ShippingMethod shippingMethod, ShippingMethodModel model)
+		{
+			var countries = _countryService.GetAllCountries(true);
+
+			shippingMethod.ExcludedCustomerRoleIds = Request.Form["ExcludedCustomerRoleIds"];
+			shippingMethod.CountryExclusionContext = model.CountryExclusionContext;
+
+			string[] excludedCountryIds = Request.Form["ExcludedCountryIds"].SplitSafe(",");
+
+			foreach (var country in countries)
+			{
+				if (excludedCountryIds.Contains(country.Id.ToString()))
+				{
+					if (shippingMethod.RestrictedCountries.Where(c => c.Id == country.Id).FirstOrDefault() == null)
+					{
+						shippingMethod.RestrictedCountries.Add(country);
+						_shippingService.UpdateShippingMethod(shippingMethod);
+					}
+				}
+				else
+				{
+					if (shippingMethod.RestrictedCountries.Where(c => c.Id == country.Id).FirstOrDefault() != null)
+					{
+						shippingMethod.RestrictedCountries.Remove(country);
+						_shippingService.UpdateShippingMethod(shippingMethod);
+					}
+				}
+			}
+		}
+
         #endregion
 
         #region Shipping rate computation methods
 
         public ActionResult Providers()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingProvidersModel = new List<ShippingRateComputationMethodModel>();
@@ -99,14 +157,14 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult ActivateProvider(string systemName, bool activate)
 		{
-			if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
 				return AccessDeniedView();
 
 			var srcm = _shippingService.LoadShippingRateComputationMethodBySystemName(systemName);
 
 			if (activate && !srcm.Value.IsActive)
 			{
-				NotifyWarning(_commonServices.Localization.GetResource("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
+				NotifyWarning(_services.Localization.GetResource("Admin.Configuration.Payment.CannotActivateShippingRateComputationMethod"));
 			}
 			else
 			{
@@ -115,7 +173,7 @@ namespace SmartStore.Admin.Controllers
 				else
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(srcm.Metadata.SystemName);
 
-				_commonServices.Settings.SaveSetting(_shippingSettings);
+				_services.Settings.SaveSetting(_shippingSettings);
 				_pluginMediator.ActivateDependentWidgets(srcm.Metadata, activate);
 			}
 
@@ -128,7 +186,7 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult Methods()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
@@ -146,7 +204,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult Methods(GridCommand command)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var shippingMethodsModel = _shippingService.GetAllShippingMethods()
@@ -169,10 +227,11 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult CreateMethod()
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var model = new ShippingMethodModel();
+			PrepareShippingMethodModel(model, null);
 
             //locales
             AddLocales(_languageService, model.Locales);
@@ -182,18 +241,20 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult CreateMethod(ShippingMethodModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             if (ModelState.IsValid)
             {
                 var sm = model.ToEntity();
+				ApplyRestrictions(sm, model);
+
                 _shippingService.InsertShippingMethod(sm);
                 
 				//locales
                 UpdateLocales(sm, model);
 
-                NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
+                NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Added"));
 
                 return continueEditing ? RedirectToAction("EditMethod", new { id = sm.Id }) : RedirectToAction("Methods");
             }
@@ -204,15 +265,16 @@ namespace SmartStore.Admin.Controllers
 
         public ActionResult EditMethod(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(id);
             if (sm == null)
-                //No shipping method found with the specified id
                 return RedirectToAction("Methods");
 
             var model = sm.ToModel();
+			PrepareShippingMethodModel(model, sm);
+
             //locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
@@ -226,7 +288,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(model.Id);
@@ -236,11 +298,14 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 sm = model.ToEntity(sm);
+				ApplyRestrictions(sm, model);
+
                 _shippingService.UpdateShippingMethod(sm);
 
                 //locales
                 UpdateLocales(sm, model);
-				NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
+
+				NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Updated"));
 
                 return continueEditing ? RedirectToAction("EditMethod", sm.Id) : RedirectToAction("Methods");
             }
@@ -252,7 +317,7 @@ namespace SmartStore.Admin.Controllers
         [HttpPost]
         public ActionResult DeleteMethod(int id)
         {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
+            if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
                 return AccessDeniedView();
 
             var sm = _shippingService.GetShippingMethodById(id);
@@ -261,93 +326,10 @@ namespace SmartStore.Admin.Controllers
 
             _shippingService.DeleteShippingMethod(sm);
 
-			NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
+			NotifySuccess(_services.Localization.GetResource("Admin.Configuration.Shipping.Methods.Deleted"));
             return RedirectToAction("Methods");
         }
         
-        #endregion
-        
-        #region Restrictions
-
-        public ActionResult Restrictions()
-        {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
-            var model = new ShippingMethodRestrictionModel();
-
-            var countries = _countryService.GetAllCountries(true);
-            var shippingMethods = _shippingService.GetAllShippingMethods();
-            foreach (var country in countries)
-            {
-                model.AvailableCountries.Add(new CountryModel()
-                    {
-                        Id = country.Id,
-                        Name = country.Name
-                    });
-            }
-            foreach (var sm in shippingMethods)
-            {
-                model.AvailableShippingMethods.Add(new ShippingMethodModel()
-                {
-                    Id = sm.Id,
-                    Name = sm.Name
-                });
-            }
-            foreach (var country in countries)
-                foreach (var shippingMethod in shippingMethods)
-                {
-                    bool restricted = shippingMethod.CountryRestrictionExists(country.Id);
-                    if (!model.Restricted.ContainsKey(country.Id))
-                        model.Restricted[country.Id] = new Dictionary<int, bool>();
-                    model.Restricted[country.Id][shippingMethod.Id] = restricted;
-                }
-
-            return View(model);
-        }
-
-        [HttpPost, ActionName("Restrictions")]
-        public ActionResult RestrictionSave(FormCollection form)
-        {
-            if (!_commonServices.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
-                return AccessDeniedView();
-
-            var countries = _countryService.GetAllCountries(true);
-            var shippingMethods = _shippingService.GetAllShippingMethods();
-
-
-            foreach (var shippingMethod in shippingMethods)
-            {
-                string formKey = "restrict_" + shippingMethod.Id;
-                var countryIdsToRestrict = form[formKey] != null ? form[formKey].Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries).Select(x => int.Parse(x)).ToList() : new List<int>();
-
-                foreach (var country in countries)
-                {
-
-                    bool restrict = countryIdsToRestrict.Contains(country.Id);
-                    if (restrict)
-                    {
-                        if (shippingMethod.RestrictedCountries.Where(c => c.Id == country.Id).FirstOrDefault() == null)
-                        {
-                            shippingMethod.RestrictedCountries.Add(country);
-                            _shippingService.UpdateShippingMethod(shippingMethod);
-                        }
-                    }
-                    else
-                    {
-                        if (shippingMethod.RestrictedCountries.Where(c => c.Id == country.Id).FirstOrDefault() != null)
-                        {
-                            shippingMethod.RestrictedCountries.Remove(country);
-                            _shippingService.UpdateShippingMethod(shippingMethod);
-                        }
-                    }
-                }
-            }
-
-			NotifySuccess(_commonServices.Localization.GetResource("Admin.Configuration.Shipping.Restrictions.Updated"));
-            return RedirectToAction("Restrictions");
-        }
-
-        #endregion
+        #endregion        
     }
 }

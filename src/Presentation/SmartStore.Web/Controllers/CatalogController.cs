@@ -22,6 +22,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
@@ -105,21 +106,9 @@ namespace SmartStore.Web.Controllers
             this._catalogSettings = catalogSettings;
 
 			this._helper = helper;
-
-			T = NullLocalizer.Instance;
         }
 
         #endregion
-
-		#region Properties
-
-		public Localizer T
-		{
-			get;
-			set;
-		}
-
-		#endregion
 
         #region Categories
 
@@ -193,13 +182,13 @@ namespace SmartStore.Web.Controllers
 
 			var customerRolesIds = _services.WorkContext.CurrentCustomer.CustomerRoles.Where(x => x.Active).Select(x => x.Id).ToList();
 
-            //subcategories
+            // subcategories
             model.SubCategories = _categoryService
                 .GetAllCategoriesByParentCategoryId(categoryId)
                 .Select(x =>
                 {
                     var subCatName = x.GetLocalized(y => y.Name);
-                    var subCatModel = new CategoryModel.SubCategoryModel()
+                    var subCatModel = new CategoryModel.SubCategoryModel
                     {
                         Id = x.Id,
                         Name = subCatName,
@@ -624,7 +613,7 @@ namespace SmartStore.Web.Controllers
 
                 foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
                 {
-                    var modelMan = new ManufacturerBriefInfoModel()
+                    var modelMan = new ManufacturerBriefInfoModel
                     {
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
@@ -869,39 +858,12 @@ namespace SmartStore.Web.Controllers
 			return View(model);
 		}
 
+		[Compress]
 		public ActionResult RecentlyAddedProductsRss()
 		{
-			var feed = new SyndicationFeed(
-								string.Format("{0}: {1}", _services.StoreContext.CurrentStore.Name, T("RSS.RecentlyAddedProducts")),
-								T("RSS.InformationAboutProducts"),
-								new Uri(_services.WebHelper.GetStoreLocation(false)),
-								"RecentlyAddedProductsRSS",
-								DateTime.UtcNow);
+			var feed = _productService.CreateRecentlyAddedProductsRssFeed(Url);
 
-			if (!_catalogSettings.RecentlyAddedProductsEnabled)
-				return new RssActionResult() { Feed = feed };
-
-			var items = new List<SyndicationItem>();
-
-			var ctx = new ProductSearchContext();
-			ctx.LanguageId = _services.WorkContext.WorkingLanguage.Id;
-			ctx.OrderBy = ProductSortingEnum.CreatedOn;
-			ctx.PageSize = _catalogSettings.RecentlyAddedProductsNumber;
-			ctx.StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode;
-			ctx.VisibleIndividuallyOnly = true;
-
-			var products = _productService.SearchProducts(ctx);
-
-			foreach (var product in products)
-			{
-				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
-				if (!String.IsNullOrEmpty(productUrl))
-				{
-					items.Add(new SyndicationItem(product.GetLocalized(x => x.Name), product.GetLocalized(x => x.ShortDescription), new Uri(productUrl), String.Format("RecentlyAddedProduct:{0}", product.Id), product.CreatedOnUtc));
-				}
-			}
-			feed.Items = items;
-			return new RssActionResult() { Feed = feed };
+			return new RssActionResult { Feed = feed };
 		}
 
 		#endregion

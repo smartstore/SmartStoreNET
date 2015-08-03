@@ -137,16 +137,17 @@ namespace SmartStore.Services.Media
         /// <returns>Pictures</returns>
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
-        /// <summary>
-        /// Inserts a picture
-        /// </summary>
-        /// <param name="pictureBinary">The picture binary</param>
-        /// <param name="mimeType">The picture MIME type</param>
-        /// <param name="seoFilename">The SEO filename</param>
-        /// <param name="isNew">A value indicating whether the picture is new</param>
-        /// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
-        /// <returns>Picture</returns>
-        Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool validateBinary = true);
+		/// <summary>
+		/// Inserts a picture
+		/// </summary>
+		/// <param name="pictureBinary">The picture binary</param>
+		/// <param name="mimeType">The picture MIME type</param>
+		/// <param name="seoFilename">The SEO filename</param>
+		/// <param name="isNew">A value indicating whether the picture is new</param>
+		/// <param name="isTransient">A value indicating whether the picture is initially in transient state</param>
+		/// <param name="validateBinary">A value indicating whether to validated provided picture binary</param>
+		/// <returns>Picture</returns>
+        Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true);
 
         /// <summary>
         /// Updates the picture

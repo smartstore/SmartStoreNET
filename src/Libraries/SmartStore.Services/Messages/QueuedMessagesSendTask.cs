@@ -9,8 +9,7 @@ namespace SmartStore.Services.Messages
     {
         private readonly IQueuedEmailService _queuedEmailService;
 
-        public QueuedMessagesSendTask(
-			IQueuedEmailService queuedEmailService)
+        public QueuedMessagesSendTask(IQueuedEmailService queuedEmailService)
         {
             _queuedEmailService = queuedEmailService;
         }
@@ -22,7 +21,14 @@ namespace SmartStore.Services.Messages
 
 			for (int i = 0; i < 9999999; ++i)
 			{
-				var queuedEmails = _queuedEmailService.SearchEmails(null, null, null, null, true, maxTries, false, i, pageSize, false);
+				var q = new SearchEmailsQuery
+				{
+					MaxSendTries = maxTries,
+					PageIndex = i,
+					PageSize = pageSize,
+					Expand = "Attachments"
+				};
+				var queuedEmails = _queuedEmailService.SearchEmails(q);
 
 				foreach (var queuedEmail in queuedEmails)
 				{

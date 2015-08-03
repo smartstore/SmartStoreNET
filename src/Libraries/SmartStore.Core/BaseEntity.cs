@@ -36,9 +36,9 @@ namespace SmartStore.Core
 		/// Transient objects are not associated with an item already in storage.  For instance,
 		/// a Product entity is transient if its Id is 0.
 		/// </summary>
-		public virtual bool IsTransient
+		public virtual bool IsTransientRecord()
 		{
-			get { return Id == 0; }
+			return Id == 0;
 		}
 
 		public override bool Equals(object obj)
@@ -66,7 +66,7 @@ namespace SmartStore.Core
 
         public override int GetHashCode()
         {
-			if (this.IsTransient)
+			if (this.IsTransientRecord())
 			{
 				return base.GetHashCode();
 			}
@@ -95,7 +95,7 @@ namespace SmartStore.Core
 
 		private bool HasSameNonDefaultIds(BaseEntity other)
 		{
-			return !this.IsTransient && !other.IsTransient && this.Id == other.Id;
+			return !this.IsTransientRecord() && !other.IsTransientRecord() && this.Id == other.Id;
 		}
     }
 }

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Tasks
 {
@@ -22,16 +23,16 @@ namespace SmartStore.Services.Tasks
         public ScheduleTaskService(IRepository<ScheduleTask> taskRepository)
         {
             this._taskRepository = taskRepository;
+
+			T = NullLocalizer.Instance;
         }
+
+		public Localizer T { get; set; }
 
         #endregion
 
         #region Methods
 
-        /// <summary>
-        /// Deletes a task
-        /// </summary>
-        /// <param name="task">Task</param>
         public virtual void DeleteTask(ScheduleTask task)
         {
             if (task == null)
@@ -40,11 +41,6 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Delete(task);
         }
 
-        /// <summary>
-        /// Gets a task
-        /// </summary>
-        /// <param name="taskId">Task identifier</param>
-        /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskById(int taskId)
         {
             if (taskId == 0)
@@ -53,11 +49,6 @@ namespace SmartStore.Services.Tasks
             return _taskRepository.GetById(taskId);
         }
 
-        /// <summary>
-        /// Gets a task by its type
-        /// </summary>
-        /// <param name="type">Task type</param>
-        /// <returns>Task</returns>
         public virtual ScheduleTask GetTaskByType(string type)
         {
 			try
@@ -80,28 +71,63 @@ namespace SmartStore.Services.Tasks
 			return null;
         }
 
-        /// <summary>
-        /// Gets all tasks
-        /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Tasks</returns>
-        public virtual IList<ScheduleTask> GetAllTasks(bool showHidden = false)
+		public virtual IList<ScheduleTask> GetAllTasks(bool includeDisabled = false)
         {
             var query = _taskRepository.Table;
-            if (!showHidden)
+			if (!includeDisabled)
             {
                 query = query.Where(t => t.Enabled);
             }
-            query = query.OrderBy(t => t.Seconds);
+            query = query.OrderByDescending(t => t.Enabled).ThenBy(t => t.Seconds);
 
             var tasks = query.ToList();
             return tasks;
         }
 
-        /// <summary>
-        /// Inserts a task
-        /// </summary>
-        /// <param name="task">Task</param>
+        public virtual IList<ScheduleTask> GetPendingTasks()
+        {
+            var now = DateTime.UtcNow;
+
+            var query = from t in _taskRepository.Table
+						where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
+                        orderby t.NextRunUtc, t.Seconds
+                        select t;
+
+            return query.ToList();
+        }
+
+		public virtual bool HasRunningTasks()
+		{
+			var query = GetRunningTasksQuery();
+			return query.Any();
+		}
+
+		public virtual bool IsTaskRunning(int taskId)
+		{
+			if (taskId <= 0)
+				return false;
+
+			var query = GetRunningTasksQuery();
+			query.Where(t => t.Id == taskId);
+			return query.Any();
+		}
+
+		public virtual IList<ScheduleTask> GetRunningTasks()
+		{
+			return GetRunningTasksQuery().ToList();
+		}
+
+		private IQueryable<ScheduleTask> GetRunningTasksQuery()
+		{
+			var query = from t in _taskRepository.Table
+						where t.LastStartUtc.HasValue && t.LastStartUtc.Value > (t.LastEndUtc ?? DateTime.MinValue)
+						orderby t.LastStartUtc
+						select t;
+
+			return query;
+		}
+
+
         public virtual void InsertTask(ScheduleTask task)
         {
             if (task == null)
@@ -110,10 +136,6 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Insert(task);
         }
 
-        /// <summary>
-        /// Updates the task
-        /// </summary>
-        /// <param name="task">Task</param>
         public virtual void UpdateTask(ScheduleTask task)
         {
             if (task == null)
@@ -122,27 +144,34 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Update(task);
         }
 
-		/// <summary>
-		/// Ensures that a task is not marked as running (normalize last start and end date).
-		/// </summary>
-		/// <param name="taskId">Task identifier</param>
-		/// <remarks>Problem can be reproduced by inserting a news object without a language identifier.</remarks>
-		public virtual void EnsureTaskIsNotRunning(int taskId)
+		public void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
-			try
+			Guard.ArgumentNotNull(() => tasks);
+			
+			using (var scope = new DbContextScope(autoCommit: false))
 			{
-				if (taskId != 0)
+				var now = DateTime.UtcNow;
+				foreach (var task in tasks)
 				{
-					_taskRepository.Context.ExecuteSqlCommand("Update [dbo].[ScheduleTask] Set [LastEndUtc] = [LastStartUtc] Where Id = {0} And [LastEndUtc] < [LastStartUtc]",
-						true, null, taskId);
+					task.NextRunUtc = task.Enabled ? now.AddSeconds(task.Seconds) : (DateTime?)null;
+					if (isAppStart)
+					{
+						task.ProgressPercent = null;
+						task.ProgressMessage = null;
+						if (task.LastEndUtc.GetValueOrDefault() < task.LastStartUtc)
+						{
+							task.LastEndUtc = task.LastStartUtc;
+							task.LastError = T("Admin.System.ScheduleTasks.AbnormalAbort");
+						}
+					}
+					this.UpdateTask(task);
 				}
-			}
-			catch (Exception exc)
-			{
-				exc.Dump();
+
+				scope.Commit();
 			}
 		}
 
         #endregion
-    }
+
+	}
 }

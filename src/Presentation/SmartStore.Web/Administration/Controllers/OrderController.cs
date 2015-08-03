@@ -187,7 +187,7 @@ namespace SmartStore.Admin.Controllers
                 throw new ArgumentNullException("model");
 
 			var store = _storeService.GetStoreById(order.StoreId);
-			var primaryStoreCurrency = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var primaryStoreCurrency = store.PrimaryStoreCurrency;
 
             model.Id = order.Id;
             model.OrderStatus = order.OrderStatus.GetLocalizedEnum(_localizationService, _workContext);
@@ -470,7 +470,7 @@ namespace SmartStore.Admin.Controllers
                     hasDownloadableItems = true;
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
-                var orderItemModel = new OrderModel.OrderItemModel()
+                var orderItemModel = new OrderModel.OrderItemModel
                 {
                     Id = orderItem.Id,
 					ProductId = orderItem.ProductId,
@@ -496,7 +496,7 @@ namespace SmartStore.Admin.Controllers
 
 					foreach (var bundleItem in bundleData)
 					{
-						var bundleItemModel = new OrderModel.BundleItemModel()
+						var bundleItemModel = new OrderModel.BundleItemModel
 						{
 							ProductId = bundleItem.ProductId,
 							Sku = bundleItem.Sku,
@@ -1642,7 +1642,7 @@ namespace SmartStore.Admin.Controllers
             if (!orderItem.Product.IsDownload)
                 throw new ArgumentException("Product is not downloadable");
 
-            var model = new OrderModel.UploadLicenseModel()
+            var model = new OrderModel.UploadLicenseModel
             {
                 LicenseDownloadId = orderItem.LicenseDownloadId.HasValue ? orderItem.LicenseDownloadId.Value : 0,
                 OrderId = order.Id,
@@ -1673,6 +1673,9 @@ namespace SmartStore.Admin.Controllers
                 orderItem.LicenseDownloadId = model.LicenseDownloadId;
             else
                 orderItem.LicenseDownloadId = null;
+
+			MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
+
             _orderService.UpdateOrder(order);
 
             //success
@@ -1701,6 +1704,7 @@ namespace SmartStore.Admin.Controllers
 
             //attach license
             orderItem.LicenseDownloadId = null;
+			MediaHelper.UpdateDownloadTransientStateFor(orderItem, x => x.LicenseDownloadId);
             _orderService.UpdateOrder(order);
 
             //success
@@ -1877,7 +1881,7 @@ namespace SmartStore.Admin.Controllers
                 string attributeDescription = _productAttributeFormatter.FormatAttributes(product, attributes, order.Customer);
 
                 //save item
-                var orderItem = new OrderItem()
+                var orderItem = new OrderItem
                 {
                     OrderItemGuid = Guid.NewGuid(),
                     Order = order,

@@ -11,6 +11,7 @@ namespace SmartStore.Core.Domain.Blogs
 			PostsPageSize = 10;
 			AllowNotRegisteredUsersToLeaveComments = true;
 			NumberOfTags = 15;
+			MaxAgeInDays = 180;
 		}
 		
 		/// <summary>
@@ -37,6 +38,11 @@ namespace SmartStore.Core.Domain.Blogs
         /// Gets or sets a number of blog tags that appear in the tag cloud
         /// </summary>
         public int NumberOfTags { get; set; }
+
+		/// <summary>
+		/// The maximum age of blog items (in days) for RSS feed
+		/// </summary>
+		public int MaxAgeInDays { get; set; }
 
         /// <summary>
         /// Enable the blog RSS feed link in customers browser address bar

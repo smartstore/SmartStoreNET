@@ -14,9 +14,16 @@ namespace SmartStore.Core.Async
 	{
 		private static readonly BackgroundWorkHost _host = new BackgroundWorkHost();
 
+		/// <summary>
+		/// Gets the global cancellation token which signals the application shutdown
+		/// </summary>
+		public static CancellationToken AppShutdownCancellationToken
+		{
+			get { return _host.ShutdownCancellationTokenSource.Token; }
+		}
 
 		/// <summary>
-		/// Execute's an async Task<T> method which has a void return value synchronously
+		/// Executes an async Task<T> method which has a void return value synchronously
 		/// </summary>
 		/// <param name="func">Task<T> method to execute</param>
 		public static void RunSync(Func<Task> func)
@@ -46,7 +53,7 @@ namespace SmartStore.Core.Async
 		}
 
 		/// <summary>
-		/// Execute's an async Task<T> method which has a T return type synchronously
+		/// Executes an async Task<T> method which has a T return type synchronously
 		/// </summary>
 		/// <typeparam name="T">Return Type</typeparam>
 		/// <param name="func">Task<T> method to execute</param>
@@ -289,6 +296,11 @@ namespace SmartStore.Core.Async
 		public BackgroundWorkHost()
 		{
 			HostingEnvironment.RegisterObject(this);
+		}
+
+		public CancellationTokenSource ShutdownCancellationTokenSource
+		{
+			get { return _shutdownCancellationTokenSource; }
 		}
 
 		public void Stop(bool immediate)

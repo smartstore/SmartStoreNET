@@ -1,29 +1,28 @@
 ﻿using System;
+using System.Collections.Generic;
+using System.Globalization;
 using System.IO;
-using System.Web;
 using System.Linq;
 using System.Text;
-using System.Globalization;
-using System.Collections.Generic;
+using System.Web;
 using OffAmazonPaymentsService;
 using OffAmazonPaymentsService.Model;
-using SmartStore.Utilities;
-using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Extensions;
+using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Services.Payments;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Orders;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Common;
-using SmartStore.Services.Helpers;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
-using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Plugins;
+using SmartStore.Services;
+using SmartStore.Services.Common;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
+using SmartStore.Services.Orders;
+using SmartStore.Services.Payments;
+using SmartStore.Utilities;
 
 namespace SmartStore.AmazonPay.Api
 {
@@ -32,33 +31,30 @@ namespace SmartStore.AmazonPay.Api
 		private readonly ICountryService _countryService;
 		private readonly IStateProvinceService _stateProvinceService;
 		private readonly IOrderService _orderService;
-		private readonly ILocalizationService _localizationService;
 		private readonly IAddressService _addressService;
 		private readonly IDateTimeHelper _dateTimeHelper;
-		private readonly ICurrencyService _currencyService;
 		private readonly CurrencySettings _currencySettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly ICommonServices _services;
 
 		public AmazonPayApi(
 			ICountryService countryService,
 			IStateProvinceService stateProvinceService,
 			IOrderService orderService,
-			ILocalizationService localizationService,
 			IAddressService addressService,
 			IDateTimeHelper dateTimeHelper,
-			ICurrencyService currencyService,
 			CurrencySettings currencySettings,
-			IOrderTotalCalculationService orderTotalCalculationService)
+			IOrderTotalCalculationService orderTotalCalculationService,
+			ICommonServices services)
 		{
 			_countryService = countryService;
 			_stateProvinceService = stateProvinceService;
 			_orderService = orderService;
-			_localizationService = localizationService;
 			_addressService = addressService;
 			_dateTimeHelper = dateTimeHelper;
-			_currencyService = currencyService;
 			_currencySettings = currencySettings;
 			_orderTotalCalculationService = orderTotalCalculationService;
+			_services = services;
 		}
 
 		private string GetRandomId(string prefix)
@@ -252,7 +248,7 @@ namespace SmartStore.AmazonPay.Api
 			return null;
 		}
 
-		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, Customer customer, List<OrganizedShoppingCartItem> cart)
+		public OrderReferenceDetails SetOrderReferenceDetails(AmazonPayClient client, string orderReferenceId, string currencyCode, List<OrganizedShoppingCartItem> cart)
 		{
 			decimal orderTotalDiscountAmountBase = decimal.Zero;
 			Discount orderTotalAppliedDiscount = null;
@@ -265,8 +261,7 @@ namespace SmartStore.AmazonPay.Api
 
 			if (shoppingCartTotalBase.HasValue)
 			{
-				var currency = (Currency)null; // TODO: Merge _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
-				return SetOrderReferenceDetails(client, orderReferenceId, shoppingCartTotalBase, currency.CurrencyCode);
+				return SetOrderReferenceDetails(client, orderReferenceId, shoppingCartTotalBase, currencyCode);
 			}
 
 			return null;
@@ -436,8 +431,7 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = capture.Order.PaymentStatus;
 
 			var request = new CaptureRequest();
-			var store = (Store)null; // TODO: MERGE _storeService.GetStoreById(capture.Order.StoreId);
-			var currency = _currencyService.GetCurrencyById(store.PrimaryStoreCurrencyId);
+			var store = _services.StoreService.GetStoreById(capture.Order.StoreId);
 
 			request.SellerId = client.Settings.SellerId;
 			request.AmazonAuthorizationId = capture.Order.AuthorizationTransactionId;
@@ -447,7 +441,7 @@ namespace SmartStore.AmazonPay.Api
 			request.CaptureAmount = new Price
 			{
 				Amount = capture.Order.OrderTotal.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = currency.CurrencyCode
+				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
 			};
 
 			var response = client.Service.Capture(request);
@@ -534,7 +528,7 @@ namespace SmartStore.AmazonPay.Api
 			result.NewPaymentStatus = refund.Order.PaymentStatus;
 
 			string amazonRefundId = null;
-			var currency = (Currency)null; // TODO: MERGE _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId);
+			var store = _services.StoreService.GetStoreById(refund.Order.StoreId);
 
 			var request = new RefundRequest();
 			request.SellerId = client.Settings.SellerId;
@@ -545,7 +539,7 @@ namespace SmartStore.AmazonPay.Api
 			request.RefundAmount = new Price
 			{
 				Amount = refund.AmountToRefund.ToString("0.00", CultureInfo.InvariantCulture),
-				CurrencyCode = currency.CurrencyCode
+				CurrencyCode = store.PrimaryStoreCurrency.CurrencyCode
 			};
 
 			var response = client.Service.Refund(request);
@@ -631,7 +625,7 @@ namespace SmartStore.AmazonPay.Api
 
 			try
 			{
-				string[] strings = _localizationService.GetResource("Plugins.Payments.AmazonPay.MessageStrings").SplitSafe(";");
+				string[] strings = _services.Localization.GetResource("Plugins.Payments.AmazonPay.MessageStrings").SplitSafe(";");
 
 				string state = data.State.Grow(data.ReasonCode, " ");
 				if (data.ReasonDescription.HasValue())

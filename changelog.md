@@ -29,6 +29,7 @@
 * #735 Include SKUs of attribute combinations when filtering the backend product list
 * Filter for homepage and published\unpublished products in backend product list
 * Reduce database round trips initiated by price calculation
+* Google Analytics: added support for mobile devices
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

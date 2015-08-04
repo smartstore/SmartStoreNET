@@ -3,7 +3,7 @@ using System.Linq;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.Export
+namespace SmartStore.Services.DataExchange
 {
 	public interface IExportService
 	{

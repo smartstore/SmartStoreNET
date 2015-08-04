@@ -1,6 +1,5 @@
 namespace SmartStore.Data.Migrations
 {
-	using System;
 	using System.Data.Entity.Migrations;
 	using SmartStore.Core.Domain.Customers;
 	using SmartStore.Core.Domain.Security;
@@ -16,16 +15,16 @@ namespace SmartStore.Data.Migrations
                     {
                         Id = c.Int(nullable: false, identity: true),
                         Name = c.String(nullable: false, maxLength: 100),
+                        FolderName = c.String(nullable: false, maxLength: 100),
                         ProviderSystemName = c.String(nullable: false, maxLength: 4000),
                         Enabled = c.Boolean(nullable: false),
-                        FileTypeId = c.Int(nullable: false),
                         SchedulingTaskId = c.Int(nullable: false),
                         ProfileGuid = c.Guid(nullable: false),
-                        Partitioning = c.String(),
                         Filtering = c.String(),
-                        LastExecutionStartUtc = c.DateTime(),
-                        LastExecutionEndUtc = c.DateTime(),
-                        LastExecutionMessage = c.String(maxLength: 4000),
+                        Offset = c.Int(nullable: false),
+                        Limit = c.Int(nullable: false),
+                        BatchSize = c.Int(nullable: false),
+                        PerStore = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ScheduleTask", t => t.SchedulingTaskId)
@@ -66,6 +65,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Profile", "Profile", "Profil");
 			builder.AddOrUpdate("Common.Partition", "Partition", "Aufteilung");
 			builder.AddOrUpdate("Common.Image", "Image", "Bild");
+			builder.AddOrUpdate("Common.Filter", "Filter", "Filter");
+			builder.AddOrUpdate("Common.Projection", "Projection", "Projektion");
+			builder.AddOrUpdate("Common.Publishing", "Publishing", "Veröffentlichung");
+			builder.AddOrUpdate("Common.Website", "Website", "Web-Seite");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName.Validate",
@@ -115,43 +118,156 @@ namespace SmartStore.Data.Migrations
 				"Informationen zur letzten Ausführung des Exports.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Segmentation.Offset",
+			builder.AddOrUpdate("Admin.Configuration.Export.Offset",
 				"Offset",
 				"Abstand",
 				"Specifies the number of records to be skipped.",
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Segmentation.Limit",
+			builder.AddOrUpdate("Admin.Configuration.Export.Limit",
 				"Limit",
 				"Begrenzung",
 				"Specifies how many records to be loaded per database round-trip.",
 				"Legt die Anzahl der Datensätze fest, die pro Datenbankaufruf geladen werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Segmentation.BatchSize",
+			builder.AddOrUpdate("Admin.Configuration.Export.BatchSize",
 				"Batch size",
 				"Stapelgröße",
 				"Specifies the maximum number of records of one processed batch.",
 				"Legt die maximale Anzahl der Datensätze eines Vearbeitungsstapels fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Segmentation.PerStore",
+			builder.AddOrUpdate("Admin.Configuration.Export.PerStore",
 				"Per store",
 				"Per Shop",
 				"Specifies whether to start a separate run-through for each store.",
 				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll.");
 
 
-
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportFileType.Xml", "XML (Extensible Markup Language)", "XML (Extensible Markup Language)");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportFileType.Xls", "XLS (Microsoft Excel)", "XLS (Microsoft Excel)");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportFileType.Csv", "CSV (Delimiter Separated Values)", "CSV (Trennzeichen getrennt)");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportFileType.Txt", "TXT (Plain text)", "TXT (Einfacher Text)");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportFileType.Pdf", "PDF (Portable Document Format)", "PDF (Portables Dokumentenformat)");
-
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Product", "Product", "Produkt");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Category", "Category", "Warengruppe");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Manufacturer", "Manufacturer", "Hersteller");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Customer", "Customer", "Kunde");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Order", "Order", "Auftrag");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.StoreId",
+				"Store",
+				"Shop",
+				"Filter by store.",
+				"Nach Shop filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CreatedFrom",
+				"Created from",
+				"Erstellt ab",
+				"Filter by created date.",
+				"Nach dem Erstellungsdatum filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CreatedTo",
+				"Created to",
+				"Erstellt bis",
+				"Filter by created date.",
+				"Nach dem Erstellungsdatum filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PriceMinimum",
+				"Price from",
+				"Preis von",
+				"Filter by price.",
+				"Nach dem Preis filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PriceMaximum",
+				"Price to",
+				"Preis bis",
+				"Filter by price.",
+				"Nach dem Preis filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.AvailabilityMinimum",
+				"Availability from",
+				"Verfügbar von",
+				"Filter by availability quantity.",
+				"Nach der Verfügbarkeitsmenge filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.AvailabilityMaximum",
+				"Availability to",
+				"Verfügbar bis",
+				"Filter by availability quantity.",
+				"Nach der Verfügbarkeitsmenge filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IsPublished",
+				"Published",
+				"Veröffentlicht",
+				"Filter by publishing.",
+				"Nach Veröffentlichung filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CategoryIds",
+				"Categories",
+				"Warengruppen",
+				"Filter by categtories.",
+				"Nach Warengruppen filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.WithoutCategories",
+				"Without category mapping",
+				"Ohne Warengruppenzuordnung",
+				"Filter by missing category mapping.",
+				"Nach fehlender Warengruppenzuordnung filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ManufacturerIds",
+				"Manufacturers",
+				"Hersteller",
+				"Filter by manufacturers.",
+				"Nach Hersteller filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.WithoutManufacturers",
+				"Without manufacturer mapping",
+				"Ohne Herstellerzuordnung",
+				"Filter by missing manufacturer mapping.",
+				"Nach fehlender Herstellerzuordnung filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductTagIds",
+				"Product tags",
+				"Produkt-Tags",
+				"Filter by product tags.",
+				"Nach Produkt-Tags filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IncludeFeaturedProducts",
+				"Include featured products",
+				"Empfohlene Produkte einbeziehen",
+				"Specifies whether to include featured products.",
+				"Legt fest, ob empfohlene Produkte einbezogen werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OnlyFeaturedProducts",
+				"Only featured products",
+				"Nur empfohlene Produkte",
+				"Filter by featured products.",
+				"Nach empfohlenen Produkten filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductType",
+				"Product type",
+				"Produkttyp",
+				"Filter by product type.",
+				"Nach Produkttyp filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OrderStatus",
+				"Order status",
+				"Auftragsstatus",
+				"Filter by order status.",
+				"Nach Auftragsstaus filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PaymentStatus",
+				"Payment status",
+				"Zahlungsstatus",
+				"Filter by payment status.",
+				"Nach Zahlungsstatus filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ShippingStatus",
+				"Shipping status",
+				"Versandstatus",
+				"Filter by shipping status.",
+				"Nach Versandstatus filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CustomerRoleIds",
+				"Customer roles",
+				"Kundengruppen",
+				"Filter by customer roles.",
+				"Nach Kundengruppen filtern.");
 		}
     }
 }

@@ -1,16 +1,22 @@
 ﻿@model ExportProfileModel
-@using SmartStore.Core.Domain.Export;
-@using SmartStore.Admin.Models.Export;
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
 @{
-	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));
+	var title = string.Concat(T("Admin.Common.Edit"), " ", T("Common.Profile"));	
 	ViewBag.Title = title;
 }
 
 @using (Html.BeginForm())
 {
+	@Html.HiddenFor(model => model.Id)
+
 	<div class="section-header">
 		<div class="title">
-			<i class="fa fa-arrow-circle-o-down"></i>
+			@if (Model.Providing.ThumbnailUrl.HasValue())
+			{
+				<img src="@Url.Content(Model.Providing.ThumbnailUrl)" />
+			}
+			&nbsp;
 			@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 		</div>
 		<div class="options">
@@ -22,109 +28,323 @@
 		</div>
 	</div>
 	
-	<div>
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ProviderFriendlyName)
-				</td>
-				<td class="adminData">
-					@Model.ProviderFriendlyName.NaIfEmpty() <span class="muted">(@(Model.ProviderSystemName.NaIfEmpty()))</span>
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Name)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Name)
-					@Html.ValidationMessageFor(model => model.Name)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Enabled)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Enabled)
-					@Html.ValidationMessageFor(model => model.Enabled)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.EntityType)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(model => model.EntityType)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.FileType)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.FileType, Model.AvailableFileTypes)
-					@Html.ValidationMessageFor(model => model.FileType)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.SchedulingHours)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.SchedulingHours)
-					@Html.ValidationMessageFor(model => model.SchedulingHours)
-				</td>
-			</tr>
+	@Html.ValidationSummary(false)
 
-			<tr>
-				<td colspan="2">
-					<div class="admin-config-group">
-						<div class="title">
-							@T("Common.Partition")
-						</div>
-					</div>
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Offset)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Offset)
-					@Html.ValidationMessageFor(model => model.Offset)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Limit)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Limit)
-					@Html.ValidationMessageFor(model => model.Limit)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.BatchSize)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.BatchSize)
-					@Html.ValidationMessageFor(model => model.BatchSize)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.PerStore)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.PerStore)
-					@Html.ValidationMessageFor(model => model.PerStore)
-				</td>
-			</tr>
+	@Html.SmartStore().TabStrip().Name("export-profile-edit").Items(x =>
+	{
+		x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
+		x.Add().Text(T("Common.Filter").Text).Content(TabFilter());
+		x.Add().Text(T("Common.Projection").Text).Content(TabProjection());
+		x.Add().Text(T("Common.Partition").Text).Content(TabPartition());
+		x.Add().Text(T("Admin.Configuration").Text).Content(TabConfiguration());
+		x.Add().Text(T("Common.Publishing").Text).Content(TabDeployment());
 
-		</table>
-	</div>
+		EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "export-profile-edit", this.Html, this.Model));
+	})
+}
+
+@helper TabGeneral()
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.FriendlyName)
+			</td>
+			<td class="adminData">
+				<a href="@Model.Providing.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">@Model.Providing.FriendlyName.NaIfEmpty()</a>
+				<span class="muted">(@(Model.Providing.SystemName.NaIfEmpty()))</span>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.Author)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Providing.Author)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.Version)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Providing.Version)
+			</td>
+		</tr>
+		@if (Model.Providing.Url.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Providing.Url)
+				</td>
+				<td class="adminData">
+					<a href="@Model.Providing.Url" target="PluginWebsiteWnd" rel="nofollow">@Model.Providing.Url</a>
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.EntityTypeName)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Providing.EntityTypeName)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.FileType)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Providing.FileType)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Providing.Description)
+			</td>
+			<td class="adminData">
+				@if (Model.Providing.Description.HasValue())
+				{
+					@Html.Raw(Model.Providing.Description)
+				}
+				else
+				{
+					<span class="muted">@("".NaIfEmpty())</span>
+				}
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Enabled)
+				@Html.ValidationMessageFor(model => model.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.SchedulingHours)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.SchedulingHours)
+				@Html.ValidationMessageFor(model => model.SchedulingHours)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabFilter()
+{
+	<table class="adminContent">
+		@if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.Filtering.StoreId, Model.Filtering.AvailableStores, Model.AllString)
+					@Html.ValidationMessageFor(model => model.Filtering.StoreId)
+				</td>
+			</tr>
+		}
+
+		@if (Model.Providing.EntityType == ExportEntityType.Product)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.IsPublished)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.IsPublished)
+					@Html.ValidationMessageFor(model => model.Filtering.IsPublished)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.ProductType)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(model => model.Filtering.ProductType, Model.Filtering.AvailableProductTypes, Model.AllString)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.CreatedFrom)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.CreatedFrom)
+					@Html.ValidationMessageFor(model => model.Filtering.CreatedFrom)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.CreatedTo)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.CreatedTo)
+					@Html.ValidationMessageFor(model => model.Filtering.CreatedTo)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.PriceMinimum)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.PriceMinimum)
+					@Html.ValidationMessageFor(model => model.Filtering.PriceMinimum)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.PriceMaximum)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.PriceMaximum)
+					@Html.ValidationMessageFor(model => model.Filtering.PriceMaximum)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.AvailabilityMinimum)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.AvailabilityMinimum)
+					@Html.ValidationMessageFor(model => model.Filtering.AvailabilityMinimum)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.AvailabilityMaximum)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.AvailabilityMaximum)
+					@Html.ValidationMessageFor(model => model.Filtering.AvailabilityMaximum)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.CategoryIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.Filtering.CategoryIds,
+						new MultiSelectList(Model.Filtering.AvailableCategories, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.Filtering.CategoryIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.WithoutCategories)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.WithoutCategories)
+					@Html.ValidationMessageFor(model => model.Filtering.WithoutCategories)
+				</td>
+			</tr>
+			//TODO manus
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.WithoutManufacturers)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.WithoutManufacturers)
+					@Html.ValidationMessageFor(model => model.Filtering.WithoutManufacturers)
+				</td>
+			</tr>
+			//TODO product tags
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.IncludeFeaturedProducts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.IncludeFeaturedProducts)
+					@Html.ValidationMessageFor(model => model.Filtering.IncludeFeaturedProducts)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Filtering.OnlyFeaturedProducts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.Filtering.OnlyFeaturedProducts)
+					@Html.ValidationMessageFor(model => model.Filtering.OnlyFeaturedProducts)
+				</td>
+			</tr>
+		}
+		else if (Model.Providing.EntityType == ExportEntityType.Order)
+		{
+		}
+	</table>
+}
+
+@helper TabProjection()
+{
+}
+
+@helper TabPartition()
+{
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Offset)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Offset)
+				@Html.ValidationMessageFor(model => model.Offset)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Limit)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Limit)
+				@Html.ValidationMessageFor(model => model.Limit)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.BatchSize)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.BatchSize)
+				@Html.ValidationMessageFor(model => model.BatchSize)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PerStore)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.PerStore)
+				@Html.ValidationMessageFor(model => model.PerStore)
+			</td>
+		</tr>
+	</table>
+}
+
+@helper TabConfiguration()
+{
+}
+
+@helper TabDeployment()
+{
 }
 
 @Html.DeleteConfirmation("export-profile-delete")

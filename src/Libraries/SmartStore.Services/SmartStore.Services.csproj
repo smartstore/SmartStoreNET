@@ -160,12 +160,12 @@
     <Compile Include="Common\IUserAgent.cs" />
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
+    <Compile Include="DataExchange\ExportExtensions.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
-    <Compile Include="Export\ExportExtensions.cs" />
-    <Compile Include="Export\ExportService.cs" />
-    <Compile Include="Export\IExportProvider.cs" />
-    <Compile Include="Export\IExportService.cs" />
+    <Compile Include="DataExchange\ExportService.cs" />
+    <Compile Include="DataExchange\IExportProvider.cs" />
+    <Compile Include="DataExchange\IExportService.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />

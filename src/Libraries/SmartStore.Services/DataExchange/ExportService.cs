@@ -7,8 +7,9 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Tasks;
+using SmartStore.Utilities;
 
-namespace SmartStore.Services.Export
+namespace SmartStore.Services.DataExchange
 {
 	public partial class ExportService : IExportService
 	{
@@ -38,13 +39,14 @@ namespace SmartStore.Services.Export
 			if (provider == null)
 				throw new ArgumentNullException("provider");
 
-			var guid = Guid.NewGuid();
 			var name = provider.Metadata.FriendlyName;
 			var systemName = provider.Metadata.SystemName;
-			var taskType = "SmartStore.Services.ExportImport.{0}Task.{1}, SmartStore.Services".FormatInvariant(systemName, guid.ToString().Replace("-", ""));
 
 			if (name.IsEmpty())
 				name = systemName;
+
+			var folderName = SeoHelper.GetSeName(name, true, false).ToValidPath();
+			var taskType = "SmartStore.Services.DataExchange.{0}Task.{1}, SmartStore.Services".FormatInvariant(systemName, CommonHelper.GenerateRandomDigitCode(10));
 
 			var task = new ScheduleTask
 			{
@@ -61,11 +63,10 @@ namespace SmartStore.Services.Export
 			var profile = new ExportProfile
 			{
 				Name = name,
+				FolderName = folderName,
 				Enabled = true,
 				ProviderSystemName = systemName,
-				ProfileGuid = guid,
-				SchedulingTaskId = task.Id,
-				FileType = provider.Value.SupportedFileTypes.FirstOrDefault()
+				SchedulingTaskId = task.Id
 			};			
 
 			_exportProfileRepository.Insert(profile);

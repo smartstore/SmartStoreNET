@@ -1,15 +1,26 @@
 ﻿using System;
-using SmartStore.Core.Domain.Export;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Core.Domain
 {
 	public class ExportProfile : BaseEntity
 	{
+		public ExportProfile()
+		{
+			Limit = 100;
+			BatchSize = 1000;
+		}
+
 		/// <summary>
 		/// The name of the profile
 		/// </summary>
 		public string Name { get; set; }
+
+		/// <summary>
+		/// The name of the folder (file system)
+		/// </summary>
+		public string FolderName { get; set; }
 
 		/// <summary>
 		/// The system name of the export provider
@@ -22,26 +33,6 @@ namespace SmartStore.Core.Domain
 		public bool Enabled { get; set; }
 
 		/// <summary>
-		/// The export file type identifier
-		/// </summary>
-		public int FileTypeId { get; set; }
-
-		/// <summary>
-		/// The export file type
-		/// </summary>
-		public ExportFileType FileType
-		{
-			get
-			{
-				return (ExportFileType)FileTypeId;
-			}
-			set
-			{
-				FileTypeId = (int)value;
-			}
-		}
-
-		/// <summary>
 		/// The scheduling task identifier
 		/// </summary>
 		public int SchedulingTaskId { get; set; }
@@ -52,29 +43,29 @@ namespace SmartStore.Core.Domain
 		public Guid ProfileGuid { get; set; }
 
 		/// <summary>
-		/// XML with partioning information
-		/// </summary>
-		public string Partitioning { get; set; }
-
-		/// <summary>
 		/// XML with filtering information
 		/// </summary>
 		public string Filtering { get; set; }
 
 		/// <summary>
-		/// Last start time the profile has been executed
+		/// The number of records to be skipped
 		/// </summary>
-		public DateTime? LastExecutionStartUtc { get; set; }
+		public int Offset { get; set; }
 
 		/// <summary>
-		/// /// Last end time the profile has been executed
+		/// How many records to be loaded per database round-trip
 		/// </summary>
-		public DateTime? LastExecutionEndUtc { get; set; }
+		public int Limit { get; set; }
 
 		/// <summary>
-		/// Message of the last execution
+		/// The maximum number of records of one processed batch
 		/// </summary>
-		public string LastExecutionMessage { get; set; }
+		public int BatchSize { get; set; }
+
+		/// <summary>
+		/// Whether to start a separate run-through for each store
+		/// </summary>
+		public bool PerStore { get; set; }
 
 		/// <summary>
 		/// The scheduling task

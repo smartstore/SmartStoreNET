@@ -1,5 +1,5 @@
-﻿@using SmartStore.Core.Domain.Export;
-@using SmartStore.Admin.Models.Export;
+﻿@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
 @using Telerik.Web.Mvc.UI;
 @{
 	ViewBag.Title = T("Common.Export").Text;
@@ -35,29 +35,29 @@
 					})
 					.Columns(columns =>
 					{
-						columns.Bound(x => x.ThumbnailUrl)
+						columns.Bound(x => x.Providing.ThumbnailUrl)
 							.Width(70)
 							.Centered()
 							.Template(
 								@<text>
-									<img alt="@item.Id" src="@item.ThumbnailUrl" />
+									<img alt="@item.Id" src="@item.Providing.ThumbnailUrl" />
 								</text>
 							)
-							.ClientTemplate("<img alt='<#= Id #>' src='<#= ThumbnailUrl #>' />");
+							.ClientTemplate("<img alt='<#= Id #>' src='<#= Providing.ThumbnailUrl #>' />");
 						columns.Bound(x => x.Name)
 							.Width(400)
 							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.ProviderSystemName)
-							.Template(x => "{0} ({1})".FormatInvariant(x.ProviderFriendlyName, x.ProviderSystemName))
-							.ClientTemplate("<#= ProviderFriendlyName #> <span class='muted'>(<#= ProviderSystemName #>)</span>");
+						columns.Bound(x => x.Providing.SystemName)
+							.Template(x => "{0} ({1})".FormatInvariant(x.Providing.FriendlyName, x.Providing.SystemName))
+							.ClientTemplate("<#= Providing.FriendlyName #> <span class='muted'>(<#= Providing.SystemName #>)</span>");
 						columns.Bound(x => x.Enabled)
 							.Width(100)
 							.Template(item => @Html.SymbolForBool(item.Enabled))
 							.ClientTemplate(@Html.SymbolForBool("Enabled"))
 							.Centered();
-						columns.Bound(x => x.EntityType);
-						columns.Bound(x => x.FileTypeName)
+						columns.Bound(x => x.Providing.EntityTypeName);
+						columns.Bound(x => x.Providing.FileType)
 							.Centered();
 						columns.Bound(x => x.SchedulingHours)
 							.Centered();
@@ -115,7 +115,7 @@
 				smallIcon: dialog.find('.modal-body'),
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
-					$('#ProviderSystemName').selectWrapper();
+					$('select[name="Providing.SystemName"]').selectWrapper();
 				},
 				callbackComplete: function () {
 					showPrimaryButton(true);

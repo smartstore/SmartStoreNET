@@ -121,7 +121,7 @@
     <Compile Include="Caching\EfCacheImpl.cs" />
     <Compile Include="Caching\EfCachingPolicy.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
-    <Compile Include="Mapping\Export\ExportProfileMap.cs" />
+    <Compile Include="Mapping\DataExchange\ExportProfileMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
     <Compile Include="Migrations\201403112331027_Initial.cs" />
@@ -332,9 +332,9 @@
     <Compile Include="Migrations\201507250039446_Merge2.Designer.cs">
       <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508011828241_ExportFramework.cs" />
-    <Compile Include="Migrations\201508011828241_ExportFramework.Designer.cs">
-      <DependentUpon>201508011828241_ExportFramework.cs</DependentUpon>
+    <Compile Include="Migrations\201508040836122_ExportFramework.cs" />
+    <Compile Include="Migrations\201508040836122_ExportFramework.Designer.cs">
+      <DependentUpon>201508040836122_ExportFramework.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -633,8 +633,8 @@
     <EmbeddedResource Include="Migrations\201507250039446_Merge2.resx">
       <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508011828241_ExportFramework.resx">
-      <DependentUpon>201508011828241_ExportFramework.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508040836122_ExportFramework.resx">
+      <DependentUpon>201508040836122_ExportFramework.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

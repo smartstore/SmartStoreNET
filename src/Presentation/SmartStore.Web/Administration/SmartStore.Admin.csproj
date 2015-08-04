@@ -248,7 +248,7 @@
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
-    <Compile Include="Models\Export\ExportProfileModel.cs" />
+    <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
     <Compile Include="Models\News\NewsItemListModel.cs" />
     <Compile Include="Models\Orders\AutoUpdateOrderItemModel.cs" />

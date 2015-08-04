@@ -1,16 +1,18 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Admin.Models.Export;
+using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.Export;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
-using SmartStore.Services.Export;
+using SmartStore.Services.Catalog;
+using SmartStore.Services.DataExchange;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
+using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
@@ -24,60 +26,108 @@ namespace SmartStore.Admin.Controllers
 		private readonly IExportService _exportService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IPictureService _pictureService;
+		private readonly ICategoryService _categoryService;
 
 		public ExportController(
 			ICommonServices services,
 			IExportService exportService,
 			PluginMediator pluginMediator,
-			IPictureService pictureService)
+			IPictureService pictureService,
+			ICategoryService categoryService)
 		{
 			_services = services;
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
 			_pictureService = pictureService;
+			_categoryService = categoryService;
 		}
 
 		private void PrepareExportProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
-			var partition = XmlHelper.Deserialize<ExportPartition>(profile.Partitioning);
-
-			model.AvailableFileTypes = new List<SelectListItem>();
+			model.Providing = new ExportProfileModel.Provider
+			{
+				SystemName = profile.ProviderSystemName
+			};
 
 			model.Id = profile.Id;
 			model.Name = profile.Name;
-			model.ProviderSystemName = profile.ProviderSystemName;
 			model.Enabled = profile.Enabled;
-			model.FileType = profile.FileType;
-			model.FileTypeName = profile.FileType.ToString().ToUpper();
 			model.SchedulingHours = profile.ScheduleTask.Seconds / 3600;
-
-			model.Offset = partition.Offset;
-			model.Limit = partition.Limit;
-			model.BatchSize = partition.BatchSize;
-			model.PerStore = partition.PerStore;
 
 			if (provider != null)
 			{
-				model.ThumbnailUrl = _pluginMediator.GetIconUrl(provider.Metadata);
+				model.Providing.ThumbnailUrl = _pluginMediator.GetIconUrl(provider.Metadata);
 
-				if (model.ThumbnailUrl.IsEmpty())
-					model.ThumbnailUrl = _pictureService.GetDefaultPictureUrl(48);
+				if (model.Providing.ThumbnailUrl.IsEmpty())
+					model.Providing.ThumbnailUrl = _pictureService.GetDefaultPictureUrl(48);
 				else
-					model.ThumbnailUrl = Url.Content(model.ThumbnailUrl);
+					model.Providing.ThumbnailUrl = Url.Content(model.Providing.ThumbnailUrl);
 
-				model.ProviderFriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+				model.Providing.Url = provider.Metadata.PluginDescriptor.Url;
+				model.Providing.ConfigurationUrl = Url.Action("ConfigurePlugin", new { systemName = provider.Metadata.SystemName });
+				model.Providing.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+				model.Providing.Author = provider.Metadata.PluginDescriptor.Author;
+				model.Providing.Version = provider.Metadata.PluginDescriptor.Version.ToString();
+				model.Providing.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
 
-				model.EntityType = T("Enums.SmartStore.Core.Domain.ExportEntityType." + provider.Value.EntityType.ToString());
-
-				foreach (var fileType in provider.Value.SupportedFileTypes)
-				{
-					model.AvailableFileTypes.Add(new SelectListItem
-					{
-						Text = T("Enums.SmartStore.Core.Domain.ExportFileType." + fileType.ToString()),
-						Value = ((int)fileType).ToString()
-					});
-				}
+				model.Providing.EntityType = provider.Value.EntityType;
+				model.Providing.EntityTypeName = T("Enums.SmartStore.Core.Domain.ExportEntityType." + provider.Value.EntityType.ToString());
+				model.Providing.FileType = provider.Value.FileType.ToUpper();
 			}
+		}
+
+		private void PrepareExportProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		{
+			var filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
+
+			var allStores = _services.StoreService.GetAllStores();
+			var allCategories = _categoryService.GetAllCategories(showHidden: true);
+			var mappedCategories = allCategories.ToDictionary(x => x.Id);
+
+			var yes = T("Admin.Common.Yes").Text;
+			var no = T("Admin.Common.No").Text;
+
+			model.StoreCount = allStores.Count;
+			model.AllString = T("Admin.Common.All");
+			model.UnspecifiedString = T("Common.Unspecified");
+			model.Offset = profile.Offset;
+			model.Limit = profile.Limit;
+			model.BatchSize = profile.BatchSize;
+			model.PerStore = profile.PerStore;
+
+			model.Filtering = new ExportProfileModel.Filter
+			{
+				StoreId = filter.StoreId,
+				CreatedFrom = filter.CreatedFrom,
+				CreatedTo = filter.CreatedTo,
+				PriceMinimum = filter.PriceMinimum,
+				PriceMaximum = filter.PriceMaximum,
+				AvailabilityMinimum = filter.AvailabilityMinimum,
+				AvailabilityMaximum = filter.AvailabilityMaximum,
+				IsPublished = filter.IsPublished,
+				CategoryIds = filter.CategoryIds,
+				WithoutCategories = filter.WithoutCategories,
+				ManufacturerIds = filter.ManufacturerIds,
+				WithoutManufacturers = filter.WithoutManufacturers,
+				ProductTagIds = filter.ProductTagIds,
+				IncludeFeaturedProducts = filter.IncludeFeaturedProducts,
+				OnlyFeaturedProducts = filter.OnlyFeaturedProducts,
+				ProductType = filter.ProductType,
+				OrderStatus = filter.OrderStatus,
+				PaymentStatus = filter.PaymentStatus,
+				ShippingStatus = filter.ShippingStatus,
+				CustomerRoleIds = filter.CustomerRoleIds
+			};
+
+			model.Filtering.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+
+			model.Filtering.AvailableStores = allStores
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
+
+			model.Filtering.AvailableCategories = allCategories
+				.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+				.ToList();
 		}
 
         public ActionResult Index()
@@ -123,8 +173,9 @@ namespace SmartStore.Admin.Controllers
 			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 			{
 				var model = new ExportProfileModel();
+				model.Providing = new ExportProfileModel.Provider();
 
-				model.AvailableExportProviders = _exportService.LoadAllExportProviders()
+				model.Providing.AvailableExportProviders = _exportService.LoadAllExportProviders()
 					.Select(x =>
 					{
 						var item = new SelectListItem
@@ -148,20 +199,18 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
-			if (model.ProviderSystemName.HasValue())
+			if (model.Providing.SystemName.HasValue())
 			{
-				var provider = _exportService.LoadProvider(model.ProviderSystemName);
+				var provider = _exportService.LoadProvider(model.Providing.SystemName);
 				if (provider != null)
 				{
 					var profile = _exportService.InsertExportProfile(provider);
-
-					PrepareExportProfileModel(model, profile, provider);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
 			}
 
-			NotifyError(T("Admin.Configuration.Export.ProviderSystemName.Validate", model.ProviderSystemName.NaIfEmpty()));
+			NotifyError(T("Admin.Configuration.Export.ProviderSystemName.Validate", model.Providing.SystemName.NaIfEmpty()));
 
 			return RedirectToAction("List");
 		}
@@ -180,6 +229,7 @@ namespace SmartStore.Admin.Controllers
 			var model = new ExportProfileModel();
 
 			PrepareExportProfileModel(model, profile, provider);
+			PrepareExportProfileModelForEdit(model, profile, provider);
 
 			return View(model);
 		}
@@ -195,32 +245,60 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			if (ModelState.IsValid)
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+
+			if (!ModelState.IsValid)
 			{
-				var partition = new ExportPartition
-				{
-					Offset = model.Offset,
-					Limit = model.Limit,
-					BatchSize = model.BatchSize,
-					PerStore = model.PerStore
-				};
-
-				profile.Name = model.Name;
-				profile.Enabled = model.Enabled;
-				profile.ScheduleTask.Seconds = model.SchedulingHours * 3600;
-				profile.FileType = model.FileType;
-				profile.Partitioning = XmlHelper.Serialize<ExportPartition>(partition);
-
-				_exportService.UpdateExportProfile(profile);
-
-				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
-
-				return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
+				PrepareExportProfileModel(model, profile, provider);
+				PrepareExportProfileModelForEdit(model, profile, provider);
+				return View(model);
 			}
 
-			PrepareExportProfileModel(model, profile, _exportService.LoadProvider(model.ProviderSystemName));
+			var filter = new ExportFilter
+			{
+				StoreId = model.Filtering.StoreId ?? 0,
+				CreatedFrom = model.Filtering.CreatedFrom,
+				CreatedTo = model.Filtering.CreatedTo,
+				PriceMinimum = model.Filtering.PriceMinimum,
+				PriceMaximum = model.Filtering.PriceMaximum,
+				AvailabilityMinimum = model.Filtering.AvailabilityMinimum,
+				AvailabilityMaximum = model.Filtering.AvailabilityMaximum,
+				IsPublished = model.Filtering.IsPublished,
+				CategoryIds = model.Filtering.CategoryIds,
+				WithoutCategories = model.Filtering.WithoutCategories,
+				ManufacturerIds = model.Filtering.ManufacturerIds,
+				WithoutManufacturers = model.Filtering.WithoutManufacturers,
+				ProductTagIds = model.Filtering.ProductTagIds,
+				IncludeFeaturedProducts = model.Filtering.IncludeFeaturedProducts,
+				OnlyFeaturedProducts = model.Filtering.OnlyFeaturedProducts,
+				ProductType = model.Filtering.ProductType,
+				OrderStatus = model.Filtering.OrderStatus,
+				PaymentStatus = model.Filtering.PaymentStatus,
+				ShippingStatus = model.Filtering.ShippingStatus,
+				CustomerRoleIds = model.Filtering.CustomerRoleIds
+			};
 
-			return View(model);
+			profile.Name = model.Name;
+			profile.Enabled = model.Enabled;
+			profile.ScheduleTask.Seconds = model.SchedulingHours * 3600;
+			profile.Offset = model.Offset;
+			profile.Limit = model.Limit;
+			profile.BatchSize = model.BatchSize;
+			profile.PerStore = model.PerStore;
+
+			if (profile.Name.IsEmpty())
+				profile.Name = provider.Metadata.FriendlyName;
+
+			if (profile.Name.IsEmpty())
+				profile.Name = provider.Metadata.SystemName;
+
+			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+
+			_exportService.UpdateExportProfile(profile);
+
+			NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+			return (continueEditing ? RedirectToAction("Edit", new { id = profile.Id }) : RedirectToAction("List"));
 		}
 
 		[HttpPost, ActionName("Delete")]
@@ -247,6 +325,11 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			return RedirectToAction("Edit", new { id = profile.Id });
+		}
+
+		public ActionResult Execute(int id)
+		{
+			return null;
 		}
 	}
 }

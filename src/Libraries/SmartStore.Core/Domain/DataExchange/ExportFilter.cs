@@ -75,17 +75,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Identifiers of product tags
 		/// </summary>
-		public int? ProductTagIds { get; set; }
+		public int[] ProductTagIds { get; set; }
 
 		/// <summary>
-		/// A value indicating whether loaded products are marked as featured
+		/// A value indicating whether to load products that are marked as featured (relates only to categories and manufacturers)
 		/// </summary>
-		public bool? IncludeFeaturedProducts { get; set; }
-
-		/// <summary>
-		/// A value indicating whether to load only featured products
-		/// </summary>
-		public bool? OnlyFeaturedProducts { get; set; }
+		public bool? FeaturedProducts { get; set; }
 
 		/// <summary>
 		/// Filter by product type
@@ -99,17 +94,17 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Filter by order status
 		/// </summary>
-		public OrderStatus? OrderStatus { get; set; }
+		public OrderStatus[] OrderStatus { get; set; }
 
 		/// <summary>
 		/// Filter by payment status
 		/// </summary>
-		public PaymentStatus? PaymentStatus { get; set; }
+		public PaymentStatus[] PaymentStatus { get; set; }
 
 		/// <summary>
 		/// Filter by shipping status
 		/// </summary>
-		public ShippingStatus? ShippingStatus { get; set; }
+		public ShippingStatus[] ShippingStatus { get; set; }
 
 		/// <summary>
 		/// Identifiers of customer roles

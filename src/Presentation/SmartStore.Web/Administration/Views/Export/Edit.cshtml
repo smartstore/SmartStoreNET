@@ -151,144 +151,228 @@
 @helper TabFilter()
 {
 	<table class="adminContent">
-		@if (Model.StoreCount > 1)
+		@if (Model.ProductFiltering != null)
 		{
+			if (Model.StoreCount > 1)
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.ProductFiltering.StoreId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.ProductFiltering.StoreId, Model.ProductFiltering.AvailableStores, Model.AllString)
+						@Html.ValidationMessageFor(model => model.ProductFiltering.StoreId)
+					</td>
+				</tr>
+			}
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.StoreId)
+					@Html.SmartLabelFor(model => model.ProductFiltering.CreatedFrom)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(model => model.Filtering.StoreId, Model.Filtering.AvailableStores, Model.AllString)
-					@Html.ValidationMessageFor(model => model.Filtering.StoreId)
-				</td>
-			</tr>
-		}
-
-		@if (Model.Providing.EntityType == ExportEntityType.Product)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.IsPublished)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.IsPublished)
-					@Html.ValidationMessageFor(model => model.Filtering.IsPublished)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.ProductType)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.Filtering.ProductType, Model.Filtering.AvailableProductTypes, Model.AllString)
+					@Html.EditorFor(model => model.ProductFiltering.CreatedFrom)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.CreatedFrom)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.CreatedFrom)
+					@Html.SmartLabelFor(model => model.ProductFiltering.CreatedTo)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.CreatedFrom)
-					@Html.ValidationMessageFor(model => model.Filtering.CreatedFrom)
+					@Html.EditorFor(model => model.ProductFiltering.CreatedTo)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.CreatedTo)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.CreatedTo)
+					@Html.SmartLabelFor(model => model.ProductFiltering.ProductType)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.CreatedTo)
-					@Html.ValidationMessageFor(model => model.Filtering.CreatedTo)
+					@Html.DropDownListFor(model => model.ProductFiltering.ProductType, Model.ProductFiltering.AvailableProductTypes, Model.AllString)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.PriceMinimum)
+					@Html.SmartLabelFor(model => model.ProductFiltering.IsPublished)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.PriceMinimum)
-					@Html.ValidationMessageFor(model => model.Filtering.PriceMinimum)
+					@Html.EditorFor(model => model.ProductFiltering.IsPublished)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.IsPublished)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.PriceMaximum)
+					@Html.SmartLabelFor(model => model.ProductFiltering.PriceMinimum)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.PriceMaximum)
-					@Html.ValidationMessageFor(model => model.Filtering.PriceMaximum)
+					@Html.EditorFor(model => model.ProductFiltering.PriceMinimum)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.PriceMinimum)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.AvailabilityMinimum)
+					@Html.SmartLabelFor(model => model.ProductFiltering.PriceMaximum)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.AvailabilityMinimum)
-					@Html.ValidationMessageFor(model => model.Filtering.AvailabilityMinimum)
+					@Html.EditorFor(model => model.ProductFiltering.PriceMaximum)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.PriceMaximum)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.AvailabilityMaximum)
+					@Html.SmartLabelFor(model => model.ProductFiltering.AvailabilityMinimum)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.AvailabilityMaximum)
-					@Html.ValidationMessageFor(model => model.Filtering.AvailabilityMaximum)
+					@Html.EditorFor(model => model.ProductFiltering.AvailabilityMinimum)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.AvailabilityMinimum)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.CategoryIds)
+					@Html.SmartLabelFor(model => model.ProductFiltering.AvailabilityMaximum)
 				</td>
 				<td class="adminData">
-					@Html.ListBoxFor(model => model.Filtering.CategoryIds,
-						new MultiSelectList(Model.Filtering.AvailableCategories, "Value", "Text"),
+					@Html.EditorFor(model => model.ProductFiltering.AvailabilityMaximum)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.AvailabilityMaximum)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ProductFiltering.WithoutCategories)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.ProductFiltering.WithoutCategories)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.WithoutCategories)
+				</td>
+			</tr>
+			<tr id="FilterCategoryIdsContainer">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ProductFiltering.CategoryIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.ProductFiltering.CategoryIds,
+						new MultiSelectList(Model.ProductFiltering.AvailableCategories, "Value", "Text"),
 						new { multiple = "multiple", @class = "control-xlarge" })
-					@Html.ValidationMessageFor(model => model.Filtering.CategoryIds)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.CategoryIds)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.WithoutCategories)
+					@Html.SmartLabelFor(model => model.ProductFiltering.WithoutManufacturers)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.WithoutCategories)
-					@Html.ValidationMessageFor(model => model.Filtering.WithoutCategories)
+					@Html.EditorFor(model => model.ProductFiltering.WithoutManufacturers)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.WithoutManufacturers)
 				</td>
 			</tr>
-			//TODO manus
-			<tr>
+			<tr id="FilterManufacturerIdsContainer">
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.WithoutManufacturers)
+					@Html.SmartLabelFor(model => model.ProductFiltering.ManufacturerIds)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.WithoutManufacturers)
-					@Html.ValidationMessageFor(model => model.Filtering.WithoutManufacturers)
-				</td>
-			</tr>
-			//TODO product tags
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.IncludeFeaturedProducts)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.IncludeFeaturedProducts)
-					@Html.ValidationMessageFor(model => model.Filtering.IncludeFeaturedProducts)
+					@Html.ListBoxFor(model => model.ProductFiltering.ManufacturerIds,
+						new MultiSelectList(Model.ProductFiltering.AvailableManufacturers, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ProductFiltering.ManufacturerIds)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Filtering.OnlyFeaturedProducts)
+					@Html.SmartLabelFor(model => model.ProductFiltering.ProductTagIds)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(model => model.Filtering.OnlyFeaturedProducts)
-					@Html.ValidationMessageFor(model => model.Filtering.OnlyFeaturedProducts)
+					@Html.ListBoxFor(model => model.ProductFiltering.ProductTagIds,
+						new MultiSelectList(Model.ProductFiltering.AvailableProductTags, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.ProductFiltering.ProductTagIds)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.ProductFiltering.FeaturedProducts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.ProductFiltering.FeaturedProducts)
+					@Html.ValidationMessageFor(model => model.ProductFiltering.FeaturedProducts)
 				</td>
 			</tr>
 		}
-		else if (Model.Providing.EntityType == ExportEntityType.Order)
+		else if (Model.OrderFiltering != null)
 		{
+			if (Model.StoreCount > 1)
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.OrderFiltering.StoreId)
+					</td>
+					<td class="adminData">
+						@Html.DropDownListFor(model => model.OrderFiltering.StoreId, Model.OrderFiltering.AvailableStores, Model.AllString)
+						@Html.ValidationMessageFor(model => model.OrderFiltering.StoreId)
+					</td>
+				</tr>
+			}
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.CreatedFrom)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.OrderFiltering.CreatedFrom)
+					@Html.ValidationMessageFor(model => model.OrderFiltering.CreatedFrom)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.CreatedTo)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(model => model.OrderFiltering.CreatedTo)
+					@Html.ValidationMessageFor(model => model.OrderFiltering.CreatedTo)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.OrderStatus)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.OrderFiltering.OrderStatus,
+						new MultiSelectList(Model.OrderFiltering.AvailableOrderStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.OrderFiltering.OrderStatus)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.PaymentStatus)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.OrderFiltering.PaymentStatus,
+						new MultiSelectList(Model.OrderFiltering.AvailablePaymentStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.OrderFiltering.PaymentStatus)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.ShippingStatus)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.OrderFiltering.ShippingStatus,
+						new MultiSelectList(Model.OrderFiltering.AvailableShippingStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.OrderFiltering.ShippingStatus)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.OrderFiltering.CustomerRoleIds)
+				</td>
+				<td class="adminData">
+					@Html.ListBoxFor(model => model.OrderFiltering.CustomerRoleIds,
+						new MultiSelectList(Model.OrderFiltering.AvailableCustomerRoles, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+					@Html.ValidationMessageFor(model => model.OrderFiltering.CustomerRoleIds)
+				</td>
+			</tr>
 		}
 	</table>
 }
@@ -351,5 +435,16 @@
 
 <script type="text/javascript">
 	jQuery(document).ready(function () {
+
+		// show/hide product category filter
+		$('select[name="ProductFiltering.WithoutCategories"]').change(function () {
+			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
+		}).trigger('change');
+
+		// show/hide product manufacturer filter
+		$('select[name="ProductFiltering.WithoutManufacturers"]').change(function () {
+			$('#FilterManufacturerIdsContainer').toggle(_.isEmpty($(this).val()));
+		}).trigger('change');
+
 	});
 </script>

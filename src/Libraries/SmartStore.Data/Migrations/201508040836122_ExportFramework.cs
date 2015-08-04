@@ -157,7 +157,7 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CreatedFrom",
 				"Created from",
-				"Erstellt ab",
+				"Erstellt von",
 				"Filter by created date.",
 				"Nach dem Erstellungsdatum filtern.");
 
@@ -227,17 +227,11 @@ namespace SmartStore.Data.Migrations
 				"Filter by product tags.",
 				"Nach Produkt-Tags filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IncludeFeaturedProducts",
-				"Include featured products",
-				"Empfohlene Produkte einbeziehen",
-				"Specifies whether to include featured products.",
-				"Legt fest, ob empfohlene Produkte einbezogen werden sollen.");
-
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OnlyFeaturedProducts",
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.FeaturedProducts",
 				"Only featured products",
 				"Nur empfohlene Produkte",
-				"Filter by featured products.",
-				"Nach empfohlenen Produkten filtern.");
+				"Filter by featured products. Is only applied when the filtering by categories and manufacturers.",
+				"Nach empfohlenen Produkten filtern. Wird nur bei der Filterung nach Warengruppen und Hersteller angewendet.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductType",
 				"Product type",

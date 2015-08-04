@@ -6,9 +6,13 @@ using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
@@ -27,19 +31,28 @@ namespace SmartStore.Admin.Controllers
 		private readonly PluginMediator _pluginMediator;
 		private readonly IPictureService _pictureService;
 		private readonly ICategoryService _categoryService;
+		private readonly IManufacturerService _manufacturerService;
+		private readonly IProductTagService _productTagService;
+		private readonly ICustomerService _customerService;
 
 		public ExportController(
 			ICommonServices services,
 			IExportService exportService,
 			PluginMediator pluginMediator,
 			IPictureService pictureService,
-			ICategoryService categoryService)
+			ICategoryService categoryService,
+			IManufacturerService manufacturerService,
+			IProductTagService productTagService,
+			ICustomerService customerService)
 		{
 			_services = services;
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
 			_pictureService = pictureService;
 			_categoryService = categoryService;
+			_manufacturerService = manufacturerService;
+			_productTagService = productTagService;
+			_customerService = customerService;
 		}
 
 		private void PrepareExportProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
@@ -81,53 +94,88 @@ namespace SmartStore.Admin.Controllers
 			var filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 
 			var allStores = _services.StoreService.GetAllStores();
-			var allCategories = _categoryService.GetAllCategories(showHidden: true);
-			var mappedCategories = allCategories.ToDictionary(x => x.Id);
 
-			var yes = T("Admin.Common.Yes").Text;
-			var no = T("Admin.Common.No").Text;
-
-			model.StoreCount = allStores.Count;
 			model.AllString = T("Admin.Common.All");
-			model.UnspecifiedString = T("Common.Unspecified");
+			//model.UnspecifiedString = T("Common.Unspecified");
+			model.StoreCount = allStores.Count;
 			model.Offset = profile.Offset;
 			model.Limit = profile.Limit;
 			model.BatchSize = profile.BatchSize;
 			model.PerStore = profile.PerStore;
 
-			model.Filtering = new ExportProfileModel.Filter
+			Action<ExportFilterModelBase> initModelBase = x =>
 			{
-				StoreId = filter.StoreId,
-				CreatedFrom = filter.CreatedFrom,
-				CreatedTo = filter.CreatedTo,
-				PriceMinimum = filter.PriceMinimum,
-				PriceMaximum = filter.PriceMaximum,
-				AvailabilityMinimum = filter.AvailabilityMinimum,
-				AvailabilityMaximum = filter.AvailabilityMaximum,
-				IsPublished = filter.IsPublished,
-				CategoryIds = filter.CategoryIds,
-				WithoutCategories = filter.WithoutCategories,
-				ManufacturerIds = filter.ManufacturerIds,
-				WithoutManufacturers = filter.WithoutManufacturers,
-				ProductTagIds = filter.ProductTagIds,
-				IncludeFeaturedProducts = filter.IncludeFeaturedProducts,
-				OnlyFeaturedProducts = filter.OnlyFeaturedProducts,
-				ProductType = filter.ProductType,
-				OrderStatus = filter.OrderStatus,
-				PaymentStatus = filter.PaymentStatus,
-				ShippingStatus = filter.ShippingStatus,
-				CustomerRoleIds = filter.CustomerRoleIds
+				x.StoreId = filter.StoreId;
+				x.CreatedFrom = filter.CreatedFrom;
+				x.CreatedTo = filter.CreatedTo;
+
+				x.AvailableStores = allStores
+					.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+					.ToList();
 			};
 
-			model.Filtering.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+			if (model.Providing.EntityType == ExportEntityType.Product)
+			{
+				var allCategories = _categoryService.GetAllCategories(showHidden: true);
+				var mappedCategories = allCategories.ToDictionary(x => x.Id);
+				var allManufacturers = _manufacturerService.GetAllManufacturers(true);
+				var allProductTags = _productTagService.GetAllProductTags();
 
-			model.Filtering.AvailableStores = allStores
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+				model.ProductFiltering = new ExportProductFilterModel
+				{
+					PriceMinimum = filter.PriceMinimum,
+					PriceMaximum = filter.PriceMaximum,
+					AvailabilityMinimum = filter.AvailabilityMinimum,
+					AvailabilityMaximum = filter.AvailabilityMaximum,
+					IsPublished = filter.IsPublished,
+					CategoryIds = filter.CategoryIds,
+					WithoutCategories = filter.WithoutCategories,
+					ManufacturerIds = filter.ManufacturerIds,
+					WithoutManufacturers = filter.WithoutManufacturers,
+					ProductTagIds = filter.ProductTagIds,
+					FeaturedProducts = filter.FeaturedProducts,
+					ProductType = filter.ProductType
+				};
 
-			model.Filtering.AvailableCategories = allCategories
-				.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
-				.ToList();
+				model.ProductFiltering.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+
+				model.ProductFiltering.AvailableCategories = allCategories
+					.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+					.ToList();
+
+				model.ProductFiltering.AvailableManufacturers = allManufacturers
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
+
+				model.ProductFiltering.AvailableProductTags = allProductTags
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
+
+				initModelBase(model.ProductFiltering);
+			}
+			else if (model.Providing.EntityType == ExportEntityType.Order)
+			{
+				var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
+				model.OrderFiltering = new ExportOrderFilterModel
+				{
+					OrderStatus = filter.OrderStatus,
+					PaymentStatus = filter.PaymentStatus,
+					ShippingStatus = filter.ShippingStatus,
+					CustomerRoleIds = filter.CustomerRoleIds
+				};
+
+				model.OrderFiltering.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
+				model.OrderFiltering.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
+				model.OrderFiltering.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+
+				model.OrderFiltering.AvailableCustomerRoles = allCustomerRoles
+					.OrderBy(x => x.Name)
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
+
+				initModelBase(model.OrderFiltering);
+			}
 		}
 
         public ActionResult Index()
@@ -254,29 +302,47 @@ namespace SmartStore.Admin.Controllers
 				return View(model);
 			}
 
-			var filter = new ExportFilter
+			ExportFilter filter = null;
+
+			Action<ExportFilterModelBase> getFromModelBase = x =>
 			{
-				StoreId = model.Filtering.StoreId ?? 0,
-				CreatedFrom = model.Filtering.CreatedFrom,
-				CreatedTo = model.Filtering.CreatedTo,
-				PriceMinimum = model.Filtering.PriceMinimum,
-				PriceMaximum = model.Filtering.PriceMaximum,
-				AvailabilityMinimum = model.Filtering.AvailabilityMinimum,
-				AvailabilityMaximum = model.Filtering.AvailabilityMaximum,
-				IsPublished = model.Filtering.IsPublished,
-				CategoryIds = model.Filtering.CategoryIds,
-				WithoutCategories = model.Filtering.WithoutCategories,
-				ManufacturerIds = model.Filtering.ManufacturerIds,
-				WithoutManufacturers = model.Filtering.WithoutManufacturers,
-				ProductTagIds = model.Filtering.ProductTagIds,
-				IncludeFeaturedProducts = model.Filtering.IncludeFeaturedProducts,
-				OnlyFeaturedProducts = model.Filtering.OnlyFeaturedProducts,
-				ProductType = model.Filtering.ProductType,
-				OrderStatus = model.Filtering.OrderStatus,
-				PaymentStatus = model.Filtering.PaymentStatus,
-				ShippingStatus = model.Filtering.ShippingStatus,
-				CustomerRoleIds = model.Filtering.CustomerRoleIds
+				filter.StoreId = x.StoreId ?? 0;
+				filter.CreatedFrom = x.CreatedFrom;
+				filter.CreatedTo = x.CreatedTo;
 			};
+
+			if (model.ProductFiltering != null && provider.Value.EntityType == ExportEntityType.Product)
+			{
+				filter = new ExportFilter
+				{
+					PriceMinimum = model.ProductFiltering.PriceMinimum,
+					PriceMaximum = model.ProductFiltering.PriceMaximum,
+					AvailabilityMinimum = model.ProductFiltering.AvailabilityMinimum,
+					AvailabilityMaximum = model.ProductFiltering.AvailabilityMaximum,
+					IsPublished = model.ProductFiltering.IsPublished,
+					CategoryIds = model.ProductFiltering.CategoryIds,
+					WithoutCategories = model.ProductFiltering.WithoutCategories,
+					ManufacturerIds = model.ProductFiltering.ManufacturerIds,
+					WithoutManufacturers = model.ProductFiltering.WithoutManufacturers,
+					ProductTagIds = model.ProductFiltering.ProductTagIds,
+					FeaturedProducts = model.ProductFiltering.FeaturedProducts,
+					ProductType = model.ProductFiltering.ProductType
+				};
+
+				getFromModelBase(model.ProductFiltering);
+			}
+			else if (model.OrderFiltering != null && provider.Value.EntityType == ExportEntityType.Order)
+			{
+				filter = new ExportFilter
+				{
+					OrderStatus = model.OrderFiltering.OrderStatus,
+					PaymentStatus = model.OrderFiltering.PaymentStatus,
+					ShippingStatus = model.OrderFiltering.ShippingStatus,
+					CustomerRoleIds = model.OrderFiltering.CustomerRoleIds
+				};
+
+				getFromModelBase(model.OrderFiltering);
+			}
 
 			profile.Name = model.Name;
 			profile.Enabled = model.Enabled;

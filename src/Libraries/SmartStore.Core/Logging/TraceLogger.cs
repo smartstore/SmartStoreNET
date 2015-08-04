@@ -89,7 +89,7 @@ namespace SmartStore.Core.Logging
 			var msg = context.ShortMessage;
 			if (context.FullMessage.HasValue())
 			{
-				msg += "\r\n{0}".FormatCurrent(context.FullMessage);
+				msg += "{0}{1}".FormatCurrent(Environment.NewLine, context.FullMessage);
 			}
 			_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 		}

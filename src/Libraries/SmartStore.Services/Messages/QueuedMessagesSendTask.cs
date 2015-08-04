@@ -16,7 +16,7 @@ namespace SmartStore.Services.Messages
 
 		public void Execute(TaskExecutionContext ctx)
         {
-			const int pageSize = 100;
+			const int pageSize = 1000;
 			const int maxTries = 3;
 
 			for (int i = 0; i < 9999999; ++i)
@@ -26,7 +26,8 @@ namespace SmartStore.Services.Messages
 					MaxSendTries = maxTries,
 					PageIndex = i,
 					PageSize = pageSize,
-					Expand = "Attachments"
+					Expand = "Attachments",
+					UnsentOnly = true
 				};
 				var queuedEmails = _queuedEmailService.SearchEmails(q);
 

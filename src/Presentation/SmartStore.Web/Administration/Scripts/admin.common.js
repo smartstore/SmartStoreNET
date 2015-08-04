@@ -108,6 +108,9 @@ var Admin = {
 									}
 								}
 							});
+						},
+						error: function (xhr, ajaxOptions, thrownError) {
+							window.clearInterval(interval);
 						}
 					});
 				}

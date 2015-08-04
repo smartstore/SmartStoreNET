@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
@@ -38,7 +39,20 @@ namespace SmartStore.Services.Tasks
 						var tasks = taskService.GetAllTasks(true);
 						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
 
-						taskScheduler.SetBaseUrl(storeService, filterContext.HttpContext);
+						var baseUrl = CommonHelper.GetAppSetting<string>("sm:TaskSchedulerBaseUrl");
+						if (baseUrl.IsWebUrl())
+						{
+							taskScheduler.BaseUrl = baseUrl;
+						}
+						else
+						{
+							// autoresolve base url
+							taskScheduler.SetBaseUrl(storeService, filterContext.HttpContext);
+						}
+
+						var sweepInterval = CommonHelper.GetAppSetting<int>("sm:TaskSchedulerSweepInterval", 60);
+						taskScheduler.SweepInterval = TimeSpan.FromSeconds(sweepInterval);
+
 						taskScheduler.Start();
 
 						logger.Information("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));

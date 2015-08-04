@@ -83,11 +83,6 @@
 			}
 		});
 
-		function refreshGrid() {
-			var grid = $("#schedule-tasks-grid").data("tGrid");
-			grid.ajaxRequest();
-		}
-
 		Admin.TaskWatcher.startWatching({
 			context: $('#schedule-tasks-grid'),
 			elementsSelector: '.task-progress',

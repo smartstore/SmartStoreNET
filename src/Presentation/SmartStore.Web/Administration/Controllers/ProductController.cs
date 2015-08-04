@@ -870,8 +870,6 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
 			var allStores = _storeService.GetAllStores();
-			var yes = T("Admin.Common.Yes").Text;
-			var no = T("Admin.Common.No").Text;
 
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
             model.DisplayPdfExport = _pdfSettings.Enabled;
@@ -896,18 +894,6 @@ namespace SmartStore.Admin.Controllers
             }
 
 			model.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-			model.AvailableWithoutCategories.Add(new SelectListItem { Text = yes, Value = "true" });
-			model.AvailableWithoutCategories.Add(new SelectListItem { Text = no, Value = "false" });
-
-			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = yes, Value = "true" });
-			model.AvailableWithoutManufacturers.Add(new SelectListItem { Text = no, Value = "false" });
-
-			model.AvailableIsPublished.Add(new SelectListItem { Text = yes, Value = "true" });
-			model.AvailableIsPublished.Add(new SelectListItem { Text = no, Value = "false" });
-
-			model.AvailableHomePageProducts.Add(new SelectListItem { Text = yes, Value = "true" });
-			model.AvailableHomePageProducts.Add(new SelectListItem { Text = no, Value = "false" });
 
             return View(model);
         }

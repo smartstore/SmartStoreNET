@@ -4778,14 +4778,6 @@ namespace SmartStore.Data.Setup
 				},
 				new ScheduleTask
 				{
-					Name = "Keep alive",
-					Seconds = 300,
-					Type = "SmartStore.Services.Common.KeepAliveTask, SmartStore.Services",
-					Enabled = true,
-					StopOnError = false,
-				},
-				new ScheduleTask
-				{
 					Name = "Delete guests",
 					Seconds = 600,
 					Type = "SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services",

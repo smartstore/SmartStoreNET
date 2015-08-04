@@ -2525,10 +2525,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Temporäre Uploads bereinigen";
 				})
-				.Alter("SmartStore.Services.Common.KeepAliveTask, SmartStore.Services", x =>
-                    {
-                        x.Name = "Keep alive";
-                    })
 				.Alter("SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services", x =>
                     {
                         x.Name = "Gastbenutzer löschen";

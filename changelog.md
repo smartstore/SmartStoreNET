@@ -17,6 +17,7 @@
 * #733 Option to set a display order for homepage products
 * #607 HTML capable full description for payment methods displayed in checkout
 * #732 Product list: Option to display the pre-selected price instead of the lowest price
+* New payment provider for Offline Payment Plugin: Purchase Order Number 
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

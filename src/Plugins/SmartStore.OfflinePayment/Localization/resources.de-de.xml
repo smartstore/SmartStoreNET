@@ -211,5 +211,21 @@
     </Children>
   </LocaleResource>
 
+  <!-- PuchaseOrderNumber -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+    <Value>Bestellnummer</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PurchaseOrderNumber">
+        <Value>Bestellnummer</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
 
 </Language>

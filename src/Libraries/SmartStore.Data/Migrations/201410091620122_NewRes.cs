@@ -91,15 +91,15 @@ namespace SmartStore.Data.Migrations
 				"Gültig bis");
 
 			builder.Update("Plugins.Payment.CashOnDelivery.PaymentInfoDescription")
-				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("en", "Once your order is placed, you will be contacted by our staff to confirm the order.")
 				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
 
 			builder.Update("Plugins.Payment.Invoice.PaymentInfoDescription")
-				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("en", "Once your order is placed, you will be contacted by our staff to confirm the order.")
 				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
 
 			builder.Update("Plugins.Payment.DirectDebit.PaymentInfoDescription")
-				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("en", "Once your order is placed, you will be contacted by our staff to confirm the order.")
 				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
 
 			builder.Update("Plugins.Payment.PayInStore.PaymentInfoDescription")
@@ -107,7 +107,7 @@ namespace SmartStore.Data.Migrations
 				.Value("de", "Reservieren Sie Produkte und zahlen Sie an der Kasse in unserem Ladenlokal.");
 
 			builder.Update("Plugins.Payment.Prepayment.PaymentInfoDescription")
-				.Value("en", "Once your order is placed, you will be contacted by our stuff to confirm the order.")
+				.Value("en", "Once your order is placed, you will be contacted by our staff to confirm the order.")
 				.Value("de", "Sobald Ihre Bestellung abgeschloßen ist, werden Sie persönlich von einem unserer Mitarbeiter kontaktiert, um die Bestellung zu bestätigen.");
 
 		}

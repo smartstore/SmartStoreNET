@@ -29,6 +29,11 @@ namespace SmartStore.OfflinePayment.Settings
 		public TransactMode TransactMode { get; set; }
 	}
 
+    public class PurchaseOrderNumberPaymentSettings : PaymentSettingsBase, ISettings
+    {
+        public TransactMode TransactMode { get; set; }
+    }
+
 	public class PayInStorePaymentSettings : PaymentSettingsBase, ISettings
 	{
 	}

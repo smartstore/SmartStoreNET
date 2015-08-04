@@ -145,6 +145,7 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Providers\DirectDebitProvider.cs" />
     <Compile Include="Providers\ManualProvider.cs" />
+    <Compile Include="Providers\PurchaseOrderNumberProvider.cs" />
     <Compile Include="Providers\PrepaymentStoreProvider.cs" />
     <Compile Include="Providers\PayInStoreProvider.cs" />
     <Compile Include="Providers\InvoiceProvider.cs" />
@@ -212,6 +213,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
     <Content Include="Views\OfflinePayment\DirectDebitPaymentInfo.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\OfflinePayment\PurchaseOrderNumberPaymentInfo.Mobile.cshtml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\OfflinePayment\PurchaseOrderNumberPaymentInfo.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

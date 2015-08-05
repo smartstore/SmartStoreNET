@@ -101,6 +101,7 @@ namespace SmartStore.Admin.Controllers
 				Id = task.Id,
 				Name = task.Name,
 				Seconds = task.Seconds,
+				PrettySeconds = TimeSpan.FromSeconds(task.Seconds).Prettify(),
 				Enabled = task.Enabled,
 				StopOnError = task.StopOnError,
 				LastStartUtc = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",

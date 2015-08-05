@@ -15,6 +15,7 @@ namespace SmartStore.Admin.Models.Tasks
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Seconds")]
         public int Seconds { get; set; }
+		public string PrettySeconds { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Enabled")]
         public bool Enabled { get; set; }

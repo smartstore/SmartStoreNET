@@ -27,7 +27,7 @@
                     {
                         columns.Bound(x => x.Name).ClientTemplate("<strong><#= Name #></strong>");
                         columns.Bound(x => x.Seconds)
-							.ClientTemplate("<#= _.formatTime(Seconds) #>");
+							.ClientTemplate("<#= PrettySeconds #>");
                         columns.Bound(x => x.Enabled)
                             .ClientTemplate(@Html.SymbolForBool("Enabled"))
                             .Centered()

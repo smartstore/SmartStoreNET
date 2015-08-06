@@ -19,8 +19,9 @@ namespace SmartStore.Data.Migrations
                         ProviderSystemName = c.String(nullable: false, maxLength: 4000),
                         Enabled = c.Boolean(nullable: false),
                         SchedulingTaskId = c.Int(nullable: false),
-                        ProfileGuid = c.Guid(nullable: false),
                         Filtering = c.String(),
+                        Projection = c.String(),
+                        ProviderConfigData = c.String(),
                         Offset = c.Int(nullable: false),
                         Limit = c.Int(nullable: false),
                         BatchSize = c.Int(nullable: false),
@@ -78,6 +79,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.NoProfiles",
 				"There were no export profiles found.",
 				"Es wurden keine Exportprofile gefunden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.NoProviderConfigurationRequired",
+				"The export provider <b>{0}</b> requires no further configuration.",
+				"Der Export-Provider <b>{0}</b> benötigt keine weitergehende Konfiguration.");
+
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName",
@@ -262,6 +268,19 @@ namespace SmartStore.Data.Migrations
 				"Kundengruppen",
 				"Filter by customer roles.",
 				"Nach Kundengruppen filtern.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.LanguageId",
+				"Language",
+				"Sprache",
+				"Specifies the language to be applied to the export.",
+				"Legt die auf den Export anzuwendende Sprache fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CurrencyId",
+				"Currency",
+				"Währung",
+				"Specifies the currency to be applied to the export.",
+				"Legt die auf den Export anzuwendende Währung fest.");
 		}
     }
 }

@@ -35,29 +35,29 @@
 					})
 					.Columns(columns =>
 					{
-						columns.Bound(x => x.Providing.ThumbnailUrl)
+						columns.Bound(x => x.Provider.ThumbnailUrl)
 							.Width(70)
 							.Centered()
 							.Template(
 								@<text>
-									<img alt="@item.Id" src="@item.Providing.ThumbnailUrl" />
+									<img alt="@item.Id" src="@item.Provider.ThumbnailUrl" />
 								</text>
 							)
-							.ClientTemplate("<img alt='<#= Id #>' src='<#= Providing.ThumbnailUrl #>' />");
+							.ClientTemplate("<img alt='<#= Id #>' src='<#= Provider.ThumbnailUrl #>' />");
 						columns.Bound(x => x.Name)
 							.Width(400)
 							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.Providing.SystemName)
-							.Template(x => "{0} ({1})".FormatInvariant(x.Providing.FriendlyName, x.Providing.SystemName))
-							.ClientTemplate("<#= Providing.FriendlyName #> <span class='muted'>(<#= Providing.SystemName #>)</span>");
+						columns.Bound(x => x.Provider.SystemName)
+							.Template(x => "{0} ({1})".FormatInvariant(x.Provider.FriendlyName, x.Provider.SystemName))
+							.ClientTemplate("<#= Provider.FriendlyName #> <span class='muted'>(<#= Provider.SystemName #>)</span>");
 						columns.Bound(x => x.Enabled)
 							.Width(100)
 							.Template(item => @Html.SymbolForBool(item.Enabled))
 							.ClientTemplate(@Html.SymbolForBool("Enabled"))
 							.Centered();
-						columns.Bound(x => x.Providing.EntityTypeName);
-						columns.Bound(x => x.Providing.FileType)
+						columns.Bound(x => x.Provider.EntityTypeName);
+						columns.Bound(x => x.Provider.FileType)
 							.Centered();
 						columns.Bound(x => x.SchedulingHours)
 							.Centered();
@@ -115,7 +115,7 @@
 				smallIcon: dialog.find('.modal-body'),
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
-					$('select[name="Providing.SystemName"]').selectWrapper();
+					$('select[name="Provider.SystemName"]').selectWrapper();
 				},
 				callbackComplete: function () {
 					showPrimaryButton(true);

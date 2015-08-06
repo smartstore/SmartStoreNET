@@ -120,7 +120,7 @@ namespace SmartStore.Core
 		/// </summary>
 		/// <typeparam name="T">Object type</typeparam>
 		/// <param name="instance">Object instance</param>
-		/// <returns>XML</returns>
+		/// <returns>XML string</returns>
 		public static string Serialize<T>(T instance)
 		{
 			if (instance != null)
@@ -137,10 +137,31 @@ namespace SmartStore.Core
 		}
 
 		/// <summary>
+		/// Serializes an object instance to a XML formatted string
+		/// </summary>
+		/// <param name="instance">Object instance</param>
+		/// <param name="type">Object type</param>
+		/// <returns>XML string</returns>
+		public static string Serialize(object instance, Type type)
+		{
+			if (instance != null)
+			{
+				using (var writer = new StringWriter())
+				{
+					var xmlSerializer = new XmlSerializer(type);
+
+					xmlSerializer.Serialize(writer, instance);
+					return writer.ToString();
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
 		/// Deserializes a XML formatted string to an object instance
 		/// </summary>
 		/// <typeparam name="T">Object type</typeparam>
-		/// <param name="xml">XML</param>
+		/// <param name="xml">XML string</param>
 		/// <returns>Object instance</returns>
 		public static T Deserialize<T>(string xml)
 		{
@@ -154,6 +175,26 @@ namespace SmartStore.Core
 				}
 			}
 			return (T)Activator.CreateInstance(typeof(T));
+		}
+
+		/// <summary>
+		/// Deserializes a XML formatted string to an object instance
+		/// </summary>
+		/// <param name="xml">XML string</param>
+		/// <param name="type">Object type</param>
+		/// <returns>Object instance</returns>
+		public static object Deserialize(string xml, Type type)
+		{
+			if (xml.HasValue())
+			{
+				using (var reader = new StringReader(xml))
+				{
+					var serializer = new XmlSerializer(type);
+
+					return serializer.Deserialize(reader);
+				}
+			}
+			return Activator.CreateInstance(type);
 		}
 
 		#endregion

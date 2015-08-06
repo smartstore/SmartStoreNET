@@ -1,0 +1,20 @@
+﻿@using SmartStore.Admin.Models.DataExchange
+@model ExportPreviewModel
+@{
+	var title = string.Concat(T("Admin.Common.Preview"), " ", T("Common.Export"));
+	ViewBag.Title = title;
+}
+
+<div class="section-header">
+	<div class="title">
+		<img src="@Url.Content(Model.ThumbnailUrl)" />
+		&nbsp;
+		@title - @Model.Name @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
+	</div>
+	<div class="options">
+	</div>
+</div>
+
+<div>
+	TODO
+</div>

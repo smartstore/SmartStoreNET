@@ -1,11 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Dynamic;
 using System.Web.Mvc;
-using SmartStore.Core.Domain.Catalog;
+using System.Web.Routing;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -13,6 +11,10 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	public partial class ExportProfileModel : EntityModelBase
 	{
+		public int StoreCount { get; set; }
+		public string AllString { get; set; }
+		public string UnspecifiedString { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Name")]
 		public string Name { get; set; }
 
@@ -38,17 +40,20 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.PerStore")]
 		public bool PerStore { get; set; }
 
-		public Provider Providing { get; set; }
+		public ProviderModel Provider { get; set; }
 
-		public ExportProductFilterModel ProductFiltering { get; set; }
-		public ExportOrderFilterModel OrderFiltering { get; set; }
+		public ExportProductFilterModel ProductFilter { get; set; }
+		public ExportOrderFilterModel OrderFilter { get; set; }
 
-		public int StoreCount { get; set; }
-		public string AllString { get; set; }
+		public ExportProjectionModel Projection { get; set; }
 
 
-		public class Provider
+		public class ProviderModel
 		{
+			public string ConfigPartialViewName { get; set; }
+			public Type ConfigDataType { get; set; }
+			public object ConfigData { get; set; }
+
 			[SmartResourceDisplayName("Common.Image")]
 			public string ThumbnailUrl { get; set; }
 

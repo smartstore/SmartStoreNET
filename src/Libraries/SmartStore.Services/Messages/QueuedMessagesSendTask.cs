@@ -26,7 +26,8 @@ namespace SmartStore.Services.Messages
 					MaxSendTries = maxTries,
 					PageIndex = i,
 					PageSize = pageSize,
-					Expand = "Attachments"
+					Expand = "Attachments",
+					UnsentOnly = true
 				};
 				var queuedEmails = _queuedEmailService.SearchEmails(q);
 

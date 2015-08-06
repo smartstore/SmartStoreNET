@@ -5,16 +5,16 @@
 }
 
 <div style="padding-bottom: 5px;">
-	@if(Model.Providing.AvailableExportProviders.Count > 0)
+	@if(Model.Provider.AvailableExportProviders.Count > 0)
 	{
 		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
 			<table class="adminContent">
 				<tr>
 					<td class="adminTitle">
-						@Html.SmartLabelFor(model => model.Providing.SystemName)
+						@Html.SmartLabelFor(model => model.Provider.SystemName)
 					</td>
 					<td class="adminData">
-						@Html.DropDownListFor(model => model.Providing.SystemName, Model.Providing.AvailableExportProviders)
+						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders)
 					</td>
 				</tr>
 			</table>

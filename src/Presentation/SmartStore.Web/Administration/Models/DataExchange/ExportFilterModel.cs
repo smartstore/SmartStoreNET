@@ -9,7 +9,7 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	public class ExportFilterModelBase
+	public abstract class ExportFilterModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.StoreId")]
 		public int? StoreId { get; set; }

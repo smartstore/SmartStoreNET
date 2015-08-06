@@ -38,14 +38,19 @@ namespace SmartStore.Core.Domain
 		public int SchedulingTaskId { get; set; }
 
 		/// <summary>
-		/// The profile GUID is the folder name in the file system
-		/// </summary>
-		public Guid ProfileGuid { get; set; }
-
-		/// <summary>
 		/// XML with filtering information
 		/// </summary>
 		public string Filtering { get; set; }
+
+		/// <summary>
+		/// XML with projection information
+		/// </summary>
+		public string Projection { get; set; }
+
+		/// <summary>
+		/// Provider specific configuration data
+		/// </summary>
+		public string ProviderConfigData { get; set; }
 
 		/// <summary>
 		/// The number of records to be skipped

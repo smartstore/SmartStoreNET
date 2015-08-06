@@ -248,6 +248,8 @@
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
+    <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
     <Compile Include="Models\DataExchange\ExportProfileModel.cs" />
     <Compile Include="Models\Messages\MessageTemplateListModel.cs" />
@@ -504,6 +506,7 @@
     <Content Include="Views\Export\List.cshtml" />
     <Content Include="Views\Export\Create.cshtml" />
     <Content Include="Views\Export\Edit.cshtml" />
+    <Content Include="Views\Export\Preview.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

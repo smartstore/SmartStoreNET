@@ -134,10 +134,12 @@
                     </div>
                 }
                 
-                @if(Model.CustomerNumberEnabled)
-                {
-                    @Html.ControlGroupFor(model => model.CustomerNumber, required: false)    
-                }
+                <div class="control-group">
+                    @Html.LabelFor(model => model.CustomerNumber, new { @class = "control-label", @for = "CustomerNumber" })
+                    <div class="controls">
+                        @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @readonly = "true" } : null)
+                    </div>
+                </div>
                 
            </fieldset>
             

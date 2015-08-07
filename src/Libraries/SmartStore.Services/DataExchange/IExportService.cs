@@ -40,6 +40,7 @@ namespace SmartStore.Services.DataExchange
 		/// <returns>Export profile</returns>
 		ExportProfile GetExportProfileById(int id);
 
+
 		/// <summary>
 		/// Load all export providers
 		/// </summary>
@@ -54,5 +55,12 @@ namespace SmartStore.Services.DataExchange
 		/// <param name="storeId">Store identifier</param>
 		/// <returns>Export provider</returns>
 		Provider<IExportProvider> LoadProvider(string systemName, int storeId = 0);
+
+
+		/// <summary>
+		/// Deletes an export deployment
+		/// </summary>
+		/// <param name="deployment">Export deployment</param>
+		void DeleteExportDeployment(ExportDeployment deployment);
 	}
 }

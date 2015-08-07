@@ -1,11 +1,6 @@
 ﻿using System;
-using System.Globalization;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
-using System.Web.Routing;
-using System.Xml.Serialization;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
@@ -82,7 +77,28 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
-		private void PrepareExportProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment)
+		{
+			var model = new ExportDeploymentModel
+			{
+				Id = deployment.Id,
+				Name = deployment.Name,
+				Enabled = deployment.Enabled,
+				IsPublic = deployment.IsPublic,
+				DeploymentType = deployment.DeploymentType,
+				DeploymentTypeName = T("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType." + deployment.DeploymentType.ToString()),
+				Username = deployment.Username,
+				Password = deployment.Password,
+				Url = deployment.Url,
+				FileSystemPath = deployment.FileSystemPath,
+				EmailAddresses = deployment.EmailAddresses,
+				EmailSubject = deployment.EmailSubject,
+				EmailAccountId = deployment.EmailAccountId
+			};
+			return model;
+		}
+
+		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -106,12 +122,12 @@ namespace SmartStore.Admin.Controllers
 				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
 
 				model.Provider.EntityType = provider.Value.EntityType;
-				model.Provider.EntityTypeName = T("Enums.SmartStore.Core.Domain.ExportEntityType." + provider.Value.EntityType.ToString());
+				model.Provider.EntityTypeName = T("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType." + provider.Value.EntityType.ToString());
 				model.Provider.FileType = provider.Value.FileType.ToUpper();
 			}
 		}
 
-		private void PrepareExportProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		private void PrepareProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			var filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			var projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
@@ -127,16 +143,25 @@ namespace SmartStore.Admin.Controllers
 			model.Limit = profile.Limit;
 			model.BatchSize = profile.BatchSize;
 			model.PerStore = profile.PerStore;
+			model.CreateZipArchive = profile.CreateZipArchive;
+			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
 
 			if (provider != null)
 			{
-				string partialName;
-				Type dataType;
-				if (provider.Value.RequiresConfiguration(out partialName, out dataType))
+				try
 				{
-					model.Provider.ConfigPartialViewName = partialName;
-					model.Provider.ConfigDataType = dataType;
-					model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, dataType);
+					string partialName;
+					Type dataType;
+					if (provider.Value.RequiresConfiguration(out partialName, out dataType))
+					{
+						model.Provider.ConfigPartialViewName = partialName;
+						model.Provider.ConfigDataType = dataType;
+						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, dataType);
+					}
+				}
+				catch (Exception exc)
+				{
+					NotifyError(exc);
 				}
 			}
 
@@ -229,6 +254,9 @@ namespace SmartStore.Admin.Controllers
 
 				initModelBase(model.OrderFilter);
 			}
+
+			// deplyoment
+			model.Deployments = profile.Deployments.Select(x => PrepareDeploymentModel(x)).ToList();
 		}
 
 		#endregion
@@ -262,7 +290,7 @@ namespace SmartStore.Admin.Controllers
 				model.Data = profiles.Select(x =>
 				{
 					var profileModel = new ExportProfileModel();
-					PrepareExportProfileModel(profileModel, x, providers.FirstOrDefault(y => y.Metadata.SystemName == x.ProviderSystemName));
+					PrepareProfileModel(profileModel, x, providers.FirstOrDefault(y => y.Metadata.SystemName == x.ProviderSystemName));
 
 					return profileModel;
 				});
@@ -331,8 +359,8 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ExportProfileModel();
 
-			PrepareExportProfileModel(model, profile, provider);
-			PrepareExportProfileModelForEdit(model, profile, provider);
+			PrepareProfileModel(model, profile, provider);
+			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
 		}
@@ -352,8 +380,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				PrepareExportProfileModel(model, profile, provider);
-				PrepareExportProfileModelForEdit(model, profile, provider);
+				PrepareProfileModel(model, profile, provider);
+				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}
 
@@ -364,6 +392,8 @@ namespace SmartStore.Admin.Controllers
 			profile.Limit = model.Limit;
 			profile.BatchSize = model.BatchSize;
 			profile.PerStore = model.PerStore;
+			profile.CreateZipArchive = model.CreateZipArchive;
+			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
 
 			if (profile.Name.IsEmpty())
 				profile.Name = provider.Metadata.FriendlyName;
@@ -499,5 +529,33 @@ namespace SmartStore.Admin.Controllers
 		{
 			return null;
 		}
+
+		#region Export deployment
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult DeploymentList(GridCommand command, int id)
+		{
+			var model = new GridModel<ExportDeploymentModel>();
+
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			{
+				var profile = _exportService.GetExportProfileById(id);
+				if (profile != null)
+				{
+					model.Total = profile.Deployments.Count;
+
+					model.Data = profile.Deployments.Select(x => PrepareDeploymentModel(x)).ToList();
+				}
+			}
+
+			return new JsonResult { Data = model };
+		}
+
+		public ActionResult DeploymentEdit(int id)
+		{
+			return null;
+		}
+
+		#endregion
 	}
 }

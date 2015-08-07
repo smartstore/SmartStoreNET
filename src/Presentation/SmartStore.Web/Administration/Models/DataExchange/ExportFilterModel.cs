@@ -26,7 +26,7 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportProductFilterModel : ExportFilterModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IsPublished")]
-		public bool? IsPublished { get; set; }
+		public bool IsPublished { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductType")]
 		public ProductType? ProductType { get; set; }

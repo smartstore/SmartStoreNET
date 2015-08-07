@@ -11,4 +11,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		Order,
 		NewsletterSubscriber
 	}
+
+	public enum ExportDeploymentType
+	{
+		FileSystem = 0,
+		Email,
+		Http,
+		Ftp
+	}
 }

@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 
@@ -6,6 +7,8 @@ namespace SmartStore.Core.Domain
 {
 	public class ExportProfile : BaseEntity
 	{
+		private ICollection<ExportDeployment> _deployments;
+
 		public ExportProfile()
 		{
 			Limit = 100;
@@ -73,8 +76,27 @@ namespace SmartStore.Core.Domain
 		public bool PerStore { get; set; }
 
 		/// <summary>
+		/// Whether to combine and compress the export files in a ZIP archive
+		/// </summary>
+		public bool CreateZipArchive { get; set; }
+
+		/// <summary>
+		/// Email addresses (semicolon separated) where to send a notification message of the completion of the export
+		/// </summary>
+		public string CompletedEmailAddresses { get; set; }
+
+		/// <summary>
 		/// The scheduling task
 		/// </summary>
 		public virtual ScheduleTask ScheduleTask { get; set; }
+
+		/// <summary>
+		/// Gets or sets export deployments
+		/// </summary>
+		public virtual ICollection<ExportDeployment> Deployments
+		{
+			get { return _deployments ?? (_deployments = new HashSet<ExportDeployment>()); }
+			set { _deployments = value; }
+		}
 	}
 }

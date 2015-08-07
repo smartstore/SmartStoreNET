@@ -10,6 +10,28 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             CreateTable(
+                "dbo.ExportDeployment",
+                c => new
+                    {
+                        Id = c.Int(nullable: false, identity: true),
+                        ProfileId = c.Int(nullable: false),
+                        Name = c.String(nullable: false, maxLength: 100),
+                        Enabled = c.Boolean(nullable: false),
+                        IsPublic = c.Boolean(nullable: false),
+                        DeploymentTypeId = c.Int(nullable: false),
+                        Username = c.String(maxLength: 400),
+                        Password = c.String(maxLength: 400),
+                        Url = c.String(maxLength: 4000),
+                        FileSystemPath = c.String(maxLength: 400),
+                        EmailAddresses = c.String(maxLength: 4000),
+                        EmailSubject = c.String(maxLength: 400),
+                        EmailAccountId = c.Int(nullable: false),
+                    })
+                .PrimaryKey(t => t.Id)
+                .ForeignKey("dbo.ExportProfile", t => t.ProfileId, cascadeDelete: true)
+                .Index(t => t.ProfileId);
+            
+            CreateTable(
                 "dbo.ExportProfile",
                 c => new
                     {
@@ -26,6 +48,8 @@ namespace SmartStore.Data.Migrations
                         Limit = c.Int(nullable: false),
                         BatchSize = c.Int(nullable: false),
                         PerStore = c.Boolean(nullable: false),
+                        CreateZipArchive = c.Boolean(nullable: false),
+                        CompletedEmailAddresses = c.String(maxLength: 400),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ScheduleTask", t => t.SchedulingTaskId)
@@ -35,9 +59,12 @@ namespace SmartStore.Data.Migrations
         
         public override void Down()
         {
+            DropForeignKey("dbo.ExportDeployment", "ProfileId", "dbo.ExportProfile");
             DropForeignKey("dbo.ExportProfile", "SchedulingTaskId", "dbo.ScheduleTask");
             DropIndex("dbo.ExportProfile", new[] { "SchedulingTaskId" });
+            DropIndex("dbo.ExportDeployment", new[] { "ProfileId" });
             DropTable("dbo.ExportProfile");
+            DropTable("dbo.ExportDeployment");
         }
 
 		public bool RollbackOnFailure
@@ -68,7 +95,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Image", "Image", "Bild");
 			builder.AddOrUpdate("Common.Filter", "Filter", "Filter");
 			builder.AddOrUpdate("Common.Projection", "Projection", "Projektion");
-			builder.AddOrUpdate("Common.Publishing", "Publishing", "Veröffentlichung");
+			builder.AddOrUpdate("Common.Deployment", "Deployment", "Bereitstellung");
 			builder.AddOrUpdate("Common.Website", "Website", "Web-Seite");
 
 
@@ -104,6 +131,10 @@ namespace SmartStore.Data.Migrations
 				"Name des Profils",
 				"Specifies the name of the export profile.",
 				"Legt den Namen des Exportprofils fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Name.Validate",
+				"Please enter the name of the profile.",
+				"Bitte den Namen des Profils eingeben.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.FileType",
 				"File type",
@@ -148,12 +179,23 @@ namespace SmartStore.Data.Migrations
 				"Specifies whether to start a separate run-through for each store.",
 				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll.");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.CreateZipArchive",
+				"Create ZIP archive",
+				"ZIP-Archiv erstellen",
+				"Specifies whether to combine and compress the export files in a ZIP archive.",
+				"Legt fest, ob die Exportdateien in einem ZIP-Archiv zusammengefasst und komprimiert werden sollen.");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Product", "Product", "Produkt");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Category", "Category", "Warengruppe");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Manufacturer", "Manufacturer", "Hersteller");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Customer", "Customer", "Kunde");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.ExportEntityType.Order", "Order", "Auftrag");
+			builder.AddOrUpdate("Admin.Configuration.Export.CompletedEmailAddresses",
+				"Notification (email addresses)",
+				"Benachrichtigung (E-Mail-Addressen)",
+				"Specifies the email addresses (semicolon separated) where to send a notification message of the completion of the export.",
+				"Legt die E-Mail Addressen (Semikolon getrennt) fest, an die eine Benachrichtigung über die Fertigstellung des Exports verschickt werden soll.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Product", "Product", "Produkt");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Category", "Category", "Warengruppe");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Manufacturer", "Manufacturer", "Hersteller");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Customer", "Customer", "Kunde");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Order", "Order", "Auftrag");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.StoreId",
 				"Store",
@@ -281,6 +323,77 @@ namespace SmartStore.Data.Migrations
 				"Währung",
 				"Specifies the currency to be applied to the export.",
 				"Legt die auf den Export anzuwendende Währung fest.");
+
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.FileSystem", "File system", "Dateisystem");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Email", "Email", "E-Mail");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Http", "HTTP", "HTTP");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Ftp", "FTP", "FTP");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name",
+				"Name",
+				"Name",
+				"Specifies the name of the deployment.",
+				"Legt den Namen der Bereitstellung fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name.Validate",
+				"Please enter the name of the deployment.",
+				"Bitte den Namen der Bereitstellung eingeben.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.IsPublic",
+				"Make public",
+				"Öffentlich machen",
+				"Specifies whether to publish the exported data (e.g. whether they are accessible on the internet).",
+				"Legt fest, ob die exportierten Daten öffentlich gemacht werden sollen (z.B. ob sie über das Internet erreichbar sind).");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.DeploymentType",
+				"Type of deployment",
+				"Typ der Bereitstellung",
+				"Specifies the deployment type.",
+				"Legt den Bereitstellungstyp fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Username",
+				"User name",
+				"Benutzername",
+				"Specifies the user name.",
+				"Legt den Benutzernamen fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Password",
+				"Password",
+				"Passwort",
+				"Specifies the password.",
+				"Legt das Passwort fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Url",
+				"URL",
+				"URL",
+				"Specifies the URL on which the data should be deployed.",
+				"Legt die URL fest, unter der die Daten bereitgestellt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.FileSystemPath",
+				"Relative path",
+				"Relativer Pfad",
+				"Specifies the relative path for the deployed data.",
+				"Legt den relativen Pfad für die bereitgestellten Daten fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAddresses",
+				"Email addresses",
+				"E-Mail-Addressen",
+				"Specifies the email addresses (semicolon separated) where to send the data.",
+				"Legt die E-Mail Addressen (Semikolon getrennt) fest, an die die Daten verschickt werden soll.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailSubject",
+				"Email subject",
+				"E-Mail Betreff",
+				"Specifies the subject of the data should be sent.",
+				"Legt den Betreff der verschickten Daten fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAccountId",
+				"Email account",
+				"E-Mail Konto",
+				"Specifies the email account through which the data should be sent.",
+				"Legt das E-Mail Konto fest, über welches die Daten verschickt werden sollen.");
 		}
     }
 }

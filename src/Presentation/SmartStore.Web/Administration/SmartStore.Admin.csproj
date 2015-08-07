@@ -247,6 +247,7 @@
     <Compile Include="Models\Common\SystemInfoModel.cs" />
     <Compile Include="Models\Common\UrlRecordListModel.cs" />
     <Compile Include="Models\Common\UrlRecordModel.cs" />
+    <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
     <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
@@ -366,6 +367,8 @@
     <Compile Include="Validators\Common\AddressValidator.cs" />
     <Compile Include="Validators\Common\GenericAttributeValidator.cs" />
     <Compile Include="Validators\ContentSlider\ContentSliderValidator.cs" />
+    <Compile Include="Validators\DataExchange\ExportDeplomentValidator.cs" />
+    <Compile Include="Validators\DataExchange\ExportProfileValidator.cs" />
     <Compile Include="Validators\Directory\DeliveryTimeValidator.cs" />
     <Compile Include="Validators\Messages\NewsLetterSubscriptionValidator.cs" />
     <Compile Include="Validators\Orders\CheckoutAttributeValueValidator.cs" />

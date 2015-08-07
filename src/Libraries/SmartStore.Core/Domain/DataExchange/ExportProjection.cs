@@ -8,11 +8,11 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// The language to be applied to the export
 		/// </summary>
-		public int LanguageId { get; set; }
+		public int? LanguageId { get; set; }
 
 		/// <summary>
 		/// The currency to be applied to the export
 		/// </summary>
-		public int CurrencyId { get; set; }
+		public int? CurrencyId { get; set; }
 	}
 }

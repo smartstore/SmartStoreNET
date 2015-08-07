@@ -36,7 +36,7 @@
 			x.Add().Text(T("Common.Filter").Text).Content(TabFilter());
 			x.Add().Text(T("Common.Projection").Text).Content(TabProjection());
 			x.Add().Text(T("Admin.Configuration").Text).Content(TabConfiguration());
-			x.Add().Text(T("Common.Publishing").Text).Content(TabDeployment());
+			x.Add().Text(T("Common.Deployment").Text).Content(TabDeployment());
 
 			EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "export-profile-edit", this.Html, this.Model));
 		})
@@ -466,6 +466,65 @@
 
 @helper TabDeployment()
 {
+	<script type="text/javascript">
+		function onRowDataBound_ExportDeployments(e) {
+			if (!e.dataItem.Enabled) {
+				$(e.row).find('td').wrapInner('<span class="muted" />');
+			}
+		}
+	</script>
+	<div>
+		@(Html.Telerik().Grid<ExportDeploymentModel>(Model.Deployments)
+			.Name("export-deployment-grid")
+			.DataKeys(keys => keys.Add(x => x.Id)
+			.RouteKey("Id"))
+			.Columns(columns =>
+			{
+				columns.Bound(x => x.Name)
+					.Width(400)
+					.Template(x => Html.ActionLink(x.Name, "DeploymentEdit", new { id = x.Id }))
+					.ClientTemplate("<a href=\"DeploymentEdit/<#= Id #>\"><#= Name #></a>");
+				columns.Bound(x => x.DeploymentTypeName);
+				columns.Bound(x => x.Enabled)
+					.Width(100)
+					.Template(item => @Html.SymbolForBool(item.Enabled))
+					.ClientTemplate(@Html.SymbolForBool("Enabled"))
+					.Centered();
+			})
+			.ToolBar(commands =>
+			{
+				commands.Custom()
+					.Name("export-deployment-insert-button")
+					.HtmlAttributes(new { @class = "btn btn-primary" })
+					.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.AddNew"));
+			})
+			.DataBinding(dataBinding => dataBinding.Ajax().Select("DeploymentList", "Export", new { id = Model.Id }))
+			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportDeployments"))
+			.EnableCustomBinding(true))
+	</div>
+	
+	<p></p>
+	
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CreateZipArchive)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CreateZipArchive)
+				@Html.ValidationMessageFor(x => x.CreateZipArchive)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CompletedEmailAddresses, new { @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
+			</td>
+		</tr>
+	</table>
 }
 
 @Html.DeleteConfirmation("export-profile-delete")

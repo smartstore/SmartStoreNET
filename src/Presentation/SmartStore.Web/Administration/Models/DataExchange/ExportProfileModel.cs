@@ -1,14 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Dynamic;
 using System.Web.Mvc;
-using System.Web.Routing;
+using FluentValidation.Attributes;
+using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
+	[Validator(typeof(ExportProfileValidator))]
 	public partial class ExportProfileModel : EntityModelBase
 	{
 		public int StoreCount { get; set; }
@@ -40,12 +41,20 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.PerStore")]
 		public bool PerStore { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Export.CreateZipArchive")]
+		public bool CreateZipArchive { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.CompletedEmailAddresses")]
+		public string CompletedEmailAddresses { get; set; }
+
 		public ProviderModel Provider { get; set; }
 
 		public ExportProductFilterModel ProductFilter { get; set; }
 		public ExportOrderFilterModel OrderFilter { get; set; }
 
 		public ExportProjectionModel Projection { get; set; }
+
+		public List<ExportDeploymentModel> Deployments { get; set; }
 
 
 		public class ProviderModel

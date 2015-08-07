@@ -29,10 +29,8 @@
 			<td>
 				@(Html.Telerik().Grid<ExportProfileModel>()
 					.Name("export-profile-grid")
-					.DataKeys(x =>
-					{
-						x.Add(y => y.Id).RouteKey("Id");
-					})
+					.DataKeys(keys => keys.Add(x => x.Id)
+					.RouteKey("Id"))
 					.Columns(columns =>
 					{
 						columns.Bound(x => x.Provider.ThumbnailUrl)

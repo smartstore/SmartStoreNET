@@ -16,17 +16,20 @@ namespace SmartStore.Services.DataExchange
 		private const int _defaultSchedulingHours = 6;
 
 		private readonly IRepository<ExportProfile> _exportProfileRepository;
+		private readonly IRepository<ExportDeployment> _exportDeploymentRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IProviderManager _providerManager;
 
 		public ExportService(
 			IRepository<ExportProfile> exportProfileRepository,
+			IRepository<ExportDeployment> exportDeploymentRepository,
 			IEventPublisher eventPublisher,
 			IScheduleTaskService scheduleTaskService,
 			IProviderManager providerManager)
 		{
 			_exportProfileRepository = exportProfileRepository;
+			_exportDeploymentRepository = exportDeploymentRepository;
 			_eventPublisher = eventPublisher;
 			_scheduleTaskService = scheduleTaskService;
 			_providerManager = providerManager;
@@ -123,7 +126,12 @@ namespace SmartStore.Services.DataExchange
 			if (id == 0)
 				return null;
 
-			return _exportProfileRepository.GetById(id);
+			var profile = _exportProfileRepository.Table
+				.Expand(x => x.ScheduleTask)
+				.Expand(x => x.Deployments)
+				.FirstOrDefault(x => x.Id == id);
+
+			return profile;
 		}
 
 
@@ -140,6 +148,17 @@ namespace SmartStore.Services.DataExchange
 			var provider = _providerManager.GetProvider<IExportProvider>(systemName, storeId);
 
 			return (provider.IsValid() ? provider : null);
+		}
+
+
+		public virtual void DeleteExportDeployment(ExportDeployment deployment)
+		{
+			if (deployment == null)
+				throw new ArgumentNullException("deployment");
+
+			_exportDeploymentRepository.Delete(deployment);
+
+			_eventPublisher.EntityDeleted(deployment);
 		}
 
 		#endregion

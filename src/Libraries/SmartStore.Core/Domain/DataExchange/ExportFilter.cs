@@ -10,6 +10,11 @@ namespace SmartStore.Core.Domain.DataExchange
 	[Serializable]
 	public class ExportFilter
 	{
+		public ExportFilter()
+		{
+			IsPublished = true;
+		}
+
 		/// <summary>
 		/// Store identifier; 0 to load all records
 		/// </summary>
@@ -50,7 +55,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// A value indicating whether to load only published or non published products
 		/// </summary>
-		public bool? IsPublished { get; set; }
+		public bool IsPublished { get; set; }
 
 		/// <summary>
 		/// Category identifiers

@@ -98,6 +98,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Deployment", "Deployment", "Bereitstellung");
 			builder.AddOrUpdate("Common.Website", "Website", "Web-Seite");
 
+			builder.AddOrUpdate("Admin.Validation.UsernamePassword", "Please enter username and password", "Bitte geben Sie Benutzername und Passwort ein");
+			builder.AddOrUpdate("Admin.Validation.Url",	"Please enter a valid URL",	"Bitte geben Sie eine gültige URL ein");
+			builder.AddOrUpdate("Admin.Validation.Name", "Please enter a name", "Bitte geben Sie einen Namen ein");
+			builder.AddOrUpdate("Admin.Validation.EmailAddress", "Please enter a valid email address", "Bitte geben Sie eine gültige E-Mail Adresse ein");
+
 
 			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName.Validate",
 				"There were no export provider found for system name \"{0}\". A provider is mandatory for an export profile.",
@@ -131,10 +136,6 @@ namespace SmartStore.Data.Migrations
 				"Name des Profils",
 				"Specifies the name of the export profile.",
 				"Legt den Namen des Exportprofils fest.");
-
-			builder.AddOrUpdate("Admin.Configuration.Export.Name.Validate",
-				"Please enter the name of the profile.",
-				"Bitte den Namen des Profils eingeben.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.FileType",
 				"File type",
@@ -325,10 +326,10 @@ namespace SmartStore.Data.Migrations
 				"Legt die auf den Export anzuwendende Währung fest.");
 
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.FileSystem", "File system", "Dateisystem");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Email", "Email", "E-Mail");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Http", "HTTP", "HTTP");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Ftp", "FTP", "FTP");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.FileSystem", "File system", "Dateisystem");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Email", "Email", "E-Mail");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Http", "HTTP", "HTTP");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Ftp", "FTP", "FTP");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name",
@@ -336,10 +337,6 @@ namespace SmartStore.Data.Migrations
 				"Name",
 				"Specifies the name of the deployment.",
 				"Legt den Namen der Bereitstellung fest.");
-
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name.Validate",
-				"Please enter the name of the deployment.",
-				"Bitte den Namen der Bereitstellung eingeben.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.IsPublic",
 				"Make public",
@@ -349,9 +346,9 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.DeploymentType",
 				"Type of deployment",
-				"Typ der Bereitstellung",
+				"Art der Bereitstellung",
 				"Specifies the deployment type.",
-				"Legt den Bereitstellungstyp fest.");
+				"Legt die Art Bereitstellung fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Username",
 				"User name",

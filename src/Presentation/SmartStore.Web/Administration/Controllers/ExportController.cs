@@ -17,10 +17,12 @@ using SmartStore.Services.DataExchange;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
+using SmartStore.Web.Framework.UI;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -38,6 +40,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
+		private readonly IEmailAccountService _emailAccountService;
 
 		public ExportController(
 			ICommonServices services,
@@ -49,7 +52,8 @@ namespace SmartStore.Admin.Controllers
 			IProductTagService productTagService,
 			ICustomerService customerService,
 			ILanguageService languageService,
-			ICurrencyService currencyService)
+			ICurrencyService currencyService,
+			IEmailAccountService emailAccountService)
 		{
 			_services = services;
 			_exportService = exportService;
@@ -61,6 +65,7 @@ namespace SmartStore.Admin.Controllers
 			_customerService = customerService;
 			_languageService = languageService;
 			_currencyService = currencyService;
+			_emailAccountService = emailAccountService;
 		}
 
 		#region Utilities
@@ -75,27 +80,6 @@ namespace SmartStore.Admin.Controllers
 				url = Url.Content(url);
 
 			return url;
-		}
-
-		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment)
-		{
-			var model = new ExportDeploymentModel
-			{
-				Id = deployment.Id,
-				Name = deployment.Name,
-				Enabled = deployment.Enabled,
-				IsPublic = deployment.IsPublic,
-				DeploymentType = deployment.DeploymentType,
-				DeploymentTypeName = T("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType." + deployment.DeploymentType.ToString()),
-				Username = deployment.Username,
-				Password = deployment.Password,
-				Url = deployment.Url,
-				FileSystemPath = deployment.FileSystemPath,
-				EmailAddresses = deployment.EmailAddresses,
-				EmailSubject = deployment.EmailSubject,
-				EmailAccountId = deployment.EmailAccountId
-			};
-			return model;
 		}
 
 		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
@@ -122,7 +106,7 @@ namespace SmartStore.Admin.Controllers
 				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
 
 				model.Provider.EntityType = provider.Value.EntityType;
-				model.Provider.EntityTypeName = T("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType." + provider.Value.EntityType.ToString());
+				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.Provider.FileType = provider.Value.FileType.ToUpper();
 			}
 		}
@@ -254,9 +238,69 @@ namespace SmartStore.Admin.Controllers
 
 				initModelBase(model.OrderFilter);
 			}
+		}
 
-			// deplyoment
-			model.Deployments = profile.Deployments.Select(x => PrepareDeploymentModel(x)).ToList();
+		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment)
+		{
+			var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
+
+			var model = new ExportDeploymentModel
+			{
+				Id = deployment.Id,
+				ProfileId = deployment.ProfileId,
+				Name = deployment.Name,
+				Enabled = deployment.Enabled,
+				IsPublic = deployment.IsPublic,
+				DeploymentType = deployment.DeploymentType,
+				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext),
+				Username = deployment.Username,
+				Password = deployment.Password,
+				Url = deployment.Url,
+				FileSystemPath = deployment.FileSystemPath,
+				EmailAddresses = deployment.EmailAddresses,
+				EmailSubject = deployment.EmailSubject,
+				EmailAccountId = deployment.EmailAccountId
+			};
+
+			model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
+
+			model.AvailableEmailAccounts = allEmailAccounts
+				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
+				.ToList();
+
+			return model;
+		}
+
+		private void ModelToEntity(ExportDeploymentModel model, ExportDeployment deployment)
+		{
+			deployment.ProfileId = model.ProfileId;
+			deployment.Name = model.Name;
+			deployment.Enabled = model.Enabled;
+			deployment.DeploymentType = model.DeploymentType;
+			deployment.IsPublic = model.IsPublic;
+			deployment.Username = model.Username;
+			deployment.Password = model.Password;
+			deployment.Url = model.Url;
+			deployment.FileSystemPath = model.FileSystemPath;
+			deployment.EmailAddresses = model.EmailAddresses;
+			deployment.EmailSubject = model.EmailSubject;
+			deployment.EmailAccountId = model.EmailAccountId;			
+		}
+
+		private ActionResult SmartRedirect(bool continueEditing, int profileId, int deploymentId)
+		{
+			if (!continueEditing)
+			{
+				TempData["SelectedTab.export-profile-edit"] = new SelectedTabInfo
+				{
+					TabId = "export-profile-edit-6",
+					Path = Url.Action("Edit", new { id = profileId })
+				};
+			}
+
+			return (continueEditing ?
+				RedirectToAction("EditDeployment", new { id = deploymentId }) :
+				RedirectToAction("Edit", new { id = profileId }));
 		}
 
 		#endregion
@@ -544,16 +588,132 @@ namespace SmartStore.Admin.Controllers
 				{
 					model.Total = profile.Deployments.Count;
 
-					model.Data = profile.Deployments.Select(x => PrepareDeploymentModel(x)).ToList();
+					model.Data = profile.Deployments.Select(x => 
+					{
+						var deploymentModel = new ExportDeploymentModel
+						{
+							Id = x.Id,
+							ProfileId = profile.Id,
+							Name = x.Name,
+							Enabled = x.Enabled,
+							DeploymentType = x.DeploymentType,
+							DeploymentTypeName = x.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext)
+						};
+						return deploymentModel;
+					}).ToList();
 				}
 			}
 
 			return new JsonResult { Data = model };
 		}
 
-		public ActionResult DeploymentEdit(int id)
+		public ActionResult CreateDeployment(int id)
 		{
-			return null;
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var profile = _exportService.GetExportProfileById(id);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(_services.Localization, _services.WorkContext);
+
+			var model = PrepareDeploymentModel(new ExportDeployment
+			{
+				ProfileId = id,
+				Enabled = true,
+				DeploymentType = ExportDeploymentType.FileSystem,
+				Name = profile.Name
+			});
+
+			return View(model);
+		}
+
+		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[FormValueRequired("save", "save-continue")]
+		public ActionResult CreateDeployment(ExportDeploymentModel model, bool continueEditing, ExportDeploymentType deploymentType)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var profile = _exportService.GetExportProfileById(model.ProfileId);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			if (ModelState.IsValid)
+			{
+				var deployment = new ExportDeployment();
+
+				ModelToEntity(model, deployment);
+
+				profile.Deployments.Add(deployment);
+
+				_exportService.UpdateExportProfile(profile);
+
+				return SmartRedirect(continueEditing, profile.Id, deployment.Id);
+			}
+
+			return CreateDeployment(profile.Id);
+		}
+
+		public ActionResult EditDeployment(int id)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var deployment = _exportService.GetExportDeploymentById(id);
+			if (deployment == null)
+				return RedirectToAction("List");
+
+			var model = PrepareDeploymentModel(deployment);
+
+			return View(model);
+		}
+
+		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[FormValueRequired("save", "save-continue")]
+		public ActionResult EditDeployment(ExportDeploymentModel model, bool continueEditing)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var deployment = _exportService.GetExportDeploymentById(model.Id);
+			if (deployment == null)
+				return RedirectToAction("List");
+
+			if (ModelState.IsValid)
+			{
+				ModelToEntity(model, deployment);
+
+				_exportService.UpdateExportProfile(deployment.Profile);
+
+				NotifySuccess(T("Admin.Common.DataSuccessfullySaved"));
+
+				return SmartRedirect(continueEditing, deployment.ProfileId, deployment.Id);
+			}
+
+			model = PrepareDeploymentModel(deployment);
+
+			return View(model);
+		}
+
+		[HttpPost]
+		public ActionResult DeleteDeployment(int id)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var deployment = _exportService.GetExportDeploymentById(id);
+			if (deployment == null)
+				return RedirectToAction("List");
+
+			int profileId = deployment.ProfileId;
+
+			_exportService.DeleteExportDeployment(deployment);
+
+			NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
+
+			return SmartRedirect(false, profileId, 0);
 		}
 
 		#endregion

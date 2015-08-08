@@ -56,9 +56,15 @@ namespace SmartStore.Services.DataExchange
 		/// <returns>Export provider</returns>
 		Provider<IExportProvider> LoadProvider(string systemName, int storeId = 0);
 
+		/// <summary>
+		/// Get export deployment by identifier
+		/// </summary>
+		/// <param name="id">Export deployment identifier</param>
+		/// <returns>Export deployment</returns>
+		ExportDeployment GetExportDeploymentById(int id);
 
 		/// <summary>
-		/// Deletes an export deployment
+		/// Deleted a export deployment
 		/// </summary>
 		/// <param name="deployment">Export deployment</param>
 		void DeleteExportDeployment(ExportDeployment deployment);

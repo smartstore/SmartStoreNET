@@ -150,6 +150,17 @@ namespace SmartStore.Services.DataExchange
 			return (provider.IsValid() ? provider : null);
 		}
 
+		public virtual ExportDeployment GetExportDeploymentById(int id)
+		{
+			if (id == 0)
+				return null;
+
+			var deployment = _exportDeploymentRepository.Table
+				.Expand(x => x.Profile)
+				.FirstOrDefault(x => x.Id == id);
+
+			return deployment;
+		}
 
 		public virtual void DeleteExportDeployment(ExportDeployment deployment)
 		{

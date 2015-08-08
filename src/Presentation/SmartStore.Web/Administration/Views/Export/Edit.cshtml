@@ -474,17 +474,19 @@
 		}
 	</script>
 	<div>
-		@(Html.Telerik().Grid<ExportDeploymentModel>(Model.Deployments)
+		@(Html.Telerik().Grid<ExportDeploymentModel>()
 			.Name("export-deployment-grid")
 			.DataKeys(keys => keys.Add(x => x.Id)
 			.RouteKey("Id"))
 			.Columns(columns =>
 			{
 				columns.Bound(x => x.Name)
-					.Width(400)
-					.Template(x => Html.ActionLink(x.Name, "DeploymentEdit", new { id = x.Id }))
-					.ClientTemplate("<a href=\"DeploymentEdit/<#= Id #>\"><#= Name #></a>");
-				columns.Bound(x => x.DeploymentTypeName);
+					.Template(x => Html.ActionLink(x.Name, "EditDeployment", "Export", new { id = x.Id }, null))
+					.ClientTemplate("<a href=\"/Admin/Export/EditDeployment/<#= Id #>\"><#= Name #></a>");
+				columns.Bound(x => x.DeploymentTypeName)
+					.Template(x => "<i class='fa {0}'></i>&nbsp;{1}".FormatInvariant(x.DeploymentTypeIconClass, x.DeploymentTypeName))
+					.ClientTemplate("<i class='fa <#= DeploymentTypeIconClass #>'></i>&nbsp;<#= DeploymentTypeName #>")
+					.Width(320);
 				columns.Bound(x => x.Enabled)
 					.Width(100)
 					.Template(item => @Html.SymbolForBool(item.Enabled))
@@ -494,8 +496,8 @@
 			.ToolBar(commands =>
 			{
 				commands.Custom()
-					.Name("export-deployment-insert-button")
-					.HtmlAttributes(new { @class = "btn btn-primary" })
+					.Name("export-deployment-add-button")
+					.HtmlAttributes(new { @class = "btn btn-primary", href = @Url.Action("CreateDeployment", new { id = Model.Id }) })
 					.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.AddNew"));
 			})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("DeploymentList", "Export", new { id = Model.Id }))
@@ -520,7 +522,7 @@
 				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.CompletedEmailAddresses, new { @class = "control-xlarge" })
+				@Html.EditorFor(x => x.CompletedEmailAddresses)
 				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
 			</td>
 		</tr>

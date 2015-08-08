@@ -56,7 +56,6 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public List<ExportDeploymentModel> Deployments { get; set; }
 
-
 		public class ProviderModel
 		{
 			public string ConfigPartialViewName { get; set; }

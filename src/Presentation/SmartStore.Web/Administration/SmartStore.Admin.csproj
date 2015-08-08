@@ -510,6 +510,9 @@
     <Content Include="Views\Export\Create.cshtml" />
     <Content Include="Views\Export\Edit.cshtml" />
     <Content Include="Views\Export\Preview.cshtml" />
+    <Content Include="Views\Export\EditDeployment.cshtml" />
+    <Content Include="Views\Export\CreateDeployment.cshtml" />
+    <Content Include="Views\Export\_CreateOrUpdateDeployment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

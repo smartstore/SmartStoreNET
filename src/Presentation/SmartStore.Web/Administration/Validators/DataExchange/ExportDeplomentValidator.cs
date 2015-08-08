@@ -1,5 +1,6 @@
 ﻿using FluentValidation;
 using SmartStore.Admin.Models.DataExchange;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Services.Localization;
 
 namespace SmartStore.Admin.Validators.DataExchange
@@ -10,7 +11,32 @@ namespace SmartStore.Admin.Validators.DataExchange
 		{
 			RuleFor(x => x.Name)
 				.NotEmpty()
-				.WithMessage(localization.GetResource("Admin.Configuration.Export.Deployment.Name.Validate"));
+				.WithMessage(localization.GetResource("Admin.Validation.Name"));
+
+			RuleFor(x => x.EmailAddresses)
+				.NotEmpty()
+				.When(x => x.DeploymentType == ExportDeploymentType.Email)
+				.WithMessage(localization.GetResource("Admin.Validation.EmailAddress"));
+
+			RuleFor(x => x.Url)
+				.NotEmpty()
+				.When(x => x.DeploymentType == ExportDeploymentType.Http)
+				.WithMessage(localization.GetResource("Admin.Validation.Url"));
+
+			RuleFor(x => x.Url)
+				.Matches(RegularExpressions.IsWebUrl)
+				.When(x => x.DeploymentType == ExportDeploymentType.Http)
+				.WithMessage(localization.GetResource("Admin.Validation.Url"));
+
+			RuleFor(x => x.Username)
+				.NotEmpty()
+				.When(x => x.DeploymentType == ExportDeploymentType.Ftp)
+				.WithMessage(localization.GetResource("Admin.Validation.UsernamePassword"));
+
+			RuleFor(x => x.Password)
+				.NotEmpty()
+				.When(x => x.DeploymentType == ExportDeploymentType.Ftp)
+				.WithMessage(localization.GetResource("Admin.Validation.UsernamePassword"));
 		}
 	}
 }

@@ -10,7 +10,7 @@ namespace SmartStore.Admin.Validators.DataExchange
 		{
 			RuleFor(x => x.Name)
 				.NotEmpty()
-				.WithMessage(localization.GetResource("Admin.Configuration.Export.Name.Validate"));
+				.WithMessage(localization.GetResource("Admin.Validation.Name"));
 		}
 	}
 }

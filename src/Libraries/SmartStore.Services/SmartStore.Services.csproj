@@ -161,6 +161,7 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="DataExchange\ExportExtensions.cs" />
+    <Compile Include="DataExchange\ExportProfileTask.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="DataExchange\ExportService.cs" />

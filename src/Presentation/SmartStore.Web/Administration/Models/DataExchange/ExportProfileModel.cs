@@ -41,11 +41,14 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.PerStore")]
 		public bool PerStore { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Export.CompletedEmailAddresses")]
+		public string CompletedEmailAddresses { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.CreateZipArchive")]
 		public bool CreateZipArchive { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.CompletedEmailAddresses")]
-		public string CompletedEmailAddresses { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Cleanup")]
+		public bool Cleanup { get; set; }
 
 		public ProviderModel Provider { get; set; }
 

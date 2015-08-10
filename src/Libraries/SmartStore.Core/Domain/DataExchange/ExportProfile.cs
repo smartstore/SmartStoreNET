@@ -12,7 +12,9 @@ namespace SmartStore.Core.Domain
 		public ExportProfile()
 		{
 			Limit = 100;
-			BatchSize = 1000;
+			Enabled = true;
+			PerStore = true;
+			Cleanup = true;
 		}
 
 		/// <summary>
@@ -76,14 +78,20 @@ namespace SmartStore.Core.Domain
 		public bool PerStore { get; set; }
 
 		/// <summary>
+		/// Email addresses (semicolon separated) where to send a notification message of the completion of the export
+		/// </summary>
+		public string CompletedEmailAddresses { get; set; }
+
+		/// <summary>
 		/// Whether to combine and compress the export files in a ZIP archive
 		/// </summary>
 		public bool CreateZipArchive { get; set; }
 
 		/// <summary>
-		/// Email addresses (semicolon separated) where to send a notification message of the completion of the export
+		/// Whether to delete unneeded files after deployment
 		/// </summary>
-		public string CompletedEmailAddresses { get; set; }
+		public bool Cleanup { get; set; }
+
 
 		/// <summary>
 		/// The scheduling task

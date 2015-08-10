@@ -127,8 +127,9 @@ namespace SmartStore.Admin.Controllers
 			model.Limit = profile.Limit;
 			model.BatchSize = profile.BatchSize;
 			model.PerStore = profile.PerStore;
-			model.CreateZipArchive = profile.CreateZipArchive;
 			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
+			model.CreateZipArchive = profile.CreateZipArchive;
+			model.Cleanup = profile.Cleanup;
 
 			if (provider != null)
 			{
@@ -240,7 +241,7 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
-		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment)
+		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment, Provider<IExportProvider> provider)
 		{
 			var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
 
@@ -267,6 +268,11 @@ namespace SmartStore.Admin.Controllers
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
 				.ToList();
+
+			if (provider != null)
+			{
+				model.ThumbnailUrl = GetThumbnailUrl(provider);
+			}
 
 			return model;
 		}
@@ -436,8 +442,9 @@ namespace SmartStore.Admin.Controllers
 			profile.Limit = model.Limit;
 			profile.BatchSize = model.BatchSize;
 			profile.PerStore = model.PerStore;
-			profile.CreateZipArchive = model.CreateZipArchive;
 			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
+			profile.CreateZipArchive = model.CreateZipArchive;
+			profile.Cleanup = model.Cleanup;
 
 			if (profile.Name.IsEmpty())
 				profile.Name = provider.Metadata.FriendlyName;
@@ -566,12 +573,23 @@ namespace SmartStore.Admin.Controllers
 				ThumbnailUrl = GetThumbnailUrl(provider)
 			};
 
+			// TODO....
+
 			return View(model);
 		}
 
 		public ActionResult Execute(int id)
 		{
-			return null;
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var profile = _exportService.GetExportProfileById(id);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			var returnUrl = Url.Action("List", "Export", new { area = "admin" });
+
+			return RedirectToAction("RunJob", "ScheduleTask", new { area = "admin", id = profile.SchedulingTaskId, returnUrl = returnUrl });
 		}
 
 		#region Export deployment
@@ -616,6 +634,8 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+
 			var fileSystemName = ExportDeploymentType.FileSystem.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 
 			var model = PrepareDeploymentModel(new ExportDeployment
@@ -624,7 +644,7 @@ namespace SmartStore.Admin.Controllers
 				Enabled = true,
 				DeploymentType = ExportDeploymentType.FileSystem,
 				Name = profile.Name
-			});
+			}, provider);
 
 			return View(model);
 		}
@@ -665,7 +685,9 @@ namespace SmartStore.Admin.Controllers
 			if (deployment == null)
 				return RedirectToAction("List");
 
-			var model = PrepareDeploymentModel(deployment);
+			var provider = _exportService.LoadProvider(deployment.Profile.ProviderSystemName);
+
+			var model = PrepareDeploymentModel(deployment, provider);
 
 			return View(model);
 		}
@@ -692,7 +714,7 @@ namespace SmartStore.Admin.Controllers
 				return SmartRedirect(continueEditing, deployment.ProfileId, deployment.Id);
 			}
 
-			model = PrepareDeploymentModel(deployment);
+			model = PrepareDeploymentModel(deployment, _exportService.LoadProvider(deployment.Profile.ProviderSystemName));
 
 			return View(model);
 		}

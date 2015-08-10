@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
@@ -49,7 +51,7 @@ namespace SmartStore.Services.DataExchange
 				name = systemName;
 
 			var folderName = SeoHelper.GetSeName(name, true, false).ToValidPath();
-			var taskType = "SmartStore.Services.DataExchange.{0}Task.{1}, SmartStore.Services".FormatInvariant(systemName, CommonHelper.GenerateRandomDigitCode(10));
+			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
 
 			var task = new ScheduleTask
 			{
@@ -67,9 +69,10 @@ namespace SmartStore.Services.DataExchange
 			{
 				Name = name,
 				FolderName = folderName,
-				Enabled = true,
 				ProviderSystemName = systemName,
-				SchedulingTaskId = task.Id
+				SchedulingTaskId = task.Id,
+				Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
+				Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
 			};			
 
 			_exportProfileRepository.Insert(profile);

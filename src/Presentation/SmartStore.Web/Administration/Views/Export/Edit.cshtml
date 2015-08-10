@@ -14,7 +14,6 @@
 		<div class="section-header">
 			<div class="title">
 				<img src="@Url.Content(Model.Provider.ThumbnailUrl)" />
-				&nbsp;
 				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 			</div>
 			<div class="options">
@@ -510,6 +509,15 @@
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CompletedEmailAddresses)
+				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.CreateZipArchive)
 			</td>
 			<td class="adminData">
@@ -519,11 +527,11 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
+				@Html.SmartLabelFor(x => x.Cleanup)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.CompletedEmailAddresses)
-				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
+				@Html.EditorFor(x => x.Cleanup)
+				@Html.ValidationMessageFor(x => x.Cleanup)
 			</td>
 		</tr>
 	</table>

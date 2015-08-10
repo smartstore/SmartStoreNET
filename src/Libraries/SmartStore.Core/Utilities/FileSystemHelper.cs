@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading;
 
 namespace SmartStore.Utilities
@@ -144,7 +146,9 @@ namespace SmartStore.Utilities
 		/// Safe way to delete all directory content
 		/// </summary>
 		/// <param name="directoryPath">A directory path</param>
-		public static void ClearDirectory(string directoryPath, bool selfToo)
+		/// <param name="selfToo">Delete directoryPath too</param>
+		/// <param name="exceptFileNames">Name of files not to be deleted</param>
+		public static void ClearDirectory(string directoryPath, bool selfToo, List<string> exceptFileNames = null)
 		{
 			if (directoryPath.IsEmpty())
 				return;
@@ -155,6 +159,9 @@ namespace SmartStore.Utilities
 
 				foreach (var fi in dir.GetFiles())
 				{
+					if (exceptFileNames != null && exceptFileNames.Any(x => x.IsCaseInsensitiveEqual(fi.Name)))
+						continue;
+
 					try
 					{
 						fi.IsReadOnly = false;

@@ -21,6 +21,6 @@ namespace SmartStore.Services.DataExchange
 		bool RequiresConfiguration(out string partialViewName, out Type modelType);
 
 		// TODO: a more complex result type is required. e.g. IEnumerable<ExportSegment>....
-		MemoryStream Execute(ExportProfile profile);
+		void Execute(ExportExecuteContext context);
 	}
 }

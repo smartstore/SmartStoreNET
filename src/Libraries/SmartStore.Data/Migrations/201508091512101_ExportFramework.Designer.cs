@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201508070937542_ExportFramework"; }
+            get { return "201508091512101_ExportFramework"; }
         }
         
         string IMigrationMetadata.Source

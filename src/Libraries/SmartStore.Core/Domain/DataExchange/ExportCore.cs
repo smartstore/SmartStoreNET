@@ -19,4 +19,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		Http,
 		Ftp
 	}
+
+	public class ExportExecuteContext
+	{
+	}
 }

@@ -333,9 +333,9 @@
     <Compile Include="Migrations\201507250039446_Merge2.Designer.cs">
       <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508070937542_ExportFramework.cs" />
-    <Compile Include="Migrations\201508070937542_ExportFramework.Designer.cs">
-      <DependentUpon>201508070937542_ExportFramework.cs</DependentUpon>
+    <Compile Include="Migrations\201508091512101_ExportFramework.cs" />
+    <Compile Include="Migrations\201508091512101_ExportFramework.Designer.cs">
+      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
@@ -634,8 +634,8 @@
     <EmbeddedResource Include="Migrations\201507250039446_Merge2.resx">
       <DependentUpon>201507250039446_Merge2.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508070937542_ExportFramework.resx">
-      <DependentUpon>201508070937542_ExportFramework.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508091512101_ExportFramework.resx">
+      <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

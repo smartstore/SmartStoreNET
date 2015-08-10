@@ -48,8 +48,9 @@ namespace SmartStore.Data.Migrations
                         Limit = c.Int(nullable: false),
                         BatchSize = c.Int(nullable: false),
                         PerStore = c.Boolean(nullable: false),
-                        CreateZipArchive = c.Boolean(nullable: false),
                         CompletedEmailAddresses = c.String(maxLength: 400),
+                        CreateZipArchive = c.Boolean(nullable: false),
+                        Cleanup = c.Boolean(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ScheduleTask", t => t.SchedulingTaskId)
@@ -99,7 +100,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Website", "Website", "Web-Seite");
 
 			builder.AddOrUpdate("Admin.Validation.UsernamePassword", "Please enter username and password", "Bitte geben Sie Benutzername und Passwort ein");
-			builder.AddOrUpdate("Admin.Validation.Url",	"Please enter a valid URL",	"Bitte geben Sie eine gültige URL ein");
+			builder.AddOrUpdate("Admin.Validation.Url", "Please enter a valid URL", "Bitte geben Sie eine gültige URL ein");
 			builder.AddOrUpdate("Admin.Validation.Name", "Please enter a name", "Bitte geben Sie einen Namen ein");
 			builder.AddOrUpdate("Admin.Validation.EmailAddress", "Please enter a valid email address", "Bitte geben Sie eine gültige E-Mail Adresse ein");
 
@@ -177,8 +178,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.PerStore",
 				"Per store",
 				"Per Shop",
-				"Specifies whether to start a separate run-through for each store.",
-				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll.");
+				"Specifies whether to start a separate run-through for each store. The data are thus divided into separate folders and files.",
+				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll. Die Daten werden dadurch in separate Ordner und Dateien aufgeteilt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.CreateZipArchive",
 				"Create ZIP archive",
@@ -191,6 +192,12 @@ namespace SmartStore.Data.Migrations
 				"Benachrichtigung (E-Mail-Addressen)",
 				"Specifies the email addresses (semicolon separated) where to send a notification message of the completion of the export.",
 				"Legt die E-Mail Addressen (Semikolon getrennt) fest, an die eine Benachrichtigung über die Fertigstellung des Exports verschickt werden soll.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Cleanup",
+				"Clean up at the end",
+				"Zum Schluss aufräumen",
+				"Specifies whether to delete unneeded files after deployment.",
+				"Legt fest, ob nicht mehr benötigte Dateien nach der Bereitstellung gelöscht werden sollen.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Product", "Product", "Produkt");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Category", "Category", "Warengruppe");

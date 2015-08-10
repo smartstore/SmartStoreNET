@@ -10,6 +10,7 @@
 {
 	<div class="section-header">
 		<div class="title">
+			<img src="@Url.Content(Model.ThumbnailUrl)" />
 			@title @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.ProfileId })
 		</div>
 		<div class="options">

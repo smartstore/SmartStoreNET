@@ -36,22 +36,14 @@
 						columns.Bound(x => x.Provider.ThumbnailUrl)
 							.Width(70)
 							.Centered()
-							.Template(
-								@<text>
-									<img alt="@item.Id" src="@item.Provider.ThumbnailUrl" />
-								</text>
-							)
 							.ClientTemplate("<img alt='<#= Id #>' src='<#= Provider.ThumbnailUrl #>' />");
 						columns.Bound(x => x.Name)
 							.Width(400)
-							.Template(x => Html.ActionLink(x.Name, "Edit", new { id = x.Id }))
 							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
 						columns.Bound(x => x.Provider.SystemName)
-							.Template(x => "{0} ({1})".FormatInvariant(x.Provider.FriendlyName, x.Provider.SystemName))
 							.ClientTemplate("<#= Provider.FriendlyName #> <span class='muted'>(<#= Provider.SystemName #>)</span>");
 						columns.Bound(x => x.Enabled)
 							.Width(100)
-							.Template(item => @Html.SymbolForBool(item.Enabled))
 							.ClientTemplate(@Html.SymbolForBool("Enabled"))
 							.Centered();
 						columns.Bound(x => x.Provider.EntityTypeName);
@@ -60,6 +52,9 @@
 						columns.Bound(x => x.SchedulingHours)
 							.Centered();
 						columns.Bound(x => x.LastExecution)
+							.ClientTemplate(
+								"<!-- TODO --><a href='" + @Url.Action("Execute", new { id = "<#= Id #>" }) + "' class='btn btn-primary <#= (Enabled ? '' : 'hide') #>'>Execute</a>"
+							)
 							.ReadOnly();
 					})
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Export"))

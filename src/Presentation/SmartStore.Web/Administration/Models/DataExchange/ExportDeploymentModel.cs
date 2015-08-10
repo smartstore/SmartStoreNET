@@ -14,6 +14,9 @@ namespace SmartStore.Admin.Models.DataExchange
 	{
 		public int ProfileId { get; set; }
 
+		[SmartResourceDisplayName("Common.Image")]
+		public string ThumbnailUrl { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Name")]
 		public string Name { get; set; }
 

@@ -44,8 +44,6 @@ namespace SmartStore.Web.Controllers
 			var prevTaskStart = DateTime.UtcNow;
 			var count = 0;
 
-			return new HttpStatusCodeResult(System.Net.HttpStatusCode.Unauthorized, "YOOO, this is not authorized dude. WTF?!");
-
             foreach (var task in pendingTasks)
             {
 				var elapsedSincePrevTask = DateTime.UtcNow - prevTaskStart;

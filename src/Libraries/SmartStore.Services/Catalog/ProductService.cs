@@ -578,7 +578,7 @@ namespace SmartStore.Services.Catalog
 				pWithoutManufacturers.DbType = DbType.Boolean;
 
 				var pIsPublished = _dataProvider.GetParameter();
-				pIsPublished.ParameterName = "OverridePublished";
+				pIsPublished.ParameterName = "IsPublished";
 				pIsPublished.Value = (ctx.IsPublished.HasValue ? (object)ctx.IsPublished.Value : DBNull.Value);
 				pIsPublished.DbType = DbType.Boolean;
 

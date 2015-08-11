@@ -48,12 +48,10 @@ namespace SmartStore.Core
         /// <param name="totalCount">Total count</param>
         public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
-            // codehint: sm-edit
             Guard.ArgumentNotNull(source, "source");
             Init(source, pageIndex, pageSize, totalCount);
         }
 
-        // codehint: sm-add
         private void Init(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
             Guard.PagingArgsValid(pageIndex, pageSize,"pageIndex", "pageSize");

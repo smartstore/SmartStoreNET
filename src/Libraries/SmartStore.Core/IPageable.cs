@@ -3,8 +3,6 @@ using System.Runtime.Serialization;
 using System.Collections;
 using System.Collections.Generic;
 
-// codehint: sm-add (new file)
-
 namespace SmartStore.Core
 {
     

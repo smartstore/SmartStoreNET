@@ -152,7 +152,7 @@
 	    loader: null,
 	    preloads: null,
 	    thumbsWrapper: null,
-	    box: null,
+	    box: null, // (blueImp) image gallery element
 	    	
 	    imageWrapperWidth: 0,
 	    imageWrapperHeight: 0,
@@ -209,6 +209,12 @@
 		    }
 
 		    self.imageWrapper.find('.sg-image').remove();
+
+		    $('.smartgallery-overlay').remove();
+		    if (self.box) {
+		    	self.box.remove();
+		    }
+		    self.box = null;
 		},
 
 		loading: function(value) {
@@ -410,7 +416,6 @@
 		
 		initBox: function() {
 			var self = this;
-			var gov;
 
 			var getWidget = function (id) {
 				var widget = $('#' + id);
@@ -425,6 +430,8 @@
 					.append('<a class="close">' + String.fromCharCode(215) + '</a>')
 					.append('<ol class="indicator"></ol>');
 				widget.appendTo('body');
+
+				self.box = widget;
 
 				var prevY = null;
 
@@ -453,6 +460,14 @@
 				return widget;
 			};
 
+			var getOverlay = function (widget) {
+				var gov = $('.smartgallery-overlay');
+				if (gov.length == 0) {
+					gov = $('<div class="smartgallery-overlay" style="display: none"></div>').insertBefore(widget[0]);
+				}
+				return gov;
+			};
+
 			if (this.options.displayImage) {
 				// Global click handler to open links with data-gallery attribute
 				// in the Gallery lightbox:
@@ -464,13 +479,10 @@
 						container = (widget.length && widget) || $(Gallery.prototype.options.container),
 						callbacks = {
 							onopen: function () {
-								if (!gov || (gov = $('.smartgallery-overlay')).length == 0) {
-									gov = $('<div class="smartgallery-overlay" style="display: none"></div>').insertBefore(widget[0]);
-									gov.on('click', function (e) {
-										widget.data('gallery').close();
-									});
-								}
-
+								var gov = getOverlay(widget);
+								gov.on('click', function (e) {
+									widget.data('gallery').close();
+								});
 								gov.show().addClass("in");
 								container.data('gallery', this).trigger('open');
 						    },
@@ -487,11 +499,11 @@
 						        container.trigger('slidecomplete', arguments);
 						    },
 						    onclose: function () {
-						    	gov.removeClass("in");
+						    	getOverlay(widget).removeClass("in");
 						    	container.trigger('close');
 						    },
 						    onclosed: function () {
-						    	gov.css('display', 'none');
+						    	getOverlay(widget).css('display', 'none');
 						        container.trigger('closed').removeData('gallery');
 						    }
 						},

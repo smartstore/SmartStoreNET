@@ -965,10 +965,13 @@ namespace SmartStore.Web.Controllers
 				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
 				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
 			};
+
 			var products = _compareProductsService.GetComparedProducts();
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
+
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true)
 				.ToList()
 				.ForEach(model.Products.Add);
+
 			return View(model);
 		}
 
@@ -1012,7 +1015,9 @@ namespace SmartStore.Web.Controllers
 				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
 				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
 			};
+
 			var products = _compareProductsService.GetComparedProducts();
+
 			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
 				.ToList()
 				.ForEach(model.Products.Add);

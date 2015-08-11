@@ -991,7 +991,8 @@ namespace SmartStore.Web.Controllers
 			bool forceRedirectionAfterAddingToCart = false, 
 			bool prepareColorAttributes = false,
 			bool prepareManufacturers = false,
-            bool isCompact = false)
+            bool isCompact = false,
+			bool prepareFullDescription = false)
 		{
 			if (products == null)
 				throw new ArgumentNullException("products");
@@ -1034,6 +1035,11 @@ namespace SmartStore.Web.Controllers
 					ShortDescription = product.GetLocalized(x => x.ShortDescription),
 					SeName = product.GetSeName()
 				};
+
+				if (prepareFullDescription)
+				{
+					model.FullDescription = product.GetLocalized(x => x.FullDescription);
+				}
 
 				// price
 				if (preparePriceModel)

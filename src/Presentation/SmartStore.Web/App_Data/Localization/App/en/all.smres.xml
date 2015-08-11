@@ -1528,7 +1528,7 @@
 		<Value>Published</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.Published.Hint">
-		<Value>Check to publish this category (visible in store). Uncheck to unpublish (category not available in store).</Value>
+		<Value>Check the box to publish this category (visible in store). Uncheck to unpublish (category not available in store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.SeName">
 		<Value>URL alias</Value>
@@ -1540,7 +1540,7 @@
 		<Value>Show on home page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.ShowOnHomePage.Hint">
-		<Value>Check if you want to show a category on home page.</Value>
+		<Value>Check the box if you want to show a category on home page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Categories.Fields.SubjectToAcl">
 		<Value>Subject to ACL</Value>
@@ -1708,7 +1708,7 @@
 		<Value>Published</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.Published.Hint">
-		<Value>Check to publish this manufacturer (visible in store). Uncheck to unpublish (manufacturer not available in store).</Value>
+		<Value>Check the box to publish this manufacturer (visible in store). Uncheck to unpublish (manufacturer not available in store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Manufacturers.Fields.SeName">
 		<Value>URL alias</Value>
@@ -2021,7 +2021,7 @@
 		<Value>Copy images</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Copy.CopyImages.Hint">
-		<Value>Check to copy the images.</Value>
+		<Value>Check the box the box to copy the images.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Copy.Name">
 		<Value>New product name</Value>
@@ -2093,7 +2093,7 @@
 		<Value>Allow customer reviews</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AllowCustomerReviews.Hint">
-		<Value>Check to allow customers to review this product.</Value>
+		<Value>Check the box to allow customers to review this product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AllowedQuantities">
 		<Value>Allowed quantities</Value>
@@ -2111,7 +2111,7 @@
 		<Value>Automatically add these products to the cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AutomaticallyAddRequiredProducts.Hint">
-		<Value>Check to automatically add these products to the cart.</Value>
+		<Value>Check the box to automatically add these products to the cart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AvailableEndDateTime">
 		<Value>Available end date</Value>
@@ -2123,7 +2123,7 @@
 		<Value>Available for pre-order</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AvailableForPreOrder.Hint">
-		<Value>Check if this item is available for Pre-Order. It also displays "Pre-order" button instead of "Add to cart".</Value>
+		<Value>Check the box if this item is available for Pre-Order. It also displays "Pre-order" button instead of "Add to cart".</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.AvailableStartDateTime">
 		<Value>Available start date</Value>
@@ -2198,7 +2198,7 @@
 		<Value>Call for price</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.CallForPrice.Hint">
-		<Value>Check to show "Call for Pricing" or "Call for quote" instead of price.</Value>
+		<Value>Check the box to show "Call for Pricing" or "Call for quote" instead of price.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.CustomerEntersPrice">
 		<Value>Customer enters price</Value>
@@ -2216,25 +2216,25 @@
 		<Value>Disable buy button</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisableBuyButton.Hint">
-		<Value>Check to disable the buy button for this product. This may be necessary for products that are "available upon request".</Value>
+		<Value>Check the box to disable the buy button for this product. This may be necessary for products that are "available upon request".</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisableWishlistButton">
 		<Value>Disable wishlist button</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisableWishlistButton.Hint">
-		<Value>Check to disable the wishlist button for this product.</Value>
+		<Value>Check the box to disable the wishlist button for this product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisplayStockAvailability">
 		<Value>Display stock availability</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisplayStockAvailability.Hint">
-		<Value>Check to display stock availability. When enabled, customers will see stock availability.</Value>
+		<Value>Check the box to display stock availability. When enabled, customers will see stock availability.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisplayStockQuantity">
 		<Value>Display stock quantity</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.DisplayStockQuantity.Hint">
-		<Value>Check to display stock quantity. When enabled, customers will see stock quantity.</Value>
+		<Value>Check the box to display stock quantity. When enabled, customers will see stock quantity.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Download">
 		<Value>Download file</Value>
@@ -2276,13 +2276,13 @@
 		<Value>Has sample download file</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.HasSampleDownload.Hint">
-		<Value>Check if this product has a sample download file that can be downloaded before checkout.</Value>
+		<Value>Check the box if this product has a sample download file that can be downloaded before checkout.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.HasUserAgreement">
 		<Value>Has user agreement</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.HasUserAgreement.Hint">
-		<Value>Check if the product has a user agreement.</Value>
+		<Value>Check the box if the product has a user agreement.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Height">
 		<Value>Height</Value>
@@ -2300,7 +2300,7 @@
 		<Value>Downloadable product</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsDownload.Hint">
-		<Value>Check if this product variant is a downloadable product. When a customer purchases a download product, they can download the item direct from your store by viewing their completed order.</Value>
+		<Value>Check the box if this product variant is a downloadable product. When a customer purchases a download product, they can download the item direct from your store by viewing their completed order.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsEsd">
 		<Value>Is Electronic Service</Value>
@@ -2312,19 +2312,19 @@
 		<Value>Free shipping</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsFreeShipping.Hint">
-		<Value>Check if this product comes with FREE shipping.</Value>
+		<Value>Check the box if this product comes with FREE shipping.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsGiftCard">
 		<Value>Is gift card</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsGiftCard.Hint">
-		<Value>Check if it is a gift card.</Value>
+		<Value>Check the box if this product is a gift card.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsRecurring">
 		<Value>Recurring product</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsRecurring.Hint">
-		<Value>Check if this product is a recurring product.</Value>
+		<Value>Check the box if this product is a recurring product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.IsShipEnabled">
 		<Value>Shipping enabled</Value>
@@ -2480,7 +2480,7 @@
 		<Value>Published</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Published.Hint">
-		<Value>Check to publish this product (visible in store). Uncheck to unpublish (product not available in store).</Value>
+		<Value>Check the box to publish this product (visible in store). Uncheck to unpublish (product not available in store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.QuantityUnit">
 		<Value>Quantity unit</Value>
@@ -2513,7 +2513,7 @@
 		<Value>Require other products are added to the cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.RequireOtherProducts.Hint">
-		<Value>Check if this product requires that other products are added to the cart.</Value>
+		<Value>Check the box if this product requires that other products are added to the cart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.SampleDownload">
 		<Value>Sample download file</Value>
@@ -2537,7 +2537,7 @@
 		<Value>Show on home page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.ShowOnHomePage.Hint">
-		<Value>Check to display this product on your store's home page. Recommended for your most popular products.</Value>
+		<Value>Check the box to display this product on your store's home page. Recommended for your most popular products.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Sku">
 		<Value>SKU</Value>
@@ -2597,7 +2597,7 @@
 		<Value>Visible individually</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.VisibleIndividually.Hint">
-		<Value>Check it if you want this product to be visible in catalog or search results. You can use this field (just uncheck) to hide associated products from catalog and make them accessible only from a parent "grouped" product details page.</Value>
+		<Value>Check the box it if you want this product to be visible in catalog or search results. You can use this field (just uncheck) to hide associated products from catalog and make them accessible only from a parent "grouped" product details page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.Fields.Weight">
 		<Value>Weight</Value>
@@ -2777,7 +2777,7 @@
 		<Value>Pictures</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Pictures.Hint">
-		<Value>Check the images that shows this attribute combination</Value>
+		<Value>Check the box of the images that show this attribute combination</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.Fields.Sku">
 		<Value>#</Value>
@@ -2951,7 +2951,7 @@
 		<Value>Show on product page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.SpecificationAttributes.Fields.ShowOnProductPage.Hint">
-		<Value>Check to display the attribute in the public product detail page</Value>
+		<Value>Check the box to display the attribute in the public product detail page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Catalog.Products.SpecificationAttributes.Fields.SpecificationAttribute">
 		<Value>Attribute</Value>
@@ -3992,7 +3992,7 @@
 		<Value>SSL</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.Fields.EnableSsl.Hint">
-		<Value>Check to use Secure Sockets Layer (SSL) to encrypt the SMTP connection.</Value>
+		<Value>Check the box to use Secure Sockets Layer (SSL) to encrypt the SMTP connection.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.Fields.Host">
 		<Value>Host</Value>
@@ -4031,7 +4031,7 @@
 		<Value>Use default credentials</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.Fields.UseDefaultCredentials.Hint">
-		<Value>Check to use default credentials for the connection</Value>
+		<Value>Check the box to use default credentials for the connection</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.EmailAccounts.Fields.Username">
 		<Value>User</Value>
@@ -4127,7 +4127,7 @@
 		<Value>Right-to-left</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.Fields.Rtl.Hint">
-		<Value>Check to enable right-to-left support for this language. The active theme should support RTL (have appropriate CSS style file). And it affects only public store.</Value>
+		<Value>Check the box to enable right-to-left support for this language. The active theme should support RTL (have appropriate CSS style file). And it affects only public store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Languages.Fields.UniqueSeoCode">
 		<Value>Unique SEO code</Value>
@@ -4520,19 +4520,19 @@
 		<Value>Allow not registered users to leave comments</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.AllowNotRegisteredUsersToLeaveComments.Hint">
-		<Value>Check to allow not registered users to leave comments.</Value>
+		<Value>Check the box to allow not registered users to leave comments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.Enabled">
 		<Value>Blog enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.Enabled.Hint">
-		<Value>Check to enable the blog in your store.</Value>
+		<Value>Check the box to enable the blog in your store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.NotifyAboutNewBlogComments">
 		<Value>Notify about new blog comments</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.NotifyAboutNewBlogComments.Hint">
-		<Value>Check to notify store owner about new blog comments.</Value>
+		<Value>Check the box to notify store owner about new blog comments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.NumberOfTags">
 		<Value>Number of tags (cloud)</Value>
@@ -4550,7 +4550,7 @@
 		<Value>Display blog RSS feed link in the browser address bar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Blog.ShowHeaderRSSUrl.Hint">
-		<Value>Check to enable the blog RSS feed link in customers browser address bar</Value>
+		<Value>Check the box to enable the blog RSS feed link in customers browser address bar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog">
 		<Value>Catalog settings</Value>
@@ -4559,31 +4559,31 @@
 		<Value>Allow anonymous users to email a friend</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToEmailAFriend.Hint">
-		<Value>Check if you want to allow anonymous users to email a friend.</Value>
+		<Value>Check the box if you want to allow anonymous users to email a friend.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToReviewProduct">
 		<Value>Allow anonymous users to write product reviews</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowAnonymousUsersToReviewProduct.Hint">
-		<Value>Check to allow anonymous users to write product reviews.</Value>
+		<Value>Check the box to allow anonymous users to write product reviews.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductSorting">
 		<Value>Allow product sorting</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductSorting.Hint">
-		<Value>Check to enable product sorting option on category/manufacturer details page.</Value>
+		<Value>Check the box to enable product sorting option on category/manufacturer details page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging">
 		<Value>Allow view mode changing</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging.Hint">
-		<Value>Check to enable the option to change view mode on category/manufacturer details page.</Value>
+		<Value>Check the box to enable the option to change view mode on category/manufacturer details page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AskQuestionEnabled">
 		<Value>'Ask question' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.AskQuestionEnabled.Hint">
-		<Value>Check to allow customers to send an inquiry concerning a product</Value>
+		<Value>Check the box to allow customers to send an inquiry concerning a product</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.BundleItemShowBasePrice">
 		<Value>Base price for bundle items</Value>
@@ -4595,13 +4595,13 @@
 		<Value>Category breadcrumb enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.CategoryBreadcrumbEnabled.Hint">
-		<Value>Check to show category breadcrumb.</Value>
+		<Value>Check the box the box to show category breadcrumb.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.CompareProductsEnabled">
 		<Value>'Compare Products' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.CompareProductsEnabled.Hint">
-		<Value>Check to allow customers to use the 'Compare Products' option in your store</Value>
+		<Value>Check the box to allow customers to use the 'Compare Products' option in your store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.DefaultPageSizeOptions">
 		<Value>Amount of displayed products per page</Value>
@@ -4631,13 +4631,13 @@
 		<Value>'Email a friend' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.EmailAFriendEnabled.Hint">
-		<Value>Check to allow customers to use the 'Email a friend' option in your store</Value>
+		<Value>Check the box to allow customers to use the 'Email a friend' option in your store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate">
 		<Value>Enable dynamic price update</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.EnableDynamicPriceUpdate.Hint">
-		<Value>Check if you want to enable dynamic price update on product details page in case a product has product attributes with price adjustments.</Value>
+		<Value>Check the box if you want to enable dynamic price update on product details page in case a product has product attributes with price adjustments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.EnableHtmlTextCollapser">
 		<Value>Truncate long texts</Value>
@@ -4661,7 +4661,7 @@
 		<Value>Hide buy-button in product lists</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HideBuyButtonInLists.Hint">
-		<Value>Check to hide the buy-button in product lists.</Value>
+		<Value>Check the box to hide the buy-button in product lists.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.HtmlTextCollapsedHeight">
 		<Value>Height of truncated long text</Value>
@@ -4673,13 +4673,13 @@
 		<Value>Ignore discounts (sitewide)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IgnoreDiscounts.Hint">
-		<Value>Check to ignore discounts (sitewide). It can significantly improve performance.</Value>
+		<Value>Check the box to ignore discounts (sitewide). It can significantly improve performance.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts">
 		<Value>Ignore featured products (sitewide)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IgnoreFeaturedProducts.Hint">
-		<Value>Check to ignore featured products (sitewide). It can significantly improve performance.</Value>
+		<Value>Check the box to ignore featured products (sitewide). It can significantly improve performance.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeFeaturedProductsInNormalLists">
 		<Value>Show featured products in lists</Value>
@@ -4691,13 +4691,13 @@
 		<Value>Include full description in compare products</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeFullDescriptionInCompareProducts.Hint">
-		<Value>Check to display product full description on the compare products page.</Value>
+		<Value>Check the box to display product full description on the compare products page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts">
 		<Value>Include short description in compare products</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.IncludeShortDescriptionInCompareProducts.Hint">
-		<Value>Check to display product short description on the compare products page.</Value>
+		<Value>Check the box to display product short description on the compare products page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.LabelAsNewForMaxDays">
 		<Value>Label product as "new" for max. [x] days</Value>
@@ -4724,7 +4724,7 @@
 		<Value>Notify about new product reviews</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.NotifyStoreOwnerAboutNewProductReviews.Hint">
-		<Value>Check to notify store owner about new product reviews.</Value>
+		<Value>Check the box to notify store owner about new product reviews.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.NumberOfBestsellersOnHomepage">
 		<Value>Number of best sellers on home page</Value>
@@ -4748,13 +4748,13 @@
 		<Value>Product reviews must be approved</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductReviewsMustBeApproved.Hint">
-		<Value>Check if product reviews must be approved by administrator.</Value>
+		<Value>Check the box if product reviews must be approved by administrator.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedEnabled">
 		<Value>'Products also purchased' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedEnabled.Hint">
-		<Value>Check to allow customers to view a list of products purchased by other customers who purchased the above</Value>
+		<Value>Check the box to allow customers to view a list of products purchased by other customers who purchased the above</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductsAlsoPurchasedNumber">
 		<Value>Number of also purchased products to display</Value>
@@ -4790,7 +4790,7 @@
 		<Value>Search autocomplete enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteEnabled.Hint">
-		<Value>Check to enabled autocomplete in the search box.</Value>
+		<Value>Check the box to enabled autocomplete in the search box.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ProductSearchAutoCompleteNumberOfProducts">
 		<Value>Number of 'autocomplete' products to display</Value>
@@ -4823,7 +4823,7 @@
 		<Value>'Recently added products' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.RecentlyAddedProductsEnabled.Hint">
-		<Value>Check to allow customers to use the 'Recently added products' feature in your store</Value>
+		<Value>Check the box to allow customers to use the 'Recently added products' feature in your store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.RecentlyAddedProductsNumber">
 		<Value>Number of 'Recently added products'</Value>
@@ -4847,7 +4847,7 @@
 		<Value>'Recently viewed products' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.RecentlyViewedProductsEnabled.Hint">
-		<Value>Check to allow customers to use the 'Recently viewed products' feature in your store</Value>
+		<Value>Check the box to allow customers to use the 'Recently viewed products' feature in your store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.RecentlyViewedProductsNumber">
 		<Value>Number of 'Recently viewed products'</Value>
@@ -4871,19 +4871,19 @@
 		<Value>Show best sellers on home page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowBestsellersOnHomepage.Hint">
-		<Value>Check to show best sellers on home page.</Value>
+		<Value>Check the box to show best sellers on home page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowCategoryProductNumber">
 		<Value>Show the number of distinct products besides each category</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowCategoryProductNumber.Hint">
-		<Value>Check to show the number of products besides each category (category navigation block).</Value>
+		<Value>Check the box to show the number of products besides each category (category navigation block).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowCategoryProductNumberIncludingSubcategories">
 		<Value>Include subcategories (number of distinct products)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowCategoryProductNumberIncludingSubcategories.Hint">
-		<Value>Check to including when showing the number of products besides each category.</Value>
+		<Value>Check the box to include subcategories when showing the number of products besides each category.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowColorSquaresInLists">
 		<Value>Show color squares in product lists</Value>
@@ -4913,7 +4913,7 @@
 		<Value>Display dimensions</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDimensions.Hint">
-		<Value>Check to display dimensions. When enabled, customers will see the dimensions of the product.</Value>
+		<Value>Check the box to display dimensions. When enabled, customers will see the dimensions of the product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowDiscountSign">
 		<Value>Show discount sign</Value>
@@ -4925,7 +4925,7 @@
 		<Value>Show GTIN</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowGtin.Hint">
-		<Value>Check to show GTIN in public store.</Value>
+		<Value>Check the box to show GTIN in public store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowLinkedAttributeValueImage">
 		<Value>Show image of linked product</Value>
@@ -4943,7 +4943,7 @@
 		<Value>Show manufacturer part number</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPartNumber.Hint">
-		<Value>Check to show manufacturer part numbers in public store.</Value>
+		<Value>Check the box to show manufacturer part numbers in public store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures">
 		<Value>Show manufacturer pictures on homepage</Value>
@@ -4979,19 +4979,19 @@
 		<Value>Include products from subcategories</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductsFromSubcategories.Hint">
-		<Value>Check if you want a category details page to include products from subcategories.</Value>
+		<Value>Check the box if you want a category details page to include products from subcategories.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductSku">
 		<Value>Show SKU</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductSku.Hint">
-		<Value>Check to show product SKU in public store.</Value>
+		<Value>Check the box to show product SKU in public store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowShareButton">
 		<Value>Show a share button</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowShareButton.Hint">
-		<Value>Check to show share button on product details page.</Value>
+		<Value>Check the box to show share button on product details page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowVariantCombinationPriceAdjustment">
 		<Value>Show variant combination price adjustments</Value>
@@ -5003,7 +5003,7 @@
 		<Value>Display weight</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowWeight.Hint">
-		<Value>Check to display the weight. When enabled, customers will see the weight of the product.</Value>
+		<Value>Check the box to display the weight. When enabled, customers will see the weight of the product.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SubCategoryDisplayType">
 		<Value>Show subcategories</Value>
@@ -5015,7 +5015,7 @@
 		<Value>Suppress SKU search</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SuppressSkuSearch.Hint">
-		<Value>Check to disable the searching of product SKUs. This setting can increase the performance of searching.</Value>
+		<Value>Check the box to disable the searching of product SKUs. This setting can increase the performance of searching.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.UserSettings">
 		<Value>Customers</Value>
@@ -5036,7 +5036,7 @@
 		<Value>'City' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CityRequired.Hint">
-		<Value>Check if 'City' is required.</Value>
+		<Value>Check the box if 'City' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyEnabled">
 		<Value>'Company' enabled</Value>
@@ -5048,7 +5048,7 @@
 		<Value>'Company' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CompanyRequired.Hint">
-		<Value>Check if 'Company' is required.</Value>
+		<Value>Check the box if 'Company' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.CountryEnabled">
 		<Value>'Country' enabled</Value>
@@ -5069,7 +5069,7 @@
 		<Value>'Fax number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.FaxRequired.Hint">
-		<Value>Check if 'Fax number' is required.</Value>
+		<Value>Check the box if 'Fax number' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneEnabled">
 		<Value>'Phone number' enabled</Value>
@@ -5081,7 +5081,7 @@
 		<Value>'Phone number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.PhoneRequired.Hint">
-		<Value>Check if 'Phone number' is required.</Value>
+		<Value>Check the box if 'Phone number' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StateProvinceEnabled">
 		<Value>'State/province' enabled</Value>
@@ -5099,7 +5099,7 @@
 		<Value>'Street address 2' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddress2Required.Hint">
-		<Value>Check if 'Street address 2' is required.</Value>
+		<Value>Check the box if 'Street address 2' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressEnabled">
 		<Value>'Street address' enabled</Value>
@@ -5111,7 +5111,7 @@
 		<Value>'Street address' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.StreetAddressRequired.Hint">
-		<Value>Check if 'Street address' is required.</Value>
+		<Value>Check the box if 'Street address' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeEnabled">
 		<Value>'Zip / postal code' enabled</Value>
@@ -5123,13 +5123,13 @@
 		<Value>'Zip / postal code' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AddressFormFields.ZipPostalCodeRequired.Hint">
-		<Value>Check if 'Zip / postal code' is required.</Value>
+		<Value>Check the box if 'Zip / postal code' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AllowCustomersToSetTimeZone">
 		<Value>Allow customers to select time zone</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AllowCustomersToSetTimeZone.Hint">
-		<Value>Check to allow customers to select time zone. If checked, then time zone can be selected on the public store (account page). If not, then default time zone will be used.</Value>
+		<Value>Check the box to allow customers to select a time zone. If checked, then the time zone can be selected on the public store (account page). If not, then the default time zone will be used.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.AllowCustomersToUploadAvatars">
 		<Value>Allow customers to upload avatars</Value>
@@ -5165,7 +5165,7 @@
 		<Value>'City' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CityRequired.Hint">
-		<Value>Check if 'City' is required.</Value>
+		<Value>Check the box if 'City' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyEnabled">
 		<Value>'Company' enabled</Value>
@@ -5177,7 +5177,7 @@
 		<Value>'Company' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CompanyRequired.Hint">
-		<Value>Check if 'Company' is required.</Value>
+		<Value>Check the box if 'Company' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CountryEnabled">
 		<Value>'Country' enabled</Value>
@@ -5243,7 +5243,7 @@
 		<Value>Auto register enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationAutoRegisterEnabled.Hint">
-		<Value>Check to enable auto registration when using external authentication.</Value>
+		<Value>Check the box to enable auto registration when using external authentication.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ExternalAuthenticationSettings">
 		<Value>External authentication settings</Value>
@@ -5258,7 +5258,7 @@
 		<Value>'Fax number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.FaxRequired.Hint">
-		<Value>Check if 'Fax number' is required</Value>
+		<Value>Check the box if 'Fax number' is required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.GenderEnabled">
 		<Value>'Gender' enabled</Value>
@@ -5270,19 +5270,19 @@
 		<Value>Hide 'Back in stock subscriptions' tab</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideBackInStockSubscriptionsTab.Hint">
-		<Value>Check to hide 'Back in stock subscriptions' tab on 'My account' page</Value>
+		<Value>Check the box to hide 'Back in stock subscriptions' tab on 'My account' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideDownloadableProductsTab">
 		<Value>Hide 'Downloadable products' tab</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideDownloadableProductsTab.Hint">
-		<Value>Check to hide 'Downloadable products' tab on 'My account' page</Value>
+		<Value>Check the box to hide 'Downloadable products' tab on 'My account' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideNewsletterBlock">
 		<Value>Hide newsletter box</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.HideNewsletterBlock.Hint">
-		<Value>Check if you want to hide the newsletter subscription box.</Value>
+		<Value>Check the box if you want to hide the newsletter subscription box.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.NewsletterEnabled">
 		<Value>'Newsletter' enabled</Value>
@@ -5306,7 +5306,7 @@
 		<Value>'Phone number' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.PhoneRequired.Hint">
-		<Value>Check if 'Phone number' is required.</Value>
+		<Value>Check the box if 'Phone number' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ShowCustomersJoinDate">
 		<Value>Show customers' join date</Value>
@@ -5342,7 +5342,7 @@
 		<Value>'Street address 2' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddress2Required.Hint">
-		<Value>Check if 'Street address 2' is required.</Value>
+		<Value>Check the box if 'Street address 2' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressEnabled">
 		<Value>'Street address' enabled</Value>
@@ -5354,19 +5354,19 @@
 		<Value>'Street address' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.StreetAddressRequired.Hint">
-		<Value>Check if 'Street address' is required.</Value>
+		<Value>Check the box if 'Street address' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UsernamesEnabled">
 		<Value>'Usernames' enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UsernamesEnabled.Hint">
-		<Value>Check to use usernames for login/registration instead of emails. WARNING: not recommended to change in production environment.</Value>
+		<Value>Check the box to use usernames for login/registration instead of E-Mails. WARNING: not recommended to change in production environment.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UserRegistrationType">
 		<Value>Registration method</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.UserRegistrationType.Hint">
-		<Value>Determines customer registration method. Standard - mode where visitors can register and no approval is required. Email Validation - mode where user must respond to validation email that is sent to them before they are activated. Admin Approval - mode where visitors can register but admin approval is required. Disabled - mode where registration is disabled</Value>
+		<Value>Determines customer registration method. Standard - mode where visitors can register and no approval is required. E-mail Validation - mode where user must respond to validation email that is sent to them before they are activated. Admin Approval - mode where visitors can register but admin approval is required. Disabled - mode where registration is disabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ValidateEmailAddress">
 		<Value>Validate customer email address</Value>
@@ -5384,7 +5384,7 @@
 		<Value>'Zip / postal code' required</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.ZipPostalCodeRequired.Hint">
-		<Value>Check if 'Zip / postal code' is required.</Value>
+		<Value>Check the box if 'Zip / postal code' is required.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Forums">
 		<Value>Forum settings</Value>
@@ -5417,7 +5417,7 @@
 		<Value>Allow customers to manage forum subscriptions</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Forums.AllowCustomersToManageSubscriptions.Hint">
-		<Value>Check if you want to allow customers to manage forum subscriptions</Value>
+		<Value>Check the box if you want to allow customers to manage forum subscriptions</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Forums.AllowGuestsToCreatePosts">
 		<Value>Allow guests to create posts</Value>
@@ -5459,7 +5459,7 @@
 		<Value>Forums enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Forums.ForumsEnabled.Hint">
-		<Value>Check to enable forums.</Value>
+		<Value>Check the box to enable forums.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Forums.NotifyAboutPrivateMessages">
 		<Value>Notify about private messages</Value>
@@ -5585,7 +5585,7 @@
 		<Value>CAPTCHA enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabled.Hint">
-		<Value>Check to enable CAPTCHA</Value>
+		<Value>Check the box to enable CAPTCHA</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaEnabledNoKeys">
 		<Value>Captcha is enabled but the appropriate keys are not entered.</Value>
@@ -5594,55 +5594,55 @@
 		<Value>Show on 'ask question' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnAskQuestionPage.Hint">
-		<Value>Check to show CAPTCHA on 'ask question' page</Value>
+		<Value>Check the box the box to show CAPTCHA on 'ask question' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnBlogCommentPage">
 		<Value>Show on blog page (comments)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnBlogCommentPage.Hint">
-		<Value>Check to show CAPTCHA on blog page when writing a comment.</Value>
+		<Value>Check the box to show CAPTCHA on blog page when writing a comment.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnContactUsPage">
 		<Value>Show on contact us page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnContactUsPage.Hint">
-		<Value>Check to show CAPTCHA on contact us page.</Value>
+		<Value>Check the box to show CAPTCHA on contact us page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailProductToFriendPage">
 		<Value>Show on 'email product to a friend' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailProductToFriendPage.Hint">
-		<Value>Check to show CAPTCHA on 'email product to a friend' page.</Value>
+		<Value>Check the box to show CAPTCHA on 'email product to a friend' page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailWishlistToFriendPage">
 		<Value>Show on 'email wishlist to a friend' page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnEmailWishlistToFriendPage.Hint">
-		<Value>Check to show CAPTCHA on 'email wishlist to a friend' page.</Value>
+		<Value>Check the box to show CAPTCHA on 'email wishlist to a friend' page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnLoginPage">
 		<Value>Show on login page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnLoginPage.Hint">
-		<Value>Check to show CAPTCHA on login page.</Value>
+		<Value>Check the box to show CAPTCHA on login page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage">
 		<Value>Show on news page (comments)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnNewsCommentPage.Hint">
-		<Value>Check to show CAPTCHA on news page when writing a comment.</Value>
+		<Value>Check the box to show CAPTCHA on news page when writing a comment.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage">
 		<Value>Show on product reviews page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnProductReviewPage.Hint">
-		<Value>Check to show CAPTCHA on product reviews page when writing a review.</Value>
+		<Value>Check the box to show CAPTCHA on product reviews page when writing a review.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnRegistrationPage">
 		<Value>Show on registration page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CaptchaShowOnRegistrationPage.Hint">
-		<Value>Check to show CAPTCHA on registration page.</Value>
+		<Value>Check the box to show CAPTCHA on registration page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.CompanyInformationSettings">
 		<Value>Company</Value>
@@ -5828,7 +5828,7 @@
 		<Value>Convert non-western chars</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.ConvertNonWesternChars.Hint">
-		<Value>Check to take out the accent marks in the letters of SEO names while keeping the letter.</Value>
+		<Value>Check the box to take out the accent marks in the letters of SEO names while keeping the letter.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.DefaultLanguageRedirectBehaviour">
 		<Value>Default language redirect behaviour</Value>
@@ -5945,7 +5945,7 @@
 		<Value>Enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PdfEnabled.Hint">
-		<Value>Check to enabled PDF.</Value>
+		<Value>Check the box to enabled PDF.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.PdfLetterPageSizeEnabled">
 		<Value>Use Letter page size</Value>
@@ -6026,13 +6026,13 @@
 		<Value>Store closed</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreClosed.Hint">
-		<Value>Check to close the store. Uncheck to re-open.</Value>
+		<Value>Check the box to close the store. Uncheck to re-open.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreClosedAllowForAdmins">
 		<Value>Allow an admin to view the closed store</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreClosedAllowForAdmins.Hint">
-		<Value>Check to allow a user with admin access to view the store while it is set to closed.</Value>
+		<Value>Check the box to allow a user with admin access to view the store while it is set to closed.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.StoreInformationSettings">
 		<Value>Store information</Value>
@@ -6041,7 +6041,7 @@
 		<Value>Use images for language selection</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.GeneralCommon.UseImagesForLanguageSelection.Hint">
-		<Value>Check if you want to use images for language selection.</Value>
+		<Value>Check the box if you want to use images for language selection.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Media">
 		<Value>Media settings</Value>
@@ -6161,13 +6161,13 @@
 		<Value>Allow not registered users to leave comments</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.AllowNotRegisteredUsersToLeaveComments.Hint">
-		<Value>Check to allow not registered users to leave comments.</Value>
+		<Value>Check the box to allow not registered users to leave comments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.Enabled">
 		<Value>News enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.Enabled.Hint">
-		<Value>Check to enable the news in your store.</Value>
+		<Value>Check the box to enable the news in your store.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.MainPageNewsCount">
 		<Value>Number of items to display</Value>
@@ -6185,19 +6185,19 @@
 		<Value>Notify about new news comments</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.NotifyAboutNewNewsComments.Hint">
-		<Value>Check to notify store owner about new news comments.</Value>
+		<Value>Check the box to notify store owner about new news comments.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.ShowHeaderRSSUrl">
 		<Value>Display news RSS feed link in the browser address bar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.ShowHeaderRSSUrl.Hint">
-		<Value>Check to enable the news RSS feed link in customers browser address bar</Value>
+		<Value>Check the box to enable the news RSS feed link in customers browser address bar</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.ShowNewsOnMainPage">
 		<Value>Show on home page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.News.ShowNewsOnMainPage.Hint">
-		<Value>Check to display your news items on your store home page.</Value>
+		<Value>Check the box to display your news items on your store home page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.NoneWithThatId">
 		<Value>No setting could be loaded with the specified ID.</Value>
@@ -6209,7 +6209,7 @@
 		<Value>Anonymous checkout allowed</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.AnonymousCheckoutAllowed.Hint">
-		<Value>Check to enable anonymous checkout (customers are not required to login/register when purchasing products)</Value>
+		<Value>Check the box to enable anonymous checkout (customers are not required to login/register when purchasing products)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.DisableOrderCompletedPage">
 		<Value>Disable "Order completed" page</Value>
@@ -6239,7 +6239,7 @@
 		<Value>Is re-order allowed</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.IsReOrderAllowed.Hint">
-		<Value>Check if you want to allow customers to make re-orders.</Value>
+		<Value>Check the box if you want to allow customers to make re-orders.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.MinOrderSubtotalAmount">
 		<Value>Min order sub-total amount</Value>
@@ -6296,7 +6296,7 @@
 		<Value>Enable Returns System</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.ReturnRequestsEnabled.Hint">
-		<Value>Check if you want to allow customers to submit return requests for items they've previously purchased.</Value>
+		<Value>Check the box if you want to allow customers to submit return requests for items they've previously purchased.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Order.ReturnRequestSettings">
 		<Value>Return request settings</Value>
@@ -6329,7 +6329,7 @@
 		<Value>Enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.RewardPoints.Enabled.Hint">
-		<Value>Check if you want to enable the Reward Points Program.</Value>
+		<Value>Check the box if you want to enable the Reward Points Program.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.RewardPoints.ExchangeRate">
 		<Value>Exchange rate</Value>
@@ -6383,25 +6383,25 @@
 		<Value>Display shipment events</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.DisplayShipmentEventsToCustomers.Hint">
-		<Value>Check if you want your customers to see shipment events on their shipment details pages (if supported by your shipping rate computation method).</Value>
+		<Value>Check the box if you want your customers to see shipment events on their shipment details pages (if supported by your shipping rate computation method).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.EstimateShippingEnabled">
 		<Value>Estimate shipping enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.EstimateShippingEnabled.Hint">
-		<Value>Check to allow customers to estimate shipping on shopping cart page</Value>
+		<Value>Check the box to allow customers to estimate shipping on shopping cart page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.FreeShippingOverXEnabled">
 		<Value>Free shipping over 'X'</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.FreeShippingOverXEnabled.Hint">
-		<Value>Check to enable free shipping for all orders over 'X'. Set the value for X below.</Value>
+		<Value>Check the box to enable free shipping for all orders over 'X'. Set the value for X below.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.FreeShippingOverXIncludingTax">
 		<Value>Calculate 'X' including tax</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.FreeShippingOverXIncludingTax.Hint">
-		<Value>Check to calculate 'X' value including tax; otherwise excluding tax.</Value>
+		<Value>Check the box to calculate 'X' value including tax; otherwise excluding tax.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Shipping.FreeShippingOverXValue">
 		<Value>Value of 'X'</Value>
@@ -6422,13 +6422,13 @@
 		<Value>Allow guests to email their wishlists</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.AllowAnonymousUsersToEmailWishlist.Hint">
-		<Value>Check to allow guests to email their wishlists to friends.</Value>
+		<Value>Check the box to allow guests to email their wishlists to friends.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.AllowOutOfStockItemsToBeAddedToWishlist">
 		<Value>Allow 'out of stock' items to be added to wishlist</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.AllowOutOfStockItemsToBeAddedToWishlist.Hint">
-		<Value>Check to allow 'out of stock' products to be added to wishlist.</Value>
+		<Value>Check the box to allow 'out of stock' products to be added to wishlist.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.CartSettings">
 		<Value>Shopping cart</Value>
@@ -6458,7 +6458,7 @@
 		<Value>Allow customers to email their wishlists</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.EmailWishlistEnabled.Hint">
-		<Value>Check to allow customers to email their wishlists to friends.</Value>
+		<Value>Check the box to allow customers to email their wishlists to friends.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MaximumShoppingCartItems">
 		<Value>Maximum shopping cart items</Value>
@@ -6476,7 +6476,7 @@
 		<Value>Show mini-shopping cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartEnabled.Hint">
-		<Value>Check to enable mini-shopping cart.</Value>
+		<Value>Check the box to enable mini-shopping cart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MiniShoppingCartProductNumber">
 		<Value>Mini-shopping cart product number</Value>
@@ -6488,7 +6488,7 @@
 		<Value>Move items from wishlist to cart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.MoveItemsFromWishlistToCart.Hint">
-		<Value>Check to move products from wishlist to the cart when clicking "Add to cart" button. Otherwise, they are copied.</Value>
+		<Value>Check the box to move products from wishlist to the cart when clicking "Add to cart" button. Otherwise, they are copied.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.RoundPricesDuringCalculation">
 		<Value>Round prices during calculation</Value>
@@ -6524,13 +6524,13 @@
 		<Value>Show discount box</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowDiscountBox.Hint">
-		<Value>Check if you want the discount coupon box to be displayed on shopping cart page</Value>
+		<Value>Check the box if you want the discount coupon box to be displayed on shopping cart page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowGiftCardBox">
 		<Value>Show gift card box</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowGiftCardBox.Hint">
-		<Value>Check if you want the gift card coupon box to be displayed on shopping cart page</Value>
+		<Value>Check the box if you want the gift card coupon box to be displayed on shopping cart page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.ShoppingCart.ShowLinkedAttributeValueQuantity">
 		<Value>Show quantity of linked product</Value>
@@ -6623,19 +6623,19 @@
 		<Value>Allow VAT exemption</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatAllowVatExemption.Hint">
-		<Value>Check if this store will exempt eligible VAT-registered customers from VAT.</Value>
+		<Value>Check the box if this store will exempt eligible VAT-registered customers from VAT.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatEmailAdminWhenNewVatSubmitted">
 		<Value>Notify admin when a new VAT number is submitted</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatEmailAdminWhenNewVatSubmitted.Hint">
-		<Value>Check if you want to receive a notification (email) when a new VAT number is submitted.</Value>
+		<Value>Check the box if you want to receive a notification (email) when a new VAT number is submitted.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatEnabled">
 		<Value>EU VAT enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatEnabled.Hint">
-		<Value>Check to enable EU VAT (the European Union Value Added Tax)</Value>
+		<Value>Check the box to enable EU VAT (the European Union Value Added Tax)</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatShopCountry">
 		<Value>Your shop country</Value>
@@ -6647,7 +6647,7 @@
 		<Value>Use web service</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.EuVatUseWebService.Hint">
-		<Value>Check if you want to use the EU web service to validate VAT numbers. WARNING: If this option is enabled, then DO NOT disable country form field available during registration (public store).</Value>
+		<Value>Check the box if you want to use the EU web service to validate VAT numbers. WARNING: If this option is enabled, then DO NOT disable country form field available during registration (public store).</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.HideTaxInOrderSummary">
 		<Value>Hide tax in order summary</Value>
@@ -6707,25 +6707,25 @@
 		<Value>Show legal information in footer.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInFooter.Hint">
-		<Value>Check to show legal information in footer.</Value>
+		<Value>Check the box to show legal information in footer.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductDetails">
 		<Value>Show legal information in product detail page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductDetails.Hint">
-		<Value>Check to show legal information in product detail page.</Value>
+		<Value>Check the box to show legal information in product detail page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductGrid">
 		<Value>Show legal information in product grid.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductGrid.Hint">
-		<Value>Check to show legal information in product grid.</Value>
+		<Value>Check the box to show legal information in product grid.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductList">
 		<Value>Show legal information in product list.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.ShowLegalHintsInProductList.Hint">
-		<Value>Check to show legal information in product list.</Value>
+		<Value>Check the box to show legal information in product list.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Tax.TaxBasedOn">
 		<Value>Tax based on</Value>
@@ -6906,7 +6906,7 @@
 		<Value>SSL enabled</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.SslEnabled.Hint">
-		<Value>Check if your store will be SSL secured.</Value>
+		<Value>Check the box if your store will be SSL secured.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Stores.Fields.StoreLogo">
 		<Value>Store logo</Value>
@@ -7032,7 +7032,7 @@
 		<Value>Allow customers to select a theme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.AllowCustomerToSelectTheme.Hint">
-		<Value>Check to allow customers to select a store theme.</Value>
+		<Value>Check the box to allow customers to select a store theme.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.BundleOptimizationEnabled">
 		<Value>Enable asset bundling</Value>
@@ -7056,7 +7056,7 @@
 		<Value>Mobile devices supported</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.MobileDevicesSupported.Hint">
-		<Value>Check to enable mobile devices support.</Value>
+		<Value>Check the box to enable mobile devices support.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Themes.Option.SaveThemeChoiceInCookie">
 		<Value>Save theme choice in cookie</Value>
@@ -7620,7 +7620,7 @@
 		<Value>Allow guests to vote</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Polls.Fields.AllowGuestsToVote.Hint">
-		<Value>Check to allow guests to vote.</Value>
+		<Value>Check the box to allow guests to vote.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Polls.Fields.DisplayOrder">
 		<Value>Display order</Value>
@@ -7659,7 +7659,7 @@
 		<Value>Show on home page</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Polls.Fields.ShowOnHomePage.Hint">
-		<Value>Check if you want to show poll on home page.</Value>
+		<Value>Check the box if you want to show poll on home page.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Polls.Fields.StartDate">
 		<Value>Start date</Value>
@@ -7710,13 +7710,13 @@
 		<Value>Include in sitemap</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.IncludeInSitemap.Hint">
-		<Value>Check to include this topic in the sitemap.</Value>
+		<Value>Check the box to include this topic in the sitemap.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.IsPasswordProtected">
 		<Value>Password protected</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.IsPasswordProtected.Hint">
-		<Value>Check if this topic is password protected</Value>
+		<Value>Check the box if this topic is password protected</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Topics.Fields.MetaDescription">
 		<Value>Meta description</Value>
@@ -7908,13 +7908,13 @@
 		<Value>System customer roles can't be disabled.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.Active.Hint">
-		<Value>Check to make this role active.</Value>
+		<Value>Check the box to make this role active.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.FreeShipping">
 		<Value>Free shipping</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.FreeShipping.Hint">
-		<Value>Check to allow customers in this role to get free shipping on their orders.</Value>
+		<Value>Check the box to allow customers in this role to get free shipping on their orders.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.IsSystemRole">
 		<Value>Is system role</Value>
@@ -7947,7 +7947,7 @@
 		<Value>Tax exempt</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Fields.TaxExempt.Hint">
-		<Value>Check to allow customers in this role to make tax free purchases.</Value>
+		<Value>Check the box to allow customers in this role to make tax free purchases.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Customers.CustomerRoles.Updated">
 		<Value>The customer role has been updated successfully.</Value>

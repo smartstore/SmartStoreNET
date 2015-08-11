@@ -381,7 +381,6 @@ namespace SmartStore.PayPal
                 result = service.SetExpressCheckout(req);
             }
 
-            
             _httpContext.GetCheckoutState().CustomProperties.Add("PayPalExpressButtonUsed", true);
             return result;
         }

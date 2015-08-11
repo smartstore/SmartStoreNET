@@ -27,7 +27,7 @@
     <Value>Enabled</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.Enabled.Hint">
-    <Value>Check to enable SMS provider</Value>
+    <Value>Check the box to enable SMS provider</Value>
   </LocaleResource>
   <LocaleResource Name="Fields.ApiId">
     <Value>API ID</Value>

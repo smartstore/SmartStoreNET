@@ -60,7 +60,7 @@
         <Value>Use percentage</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.UsePercentage.Hint">
-        <Value>Check to use 'charge percentage' value.</Value>
+        <Value>Check the box to use 'charge percentage' value.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ShippingChargePercentage">
         <Value>Charge %</Value>

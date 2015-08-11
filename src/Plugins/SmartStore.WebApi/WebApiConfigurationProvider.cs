@@ -3,6 +3,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
@@ -99,6 +100,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<StoreMapping>(WebApiOdataEntitySet.StoreMappings);
 			m.EntitySet<TierPrice>(WebApiOdataEntitySet.TierPrices);
 			m.EntitySet<UrlRecord>(WebApiOdataEntitySet.UrlRecords);
+			m.EntitySet<SyncMapping>(WebApiOdataEntitySet.SyncMappings);
 
 			AddActionsToOrder(m.Entity<Order>());
 			AddActionsToProduct(m.Entity<Product>());
@@ -151,5 +153,6 @@ namespace SmartStore.WebApi
 		public static string StoreMappings { get { return "StoreMappings"; } }
 		public static string TierPrices { get { return "TierPrices"; } }
 		public static string UrlRecords { get { return "UrlRecords"; } }
+		public static string SyncMappings { get { return "SyncMappings"; } }
 	}
 }

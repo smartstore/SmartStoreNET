@@ -65,7 +65,7 @@ namespace SmartStore.Core.Data
 		{
 			var count = 0;
 
-			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+			using (var scope = new DbContextScope(ctx: rs.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
 			{
 				var query = rs.Table;
 				if (predicate != null)

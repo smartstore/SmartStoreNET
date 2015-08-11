@@ -99,6 +99,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			}
 			return customer;
 		}
+
 		protected virtual HmacResult IsAuthenticated(HttpActionContext actionContext, DateTime now, WebApiControllingCacheData cacheControllingData, out Customer customer)
 		{
 			customer = null;

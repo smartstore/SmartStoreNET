@@ -9,6 +9,7 @@
 * #584 Email attachment support for message templates
 * Attach order invoice PDF automatically to order notification emails
 * #526 Min/Max amount option for which the payment method should be offered during checkout
+* (Dev) New _SyncMapping_ service: enables easier entity synchronization with external systems 
 * #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
 * #702 Facebook and Twitter external authentication suitable for multi-stores
 * New scheduled task: Clear e-mail queue

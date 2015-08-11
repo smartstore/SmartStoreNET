@@ -120,6 +120,7 @@
     </Compile>
     <Compile Include="Caching\EfCacheImpl.cs" />
     <Compile Include="Caching\EfCachingPolicy.cs" />
+    <Compile Include="Mapping\DataExchange\SyncMappingMap.cs" />
     <Compile Include="Mapping\Directory\QuantityUnitMap.cs" />
     <Compile Include="Mapping\Messages\QueuedEmailAttachmentMap.cs" />
     <Compile Include="Mapping\Payments\PaymentMethodMap.cs" />
@@ -334,6 +335,10 @@
     <Compile Include="Migrations\201508042207146_RemoveKeepAlive.cs" />
     <Compile Include="Migrations\201508042207146_RemoveKeepAlive.Designer.cs">
       <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
+    </Compile>
+    <Compile Include="Migrations\201508112044167_AddSyncMapping.cs" />
+    <Compile Include="Migrations\201508112044167_AddSyncMapping.Designer.cs">
+      <DependentUpon>201508112044167_AddSyncMapping.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -633,6 +638,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508042207146_RemoveKeepAlive.resx">
       <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508112044167_AddSyncMapping.resx">
+      <DependentUpon>201508112044167_AddSyncMapping.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

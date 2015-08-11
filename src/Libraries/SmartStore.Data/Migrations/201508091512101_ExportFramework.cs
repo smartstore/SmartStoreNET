@@ -172,8 +172,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.BatchSize",
 				"Batch size",
 				"Stapelgröße",
-				"Specifies the maximum number of records of one processed batch.",
-				"Legt die maximale Anzahl der Datensätze eines Vearbeitungsstapels fest.");
+				"Specifies the maximum number of records per export file. 0 is the default and means that all the records are exported in one file.",
+				"Legt die maximale Anzahl der Datensätze pro Exportdatei fest. 0 ist der Standard und bedeutet, dass alle Datensätze in eine Datei exportiert werden.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.PerStore",
 				"Per store",

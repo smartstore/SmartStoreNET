@@ -1,6 +1,4 @@
 ﻿using System;
-using System.IO;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
@@ -20,7 +18,10 @@ namespace SmartStore.Services.DataExchange
 		/// <returns>Whether configuration is required</returns>
 		bool RequiresConfiguration(out string partialViewName, out Type modelType);
 
-		// TODO: a more complex result type is required. e.g. IEnumerable<ExportSegment>....
+		/// <summary>
+		/// A record needs to be exported to a file
+		/// </summary>
+		/// <param name="context">Export execution context</param>
 		void Execute(ExportExecuteContext context);
 	}
 }

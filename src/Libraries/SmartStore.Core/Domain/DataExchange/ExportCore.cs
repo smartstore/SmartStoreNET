@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 namespace SmartStore.Core.Domain.DataExchange
 {
 	public enum ExportEntityType
@@ -18,9 +17,5 @@ namespace SmartStore.Core.Domain.DataExchange
 		Email,
 		Http,
 		Ftp
-	}
-
-	public class ExportExecuteContext
-	{
 	}
 }

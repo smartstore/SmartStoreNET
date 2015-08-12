@@ -98,7 +98,7 @@
 		@Html.Action("LanguageSelector", "Common", new { area = "Admin" })
 
 		<div class="btn-group toppad pull-right">
-			<button class="btn dropdown-toggle navbar-tool" title='Aktionen' data-toggle="dropdown">
+			<button class="btn dropdown-toggle navbar-tool" title='@T("Admin.Common.Actions")' data-toggle="dropdown">
 				<i class="fa fa-fw fa-gear"></i>
 			</button>
 			<ul class="dropdown-menu">
@@ -114,7 +114,7 @@
 				<li>
 					<a href='@Url.Action("Preview", "Theme")'>
 						<i class="fa fa-fw fa-eye"></i>
-						Vorschaumodus
+						@T("Admin.Configuration.Themes.PreviewMode")
 					</a>
 				</li>
 				<li class="divider"></li>

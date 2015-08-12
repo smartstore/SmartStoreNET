@@ -224,7 +224,7 @@ namespace SmartStore.Web.Framework
 				.InstancePerRequest();
 
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
-			builder.RegisterType<ISyncMappingService>().As<SyncMappingService>().InstancePerRequest();
+			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
 
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();

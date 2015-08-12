@@ -38,6 +38,7 @@ using SmartStore.Services.Cms;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
@@ -223,6 +224,8 @@ namespace SmartStore.Web.Framework
 				.InstancePerRequest();
 
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
+			builder.RegisterType<ISyncMappingService>().As<SyncMappingService>().InstancePerRequest();
+
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();
 			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();

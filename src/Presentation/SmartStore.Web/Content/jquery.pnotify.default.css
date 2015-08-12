@@ -57,11 +57,7 @@ margin: 0;
 	width: 70px;
 	border-top: none;
 	padding: 0;
-	-webkit-border-top-left-radius: 0;
-	-moz-border-top-left-radius: 0;
 	border-top-left-radius: 0;
-	-webkit-border-top-right-radius: 0;
-	-moz-border-top-right-radius: 0;
 	border-top-right-radius: 0;
 	/* Ensures history container is above notices. */
 	z-index: 10000;

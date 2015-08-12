@@ -89,6 +89,7 @@
     <Compile Include="ExceptionAssert.cs" />
     <Compile Include="MemoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="TestDbSet.cs" />
     <Compile Include="TestExtensions.cs" />
     <Compile Include="TestsBase.cs" />
     <Compile Include="TypeAssert.cs" />

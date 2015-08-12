@@ -13,7 +13,7 @@ namespace SmartStore.Data.Migrations
         
         string IMigrationMetadata.Id
         {
-            get { return "201508112044167_AddSyncMapping"; }
+            get { return "201508121735397_AddSyncMapping"; }
         }
         
         string IMigrationMetadata.Source

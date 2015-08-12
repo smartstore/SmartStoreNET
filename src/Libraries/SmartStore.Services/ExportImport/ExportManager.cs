@@ -719,13 +719,13 @@ namespace SmartStore.Services.ExportImport
 		/// <param name="searchContext">Search context</param>
 		public virtual void ExportProductsToXml(Stream stream, ProductSearchContext searchContext)
 		{
-			var settings = new XmlWriterSettings()
+			var settings = new XmlWriterSettings
 			{
 				Encoding = new UTF8Encoding(false),
 				CheckCharacters = false
 			};
 
-			var context = new XmlExportContext()
+			var context = new XmlExportContext
 			{
 				ProductTemplates = _productTemplateService.GetAllProductTemplates(),
 				Languages = _languageService.GetAllLanguages(true),

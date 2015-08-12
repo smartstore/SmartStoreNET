@@ -661,7 +661,7 @@ namespace SmartStore.Services.ExportImport
 								var manufacturer = _manufacturerService.GetManufacturerById(id);
 								if (manufacturer != null)
 								{
-									var productManufacturer = new ProductManufacturer()
+									var productManufacturer = new ProductManufacturer
 									{
 										ProductId = row.Entity.Id,
 										ManufacturerId = manufacturer.Id,

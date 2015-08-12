@@ -68,6 +68,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		public string CustomString { get; set; }
 
 		/// <summary>
+		/// Gets or sets a custom bool value
+		/// </summary>
+		[DataMember]
+		public bool? CustomBool { get; set; }
+
+		/// <summary>
 		/// Gets or sets the date of the last sync operation
 		/// </summary>
 		[DataMember]

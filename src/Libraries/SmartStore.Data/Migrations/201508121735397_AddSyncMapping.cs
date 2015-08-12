@@ -19,6 +19,7 @@ namespace SmartStore.Data.Migrations
                         SourceHash = c.String(maxLength: 40),
                         CustomInt = c.Int(),
                         CustomString = c.String(),
+                        CustomBool = c.Boolean(),
                         SyncedOnUtc = c.DateTime(nullable: false),
                     })
                 .PrimaryKey(t => t.Id)

@@ -336,9 +336,9 @@
     <Compile Include="Migrations\201508042207146_RemoveKeepAlive.Designer.cs">
       <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
     </Compile>
-    <Compile Include="Migrations\201508112044167_AddSyncMapping.cs" />
-    <Compile Include="Migrations\201508112044167_AddSyncMapping.Designer.cs">
-      <DependentUpon>201508112044167_AddSyncMapping.cs</DependentUpon>
+    <Compile Include="Migrations\201508121735397_AddSyncMapping.cs" />
+    <Compile Include="Migrations\201508121735397_AddSyncMapping.Designer.cs">
+      <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
     </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -639,8 +639,8 @@
     <EmbeddedResource Include="Migrations\201508042207146_RemoveKeepAlive.resx">
       <DependentUpon>201508042207146_RemoveKeepAlive.cs</DependentUpon>
     </EmbeddedResource>
-    <EmbeddedResource Include="Migrations\201508112044167_AddSyncMapping.resx">
-      <DependentUpon>201508112044167_AddSyncMapping.cs</DependentUpon>
+    <EmbeddedResource Include="Migrations\201508121735397_AddSyncMapping.resx">
+      <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

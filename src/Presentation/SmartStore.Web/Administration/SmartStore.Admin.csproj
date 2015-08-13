@@ -496,7 +496,7 @@
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
     <Content Include="Views\Common\CheckUpdate.cshtml" />
     <Content Include="Views\Payment\Edit.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Download2.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -722,9 +722,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductAttributeValue.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />

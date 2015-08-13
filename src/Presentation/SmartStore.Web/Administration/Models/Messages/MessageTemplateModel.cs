@@ -42,7 +42,7 @@ namespace SmartStore.Admin.Models.Messages
         [AllowHtml]
         public string Body { get; set; }
 
-        [SmartResourceDisplayName("Admin.ContentManagement.MessageTemplates.Fields.IsActive")]
+        [SmartResourceDisplayName("Common.Active")]
         [AllowHtml]
         public bool IsActive { get; set; }
 

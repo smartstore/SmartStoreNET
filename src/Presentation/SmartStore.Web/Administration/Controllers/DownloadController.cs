@@ -11,7 +11,9 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
-        private readonly IDownloadService _downloadService;
+		const string TEMPLATE = "EditorTemplates/Download";
+		
+		private readonly IDownloadService _downloadService;
 
         public DownloadController(IDownloadService downloadService)
         {
@@ -43,7 +45,7 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult SaveDownloadUrl(string downloadUrl)
+		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null)
         {
 			var download = new Download
 			{
@@ -53,13 +55,19 @@ namespace SmartStore.Admin.Controllers
 				IsNew = true,
 				IsTransient = true
 			};
+
             _downloadService.InsertDownload(download);
 
-            return Json(new { downloadId = download.Id }, JsonRequestBehavior.AllowGet);
+			return Json(new
+			{
+				success = true,
+				downloadId = download.Id,
+				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+			}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public ActionResult AsyncUpload()
+		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null)
         {
 			var postedFile = Request.ToPostedFileResult();
 			if (postedFile == null)
@@ -74,35 +82,33 @@ namespace SmartStore.Admin.Controllers
                 DownloadUrl = "",
                 DownloadBinary = postedFile.Buffer,
                 ContentType = postedFile.ContentType,
-                //we store filename without extension for downloads
+                // we store filename without extension for downloads
                 Filename = postedFile.FileTitle,
                 Extension = postedFile.FileExtension,
                 IsNew = true,
 				IsTransient = true
             };
+
             _downloadService.InsertDownload(download);
 
             return Json(new 
             { 
                 success = true, 
-                downloadId = download.Id,
-                fileName = download.Filename.Truncate(50, "...") + download.Extension,
-                downloadUrl = Url.Action("DownloadFile", new { downloadId = download.Id }) 
+				downloadId = download.Id,
+				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
             });
         }
 
 		[HttpPost]
-		public ActionResult DeleteDownload(int downloadId)
+		public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
 		{
-			var download = _downloadService.GetDownloadById(downloadId);
-			if (download == null)
+			// We don't actually delete here. We just return the editor in it's init state
+			// so the download entity can be set to transient state and deleted later by a scheduled task.
+			return Json(new
 			{
-				NotifyError("No download record found with the specified id");
-				return Json(new { success = false });
-			}
-
-			_downloadService.DeleteDownload(download);
-			return Json(new { success = true });
+				success = true,
+				html = this.RenderPartialViewToString(TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
+			});
 		}
     }
 }

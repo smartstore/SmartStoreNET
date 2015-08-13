@@ -2,8 +2,9 @@ namespace SmartStore.Data.Migrations
 {
     using System;
     using System.Data.Entity.Migrations;
-    
-    public partial class AddSyncMapping : DbMigration
+	using SmartStore.Data.Setup;
+
+	public partial class AddSyncMapping : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
@@ -34,5 +35,41 @@ namespace SmartStore.Data.Migrations
             DropIndex("dbo.SyncMapping", "IX_SyncMapping_ByEntity");
             DropTable("dbo.SyncMapping");
         }
+
+		public bool RollbackOnFailure
+		{
+			get { return false; }
+		}
+
+		public void Seed(SmartObjectContext context)
+		{
+			context.MigrateLocaleResources(MigrateLocaleResources);
+		}
+
+		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
+		{
+			string attachHint = "A file that is to be appended to each sent email (eg Terms, Conditions etc.)";
+			string attachHintDe = "Eine Datei, die jedem gesendeten E-Mail angehangen werden soll (z.B. AGB, Widerrufsbelehrung etc.)";
+			
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.Fields.Attachment1FileId",
+				"Attachment 1",
+				"Anhang 1",
+				attachHint,
+				attachHintDe);
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.Fields.Attachment2FileId",
+				"Attachment 2",
+				"Anhang 2",
+				attachHint,
+				attachHintDe);
+			builder.AddOrUpdate("Admin.ContentManagement.MessageTemplates.Fields.Attachment3FileId",
+				"Attachment 3",
+				"Anhang 3",
+				attachHint,
+				attachHintDe);
+
+			builder.AddOrUpdate("Common.FileUploader.EnterUrl",
+				"Enter URL",
+				"URL eingeben");
+		}
     }
 }

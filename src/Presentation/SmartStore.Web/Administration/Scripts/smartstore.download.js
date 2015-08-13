@@ -22,13 +22,17 @@
 			if (useUrl == el.data("use-url"))
 				return;
 
+			var i = el.find('.panel-switcher > .dropdown-toggle > .fa');
+
 			if (useUrl) {
+				i.removeClass('fa-upload').addClass('fa-globe');
 				el.find('.panel-upload').hide();
 				el.find('.panel-url').show();
 				el.find('.toggle-file').parent().removeClass("disabled");
 				el.find('.toggle-url').parent().addClass("disabled");
 			}
 			else {
+				i.removeClass('fa-globe').addClass('fa-upload');
 				el.find('.panel-url').hide();
 				el.find('.panel-upload').show();
 				el.find('.toggle-file').parent().addClass("disabled");
@@ -40,11 +44,14 @@
 
 		this.init = function () {
 			var elHidden = el.find('.hidden'),
-				elRemove = el.find('.remove');
+				elRemove = el.find('.remove'),
+				elSaveUrl = el.find('.save-download-url');
 
 			// handle panel switcher buttons
-			el.find('.toggle-file').on('click', function (e) { e.preventDefault(); self.togglePanel(false); });
-			el.find('.toggle-url').on('click', function (e) { e.preventDefault(); self.togglePanel(true); });
+			el.find('.toggle-file, .toggle-url').on('click', function (e) {
+				e.preventDefault();
+				self.togglePanel($(this).hasClass('toggle-url'));
+			});
 
 			// init file uploader
 			el.find('.fileupload').fileupload({
@@ -54,25 +61,64 @@
 				done: function (e, data) {
 					var result = data.result;
 					if (result.success) {
-						// >>>>>> $('#@(clientId + "downloadurl")').html('<a href="' + result.downloadUrl + '">@T("Admin.Download.DownloadUploadedFile"): <strong>' + result.fileName + '</strong></a>');
-						elHidden.val(result.downloadId);
-						elRemove.show();
+						el.replaceWith($(result.html));
 					}
 				},
 
 				error: function (jqXHR, textStatus, errorThrown) {
 					if (errorThrown === 'abort') {
-						//alert('File Upload has been canceled');
+						displayNotification('File Upload has been canceled');
 					}
 				}
 			});
 
-			// Download removal
+			el.find('.download-url-value').on('input propertychange paste', function (e) {
+				var txt = $(this);
+				var hasVal = !!(txt.val()) && txt.val() != txt.data('value');
+				var btn = txt.next();
+				btn.attr('disabled', hasVal ? null : "disabled");
+
+				var i = elSaveUrl.find('.fa');
+				i.toggleClass('fa-save', hasVal).toggleClass('fa-check', !hasVal);
+
+			});
+
+			// Download removal (transient)
 			elRemove.click(function (e) {
-				// >>>>>> $('#@(clientId + "downloadurl")').html("&nbsp;");
-				elHidden.val(0);
-				$(this).hide();
 				e.preventDefault();
+
+				$.ajax({
+					cache: false,
+					type: 'POST',
+					url: el.data('delete-url'),
+					dataType: 'json',
+					success: function (data) {
+						if (data.success) {
+							// just update editor html (with init state)
+							el.replaceWith($(data.html));
+						}
+					}
+				});
+			});
+
+			// Save download url
+			elSaveUrl.click(function (e) {
+				e.preventDefault();
+
+				var url = el.find('.download-url-value').val();
+				if (!url)
+					return false;
+
+				$.ajax({
+					cache: false,
+					type: 'POST',
+					url: $(this).attr('href'),
+					data: { "downloadUrl": url },
+					dataType: 'json',
+					success: function (data) {
+						el.replaceWith($(data.html));
+					}
+				});
 			});
 		};
 

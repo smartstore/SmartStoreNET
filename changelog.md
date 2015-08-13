@@ -38,7 +38,7 @@
 * Google Analytics: added support for mobile devices
 * (Dev) TaskScheduler: Tasks can propagate progress info (percentage & message)
 * (Dev) TaskScheduler: Cancellation request is sent to tasks on app shutdown
-* ShippingByWeight & ShippingByTotal: Support of multiple zip ranges (comma devided)
+* ShippingByWeight & ShippingByTotal: Support for multiple zip ranges (comma separated)
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

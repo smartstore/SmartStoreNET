@@ -152,7 +152,7 @@ namespace SmartStore.Services.Media
 					}
 				}
 
-				if (prevMediaId > 0)
+				if (prevMediaId > 0 && isModified)
 				{
 					// ID changed, so delete old record
 					media = rs.GetById(prevMediaId);

@@ -8,7 +8,7 @@ namespace SmartStore.Services.DataExchange
 		{
 			return (
 				provider != null &&
-				provider.Value.FileType.HasValue()
+				provider.Value.FileExtension.HasValue()
 			);
 		}
 	}

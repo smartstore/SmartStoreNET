@@ -50,7 +50,10 @@ namespace SmartStore.Services.DataExchange
 			if (name.IsEmpty())
 				name = systemName;
 
-			var folderName = SeoHelper.GetSeName(name, true, false).ToValidPath();
+			var folderName = SeoHelper.GetSeName(name, true, false)
+				.Replace("/", "")
+				.ToValidPath();
+
 			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
 
 			var task = new ScheduleTask

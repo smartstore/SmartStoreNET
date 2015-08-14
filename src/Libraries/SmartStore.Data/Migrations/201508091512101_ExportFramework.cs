@@ -138,7 +138,7 @@ namespace SmartStore.Data.Migrations
 				"Specifies the name of the export profile.",
 				"Legt den Namen des Exportprofils fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.FileType",
+			builder.AddOrUpdate("Admin.Configuration.Export.FileExtension",
 				"File type",
 				"Dateityp",
 				"The file type of the exported data.",
@@ -166,8 +166,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.Limit",
 				"Limit",
 				"Begrenzung",
-				"Specifies how many records to be loaded per database round-trip.",
-				"Legt die Anzahl der Datensätze fest, die pro Datenbankaufruf geladen werden sollen.");
+				"Specifies how many records to be loaded at maximum.",
+				"Legt die Anzahl der Datensätze fest, die maximal geladen werden sollen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.BatchSize",
 				"Batch size",

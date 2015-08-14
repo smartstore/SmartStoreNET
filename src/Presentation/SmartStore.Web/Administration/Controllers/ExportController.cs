@@ -107,7 +107,7 @@ namespace SmartStore.Admin.Controllers
 
 				model.Provider.EntityType = provider.Value.EntityType;
 				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-				model.Provider.FileType = provider.Value.FileType.ToUpper();
+				model.Provider.FileExtension = provider.Value.FileExtension.ToUpper();
 			}
 		}
 
@@ -361,7 +361,7 @@ namespace SmartStore.Admin.Controllers
 					{
 						var item = new SelectListItem
 						{
-							Text = x.Metadata.FriendlyName,
+							Text = "{0} ({1})".FormatInvariant(x.Metadata.FriendlyName, x.Metadata.SystemName),
 							Value = x.Metadata.SystemName
 						};
 

@@ -11,7 +11,6 @@ namespace SmartStore.Core.Domain
 
 		public ExportProfile()
 		{
-			Limit = 100;
 			Enabled = true;
 			PerStore = true;
 			Cleanup = true;

@@ -97,8 +97,8 @@ namespace SmartStore.Admin.Models.DataExchange
 			[SmartResourceDisplayName("Admin.Configuration.Export.EntityType")]
 			public string EntityTypeName { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.FileType")]
-			public string FileType { get; set; }
+			[SmartResourceDisplayName("Admin.Configuration.Export.FileExtension")]
+			public string FileExtension { get; set; }
 
 			[SmartResourceDisplayName("Admin.Configuration.Export.SupportedFileTypes")]
 			public string SupportedFileTypes { get; set; }

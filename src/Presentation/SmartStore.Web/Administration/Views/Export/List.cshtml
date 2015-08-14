@@ -47,7 +47,7 @@
 							.ClientTemplate(@Html.SymbolForBool("Enabled"))
 							.Centered();
 						columns.Bound(x => x.Provider.EntityTypeName);
-						columns.Bound(x => x.Provider.FileType)
+						columns.Bound(x => x.Provider.FileExtension)
 							.Centered();
 						columns.Bound(x => x.SchedulingHours)
 							.Centered();

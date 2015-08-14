@@ -6,9 +6,15 @@ namespace SmartStore.Services.DataExchange
 {
 	public partial interface IExportProvider : IProvider, IUserEditable
 	{
+		/// <summary>
+		/// Th exported entity type
+		/// </summary>
 		ExportEntityType EntityType { get; }
 
-		string FileType { get; }
+		/// <summary>
+		/// Extension of the export files (without dot)
+		/// </summary>
+		string FileExtension { get; }
 
 		/// <summary>
 		/// Get configuration information
@@ -19,9 +25,9 @@ namespace SmartStore.Services.DataExchange
 		bool RequiresConfiguration(out string partialViewName, out Type modelType);
 
 		/// <summary>
-		/// A record needs to be exported to a file
+		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void Execute(ExportExecuteContext context);
+		void Execute(IExportExecuteContext context);
 	}
 }

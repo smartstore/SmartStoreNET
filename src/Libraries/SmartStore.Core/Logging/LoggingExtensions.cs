@@ -45,7 +45,7 @@ namespace SmartStore.Core.Logging
 
             if (logger.IsEnabled(level))
             {
-                string fullMessage = exception == null ? string.Empty : exception.ToString();
+                string fullMessage = exception == null ? string.Empty : exception.ToAllMessages();
                 logger.InsertLog(level, message, fullMessage, customer);
             }
         }

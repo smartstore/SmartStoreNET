@@ -39,6 +39,7 @@
 * (Dev) TaskScheduler: Tasks can propagate progress info (percentage & message)
 * (Dev) TaskScheduler: Cancellation request is sent to tasks on app shutdown
 * ShippingByWeight & ShippingByTotal: Support for multiple zip ranges (comma separated)
+* Two more options to handle customer numbers: display customer number in frontend & let customers enter their customer number if it's still empty
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

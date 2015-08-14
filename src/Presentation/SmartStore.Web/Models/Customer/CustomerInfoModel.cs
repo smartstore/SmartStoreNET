@@ -26,6 +26,7 @@ namespace SmartStore.Web.Models.Customer
         [AllowHtml]
         public string CustomerNumber { get; set; }
         public bool CustomerNumberEnabled { get; set; }
+        public bool DisplayCustomerNumber { get; set; }
 
         public bool CheckUsernameAvailabilityEnabled { get; set; }
         public bool AllowUsersToChangeUsernames { get; set; }

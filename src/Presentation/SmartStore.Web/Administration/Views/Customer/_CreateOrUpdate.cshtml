@@ -201,16 +201,19 @@
             </tr>
         }
         
-        <tr>
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerNumber)
-            </td>
-            <td class="adminData">
-                @Html.EditorFor(model => model.CustomerNumber)
-                @Html.ValidationMessageFor(model => model.CustomerNumber)
-            </td>
-        </tr>
-
+        @if (Model.CustomerNumberEnabled)
+        {
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.CustomerNumber)
+                </td>
+                <td class="adminData">
+                    @Html.EditorFor(model => model.CustomerNumber)
+                    @Html.ValidationMessageFor(model => model.CustomerNumber)
+                </td>
+            </tr>
+        }
+        
         @if (Model.StreetAddressEnabled)
         {
             <tr>

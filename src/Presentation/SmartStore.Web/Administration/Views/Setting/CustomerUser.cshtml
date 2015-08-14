@@ -41,9 +41,13 @@
 
             $("#@Html.FieldIdFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)").click(toggleAvatar);
             $("#@Html.FieldIdFor(model => model.CustomerSettings.UsernamesEnabled)").click(toggleUsername);
+            $("#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberEnabled)").click(toggleCustomerNumber);
+            $("#@Html.FieldIdFor(model => model.CustomerSettings.DisplayCustomerNumber)").click(toggleEditCustomerNumber);
 
             toggleAvatar();
             toggleUsername();
+            toggleCustomerNumber();
+            toggleEditCustomerNumber();
         });
 
         function toggleAvatar() {
@@ -66,6 +70,26 @@
             }
         }
 
+        function toggleCustomerNumber() {
+            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberEnabled)').is(':checked')) {
+                $('#pnlDisplayCustomerNumber').show();
+                $('#pnlCustomerCanEditNumberIfEmpty').show();
+            }
+            else {
+                $('#pnlDisplayCustomerNumber').hide();
+                $('#pnlCustomerCanEditNumberIfEmpty').hide();
+            }
+        }
+        
+        function toggleEditCustomerNumber() {
+            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.DisplayCustomerNumber)').is(':checked')) {
+                $('#pnlCustomerCanEditNumberIfEmpty').show();
+            }
+            else {
+                $('#pnlCustomerCanEditNumberIfEmpty').hide();
+            }
+        }
+
     </script>
     <table class="adminContent">
         <tr>
@@ -84,6 +108,24 @@
             <td class="adminData">
                 @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNumberEnabled)
                 @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberEnabled)
+            </td>
+        </tr>
+        <tr id="pnlDisplayCustomerNumber">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayCustomerNumber)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayCustomerNumber)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayCustomerNumber)
+            </td>
+        </tr>
+        <tr id="pnlCustomerCanEditNumberIfEmpty">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
             </td>
         </tr>
         <tr id="pnlAllowUsersToChangeUsernames">

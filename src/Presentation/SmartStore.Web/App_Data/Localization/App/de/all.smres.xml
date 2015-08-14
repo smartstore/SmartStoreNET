@@ -5048,10 +5048,10 @@
 		<Value>Legt die maximale Länge des angezeigten Benutzernamens fest.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled">
-		<Value>Kunden können Kundennummer hinterlegen</Value>
+		<Value>Kundennummer speichern</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled.Hint">
-		<Value>Bestimmt ob Kunden eine Kundennummer hinterlegen können.</Value>
+		<Value>Bestimmt ob Kundennummern hinterlegt werden können.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerSettings">
 		<Value>Kundeneinstellungen</Value>

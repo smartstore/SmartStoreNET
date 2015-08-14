@@ -5204,10 +5204,10 @@
 		<Value>Determines the maximum length of the displayed customer name.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled">
-		<Value>Customers can enter a customer number</Value>
+		<Value>Save customer number</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled.Hint">
-		<Value>Specifies whether customers can enter a customer number.</Value>
+		<Value>Specifies whether customer numbers can be saved.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerSettings">
 		<Value>Customer settings</Value>

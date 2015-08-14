@@ -70,6 +70,24 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.FileUploader.EnterUrl",
 				"Enter URL",
 				"URL eingeben");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled",
+                "Save customer number",
+                "Kundennummer speichern",
+                "Specifies whether customer numbers can be saved.",
+                "Bestimmt ob Kundennummern hinterlegt werden können.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.DisplayCustomerNumber",
+                "Display customer numbers in frontend",
+                "Kundennummern im Frontend anzeigen",
+                "Specifies whether customer numbers will be displayed to customers in their account area.",
+                "Bestimmt ob Kunden ihre Kundennummer in Ihrem Account-Bereich einsehen können.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerCanEditNumberIfEmpty",
+                "Customers can enter a customer number",
+                "Kunden können Kundennummer hinterlegen",
+                "Specifies whether customers can enter a customer number if the customer number doesn't contain a value yet.",
+                "Bestimmt ob Kunden eine Kundennummer angeben können, wenn für diese noch kein Wert hinterlegt wurde.");
 		}
     }
 }

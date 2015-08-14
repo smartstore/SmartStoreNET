@@ -108,12 +108,6 @@ namespace SmartStore.Admin.Models.Customers
         [AllowHtml]
         public string Fax { get; set; }
         
-
-
-
-
-
-
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.AdminComment")]
         [AllowHtml]
         public string AdminComment { get; set; }
@@ -128,8 +122,6 @@ namespace SmartStore.Admin.Models.Customers
         public int AffiliateId { get; set; }
 		public string AffiliateFullName { get; set; }
 
-
-
         //time zone
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.TimeZoneId")]
         [AllowHtml]
@@ -139,10 +131,6 @@ namespace SmartStore.Admin.Models.Customers
 
         public IList<SelectListItem> AvailableTimeZones { get; set; }
 
-
-
-
-
         //EU VAT
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.VatNumber")]
         [AllowHtml]
@@ -151,10 +139,6 @@ namespace SmartStore.Admin.Models.Customers
         public string VatNumberStatusNote { get; set; }
 
         public bool DisplayVatNumber { get; set; }
-
-
-
-
 
         //registration date
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CreatedOn")]
@@ -170,18 +154,12 @@ namespace SmartStore.Admin.Models.Customers
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.LastVisitedPage")]
         public string LastVisitedPage { get; set; }
 
-
         //customer roles
         [SmartResourceDisplayName("Admin.Customers.Customers.Fields.CustomerRoles")]
         public string CustomerRoleNames { get; set; }
         public List<CustomerRoleModel> AvailableCustomerRoles { get; set; }
         public int[] SelectedCustomerRoleIds { get; set; }
         public bool AllowManagingCustomerRoles { get; set; }
-
-
-
-
-
 
         //reward points history
         public bool DisplayRewardPointsHistory { get; set; }

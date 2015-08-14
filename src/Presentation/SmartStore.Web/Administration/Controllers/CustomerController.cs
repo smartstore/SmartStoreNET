@@ -770,7 +770,7 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.CompanyEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.Company);
                     if (_customerSettings.CustomerNumberEnabled)
-                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Company, model.CustomerNumber);
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
                     if (_customerSettings.StreetAddressEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.StreetAddress, model.StreetAddress);
                     if (_customerSettings.StreetAddress2Enabled)

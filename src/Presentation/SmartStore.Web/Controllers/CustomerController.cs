@@ -310,7 +310,16 @@ namespace SmartStore.Web.Controllers
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
-            model.CustomerNumberEnabled = _customerSettings.CustomerNumberEnabled;
+            model.DisplayCustomerNumber = _customerSettings.DisplayCustomerNumber && _customerSettings.CustomerNumberEnabled;
+
+            if (_customerSettings.CustomerNumberEnabled && (_customerSettings.CustomerCanEditNumberIfEmpty && String.IsNullOrEmpty(model.CustomerNumber)))
+            {
+                model.CustomerNumberEnabled = true;
+            }
+            else
+            {
+                model.CustomerNumberEnabled = false;
+            }
 
             //external authentication
             foreach (var ear in _openAuthenticationService.GetExternalIdentifiersFor(customer))

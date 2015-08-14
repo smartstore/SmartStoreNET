@@ -28,16 +28,10 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public partial class ScheduleTaskController : AdminControllerBase
     {
-        #region Fields
-
 		private readonly IScheduleTaskService _scheduleTaskService;
         private readonly ITaskScheduler _taskScheduler;
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
-
-        #endregion
-
-        #region Constructors
 
 		public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
@@ -50,10 +44,6 @@ namespace SmartStore.Admin.Controllers
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
         }
-
-        #endregion
-
-        #region Utility
 
 		private bool IsTaskVisible(ScheduleTask task)
 		{
@@ -100,8 +90,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				Id = task.Id,
 				Name = task.Name,
-				Seconds = task.Seconds,
-				PrettySeconds = TimeSpan.FromSeconds(task.Seconds).Prettify(),
+				CronExpression = task.CronExpression,
+				CronDescription = CronExpression.GetFriendlyDescription(task.CronExpression),
 				Enabled = task.Enabled,
 				StopOnError = task.StopOnError,
 				LastStartUtc = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
@@ -111,6 +101,7 @@ namespace SmartStore.Admin.Controllers
 				LastError = task.LastError.EmptyNull(),
 				IsRunning = isRunning,
 				CancelUrl = isRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
+				EditUrl = Url.Action("EditPopup", new { id = task.Id }),
 				ProgressPercent = task.ProgressPercent,
 				ProgressMessage = task.ProgressMessage,
 				IsOverdue = isOverdue,
@@ -126,10 +117,6 @@ namespace SmartStore.Admin.Controllers
 
             return model;
         }
-
-        #endregion
-
-        #region Methods
 
         public ActionResult Index()
         {
@@ -153,9 +140,9 @@ namespace SmartStore.Admin.Controllers
             var models = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
                 .Select(PrepareScheduleTaskModel)
-				.OrderByDescending(x => x.IsRunning)
-				.ThenByDescending(x => x.IsOverdue)
-				.ThenBy(x => x.Seconds)
+				//.OrderByDescending(x => x.IsRunning)
+				//.ThenByDescending(x => x.IsOverdue)
+				//.ThenBy(x => x.Seconds)
                 .ToList();
 
             var model = new GridModel<ScheduleTaskModel>
@@ -198,22 +185,17 @@ namespace SmartStore.Admin.Controllers
 			}
 
             scheduleTask.Name = model.Name;
-            scheduleTask.Seconds = model.Seconds;
             scheduleTask.Enabled = model.Enabled;
             scheduleTask.StopOnError = model.StopOnError;
 
 			if (model.Enabled)
 			{
-				scheduleTask.NextRunUtc = DateTime.UtcNow.AddSeconds(scheduleTask.Seconds);
+				scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
 			}
 			else
 			{
 				scheduleTask.NextRunUtc = null;
 			}
-
-			int max = Int32.MaxValue / 1000;
-
-			scheduleTask.Seconds = (model.Seconds > max ? max : model.Seconds);
 
             _scheduleTaskService.UpdateTask(scheduleTask);
 
@@ -266,6 +248,30 @@ namespace SmartStore.Admin.Controllers
 			return Redirect(returnUrl);
 		}
 
-        #endregion
+		public ActionResult EditPopup(int id /* taskId */)
+		{
+			var task = _scheduleTaskService.GetTaskById(id);
+			var model = PrepareScheduleTaskModel(task);
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		public ActionResult CronScheduleNextOccurrences(string expression)
+		{
+			try
+			{
+				var now = DateTime.Now;
+				var model = CronExpression.GetFutureSchedules(expression, now, now.AddYears(1));
+				ViewBag.Description = CronExpression.GetFriendlyDescription(expression);
+				return PartialView(model);
+			}
+			catch (Exception ex)
+			{
+				ViewBag.CronScheduleParseError = ex.Message;
+				return PartialView(Enumerable.Empty<DateTime>());
+			}
+		}
+
     }
 }

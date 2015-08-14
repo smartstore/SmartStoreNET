@@ -124,7 +124,7 @@ namespace SmartStore.Services.Tasks
 
                 if (task.Enabled)
                 {
-					task.NextRunUtc = now.AddSeconds(task.Seconds);
+					task.NextRunUtc = _scheduledTaskService.GetNextSchedule(task);
                 }
 
                 _scheduledTaskService.UpdateTask(task);

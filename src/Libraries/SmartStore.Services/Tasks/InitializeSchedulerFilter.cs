@@ -37,7 +37,7 @@ namespace SmartStore.Services.Tasks
 						var taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 						var tasks = taskService.GetAllTasks(true);
-						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
+						taskService.CalculateFutureSchedules(tasks, true /* isAppStart */);
 
 						var baseUrl = CommonHelper.GetAppSetting<string>("sm:TaskSchedulerBaseUrl");
 						if (baseUrl.IsWebUrl())

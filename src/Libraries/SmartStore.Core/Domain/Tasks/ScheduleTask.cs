@@ -18,10 +18,10 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         public string Alias { get; set; }
 
-        /// <summary>
-        /// Gets or sets the run period (in seconds)
-        /// </summary>
-        public int Seconds { get; set; }
+		/// <summary>
+		/// Gets or sets the CRON expression used to calculate future schedules
+		/// </summary>
+		public string CronExpression { get; set; }
 
         /// <summary>
         /// Gets or sets the type of appropriate ITask class

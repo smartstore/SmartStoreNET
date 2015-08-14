@@ -340,6 +340,10 @@
     <Compile Include="Migrations\201508121735397_AddSyncMapping.Designer.cs">
       <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201508142203054_CronExpressions.cs" />
+    <Compile Include="Migrations\201508142203054_CronExpressions.Designer.cs">
+      <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
     <Compile Include="Setup\DbMigrationContext.cs" />
@@ -641,6 +645,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508121735397_AddSyncMapping.resx">
       <DependentUpon>201508121735397_AddSyncMapping.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201508142203054_CronExpressions.resx">
+      <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

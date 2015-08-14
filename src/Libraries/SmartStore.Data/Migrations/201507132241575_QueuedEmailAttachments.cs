@@ -51,7 +51,7 @@ namespace SmartStore.Data.Migrations
 				new ScheduleTask
 				{
 					Name = "Clear email queue",
-					Seconds = 86400, // 1 day
+					CronExpression = "0 2 * * *",
 					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,

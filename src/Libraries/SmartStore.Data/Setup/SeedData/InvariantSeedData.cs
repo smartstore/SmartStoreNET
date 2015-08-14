@@ -4771,7 +4771,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Send emails",
-					Seconds = 60,
+					CronExpression = "* * * * *", // every Minute
 					Type = "SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4779,7 +4779,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Delete guests",
-					Seconds = 600,
+					CronExpression = "*/10 * * * *", // Every 10 minutes
 					Type = "SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4787,7 +4787,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Delete logs",
-					Seconds = 86400, // 1 day
+					CronExpression = "0 1 * * *", // At 01:00
 					Type = "SmartStore.Services.Logging.DeleteLogsTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4795,7 +4795,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					Seconds = 14400, // 4 hrs
+					CronExpression = "0 */4 * * *", // Every 04 hours
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,
@@ -4803,7 +4803,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Update currency exchange rates",
-					Seconds = 900,
+					CronExpression = "0/15 * * * *", // Every 15 minutes
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4811,7 +4811,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear transient uploads",
-					Seconds = 43200, // 12 hours
+					CronExpression = "30 1,13 * * *", // At 01:30 and 13:30
 					Type = "SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4819,11 +4819,19 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear email queue",
-					Seconds = 86400, // 1 day
+					CronExpression = "0 2 * * *", // At 02:00
 					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
 				},
+				new ScheduleTask
+				{
+					Name = "Cleanup temporary files",
+					CronExpression = "30 3 * * *", // At 03:30
+					Type = "SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false
+				}
 			};
 			this.Alter(entities);
 			return entities;

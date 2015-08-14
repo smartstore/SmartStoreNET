@@ -13,10 +13,13 @@ namespace SmartStore.Admin.Models.Tasks
         [AllowHtml]
         public string Name { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.ScheduleTasks.Seconds")]
-        public int Seconds { get; set; }
-		public string PrettySeconds { get; set; }
+		//[SmartResourceDisplayName("Admin.System.ScheduleTasks.Seconds")]
+		//public int Seconds { get; set; }
+		//public string PrettySeconds { get; set; }
 
+		public string CronExpression { get; set; }
+		public string CronDescription { get; set; }
+		
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Enabled")]
         public bool Enabled { get; set; }
 
@@ -46,6 +49,7 @@ namespace SmartStore.Admin.Models.Tasks
 		public int? ProgressPercent { get; set; }
 		public string ProgressMessage { get; set; }
 		public string CancelUrl { get; set; }
+		public string EditUrl { get; set; }
 
     }
 }

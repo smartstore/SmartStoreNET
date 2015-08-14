@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using SmartStore.Core.Domain.Tasks;
 
@@ -73,10 +74,17 @@ namespace SmartStore.Services.Tasks
         void UpdateTask(ScheduleTask task);
 
 		/// <summary>
-		/// Calculates - according to their intervals - all task next run times
+		/// Calculates - according to their cron expressions - all task future schedules
 		/// and saves them to the database.
 		/// </summary>
 		/// <param name="isAppStart">When <c>true</c>, determines stale tasks and fixes their states to idle.</param>
-		void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks, bool isAppStart = false);
+		void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false);
+
+		/// <summary>
+		/// Calculates the next schedule according to the task's cron expression
+		/// </summary>
+		/// <param name="task">ScheduleTask</param>
+		/// <returns>The next schedule or <c>null</c> if the task is disabled</returns>
+		DateTime? GetNextSchedule(ScheduleTask task);
     }
 }

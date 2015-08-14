@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Localization;
+using SmartStore.Services.Helpers;
 
 namespace SmartStore.Services.Tasks
 {
@@ -15,14 +16,16 @@ namespace SmartStore.Services.Tasks
         #region Fields
 
         private readonly IRepository<ScheduleTask> _taskRepository;
+		private readonly IDateTimeHelper _dateTimeHelper;
 
         #endregion
 
         #region Ctor
 
-        public ScheduleTaskService(IRepository<ScheduleTask> taskRepository)
+		public ScheduleTaskService(IRepository<ScheduleTask> taskRepository, IDateTimeHelper dateTimeHelper)
         {
             this._taskRepository = taskRepository;
+			this._dateTimeHelper = dateTimeHelper;
 
 			T = NullLocalizer.Instance;
         }
@@ -78,7 +81,7 @@ namespace SmartStore.Services.Tasks
             {
                 query = query.Where(t => t.Enabled);
             }
-            query = query.OrderByDescending(t => t.Enabled).ThenBy(t => t.Seconds);
+            query = query.OrderByDescending(t => t.Enabled);
 
             var tasks = query.ToList();
             return tasks;
@@ -90,7 +93,7 @@ namespace SmartStore.Services.Tasks
 
             var query = from t in _taskRepository.Table
 						where t.NextRunUtc.HasValue && t.NextRunUtc <= now && t.Enabled
-                        orderby t.NextRunUtc, t.Seconds
+                        orderby t.NextRunUtc
                         select t;
 
             return query.ToList();
@@ -144,7 +147,7 @@ namespace SmartStore.Services.Tasks
             _taskRepository.Update(task);
         }
 
-		public void CalculateNextRunTimes(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
+		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)
 		{
 			Guard.ArgumentNotNull(() => tasks);
 			
@@ -153,7 +156,7 @@ namespace SmartStore.Services.Tasks
 				var now = DateTime.UtcNow;
 				foreach (var task in tasks)
 				{
-					task.NextRunUtc = task.Enabled ? now.AddSeconds(task.Seconds) : (DateTime?)null;
+					task.NextRunUtc = GetNextSchedule(task);
 					if (isAppStart)
 					{
 						task.ProgressPercent = null;
@@ -169,6 +172,22 @@ namespace SmartStore.Services.Tasks
 
 				scope.Commit();
 			}
+		}
+
+		public virtual DateTime? GetNextSchedule(ScheduleTask task)
+		{
+			if (task.Enabled)
+			{
+				try
+				{
+					var baseTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow);
+					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
+					return _dateTimeHelper.ConvertToUtcTime(next);
+				}
+				catch { }
+			}
+
+			return null;
 		}
 
         #endregion

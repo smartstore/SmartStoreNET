@@ -829,7 +829,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		{
 			Helper.SetupConfigModel(model, "FeedFroogle");
 
-			model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
+			//model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
 			model.TaskEnabled = Helper.ScheduleTask.Enabled;
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();

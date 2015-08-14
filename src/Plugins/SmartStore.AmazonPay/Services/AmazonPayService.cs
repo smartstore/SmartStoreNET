@@ -336,7 +336,7 @@ namespace SmartStore.AmazonPay.Services
 			if (task == null)
 				model.PollingTaskMinutes = 30;
 			else
-				model.PollingTaskMinutes = (task.Seconds / 60);
+				model.PollingTaskMinutes = 30; // (task.Seconds / 60);
 		}
 
 		public string GetWidgetUrl()
@@ -1287,7 +1287,7 @@ namespace SmartStore.AmazonPay.Services
 				_scheduleTaskService.InsertTask(new ScheduleTask
 				{
 					Name = "{0} data polling".FormatWith(AmazonPayCore.SystemName),
-					Seconds = 30 * 60,
+					CronExpression = "*/30 * * * *", // Every 30 minutes
 					Type = AmazonPayCore.DataPollingTaskType,
 					Enabled = false,
 					StopOnError = false,
@@ -1301,7 +1301,7 @@ namespace SmartStore.AmazonPay.Services
 			if (task != null)
 			{
 				task.Enabled = enabled;
-				task.Seconds = seconds;
+				//task.Seconds = seconds;
 
 				_scheduleTaskService.UpdateTask(task);
 			}

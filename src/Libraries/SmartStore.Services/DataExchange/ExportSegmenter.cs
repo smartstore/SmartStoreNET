@@ -1,18 +1,22 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Dynamic;
+using System.Linq;
 using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange
 {
 	public interface IExportSegmenter
 	{
-		int TotalRecords { get; }
+		int ProcessedItems { get; }
+
+		int TotalItems { get; }
 
 		int TotalSegments { get; }
 
-		int CurrentSegmentIndex { get; }
+		int SegmentIndex { get; }
+		
+		int FileIndex { get; }
 
 		bool ReadNextSegment();
 
@@ -20,24 +24,54 @@ namespace SmartStore.Services.DataExchange
 	}
 
 
-	public class ExportSegmenter<T> : IExportSegmenter where T : BaseEntity
+	public class ExportSegmenter : IExportSegmenter, IDisposable
 	{
-		private Func<int, IEnumerable<T>> _loadData;
-		private Func<T, ExpandoObject> _convertData;
+		private Func<int, IEnumerable<object>> _loadData;
+		private Func<object, ExpandoObject> _convertData;
 		private List<ExpandoObject> _currentSegment;
 		private IPageable _pageable;
-		private bool _isBeginOfFile;
+		private int _pageIndexReset;
+		private bool _isBeginOfSegmentation;
 
-		internal ExportSegmenter(Func<int, IEnumerable<T>> loadData, Func<T, ExpandoObject> convertData, int pageSize, int totalRecords)
+		private int _itemsPerFile;
+		private int _fileIndex;
+		private int _fileItemsSkip;
+		private bool _fileCaptured;
+
+		private int _itemsPerFileCount;
+		private int _itemsCount;
+
+		public ExportSegmenter(Func<int, IEnumerable<object>> loadData, Func<object, ExpandoObject> convertData, PagedList pageable, int itemsPerFile)
 		{
 			_loadData = loadData;
 			_convertData = convertData;
+			_pageable = pageable;
+			_itemsPerFile = itemsPerFile;
 
-			_isBeginOfFile = true;
-			_pageable = new PagedList(0, pageSize, totalRecords);
+			_pageIndexReset = pageable.PageIndex;
+			_isBeginOfSegmentation = true;
 		}
 
-		public int TotalRecords
+		protected void ClearSegment()
+		{
+			if (_currentSegment != null)
+			{
+				_currentSegment.Clear();
+				_currentSegment = null;
+			}
+		}
+
+		public void Dispose()
+		{
+			ClearSegment();
+		}
+
+		public int ProcessedItems
+		{
+			get { return _itemsCount; }
+		}
+
+		public int TotalItems
 		{
 			get	{ return _pageable.TotalCount; }
 		}
@@ -47,34 +81,69 @@ namespace SmartStore.Services.DataExchange
 			get { return _pageable.TotalPages; }
 		}
 
-		public int CurrentSegmentIndex
+		public int SegmentIndex
 		{
-			get { return _isBeginOfFile ? 0 : _pageable.PageNumber; }
+			get { return _isBeginOfSegmentation ? 0 : _pageable.PageNumber; }
+		}
+
+		public int FileIndex
+		{
+			get { return _fileIndex; }
+		}
+
+		public void Start(Func<bool> callback)
+		{
+			for (int oldFileIndex = 0; oldFileIndex < 9999999; ++oldFileIndex)
+			{
+				_fileCaptured = false;
+
+				if (!callback())
+					break;
+
+				if (_fileIndex <= oldFileIndex)
+					break;
+			}
+
+			Dispose();
 		}
 
 		public void Reset()
 		{
-			if (_pageable.PageIndex != 0 && _currentSegment != null)
-			{
-				_currentSegment.Clear();
-				_currentSegment = null;
-			}
-			_isBeginOfFile = true;
-			_pageable.PageIndex = 0;
+			//if (_pageable.PageIndex != 0 && _currentSegment != null)
+			//{
+			//	_currentSegment.Clear();
+			//	_currentSegment = null;
+			//}
+
+			ClearSegment();
+
+			_isBeginOfSegmentation = true;
+			_pageable.PageIndex = _pageIndexReset;
+			_fileIndex = 0;
+			_fileItemsSkip = 0;
+			_fileCaptured = false;
+			_itemsPerFileCount = 0;
 		}
 
 		public bool ReadNextSegment()
 		{
-			if (_currentSegment != null)
+			ClearSegment();
+
+			if (_isBeginOfSegmentation)
 			{
-				_currentSegment.Clear();
-				_currentSegment = null;
+				_isBeginOfSegmentation = false;
+				//_itemsCount = 0;
+				return _pageable.TotalCount > 0;
 			}
 
-			if (_isBeginOfFile)
+			if (_fileCaptured)
 			{
-				_isBeginOfFile = false;
-				return _pageable.TotalCount > 0;
+				return false;
+			}
+
+			if (_fileItemsSkip > 0)
+			{
+				return true;
 			}
 
 			if (_pageable.HasNextPage)
@@ -97,11 +166,27 @@ namespace SmartStore.Services.DataExchange
 
 					var data = _loadData(_pageable.PageIndex);
 
-					foreach (var item in data)
+					foreach (var item in data.Skip(_fileItemsSkip))
 					{
+						if (_itemsPerFile > 0 && _itemsPerFileCount >= _itemsPerFile)
+						{
+							_fileCaptured = true;
+							_fileIndex++;
+							_itemsPerFileCount = 0;
+							_fileItemsSkip = _currentSegment.Count;
+
+							return _currentSegment.AsReadOnly();
+						}
+
 						var expando = _convertData(item);
+
 						_currentSegment.Add(expando);
+
+						++_itemsPerFileCount;
+						++_itemsCount;
 					}
+
+					_fileItemsSkip = 0;
 				}
 
 				return _currentSegment.AsReadOnly();

@@ -144,9 +144,15 @@ namespace SmartStore.Core
 
     public class PagedList : PagedListBase
     {
-        public PagedList(int pageIndex, int pageSize, int totalItemsCount) : base(pageIndex, pageSize, totalItemsCount)
+        public PagedList(int pageIndex, int pageSize, int totalItemsCount)
+			: base(pageIndex, pageSize, totalItemsCount)
         {
         }
+
+		public PagedList(int offset, int limit, int pageSize, int totalItemsCount)
+			: base(offset > 0 && pageSize > 0 ? offset / pageSize : 0, pageSize, limit > 0 ? limit : totalItemsCount)
+		{
+		}
     }
 
 }

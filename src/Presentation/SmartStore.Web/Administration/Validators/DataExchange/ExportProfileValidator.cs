@@ -11,6 +11,10 @@ namespace SmartStore.Admin.Validators.DataExchange
 			RuleFor(x => x.Name)
 				.NotEmpty()
 				.WithMessage(localization.GetResource("Admin.Validation.Name"));
+
+			RuleFor(x => x.Offset)
+				.LessThanOrEqualTo(x => x.Limit)
+				.WithMessage(localization.GetResource("Admin.Configuration.Export.LimitOffsetValidation"));
 		}
 	}
 }

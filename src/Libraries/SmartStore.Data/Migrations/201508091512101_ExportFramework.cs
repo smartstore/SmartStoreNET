@@ -169,6 +169,10 @@ namespace SmartStore.Data.Migrations
 				"Specifies how many records to be loaded at maximum.",
 				"Legt die Anzahl der Datensätze fest, die maximal geladen werden sollen.");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.LimitOffsetValidation",
+				"The offset must be less or equal to limit.",
+				"Der Abstand muss kleiner oder gleich der Begrenzung sein.");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.BatchSize",
 				"Batch size",
 				"Stapelgröße",
@@ -178,8 +182,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.PerStore",
 				"Per store",
 				"Per Shop",
-				"Specifies whether to start a separate run-through for each store. The data are thus divided into separate folders and files.",
-				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll. Die Daten werden dadurch in separate Ordner und Dateien aufgeteilt.");
+				"Specifies whether to start a separate run-through for each store. For each shop a new file will be created.",
+				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll. Für jeden Shop wird eine neue Datei erzeugt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.CreateZipArchive",
 				"Create ZIP archive",

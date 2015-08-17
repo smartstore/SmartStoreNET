@@ -14,14 +14,19 @@ namespace SmartStore.Services.DataExchange
 
 		bool IsCanceled { get; }
 
+		int StoreId { get; }
+
+		string StoreUrl { get; }
+
 		string Folder { get; }
 
 		string FileNamePattern { get; }
 
 		Dictionary<string, object> CustomProperties { get; set; }
 
-		string GetFilePath(int numberOfCreatedFiles, string fileNameSuffix = null);
+		string GetFilePath(string fileNameSuffix = null);
 	}
+
 
 	public class ExportExecuteContext : IExportExecuteContext
 	{
@@ -44,16 +49,20 @@ namespace SmartStore.Services.DataExchange
 			get { return _cancellation.IsCancellationRequested; }
 		}
 
+		public int StoreId { get; internal set; }
+
+		public string StoreUrl { get; internal set; }
+
 		public string Folder { get; private set; }
 
 		public string FileNamePattern { get; internal set; }
 
 		public Dictionary<string, object> CustomProperties { get; set; }
 
-		public string GetFilePath(int numberOfCreatedFiles, string fileNameSuffix = null)
+		public string GetFilePath(string fileNameSuffix = null)
 		{
 			var fileName = FileNamePattern.FormatInvariant(
-				numberOfCreatedFiles.ToString("D5"),
+				(Data.FileIndex + 1).ToString("D5"),
 				SeoHelper.GetSeName(fileNameSuffix.EmptyNull(), true, false)
 			);
 

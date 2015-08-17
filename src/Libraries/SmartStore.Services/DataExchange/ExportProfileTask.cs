@@ -12,10 +12,15 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 
@@ -30,38 +35,8 @@ namespace SmartStore.Services.DataExchange
 		private ICommonServices _services;
 		private IExportService _exportService;
 		private IProductService _productService;
-
-		#region Entity to expando
-
-		private ExpandoObject ToProduct(ExportProfileTaskContext ctx, Product product)
-		{
-			IDictionary<string, object> expando = new ExpandoObject();
-
-			expando.Add("Id", product.Id);
-			expando.Add("Name", product.Name);
-			expando.Add("Sku", product.Sku);
-			expando.Add("ShortDescription", product.ShortDescription);
-
-			return expando as ExpandoObject;
-		}
-
-		private ExpandoObject ToExpando<T>(ExportProfileTaskContext ctx, T entity) where T : BaseEntity
-		{
-			Product product = null;
-
-			if ((product = entity as Product) != null)
-			{
-				return ToProduct(ctx, product);
-			}
-
-			ctx.Log.Error("Unsupported entity type '{0}'".FormatInvariant(typeof(T).Name));
-
-			return null;
-		}
-
-		#endregion
-
-		#region Get entities
+		private IPictureService _pictureService;
+		private MediaSettings _mediaSettings;
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
@@ -72,9 +47,9 @@ namespace SmartStore.Services.DataExchange
 				var searchContext = new ProductSearchContext
 				{
 					OrderBy = ProductSortingEnum.CreatedOn,
-					PageIndex = ctx.Profile.Offset + pageIndex,
+					PageIndex = pageIndex,
 					PageSize = _pageSize,
-					StoreId = (ctx.Store == null ? 0 : ctx.Store.Id),
+					StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : 0),
 					VisibleIndividuallyOnly = true
 				};
 
@@ -92,7 +67,7 @@ namespace SmartStore.Services.DataExchange
 						{
 							OrderBy = ProductSortingEnum.CreatedOn,
 							PageSize = int.MaxValue,
-							StoreId = (ctx.Store == null ? 0 : ctx.Store.Id),
+							StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : 0),
 							VisibleIndividuallyOnly = false,
 							ParentGroupedProductId = product.Id
 						};
@@ -106,13 +81,22 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
-		#endregion
+		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Product product)
+		{
+			dynamic expando = product.ToExpando(ctx.Projection.LanguageId ?? 0, _pictureService, _mediaSettings, ctx.Store);
+
+
+
+			return expando as ExpandoObject;
+		}
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
 			_services = context.Resolve<ICommonServices>();
 			_exportService = context.Resolve<IExportService>();
 			_productService = context.Resolve<IProductService>();
+			_pictureService = context.Resolve<IPictureService>();
+			_mediaSettings = context.Resolve<MediaSettings>();
 		}
 
 		private void Cleanup(ExportProfileTaskContext ctx)
@@ -125,27 +109,48 @@ namespace SmartStore.Services.DataExchange
 			// TODO: more deployment specific here
 		}
 
-		private bool ExportCoreInner(ExportProfileTaskContext ctx)
+		private void ExportCoreInner(ExportProfileTaskContext ctx, Store store)
 		{
-			if (ctx.Provider == null)
-			{
-				ctx.Log.Error("Export aborted. Export provider cannot be loaded.");
-				return false;
-			}
-
-			if (!ctx.Provider.IsValid())
-			{
-				ctx.Log.Error("Export aborted. Export provider is not valid.");
-				return false;
-			}
+			ctx.Store = store;
+			ctx.Export.StoreId = store.Id;
+			ctx.Export.StoreUrl = store.Url;
 
 			// be careful with too long file system paths
 			ctx.Export.FileNamePattern = string.Concat(
 				"{0}-",
-				ctx.Store == null ? "all-stores" : SeoHelper.GetSeName(ctx.Store.Name, true, false).ToValidFileName("").Truncate(20),
+				ctx.Profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false).ToValidFileName("").Truncate(20) : "all-stores",
 				"{1}",
-				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith("."));
+				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".")
+			);
 
+			{
+				var logHead = new StringBuilder();
+				logHead.AppendLine();
+				logHead.AppendLine(new string('-', 40));
+				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
+				logHead.AppendLine("Export profile:\t\t{0} (Id {1})".FormatInvariant(ctx.Profile.Name, ctx.Profile.Id));
+
+				var plugin = ctx.Provider.Metadata.PluginDescriptor;
+				logHead.Append("Plugin:\t\t\t\t");
+				logHead.AppendLine(plugin == null ? "".NaIfEmpty() : "{0} ({1}) v.{2}".FormatInvariant(plugin.FriendlyName, plugin.SystemName, plugin.Version.ToString()));
+
+				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Provider == null ? "".NaIfEmpty() : ctx.Provider.Metadata.FriendlyName, ctx.Profile.ProviderSystemName));
+
+				var storeInfo = (ctx.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(store.Name, store.Id) : "all stores");
+				logHead.Append("Store:\t\t\t\t" + storeInfo);
+
+				ctx.Log.Information(logHead.ToString());
+			}
+
+			if (ctx.Provider == null)
+			{
+				throw new SmartException("Export aborted because the export provider cannot be loaded");
+			}
+
+			if (!ctx.Provider.IsValid())
+			{
+				throw new SmartException("Export aborted because the export provider is not valid");
+			}
 
 			if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 			{
@@ -154,33 +159,35 @@ namespace SmartStore.Services.DataExchange
 					OrderBy = ProductSortingEnum.CreatedOn,
 					PageIndex = ctx.Profile.Offset,
 					PageSize = 1,
-					StoreId = (ctx.Store == null ? 0 : ctx.Store.Id),
+					StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : 0),
 					VisibleIndividuallyOnly = true
 				});
 
-				ctx.Export.Data = new ExportSegmenter<Product>(
+				ctx.Segmenter = new ExportSegmenter(
 					pageIndex => GetProducts(ctx, pageIndex),
-					entity => ToExpando<Product>(ctx, entity),
-					_pageSize,
-					anySingleProduct.TotalCount
+					entity => ToExpando(ctx, (Product)entity),
+					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, _pageSize, anySingleProduct.TotalCount),
+					ctx.Profile.BatchSize
 				);
 			}
 
-			if (ctx.Export.Data == null)
+
+			if (ctx.Segmenter == null)
 			{
-				ctx.Log.Error("Unsupported entity type '{0}'".FormatInvariant(ctx.Provider.Value.EntityType.ToString()));
+				throw new SmartException("Unsupported entity type '{0}'".FormatInvariant(ctx.Provider.Value.EntityType.ToString()));
 			}
 			else
 			{
-				ctx.Provider.Value.Execute(ctx.Export);
-			}
+				ctx.Export.Data = ctx.Segmenter;
 
-			if (ctx.Cancellation.IsCancellationRequested)
-			{
-				ctx.Log.Warning("A cancellation has been requested");
-				return false;
+				ctx.Segmenter.Start(() =>
+				{
+					if (!ctx.Provider.Value.Execute(ctx.Export))
+						return false;
+
+					return !ctx.Cancellation.IsCancellationRequested;
+				});
 			}
-			return true;
 		}
 
 		private void ExportCoreOuter(ExportProfileTaskContext ctx)
@@ -198,40 +205,20 @@ namespace SmartStore.Services.DataExchange
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
 
-					{
-						var logHead = new StringBuilder();
-						logHead.AppendLine();
-						logHead.AppendLine(new string('-', 40));
-						logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-						logHead.AppendLine("Export profile:\t\t{0} (Id {1})".FormatInvariant(ctx.Profile.Name, ctx.Profile.Id));
-
-						var plugin = ctx.Provider.Metadata.PluginDescriptor;
-						logHead.Append("Plugin:\t\t\t\t");
-						logHead.AppendLine(plugin == null ? "".NaIfEmpty() : "{0} ({1}) v.{2}".FormatInvariant(plugin.FriendlyName, plugin.SystemName, plugin.Version.ToString()));
-
-						logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Provider == null ? "".NaIfEmpty() : ctx.Provider.Metadata.FriendlyName, ctx.Profile.ProviderSystemName));
-
-						if (!ctx.Profile.PerStore)
-							logHead.Append("Store:\t\t\t\tprocessing all stores");
-
-						ctx.Log.Information(logHead.ToString());
-					}
-
+					// TODO: log number of flown out records
 
 					if (ctx.Profile.PerStore)
 					{
-						foreach (var store in _services.StoreService.GetAllStores().Where(x => ctx.Filter.StoreId == 0 || ctx.Filter.StoreId == x.Id))
-						{
-							ctx.Log.Information("Store:\t\t\t\tprocessing \"{0}\" (Id {1})".FormatInvariant(store.Name, store.Id));
-							ctx.Store = store;
+						var allStores = _services.StoreService.GetAllStores();
 
-							if (!ExportCoreInner(ctx))
-								break;
+						foreach (var store in allStores.Where(x => ctx.Filter.StoreId == 0 || ctx.Filter.StoreId == x.Id))
+						{
+							ExportCoreInner(ctx, store);
 						}
 					}
 					else
 					{
-						ExportCoreInner(ctx);
+						ExportCoreInner(ctx, _services.StoreContext.CurrentStore);
 					}
 				}
 			}
@@ -241,11 +228,14 @@ namespace SmartStore.Services.DataExchange
 			}
 			finally
 			{
-				//if (ctx.Export.ExportedRecords.HasValue)
-				//	ctx.Log.Information("Number of exported records: {0}".FormatInvariant(ctx.Export.ExportedRecords.Value));
-
 				try
 				{
+					if (ctx.Cancellation.IsCancellationRequested)
+						ctx.Log.Warning("Export aborted. A cancellation has been requested");
+
+					if (ctx.Segmenter != null)
+						ctx.Segmenter.Dispose();
+
 					Cleanup(ctx);
 				}
 				catch { }
@@ -265,6 +255,7 @@ namespace SmartStore.Services.DataExchange
 			ExportCoreOuter(ctx);
 		}
 
+		// TODO: is method required?
 		public void Execute(ExportProfile profile, IComponentContext context)
 		{
 			if (profile == null)
@@ -310,6 +301,8 @@ namespace SmartStore.Services.DataExchange
 		public Store Store { get; set; }
 
 		public string Folder { get; private set; }
+
+		public ExportSegmenter Segmenter { get; set; }
 
 		public ExportExecuteContext Export { get; set; }
 	}

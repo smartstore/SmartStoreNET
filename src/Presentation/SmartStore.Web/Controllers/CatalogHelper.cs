@@ -680,7 +680,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var addShippingPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, _services.WorkContext.WorkingCurrency);
-			string additionalShippingCosts = "";
+			string additionalShippingCosts = String.Empty;
 			if (addShippingPrice > 0)
 			{
 				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false)) + ", ";
@@ -689,7 +689,7 @@ namespace SmartStore.Web.Controllers
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
             
             if (!product.IsTaxExempt && !product.IsShipEnabled)
-                model.LegalInfo += taxInfo + " " + defaultTaxRate;
+                model.LegalInfo += "{0} {1}, {2}".FormatWith(taxInfo, defaultTaxRate, T("Common.FreeShipping"));
 
             if(product.IsShipEnabled) 
             {

@@ -88,6 +88,11 @@ namespace SmartStore.Data.Migrations
                 "Kunden können Kundennummer hinterlegen",
                 "Specifies whether customers can enter a customer number if the customer number doesn't contain a value yet.",
                 "Bestimmt ob Kunden eine Kundennummer angeben können, wenn für diese noch kein Wert hinterlegt wurde.");
+
+            builder.AddOrUpdate("Common.FreeShipping",
+                "Free shipping",
+                "Versandkostenfrei");
+
 		}
     }
 }

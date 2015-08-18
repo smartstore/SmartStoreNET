@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System;
+using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Tasks;
 using SmartStore.Web.Framework;
@@ -13,10 +14,6 @@ namespace SmartStore.Admin.Models.Tasks
         [AllowHtml]
         public string Name { get; set; }
 
-		//[SmartResourceDisplayName("Admin.System.ScheduleTasks.Seconds")]
-		//public int Seconds { get; set; }
-		//public string PrettySeconds { get; set; }
-
 		public string CronExpression { get; set; }
 		public string CronDescription { get; set; }
 		
@@ -27,16 +24,20 @@ namespace SmartStore.Admin.Models.Tasks
         public bool StopOnError { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastStart")]
-        public string LastStartUtc { get; set; }
+        public string LastStartPretty { get; set; }
+		public DateTime? LastStart { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastEnd")]
-        public string LastEndUtc { get; set; }
+        public string LastEndPretty { get; set; }
+		public DateTime? LastEnd { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastSuccess")]
-        public string LastSuccessUtc { get; set; }
+        public string LastSuccessPretty { get; set; }
+		public DateTime? LastSuccess { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
-        public string NextRunUtc { get; set; }
+        public string NextRunPretty { get; set; }
+		public DateTime? NextRun { get; set; }
 
 		public bool IsOverdue { get; set; }
 
@@ -50,6 +51,7 @@ namespace SmartStore.Admin.Models.Tasks
 		public string ProgressMessage { get; set; }
 		public string CancelUrl { get; set; }
 		public string EditUrl { get; set; }
+		public string ExecuteUrl { get; set; }
 
     }
 }

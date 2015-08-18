@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core;
 
 namespace SmartStore.Services.ExportImport
 {

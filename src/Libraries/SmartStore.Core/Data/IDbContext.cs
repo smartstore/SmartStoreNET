@@ -93,10 +93,10 @@ namespace SmartStore.Core.Data
         void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
 
 		/// <summary>
-		/// Detaches all entities from the current object context
+		/// Detaches all entities of type <c>TEntity</c> from the current object context
 		/// </summary>
 		/// <returns>The count of detached entities</returns>
-		int DetachAll();
+		int DetachEntities<TEntity>() where TEntity : class;
 
 		/// <summary>
 		/// Change the state of an entity object
@@ -131,6 +131,11 @@ namespace SmartStore.Core.Data
 	public static class IDbContextExtensions
 	{
 
+		public static int DetachAll(this IDbContext ctx)
+		{
+			return ctx.DetachEntities<BaseEntity>();
+		}
+		
 		/// <summary>
 		/// Changes the object state to unchanged
 		/// </summary>

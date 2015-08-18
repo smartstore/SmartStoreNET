@@ -6,8 +6,9 @@
 }
 
 <style>
-	.future-schedules { border-spacing: 20px 5px; border-collapse: separate }
-	.future-schedules td { vertical-align: top }
+	.future-schedules { border-collapse: separate }
+	.future-schedules td { vertical-align: top; padding-bottom: 10px }
+	.future-schedules tr td:first-child { padding-right: 20px }
 </style>
 
 @if (error.HasValue())
@@ -16,17 +17,18 @@
 }
 else
 {
-	<p class="muted">@ViewBag.Description</p>
+	<h4 style="xmargin-bottom: 20px">Zukünftige Zeitpläne</h4>
+	<p class="text-warning">@ViewBag.Description</p>
 	<table class="future-schedules">
 		<tbody>
 			@foreach (var day in Model.Take(30).ToLookup(x => x.Date))
 			{
 				<tr>
-					<td><strong>@day.Key.ToLocalTime().ToShortDateString()</strong></td>
+					<td><strong>@day.Key.ToShortDateString()</strong></td>
 					<td>
 						@foreach (var time in day)
 						{
-							<div>@time.ToLocalTime().ToLongTimeString()</div>
+							<div>@time.ToShortTimeString()</div>
 						}
 					</td>
 				</tr>

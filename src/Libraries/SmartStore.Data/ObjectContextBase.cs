@@ -523,10 +523,10 @@ namespace SmartStore.Data
 			}
         }
 
-		public int DetachAll() 
+		public int DetachEntities<TEntity>() where TEntity : class
 		{
 			var attachedEntities = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Detached)
+				.Where(x => x.State != System.Data.Entity.EntityState.Detached && x.Entity is TEntity)
 				.ToList();
 			attachedEntities.Each(x => this.Entry(x.Entity).State = System.Data.Entity.EntityState.Detached);
 			return attachedEntities.Count;

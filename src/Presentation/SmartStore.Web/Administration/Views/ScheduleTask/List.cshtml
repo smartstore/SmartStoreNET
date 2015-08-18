@@ -1,12 +1,10 @@
-﻿@model dynamic
+﻿@model IList<ScheduleTaskModel>
 @using Telerik.Web.Mvc.UI;
 @using System.Linq;
 @{
-    //page title
     ViewBag.Title = T("Admin.System.ScheduleTasks").Text;
-
-	var runJobUrl = Url.Content("~/Admin/ScheduleTask/RunJob/");
 }
+
 <div class="section-header">
     <div class="title">
 		<i class="fa fa-clock-o"></i>
@@ -14,46 +12,61 @@
     </div>
 </div>
 
-
-
-
-@{Html.SmartStore().Window()
-	.Name("cron-schedule-window")
-	.Title("Cron Ausdruck bearbeiten")
-	.ShowClose(true)
-	//.LoadContentFrom(Url.Action("CronSchedule"))
-	.FooterContent(@<text>
-		<button class="btn btn-primary" data-dismiss="modal">@T("Common.Save")</button>
-		<btn class="btn btn-link" data-dismiss="modal" aria-hidden="true">@T("Common.Cancel")</btn>
-	</text>)
-	.Width(600)
-	//.Height(500)
-	.Modal(true)
-	.Visible(false)
-	.Render();
-}
-
-<a href='@Url.Action("CronSchedule")' data-toggle='modal' data-target='#cron-schedule-window' class='btn' id='cron-schedule' style="margin-bottom: 30px">
-	CronSchedule
-</a>
-
-<script>
-	$(function () {
-		$(document).on("hidden.bs.modal", "#cron-schedule-window", function (e) {
-			$(e.target).removeData("modal").find(".modal-body").empty();
-		});
-	});
-</script>
-
-
-
-
-
+<table class="table" id="schedule-tasks-grid">
+	<thead>
+		<tr>
+			<th>@T("Admin.System.ScheduleTasks.Name")</th>
+			<th>@T("Common.Active")</th>
+			<th>CronExpression</th>
+			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+			<th>@T("Admin.Common.Actions")</th>
+		</tr>
+	</thead>
+	<tbody>
+		@foreach (var task in Model)
+		{
+			<tr data-task-id='@task.Id' style='@(task.Enabled ? "" : "background: #fafafa")'>
+				<td>
+					<a href='@task.EditUrl'>@task.Name</a>
+				</td>
+				<td>@Html.SymbolForBool(task.Enabled)</td>
+				<td>
+					<div>@task.CronExpression</div>
+					<div class="muted">@task.CronDescription</div>
+				</td>
+				<!-- LastStart -->
+				<td>
+					<div class="last-run-info">
+						@Html.Partial("_LastRun", task)
+					</div>
+				</td>
+				<!-- NextRun -->
+				<td style="min-width: 300px">
+					<div class="next-run-info">
+						@Html.Partial("_NextRun", task)
+					</div>
+					<div class='task-progress text-success@(task.IsRunning ? "" : " hide")' data-task-id='@task.Id' data-running='@(task.IsRunning ? "true" : "false")'></div>
+				</td>
+				<!-- Actions -->
+				<td>
+					<a href='@task.EditUrl' class="btn btn-small" style="margin-bottom: 4px">@T("Common.Edit")</a>
+					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")'>
+						@T("Admin.System.ScheduleTasks.RunNow")
+					</a>
+					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")'>
+						@T("Common.Cancel")
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
 
 <table class="adminContent">
     <tr>
         <td>
-            @(Html.Telerik().Grid<ScheduleTaskModel>()
+            @*@(Html.Telerik().Grid<ScheduleTaskModel>()
                     .Name("schedule-tasks-grid")
                     .DataKeys(x =>
                     {
@@ -65,7 +78,7 @@
 						//columns.Bound(x => x.Seconds)
 						//	.ClientTemplate("<#= PrettySeconds #>");
 						columns.Bound(x => x.CronExpression)
-							.ClientTemplate("<a href='<#= EditUrl #>' data-toggle='modal' data-target='#cron-schedule-window'><#= CronExpression #></a> (<#= CronDescription #>)");
+							.ClientTemplate("<a href='<#= EditUrl #>' xdata-toggle='modal' xdata-target='#cron-schedule-window'><#= CronExpression #></a> (<#= CronDescription #>)");
                         columns.Bound(x => x.Enabled)
                             .ClientTemplate(@Html.SymbolForBool("Enabled"))
                             .Centered()
@@ -82,7 +95,7 @@
 								"<# if (Duration.length) {#><div><span>" + @T("Common.Duration") + ":</span> <span class='task-duration muted'><#= Duration #></span></div><# } #>" +
 								"<# if (LastError.length) {#><div class='text-error'><strong>" + @T("Common.Error") + ":</strong> <span><#= LastError #></span></div><# } #>" +								
 								"<# if (LastSuccessUtc != LastEndUtc) {#><div><span>" + @T("Admin.System.ScheduleTasks.LastSuccess") + ":</span> <span class='task-last-success muted'><#= LastSuccessUtc #></span></div><# } #>" +
-								"<a href='" + @runJobUrl + "<#= Id #>' class='btn btn-success btn-run-task <#= (IsRunning ? 'hide' : '') #>' data-task-id='<#= Id #>' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a>" +
+								"<a href='<#= ExecuteUrl #>' class='btn btn-success btn-run-task <#= (IsRunning ? 'hide' : '') #>' data-task-id='<#= Id #>' style='margin-top: 12px'><i class='fa fa-play'></i> " + @T("Admin.System.ScheduleTasks.RunNow") + "</a>" +
 								"<a href='<#= CancelUrl #>' class='btn btn-danger btn-cancel-task <#= (IsRunning ? '' : 'hide') #>' data-task-id='<#= Id #>' style='margin-top: 12px'>" + @T("Common.Cancel") + "</a>" +
 								"<div class='task-progress text-success hide' data-task-id='<#= Id #>' data-running='false'></div>")
 							.Title(T("Common.Execution").Text)
@@ -102,13 +115,13 @@
                         dataBinding.Ajax().Select("List", "ScheduleTask").Update("TaskUpdate", "ScheduleTask");
                     })
                     .ClientEvents(x => x.OnError("grid_onError"))
-                    .EnableCustomBinding(true))
-            <script type="text/javascript">
+                    .EnableCustomBinding(true))*@
+            @*<script type="text/javascript">
                 function grid_onError(e) {
                     //alert(e.XMLHttpRequest.responseText);
                     e.preventDefault();
                 }
-            </script>
+            </script>*@
         </td>
     </tr>
 </table>
@@ -128,10 +141,22 @@
 			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
 			pollUrl: '@Url.Action("GetRunningTasks")',
 			onTaskStarted: function (task, el) {
-				el.parent().find('.btn-run-task').addClass('hide').next().removeClass('hide');
+				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
+				el.closest('tr').find('.next-run-info').addClass('hide');
 			},
 			onTaskCompleted: function (taskId, el) {
-				el.parent().find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo")',
+					data: { id: taskId },
+					success: function (data) {
+						el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
 			}
 		});
 	});

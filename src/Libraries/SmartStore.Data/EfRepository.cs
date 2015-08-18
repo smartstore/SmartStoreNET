@@ -129,23 +129,16 @@ namespace SmartStore.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+			if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+			{
+				this.Entities.Attach(entity);
+				InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+			}
+
 			if (this.AutoCommitEnabledInternal)
-            {
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-				}
+			{
 				_context.SaveChanges();
-            }
-            else
-            {
-                try
-                {
-                    this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                }
-                finally { }
-            }
+			}
         }
 
 		public virtual void UpdateRange(IEnumerable<T> entities)
@@ -153,28 +146,18 @@ namespace SmartStore.Data
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
+			entities.Each(entity =>
+			{
+				if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+				{
+					this.Entities.Attach(entity);
+					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
+				}			
+			});
+
 			if (this.AutoCommitEnabledInternal)
 			{
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					entities.Each(entity =>
-					{
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-					});
-				}
 				_context.SaveChanges();
-			}
-			else
-			{
-				try
-				{
-					entities.Each(entity =>
-					{
-						this.Entities.Attach(entity);
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
-					});
-				}
-				finally { }
 			}
 		}
 

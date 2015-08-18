@@ -69,22 +69,26 @@ namespace SmartStore.Admin.Controllers
 				dueIn = task.NextRunUtc.Value - now;
 			}
 
-			var nextRunStr = "";
+			var nextRunPretty = "";
 			bool isOverdue = false;
 			if (dueIn.HasValue)
 			{
 				if (dueIn.Value.TotalSeconds > 0)
 				{
-					nextRunStr = "<span class='muted'>{0}</span>".FormatCurrent(dueIn.Value.Prettify());
+					nextRunPretty = dueIn.Value.Prettify();
 				}
 				else
 				{
-					nextRunStr = "<span class='text-success'><strong>{0}</strong></span>".FormatCurrent(T("Common.Waiting") + "...");
+					nextRunPretty = T("Common.Waiting") + "...";
 					isOverdue = true;
 				}
 			}
 
 			var isRunning = task.IsRunning;
+			var lastStartOn = task.LastStartUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastStartUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
+			var lastEndOn = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
+			var lastSuccessOn = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
+			var nextRunOn = task.NextRunUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
 
 			var model = new ScheduleTaskModel
 			{
@@ -94,14 +98,19 @@ namespace SmartStore.Admin.Controllers
 				CronDescription = CronExpression.GetFriendlyDescription(task.CronExpression),
 				Enabled = task.Enabled,
 				StopOnError = task.StopOnError,
-				LastStartUtc = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
-				LastEndUtc = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc).ToString("G") : "",
-				LastSuccessUtc = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc).ToString("G") : "",
-				NextRunUtc = nextRunStr,
+				LastStart = lastStartOn,
+				LastStartPretty = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
+				LastEnd = lastEndOn,
+				LastEndPretty = lastEndOn.HasValue ? lastEndOn.Value.ToString("G") : "",
+				LastSuccess = lastSuccessOn,
+				LastSuccessPretty = lastSuccessOn.HasValue ? lastSuccessOn.Value.ToString("G") : "",
+				NextRun = nextRunOn,
+				NextRunPretty = nextRunPretty,
 				LastError = task.LastError.EmptyNull(),
 				IsRunning = isRunning,
-				CancelUrl = isRunning ? Url.Action("CancelJob", new { id = task.Id }) : "",
-				EditUrl = Url.Action("EditPopup", new { id = task.Id }),
+				CancelUrl = Url.Action("CancelJob", new { id = task.Id }),
+				ExecuteUrl = Url.Action("RunJob", new { id = task.Id }),
+				EditUrl = Url.Action("Edit", new { id = task.Id }),
 				ProgressPercent = task.ProgressPercent,
 				ProgressMessage = task.ProgressMessage,
 				IsOverdue = isOverdue,
@@ -128,79 +137,87 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
                 return AccessDeniedView();
 
-            return View();
-        }
-
-        [HttpPost, GridAction(EnableCustomBinding = true)]
-        public ActionResult List(GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-                return AccessDeniedView();
-			
-            var models = _scheduleTaskService.GetAllTasks(true)
+			var model = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
-                .Select(PrepareScheduleTaskModel)
+				.Select(PrepareScheduleTaskModel)
 				//.OrderByDescending(x => x.IsRunning)
 				//.ThenByDescending(x => x.IsOverdue)
 				//.ThenBy(x => x.Seconds)
-                .ToList();
+				.ToList();
 
-            var model = new GridModel<ScheduleTaskModel>
-            {
-                Data = models,
-                Total = models.Count
-            };
-
-            return new JsonResult
-            {
-                Data = model
-            };
+            return View(model);
         }
 
-        [GridAction(EnableCustomBinding = true)]
-        public ActionResult TaskUpdate(ScheduleTaskModel model, GridCommand command)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-                return AccessDeniedView();
+		//[HttpPost, GridAction(EnableCustomBinding = true)]
+		//public ActionResult List(GridCommand command)
+		//{
+		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+		//		return AccessDeniedView();
+			
+		//	var models = _scheduleTaskService.GetAllTasks(true)
+		//		.Where(IsTaskVisible)
+		//		.Select(PrepareScheduleTaskModel)
+		//		//.OrderByDescending(x => x.IsRunning)
+		//		//.ThenByDescending(x => x.IsOverdue)
+		//		//.ThenBy(x => x.Seconds)
+		//		.ToList();
 
-            if (!ModelState.IsValid)
-            {
-                //display the first model error
-                var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-				NotifyError(modelStateErrors.FirstOrDefault());
-                return Content(modelStateErrors.FirstOrDefault());
-            }
+		//	var model = new GridModel<ScheduleTaskModel>
+		//	{
+		//		Data = models,
+		//		Total = models.Count
+		//	};
 
-            var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
-			if (scheduleTask == null)
-			{
-				NotifyError("Schedule task cannot be loaded");
-				return Content("");
-			}
+		//	return new JsonResult
+		//	{
+		//		Data = model
+		//	};
+		//}
 
-			if (scheduleTask.IsRunning)
-			{
-				NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
-				return Content("");
-			}
+		//[GridAction(EnableCustomBinding = true)]
+		//public ActionResult TaskUpdate(ScheduleTaskModel model, GridCommand command)
+		//{
+		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+		//		return AccessDeniedView();
 
-            scheduleTask.Name = model.Name;
-            scheduleTask.Enabled = model.Enabled;
-            scheduleTask.StopOnError = model.StopOnError;
+		//	if (!ModelState.IsValid)
+		//	{
+		//		//display the first model error
+		//		var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+		//		NotifyError(modelStateErrors.FirstOrDefault());
+		//		return Content(modelStateErrors.FirstOrDefault());
+		//	}
 
-			if (model.Enabled)
-			{
-				scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
-			}
-			else
-			{
-				scheduleTask.NextRunUtc = null;
-			}
+		//	var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
+		//	if (scheduleTask == null)
+		//	{
+		//		NotifyError("Schedule task cannot be loaded");
+		//		return Content("");
+		//	}
 
-            _scheduleTaskService.UpdateTask(scheduleTask);
+		//	if (scheduleTask.IsRunning)
+		//	{
+		//		NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
+		//		return Content("");
+		//	}
 
-            return List(command);
-        }
+		//	scheduleTask.Name = model.Name;
+		//	scheduleTask.Enabled = model.Enabled;
+		//	scheduleTask.StopOnError = model.StopOnError;
+
+		//	if (model.Enabled)
+		//	{
+		//		scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
+		//	}
+		//	else
+		//	{
+		//		scheduleTask.NextRunUtc = null;
+		//	}
+
+		//	_scheduleTaskService.UpdateTask(scheduleTask);
+
+		//	return List(command);
+		//}
 
 		[HttpPost]
 		public ActionResult GetRunningTasks()
@@ -217,6 +234,27 @@ namespace SmartStore.Admin.Controllers
 							   };
 
 			return Json(runningTasks.ToArray());
+		}
+
+		[HttpPost]
+		public ActionResult GetTaskRunInfo(int id /* taskId */)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+				return new HttpUnauthorizedResult();
+
+			var task = _scheduleTaskService.GetTaskById(id);
+			if (task == null)
+			{
+				return HttpNotFound();
+			}
+
+			var model = PrepareScheduleTaskModel(task);
+
+			return Json(new 
+			{
+				lastRunHtml = this.RenderPartialViewToString("_LastRun", model),
+				nextRunHtml = this.RenderPartialViewToString("_NextRun", model)
+			});
 		}
 
 		public ActionResult RunJob(int id, string returnUrl = "")
@@ -248,21 +286,83 @@ namespace SmartStore.Admin.Controllers
 			return Redirect(returnUrl);
 		}
 
-		public ActionResult EditPopup(int id /* taskId */)
+		public ActionResult Edit(int id /* taskId */, string returnUrl = null)
 		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+				return AccessDeniedView();
+			
 			var task = _scheduleTaskService.GetTaskById(id);
-			var model = PrepareScheduleTaskModel(task);
+			if (task == null)
+			{
+				return HttpNotFound();
+			}
 
-			return PartialView(model);
+			var model = PrepareScheduleTaskModel(task);
+			ViewBag.ReturnUrl = returnUrl.NullEmpty() ?? Url.Action("List");
+
+			return View(model);
+		}
+
+		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[ValidateAntiForgeryToken]
+		public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
+				return AccessDeniedView();
+
+			Func<ActionResult> result = null;
+			if (continueEditing)
+				result = () => RedirectToAction("Edit", new { id = model.Id });
+			else
+				result = () => RedirectToAction("List");
+
+			if (!ModelState.IsValid)
+			{
+				// display the first model error
+				var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
+				NotifyError(modelStateErrors.FirstOrDefault());
+				return result();
+			}
+
+			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
+			if (scheduleTask == null)
+			{
+				NotifyError("Schedule task cannot be loaded");
+				return result();
+			}
+
+			if (scheduleTask.IsRunning)
+			{
+				NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
+				return result();
+			}
+
+			scheduleTask.Name = model.Name;
+			scheduleTask.Enabled = model.Enabled;
+			scheduleTask.StopOnError = model.StopOnError;
+			scheduleTask.CronExpression = model.CronExpression;
+
+			if (model.Enabled)
+			{
+				scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
+			}
+			else
+			{
+				scheduleTask.NextRunUtc = null;
+			}
+
+			_scheduleTaskService.UpdateTask(scheduleTask);
+
+			return result();
 		}
 
 		[HttpPost]
-		public ActionResult CronScheduleNextOccurrences(string expression)
+		public ActionResult FutureSchedules(string expression)
 		{
 			try
 			{
 				var now = DateTime.Now;
-				var model = CronExpression.GetFutureSchedules(expression, now, now.AddYears(1));
+				var model = CronExpression.GetFutureSchedules(expression, now, now.AddYears(1), 20);
 				ViewBag.Description = CronExpression.GetFriendlyDescription(expression);
 				return PartialView(model);
 			}

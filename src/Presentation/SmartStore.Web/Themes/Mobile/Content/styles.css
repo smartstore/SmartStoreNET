@@ -689,3 +689,10 @@ pre{white-space:pre-wrap;/* css-3 */white-space:0;/* Mozilla, since 1999 */white
 .legal-hints .footer-legal {
     color: green;
 }
+.change-device button{
+    display: inline; 
+    margin: 0;
+    border: 0;
+    background: none;
+    padding: 7px;
+}

@@ -1,5 +1,6 @@
 ﻿<div class="change-device">
-	<a data-ajax="false" href="@(Url.RouteUrl("ChangeDevice", new { dontusemobileversion = true }))" rel="nofollow">
-		@T("Mobile.ViewFullSite")
-	</a>
+    @using (Html.BeginRouteForm("ChangeDevice", new { dontusemobileversion = true }, FormMethod.Post))
+    {
+        <button type="submit" data-role="none" class="ui-body-a">@T("Mobile.ViewFullSite")</button>
+    }
 </div>

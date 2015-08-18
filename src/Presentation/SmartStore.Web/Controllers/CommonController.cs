@@ -770,6 +770,7 @@ namespace SmartStore.Web.Controllers
         /// </summary>
         /// <param name="dontUseMobileVersion">True - use desktop version; false - use version for mobile devices</param>
         /// <returns>Action result</returns>
+        [HttpPost]
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
 			_genericAttributeService.Value.SaveAttribute(_services.WorkContext.CurrentCustomer,

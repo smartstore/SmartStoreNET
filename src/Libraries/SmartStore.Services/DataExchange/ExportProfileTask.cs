@@ -6,22 +6,28 @@ using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading;
+using System.Web;
 using Autofac;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.Customers;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Tasks;
+using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange
@@ -37,6 +43,162 @@ namespace SmartStore.Services.DataExchange
 		private IProductService _productService;
 		private IPictureService _pictureService;
 		private MediaSettings _mediaSettings;
+		private IPriceCalculationService _priceCalculationService;
+		private ITaxService _taxService;
+		private ICurrencyService _currencyService;
+		private ICustomerService _customerService;
+
+		#region Utilities
+
+		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando)
+		{
+			try
+			{
+				string description = "";
+
+				// description merging
+				if (ctx.Projection.DescriptionMerging.HasValue)
+				{
+					var type = ctx.Projection.DescriptionMerging ?? ExportDescriptionMergingType.ShortDescriptionOrNameIfEmpty;
+
+					if (type == ExportDescriptionMergingType.ShortDescriptionOrNameIfEmpty)
+					{
+						description = expando.FullDescription;
+
+						if (description.IsEmpty())
+							description = expando.ShortDescription;
+						if (description.IsEmpty())
+							description = expando.Name;
+					}
+					else if (type == ExportDescriptionMergingType.ShortDescription)
+					{
+						description = expando.ShortDescription;
+					}
+					else if (type == ExportDescriptionMergingType.Description)
+					{
+						description = expando.FullDescription;
+					}
+					else if (type == ExportDescriptionMergingType.NameAndShortDescription)
+					{
+						description = ((string)expando.Name).Grow((string)expando.ShortDescription, " ");
+					}
+					else if (type == ExportDescriptionMergingType.NameAndDescription)
+					{
+						description = ((string)expando.Name).Grow((string)expando.FullDescription, " ");
+					}
+					else if (type == ExportDescriptionMergingType.ManufacturerAndNameAndShortDescription || type == ExportDescriptionMergingType.ManufacturerAndNameAndDescription)
+					{
+						string name = (string)expando.Name;
+						dynamic productManu = ((List<ExpandoObject>)expando.ProductManufacturers).FirstOrDefault();
+
+						if (productManu != null)
+						{
+							dynamic manu = productManu.Manufacturer;
+							description = ((string)manu.Name).Grow(name, " ");
+
+							if (type == ExportDescriptionMergingType.ManufacturerAndNameAndShortDescription)
+								description = description.Grow((string)expando.ShortDescription, " ");
+							else
+								description = description.Grow((string)expando.FullDescription, " ");
+						}
+					}
+				}
+				else
+				{
+					description = expando.FullDescription;
+				}
+
+				// append text
+				if (ctx.Projection.AppendDescriptionText.HasValue() && ((string)expando.ShortDescription).IsEmpty() && ((string)expando.FullDescription).IsEmpty())
+				{
+					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(";");
+					if (appendText.Length > 0)
+					{
+						var rnd = (new Random()).Next(0, appendText.Length - 1);
+
+						description = description.Grow(appendText.SafeGet(rnd), " ");
+					}
+				}
+
+				// remove critical characters
+				if (description.HasValue() && ctx.Projection.RemoveCriticalCharacters)
+				{
+					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(";"))
+						description = description.Replace(str, "");
+				}
+
+				// convert to plain text
+				if (ctx.Projection.DescriptionToPlainText)
+				{
+					//Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+					//description = HttpUtility.HtmlDecode(reg.Replace(description, ""));
+
+					description = HtmlUtils.ConvertHtmlToPlainText(description);
+					description = HtmlUtils.StripTags(HttpUtility.HtmlDecode(description));
+				}
+
+				expando.FullDescription = description;
+			}
+			catch { }
+		}
+
+		private void PrepareProductPrice(ExportProfileTaskContext ctx, dynamic expando, Product product)
+		{
+			decimal price = decimal.Zero;
+
+			// price type
+			if (ctx.Projection.PriceType.HasValue)
+			{
+				var type = ctx.Projection.PriceType ?? PriceDisplayType.PreSelectedPrice;
+
+				if (type == PriceDisplayType.LowestPrice)
+				{
+					bool displayFromMessage;
+					price = _priceCalculationService.GetLowestPrice(product, null, out displayFromMessage);
+				}
+				else if (type == PriceDisplayType.PreSelectedPrice)
+				{
+					price = _priceCalculationService.GetPreselectedPrice(product, null);
+				}
+				else if (type == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+				{
+					price = _priceCalculationService.GetFinalPrice(product, null, ctx.ProjectionCustomer, decimal.Zero, false, 1, null, null);
+				}
+			}
+			else
+			{
+				price = expando.Price;
+			}
+
+			// convert net to gross
+			if (ctx.Projection.ConvertNetToGrossPrices)
+			{
+				decimal taxRate;
+				price = _taxService.GetProductPrice(product, price, true, ctx.ProjectionCustomer, out taxRate);
+			}
+
+			if (price != decimal.Zero)
+			{
+				price = _currencyService.ConvertFromPrimaryStoreCurrency(price, ctx.ProjectionCurrency, ctx.Store);
+			}
+
+			expando.Price = price;
+		}
+
+		#endregion
+
+		private void InitDependencies(TaskExecutionContext context)
+		{
+			_services = context.Resolve<ICommonServices>();
+			_exportService = context.Resolve<IExportService>();
+			_productService = context.Resolve<IProductService>();
+			_pictureService = context.Resolve<IPictureService>();
+			_mediaSettings = context.Resolve<MediaSettings>();
+			_priceCalculationService = context.Resolve<IPriceCalculationService>();
+			_taxService = context.Resolve<ITaxService>();
+			_currencyService = context.Resolve<ICurrencyService>();
+			_customerService = context.Resolve<ICustomerService>();
+		}
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
@@ -85,18 +247,20 @@ namespace SmartStore.Services.DataExchange
 		{
 			dynamic expando = product.ToExpando(ctx.Projection.LanguageId ?? 0, _pictureService, _mediaSettings, ctx.Store);
 
+			PrepareProductDescription(ctx, expando);
+			PrepareProductPrice(ctx, expando, product);
 
+			string brand = null;
+
+			var manu = (product.ProductManufacturers as List<dynamic>).FirstOrDefault();
+			if (manu != null)
+				brand = manu.Manufacturer.Name;
+			if (brand.IsEmpty())
+				brand = ctx.Projection.Brand;
+
+			expando._Brand = brand;
 
 			return expando as ExpandoObject;
-		}
-
-		private void InitDependencies(TaskExecutionContext context)
-		{
-			_services = context.Resolve<ICommonServices>();
-			_exportService = context.Resolve<IExportService>();
-			_productService = context.Resolve<IProductService>();
-			_pictureService = context.Resolve<IPictureService>();
-			_mediaSettings = context.Resolve<MediaSettings>();
 		}
 
 		private void Cleanup(ExportProfileTaskContext ctx)
@@ -205,6 +369,16 @@ namespace SmartStore.Services.DataExchange
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
 
+					if (ctx.Projection.CurrencyId.HasValue)
+						ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
+					else
+						ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
+
+					if (ctx.Projection.CustomerId.HasValue)
+						ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
+					else
+						ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+
 					// TODO: log number of flown out records
 
 					if (ctx.Profile.PerStore)
@@ -294,7 +468,10 @@ namespace SmartStore.Services.DataExchange
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
 		public ExportFilter Filter { get; private set; }
+
 		public ExportProjection Projection { get; private set; }
+		public Currency ProjectionCurrency { get; set; }
+		public Customer ProjectionCustomer { get; set; }
 
 		public CancellationToken Cancellation { get; private set; }
 		public TraceLogger Log { get; set; }

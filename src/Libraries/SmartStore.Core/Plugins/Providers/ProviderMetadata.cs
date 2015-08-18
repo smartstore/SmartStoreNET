@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Core.Plugins
 {
@@ -66,6 +67,11 @@ namespace SmartStore.Core.Plugins
 		/// A provider is editable if the user is allowed to change display order and/or localize display name
 		/// </remarks>
 		public bool IsEditable { get; set; }
+
+		/// <summary>
+		/// Gets or sets an array of field types that are supported by an export provider and thus should be editable on profile level
+		/// </summary>
+		public ExportProjectionFieldType[] ExportProjectionFields { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of widget system names, which depend on the current provider

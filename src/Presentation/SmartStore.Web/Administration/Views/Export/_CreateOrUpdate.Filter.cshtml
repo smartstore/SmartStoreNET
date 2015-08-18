@@ -1,0 +1,229 @@
+﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+
+<table class="adminContent">
+	@if (Model.ProductFilter != null)
+	{
+		if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductFilter.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.ProductFilter.StoreId, Model.ProductFilter.AvailableStores, Model.AllString)
+					@Html.ValidationMessageFor(x => x.ProductFilter.StoreId)
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.CreatedFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.CreatedFrom)
+				@Html.ValidationMessageFor(x => x.ProductFilter.CreatedFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.CreatedTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.CreatedTo)
+				@Html.ValidationMessageFor(x => x.ProductFilter.CreatedTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.ProductType)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.ProductFilter.ProductType, Model.ProductFilter.AvailableProductTypes, Model.AllString)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.IsPublished)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.IsPublished)
+				@Html.ValidationMessageFor(x => x.ProductFilter.IsPublished)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.PriceMinimum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.PriceMinimum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.PriceMinimum)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.PriceMaximum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.PriceMaximum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.PriceMaximum)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.AvailabilityMinimum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.AvailabilityMinimum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.AvailabilityMinimum)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.AvailabilityMaximum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.AvailabilityMaximum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.AvailabilityMaximum)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.WithoutCategories)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.WithoutCategories)
+				@Html.ValidationMessageFor(x => x.ProductFilter.WithoutCategories)
+			</td>
+		</tr>
+		<tr id="FilterCategoryIdsContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.CategoryIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.ProductFilter.CategoryIds,
+						new MultiSelectList(Model.ProductFilter.AvailableCategories, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.ProductFilter.CategoryIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.WithoutManufacturers)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.WithoutManufacturers)
+				@Html.ValidationMessageFor(x => x.ProductFilter.WithoutManufacturers)
+			</td>
+		</tr>
+		<tr id="FilterManufacturerIdsContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.ManufacturerIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.ProductFilter.ManufacturerIds,
+						new MultiSelectList(Model.ProductFilter.AvailableManufacturers, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.ProductFilter.ManufacturerIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.ProductTagIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.ProductFilter.ProductTagIds,
+						new MultiSelectList(Model.ProductFilter.AvailableProductTags, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.ProductFilter.ProductTagIds)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.FeaturedProducts)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.FeaturedProducts)
+				@Html.ValidationMessageFor(x => x.ProductFilter.FeaturedProducts)
+			</td>
+		</tr>
+	}
+	else if (Model.OrderFilter != null)
+	{
+		if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.OrderFilter.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.OrderFilter.StoreId, Model.OrderFilter.AvailableStores, Model.AllString)
+					@Html.ValidationMessageFor(x => x.OrderFilter.StoreId)
+				</td>
+			</tr>
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.CreatedFrom)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.OrderFilter.CreatedFrom)
+				@Html.ValidationMessageFor(x => x.OrderFilter.CreatedFrom)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.CreatedTo)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.OrderFilter.CreatedTo)
+				@Html.ValidationMessageFor(x => x.OrderFilter.CreatedTo)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.OrderStatus)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.OrderFilter.OrderStatus,
+						new MultiSelectList(Model.OrderFilter.AvailableOrderStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.OrderFilter.OrderStatus)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.PaymentStatus)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.OrderFilter.PaymentStatus,
+						new MultiSelectList(Model.OrderFilter.AvailablePaymentStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.OrderFilter.PaymentStatus)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.ShippingStatus)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.OrderFilter.ShippingStatus,
+						new MultiSelectList(Model.OrderFilter.AvailableShippingStates, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.OrderFilter.ShippingStatus)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.OrderFilter.CustomerRoleIds)
+			</td>
+			<td class="adminData">
+				@Html.ListBoxFor(x => x.OrderFilter.CustomerRoleIds,
+						new MultiSelectList(Model.OrderFilter.AvailableCustomerRoles, "Value", "Text"),
+						new { multiple = "multiple", @class = "control-xlarge" })
+				@Html.ValidationMessageFor(x => x.OrderFilter.CustomerRoleIds)
+			</td>
+		</tr>
+	}
+</table>

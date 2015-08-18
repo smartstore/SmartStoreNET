@@ -1,0 +1,114 @@
+﻿@model ExportProfileModel
+@using SmartStore.Core.Domain.DataExchange;
+@using SmartStore.Admin.Models.DataExchange;
+
+<table class="adminContent">
+	@if (Model.ProductProjection != null)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.LanguageId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.ProductProjection.LanguageId, Model.ProductProjection.AvailableLanguages, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.ProductProjection.LanguageId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.CurrencyId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.ProductProjection.CurrencyId, Model.ProductProjection.AvailableCurrencies, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.ProductProjection.CurrencyId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.CustomerId)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductProjection.CustomerId)
+				@Html.ValidationMessageFor(x => x.ProductProjection.CustomerId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.PriceType)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.ProductProjection.PriceType, Model.ProductProjection.AvailablePriceTypes, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.ProductProjection.PriceType)
+			</td>
+		</tr>
+		
+		if (Model.Provider.ProjectionFields.Contains(ExportProjectionFieldType.Brand))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.Brand)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.Brand)
+					@Html.ValidationMessageFor(x => x.ProductProjection.Brand)
+				</td>
+			</tr>
+		}
+		
+		if (Model.Provider.ProjectionFields.Contains(ExportProjectionFieldType.Description))
+		{
+			<tr>
+				<td colspan="2">
+					<div class="admin-config-group">
+						<div class="title">@T("Common.DetailDescription")</div>
+					</div>
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionMerging)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.ProductProjection.DescriptionMerging, Model.ProductProjection.AvailableDescriptionMergings, Model.UnspecifiedString)
+					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionMerging)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.AppendDescriptionText)
+				</td>
+				<td class="adminData">
+					@Html.TextBoxFor(x => x.ProductProjection.AppendDescriptionText, new { @class = "input-xlarge" })
+					@Html.ValidationMessageFor(x => x.ProductProjection.AppendDescriptionText)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.RemoveCriticalCharacters)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.RemoveCriticalCharacters)
+					@Html.ValidationMessageFor(x => x.ProductProjection.RemoveCriticalCharacters)
+				</td>
+			</tr>
+			<tr id="CriticalCharactersContainer">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.CriticalCharacters)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.CriticalCharacters)
+					@Html.ValidationMessageFor(x => x.ProductProjection.CriticalCharacters)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionToPlainText)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.DescriptionToPlainText)
+					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionToPlainText)
+				</td>
+			</tr>
+		}
+	}
+</table>

@@ -133,6 +133,8 @@ namespace SmartStore.Admin.Controllers
 
 			if (provider != null)
 			{
+				model.Provider.ProjectionFields = provider.Metadata.ExportProjectionFields;
+
 				try
 				{
 					string partialName;
@@ -151,22 +153,42 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			// projection
-			model.Projection = new ExportProjectionModel
+			Action<ExportProjectionModelBase> initProjectionBase = x =>
 			{
-				LanguageId = projection.LanguageId,
-				CurrencyId = projection.CurrencyId
+				x.AvailableLanguages = allLanguages
+					.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+					.ToList();
+
+				x.AvailableCurrencies = allCurrencies
+					.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+					.ToList();
 			};
 
-			model.Projection.AvailableLanguages = allLanguages
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+			if (model.Provider.EntityType == ExportEntityType.Product)
+			{
+				model.ProductProjection = new ExportProductProjectionModel
+				{
+					LanguageId = projection.LanguageId,
+					CurrencyId = projection.CurrencyId,
+					CustomerId = projection.CustomerId,
+					DescriptionMerging = projection.DescriptionMerging,
+					DescriptionToPlainText = projection.DescriptionToPlainText,
+					AppendDescriptionText = projection.AppendDescriptionText,
+					RemoveCriticalCharacters = projection.RemoveCriticalCharacters,
+					CriticalCharacters = projection.CriticalCharacters,
+					PriceType = projection.PriceType,
+					ConvertNetToGrossPrices = projection.ConvertNetToGrossPrices,
+					Brand = projection.Brand
+				};
 
-			model.Projection.AvailableCurrencies = allCurrencies
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMergingType.Description.ToSelectList(false);
+				model.ProductProjection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
+
+				initProjectionBase(model.ProductProjection);
+			}
 
 			// filtering
-			Action<ExportFilterModelBase> initModelBase = x =>
+			Action<ExportFilterModelBase> initFilterBase = x =>
 			{
 				x.StoreId = filter.StoreId;
 				x.CreatedFrom = filter.CreatedFrom;
@@ -214,7 +236,7 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 					.ToList();
 
-				initModelBase(model.ProductFilter);
+				initFilterBase(model.ProductFilter);
 			}
 			else if (model.Provider.EntityType == ExportEntityType.Order)
 			{
@@ -237,7 +259,7 @@ namespace SmartStore.Admin.Controllers
 					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
 					.ToList();
 
-				initModelBase(model.OrderFilter);
+				initFilterBase(model.OrderFilter);
 			}
 		}
 
@@ -453,17 +475,36 @@ namespace SmartStore.Admin.Controllers
 				profile.Name = provider.Metadata.SystemName;
 
 			// projection
-			var projection = new ExportProjection
+			ExportProjection projection = null;
+			Action<ExportProjectionModelBase> getProjectionBase = x =>
 			{
-				LanguageId = model.Projection.LanguageId,
-				CurrencyId = model.Projection.CurrencyId
+				projection.LanguageId = x.LanguageId;
+				projection.CurrencyId = x.CurrencyId;
+				projection.CustomerId = x.CustomerId;
 			};
+
+			if (model.ProductProjection != null && provider.Value.EntityType == ExportEntityType.Product)
+			{
+				projection = new ExportProjection
+				{
+					DescriptionMerging = model.ProductProjection.DescriptionMerging,
+					DescriptionToPlainText = model.ProductProjection.DescriptionToPlainText,
+					AppendDescriptionText = model.ProductProjection.AppendDescriptionText,
+					RemoveCriticalCharacters = model.ProductProjection.RemoveCriticalCharacters,
+					CriticalCharacters = model.ProductProjection.CriticalCharacters,
+					PriceType = model.ProductProjection.PriceType,
+					ConvertNetToGrossPrices = model.ProductProjection.ConvertNetToGrossPrices,
+					Brand = model.ProductProjection.Brand
+				};
+
+				getProjectionBase(model.ProductProjection);
+			}
 
 			profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
 
 			// filtering
 			ExportFilter filter = null;
-			Action<ExportFilterModelBase> getFromModelBase = x =>
+			Action<ExportFilterModelBase> getFilterBase = x =>
 			{
 				filter.StoreId = x.StoreId ?? 0;
 				filter.CreatedFrom = x.CreatedFrom;
@@ -488,7 +529,7 @@ namespace SmartStore.Admin.Controllers
 					ProductType = model.ProductFilter.ProductType
 				};
 
-				getFromModelBase(model.ProductFilter);
+				getFilterBase(model.ProductFilter);
 			}
 			else if (model.OrderFilter != null && provider.Value.EntityType == ExportEntityType.Order)
 			{
@@ -500,7 +541,7 @@ namespace SmartStore.Admin.Controllers
 					CustomerRoleIds = model.OrderFilter.CustomerRoleIds
 				};
 
-				getFromModelBase(model.OrderFilter);
+				getFilterBase(model.OrderFilter);
 			}
 
 			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);

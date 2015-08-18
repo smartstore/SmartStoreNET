@@ -244,7 +244,7 @@ namespace SmartStore.Services.DataExchange
 					dynamic exp = new ExpandoObject();
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
-					exp.Picture = x.PictureId == 0 ? null : x.Picture.ToExpando(pictureService, store, mediaSettings.ProductThumbPictureSize, mediaSettings.ProductDetailsPictureSize);
+					exp.Picture = x.Picture.ToExpando(pictureService, store, mediaSettings.ProductThumbPictureSize, mediaSettings.ProductDetailsPictureSize);
 
 					return exp as ExpandoObject;
 				})
@@ -259,7 +259,7 @@ namespace SmartStore.Services.DataExchange
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
-					exp.Manufacturer = x.ManufacturerId == 0 ? null : x.Manufacturer.ToExpando(languageId);
+					exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
 
 					return exp as ExpandoObject;
 				})
@@ -274,7 +274,7 @@ namespace SmartStore.Services.DataExchange
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
-					exp.Category = x.CategoryId == 0 ? null : x.Category.ToExpando(languageId);
+					exp.Category = x.Category.ToExpando(languageId);
 
 					return exp as ExpandoObject;
 				})

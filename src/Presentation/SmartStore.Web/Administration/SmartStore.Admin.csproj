@@ -512,7 +512,9 @@
     <Content Include="Views\Export\Preview.cshtml" />
     <Content Include="Views\Export\EditDeployment.cshtml" />
     <Content Include="Views\Export\CreateDeployment.cshtml" />
-    <Content Include="Views\Export\_CreateOrUpdateDeployment.cshtml" />
+    <Content Include="Views\Export\_CreateOrUpdate.Deployment.cshtml" />
+    <Content Include="Views\Export\_CreateOrUpdate.Filter.cshtml" />
+    <Content Include="Views\Export\_CreateOrUpdate.Projection.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

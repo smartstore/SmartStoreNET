@@ -98,6 +98,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.Projection", "Projection", "Projektion");
 			builder.AddOrUpdate("Common.Deployment", "Deployment", "Bereitstellung");
 			builder.AddOrUpdate("Common.Website", "Website", "Web-Seite");
+			builder.AddOrUpdate("Common.DetailDescription", "Detail description", "Detailbeschreibung");
 
 			builder.AddOrUpdate("Admin.Validation.UsernamePassword", "Please enter username and password", "Bitte geben Sie Benutzername und Passwort ein");
 			builder.AddOrUpdate("Admin.Validation.Url", "Please enter a valid URL", "Bitte geben Sie eine gültige URL ein");
@@ -336,11 +337,81 @@ namespace SmartStore.Data.Migrations
 				"Specifies the currency to be applied to the export.",
 				"Legt die auf den Export anzuwendende Währung fest.");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CustomerId",
+				"Customer ID",
+				"Kunden-ID",
+				"Specifies the ID of the customer to be applied to the export. Is taken into account for price calculations for example.",
+				"Legt die ID des Kunden fest, auf den sich der Export beziehen soll. Wird z.B. bei Preisberechnungen berücksichtigt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.DescriptionMerging",
+				"Product description",
+				"Artikelbeschreibung",
+				"Specifies what information to use for the description of the product.",
+				"Legt fest, welche Informationen zur Beschreibung des Artikel wie verwendet werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.DescriptionToPlainText",
+				"Remove HTML from description",
+				"HTML aus der Beschreibung entfernen",
+				"Specifies whether to remove all HTML from the product description for the export.",
+				"Legt fest, ob für den Export alle HTML-Auszeichnungen aus der Artikelbeschreibung entfernt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.AppendDescriptionText",
+				"Text to be appended",
+				"Anzuhängender Text",
+				"Specifies the text to be attached to the product description. You can enter multiple, semicolon delimited texts. Then one of it is selected randomly.",
+				"Legt den an die Artikelbeschreibung anzuhängenden Text fest. Es können auch mehrere, durch Semikolon getrennte Texte eingegeben werden. Dann wird per Zufall einer ausgewählt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.RemoveCriticalCharacters",
+				"Remove critical characters",
+				"Kritische Zeichen entfernen",
+				"Specifies whether to remove critical characters (like ½) from the detail description.",
+				"Legt fest, ob kritische Zeichen (wie z.B. ½) aus der Detailsbeschreibung entfernt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CriticalCharacters",
+				"Critical characters",
+				"Kritische Zeichen",
+				"List with semicolon delimited characters to be removed from the detail description.",
+				"Liste mit Semikolon getrennten Zeichen, die aus der Detailbeschreibung entfernt werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.PriceType",
+				"Product price",
+				"Produktpreis",
+				"Specifies the product price to be exported.",
+				"Legt den zu exportierenden Produktpreis fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ConvertNetToGrossPrices",
+				"Convert net into gross prices",
+				"Netto- in Bruttopreise umrechnen",
+				"Specifies to convert net into gross prices.",
+				"Legt fest, dass Netto- in Bruttopreise umgerechnet werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.Brand",
+				"Manufacturer\\Brand",
+				"Hersteller\\Marke",
+				"Specifies the manufacturer or brand to be exported, if a product has no manufacturer assigned.",
+				"Legt den zu exportierenden Hersteller bzw. die Marke fest, wenn für ein Produkt kein Hersteller zugeordnet ist.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.FileSystem", "File system", "Dateisystem");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Email", "Email", "E-Mail");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Http", "HTTP", "HTTP");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Ftp", "FTP", "FTP");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.None",
+				"None", "Keine");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ShortDescriptionOrNameIfEmpty",
+				"Short description or name if empty", "Kurzbeschreibung oder Name falls leer");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ShortDescription",
+				"Short description", "Kurzbeschreibung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.Description",
+				"Description", "Detailbeschreibung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.NameAndShortDescription",
+				"Product name + short description", "Produktname + Kurzbeschreibung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.NameAndDescription",
+				"Product name + long description", "Produktname + Detailbeschreibung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ManufacturerAndNameAndShortDescription",
+				"Manufacturer + Product name + short description", "Hersteller + Produktname + Kurzbeschreibung");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ManufacturerAndNameAndDescription",
+				"Manufacturer + Product name + long description", "Hersteller + Produktname + Detailbeschreibung");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name",

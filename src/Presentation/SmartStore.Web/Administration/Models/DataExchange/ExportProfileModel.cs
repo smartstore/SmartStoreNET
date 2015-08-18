@@ -55,7 +55,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public ExportProductFilterModel ProductFilter { get; set; }
 		public ExportOrderFilterModel OrderFilter { get; set; }
 
-		public ExportProjectionModel Projection { get; set; }
+		public ExportProductProjectionModel ProductProjection { get; set; }
 
 		public List<ExportDeploymentModel> Deployments { get; set; }
 
@@ -64,6 +64,8 @@ namespace SmartStore.Admin.Models.DataExchange
 			public string ConfigPartialViewName { get; set; }
 			public Type ConfigDataType { get; set; }
 			public object ConfigData { get; set; }
+
+			public ExportProjectionFieldType[] ProjectionFields { get; set; }
 
 			[SmartResourceDisplayName("Common.Image")]
 			public string ThumbnailUrl { get; set; }

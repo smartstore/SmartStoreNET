@@ -22,6 +22,8 @@ namespace SmartStore.Services.DataExchange
 
 		string FileNamePattern { get; }
 
+		object ConfigurationData { get; }
+
 		Dictionary<string, object> CustomProperties { get; set; }
 
 		string GetFilePath(string fileNameSuffix = null);
@@ -56,6 +58,8 @@ namespace SmartStore.Services.DataExchange
 		public string Folder { get; private set; }
 
 		public string FileNamePattern { get; internal set; }
+
+		public object ConfigurationData { get; internal set; }
 
 		public Dictionary<string, object> CustomProperties { get; set; }
 

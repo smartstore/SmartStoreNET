@@ -69,9 +69,9 @@ namespace SmartStore.Core.Plugins
 		public bool IsEditable { get; set; }
 
 		/// <summary>
-		/// Gets or sets an array of field types that are supported by an export provider and thus should be editable on profile level
+		/// Gets or sets an array of values that reflects what export projection is supported by a provider
 		/// </summary>
-		public ExportProjectionFieldType[] ExportProjectionFields { get; set; }
+		public ExportProjectionSupport[] ExportProjectionSupport { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of widget system names, which depend on the current provider

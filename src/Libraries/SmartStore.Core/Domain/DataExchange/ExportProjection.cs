@@ -13,6 +13,8 @@ namespace SmartStore.Core.Domain.DataExchange
 			PriceType = PriceDisplayType.PreSelectedPrice;
 		}
 
+		public int? StoreId { get; set; }
+
 		/// <summary>
 		/// The language to be applied to the export
 		/// </summary>
@@ -25,7 +27,7 @@ namespace SmartStore.Core.Domain.DataExchange
 
 		public int? CustomerId { get; set; }
 
-		public ExportDescriptionMergingType? DescriptionMerging { get; set; }
+		public ExportDescriptionMerging? DescriptionMerging { get; set; }
 
 		public bool DescriptionToPlainText { get; set; }
 
@@ -40,5 +42,13 @@ namespace SmartStore.Core.Domain.DataExchange
 		public bool ConvertNetToGrossPrices { get; set; }
 
 		public string Brand { get; set; }
+
+		public int PictureSize { get; set; }
+
+		public string ShippingTime { get; set; }
+
+		public decimal? ShippingCosts { get; set; }
+
+		public decimal? FreeShippingThreshold { get; set; }
 	}
 }

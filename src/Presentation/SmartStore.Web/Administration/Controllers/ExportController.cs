@@ -133,7 +133,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (provider != null)
 			{
-				model.Provider.ProjectionFields = provider.Metadata.ExportProjectionFields;
+				model.Provider.ProjectionSupport = provider.Metadata.ExportProjectionSupport;
 
 				try
 				{
@@ -155,6 +155,10 @@ namespace SmartStore.Admin.Controllers
 			// projection
 			Action<ExportProjectionModelBase> initProjectionBase = x =>
 			{
+				x.AvailableStores = allStores
+					.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
+					.ToList();
+
 				x.AvailableLanguages = allLanguages
 					.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 					.ToList();
@@ -168,6 +172,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.ProductProjection = new ExportProductProjectionModel
 				{
+					StoreId = projection.StoreId,
 					LanguageId = projection.LanguageId,
 					CurrencyId = projection.CurrencyId,
 					CustomerId = projection.CustomerId,
@@ -178,10 +183,14 @@ namespace SmartStore.Admin.Controllers
 					CriticalCharacters = projection.CriticalCharacters,
 					PriceType = projection.PriceType,
 					ConvertNetToGrossPrices = projection.ConvertNetToGrossPrices,
-					Brand = projection.Brand
+					Brand = projection.Brand,
+					PictureSize = projection.PictureSize,
+					ShippingTime = projection.ShippingTime,
+					ShippingCosts = projection.ShippingCosts,
+					FreeShippingThreshold = projection.FreeShippingThreshold
 				};
 
-				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMergingType.Description.ToSelectList(false);
+				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
 				model.ProductProjection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
 
 				initProjectionBase(model.ProductProjection);
@@ -219,7 +228,9 @@ namespace SmartStore.Admin.Controllers
 					WithoutManufacturers = filter.WithoutManufacturers,
 					ProductTagIds = filter.ProductTagIds,
 					FeaturedProducts = filter.FeaturedProducts,
-					ProductType = filter.ProductType
+					ProductType = filter.ProductType,
+					IdMinimum = filter.IdMinimum,
+					IdMaximum = filter.IdMaximum
 				};
 
 				model.ProductFilter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
@@ -478,6 +489,7 @@ namespace SmartStore.Admin.Controllers
 			ExportProjection projection = null;
 			Action<ExportProjectionModelBase> getProjectionBase = x =>
 			{
+				projection.StoreId = x.StoreId;
 				projection.LanguageId = x.LanguageId;
 				projection.CurrencyId = x.CurrencyId;
 				projection.CustomerId = x.CustomerId;
@@ -494,7 +506,11 @@ namespace SmartStore.Admin.Controllers
 					CriticalCharacters = model.ProductProjection.CriticalCharacters,
 					PriceType = model.ProductProjection.PriceType,
 					ConvertNetToGrossPrices = model.ProductProjection.ConvertNetToGrossPrices,
-					Brand = model.ProductProjection.Brand
+					Brand = model.ProductProjection.Brand,
+					PictureSize = model.ProductProjection.PictureSize,
+					ShippingTime = model.ProductProjection.ShippingTime,
+					ShippingCosts = model.ProductProjection.ShippingCosts,
+					FreeShippingThreshold = model.ProductProjection.FreeShippingThreshold
 				};
 
 				getProjectionBase(model.ProductProjection);
@@ -526,7 +542,9 @@ namespace SmartStore.Admin.Controllers
 					WithoutManufacturers = model.ProductFilter.WithoutManufacturers,
 					ProductTagIds = model.ProductFilter.ProductTagIds,
 					FeaturedProducts = model.ProductFilter.FeaturedProducts,
-					ProductType = model.ProductFilter.ProductType
+					ProductType = model.ProductFilter.ProductType,
+					IdMinimum = model.ProductFilter.IdMinimum,
+					IdMaximum = model.ProductFilter.IdMaximum
 				};
 
 				getFilterBase(model.ProductFilter);

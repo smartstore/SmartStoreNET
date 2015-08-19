@@ -10,11 +10,6 @@ namespace SmartStore.Core.Domain.DataExchange
 	[Serializable]
 	public class ExportFilter
 	{
-		public ExportFilter()
-		{
-			IsPublished = true;
-		}
-
 		/// <summary>
 		/// Store identifier; 0 to load all records
 		/// </summary>
@@ -31,6 +26,16 @@ namespace SmartStore.Core.Domain.DataExchange
 		public DateTime? CreatedTo { get; set; }
 
 		#region Product
+
+		/// <summary>
+		/// Minimum product identifier
+		/// </summary>
+		public int? IdMinimum { get; set; }
+
+		/// <summary>
+		/// Maximum product identifier
+		/// </summary>
+		public int? IdMaximum { get; set; }
 
 		/// <summary>
 		/// Minimum price
@@ -55,7 +60,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// A value indicating whether to load only published or non published products
 		/// </summary>
-		public bool IsPublished { get; set; }
+		public bool? IsPublished { get; set; }
 
 		/// <summary>
 		/// Category identifiers

@@ -87,6 +87,10 @@ namespace SmartStore.Data.Migrations
 			}, new string[] { SystemCustomerRoleNames.Administrators });
 		}
 
+		private void RemoveStringResources(LocaleResourcesBuilder builder)
+		{
+		}
+
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Common.Enabled", "Enabled", "Aktiviert");
@@ -228,6 +232,18 @@ namespace SmartStore.Data.Migrations
 				"Filter by created date.",
 				"Nach dem Erstellungsdatum filtern.");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IdMinimum",
+				"Product Id from",
+				"Produkt-ID von",
+				"Filter by product identifier.",
+				"Nach der Produkt-ID filtern.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IdMaximum",
+				"Product Id to",
+				"Produkt-ID bis",
+				"Filter by product identifier.",
+				"Nach der Produkt-ID filtern.");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PriceMinimum",
 				"Price from",
 				"Preis von",
@@ -325,6 +341,12 @@ namespace SmartStore.Data.Migrations
 				"Nach Kundengruppen filtern.");
 
 
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.StoreId",
+				"Store",
+				"Shop",
+				"Specifies the store to be applied to the export.",
+				"Legt den auf den Export anzuwendenden Shop fest.");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.LanguageId",
 				"Language",
 				"Sprache",
@@ -391,26 +413,51 @@ namespace SmartStore.Data.Migrations
 				"Specifies the manufacturer or brand to be exported, if a product has no manufacturer assigned.",
 				"Legt den zu exportierenden Hersteller bzw. die Marke fest, wenn für ein Produkt kein Hersteller zugeordnet ist.");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.PictureSize",
+				"Product picture size",
+				"Produktbildgröße",
+				"Specifies the size (in pixel) of the product image.",
+				"Legt die Größe (in Pixel) des Produktbildes fest.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ShippingTime",
+				"Shipping time",
+				"Lieferzeit",
+				"Specifies the shipping time for products where it is unspecified.",
+				"Legt die Lieferzeit für Produkte fest, wo diese nicht angegeben ist.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ShippingCosts",
+				"Shipping costs",
+				"Versandkosten",
+				"The shipping costs to be exported.",
+				"Die zu exportierenden Versandkosten.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.FreeShippingThreshold",
+				"Free shipping threshold",
+				"Kostenloser Versand ab",
+				"Specifies the amount as from shipping is free.",
+				"Legt den Betrag fest, ab dem keine Versandkosten anfallen.");
+
+
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.FileSystem", "File system", "Dateisystem");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Email", "Email", "E-Mail");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Http", "HTTP", "HTTP");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Ftp", "FTP", "FTP");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.None",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None",
 				"None", "Keine");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ShortDescriptionOrNameIfEmpty",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty",
 				"Short description or name if empty", "Kurzbeschreibung oder Name falls leer");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ShortDescription",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ShortDescription",
 				"Short description", "Kurzbeschreibung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.Description",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.Description",
 				"Description", "Detailbeschreibung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.NameAndShortDescription",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.NameAndShortDescription",
 				"Product name + short description", "Produktname + Kurzbeschreibung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.NameAndDescription",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.NameAndDescription",
 				"Product name + long description", "Produktname + Detailbeschreibung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ManufacturerAndNameAndShortDescription",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ManufacturerAndNameAndShortDescription",
 				"Manufacturer + Product name + short description", "Hersteller + Produktname + Kurzbeschreibung");
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMergingType.ManufacturerAndNameAndDescription",
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ManufacturerAndNameAndDescription",
 				"Manufacturer + Product name + long description", "Hersteller + Produktname + Detailbeschreibung");
 
 
@@ -473,6 +520,9 @@ namespace SmartStore.Data.Migrations
 				"E-Mail Konto",
 				"Specifies the email account through which the data should be sent.",
 				"Legt das E-Mail Konto fest, über welches die Daten verschickt werden sollen.");
+
+
+			RemoveStringResources(builder);
 		}
     }
 }

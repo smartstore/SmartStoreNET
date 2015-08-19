@@ -19,24 +19,6 @@
 		}
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductFilter.CreatedFrom)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.ProductFilter.CreatedFrom)
-				@Html.ValidationMessageFor(x => x.ProductFilter.CreatedFrom)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductFilter.CreatedTo)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.ProductFilter.CreatedTo)
-				@Html.ValidationMessageFor(x => x.ProductFilter.CreatedTo)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.ProductFilter.ProductType)
 			</td>
 			<td class="adminData">
@@ -50,6 +32,24 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.ProductFilter.IsPublished)
 				@Html.ValidationMessageFor(x => x.ProductFilter.IsPublished)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.IdMinimum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.IdMinimum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.IdMinimum)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductFilter.IdMaximum)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductFilter.IdMaximum)
+				@Html.ValidationMessageFor(x => x.ProductFilter.IdMaximum)
 			</td>
 		</tr>
 		<tr>

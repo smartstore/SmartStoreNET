@@ -26,11 +26,17 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportProductFilterModel : ExportFilterModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IsPublished")]
-		public bool IsPublished { get; set; }
+		public bool? IsPublished { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductType")]
 		public ProductType? ProductType { get; set; }
 		public List<SelectListItem> AvailableProductTypes { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IdMinimum")]
+		public int? IdMinimum { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IdMaximum")]
+		public int? IdMaximum { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PriceMinimum")]
 		public decimal? PriceMinimum { get; set; }

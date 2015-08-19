@@ -8,6 +8,10 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	public abstract class ExportProjectionModelBase
 	{
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.StoreId")]
+		public int? StoreId { get; set; }
+		public List<SelectListItem> AvailableStores { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.LanguageId")]
 		public int? LanguageId { get; set; }
 		public List<SelectListItem> AvailableLanguages { get; set; }
@@ -24,7 +28,7 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportProductProjectionModel : ExportProjectionModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.DescriptionMerging")]
-		public ExportDescriptionMergingType? DescriptionMerging { get; set; }
+		public ExportDescriptionMerging? DescriptionMerging { get; set; }
 		public SelectList AvailableDescriptionMergings { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.DescriptionToPlainText")]
@@ -49,5 +53,17 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.Brand")]
 		public string Brand { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.PictureSize")]
+		public int PictureSize { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.ShippingTime")]
+		public string ShippingTime { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.ShippingCosts")]
+		public decimal? ShippingCosts { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.FreeShippingThreshold")]
+		public decimal? FreeShippingThreshold { get; set; }
 	}
 }

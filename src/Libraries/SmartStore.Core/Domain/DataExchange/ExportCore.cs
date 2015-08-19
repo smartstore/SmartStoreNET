@@ -19,7 +19,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		Ftp
 	}
 
-	public enum ExportDescriptionMergingType
+	public enum ExportDescriptionMerging
 	{
 		None = 0,
 		ShortDescriptionOrNameIfEmpty,
@@ -31,10 +31,15 @@ namespace SmartStore.Core.Domain.DataExchange
 		ManufacturerAndNameAndDescription
 	}
 
-	public enum ExportProjectionFieldType
+	public enum ExportProjectionSupport
 	{
 		Description = 0,
 		Brand,
-		PictureSize
+		MainPictureUrl,
+		UseOwnProductNo,
+		CategoryPath,
+		ShippingTime,
+		ShippingCosts,
+		Availability
 	}
 }

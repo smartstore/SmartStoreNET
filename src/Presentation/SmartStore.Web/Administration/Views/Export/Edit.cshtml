@@ -309,6 +309,11 @@
 			$('#FilterManufacturerIdsContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
 
+		// show/hide store projection
+		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
+			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
+		}).trigger('change');
+
 		// show/hide critical characters
 		$('#@(Html.FieldIdFor(x => x.ProductProjection.RemoveCriticalCharacters))').change(function () {
 			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));

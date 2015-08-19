@@ -4,13 +4,13 @@ using SmartStore.Core.Domain.DataExchange;
 namespace SmartStore.Services.DataExchange
 {
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public sealed class ExportProjectionFieldAttribute : Attribute
+	public sealed class ExportProjectionSupportAttribute : Attribute
 	{
-		public ExportProjectionFieldAttribute(params ExportProjectionFieldType[] types)
+		public ExportProjectionSupportAttribute(params ExportProjectionSupport[] types)
 		{
 			Types = types;
 		}
 
-		public ExportProjectionFieldType[] Types { get; set; }
+		public ExportProjectionSupport[] Types { get; set; }
 	}
 }

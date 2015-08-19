@@ -771,7 +771,7 @@ namespace SmartStore.Web.Framework
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
-				var exportProjectionFields = GetExportProjectionFields(type);				
+				var exportProjectionSupport = GetExportProjectionSupport(type);				
 
 				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
 				registration.WithMetadata<ProviderMetadata>(m =>
@@ -787,7 +787,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.DependentWidgets, dependentWidgets);
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
-					m.For(em => em.ExportProjectionFields, exportProjectionFields);
+					m.For(em => em.ExportProjectionSupport, exportProjectionSupport);
 				});
 
 				// register specific provider type
@@ -854,16 +854,16 @@ namespace SmartStore.Web.Framework
 			return 0;
 		}
 
-		private ExportProjectionFieldType[] GetExportProjectionFields(Type type)
+		private ExportProjectionSupport[] GetExportProjectionSupport(Type type)
 		{
-			var attr = type.GetAttribute<ExportProjectionFieldAttribute>(false);
+			var attr = type.GetAttribute<ExportProjectionSupportAttribute>(false);
 
 			if (attr != null && attr.Types != null)
 			{
 				return attr.Types;
 			}
 
-			return new ExportProjectionFieldType[0];
+			return new ExportProjectionSupport[0];
 		}
 
 		private Tuple<string/*Name*/, string/*Description*/> GetFriendlyName(Type type, PluginDescriptor descriptor)

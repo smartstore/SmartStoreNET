@@ -5,6 +5,15 @@
 <table class="adminContent">
 	@if (Model.ProductProjection != null)
 	{
+		<tr id="ProjectionStoreContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.ProductProjection.StoreId, Model.ProductProjection.AvailableStores, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.ProductProjection.StoreId)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.ProductProjection.LanguageId)
@@ -41,8 +50,65 @@
 				@Html.ValidationMessageFor(x => x.ProductProjection.PriceType)
 			</td>
 		</tr>
-		
-		if (Model.Provider.ProjectionFields.Contains(ExportProjectionFieldType.Brand))
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ProductProjection.ConvertNetToGrossPrices)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.ProductProjection.ConvertNetToGrossPrices)
+				@Html.ValidationMessageFor(x => x.ProductProjection.ConvertNetToGrossPrices)
+			</td>
+		</tr>
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingTime))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.ShippingTime)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.ShippingTime)
+					@Html.ValidationMessageFor(x => x.ProductProjection.ShippingTime)
+				</td>
+			</tr>
+		}
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingCosts))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.ShippingCosts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.ShippingCosts)
+					@Html.ValidationMessageFor(x => x.ProductProjection.ShippingCosts)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.FreeShippingThreshold)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.FreeShippingThreshold)
+					@Html.ValidationMessageFor(x => x.ProductProjection.FreeShippingThreshold)
+				</td>
+			</tr>
+		}
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.MainPictureUrl))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.PictureSize)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.PictureSize)
+					@Html.ValidationMessageFor(x => x.ProductProjection.PictureSize)
+				</td>
+			</tr>
+		}
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.Brand))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -54,8 +120,8 @@
 				</td>
 			</tr>
 		}
-		
-		if (Model.Provider.ProjectionFields.Contains(ExportProjectionFieldType.Description))
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.Description))
 		{
 			<tr>
 				<td colspan="2">

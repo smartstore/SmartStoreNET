@@ -33,6 +33,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Messages
@@ -67,7 +68,10 @@ namespace SmartStore.Services.Messages
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IQuantityUnitService _quantityUnitService;
-        
+        private readonly IUrlRecordService _urlRecordService;
+        private readonly IStoreService _storeService;
+        private readonly IGenericAttributeService _attrService;
+
         #endregion
 
         #region Ctor
@@ -85,7 +89,9 @@ namespace SmartStore.Services.Messages
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
             ContactDataSettings contactDataSettings, ITopicService topicService,
-            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService)
+            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService,
+            IUrlRecordService urlRecordService, IStoreService storeService,
+            IGenericAttributeService attrService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -113,6 +119,9 @@ namespace SmartStore.Services.Messages
             this._shoppingCartSettings = shoppingCartSettings;
 			this._deliveryTimeService = deliveryTimeService;
             this._quantityUnitService = quantityUnitService;
+            this._urlRecordService = urlRecordService;
+            this._storeService = storeService;
+            this._attrService = attrService;
         }
 
         #endregion
@@ -985,7 +994,15 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddBackInStockTokens(IList<Token> tokens, BackInStockSubscription subscription)
         {
-            tokens.Add(new Token("BackInStockSubscription.ProductName", subscription.Product.Name));
+            var customerLangId = subscription.Customer.GetAttribute<int>(
+                        SystemCustomerAttributeNames.LanguageId,
+                        _attrService,
+                        _storeContext.CurrentStore.Id);
+
+            var store = _storeService.GetStoreById(subscription.StoreId);
+            var productLink = "{0}{1}".FormatWith(store.Url, subscription.Product.GetSeName(customerLangId, _urlRecordService, _languageService));
+
+            tokens.Add(new Token("BackInStockSubscription.ProductName", "<a href='{0}'>{1}</a>".FormatWith(productLink, subscription.Product.Name), true));
 
             //event notification
             _eventPublisher.EntityTokensAdded(subscription, tokens);

@@ -446,7 +446,7 @@ namespace SmartStore.Web.Controllers
             var model = manufacturer.ToModel();
 
             // prepare picture model
-            model.PictureModel = this.PrepareManufacturerPictureModel(manufacturer, model.Name);
+            model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
@@ -556,40 +556,11 @@ namespace SmartStore.Web.Controllers
                 var modelMan = manufacturer.ToModel();
 
                 // prepare picture model
-                modelMan.PictureModel = this.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
+                modelMan.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
                 model.Add(modelMan);
             }
 
             return View(model);
-        }
-
-        private PictureModel PrepareManufacturerPictureModel(Manufacturer manufacturer, string localizedName)
-        {
-            var model = new PictureModel();
-
-            int pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
-            var manufacturerPictureCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_PICTURE_MODEL_KEY,
-                manufacturer.Id,
-                pictureSize,
-                true,
-                _services.WorkContext.WorkingLanguage.Id,
-                _services.WebHelper.IsCurrentConnectionSecured(),
-				_services.StoreContext.CurrentStore.Id);
-
-            model = _services.Cache.Get(manufacturerPictureCacheKey, () =>
-            {
-                var pictureModel = new PictureModel()
-                {
-					PictureId = manufacturer.PictureId.GetValueOrDefault(),
-					FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize),
-					Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
-					AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
-                };
-                return pictureModel;
-            });
-
-            return model;
         }
 
         [ChildActionOnly]

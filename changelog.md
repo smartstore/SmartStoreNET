@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.5
 
@@ -41,6 +41,8 @@
 * ShippingByWeight & ShippingByTotal: Support for multiple zip ranges (comma separated)
 * Two more options to handle customer numbers: display customer number in frontend & let customers enter their customer number if it's still empty
 * #62 free shipping info on product detail page
+* Display base price in CompactProductBox
+* Automatically redirect to referrer after login
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

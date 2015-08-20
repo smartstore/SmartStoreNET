@@ -57,15 +57,15 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.WithoutCategories")]
 		public bool? WithoutCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ManufacturerIds")]
-		public int[] ManufacturerIds { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ManufacturerId")]
+		public int ManufacturerId { get; set; }
 		public List<SelectListItem> AvailableManufacturers { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.WithoutManufacturers")]
 		public bool? WithoutManufacturers { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductTagIds")]
-		public int[] ProductTagIds { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductTagId")]
+		public int ProductTagId { get; set; }
 		public List<SelectListItem> AvailableProductTags { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.FeaturedProducts")]

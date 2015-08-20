@@ -23,6 +23,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
@@ -47,6 +48,7 @@ namespace SmartStore.Services.DataExchange
 		private ICustomerService _customerService;
 		private ICategoryService _categoryService;
 		private IPriceFormatter _priceFormatter;
+		private IDateTimeHelper _dateTimeHelper;
 
 		#region Utilities
 
@@ -213,6 +215,7 @@ namespace SmartStore.Services.DataExchange
 			_customerService = context.Resolve<ICustomerService>();
 			_categoryService = context.Resolve<ICategoryService>();
 			_priceFormatter = context.Resolve<IPriceFormatter>();
+			_dateTimeHelper = context.Resolve<IDateTimeHelper>();
 		}
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
@@ -233,12 +236,25 @@ namespace SmartStore.Services.DataExchange
 					IsPublished = ctx.Filter.IsPublished,
 					WithoutCategories = ctx.Filter.WithoutCategories,
 					WithoutManufacturers = ctx.Filter.WithoutManufacturers,
+					ManufacturerId = ctx.Filter.ManufacturerId,
 					FeaturedProducts = ctx.Filter.FeaturedProducts,
-					ProductType = ctx.Filter.ProductType
+					ProductType = ctx.Filter.ProductType,
+					ProductTagId = ctx.Filter.ProductTagId,
+					IdMin = ctx.Filter.IdMinimum ?? 0,
+					IdMax = ctx.Filter.IdMaximum ?? 0,
+					AvailabilityMinimum = ctx.Filter.AvailabilityMinimum,
+					AvailabilityMaximum = ctx.Filter.AvailabilityMaximum
 				};
 
 				if (ctx.Filter.CategoryIds != null && ctx.Filter.CategoryIds.Length > 0)
 					searchContext.CategoryIds = ctx.Filter.CategoryIds.ToList();
+
+				if (ctx.Filter.CreatedFrom.HasValue)
+					searchContext.CreatedFromUtc = _dateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedFrom.Value, _dateTimeHelper.CurrentTimeZone);
+
+				if (ctx.Filter.CreatedTo.HasValue)
+					searchContext.CreatedToUtc = _dateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.CurrentTimeZone);
+
 
 				var products = _productService.SearchProducts(searchContext);
 

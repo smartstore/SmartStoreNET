@@ -117,26 +117,22 @@
 				@Html.ValidationMessageFor(x => x.ProductFilter.WithoutManufacturers)
 			</td>
 		</tr>
-		<tr id="FilterManufacturerIdsContainer">
+		<tr id="FilterManufacturerIdContainer">
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductFilter.ManufacturerIds)
+				@Html.SmartLabelFor(x => x.ProductFilter.ManufacturerId)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.ProductFilter.ManufacturerIds,
-						new MultiSelectList(Model.ProductFilter.AvailableManufacturers, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.ProductFilter.ManufacturerIds)
+				@Html.DropDownListFor(x => x.ProductFilter.ManufacturerId, Model.ProductFilter.AvailableManufacturers, Model.AllString)
+				@Html.ValidationMessageFor(x => x.ProductFilter.ManufacturerId)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductFilter.ProductTagIds)
+				@Html.SmartLabelFor(x => x.ProductFilter.ProductTagId)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.ProductFilter.ProductTagIds,
-						new MultiSelectList(Model.ProductFilter.AvailableProductTags, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.ProductFilter.ProductTagIds)
+				@Html.DropDownListFor(x => x.ProductFilter.ProductTagId, Model.ProductFilter.AvailableProductTags, Model.AllString)
+				@Html.ValidationMessageFor(x => x.ProductFilter.ProductTagId)
 			</td>
 		</tr>
 		<tr>

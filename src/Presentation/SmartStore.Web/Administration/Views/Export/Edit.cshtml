@@ -306,7 +306,7 @@
 
 		// show/hide product manufacturer filter
 		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutManufacturers))').change(function () {
-			$('#FilterManufacturerIdsContainer').toggle(_.isEmpty($(this).val()));
+			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
 
 		// show/hide store projection

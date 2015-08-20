@@ -1,6 +1,8 @@
 namespace SmartStore.Data.Migrations
 {
 	using System.Data.Entity.Migrations;
+	using System.Web.Hosting;
+	using SmartStore.Core.Data;
 	using SmartStore.Core.Domain.Customers;
 	using SmartStore.Core.Domain.Security;
 	using SmartStore.Data.Setup;
@@ -55,7 +57,11 @@ namespace SmartStore.Data.Migrations
                 .PrimaryKey(t => t.Id)
                 .ForeignKey("dbo.ScheduleTask", t => t.SchedulingTaskId)
                 .Index(t => t.SchedulingTaskId);
-            
+
+			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
+			{
+				this.SqlFileOrResource("LatestProductLoadAllPaged.sql");
+			}
         }
         
         public override void Down()
@@ -286,10 +292,10 @@ namespace SmartStore.Data.Migrations
 				"Filter by missing category mapping.",
 				"Nach fehlender Warengruppenzuordnung filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ManufacturerIds",
-				"Manufacturers",
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ManufacturerId",
+				"Manufacturer",
 				"Hersteller",
-				"Filter by manufacturers.",
+				"Filter by manufacturer.",
 				"Nach Hersteller filtern.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.WithoutManufacturers",
@@ -298,11 +304,11 @@ namespace SmartStore.Data.Migrations
 				"Filter by missing manufacturer mapping.",
 				"Nach fehlender Herstellerzuordnung filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductTagIds",
-				"Product tags",
-				"Produkt-Tags",
-				"Filter by product tags.",
-				"Nach Produkt-Tags filtern.");
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductTagId",
+				"Product tag",
+				"Produkt-Tag",
+				"Filter by product tag.",
+				"Nach Produkt-Tag filtern.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Filter.FeaturedProducts",
 				"Only featured products",

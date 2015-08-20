@@ -31,6 +31,16 @@ namespace SmartStore.Services.Catalog
 		/// <remarks>Only implemented in LINQ mode at the moment</remarks>
 		public IList<int> ProductIds { get; set; }
 
+		/// <summary>
+		/// Minimum product identifier
+		/// </summary>
+		public int IdMin { get; set; }
+
+		/// <summary>
+		/// Maximum product identifier
+		/// </summary>
+		public int IdMax { get; set; }
+
         /// <summary>
         /// A value indicating whether ALL given <see cref="CategoryIds"/> must be assigned to the resulting products (default is ANY)
         /// </summary>
@@ -168,5 +178,25 @@ namespace SmartStore.Services.Catalog
 		/// A value indicating whether to load only products displayed on the homepage
 		/// </summary>
 		public bool? HomePageProducts { get; set; }
+
+		/// <summary>
+		/// Search by minimum availability
+		/// </summary>
+		public int? AvailabilityMinimum { get; set; }
+
+		/// <summary>
+		/// Search by maximum availability
+		/// </summary>
+		public int? AvailabilityMaximum { get; set; }
+
+		/// <summary>
+		/// Search by created from date
+		/// </summary>
+		public DateTime? CreatedFromUtc { get; set; }
+
+		/// <summary>
+		/// Search by created to date
+		/// </summary>
+		public DateTime? CreatedToUtc { get; set; }
     }
 }

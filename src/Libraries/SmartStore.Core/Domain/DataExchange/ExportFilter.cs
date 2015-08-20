@@ -73,9 +73,9 @@ namespace SmartStore.Core.Domain.DataExchange
 		public bool? WithoutCategories { get; set; }
 
 		/// <summary>
-		/// Manufacturer identifiers
+		/// Manufacturer identifier
 		/// </summary>
-		public int[] ManufacturerIds { get; set; }
+		public int ManufacturerId { get; set; }
 
 		/// <summary>
 		/// A value indicating whether to load products without any manufacturer mapping
@@ -83,9 +83,9 @@ namespace SmartStore.Core.Domain.DataExchange
 		public bool? WithoutManufacturers { get; set; }
 
 		/// <summary>
-		/// Identifiers of product tags
+		/// Identifiers of product tag
 		/// </summary>
-		public int[] ProductTagIds { get; set; }
+		public int ProductTagId { get; set; }
 
 		/// <summary>
 		/// A value indicating whether to load products that are marked as featured (relates only to categories and manufacturers)

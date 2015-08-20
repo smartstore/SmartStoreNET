@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.ServiceModel.Syndication;
@@ -578,7 +579,7 @@ namespace SmartStore.Services.Catalog
 				pWithoutManufacturers.DbType = DbType.Boolean;
 
 				var pIsPublished = _dataProvider.GetParameter();
-				pIsPublished.ParameterName = "OverridePublished";
+				pIsPublished.ParameterName = "IsPublished";
 				pIsPublished.Value = (ctx.IsPublished.HasValue ? (object)ctx.IsPublished.Value : DBNull.Value);
 				pIsPublished.DbType = DbType.Boolean;
 
@@ -586,6 +587,37 @@ namespace SmartStore.Services.Catalog
 				pHomePageProducts.ParameterName = "HomePageProducts";
 				pHomePageProducts.Value = (ctx.HomePageProducts.HasValue ? (object)ctx.HomePageProducts.Value : DBNull.Value);
 				pHomePageProducts.DbType = DbType.Boolean;
+
+				var pIdMin = _dataProvider.GetParameter();
+				pIdMin.ParameterName = "IdMin";
+				pIdMin.Value = ctx.IdMin;
+				pIdMin.DbType = DbType.Int32;
+
+				var pIdMax = _dataProvider.GetParameter();
+				pIdMax.ParameterName = "IdMax";
+				pIdMax.Value = ctx.IdMin;
+				pIdMax.DbType = DbType.Int32;
+
+				var pAvailabilityMin = _dataProvider.GetParameter();
+				pAvailabilityMin.ParameterName = "AvailabilityMin";
+				pAvailabilityMin.Value = ctx.AvailabilityMinimum.HasValue ? (object)ctx.AvailabilityMinimum.Value : DBNull.Value;
+				pAvailabilityMin.DbType = DbType.Int32;
+
+				var pAvailabilityMax = _dataProvider.GetParameter();
+				pAvailabilityMax.ParameterName = "AvailabilityMax";
+				pAvailabilityMax.Value = ctx.AvailabilityMaximum.HasValue ? (object)ctx.AvailabilityMaximum.Value : DBNull.Value;
+				pAvailabilityMax.DbType = DbType.Int32;
+
+				var pCreatedFromUtc = _dataProvider.GetParameter();
+				pCreatedFromUtc.ParameterName = "CreatedFromUtc";
+				pCreatedFromUtc.Value = ctx.CreatedFromUtc.HasValue ? (object)ctx.CreatedFromUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
+				pCreatedFromUtc.DbType = DbType.String;
+
+				var pCreatedToUtc = _dataProvider.GetParameter();
+				pCreatedToUtc.ParameterName = "CreatedToUtc";
+				pCreatedToUtc.Value = ctx.CreatedToUtc.HasValue ? (object)ctx.CreatedToUtc.Value.ToString("yyyy-MM-dd HH:mm:ss", CultureInfo.InvariantCulture) : DBNull.Value;
+				pCreatedToUtc.DbType = DbType.String;
+
 
                 var pFilterableSpecificationAttributeOptionIds = _dataProvider.GetParameter();
                 pFilterableSpecificationAttributeOptionIds.ParameterName = "FilterableSpecificationAttributeOptionIds";
@@ -629,6 +661,12 @@ namespace SmartStore.Services.Catalog
 					pWithoutManufacturers,
 					pIsPublished,
 					pHomePageProducts,
+					pIdMin,
+					pIdMax,
+					pAvailabilityMin,
+					pAvailabilityMax,
+					pCreatedFromUtc,
+					pCreatedToUtc,
                     pFilterableSpecificationAttributeOptionIds,
                     pTotalRecords);
 
@@ -802,6 +840,34 @@ namespace SmartStore.Services.Catalog
 			if (ctx.ProductIds != null && ctx.ProductIds.Count > 0)
 			{
 				query = query.Where(x => ctx.ProductIds.Contains(x.Id));
+			}
+			else
+			{
+				if (ctx.IdMin != 0)
+					query = query.Where(x => x.Id >= ctx.IdMin);
+
+				if (ctx.IdMax != 0)
+					query = query.Where(x => x.Id <= ctx.IdMax);
+			}
+
+			if (ctx.AvailabilityMinimum.HasValue)
+			{
+				query = query.Where(x => x.StockQuantity >= ctx.AvailabilityMinimum.Value);
+			}
+
+			if (ctx.AvailabilityMaximum.HasValue)
+			{
+				query = query.Where(x => x.StockQuantity <= ctx.AvailabilityMaximum.Value);
+			}
+
+			if (ctx.CreatedFromUtc.HasValue)
+			{
+				query = query.Where(x => x.CreatedOnUtc >= ctx.CreatedFromUtc.Value);
+			}
+
+			if (ctx.CreatedToUtc.HasValue)
+			{
+				query = query.Where(x => x.CreatedOnUtc <= ctx.CreatedToUtc.Value);
 			}
 
 			//The function 'CurrentUtcDateTime' is not supported by SQL Server Compact. 

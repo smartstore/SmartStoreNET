@@ -213,7 +213,10 @@ namespace SmartStore.Web.Framework
             }
             set
             {
-                SetCustomerCookie(value.CustomerGuid);
+				if (!value.IsSystemAccount)
+				{
+					SetCustomerCookie(value.CustomerGuid);
+				}
                 _cachedCustomer = value;
             }
         }

@@ -1,0 +1,58 @@
+﻿@model ScheduleTaskModel
+@{
+	Layout = null;
+	var returnUrl = (string)ViewBag.ReturnUrl;
+	var hasPermission = ViewBag.HasPermission == true;
+}
+<span class="label@(Model.Enabled ? " label-warning" : "")" style="margin-right: 6px">@(Model.Enabled ? "Geplant" : "Ungeplant")</span>
+@if (Model.Enabled)
+{
+	<span>Regel: </span>
+	<span class="muted">@Model.CronDescription</span>
+	if (Model.NextRun.HasValue)
+	{
+		<span> - @T("Admin.System.ScheduleTasks.NextRun"): </span>
+		<span class="muted">@Model.NextRunPretty</span>
+	}
+}
+else
+{
+	<span>@T("Admin.System.ScheduleTasks.LastStart"): </span>
+	<span class="muted">@(Model.LastStart.HasValue ? Model.LastStartPretty : T("Common.Never").Text)</span>
+}
+@if (hasPermission)
+{
+	<div class="btn-group" style="display: inline-block; margin-left: 10px">
+		<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
+			<i class="fa fa-gear"></i>
+			@T("Admin.Common.Actions")
+			<span class="caret"></span>
+		</a>
+		<ul class="dropdown-menu">
+			<li>
+				<a href="@Url.Action("Edit", new { id = Model.Id, returnUrl = returnUrl })">
+					@if (Model.Enabled)
+					{
+						<i class="fa fa-fw fa-edit"></i>
+						@:Aufgabe bearbeiten
+						}
+					else
+					{
+						<i class="fa fa-fw fa-clock-o"></i>
+						@:Ausführung planen
+						}
+				</a>
+			</li>
+			<li>
+				<a href="@Model.ExecuteUrl" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<i class="fa fa-fw fa-play"></i>
+					@T("Admin.System.ScheduleTasks.RunNow")
+				</a>
+			</li>
+		</ul>
+	</div>
+}
+
+
+
+

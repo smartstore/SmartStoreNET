@@ -528,15 +528,15 @@ namespace SmartStore.Web.Controllers
             
             if (_workContext.CurrentCustomer.IsRegistered())
             {
-                //Already registered customer. 
+                // Already registered customer. 
                 _authenticationService.SignOut();
                 
-                //Save a new record
+                // Save a new record
                 _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
             }
             var customer = _workContext.CurrentCustomer;
 
-            //validate CAPTCHA
+            // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));

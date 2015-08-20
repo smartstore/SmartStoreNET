@@ -3,92 +3,85 @@
 @using SmartStore.Core
 @{
 	ViewBag.Title = "Aufgabe bearbeiten" + " - " + Model.Name;
-	string cronHelpLink = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower() == "de" ? "https://de.wikipedia.org/wiki/Cron" : "https://en.wikipedia.org/wiki/Cron";
+	var cronHelpLink = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower() == "de" ? "https://de.wikipedia.org/wiki/Cron" : "https://en.wikipedia.org/wiki/Cron";
+	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
 }
 
 @using (Html.BeginForm())
 {
 	@Html.AntiForgeryToken()
 	@Html.HiddenFor(model => model.Id)
+	@Html.Hidden("returnUrl", returnUrl)
 
 	<div class="section-header">
 		<div class="title">
 			<i class="fa fa-clock-o"></i>
 			@ViewBag.Title
-			<a href="@ViewBag.ReturnUrl">(@T("Common.Back"))</a>
+			<a href='@(returnUrl ?? Url.Action("List"))'>(@T("Common.Back"))</a>
 		</div>
-		@if (!Model.IsRunning)
-		{
-			<div class="options">
-				<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-				<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-				<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
-			</div>
-		}
+		<div class="options">
+			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
+			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+			<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
+		</div>
 	</div>
 	
-	if (Model.IsRunning)
-	{
-		<div class="alert alert-warning">
-			Aufgabe wird gerade im Hintergrund ausgeführt und kann daher nicht editiert werden. ...
-		</div>
-	}
-	else
-	{
-		@Html.ValidationSummary(true)
+	@Html.ValidationSummary(true)
 	
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Name)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Name)
-					@Html.ValidationMessageFor(model => model.Name)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Enabled)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.Enabled)
-					@Html.ValidationMessageFor(model => model.Enabled)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.StopOnError)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.StopOnError)
-					@Html.ValidationMessageFor(model => model.StopOnError)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.LastStartPretty)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(model => model.LastStartPretty)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.NextRunPretty)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(model => model.NextRunPretty)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.Duration)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(model => model.Duration)
-				</td>
-			</tr>
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Name)
+				@Html.ValidationMessageFor(model => model.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.Enabled)
+				@Html.ValidationMessageFor(model => model.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.StopOnError)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.StopOnError)
+				@Html.ValidationMessageFor(model => model.StopOnError)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.LastStartPretty)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.LastStartPretty)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NextRunPretty)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.NextRunPretty)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.Duration)
+			</td>
+			<td class="adminData">
+				@Html.DisplayFor(model => model.Duration)
+			</td>
+		</tr>
+		@if (Model.LastError.HasValue())
+		{
 			<tr>
 				<td class="adminTitle">
 					@Html.SmartLabelFor(model => model.LastError)
@@ -105,29 +98,29 @@
 					@Html.DisplayFor(model => model.LastSuccessPretty)
 				</td>
 			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CronExpression)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(model => model.CronExpression )
-					@Html.ValidationMessageFor(model => model.CronExpression)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">&nbsp;</td>
-				<td class="adminData">
-					<div class="muted">Hilfe zu <a href='@cronHelpLink' target="_blank">Cron-Ausdrücken</a></div>
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">&nbsp;</td>
-				<td class="adminData">
-					<div id="future-schedules"></div>
-				</td>
-			</tr>
-		</table>
-	}
+		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.CronExpression)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.CronExpression )
+				@Html.ValidationMessageFor(model => model.CronExpression)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<div class="muted">Hilfe zu <a href='@cronHelpLink' target="_blank">Cron-Ausdrücken</a></div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">&nbsp;</td>
+			<td class="adminData">
+				<div id="future-schedules"></div>
+			</td>
+		</tr>
+	</table>
 }
 
 <script>

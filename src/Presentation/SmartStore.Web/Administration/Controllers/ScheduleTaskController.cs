@@ -140,84 +140,11 @@ namespace SmartStore.Admin.Controllers
 			var model = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
 				.Select(PrepareScheduleTaskModel)
-				//.OrderByDescending(x => x.IsRunning)
-				//.ThenByDescending(x => x.IsOverdue)
-				//.ThenBy(x => x.Seconds)
 				.ToList();
 
             return View(model);
         }
 
-		//[HttpPost, GridAction(EnableCustomBinding = true)]
-		//public ActionResult List(GridCommand command)
-		//{
-		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-		//		return AccessDeniedView();
-			
-		//	var models = _scheduleTaskService.GetAllTasks(true)
-		//		.Where(IsTaskVisible)
-		//		.Select(PrepareScheduleTaskModel)
-		//		//.OrderByDescending(x => x.IsRunning)
-		//		//.ThenByDescending(x => x.IsOverdue)
-		//		//.ThenBy(x => x.Seconds)
-		//		.ToList();
-
-		//	var model = new GridModel<ScheduleTaskModel>
-		//	{
-		//		Data = models,
-		//		Total = models.Count
-		//	};
-
-		//	return new JsonResult
-		//	{
-		//		Data = model
-		//	};
-		//}
-
-		//[GridAction(EnableCustomBinding = true)]
-		//public ActionResult TaskUpdate(ScheduleTaskModel model, GridCommand command)
-		//{
-		//	if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-		//		return AccessDeniedView();
-
-		//	if (!ModelState.IsValid)
-		//	{
-		//		//display the first model error
-		//		var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-		//		NotifyError(modelStateErrors.FirstOrDefault());
-		//		return Content(modelStateErrors.FirstOrDefault());
-		//	}
-
-		//	var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
-		//	if (scheduleTask == null)
-		//	{
-		//		NotifyError("Schedule task cannot be loaded");
-		//		return Content("");
-		//	}
-
-		//	if (scheduleTask.IsRunning)
-		//	{
-		//		NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
-		//		return Content("");
-		//	}
-
-		//	scheduleTask.Name = model.Name;
-		//	scheduleTask.Enabled = model.Enabled;
-		//	scheduleTask.StopOnError = model.StopOnError;
-
-		//	if (model.Enabled)
-		//	{
-		//		scheduleTask.NextRunUtc = _scheduleTaskService.GetNextSchedule(scheduleTask);
-		//	}
-		//	else
-		//	{
-		//		scheduleTask.NextRunUtc = null;
-		//	}
-
-		//	_scheduleTaskService.UpdateTask(scheduleTask);
-
-		//	return List(command);
-		//}
 
 		[HttpPost]
 		public ActionResult GetRunningTasks()
@@ -298,7 +225,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			var model = PrepareScheduleTaskModel(task);
-			ViewBag.ReturnUrl = returnUrl.NullEmpty() ?? Url.Action("List");
+			ViewBag.ReturnUrl = returnUrl;
 
 			return View(model);
 		}
@@ -310,31 +237,30 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
-			Func<ActionResult> result = null;
-			if (continueEditing)
-				result = () => RedirectToAction("Edit", new { id = model.Id });
-			else
-				result = () => RedirectToAction("List");
+			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
+			var returnResult = Redirect(returnUrl.NullEmpty() ?? Url.Action("List"));
+
+			ViewBag.ReturnUrl = returnUrl;
 
 			if (!ModelState.IsValid)
 			{
 				// display the first model error
 				var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
 				NotifyError(modelStateErrors.FirstOrDefault());
-				return result();
+				return reloadResult;
 			}
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
 			if (scheduleTask == null)
 			{
 				NotifyError("Schedule task cannot be loaded");
-				return result();
+				return reloadResult;
 			}
 
 			if (scheduleTask.IsRunning)
 			{
 				NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
-				return result();
+				return reloadResult;
 			}
 
 			scheduleTask.Name = model.Name;
@@ -353,7 +279,10 @@ namespace SmartStore.Admin.Controllers
 
 			_scheduleTaskService.UpdateTask(scheduleTask);
 
-			return result();
+			if (continueEditing)
+				return reloadResult;
+
+			return returnResult;
 		}
 
 		[HttpPost]
@@ -371,6 +300,41 @@ namespace SmartStore.Admin.Controllers
 				ViewBag.CronScheduleParseError = ex.Message;
 				return PartialView(Enumerable.Empty<DateTime>());
 			}
+		}
+
+		[ChildActionOnly]
+		public ActionResult MinimalTask(int taskId, string returnUrl /* mandatory on purpose */, bool cancellable = true)
+		{
+			var task = _scheduleTaskService.GetTaskById(taskId);
+			if (task == null)
+			{
+				return Content("");
+			}
+
+			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+			ViewBag.ReturnUrl = returnUrl;
+			ViewBag.Cancellable = cancellable;
+
+			var model = PrepareScheduleTaskModel(task);
+
+			return PartialView(model);
+		}
+
+		[HttpPost]
+		public ActionResult GetMinimalTaskWidget(int taskId, string returnUrl /* mandatory on purpose */)
+		{
+			var task = _scheduleTaskService.GetTaskById(taskId);
+			if (task == null)
+			{
+				return Content("");
+			}
+
+			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
+			ViewBag.ReturnUrl = returnUrl;
+
+			var model = PrepareScheduleTaskModel(task);
+
+			return PartialView("_MinimalTaskWidget", model);
 		}
 
     }

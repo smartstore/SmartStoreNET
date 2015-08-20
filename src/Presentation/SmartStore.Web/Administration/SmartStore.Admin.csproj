@@ -501,6 +501,8 @@
     <Content Include="Views\ScheduleTask\FutureSchedules.cshtml" />
     <Content Include="Views\ScheduleTask\_LastRun.cshtml" />
     <Content Include="Views\ScheduleTask\_NextRun.cshtml" />
+    <Content Include="Views\ScheduleTask\MinimalTask.cshtml" />
+    <Content Include="Views\ScheduleTask\_MinimalTaskWidget.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

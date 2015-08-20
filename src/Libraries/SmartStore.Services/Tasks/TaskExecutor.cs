@@ -10,6 +10,9 @@ using SmartStore.Core.Async;
 using System.Threading;
 using SmartStore.Core.Plugins;
 using Autofac;
+using SmartStore.Services.Customers;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Services.Tasks
 {
@@ -18,13 +21,23 @@ namespace SmartStore.Services.Tasks
     {
         private readonly IScheduleTaskService _scheduledTaskService;
 		private readonly IDbContext _dbContext;
+		private readonly ICustomerService _customerService;
+		private readonly IWorkContext _workContext;
         private readonly Func<Type, ITask> _taskResolver;
 		private readonly IComponentContext _componentContext;
 
-        public TaskExecutor(IScheduleTaskService scheduledTaskService, IDbContext dbContext, IComponentContext componentContext, Func<Type, ITask> taskResolver)
+        public TaskExecutor(
+			IScheduleTaskService scheduledTaskService, 
+			IDbContext dbContext,
+ 			ICustomerService customerService,
+			IWorkContext workContext,
+			IComponentContext componentContext, 
+			Func<Type, ITask> taskResolver)
         {
             this._scheduledTaskService = scheduledTaskService;
 			this._dbContext = dbContext;
+			this._customerService = customerService;
+			this._workContext = workContext;
 			this._componentContext = componentContext;
             this._taskResolver = taskResolver;
 
@@ -62,7 +75,11 @@ namespace SmartStore.Services.Tasks
 
             try
             {
-                // create task instance
+                // set background task system customer as current customer
+				var customer = _customerService.GetCustomerBySystemName(SystemCustomerNames.BackgroundTask);
+				_workContext.CurrentCustomer = customer;
+
+				// create task instance
 				instance = _taskResolver(taskType);
 				stateName = task.Id.ToString();
                 

@@ -114,7 +114,7 @@ var Admin = {
 						}
 					});
 				}
-				window.setTimeout(poll, 500);
+				window.setTimeout(poll, 50);
 				interval = window.setInterval(poll, 5000);
 			}
 		}

@@ -1007,8 +1007,8 @@ namespace SmartStore.Admin.Controllers
                 //No customer found with the specified id
                 return RedirectToAction("List");
 
-			//ensure that a non-admin user cannot impersonate as an administrator
-			//otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
+			// ensure that a non-admin user cannot impersonate as an administrator
+			// otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
 			if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
 			{
 				NotifyError("A non-admin user cannot impersonate as an administrator");

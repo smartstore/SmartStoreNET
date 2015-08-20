@@ -1983,7 +1983,6 @@
     <Content Include="Views\Customer\AccountActivation.cshtml" />
     <Content Include="Views\Home\ContactUs.cshtml" />
     <Content Include="Views\Common\CurrencySelector.cshtml" />
-    <Content Include="Views\Common\HeaderLinks.cshtml" />
     <Content Include="Views\Common\InfoBlock.cshtml" />
     <Content Include="Views\Common\LanguageSelector.cshtml" />
     <Content Include="Views\Common\List.cshtml" />

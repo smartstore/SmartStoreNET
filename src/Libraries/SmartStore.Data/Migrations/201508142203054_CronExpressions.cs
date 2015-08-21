@@ -13,12 +13,14 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
 			AddColumn("dbo.ScheduleTask", "CronExpression", c => c.String(maxLength: 1000, defaultValue: "0 */1 * * *" /* Every hour */));
+			AddColumn("dbo.ScheduleTask", "RowVersion", c => c.Binary(nullable: false, fixedLength: true, timestamp: true, storeType: "rowversion"));
             DropColumn("dbo.ScheduleTask", "Seconds");
         }
         
         public override void Down()
         {
             AddColumn("dbo.ScheduleTask", "Seconds", c => c.Int(nullable: false));
+			DropColumn("dbo.ScheduleTask", "RowVersion");
             DropColumn("dbo.ScheduleTask", "CronExpression");
         }
 
@@ -104,7 +106,69 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			// ...
+			builder.Delete(
+				"Admin.System.ScheduleTasks.Seconds",
+				"Admin.System.ScheduleTasks.Seconds.Positive", 
+				"Admin.System.ScheduleTasks.RunNow.Completed");
+			
+			builder.AddOrUpdate("Common.Rule",
+				"Rule",
+				"Regel");
+			builder.AddOrUpdate("Common.Scheduled",
+				"Scheduled",
+				"Geplant");
+			builder.AddOrUpdate("Common.Unscheduled",
+				"Unscheduled",
+				"Ungeplant");
+	
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.CronExpression",
+				"Cron Expression",
+				"Cron Ausdruck",
+				"An expression that defines the schedule for the automatic execution of the task.",
+				"Ein Ausdruck, der den Zeitplan für die automatische Ausführung der Aufgabe festlegt.");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.Enabled.Hint",
+				"Enables the scheduled execution of the task in accordance with the cron expression",
+				"Aktiviert die geplante Ausführung der Aufgabe gemäß Cron Ausdruck");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.StopOnError",
+				"Disable on error",
+				"Bei Fehler deaktivieren",
+				"Check the box if the task should be disabled automatically when an error occurs during execution",
+				"Aktivieren Sie das Kästchen, wenn die Aufgabe bei Auftreten eines Fehlers während der Ausführung deaktiviert werden soll");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.LastStart.Hint",
+				"Start date of the last execution",
+				"Startdatum der letzten Ausführung");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.LastSuccess.Hint",
+				"Start date of the last successful execution",
+				"Startdatum der letzten erfolgreichen Ausführung");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.Duration.Hint",
+				"Duration of the latest execution ([h]:[min]:[sec])",
+				"Dauer der letzten Ausführung ([Std.]:[Min.]:[Sek.])");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.NextRun.Hint",
+				"Date of the next scheduled execution",
+				"Datum der nächsten geplanten Ausführung");
+
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.CronHelp",
+				"<a href='{0}' target='_blank'>Cron Expressions</a> help",
+				"Hilfe zu <a href='{0}' target='_blank'>Cron-Ausdrücken</a>");
+
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.FutureSchedules",
+				"Future schedules",
+				"Zukünftige Zeitpläne");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.EditTask",
+				"Edit task",
+				"Aufgabe bearbeiten");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.ScheduleExecution",
+				"Schedule execution",
+				"Ausführung planen");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.InvalidCronExpression",
+				"The cron expression is invalid",
+				"Der Cron-Ausdruck ist ungültig");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.RunNow.Success",
+				"The task has been executed successfully",
+				"Aufgabe wurde erfolgreich ausgeführt");
+			builder.AddOrUpdate("Admin.System.ScheduleTasks.UpdateSuccess",
+				"The task has been updated successfully",
+				"Die Aufgabe wurde erfolgreich bearbeitet");
 		}
     }
 }

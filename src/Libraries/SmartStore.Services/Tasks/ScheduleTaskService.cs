@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Data.Entity.Infrastructure;
 using System.Linq;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
@@ -144,7 +145,63 @@ namespace SmartStore.Services.Tasks
             if (task == null)
                 throw new ArgumentNullException("task");
 
-            _taskRepository.Update(task);
+			bool saveFailed;
+			bool? autoCommit = null;
+
+			do
+			{
+				saveFailed = false;
+
+				// ALWAYS save immediately
+				try
+				{
+					autoCommit = _taskRepository.AutoCommitEnabled;
+					_taskRepository.AutoCommitEnabled = true;
+					_taskRepository.Update(task);
+				}
+				catch (DbUpdateConcurrencyException ex)
+				{
+					saveFailed = true;
+					
+					var entry = ex.Entries.Single();
+					var current = (ScheduleTask)entry.CurrentValues.ToObject(); // from current scope
+
+					// When 'StopOnError' is true, the 'Enabled' property could have been be set to true on exception.
+					var enabledModified = entry.Property("Enabled").IsModified;
+
+					// Save current cron expression
+					var cronExpression = task.CronExpression;
+
+					// Fetch Name, CronExpression, Enabled & StopOnError from database
+					// (these were possibly edited thru the backend)
+					_taskRepository.Context.ReloadEntity(task);
+
+					// Do we have to reschedule the task?
+					var cronModified = cronExpression != task.CronExpression;
+
+					// Copy execution specific data from current to reloaded entity 
+					task.LastEndUtc = current.LastEndUtc;
+					task.LastError = current.LastError;
+					task.LastStartUtc = current.LastStartUtc;
+					task.LastSuccessUtc = current.LastSuccessUtc;
+					task.ProgressMessage = current.ProgressMessage;
+					task.ProgressPercent = current.ProgressPercent;
+					task.NextRunUtc = current.NextRunUtc;
+					if (enabledModified)
+					{
+						task.Enabled = current.Enabled;
+					}
+					if (task.NextRunUtc.HasValue && cronModified)
+					{
+						// reschedule task
+						task.NextRunUtc = GetNextSchedule(task);
+					}
+				}
+				finally
+				{
+					_taskRepository.AutoCommitEnabled = autoCommit;
+				}
+			} while (saveFailed);
         }
 
 		public void CalculateFutureSchedules(IEnumerable<ScheduleTask> tasks, bool isAppStart = false)

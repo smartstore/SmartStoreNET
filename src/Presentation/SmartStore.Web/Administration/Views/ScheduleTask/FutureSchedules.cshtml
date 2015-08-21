@@ -3,6 +3,7 @@
 
 @{
 	string error = (string)ViewBag.CronScheduleParseError;
+	string description = (string)ViewBag.Description;
 }
 
 <style>
@@ -17,11 +18,14 @@
 }
 else
 {
-	<h4 style="xmargin-bottom: 20px">Zukünftige Zeitpläne</h4>
-	<p class="text-warning">@ViewBag.Description</p>
+	<h4>@T("Admin.System.ScheduleTasks.FutureSchedules")</h4>
+	if (description.HasValue())
+	{
+		<p class="text-warning">@description</p>
+	}
 	<table class="future-schedules">
 		<tbody>
-			@foreach (var day in Model.Take(30).ToLookup(x => x.Date))
+			@foreach (var day in Model.ToLookup(x => x.Date))
 			{
 				<tr>
 					<td><strong>@day.Key.ToShortDateString()</strong></td>

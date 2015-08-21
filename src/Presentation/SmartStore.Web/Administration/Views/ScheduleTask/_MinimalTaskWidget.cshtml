@@ -4,11 +4,11 @@
 	var returnUrl = (string)ViewBag.ReturnUrl;
 	var hasPermission = ViewBag.HasPermission == true;
 }
-<span class="label@(Model.Enabled ? " label-warning" : "")" style="margin-right: 6px">@(Model.Enabled ? "Geplant" : "Ungeplant")</span>
+<span class="label@(Model.Enabled ? " label-warning" : "")" style="margin-right: 6px">@(Model.Enabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
 @if (Model.Enabled)
 {
-	<span>Regel: </span>
-	<span class="muted">@Model.CronDescription</span>
+	<span>@T("Common.Rule"): </span>
+	<span class="muted">@(Model.CronDescription ?? Model.CronExpression)</span>
 	if (Model.NextRun.HasValue)
 	{
 		<span> - @T("Admin.System.ScheduleTasks.NextRun"): </span>
@@ -22,7 +22,7 @@ else
 }
 @if (hasPermission)
 {
-	<div class="btn-group" style="display: inline-block; margin-left: 10px">
+	<div class="btn-group btn-actions">
 		<a class="btn btn-small dropdown-toggle" data-toggle="dropdown" href="#">
 			<i class="fa fa-gear"></i>
 			@T("Admin.Common.Actions")
@@ -34,13 +34,13 @@ else
 					@if (Model.Enabled)
 					{
 						<i class="fa fa-fw fa-edit"></i>
-						@:Aufgabe bearbeiten
-						}
+						@T("Admin.System.ScheduleTasks.EditTask")
+					}
 					else
 					{
 						<i class="fa fa-fw fa-clock-o"></i>
-						@:Ausführung planen
-						}
+						@T("Admin.System.ScheduleTasks.ScheduleExecution")
+					}
 				</a>
 			</li>
 			<li>

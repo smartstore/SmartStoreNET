@@ -54,12 +54,19 @@ namespace SmartStore.Services.Tasks
 			var options = new Options 
 			{ 
 				DayOfWeekStartIndexZero = true, 
-				ThrowExceptionOnParseError = false, 
+				ThrowExceptionOnParseError = true, 
 				Verbose = false,
 				Use24HourTimeFormat = Thread.CurrentThread.CurrentUICulture.DateTimeFormat.AMDesignator.IsEmpty()
 			};
 
-			return ExpressionDescriptor.GetDescription(expression, options);
+			try
+			{
+				return ExpressionDescriptor.GetDescription(expression, options);
+			}
+			catch
+			{
+				return null;
+			}
 		}
 
 	}

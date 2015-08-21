@@ -121,7 +121,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 
 			model.Copy(_googleService.Settings, false);
 			_settingService.SaveSetting(_googleService.Settings);
-
+			
 			_googleService.Helper.UpdateScheduleTask(model.TaskEnabled);
 
 			NotifySuccess(_googleService.Helper.GetResource("ConfigSaveNote"), true);

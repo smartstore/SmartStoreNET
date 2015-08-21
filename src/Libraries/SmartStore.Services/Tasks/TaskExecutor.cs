@@ -87,6 +87,9 @@ namespace SmartStore.Services.Tasks
                 task.LastStartUtc = DateTime.UtcNow;
                 task.LastEndUtc = null;
                 task.NextRunUtc = null;
+				task.ProgressPercent = null;
+				task.ProgressMessage = null;
+
                 _scheduledTaskService.UpdateTask(task);
 
 				// create & set a composite CancellationTokenSource which also contains the global app shoutdown token

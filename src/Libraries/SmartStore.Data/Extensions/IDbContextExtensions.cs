@@ -5,7 +5,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 
-namespace SmartStore.Data 
+namespace SmartStore 
 {
 
     public static class IDbContextExtensions 
@@ -25,16 +25,16 @@ namespace SmartStore.Data
 
         private static T InnerGetCopy<T>(IDbContext context, T currentCopy, Func<DbEntityEntry<T>, DbPropertyValues> func) where T : BaseEntity 
 		{
-            //Get the database context
+            // Get the database context
             DbContext dbContext = CastOrThrow(context);
 
-            //Get the entity tracking object
+            // Get the entity tracking object
             DbEntityEntry<T> entry = GetEntityOrReturnNull(currentCopy, dbContext);
 
-            //The output 
+            // The output 
             T output = null;
 
-            //Try and get the values
+            // Try and get the values
             if (entry != null) {
                 DbPropertyValues dbPropertyValues = func(entry);
                 if(dbPropertyValues != null) {

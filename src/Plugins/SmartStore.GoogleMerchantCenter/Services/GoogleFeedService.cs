@@ -831,6 +831,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 			//model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
 			model.TaskEnabled = Helper.ScheduleTask.Enabled;
+			model.ScheduleTaskId = Helper.ScheduleTask.Id;
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();

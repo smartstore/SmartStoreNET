@@ -195,7 +195,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntityToContext(result[i]);
+						result[i] = AttachEntity(result[i]);
 					}
 				}
 			}
@@ -228,7 +228,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntityToContext(result[i]);
+						result[i] = AttachEntity(result[i]);
 					}
 				}
 				// close up the reader, we're done saving results
@@ -356,7 +356,7 @@ namespace SmartStore.Data
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
 			this.Configuration.ValidateOnSaveEnabled = false;
-            int result = this.Commit();
+            int result = base.SaveChanges();
             this.Configuration.ValidateOnSaveEnabled = validateOnSaveEnabled;
 
 			PerformPostSaveActions(modifiedEntries, modifiedHookEntries);
@@ -373,7 +373,7 @@ namespace SmartStore.Data
 			// SAVE NOW!!!
 			bool validateOnSaveEnabled = this.Configuration.ValidateOnSaveEnabled;
 			this.Configuration.ValidateOnSaveEnabled = false;
-			var result = this.CommitAsync();
+			var result = base.SaveChangesAsync();
 
 			result.ContinueWith((t) =>
 			{
@@ -487,15 +487,16 @@ namespace SmartStore.Data
         /// <typeparam name="TEntity">TEntity</typeparam>
         /// <param name="entity">Entity</param>
         /// <returns>Attached entity</returns>
-        protected virtual TEntity AttachEntityToContext<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        protected virtual TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
         {
 			// little hack here until Entity Framework really supports stored procedures
 			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
-			var alreadyAttached = Set<TEntity>().Local.Where(x => x.Id == entity.Id).FirstOrDefault();
+			var dbSet = Set<TEntity>();
+			var alreadyAttached = dbSet.Local.Where(x => x.Id == entity.Id).FirstOrDefault();
 			if (alreadyAttached == null)
 			{
 				// attach new entity
-				Set<TEntity>().Attach(entity);
+				dbSet.Attach(entity);
 				return entity;
 			}
 			else
@@ -505,39 +506,50 @@ namespace SmartStore.Data
 			}
         }
 
-        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
 			if (entity != null)
 			{
-				return Set<TEntity>().Local.Any(x => x == entity);
+				return Set<TEntity>().Local.Any(x => x.Id == entity.Id);
 			}
 
 			return false;
         }
 
-        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+        public void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
-			if (this.IsAttached(entity))
-			{
-				this.Entry(entity).State = System.Data.Entity.EntityState.Detached;
-			}
+			this.Entry(entity).State = System.Data.Entity.EntityState.Detached;
         }
 
-		public int DetachEntities<TEntity>() where TEntity : class
+		public int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class
 		{
-			var attachedEntities = this.ChangeTracker.Entries()
-				.Where(x => x.State != System.Data.Entity.EntityState.Detached && x.Entity is TEntity)
-				.ToList();
-			attachedEntities.Each(x => this.Entry(x.Entity).State = System.Data.Entity.EntityState.Detached);
+			Func<DbEntityEntry, bool> predicate = x => 
+			{
+				if (x.Entity is TEntity)
+				{
+					if (x.State == System.Data.Entity.EntityState.Detached)
+						return false;
+
+					if (unchangedEntitiesOnly)
+						return x.State == System.Data.Entity.EntityState.Unchanged;
+
+					return true;
+				}
+
+				return false;
+			};
+			
+			var attachedEntities = this.ChangeTracker.Entries().Where(predicate).ToList();
+			attachedEntities.Each(entry => entry.State = System.Data.Entity.EntityState.Detached);
 			return attachedEntities.Count;
 		}
 
-		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity, new()
+		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
 		{
 			this.Entry(entity).State = newState;
 		}
 
-		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
+		public void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
 		{
 			this.Entry(entity).Reload();
 		}
@@ -583,69 +595,6 @@ namespace SmartStore.Data
 		}
 
         #endregion
-
-		#region EF helpers
-
-		private int Commit()
-		{
-			int result = 0;
-			bool commitFailed = false;
-			do
-			{
-				commitFailed = false;
-
-				try
-				{
-					result = base.SaveChanges();
-				}
-				catch (DbUpdateConcurrencyException ex)
-				{
-					commitFailed = true;
-
-					foreach (var entry in ex.Entries)
-					{
-						entry.Reload();
-					}
-				}
-			}
-			while (commitFailed);
-
-			return result;
-		}
-
-		private Task<int> CommitAsync()
-		{
-			var tcs = new TaskCompletionSource<int>();
-
-			base.SaveChangesAsync().ContinueWith((t) =>
-			{
-				if (!t.IsFaulted)
-				{
-					//if (t.IsCanceled)
-					//{
-					//	tcs.TrySetCanceled();
-					//	return;
-					//}
-					tcs.TrySetResult(t.Result);
-					return;
-				}
-
-				var ex = t.Exception.InnerException;
-				if (ex != null && ex is DbUpdateConcurrencyException)
-				{
-					// try again
-					tcs.TrySetResult(this.CommitAsync().Result);
-				}
-				else
-				{
-					tcs.TrySetException(ex);
-				}
-			});
-
-			return tcs.Task;
-		}
-
-		#endregion
 
 		#region Nested classes
 

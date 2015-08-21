@@ -163,7 +163,7 @@ namespace SmartStore.Services.ExportImport
 						    var batch = segmenter.CurrentBatch;
 
 						    // Perf: detach all entities
-						    _rsProduct.Context.DetachAll();
+						    _rsProduct.Context.DetachAll(false);
 
 						    // Update progress for calling thread
 						    if (progress != null)

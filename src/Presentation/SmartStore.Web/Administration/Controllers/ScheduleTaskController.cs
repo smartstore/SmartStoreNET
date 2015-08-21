@@ -22,6 +22,7 @@ using Autofac;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using System.Collections.Generic;
+using System.Threading;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -121,7 +122,10 @@ namespace SmartStore.Admin.Controllers
 			if (task.LastStartUtc.HasValue)
 			{
 				span = model.IsRunning ? now - task.LastStartUtc.Value : task.LastEndUtc.Value - task.LastStartUtc.Value;
-				model.Duration = span.ToString("g");
+				if (span > TimeSpan.Zero)
+				{
+					model.Duration = span.ToString("g");
+				}
 			}
 
             return model;
@@ -193,7 +197,32 @@ namespace SmartStore.Admin.Controllers
 
             _taskScheduler.RunSingleTask(id);
 
-            NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			// The most tasks are completed rather quickly. Wait a while...
+			var start = DateTime.UtcNow;
+			Thread.Sleep(200);
+
+			// ...check and return suitable notifications
+			var task = _scheduleTaskService.GetTaskById(id);
+			if (task != null)
+			{
+				if (task.IsRunning)
+				{
+					NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+				}
+				else
+				{
+					if (task.LastError.HasValue())
+					{
+						NotifyError(task.LastError);
+					}
+					else
+					{
+						NotifySuccess(T("Admin.System.ScheduleTasks.RunNow.Success"));
+					}
+				}
+				var now = DateTime.UtcNow;
+			}
+
 			return Redirect(returnUrl);
 		}
 
@@ -237,29 +266,20 @@ namespace SmartStore.Admin.Controllers
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
 				return AccessDeniedView();
 
-			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
-			var returnResult = Redirect(returnUrl.NullEmpty() ?? Url.Action("List"));
-
 			ViewBag.ReturnUrl = returnUrl;
 
 			if (!ModelState.IsValid)
 			{
-				// display the first model error
-				var modelStateErrors = this.ModelState.Values.SelectMany(x => x.Errors).Select(x => x.ErrorMessage);
-				NotifyError(modelStateErrors.FirstOrDefault());
-				return reloadResult;
+				return View(model);
 			}
+
+			var reloadResult = RedirectToAction("Edit", new { id = model.Id, returnUrl = returnUrl });
+			var returnResult = Redirect(returnUrl.NullEmpty() ?? Url.Action("List"));
 
 			var scheduleTask = _scheduleTaskService.GetTaskById(model.Id);
 			if (scheduleTask == null)
 			{
 				NotifyError("Schedule task cannot be loaded");
-				return reloadResult;
-			}
-
-			if (scheduleTask.IsRunning)
-			{
-				NotifyError(T("Admin.System.ScheduleTasks.UpdateLocked"));
 				return reloadResult;
 			}
 
@@ -278,6 +298,8 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			_scheduleTaskService.UpdateTask(scheduleTask);
+
+			NotifySuccess(T("Admin.System.ScheduleTasks.UpdateSuccess"));
 
 			if (continueEditing)
 				return reloadResult;

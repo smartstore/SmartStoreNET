@@ -2,7 +2,7 @@
 @using SmartStore
 @using SmartStore.Core
 @{
-	ViewBag.Title = "Aufgabe bearbeiten" + " - " + Model.Name;
+	ViewBag.Title = T("Admin.System.ScheduleTasks.EditTask") + " - " + Model.Name;
 	var cronHelpLink = WorkContext.WorkingLanguage.UniqueSeoCode.ToLower() == "de" ? "https://de.wikipedia.org/wiki/Cron" : "https://en.wikipedia.org/wiki/Cron";
 	var returnUrl = ((string)ViewBag.ReturnUrl).NullEmpty();
 }
@@ -22,11 +22,14 @@
 		<div class="options">
 			<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
 			<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
-			<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
+			@if (!Model.IsRunning)
+			{
+				<a href="@Model.ExecuteUrl" class="btn"><i class='fa fa-play'></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")</a>
+			}
 		</div>
 	</div>
 	
-	@Html.ValidationSummary(true)
+	@Html.ValidationSummary(false)
 	
 	<table class="adminContent">
 		<tr>
@@ -58,28 +61,24 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.LastStartPretty)
+				@Html.SmartLabelFor(model => model.LastStart)
 			</td>
 			<td class="adminData">
-				@Html.DisplayFor(model => model.LastStartPretty)
+
+				@(Model.LastStart.HasValue ? Model.LastStart.Value.ToString("g") : T("Common.Never").Text)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.NextRunPretty)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(model => model.NextRunPretty)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(model => model.Duration)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(model => model.Duration)
-			</td>
-		</tr>
+		@if (Model.Duration.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(model => model.Duration)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(model => model.Duration)
+				</td>
+			</tr>
+		}
 		@if (Model.LastError.HasValue())
 		{
 			<tr>
@@ -87,15 +86,29 @@
 					@Html.SmartLabelFor(model => model.LastError)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.LastError)
+					<span class="text-error">@Html.DisplayFor(model => model.LastError)</span>
 				</td>
 			</tr>
+			if (Model.LastSuccess.HasValue && Model.LastSuccess != Model.LastEnd)
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(model => model.LastSuccess)
+					</td>
+					<td class="adminData">
+						@Model.LastSuccess.Value.ToString("g")
+					</td>
+				</tr>
+			}
+		}
+		@if (Model.NextRun.HasValue)
+		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.LastSuccessPretty)
+					@Html.SmartLabelFor(model => model.NextRun)
 				</td>
 				<td class="adminData">
-					@Html.DisplayFor(model => model.LastSuccessPretty)
+					@Model.NextRun.Value.ToString("g")
 				</td>
 			</tr>
 		}
@@ -111,7 +124,7 @@
 		<tr>
 			<td class="adminTitle">&nbsp;</td>
 			<td class="adminData">
-				<div class="muted">Hilfe zu <a href='@cronHelpLink' target="_blank">Cron-Ausdrücken</a></div>
+				<div class="muted">@T("Admin.System.ScheduleTasks.CronHelp", cronHelpLink)</div>
 			</td>
 		</tr>
 		<tr>

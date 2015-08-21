@@ -14,7 +14,9 @@ namespace SmartStore.Admin.Models.Tasks
         [AllowHtml]
         public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.System.ScheduleTasks.CronExpression")]
 		public string CronExpression { get; set; }
+
 		public string CronDescription { get; set; }
 		
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.Enabled")]
@@ -23,27 +25,28 @@ namespace SmartStore.Admin.Models.Tasks
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.StopOnError")]
         public bool StopOnError { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastStart")]
-        public string LastStartPretty { get; set; }
+		[SmartResourceDisplayName("Admin.System.ScheduleTasks.LastStart")]
 		public DateTime? LastStart { get; set; }
+		public string LastStartPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastEnd")]
-        public string LastEndPretty { get; set; }
 		public DateTime? LastEnd { get; set; }
+        public string LastEndPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.LastSuccess")]
-        public string LastSuccessPretty { get; set; }
 		public DateTime? LastSuccess { get; set; }
+        public string LastSuccessPretty { get; set; }
 
         [SmartResourceDisplayName("Admin.System.ScheduleTasks.NextRun")]
-        public string NextRunPretty { get; set; }
 		public DateTime? NextRun { get; set; }
+        public string NextRunPretty { get; set; }
 
 		public bool IsOverdue { get; set; }
 
 		[SmartResourceDisplayName("Common.Error")]
 		public string LastError { get; set; }
 
+		[SmartResourceDisplayName("Common.Duration")]
 		public string Duration { get; set; }
 
 		public bool IsRunning { get; set; }

@@ -16,6 +16,7 @@ namespace SmartStore.GoogleMerchantCenter
         public void Execute(TaskExecutionContext context)
 		{
             _feedService.CreateFeed(context);
+			context.CancellationToken.ThrowIfCancellationRequested();
 		}
     }
 }

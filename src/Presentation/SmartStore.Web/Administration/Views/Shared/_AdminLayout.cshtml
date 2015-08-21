@@ -50,9 +50,6 @@
     <div id="content">
         @Html.Partial("_Notifications")
         <div class="cph">
-			<div style="margin-bottom:12px">
-				@Html.Action("MinimalTask", "ScheduleTask", new { taskId = 3, returnUrl = Request.RawUrl, cancellable = true })
-			</div>
             @RenderBody()
         </div>
 		<div id="ajax-busy">

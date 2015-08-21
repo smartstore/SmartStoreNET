@@ -15,6 +15,7 @@ namespace SmartStore.Data.Mapping.Tasks
 			this.Property(t => t.LastError).HasMaxLength(1000);
 			this.Property(t => t.ProgressMessage).HasMaxLength(1000).IsOptional();
 			this.Property(t => t.CronExpression).HasMaxLength(1000);
+			this.Property(t => t.RowVersion).IsConcurrencyToken();
 
 			this.Ignore(t => t.IsRunning);
 			this.Ignore(t => t.IsPending);

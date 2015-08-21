@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
@@ -64,6 +65,12 @@ namespace SmartStore.Core.Domain.Tasks
 		/// Gets or sets the current progress message for a running task
 		/// </summary>
 		public string ProgressMessage { get; set; }
+
+		/// <summary>
+		/// Concurrency Token
+		/// </summary>
+		[Timestamp]
+		public byte[] RowVersion { get; set; }
 
 		/// <summary>
 		/// Gets a value indicating whether a task is running

@@ -16,8 +16,8 @@
 	<thead>
 		<tr>
 			<th>@T("Admin.System.ScheduleTasks.Name")</th>
-			<th>@T("Common.Active")</th>
-			<th>CronExpression</th>
+			<th>@T("Admin.System.ScheduleTasks.Enabled")</th>
+			<th>@T("Admin.System.ScheduleTasks.CronExpression")</th>
 			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 			<th>@T("Admin.Common.Actions")</th>
@@ -33,7 +33,10 @@
 				<td>@Html.SymbolForBool(task.Enabled)</td>
 				<td>
 					<div>@task.CronExpression</div>
-					<div class="muted">@task.CronDescription</div>
+					@if (task.CronDescription.HasValue())
+					{
+						<div class="muted">@task.CronDescription</div>
+					}
 				</td>
 				<!-- LastStart -->
 				<td>
@@ -51,10 +54,10 @@
 				<!-- Actions -->
 				<td>
 					<a href='@task.EditUrl' class="btn btn-small" style="margin-bottom: 4px">@T("Common.Edit")</a>
-					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")'>
+					<a href='@task.ExecuteUrl' data-task-id='@task.Id' class='btn btn-small btn-success btn-run-task@(task.IsRunning ? " hide" : "")' style="margin-bottom: 4px">
 						@T("Admin.System.ScheduleTasks.RunNow")
 					</a>
-					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<a href='@task.CancelUrl' data-task-id='@task.Id' class='btn btn-small btn-danger btn-cancel-task@(!task.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');" style="margin-bottom: 4px">
 						@T("Common.Cancel")
 					</a>
 				</td>

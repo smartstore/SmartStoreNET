@@ -1007,7 +1007,7 @@ namespace SmartStore.Admin.Controllers
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
 			model.SeoSettings.CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled;
 			model.SeoSettings.CanonicalHostNameRule = seoSettings.CanonicalHostNameRule;
-            model.SeoSettings.ExtraRobotsDisallows = seoSettings.ExtraRobotsDisallows.ToSeparatedString("\r\n");
+            model.SeoSettings.ExtraRobotsDisallows = String.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _services.Settings, false);
 
@@ -1186,7 +1186,7 @@ namespace SmartStore.Admin.Controllers
 			seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;
 			seoSettings.CanonicalUrlsEnabled = model.SeoSettings.CanonicalUrlsEnabled;
 			seoSettings.CanonicalHostNameRule = model.SeoSettings.CanonicalHostNameRule;
-            seoSettings.ExtraRobotsDisallows = new List<string>(model.SeoSettings.ExtraRobotsDisallows.Split(new string[] { "\r\n" }, StringSplitOptions.RemoveEmptyEntries));
+            seoSettings.ExtraRobotsDisallows = new List<string>(model.SeoSettings.ExtraRobotsDisallows.Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
 			StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, _services.Settings);
 

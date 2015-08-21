@@ -52,7 +52,8 @@ namespace SmartStore.Services.DataExchange
 
 			var folderName = SeoHelper.GetSeName(name, true, false)
 				.Replace("/", "")
-				.ToValidPath();
+				.ToValidPath()
+				.Truncate(20);
 
 			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
 
@@ -104,6 +105,7 @@ namespace SmartStore.Services.DataExchange
 				throw new ArgumentNullException("profile");
 
 			int scheduleTaskId = profile.SchedulingTaskId;
+			var folder = CommonHelper.MapPath("~/App_Data/_temp/Profile/Export/" + profile.FolderName);
 
 			_exportProfileRepository.Delete(profile);
 
@@ -111,6 +113,8 @@ namespace SmartStore.Services.DataExchange
 			_scheduleTaskService.DeleteTask(scheduleTask);
 
 			_eventPublisher.EntityDeleted(profile);
+
+			FileSystemHelper.ClearDirectory(folder, true);
 		}
 
 		public virtual IQueryable<ExportProfile> GetExportProfiles(bool? enabled = null)

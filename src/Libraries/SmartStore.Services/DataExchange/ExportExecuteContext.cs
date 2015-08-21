@@ -26,6 +26,8 @@ namespace SmartStore.Services.DataExchange
 
 		Dictionary<string, object> CustomProperties { get; set; }
 
+		int SuccessfulExportedRecords { get; set; }
+
 		string GetFilePath(string fileNameSuffix = null);
 	}
 
@@ -62,6 +64,8 @@ namespace SmartStore.Services.DataExchange
 		public object ConfigurationData { get; internal set; }
 
 		public Dictionary<string, object> CustomProperties { get; set; }
+
+		public int SuccessfulExportedRecords { get; set; }
 
 		public string GetFilePath(string fileNameSuffix = null)
 		{

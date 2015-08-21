@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
+using System.IO.Compression;
 using System.Linq;
 using System.Text;
 using System.Threading;
@@ -360,11 +361,8 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
-		private void Cleanup(ExportProfileTaskContext ctx)
+		private void Deploy(ExportProfileTaskContext ctx, ExportDeployment deployment)
 		{
-			FileSystemHelper.ClearDirectory(ctx.Folder, false, new List<string> { _logName });
-			
-			// TODO: more deployment specific here
 		}
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx)
@@ -439,10 +437,16 @@ namespace SmartStore.Services.DataExchange
 
 				ctx.Segmenter.Start(() =>
 				{
-					if (!ctx.Provider.Value.Execute(ctx.Export))
-						return false;
+					ctx.Export.SuccessfulExportedRecords = 0;
 
-					return !ctx.Cancellation.IsCancellationRequested;
+					bool goOn = ctx.Provider.Value.Execute(ctx.Export);
+
+					ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.SuccessfulExportedRecords));
+
+					if (ctx.Cancellation.IsCancellationRequested)
+						ctx.Log.Warning("Export aborted. A cancellation has been requested");
+
+					return (goOn && !ctx.Cancellation.IsCancellationRequested);
 				});
 			}
 		}
@@ -452,27 +456,33 @@ namespace SmartStore.Services.DataExchange
 			if (ctx.Profile == null || !ctx.Profile.Enabled)
 				return;
 
-			try
+			var allStores = _services.StoreService.GetAllStores();
+			var currentStore = _services.StoreContext.CurrentStore;
+
+			var pathZipArchive = Path.Combine(ctx.FolderRoot, ctx.Profile.FolderName + ".zip");
+			var pathLogFile = Path.Combine(ctx.FolderRoot, _logName);
+
+			if (ctx.Projection.CurrencyId.HasValue)
+				ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
+			else
+				ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
+
+			if (ctx.Projection.CustomerId.HasValue)
+				ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
+			else
+				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+
+
+			using (var logger = new TraceLogger(pathLogFile))
 			{
-				FileSystemHelper.ClearDirectory(ctx.Folder, false);
-
-				var allStores = _services.StoreService.GetAllStores();
-				var currentStore = _services.StoreContext.CurrentStore;
-
-				using (var logger = new TraceLogger(Path.Combine(ctx.Folder, _logName)))
+				try
 				{
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
 
-					if (ctx.Projection.CurrencyId.HasValue)
-						ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
-					else
-						ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
-
-					if (ctx.Projection.CustomerId.HasValue)
-						ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-					else
-						ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+					FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+					FileSystemHelper.Delete(pathLogFile);
+					FileSystemHelper.Delete(pathZipArchive);
 
 					if (ctx.Profile.ProviderConfigData.HasValue())
 					{
@@ -506,33 +516,60 @@ namespace SmartStore.Services.DataExchange
 						}
 					}
 				}
+				catch (Exception exc)
+				{
+					logger.Error(exc);
+				}
+				finally
+				{
+					try
+					{
+						if (ctx.Segmenter != null)
+							ctx.Segmenter.Dispose();
+
+						ctx.Export.CustomProperties.Clear();
+						ctx.Export.Log = null;
+						ctx.Log = null;
+					}
+					catch { }
+				}
+			}
+
+			try
+			{
+				// create zip archive
+				if (ctx.Profile.CreateZipArchive)
+				{
+					ZipFile.CreateFromDirectory(ctx.FolderContent, pathZipArchive, CompressionLevel.Fastest, true);
+				}
+
+				// deployment
+				foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId))
+				{
+					Deploy(ctx, deployment);
+				}
 			}
 			catch (Exception exc)
 			{
-				ctx.Log.Error(exc);
+				using (var logger2 = new TraceLogger(pathLogFile))
+				{
+					logger2.Error(exc);
+				}
 			}
 			finally
 			{
 				try
 				{
 					if (ctx.Profile.Cleanup)
-						Cleanup(ctx);
+					{
+						FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+					}
 				}
 				catch { }
 
 				try
 				{
-					if (ctx.Cancellation.IsCancellationRequested)
-						ctx.Log.Warning("Export aborted. A cancellation has been requested");
-
-					// TODO: log number of flown out records
-
-					if (ctx.Segmenter != null)
-						ctx.Segmenter.Dispose();
-
-					ctx.Export.CustomProperties.Clear();
-
-					// do not call during processing!
+					// do not call during processing, should be the final statement
 					_services.DbContext.DetachAll();
 				}
 				catch { }
@@ -583,9 +620,11 @@ namespace SmartStore.Services.DataExchange
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 			Cancellation = cancellation;
-			Folder = FileSystemHelper.TempDir(@"Profile\Export\{0}".FormatInvariant(profile.FolderName));
 
-			Export = new ExportExecuteContext(Cancellation, Folder);
+			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
+			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
+
+			Export = new ExportExecuteContext(Cancellation, FolderContent);
 		}
 
 		public ExportProfile Profile { get; private set; }
@@ -600,7 +639,8 @@ namespace SmartStore.Services.DataExchange
 		public TraceLogger Log { get; set; }
 		public Store Store { get; set; }
 
-		public string Folder { get; private set; }
+		public string FolderRoot { get; private set; }
+		public string FolderContent { get; private set; }
 
 		public Dictionary<int, Category> Categories;
 		public Dictionary<int, string> CategoryPathes;

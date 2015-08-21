@@ -93,6 +93,12 @@ namespace SmartStore.Data.Migrations
                 "Free shipping",
                 "Versandkostenfrei");
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows",
+                "Extra Disallows for robots.txt",
+                "Extra Disallows für robots.txt",
+                "Enter additional paths that should be included as Disallow entries in your robots.txt. Each entry has to entered in a new line.",
+                "Geben Sie hier zusätzliche Pfade an, die als Disallow-Einträge zur robots.txt hinzugefügt werden sollen. Jeder Eintrag muss in einer neuen Zeile erfolgen.");
+
 		}
     }
 }

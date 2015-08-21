@@ -3,8 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Data.Entity;
 using System.Linq.Expressions;
+using SmartStore.Core;
 
-namespace SmartStore.Core.Data
+namespace SmartStore
 {
 	public static class IQueryableExtensions
 	{

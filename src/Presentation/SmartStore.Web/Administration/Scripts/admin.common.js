@@ -75,14 +75,14 @@ var Admin = {
 								var el = $(opts.elementsSelector + '[data-task-id=' + task.id + ']');
 								if (el.length) {
 									runningElements.push(el[0]);
-									if (el.data('running')) {
+									if (el.data('running') && el.text()) {
 										// already running
 										el.find('.text').text(task.message || opts.defaultProgressMessage);
 										el.find('.percent').text(task.percent >> 0 ? task.percent + ' %' : "");
 									}
 									else {
 										// new task
-										var row1 = $('<div class="hint clearfix" style="margin-top: 10px; position: relative"></div>').appendTo(el);
+										var row1 = $('<div class="hint clearfix" style="position: relative"></div>').appendTo(el);
 										row1.append($('<div class="text pull-left">' + (task.message || opts.defaultProgressMessage) + '</div>'));
 										row1.append($('<div class="percent pull-right">' + (task.percent >> 0 ? task.percent + ' %' : "") + '</div>'));
 										var row2 = $('<div class="loading-bar" style="margin-top: 4px"></div>').appendTo(el);
@@ -114,8 +114,8 @@ var Admin = {
 						}
 					});
 				}
-				window.setTimeout(poll, 500);
-				interval = window.setInterval(poll, 5000);
+				window.setTimeout(poll, 50);
+				interval = window.setInterval(poll, 2500);
 			}
 		}
 	})()

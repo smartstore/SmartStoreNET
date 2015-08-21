@@ -16,7 +16,9 @@ namespace SmartStore.Services.Tasks
 
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
-        private string _baseUrl;
+		private bool _intervalFixed;
+		private int _sweepInterval;
+		private string _baseUrl;
         private System.Timers.Timer _timer;
         private bool _shuttingDown;
 		private int _errCount;
@@ -24,16 +26,17 @@ namespace SmartStore.Services.Tasks
 
         public DefaultTaskScheduler()
         {
-			_timer = new System.Timers.Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
+			_sweepInterval = 1;
+			_timer = new System.Timers.Timer();
             _timer.Elapsed += Elapsed;
 
             HostingEnvironment.RegisterObject(this);
         }
 
-        public TimeSpan SweepInterval
+		public int SweepIntervalMinutes
         {
-            get { return TimeSpan.FromMilliseconds(_timer.Interval); }
-            set { _timer.Interval = value.TotalMilliseconds; }
+			get { return _sweepInterval; }
+			set { _sweepInterval = value; }
         }
 
         public string BaseUrl
@@ -49,16 +52,30 @@ namespace SmartStore.Services.Tasks
 
         public void Start()
         {
-            lock (_timer)
+			if (_timer.Enabled)
+				return;
+			
+			lock (_timer)
             {
                 CheckUrl(_baseUrl);
+				_timer.Interval = GetFixedInterval();
                 _timer.Start();
             }
         }
 
+		private double GetFixedInterval()
+		{
+			// Gets seconds to next sweep minute
+			int seconds = (_sweepInterval * 60) - DateTime.Now.Second;
+			return seconds * 1000;
+		}
+
         public void Stop()
         {
-            lock (_timer)
+			if (!_timer.Enabled)
+				return;
+			
+			lock (_timer)
             {
                 _timer.Stop();
             }
@@ -98,7 +115,13 @@ namespace SmartStore.Services.Tasks
             {
                 if (_timer.Enabled)
                 {
-                    CallEndpoint(_baseUrl + "/Sweep");
+					if (!_intervalFixed)
+					{
+						_timer.Interval = TimeSpan.FromMinutes(_sweepInterval).TotalMilliseconds;
+						_intervalFixed = true;
+					}
+
+					CallEndpoint(_baseUrl + "/Sweep");
                 }
             }
             finally

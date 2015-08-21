@@ -49,7 +49,7 @@ namespace SmartStore.Web.Framework.Controllers
 		/// <returns>Result</returns>
 		public static string RenderPartialViewToString(this ControllerBase controller, string viewName, object model)
 		{
-			return RenderPartialViewToString(controller, null, model, null);
+			return RenderPartialViewToString(controller, viewName, model, null);
 		}
         /// <summary>
         /// Render partial view to string

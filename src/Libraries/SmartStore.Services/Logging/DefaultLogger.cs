@@ -23,7 +23,7 @@ namespace SmartStore.Services.Logging
         private readonly IRepository<Log> _logRepository;
         private readonly IWebHelper _webHelper;
         private readonly IDbContext _dbContext;
-        private readonly IDataProvider _dataProvider;
+        private readonly IWorkContext _workContext;
 
 		private readonly IList<LogContext> _entries = new List<LogContext>();
 
@@ -31,12 +31,12 @@ namespace SmartStore.Services.Logging
 
         #region Ctor
 
-        public DefaultLogger(IRepository<Log> logRepository, IWebHelper webHelper, IDbContext dbContext, IDataProvider dataProvider)
+		public DefaultLogger(IRepository<Log> logRepository, IWebHelper webHelper, IDbContext dbContext, IWorkContext workContext)
         {
             this._logRepository = logRepository;
             this._webHelper = webHelper;
             this._dbContext = dbContext;
-            this._dataProvider = dataProvider;
+			this._workContext = workContext;
         }
 
         #endregion
@@ -199,6 +199,7 @@ namespace SmartStore.Services.Logging
 			string ipAddress = "";
 			string pageUrl = "";
 			string referrerUrl = "";
+			var currentCustomer = _workContext.CurrentCustomer;
 
 			try
 			{
@@ -246,7 +247,7 @@ namespace SmartStore.Services.Logging
 								ShortMessage = shortMessage,
 								FullMessage = fullMessage,
 								IpAddress = ipAddress,
-								Customer = context.Customer,
+								Customer = context.Customer ?? currentCustomer,
 								PageUrl = pageUrl,
 								ReferrerUrl = referrerUrl,
 								CreatedOnUtc = DateTime.UtcNow,
@@ -262,7 +263,7 @@ namespace SmartStore.Services.Logging
 
 							log.LogLevel = context.LogLevel;
 							log.IpAddress = ipAddress;
-							log.Customer = context.Customer;
+							log.Customer = context.Customer ?? currentCustomer;
 							log.PageUrl = pageUrl;
 							log.ReferrerUrl = referrerUrl;
 							log.UpdatedOnUtc = DateTime.UtcNow;

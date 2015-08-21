@@ -47,7 +47,7 @@ namespace SmartStore.Web.Controllers
             foreach (var task in pendingTasks)
             {
 				var elapsedSincePrevTask = DateTime.UtcNow - prevTaskStart;
-				if (elapsedSincePrevTask >= _taskScheduler.SweepInterval)
+				if (elapsedSincePrevTask >= TimeSpan.FromMinutes(_taskScheduler.SweepIntervalMinutes))
 				{
 					// the previous Task execution in this loop took longer
 					// than the scheduler's sweep interval. Most likely a subsequent

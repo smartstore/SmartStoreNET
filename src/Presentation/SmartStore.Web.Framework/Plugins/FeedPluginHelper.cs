@@ -566,19 +566,19 @@ namespace SmartStore.Web.Framework.Plugins
 			return path;
 		}
 
-		public void UpdateScheduleTask(bool enabled, int seconds)
+		public void UpdateScheduleTask(bool enabled, string cronExpression = "0 */6 * * *" /* every 6 hrs */)
 		{
 			var task = ScheduleTask;
 			if (task != null)
 			{
 				task.Enabled = enabled;
-				task.Seconds = seconds;
+				task.CronExpression = cronExpression;
 
 				ScheduleTaskService.UpdateTask(task);
 			}
 		}
 
-		public void InsertScheduleTask(int minutes = 360)
+		public void InsertScheduleTask(string cronExpression = "0 */6 * * *" /* every 6 hrs */)
 		{
 			var task = ScheduleTask;
 			if (task == null)
@@ -586,7 +586,7 @@ namespace SmartStore.Web.Framework.Plugins
 				ScheduleTaskService.InsertTask(new ScheduleTask 
 				{
 					Name = "{0} feed file generation".FormatWith(SystemName),
-					Seconds = minutes * 60,
+					CronExpression = cronExpression,
 					Type = ScheduleTaskType,
 					Enabled = false,
 					StopOnError = false,

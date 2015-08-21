@@ -42,6 +42,11 @@ namespace SmartStore.Tests
 			return _dbSet.Find(id);
 		}
 
+		public T Attach(T entity)
+		{
+			return _dbSet.Attach(entity);
+		}
+
 		public void Insert(T entity)
 		{
 			if (entity.Id <= 0)

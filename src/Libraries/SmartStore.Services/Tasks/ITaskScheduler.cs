@@ -19,7 +19,7 @@ namespace SmartStore.Services.Tasks
         /// The interval in which the scheduler triggers the sweep url 
 		/// (which determines pending tasks and executes them in the scope of a regular HTTP request).
         /// </summary>
-		TimeSpan SweepInterval { get; set; }
+		int SweepIntervalMinutes { get; set; }
 
 		/// <summary>
 		/// The fully qualified base url
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Tasks
 		/// <summary>
 		/// Starts/initializes the scheduler
 		/// </summary>
-        void Start();
+		void Start();
 
 		/// <summary>
 		/// Stops the scheduler

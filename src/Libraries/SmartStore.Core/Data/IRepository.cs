@@ -39,6 +39,13 @@ namespace SmartStore.Core.Data
         /// <returns>The resolved entity</returns>
         T GetById(object id);
 
+		/// <summary>
+		/// Attaches an entity to the context
+		/// </summary>
+		/// <param name="entity">The entity to attach</param>
+		/// <returns>The entity</returns>
+		T Attach(T entity);
+
         /// <summary>
         /// Marks the entity instance to be saved to the store.
         /// </summary>

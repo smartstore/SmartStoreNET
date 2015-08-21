@@ -14,7 +14,9 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
@@ -52,9 +54,11 @@ namespace SmartStore.Data.Caching
 				typeof(MeasureDimension).Name,
 				typeof(MeasureWeight).Name,
 				typeof(MessageTemplate).Name,
+				typeof(PaymentMethod).Name,
 				typeof(PermissionRecord).Name,
 				typeof(ProductTemplate).Name,
 				typeof(QuantityUnit).Name,
+				typeof(ShippingMethod).Name,
 				typeof(StateProvince).Name,
 				typeof(Store).Name,
 				typeof(StoreMapping).Name,

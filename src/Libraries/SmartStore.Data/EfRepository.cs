@@ -65,6 +65,11 @@ namespace SmartStore.Data
             return this.Entities.Find(id);
         }
 
+		public virtual T Attach(T entity)
+		{
+			return this.Entities.Attach(entity);
+		}
+
 		public virtual void Insert(T entity)
         {
             if (entity == null)
@@ -129,23 +134,12 @@ namespace SmartStore.Data
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+			SetEntityStateToModifiedIfApplicable(entity);
+
 			if (this.AutoCommitEnabledInternal)
-            {
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-				}
+			{
 				_context.SaveChanges();
-            }
-            else
-            {
-                try
-                {
-                    this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                }
-                finally { }
-            }
+			}
         }
 
 		public virtual void UpdateRange(IEnumerable<T> entities)
@@ -153,28 +147,23 @@ namespace SmartStore.Data
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
+			entities.Each(entity =>
+			{
+				SetEntityStateToModifiedIfApplicable(entity);
+			});
+
 			if (this.AutoCommitEnabledInternal)
 			{
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					entities.Each(entity =>
-					{
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-					});
-				}
 				_context.SaveChanges();
 			}
-			else
+		}
+
+		private void SetEntityStateToModifiedIfApplicable(T entity)
+		{
+			var entry = InternalContext.Entry(entity);
+			if (entry.State == System.Data.Entity.EntityState.Detached || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
 			{
-				try
-				{
-					entities.Each(entity =>
-					{
-						this.Entities.Attach(entity);
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
-					});
-				}
-				finally { }
+				entry.State = System.Data.Entity.EntityState.Modified;
 			}
 		}
 
@@ -198,6 +187,14 @@ namespace SmartStore.Data
 		{
 			if (entities == null)
 				throw new ArgumentNullException("entities");
+
+			entities.Each(entity =>
+			{
+				if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+				{
+					this.Entities.Attach(entity);
+				}
+			});
 
 			this.Entities.RemoveRange(entities);
 

@@ -37,7 +37,7 @@ namespace SmartStore.Services.Tasks
 						var taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 						var tasks = taskService.GetAllTasks(true);
-						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
+						taskService.CalculateFutureSchedules(tasks, true /* isAppStart */);
 
 						var baseUrl = CommonHelper.GetAppSetting<string>("sm:TaskSchedulerBaseUrl");
 						if (baseUrl.IsWebUrl())
@@ -50,9 +50,7 @@ namespace SmartStore.Services.Tasks
 							taskScheduler.SetBaseUrl(storeService, filterContext.HttpContext);
 						}
 
-						var sweepInterval = CommonHelper.GetAppSetting<int>("sm:TaskSchedulerSweepInterval", 60);
-						taskScheduler.SweepInterval = TimeSpan.FromSeconds(sweepInterval);
-
+						taskScheduler.SweepIntervalMinutes = CommonHelper.GetAppSetting<int>("sm:TaskSchedulerSweepInterval", 1);
 						taskScheduler.Start();
 
 						logger.Information("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));

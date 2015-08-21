@@ -2540,6 +2540,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services", x =>
                     {
                         x.Name = "Wechselkurse aktualisieren";
+                    })
+				.Alter("SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services", x =>
+                    {
+                        x.Name = "Temporäre Dateien bereinigen";
                     });
         }
 

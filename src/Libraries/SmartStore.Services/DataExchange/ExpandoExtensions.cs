@@ -226,61 +226,64 @@ namespace SmartStore.Services.DataExchange
 			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.IsEsd = product.IsEsd;
 
-			return expando as ExpandoObject;
-		}
-
-		public static ExpandoObject ToExpando(this Product product, int languageId, IPictureService pictureService, MediaSettings mediaSettings, Store store)
-		{
-			dynamic expando = product.ToExpando(languageId);
-
 			expando.DeliveryTime = product.DeliveryTimeId == 0 ? null : product.DeliveryTime.ToExpando(languageId);
 			expando.QuantityUnit = product.QuantityUnitId == 0 ? null : product.QuantityUnit.ToExpando(languageId);
 
-			// pictures
-			expando.ProductPictures = product.ProductPictures
-				.OrderBy(x => x.DisplayOrder)
-				.Select(x =>
-				{
-					dynamic exp = new ExpandoObject();
-					exp.Id = x.Id;
-					exp.DisplayOrder = x.DisplayOrder;
-					exp.Picture = x.Picture.ToExpando(pictureService, store, mediaSettings.ProductThumbPictureSize, mediaSettings.ProductDetailsPictureSize);
-
-					return exp as ExpandoObject;
-				})
-				.ToList();
-
-			// manufacturers
-			expando.ProductManufacturers = product.ProductManufacturers
-				.OrderBy(x => x.DisplayOrder)
-				.Select(x =>
-				{
-					dynamic exp = new ExpandoObject();
-					exp.Id = x.Id;
-					exp.DisplayOrder = x.DisplayOrder;
-					exp.IsFeaturedProduct = x.IsFeaturedProduct;
-					exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
-
-					return exp as ExpandoObject;
-				})
-				.ToList();
-
-			// categories
-			expando.ProductCategories = product.ProductCategories
-				.OrderBy(x => x.DisplayOrder)
-				.Select(x =>
-				{
-					dynamic exp = new ExpandoObject();
-					exp.Id = x.Id;
-					exp.DisplayOrder = x.DisplayOrder;
-					exp.IsFeaturedProduct = x.IsFeaturedProduct;
-					exp.Category = x.Category.ToExpando(languageId);
-
-					return exp as ExpandoObject;
-				})
-				.ToList();
-
 			return expando as ExpandoObject;
 		}
+
+		//public static ExpandoObject ToExpando(this Product product, int languageId, IPictureService pictureService, MediaSettings mediaSettings, Store store)
+		//{
+		//	dynamic expando = product.ToExpando(languageId);
+
+		//	expando.DeliveryTime = product.DeliveryTimeId == 0 ? null : product.DeliveryTime.ToExpando(languageId);
+		//	expando.QuantityUnit = product.QuantityUnitId == 0 ? null : product.QuantityUnit.ToExpando(languageId);
+
+		//	// pictures
+		//	expando.ProductPictures = product.ProductPictures
+		//		.OrderBy(x => x.DisplayOrder)
+		//		.Select(x =>
+		//		{
+		//			dynamic exp = new ExpandoObject();
+		//			exp.Id = x.Id;
+		//			exp.DisplayOrder = x.DisplayOrder;
+		//			exp.Picture = x.Picture.ToExpando(pictureService, store, mediaSettings.ProductThumbPictureSize, mediaSettings.ProductDetailsPictureSize);
+
+		//			return exp as ExpandoObject;
+		//		})
+		//		.ToList();
+
+		//	// manufacturers
+		//	expando.ProductManufacturers = product.ProductManufacturers
+		//		.OrderBy(x => x.DisplayOrder)
+		//		.Select(x =>
+		//		{
+		//			dynamic exp = new ExpandoObject();
+		//			exp.Id = x.Id;
+		//			exp.DisplayOrder = x.DisplayOrder;
+		//			exp.IsFeaturedProduct = x.IsFeaturedProduct;
+		//			exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
+
+		//			return exp as ExpandoObject;
+		//		})
+		//		.ToList();
+
+		//	// categories
+		//	expando.ProductCategories = product.ProductCategories
+		//		.OrderBy(x => x.DisplayOrder)
+		//		.Select(x =>
+		//		{
+		//			dynamic exp = new ExpandoObject();
+		//			exp.Id = x.Id;
+		//			exp.DisplayOrder = x.DisplayOrder;
+		//			exp.IsFeaturedProduct = x.IsFeaturedProduct;
+		//			exp.Category = x.Category.ToExpando(languageId);
+
+		//			return exp as ExpandoObject;
+		//		})
+		//		.ToList();
+
+		//	return expando as ExpandoObject;
+		//}
 	}
 }

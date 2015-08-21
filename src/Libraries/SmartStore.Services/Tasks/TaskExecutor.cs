@@ -1,15 +1,11 @@
-﻿using SmartStore.Core.Data;
+﻿using System;
+using System.Threading;
+using Autofac;
+using SmartStore.Core.Async;
+using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Logging;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Async;
-using System.Threading;
 using SmartStore.Core.Plugins;
-using Autofac;
 
 namespace SmartStore.Services.Tasks
 {
@@ -46,7 +42,7 @@ namespace SmartStore.Services.Tasks
             string lastError = null;
             ITask instance = null;
 			string stateName = null;
-
+			int taskId = task.Id;
 			Type taskType = null;
 
 			try
@@ -103,31 +99,33 @@ namespace SmartStore.Services.Tasks
 					AsyncState.Current.Remove<ScheduleTask>(stateName);
 				}
 
-				task.ProgressPercent = null;
-				task.ProgressMessage = null;
-
+				// "task" may not updatable here. solution: get fresh instance and update it
+				var task2 = _scheduledTaskService.GetTaskById(taskId);
 				var now = DateTime.UtcNow;
-                task.LastError = lastError;
-                task.LastEndUtc = now;
+
+				task2.ProgressPercent = null;
+				task2.ProgressMessage = null;
+                task2.LastError = lastError;
+                task2.LastEndUtc = now;
 
                 if (faulted)
                 {
-                    if ((!canceled && task.StopOnError) || instance == null)
+                    if ((!canceled && task2.StopOnError) || instance == null)
                     {
-                        task.Enabled = false;
+                        task2.Enabled = false;
                     }
                 }
                 else
                 {
-                    task.LastSuccessUtc = now;
+                    task2.LastSuccessUtc = now;
                 }
 
-                if (task.Enabled)
+                if (task2.Enabled)
                 {
-					task.NextRunUtc = now.AddSeconds(task.Seconds);
+					task2.NextRunUtc = now.AddSeconds(task2.Seconds);
                 }
 
-                _scheduledTaskService.UpdateTask(task);
+                _scheduledTaskService.UpdateTask(task2);
             }
         }
 

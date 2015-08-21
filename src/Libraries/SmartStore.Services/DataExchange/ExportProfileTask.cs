@@ -24,6 +24,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
@@ -187,19 +188,6 @@ namespace SmartStore.Services.DataExchange
 			expando.Price = price;
 		}
 
-		//public static decimal GetEstimatedShippingCosts(this Product product, decimal calculatedProductPrice, decimal defaultShippingCosts, decimal? freeShippingThreshold)
-		//{
-		//	if (product != null)
-		//	{
-		//		if (product.IsFreeShipping)
-		//			return decimal.Zero;
-
-		//		if (freeShippingThreshold.HasValue && calculatedProductPrice >= freeShippingThreshold.Value)
-		//			return decimal.Zero;
-		//	}
-		//	return defaultShippingCosts;
-		//}
-
 		#endregion
 
 		private void InitDependencies(TaskExecutionContext context)
@@ -220,7 +208,11 @@ namespace SmartStore.Services.DataExchange
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
-			_services.DbContext.DetachAll();
+			// do not call DetachAll() here! It will detach everything even things you do not want to have detached.
+			// note that detached navigation properties will not navigate again. they stay null => exception.
+			// DetachAll() is actually more useful to be called after all the work is done.
+
+			//_services.DbContext.DetachAll();
 
 			if (!ctx.Cancellation.IsCancellationRequested)
 			{
@@ -236,10 +228,10 @@ namespace SmartStore.Services.DataExchange
 					IsPublished = ctx.Filter.IsPublished,
 					WithoutCategories = ctx.Filter.WithoutCategories,
 					WithoutManufacturers = ctx.Filter.WithoutManufacturers,
-					ManufacturerId = ctx.Filter.ManufacturerId,
+					ManufacturerId = ctx.Filter.ManufacturerId ?? 0,
 					FeaturedProducts = ctx.Filter.FeaturedProducts,
 					ProductType = ctx.Filter.ProductType,
-					ProductTagId = ctx.Filter.ProductTagId,
+					ProductTagId = ctx.Filter.ProductTagId ?? 0,
 					IdMin = ctx.Filter.IdMinimum ?? 0,
 					IdMax = ctx.Filter.IdMaximum ?? 0,
 					AvailabilityMinimum = ctx.Filter.AvailabilityMinimum,
@@ -286,7 +278,7 @@ namespace SmartStore.Services.DataExchange
 
 		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Product product)
 		{
-			dynamic expando = product.ToExpando(ctx.Projection.LanguageId ?? 0, _pictureService, _mediaSettings, ctx.Store);
+			dynamic expando = product.ToExpando(ctx.Projection.LanguageId ?? 0);
 
 			PrepareProductPrice(ctx, expando, product);
 
@@ -300,10 +292,11 @@ namespace SmartStore.Services.DataExchange
 			if (ctx.Provider.Supports(ExportProjectionSupport.Brand))
 			{
 				string brand = null;
+				var manu = product.ProductManufacturers.OrderBy(x => x.DisplayOrder).FirstOrDefault();
 
-				var manu = (product.ProductManufacturers as List<dynamic>).FirstOrDefault();
 				if (manu != null)
-					brand = manu.Manufacturer.Name;
+					brand = manu.Manufacturer.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+
 				if (brand.IsEmpty())
 					brand = ctx.Projection.Brand;
 
@@ -369,9 +362,6 @@ namespace SmartStore.Services.DataExchange
 
 		private void Cleanup(ExportProfileTaskContext ctx)
 		{
-			if (!ctx.Profile.Cleanup)
-				return;
-
 			FileSystemHelper.ClearDirectory(ctx.Folder, false, new List<string> { _logName });
 			
 			// TODO: more deployment specific here
@@ -466,7 +456,9 @@ namespace SmartStore.Services.DataExchange
 			{
 				FileSystemHelper.ClearDirectory(ctx.Folder, false);
 
-				using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, forceNoTracking: true))
+				var allStores = _services.StoreService.GetAllStores();
+				var currentStore = _services.StoreContext.CurrentStore;
+
 				using (var logger = new TraceLogger(Path.Combine(ctx.Folder, _logName)))
 				{
 					ctx.Log = logger;
@@ -492,27 +484,26 @@ namespace SmartStore.Services.DataExchange
 						}
 					}
 
-					// TODO: log number of flown out records
-
-					if (ctx.Profile.PerStore)
+					using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
-						var allStores = _services.StoreService.GetAllStores();
-
-						foreach (var store in allStores.Where(x => ctx.Filter.StoreId == 0 || ctx.Filter.StoreId == x.Id))
+						if (ctx.Profile.PerStore)
 						{
-							ctx.Store = store;
+							foreach (var store in allStores.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0))
+							{
+								ctx.Store = store;
+
+								ExportCoreInner(ctx);
+							}
+						}
+						else
+						{
+							if (ctx.Filter.StoreId == 0)
+								ctx.Store = allStores.FirstOrDefault(x => x.Id == (ctx.Projection.StoreId ?? currentStore.Id));
+							else
+								ctx.Store = allStores.FirstOrDefault(x => x.Id == ctx.Filter.StoreId);
 
 							ExportCoreInner(ctx);
 						}
-					}
-					else
-					{
-						if (ctx.Projection.StoreId.HasValue)
-							ctx.Store = _services.StoreService.GetStoreById(ctx.Projection.StoreId.Value);
-						else
-							ctx.Store = _services.StoreContext.CurrentStore;
-
-						ExportCoreInner(ctx);
 					}
 				}
 			}
@@ -524,15 +515,25 @@ namespace SmartStore.Services.DataExchange
 			{
 				try
 				{
+					if (ctx.Profile.Cleanup)
+						Cleanup(ctx);
+				}
+				catch { }
+
+				try
+				{
 					if (ctx.Cancellation.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
+
+					// TODO: log number of flown out records
 
 					if (ctx.Segmenter != null)
 						ctx.Segmenter.Dispose();
 
 					ctx.Export.CustomProperties.Clear();
 
-					Cleanup(ctx);
+					// do not call during processing!
+					_services.DbContext.DetachAll();
 				}
 				catch { }
 			}

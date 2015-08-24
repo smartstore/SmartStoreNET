@@ -117,13 +117,13 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Currencies.Fields.PrimaryStoreCurrencyStores",
 				"Is primary store currency for",
 				"Ist Leitwährung für",
-				"A list of shores where the currency is primary store currency.",
+				"A list of stores where the currency is primary store currency.",
 				"Eine Liste mit Shops, in denen die Währung Leitwährung ist.");
 
 			builder.AddOrUpdate("Admin.Configuration.Currencies.Fields.PrimaryExchangeRateCurrencyStores",
 				"Is exchange rate currency for",
 				"Ist Umrechnungswährung für",
-				"A list of shores where the currency is primary exchange rate currency.",
+				"A list of stores where the currency is primary exchange rate currency.",
 				"Eine Liste mit Shops, in denen die Währung Umrechnungswährung ist.");
 
 			builder.AddOrUpdate("Admin.Configuration.Stores.Fields.SslEnabled",

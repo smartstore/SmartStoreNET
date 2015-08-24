@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Metadata.Edm;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using EFCache;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -70,7 +68,7 @@ namespace SmartStore.Data.Caching
 		protected override bool CanBeCached(ReadOnlyCollection<EntitySetBase> affectedEntitySets, string sql, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			var entitySets = affectedEntitySets.Select(x => x.Name);
-			var result = entitySets.Any(x => _cacheableSets.Contains(x));
+			var result = entitySets.All(x => _cacheableSets.Contains(x));
 			return result;
 		}
 

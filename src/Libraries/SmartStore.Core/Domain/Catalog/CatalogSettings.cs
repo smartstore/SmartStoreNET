@@ -16,6 +16,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
+            DefaultSortOrder = ProductSortingEnum.Position;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;
@@ -126,12 +127,17 @@ namespace SmartStore.Core.Domain.Catalog
         public bool AllowProductSorting { get; set; }
 
         /// <summary>
+        /// Gets or sets the default sort order in product lists
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to change product view mode
         /// </summary>
         public bool AllowProductViewModeChanging { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers are allowed to change product view mode
+        /// Gets or sets the default view mode for product lists
         /// </summary>
         public string DefaultViewMode { get; set; }
 

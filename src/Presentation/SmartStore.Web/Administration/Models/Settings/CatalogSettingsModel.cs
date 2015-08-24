@@ -118,6 +118,10 @@ namespace SmartStore.Admin.Models.Settings
         public string DefaultViewMode { get; set; }
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+        public SelectList AvailableSortOrderModes { get; set; }
+
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging")]
         public bool AllowProductViewModeChanging { get; set; }
 

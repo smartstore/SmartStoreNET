@@ -146,6 +146,11 @@ namespace SmartStore.Web.Controllers
                 command.ViewMode = category.DefaultViewMode;
             }
 
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
+            
             var model = category.ToModel();
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
@@ -448,6 +453,11 @@ namespace SmartStore.Web.Controllers
             // prepare picture model
             model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
 
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
+
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
                 AllowCustomersToSelectPageSize = manufacturer.AllowCustomersToSelectPageSize,
@@ -712,6 +722,11 @@ namespace SmartStore.Web.Controllers
 				Id = productTag.Id,
 				TagName = productTag.GetLocalized(y => y.Name)
 			};
+
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
@@ -1017,6 +1032,11 @@ namespace SmartStore.Web.Controllers
 				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
+
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{

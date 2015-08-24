@@ -1518,7 +1518,7 @@ namespace SmartStore.Web.Controllers
 
 				foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
 				{
-					if (enumValue == ProductSortingEnum.CreatedOnAsc)
+                    if (enumValue == ProductSortingEnum.CreatedOnAsc || enumValue == ProductSortingEnum.Initial)
 					{
 						// TODO: (MC) das von uns eingeführte "CreatedOnAsc" schmeiß ich
 						// jetzt deshalb aus der UI raus, weil wir diese Sortier-Option

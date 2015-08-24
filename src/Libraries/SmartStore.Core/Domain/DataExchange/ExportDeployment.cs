@@ -25,6 +25,11 @@ namespace SmartStore.Core.Domain
 		public bool IsPublic { get; set; }
 
 		/// <summary>
+		/// Whether to create a zip archive with the content of the export
+		/// </summary>
+		public bool CreateZip { get; set; }
+
+		/// <summary>
 		/// The deployment type identifier
 		/// </summary>
 		public int DeploymentTypeId { get; set; }

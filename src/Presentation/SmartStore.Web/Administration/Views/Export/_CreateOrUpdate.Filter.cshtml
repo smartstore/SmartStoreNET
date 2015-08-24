@@ -104,7 +104,7 @@
 			<td class="adminData">
 				@Html.ListBoxFor(x => x.ProductFilter.CategoryIds,
 						new MultiSelectList(Model.ProductFilter.AvailableCategories, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
+						new { multiple = "multiple" })
 				@Html.ValidationMessageFor(x => x.ProductFilter.CategoryIds)
 			</td>
 		</tr>

@@ -157,6 +157,7 @@
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
+    <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
     <Compile Include="Domain\DataExchange\ExportProjection.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />

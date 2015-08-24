@@ -128,11 +128,11 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Enabled)
+				@Html.SmartLabelFor(x => x.FolderName)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.Enabled)
-				@Html.ValidationMessageFor(x => x.Enabled)
+				@Html.EditorFor(x => x.FolderName)
+				@Html.ValidationMessageFor(x => x.FolderName)
 			</td>
 		</tr>
 		<tr>
@@ -142,6 +142,15 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.SchedulingHours)
 				@Html.ValidationMessageFor(x => x.SchedulingHours)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
 	</table>
@@ -236,13 +245,13 @@
 			.RouteKey("Id"))
 			.Columns(columns =>
 			{
-				columns.Bound(x => x.Name)
-					.Template(x => Html.ActionLink(x.Name, "EditDeployment", "Export", new { id = x.Id }, null))
-					.ClientTemplate("<a href=\"/Admin/Export/EditDeployment/<#= Id #>\"><#= Name #></a>");
 				columns.Bound(x => x.DeploymentTypeName)
 					.Template(x => "<i class='fa {0}'></i>&nbsp;{1}".FormatInvariant(x.DeploymentTypeIconClass, x.DeploymentTypeName))
 					.ClientTemplate("<i class='fa <#= DeploymentTypeIconClass #>'></i>&nbsp;<#= DeploymentTypeName #>")
-					.Width(320);
+					.Width(280);
+				columns.Bound(x => x.Name)
+					.Template(x => Html.ActionLink(x.Name, "EditDeployment", "Export", new { id = x.Id }, null))
+					.ClientTemplate("<a href=\"/Admin/Export/EditDeployment/<#= Id #>\"><#= Name #></a>");
 				columns.Bound(x => x.Enabled)
 					.Width(100)
 					.Template(item => @Html.SymbolForBool(item.Enabled))
@@ -266,10 +275,19 @@
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.EmailAccountId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.EmailAccountId)
+			</td>
+		</tr>
+		<tr id="CompletedEmailAddressesContainer">
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.CompletedEmailAddresses)
+				@Html.HiddenFor(model => model.CompletedEmailAddresses)
 				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
 			</td>
 		</tr>
@@ -299,6 +317,16 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
+		$('#@(Html.FieldIdFor(x => x.CompletedEmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedCompletedEmailAddresses))] });
+
+		@if (Model.ProductProjection != null)
+		{
+		<text>
+		$('#@(Html.FieldIdFor(x => x.ProductProjection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedAppendDescriptionText))] });
+		$('#@(Html.FieldIdFor(x => x.ProductProjection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedCriticalCharacters))] });
+		</text>
+		}
+
 		// show/hide product category filter
 		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutCategories))').change(function () {
 			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
@@ -319,5 +347,9 @@
 			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
+		// show/hide completion email addresses
+		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
+			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
+		}).trigger('change');
 	});
 </script>

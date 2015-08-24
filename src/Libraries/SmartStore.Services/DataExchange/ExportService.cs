@@ -22,19 +22,22 @@ namespace SmartStore.Services.DataExchange
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IProviderManager _providerManager;
+		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public ExportService(
 			IRepository<ExportProfile> exportProfileRepository,
 			IRepository<ExportDeployment> exportDeploymentRepository,
 			IEventPublisher eventPublisher,
 			IScheduleTaskService scheduleTaskService,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			DataExchangeSettings dataExchangeSettings)
 		{
 			_exportProfileRepository = exportProfileRepository;
 			_exportDeploymentRepository = exportDeploymentRepository;
 			_eventPublisher = eventPublisher;
 			_scheduleTaskService = scheduleTaskService;
 			_providerManager = providerManager;
+			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		#region Export profiles
@@ -53,7 +56,7 @@ namespace SmartStore.Services.DataExchange
 			var folderName = SeoHelper.GetSeName(name, true, false)
 				.Replace("/", "")
 				.ToValidPath()
-				.Truncate(20);
+				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
 			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
 

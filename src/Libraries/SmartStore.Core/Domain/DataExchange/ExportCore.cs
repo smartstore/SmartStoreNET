@@ -40,6 +40,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		CategoryPath,
 		ShippingTime,
 		ShippingCosts,
-		Availability
+		Availability,
+		AttributeCombinationAsProduct,
+		OldPrice
 	}
 }

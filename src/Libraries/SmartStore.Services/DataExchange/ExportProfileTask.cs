@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Email;
 using SmartStore.Core.Html;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
@@ -27,6 +28,7 @@ using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
+using SmartStore.Services.Messages;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
@@ -35,7 +37,6 @@ namespace SmartStore.Services.DataExchange
 {
 	public class ExportProfileTask : ITask
 	{
-		private const string _logName = "log.txt";
 		private const int _maxErrors = 20;
 		private const int _pageSize = 100;
 
@@ -51,6 +52,9 @@ namespace SmartStore.Services.DataExchange
 		private ICategoryService _categoryService;
 		private IPriceFormatter _priceFormatter;
 		private IDateTimeHelper _dateTimeHelper;
+		private IEmailAccountService _emailAccountService;
+		private IEmailSender _emailSender;
+		private DataExchangeSettings _dataExchangeSettings;
 
 		#region Utilities
 
@@ -115,7 +119,7 @@ namespace SmartStore.Services.DataExchange
 				// append text
 				if (ctx.Projection.AppendDescriptionText.HasValue() && ((string)expando.ShortDescription).IsEmpty() && ((string)expando.FullDescription).IsEmpty())
 				{
-					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(";");
+					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(",");
 					if (appendText.Length > 0)
 					{
 						var rnd = (new Random()).Next(0, appendText.Length - 1);
@@ -127,7 +131,7 @@ namespace SmartStore.Services.DataExchange
 				// remove critical characters
 				if (description.HasValue() && ctx.Projection.RemoveCriticalCharacters)
 				{
-					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(";"))
+					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(","))
 						description = description.Replace(str, "");
 				}
 
@@ -189,6 +193,27 @@ namespace SmartStore.Services.DataExchange
 			expando.Price = price;
 		}
 
+		private void SendCompletionEmail(ExportProfileTaskContext ctx)
+		{
+			var emailAccount = _emailAccountService.GetEmailAccountById(ctx.Profile.EmailAccountId);
+			var smtpContext = new SmtpContext(emailAccount);
+
+			var storeInfo = "{0} ({1})".FormatInvariant(ctx.Store.Name, ctx.Store.Url);
+
+			var message = new EmailMessage();
+
+			message.To.AddRange(ctx.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
+			message.From = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
+
+			message.Subject = _services.Localization.GetResource("Admin.Configuration.Export.CompletedEmail.Subject", ctx.Projection.LanguageId ?? 0)
+				.FormatInvariant(ctx.Profile.Name);
+
+			message.Body = _services.Localization.GetResource("Admin.Configuration.Export.CompletedEmail.Body", ctx.Projection.LanguageId ?? 0)
+				.FormatInvariant(storeInfo);
+
+			_emailSender.SendEmail(smtpContext, message);
+		}
+
 		#endregion
 
 		private void InitDependencies(TaskExecutionContext context)
@@ -205,6 +230,9 @@ namespace SmartStore.Services.DataExchange
 			_categoryService = context.Resolve<ICategoryService>();
 			_priceFormatter = context.Resolve<IPriceFormatter>();
 			_dateTimeHelper = context.Resolve<IDateTimeHelper>();
+			_emailAccountService = context.Resolve<IEmailAccountService>();
+			_emailSender = context.Resolve<IEmailSender>();
+			_dataExchangeSettings = context.Resolve<DataExchangeSettings>();
 		}
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
@@ -358,11 +386,62 @@ namespace SmartStore.Services.DataExchange
 					expando._ShippingCosts = ctx.Projection.ShippingCosts;
 			}
 
+			if (ctx.Provider.Supports(ExportProjectionSupport.OldPrice))
+			{
+				if (product.OldPrice != decimal.Zero && product.OldPrice != product.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+				{
+					if (ctx.Projection.ConvertNetToGrossPrices)
+					{
+						decimal taxRate;
+						expando._OldPrice = _taxService.GetProductPrice(product, product.OldPrice, true, ctx.ProjectionCustomer, out taxRate);
+					}
+					else
+					{
+						expando._OldPrice = product.OldPrice;
+					}
+				}
+			}
+
 			return expando as ExpandoObject;
 		}
 
 		private void Deploy(ExportProfileTaskContext ctx, ExportDeployment deployment)
 		{
+			if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+			{
+				string folderDestination = null;
+
+				if (deployment.IsPublic)
+				{
+					folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\ExportImport");
+				}
+				else if (deployment.FileSystemPath.IsEmpty())
+				{
+					return;
+				}
+				else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
+				{
+					folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
+				}
+				else
+				{
+					folderDestination = deployment.FileSystemPath;
+				}
+
+				if (!System.IO.Directory.Exists(folderDestination))
+				{
+					System.IO.Directory.CreateDirectory(folderDestination);
+				}
+
+				if (deployment.CreateZip)
+				{
+					FileSystemHelper.Copy(ctx.ZipPath, Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip"));
+				}
+				else
+				{
+					FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
+				}
+			}
 		}
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx)
@@ -370,10 +449,9 @@ namespace SmartStore.Services.DataExchange
 			ctx.Export.StoreId = ctx.Store.Id;
 			ctx.Export.StoreUrl = ctx.Store.Url;
 
-			// be careful with too long file system paths
 			ctx.Export.FileNamePattern = string.Concat(
 				"{0}-",
-				ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false).ToValidFileName("").Truncate(20) : "all-stores",
+				ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false).ToValidFileName("").Truncate(_dataExchangeSettings.MaxFileNameLength) : "all-stores",
 				"{1}",
 				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".")
 			);
@@ -459,9 +537,6 @@ namespace SmartStore.Services.DataExchange
 			var allStores = _services.StoreService.GetAllStores();
 			var currentStore = _services.StoreContext.CurrentStore;
 
-			var pathZipArchive = Path.Combine(ctx.FolderRoot, ctx.Profile.FolderName + ".zip");
-			var pathLogFile = Path.Combine(ctx.FolderRoot, _logName);
-
 			if (ctx.Projection.CurrencyId.HasValue)
 				ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
 			else
@@ -472,17 +547,16 @@ namespace SmartStore.Services.DataExchange
 			else
 				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
 
+			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+			FileSystemHelper.Delete(ctx.LogPath);
+			FileSystemHelper.Delete(ctx.ZipPath);
 
-			using (var logger = new TraceLogger(pathLogFile))
+			using (var logger = new TraceLogger(ctx.LogPath))
 			{
 				try
 				{
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
-
-					FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
-					FileSystemHelper.Delete(pathLogFile);
-					FileSystemHelper.Delete(pathZipArchive);
 
 					if (ctx.Profile.ProviderConfigData.HasValue())
 					{
@@ -537,21 +611,24 @@ namespace SmartStore.Services.DataExchange
 
 			try
 			{
-				// create zip archive
-				if (ctx.Profile.CreateZipArchive)
+				if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
 				{
-					ZipFile.CreateFromDirectory(ctx.FolderContent, pathZipArchive, CompressionLevel.Fastest, true);
+					ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
 				}
 
-				// deployment
-				foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId))
+				foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 				{
 					Deploy(ctx, deployment);
+				}
+
+				if (ctx.Profile.EmailAccountId != 0 && ctx.Profile.CompletedEmailAddresses.HasValue())
+				{
+					SendCompletionEmail(ctx);
 				}
 			}
 			catch (Exception exc)
 			{
-				using (var logger2 = new TraceLogger(pathLogFile))
+				using (var logger2 = new TraceLogger(ctx.LogPath))
 				{
 					logger2.Error(exc);
 				}
@@ -563,13 +640,14 @@ namespace SmartStore.Services.DataExchange
 					if (ctx.Profile.Cleanup)
 					{
 						FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+						// TODO: more cleanup if required
 					}
 				}
 				catch { }
 
 				try
 				{
-					// do not call during processing, should be the final statement
+					// do not call during processing, would generate exceptions. should be the final statement.
 					_services.DbContext.DetachAll();
 				}
 				catch { }
@@ -613,8 +691,6 @@ namespace SmartStore.Services.DataExchange
 	{
 		public ExportProfileTaskContext(ExportProfile profile, Provider<IExportProvider> provider, CancellationToken cancellation)
 		{
-			Debug.Assert(profile.FolderName.HasValue(), "Folder name must not be empty.");
-
 			Profile = profile;
 			Provider = provider;
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
@@ -641,6 +717,14 @@ namespace SmartStore.Services.DataExchange
 
 		public string FolderRoot { get; private set; }
 		public string FolderContent { get; private set; }
+		public string ZipPath
+		{
+			get { return Path.Combine(FolderRoot, Profile.FolderName + ".zip");	}
+		}
+		public string LogPath
+		{
+			get { return Path.Combine(FolderRoot, "log.txt"); }
+		}
 
 		public Dictionary<int, Category> Categories;
 		public Dictionary<int, string> CategoryPathes;

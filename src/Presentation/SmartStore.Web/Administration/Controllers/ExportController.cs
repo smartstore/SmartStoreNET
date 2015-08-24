@@ -86,6 +86,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
+			model.FolderName = profile.FolderName;
 			model.Enabled = profile.Enabled;
 			model.SchedulingHours = profile.ScheduleTask.Seconds / 3600;
 
@@ -119,6 +120,7 @@ namespace SmartStore.Admin.Controllers
 			var allStores = _services.StoreService.GetAllStores();
 			var allLanguages = _languageService.GetAllLanguages(true);
 			var allCurrencies = _currencyService.GetAllCurrencies(true);
+			var allEmailAccounts = _emailAccountService.GetAllEmailAccounts();
 
 			model.AllString = T("Admin.Common.All");
 			model.UnspecifiedString = T("Common.Unspecified");
@@ -127,9 +129,16 @@ namespace SmartStore.Admin.Controllers
 			model.Limit = profile.Limit;
 			model.BatchSize = profile.BatchSize;
 			model.PerStore = profile.PerStore;
+			model.EmailAccountId = profile.EmailAccountId;
 			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
+
+			model.AvailableEmailAccounts = allEmailAccounts
+				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
+				.ToList();
+
+			model.SerializedCompletedEmailAddresses = string.Join(",", profile.CompletedEmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
 
 			if (provider != null)
 			{
@@ -187,11 +196,15 @@ namespace SmartStore.Admin.Controllers
 					PictureSize = projection.PictureSize,
 					ShippingTime = projection.ShippingTime,
 					ShippingCosts = projection.ShippingCosts,
-					FreeShippingThreshold = projection.FreeShippingThreshold
+					FreeShippingThreshold = projection.FreeShippingThreshold,
+					AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct
 				};
 
 				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
 				model.ProductProjection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
+
+				model.ProductProjection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
+				model.ProductProjection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
 
 				initProjectionBase(model.ProductProjection);
 			}
@@ -285,6 +298,7 @@ namespace SmartStore.Admin.Controllers
 				Name = deployment.Name,
 				Enabled = deployment.Enabled,
 				IsPublic = deployment.IsPublic,
+				CreateZip = deployment.CreateZip,
 				DeploymentType = deployment.DeploymentType,
 				DeploymentTypeName = deployment.DeploymentType.GetLocalizedEnum(_services.Localization, _services.WorkContext),
 				Username = deployment.Username,
@@ -297,6 +311,8 @@ namespace SmartStore.Admin.Controllers
 			};
 
 			model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
+
+			model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
 
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -317,6 +333,7 @@ namespace SmartStore.Admin.Controllers
 			deployment.Enabled = model.Enabled;
 			deployment.DeploymentType = model.DeploymentType;
 			deployment.IsPublic = model.IsPublic;
+			deployment.CreateZip = model.CreateZip;
 			deployment.Username = model.Username;
 			deployment.Password = model.Password;
 			deployment.Url = model.Url;
@@ -469,6 +486,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			profile.Name = model.Name;
+			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
 			profile.ScheduleTask.Seconds = model.SchedulingHours * 3600;
 			profile.Offset = model.Offset;
@@ -476,6 +494,7 @@ namespace SmartStore.Admin.Controllers
 			profile.BatchSize = model.BatchSize;
 			profile.PerStore = model.PerStore;
 			profile.CompletedEmailAddresses = model.CompletedEmailAddresses;
+			profile.EmailAccountId = model.EmailAccountId ?? 0;
 			profile.CreateZipArchive = model.CreateZipArchive;
 			profile.Cleanup = model.Cleanup;
 
@@ -510,7 +529,8 @@ namespace SmartStore.Admin.Controllers
 					PictureSize = model.ProductProjection.PictureSize,
 					ShippingTime = model.ProductProjection.ShippingTime,
 					ShippingCosts = model.ProductProjection.ShippingCosts,
-					FreeShippingThreshold = model.ProductProjection.FreeShippingThreshold
+					FreeShippingThreshold = model.ProductProjection.FreeShippingThreshold,
+					AttributeCombinationAsProduct = model.ProductProjection.AttributeCombinationAsProduct
 				};
 
 				getProjectionBase(model.ProductProjection);

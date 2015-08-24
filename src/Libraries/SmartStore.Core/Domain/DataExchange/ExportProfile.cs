@@ -14,6 +14,7 @@ namespace SmartStore.Core.Domain
 			Enabled = true;
 			PerStore = true;
 			Cleanup = true;
+			EmailAccountId = 0;
 		}
 
 		/// <summary>
@@ -77,7 +78,12 @@ namespace SmartStore.Core.Domain
 		public bool PerStore { get; set; }
 
 		/// <summary>
-		/// Email addresses (semicolon separated) where to send a notification message of the completion of the export
+		/// Identifier of an email account used to send a notification message of the completion of the export
+		/// </summary>
+		public int EmailAccountId { get; set; }
+
+		/// <summary>
+		/// Email addresses where to send the notification message
 		/// </summary>
 		public string CompletedEmailAddresses { get; set; }
 

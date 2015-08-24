@@ -19,6 +19,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Name")]
 		public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Export.FolderName")]
+		public string FolderName { get; set; }
+
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
@@ -41,8 +44,13 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.PerStore")]
 		public bool PerStore { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Export.EmailAccountId")]
+		public int? EmailAccountId { get; set; }
+		public List<SelectListItem> AvailableEmailAccounts { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.CompletedEmailAddresses")]
 		public string CompletedEmailAddresses { get; set; }
+		public string SerializedCompletedEmailAddresses { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.CreateZipArchive")]
 		public bool CreateZipArchive { get; set; }

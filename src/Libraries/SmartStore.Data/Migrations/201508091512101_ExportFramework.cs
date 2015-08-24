@@ -93,10 +93,6 @@ namespace SmartStore.Data.Migrations
 			}, new string[] { SystemCustomerRoleNames.Administrators });
 		}
 
-		private void RemoveStringResources(LocaleResourcesBuilder builder)
-		{
-		}
-
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Common.Enabled", "Enabled", "Aktiviert");
@@ -199,14 +195,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.CreateZipArchive",
 				"Create ZIP archive",
 				"ZIP-Archiv erstellen",
-				"Specifies whether to combine and compress the export files in a ZIP archive.",
-				"Legt fest, ob die Exportdateien in einem ZIP-Archiv zusammengefasst und komprimiert werden sollen.");
-
-			builder.AddOrUpdate("Admin.Configuration.Export.CompletedEmailAddresses",
-				"Notification (email addresses)",
-				"Benachrichtigung (E-Mail-Addressen)",
-				"Specifies the email addresses (semicolon separated) where to send a notification message of the completion of the export.",
-				"Legt die E-Mail Addressen (Semikolon getrennt) fest, an die eine Benachrichtigung über die Fertigstellung des Exports verschickt werden soll.");
+				"Specifies whether to combine the export files in temporary a ZIP archive. The archive remains in the temporary folder of the export profile without further processing.",
+				"Legt fest, ob die Exportdateien in einem ZIP-Archiv zusammengefasst werden sollen. Das Archiv verbleibt im temporären Ordner des Exportprofils ohne weitere Vearbeitung.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Cleanup",
 				"Clean up at the end",
@@ -386,8 +376,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.AppendDescriptionText",
 				"Text to be appended",
 				"Anzuhängender Text",
-				"Specifies the text to be attached to the product description. You can enter multiple, semicolon delimited texts. Then one of it is selected randomly.",
-				"Legt den an die Artikelbeschreibung anzuhängenden Text fest. Es können auch mehrere, durch Semikolon getrennte Texte eingegeben werden. Dann wird per Zufall einer ausgewählt.");
+				"Specifies the text to be attached to the product description. If there are multiple texts then one of it is selected randomly.",
+				"Legt den an die Artikelbeschreibung anzuhängenden Text fest. Bei mehreren Texten wird einer per Zufall ausgewählt.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.RemoveCriticalCharacters",
 				"Remove critical characters",
@@ -398,8 +388,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CriticalCharacters",
 				"Critical characters",
 				"Kritische Zeichen",
-				"List with semicolon delimited characters to be removed from the detail description.",
-				"Liste mit Semikolon getrennten Zeichen, die aus der Detailbeschreibung entfernt werden sollen.");
+				"List with characters to be removed from the detail description.",
+				"Liste mit Zeichen, die aus der Detailbeschreibung entfernt werden sollen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.PriceType",
 				"Product price",
@@ -474,10 +464,16 @@ namespace SmartStore.Data.Migrations
 				"Legt den Namen der Bereitstellung fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.IsPublic",
-				"Make public",
-				"Öffentlich machen",
-				"Specifies whether to publish the exported data (e.g. whether they are accessible on the internet).",
-				"Legt fest, ob die exportierten Daten öffentlich gemacht werden sollen (z.B. ob sie über das Internet erreichbar sind).");
+				"Copy to public folder",
+				"In öffentlichen Ordner kopieren",
+				"Specifies whether to copy the exported data into a folder that is accessible through the internet.",
+				"Legt fest, ob die exportierten Daten in einen übers Internet zugänglichen Ordner kopiert werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.FileSystemPath",
+				"Directory path",
+				"Ordnerpfad",
+				"Specifies the path (relative or absolute) where to deploy the data.",
+				"Legt den Pfad (relativ oder absolut) zu einem Ordner fest, in den die Daten bereitgestellt werden sollen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.DeploymentType",
 				"Type of deployment",
@@ -503,17 +499,11 @@ namespace SmartStore.Data.Migrations
 				"Specifies the URL on which the data should be deployed.",
 				"Legt die URL fest, unter der die Daten bereitgestellt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.FileSystemPath",
-				"Relative path",
-				"Relativer Pfad",
-				"Specifies the relative path for the deployed data.",
-				"Legt den relativen Pfad für die bereitgestellten Daten fest.");
-
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAddresses",
 				"Email addresses",
 				"E-Mail-Addressen",
-				"Specifies the email addresses (semicolon separated) where to send the data.",
-				"Legt die E-Mail Addressen (Semikolon getrennt) fest, an die die Daten verschickt werden soll.");
+				"Specifies the email addresses where to send the data.",
+				"Legt die E-Mail Addressen fest, an die die Daten verschickt werden soll.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailSubject",
 				"Email subject",
@@ -526,9 +516,6 @@ namespace SmartStore.Data.Migrations
 				"E-Mail Konto",
 				"Specifies the email account through which the data should be sent.",
 				"Legt das E-Mail Konto fest, über welches die Daten verschickt werden sollen.");
-
-
-			RemoveStringResources(builder);
 		}
     }
 }

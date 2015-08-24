@@ -36,6 +36,15 @@
 			@Html.ValidationMessageFor(x => x.Enabled)
 		</td>
 	</tr>
+	<tr class="deployment-all">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.CreateZip)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.CreateZip)
+			@Html.ValidationMessageFor(x => x.CreateZip)
+		</td>
+	</tr>
 	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.IsPublic)
@@ -45,7 +54,7 @@
 			@Html.ValidationMessageFor(x => x.IsPublic)
 		</td>
 	</tr>
-	<tr class="deployment-@((int)ExportDeploymentType.FileSystem)">
+	<tr id="FileSystemPathContainer" class="deployment-@((int)ExportDeploymentType.FileSystem)">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.FileSystemPath)
 		</td>
@@ -60,7 +69,7 @@
 			@Html.SmartLabelFor(x => x.EmailAddresses)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.EmailAddresses)
+			@Html.HiddenFor(x => x.EmailAddresses)
 			@Html.ValidationMessageFor(x => x.EmailAddresses)
 		</td>
 	</tr>
@@ -116,12 +125,19 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 
+		$('#@(Html.FieldIdFor(x => x.EmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedEmailAddresses))] });
+
 		// deployment type changed
-		$('select[name="DeploymentType"]').change(function () {
+		$('#@(Html.FieldIdFor(x => x.DeploymentType))').change(function () {
 			var table = $('#DeploymentTable');
 
 			table.find('tr:not(.deployment-all)').hide();
 			table.find('.deployment-' + $(this).val()).show();
+		}).trigger('change');
+
+		// show\hide file system path
+		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
+			$('#FileSystemPathContainer').toggle(!$(this).is(':checked'));
 		}).trigger('change');
 	});
 </script>

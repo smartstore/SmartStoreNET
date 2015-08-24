@@ -9,7 +9,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		public ExportProjection()
 		{
 			RemoveCriticalCharacters = true;
-			CriticalCharacters = "¼;½;¾";
+			CriticalCharacters = "¼,½,¾";
 			PriceType = PriceDisplayType.PreSelectedPrice;
 		}
 
@@ -50,5 +50,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		public decimal? ShippingCosts { get; set; }
 
 		public decimal? FreeShippingThreshold { get; set; }
+
+		public bool AttributeCombinationAsProduct { get; set; }
 	}
 }

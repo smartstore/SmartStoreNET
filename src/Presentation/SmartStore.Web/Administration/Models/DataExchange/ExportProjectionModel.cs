@@ -37,12 +37,14 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AppendDescriptionText")]
 		[AllowHtml]
 		public string AppendDescriptionText { get; set; }
+		public string SerializedAppendDescriptionText { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.RemoveCriticalCharacters")]
 		public bool RemoveCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.CriticalCharacters")]
 		public string CriticalCharacters { get; set; }
+		public string SerializedCriticalCharacters { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.PriceType")]
 		public PriceDisplayType? PriceType { get; set; }
@@ -65,5 +67,8 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.FreeShippingThreshold")]
 		public decimal? FreeShippingThreshold { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AttributeCombinationAsProduct")]
+		public bool AttributeCombinationAsProduct { get; set; }
 	}
 }

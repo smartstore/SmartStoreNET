@@ -60,6 +60,19 @@
 			</td>
 		</tr>
 
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.AttributeCombinationAsProduct))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+				</td>
+			</tr>
+		}
+
 		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingTime))
 		{
 			<tr>
@@ -144,7 +157,7 @@
 					@Html.SmartLabelFor(x => x.ProductProjection.AppendDescriptionText)
 				</td>
 				<td class="adminData">
-					@Html.TextBoxFor(x => x.ProductProjection.AppendDescriptionText, new { @class = "input-xlarge" })
+					@Html.HiddenFor(x => x.ProductProjection.AppendDescriptionText)
 					@Html.ValidationMessageFor(x => x.ProductProjection.AppendDescriptionText)
 				</td>
 			</tr>
@@ -162,7 +175,7 @@
 					@Html.SmartLabelFor(x => x.ProductProjection.CriticalCharacters)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.CriticalCharacters)
+					@Html.HiddenFor(x => x.ProductProjection.CriticalCharacters)
 					@Html.ValidationMessageFor(x => x.ProductProjection.CriticalCharacters)
 				</td>
 			</tr>

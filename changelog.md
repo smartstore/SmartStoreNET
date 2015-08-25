@@ -28,6 +28,7 @@
 * (Perf) Significantly reduced number of database reads during product list rendering. Increases request speed by up to 10%.
 * (Perf) Implemented 2nd level cache for infrequently changed entities. Increases request speed by up to 10%.
 * TaskScheduler: Rewritten from scratch to be suitable for Web Farms
+* TaskScheduler: Supports cron expressions to define task execution frequency
 * TaskScheduler: Editing tasks does not require app restart anymore
 * TaskScheduler: Enhanced UI
 * #721 Message Queue: implemented "Delete all"

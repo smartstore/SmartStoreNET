@@ -323,6 +323,11 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             return defaultValue;
         }
 
+		public static string GenerateHelpUrl(string path)
+		{
+			return SmartStoreVersion.GenerateHelpUrl(path);
+		}
+
         private void EnsureThemeContextInitialized()
         {
             if (_themeRegistry == null)

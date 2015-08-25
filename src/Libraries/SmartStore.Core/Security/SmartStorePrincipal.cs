@@ -6,15 +6,11 @@ using SmartStore.Core.Domain.Customers;
 
 namespace SmartStore.Core
 {
-	public interface ISmartNetPrincipal : IPrincipal
-	{
-	}
 
-
-	public class SmartNetIdentity : ClaimsIdentity
+	public class SmartStoreIdentity : ClaimsIdentity
 	{
 		[SecuritySafeCritical]
-		public SmartNetIdentity(int customerId, string name, string type) 
+		public SmartStoreIdentity(int customerId, string name, string type) 
 			: base(new GenericIdentity(name, type))
 		{
 			CustomerId = customerId;
@@ -26,11 +22,11 @@ namespace SmartStore.Core
 	}
 
 
-	public class SmartNetPrincipal : ISmartNetPrincipal
+	public class SmartStorePrincipal : IPrincipal
 	{
-		public SmartNetPrincipal(Customer customer, string type)
+		public SmartStorePrincipal(Customer customer, string type)
 		{
-			this.Identity = new SmartNetIdentity(customer.Id, customer.Username, type);
+			this.Identity = new SmartStoreIdentity(customer.Id, customer.Username, type);
 		}
 
 		public bool IsInRole(string role)

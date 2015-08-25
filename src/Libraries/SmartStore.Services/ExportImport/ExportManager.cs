@@ -1347,7 +1347,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
 				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
-                xmlWriter.WriteElementString("RewardPointsUsed", null, order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
+                xmlWriter.WriteElementString("RewardPointsUsed", null, order.RedeemedRewardPointsEntry != null && order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
                 var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
                 xmlWriter.WriteElementString("RewardPointsRemaining", null, remainingRewardPoints > 0 ? remainingRewardPoints.ToString() : "");
 				xmlWriter.WriteElementString("HasNewPaymentNotification", null, order.HasNewPaymentNotification.ToString());
@@ -1432,7 +1432,7 @@ namespace SmartStore.Services.ExportImport
 
                 // get handle to the existing worksheet
                 var worksheet = xlPackage.Workbook.Worksheets.Add("Orders");
-                //Create Headers and format them
+                // Create Headers and format them
                 var properties = new string[]
                     {
                         //order properties

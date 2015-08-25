@@ -1,4 +1,5 @@
-﻿using System.Dynamic;
+﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -18,6 +19,8 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = deliveryTime;
+
 			expando.Id = deliveryTime.Id;
 			expando.Name = deliveryTime.GetLocalized(x => x.Name, languageId, true, false);
 			expando.DisplayLocale = deliveryTime.DisplayLocale;
@@ -33,6 +36,8 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = quantityUnit;
+
 			expando.Id = quantityUnit.Id;
 			expando.Name = quantityUnit.GetLocalized(x => x.Name, languageId, true, false);
 			expando.Description = quantityUnit.GetLocalized(x => x.Description, languageId, true, false);
@@ -49,12 +54,62 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = picture;
+
 			expando.Id = picture.Id;
 			expando.SeoFileName = picture.SeoFilename;
 			expando.MimeType = picture.MimeType;
-			expando.ThumbImageUrl = pictureService.GetPictureUrl(picture, thumbPictureSize, false, store.Url);
-			expando.ImageUrl = pictureService.GetPictureUrl(picture, detailsPictureSize, false, store.Url);
-			expando.FullSizeImageUrl = pictureService.GetPictureUrl(picture, 0, false, store.Url);
+
+			expando._ThumbImageUrl = pictureService.GetPictureUrl(picture, thumbPictureSize, false, store.Url);
+			expando._ImageUrl = pictureService.GetPictureUrl(picture, detailsPictureSize, false, store.Url);
+			expando._FullSizeImageUrl = pictureService.GetPictureUrl(picture, 0, false, store.Url);
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this ProductVariantAttribute pva, int languageId)
+		{
+			if (pva == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = pva;
+			expando.Id = pva.Id;
+			expando.TextPrompt = pva.TextPrompt;
+			expando.IsRequired = pva.IsRequired;
+			expando.AttributeControlTypeId = pva.AttributeControlTypeId;
+			expando.DisplayOrder = pva.DisplayOrder;
+
+			dynamic attribute = new ExpandoObject();
+			attribute._Entity = pva.ProductAttribute;
+			attribute.Id = pva.ProductAttribute.Id;
+			attribute.Alias = pva.ProductAttribute.Alias;
+			attribute.Name = pva.ProductAttribute.GetLocalized(y => y.Name, languageId, true, false);
+			attribute.Description = pva.ProductAttribute.GetLocalized(y => y.Description, languageId, true, false);
+
+			attribute.Values = pva.ProductVariantAttributeValues
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic value = new ExpandoObject();
+					value._Entity = x;
+					value.Id = x.Id;
+					value.Alias = x.Alias;
+					value.Name = x.GetLocalized(z => z.Name, languageId, true, false);
+					value.ColorSquaresRgb = x.ColorSquaresRgb;
+					value.PriceAdjustment = x.PriceAdjustment;
+					value.WeightAdjustment = x.WeightAdjustment;
+					value.IsPreSelected = x.IsPreSelected;
+					value.DisplayOrder = x.DisplayOrder;
+					value.ValueTypeId = x.ValueTypeId;
+					value.LinkedProductId = x.LinkedProductId;
+					value.Quantity = x.Quantity;
+
+					return value as ExpandoObject;
+				})
+				.ToList();
+
+			expando.Attribute = attribute as ExpandoObject;
 
 			return expando as ExpandoObject;
 		}
@@ -65,6 +120,8 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = manufacturer;
+
 			expando.Id = manufacturer.Id;
 			expando.Name = manufacturer.GetLocalized(x => x.Name, languageId, true, false);
 			expando.SeName = manufacturer.GetSeName(languageId, true, false);
@@ -93,6 +150,8 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = category;
+
 			expando.Id = category.Id;
 			expando.Name = category.GetLocalized(x => x.Name, languageId, true, false);
 			expando.FullName = category.GetLocalized(x => x.FullName, languageId, true, false);
@@ -129,6 +188,8 @@ namespace SmartStore.Services.DataExchange
 				return null;
 
 			dynamic expando = new ExpandoObject();
+			expando._Entity = product;
+
 			expando.Id = product.Id;
 			expando.Name = product.GetLocalized(x => x.Name, languageId, true, false);
 			expando.SeName = product.GetSeName(languageId, true, false);
@@ -226,64 +287,7 @@ namespace SmartStore.Services.DataExchange
 			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.IsEsd = product.IsEsd;
 
-			expando.DeliveryTime = product.DeliveryTimeId == 0 ? null : product.DeliveryTime.ToExpando(languageId);
-			expando.QuantityUnit = product.QuantityUnitId == 0 ? null : product.QuantityUnit.ToExpando(languageId);
-
 			return expando as ExpandoObject;
 		}
-
-		//public static ExpandoObject ToExpando(this Product product, int languageId, IPictureService pictureService, MediaSettings mediaSettings, Store store)
-		//{
-		//	dynamic expando = product.ToExpando(languageId);
-
-		//	expando.DeliveryTime = product.DeliveryTimeId == 0 ? null : product.DeliveryTime.ToExpando(languageId);
-		//	expando.QuantityUnit = product.QuantityUnitId == 0 ? null : product.QuantityUnit.ToExpando(languageId);
-
-		//	// pictures
-		//	expando.ProductPictures = product.ProductPictures
-		//		.OrderBy(x => x.DisplayOrder)
-		//		.Select(x =>
-		//		{
-		//			dynamic exp = new ExpandoObject();
-		//			exp.Id = x.Id;
-		//			exp.DisplayOrder = x.DisplayOrder;
-		//			exp.Picture = x.Picture.ToExpando(pictureService, store, mediaSettings.ProductThumbPictureSize, mediaSettings.ProductDetailsPictureSize);
-
-		//			return exp as ExpandoObject;
-		//		})
-		//		.ToList();
-
-		//	// manufacturers
-		//	expando.ProductManufacturers = product.ProductManufacturers
-		//		.OrderBy(x => x.DisplayOrder)
-		//		.Select(x =>
-		//		{
-		//			dynamic exp = new ExpandoObject();
-		//			exp.Id = x.Id;
-		//			exp.DisplayOrder = x.DisplayOrder;
-		//			exp.IsFeaturedProduct = x.IsFeaturedProduct;
-		//			exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
-
-		//			return exp as ExpandoObject;
-		//		})
-		//		.ToList();
-
-		//	// categories
-		//	expando.ProductCategories = product.ProductCategories
-		//		.OrderBy(x => x.DisplayOrder)
-		//		.Select(x =>
-		//		{
-		//			dynamic exp = new ExpandoObject();
-		//			exp.Id = x.Id;
-		//			exp.DisplayOrder = x.DisplayOrder;
-		//			exp.IsFeaturedProduct = x.IsFeaturedProduct;
-		//			exp.Category = x.Category.ToExpando(languageId);
-
-		//			return exp as ExpandoObject;
-		//		})
-		//		.ToList();
-
-		//	return expando as ExpandoObject;
-		//}
 	}
 }

@@ -37,10 +37,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		Brand,
 		MainPictureUrl,
 		UseOwnProductNo,
-		CategoryPath,
 		ShippingTime,
 		ShippingCosts,
-		Availability,
 		AttributeCombinationAsProduct,
 		OldPrice
 	}

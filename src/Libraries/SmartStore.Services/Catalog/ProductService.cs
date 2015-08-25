@@ -1833,6 +1833,22 @@ namespace SmartStore.Services.Catalog
             return productPictures;
         }
 
+		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds)
+		{
+			var query = 
+				from pp in _productPictureRepository.TableUntracked
+				where productIds.Contains(pp.ProductId)
+				select pp;
+
+			var map = query
+				.OrderBy(x => x.ProductId)
+				.ThenBy(x => x.DisplayOrder)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
+
         /// <summary>
         /// Gets a product picture
         /// </summary>

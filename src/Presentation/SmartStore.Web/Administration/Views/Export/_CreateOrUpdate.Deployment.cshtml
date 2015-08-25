@@ -66,6 +66,15 @@
 
 	<tr class="deployment-@((int)ExportDeploymentType.Email)">
 		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.EmailAccountId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts)
+			@Html.ValidationMessageFor(x => x.EmailAccountId)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Email)">
+		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.EmailAddresses)
 		</td>
 		<td class="adminData">
@@ -82,15 +91,6 @@
 			@Html.ValidationMessageFor(x => x.EmailSubject)
 		</td>
 	</tr>
-	<tr class="deployment-@((int)ExportDeploymentType.Email)">
-		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.EmailAccountId)
-		</td>
-		<td class="adminData">
-			@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts)
-			@Html.ValidationMessageFor(x => x.EmailAccountId)
-		</td>
-	</tr>
 
 	<tr class="deployment-@((int)ExportDeploymentType.Http)">
 		<td class="adminTitle">
@@ -99,6 +99,15 @@
 		<td class="adminData">
 			@Html.EditorFor(x => x.Url)
 			@Html.ValidationMessageFor(x => x.Url)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Http)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.MultipartForm)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.MultipartForm)
+			@Html.ValidationMessageFor(x => x.MultipartForm)
 		</td>
 	</tr>
 

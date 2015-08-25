@@ -313,6 +313,13 @@ namespace SmartStore.Services.Catalog
         /// <returns>Product pictures</returns>
         IList<ProductPicture> GetProductPicturesByProductId(int productId);
 
+		/// <summary>
+		/// Get product pictures by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Product pictures</returns>
+		Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds);
+
         /// <summary>
         /// Gets a product picture
         /// </summary>

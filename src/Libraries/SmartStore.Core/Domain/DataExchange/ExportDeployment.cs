@@ -59,6 +59,11 @@ namespace SmartStore.Core.Domain
 		public string Url { get; set; }
 
 		/// <summary>
+		/// Whether to use a multipart form to upload files via HTTP
+		/// </summary>
+		public bool MultipartForm { get; set; }
+
+		/// <summary>
 		/// The file system path
 		/// </summary>
 		public string FileSystemPath { get; set; }

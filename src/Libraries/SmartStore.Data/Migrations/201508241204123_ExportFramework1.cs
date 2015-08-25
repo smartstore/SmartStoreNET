@@ -9,12 +9,14 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.ExportDeployment", "CreateZip", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ExportDeployment", "MultipartForm", c => c.Boolean(nullable: false));
             AddColumn("dbo.ExportProfile", "EmailAccountId", c => c.Int(nullable: false));
         }
         
         public override void Down()
         {
             DropColumn("dbo.ExportProfile", "EmailAccountId");
+            DropColumn("dbo.ExportDeployment", "MultipartForm");
             DropColumn("dbo.ExportDeployment", "CreateZip");
         }
 
@@ -72,6 +74,12 @@ namespace SmartStore.Data.Migrations
 				"Attributkombinationen exportieren",
 				"Specifies whether to export all active attribute combinations as a standalone product in addition to each product.",
 				"Legt fest, ob zusätzlich zu jedem Produkt alle seine aktiven Attributkombinationen als eigenständiges Produkt exportiert werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.MultipartForm",
+				"Multipart form",
+				"Multipart-Form",
+				"Specifies whether to transmit the export files as multipart form data via HTTP.",
+				"Legt fest, ob die Exportdateien als Multipart-Form-Data per HTTP übertragen werden sollen.");
 		}
     }
 }

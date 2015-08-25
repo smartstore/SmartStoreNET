@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -335,6 +336,25 @@ namespace SmartStore.Services.Catalog
 					return productManufacturers;
 				});
         }
+
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pm in _productManufacturerRepository.TableUntracked.Expand(x => x.Manufacturer).Expand(x => x.Manufacturer.Picture)
+				join m in _manufacturerRepository.TableUntracked on pm.ManufacturerId equals m.Id
+				where productIds.Contains(pm.ProductId)
+				select pm;
+
+			var map = query
+				.OrderBy(x => x.ProductId)
+				.ThenBy(x => x.DisplayOrder)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
+
+			return map;
+		}
         
         /// <summary>
         /// Gets a product manufacturer mapping 

@@ -27,7 +27,7 @@ namespace SmartStore.Services.DataExchange
 	public class ExportSegmenter : IExportSegmenter, IDisposable
 	{
 		private Func<int, IEnumerable<object>> _loadData;
-		private Func<object, ExpandoObject> _convertData;
+		private Func<object, IEnumerable<object>, ExpandoObject> _convertData;
 		private List<ExpandoObject> _currentSegment;
 		private IPageable _pageable;
 		private int _pageIndexReset;
@@ -41,7 +41,11 @@ namespace SmartStore.Services.DataExchange
 		private int _itemsPerFileCount;
 		private int _itemsCount;
 
-		public ExportSegmenter(Func<int, IEnumerable<object>> loadData, Func<object, ExpandoObject> convertData, PagedList pageable, int itemsPerFile)
+		public ExportSegmenter(
+			Func<int, IEnumerable<object>> loadData,
+			Func<object, IEnumerable<object>, ExpandoObject> convertData,
+			PagedList pageable,
+			int itemsPerFile)
 		{
 			_loadData = loadData;
 			_convertData = convertData;
@@ -178,7 +182,7 @@ namespace SmartStore.Services.DataExchange
 							return _currentSegment.AsReadOnly();
 						}
 
-						var expando = _convertData(item);
+						var expando = _convertData(item, data);
 
 						_currentSegment.Add(expando);
 

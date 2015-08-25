@@ -304,6 +304,7 @@ namespace SmartStore.Admin.Controllers
 				Username = deployment.Username,
 				Password = deployment.Password,
 				Url = deployment.Url,
+				MultipartForm = deployment.MultipartForm,
 				FileSystemPath = deployment.FileSystemPath,
 				EmailAddresses = deployment.EmailAddresses,
 				EmailSubject = deployment.EmailSubject,
@@ -337,6 +338,7 @@ namespace SmartStore.Admin.Controllers
 			deployment.Username = model.Username;
 			deployment.Password = model.Password;
 			deployment.Url = model.Url;
+			deployment.MultipartForm = model.MultipartForm;
 			deployment.FileSystemPath = model.FileSystemPath;
 			deployment.EmailAddresses = model.EmailAddresses;
 			deployment.EmailSubject = model.EmailSubject;

@@ -11,7 +11,7 @@ namespace SmartStore.Services.Catalog
 	/// </summary>
 	public class PriceCalculationContext
 	{
-		private List<int> _productIds;
+		protected List<int> _productIds;
 		private List<int> _productIdsTierPrices;
 
 		private Func<int[], Multimap<int, ProductVariantAttribute>> _funcAttributes;
@@ -45,6 +45,18 @@ namespace SmartStore.Services.Catalog
 			_funcAttributeCombinations = attributeCombinations;
 			_funcTierPrices = tierPrices;
 			_funcProductCategories = productCategories;
+		}
+
+		public void Clear()
+		{
+			if (_attributes != null)
+				_attributes.Clear();
+			if (_attributeCombinations != null)
+				_attributeCombinations.Clear();
+			if (_tierPrices != null)
+				_tierPrices.Clear();
+			if (_productCategories != null)
+				_productCategories.Clear();
 		}
 
 		public LazyMultimap<ProductVariantAttribute> Attributes

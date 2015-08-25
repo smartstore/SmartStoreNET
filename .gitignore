@@ -207,6 +207,7 @@ Kopie von*
 
 # Import/Export
 /src/Presentation/SmartStore.Web/Content/files/[Ee]xport[Ii]mport/*.*
+/src/Presentation/SmartStore.Web/[Ee]xchange/*.*
 
 # Media
 /src/Presentation/SmartStore.Web/Media/[Tt]humbs

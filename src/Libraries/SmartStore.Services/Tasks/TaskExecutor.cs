@@ -42,7 +42,7 @@ namespace SmartStore.Services.Tasks
             string lastError = null;
             ITask instance = null;
 			string stateName = null;
-			int taskId = task.Id;
+
 			Type taskType = null;
 
 			try
@@ -99,33 +99,31 @@ namespace SmartStore.Services.Tasks
 					AsyncState.Current.Remove<ScheduleTask>(stateName);
 				}
 
-				// "task" may not updatable here. solution: get fresh instance and update it
-				var task2 = _scheduledTaskService.GetTaskById(taskId);
+				task.ProgressPercent = null;
+				task.ProgressMessage = null;
+
 				var now = DateTime.UtcNow;
+				task.LastError = lastError;
+				task.LastEndUtc = now;
 
-				task2.ProgressPercent = null;
-				task2.ProgressMessage = null;
-                task2.LastError = lastError;
-                task2.LastEndUtc = now;
+				if (faulted)
+				{
+					if ((!canceled && task.StopOnError) || instance == null)
+					{
+						task.Enabled = false;
+					}
+				}
+				else
+				{
+					task.LastSuccessUtc = now;
+				}
 
-                if (faulted)
-                {
-                    if ((!canceled && task2.StopOnError) || instance == null)
-                    {
-                        task2.Enabled = false;
-                    }
-                }
-                else
-                {
-                    task2.LastSuccessUtc = now;
-                }
+				if (task.Enabled)
+				{
+					task.NextRunUtc = now.AddSeconds(task.Seconds);
+				}
 
-                if (task2.Enabled)
-                {
-					task2.NextRunUtc = now.AddSeconds(task2.Seconds);
-                }
-
-                _scheduledTaskService.UpdateTask(task2);
+				_scheduledTaskService.UpdateTask(task);
             }
         }
 

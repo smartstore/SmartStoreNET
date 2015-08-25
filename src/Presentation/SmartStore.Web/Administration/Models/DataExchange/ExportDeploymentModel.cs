@@ -66,6 +66,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Url")]
 		public string Url { get; set; }
 
+		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.MultipartForm")]
+		public bool MultipartForm { get; set; }
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.FileSystemPath")]
 		public string FileSystemPath { get; set; }
 

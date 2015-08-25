@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 
@@ -84,6 +85,13 @@ namespace SmartStore.Services.Catalog
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
         /// <returns>Product manufacturer mapping collection</returns>
         IList<ProductManufacturer> GetProductManufacturersByProductId(int productId, bool showHidden = false);
+
+		/// <summary>
+		/// Get product manufacturer by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Product manufacturers</returns>
+		Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds);
 
         /// <summary>
         /// Gets a product manufacturer mapping 

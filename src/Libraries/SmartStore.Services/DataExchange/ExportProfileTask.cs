@@ -5,6 +5,8 @@ using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Net;
+using System.Net.Http;
 using System.Text;
 using System.Threading;
 using System.Web;
@@ -17,9 +19,11 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
 using SmartStore.Core.Html;
+using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -39,7 +43,12 @@ namespace SmartStore.Services.DataExchange
 	{
 		private const int _maxErrors = 20;
 		private const int _pageSize = 100;
+		// TODO: replaces Content\files\ExportImport... add it to CommonController.RobotsTextFile, CommonController.MaintenanceDeleteFiles, FilePermissionHelper.GetDirectoriesWrite
+		private const string _publicFolder = "Exchange";
 
+		#region Dependencies
+
+		private DataExchangeSettings _dataExchangeSettings;
 		private ICommonServices _services;
 		private IExportService _exportService;
 		private IProductService _productService;
@@ -54,14 +63,45 @@ namespace SmartStore.Services.DataExchange
 		private IDateTimeHelper _dateTimeHelper;
 		private IEmailAccountService _emailAccountService;
 		private IEmailSender _emailSender;
-		private DataExchangeSettings _dataExchangeSettings;
+		private IQueuedEmailService _queuedEmailService;
+		private IProductAttributeService _productAttributeService;
+		private IDeliveryTimeService _deliveryTimeService;
+		private IQuantityUnitService _quantityUnitService;
+		private IManufacturerService _manufacturerService;
+
+		private void InitDependencies(TaskExecutionContext context)
+		{
+			_dataExchangeSettings = context.Resolve<DataExchangeSettings>();
+			_services = context.Resolve<ICommonServices>();
+			_exportService = context.Resolve<IExportService>();
+			_productService = context.Resolve<IProductService>();
+			_pictureService = context.Resolve<IPictureService>();
+			_mediaSettings = context.Resolve<MediaSettings>();
+			_priceCalculationService = context.Resolve<IPriceCalculationService>();
+			_taxService = context.Resolve<ITaxService>();
+			_currencyService = context.Resolve<ICurrencyService>();
+			_customerService = context.Resolve<ICustomerService>();
+			_categoryService = context.Resolve<ICategoryService>();
+			_priceFormatter = context.Resolve<IPriceFormatter>();
+			_dateTimeHelper = context.Resolve<IDateTimeHelper>();
+			_emailAccountService = context.Resolve<IEmailAccountService>();
+			_emailSender = context.Resolve<IEmailSender>();
+			_queuedEmailService = context.Resolve<IQueuedEmailService>();
+			_productAttributeService = context.Resolve<IProductAttributeService>();
+			_deliveryTimeService = context.Resolve<IDeliveryTimeService>();
+			_quantityUnitService = context.Resolve<IQuantityUnitService>();
+			_manufacturerService = context.Resolve<IManufacturerService>();
+		}
+
+		#endregion
 
 		#region Utilities
 
-		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando)
+		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando, Product product)
 		{
 			try
 			{
+				var languageId = (ctx.Projection.LanguageId ?? 0);
 				string description = "";
 
 				// description merging
@@ -96,19 +136,17 @@ namespace SmartStore.Services.DataExchange
 					}
 					else if (type == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription || type == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
 					{
-						string name = (string)expando.Name;
-						dynamic productManu = ((List<ExpandoObject>)expando.ProductManufacturers).FirstOrDefault();
+						var productManus = ctx.DataContext.ProductManufacturers.Load(product.Id);
 
-						if (productManu != null)
-						{
-							dynamic manu = productManu.Manufacturer;
-							description = ((string)manu.Name).Grow(name, " ");
+						if (productManus != null && productManus.Any())
+							description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
 
-							if (type == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
-								description = description.Grow((string)expando.ShortDescription, " ");
-							else
-								description = description.Grow((string)expando.FullDescription, " ");
-						}
+						description = description.Grow((string)expando.Name, " ");
+
+						if (type == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
+							description = description.Grow((string)expando.ShortDescription, " ");
+						else
+							description = description.Grow((string)expando.FullDescription, " ");
 					}
 				}
 				else
@@ -153,6 +191,7 @@ namespace SmartStore.Services.DataExchange
 		private void PrepareProductPrice(ExportProfileTaskContext ctx, dynamic expando, Product product)
 		{
 			decimal price = decimal.Zero;
+			var priceCalculationContext = ctx.DataContext as PriceCalculationContext;
 
 			// price type
 			if (ctx.Projection.PriceType.HasValue)
@@ -162,15 +201,15 @@ namespace SmartStore.Services.DataExchange
 				if (type == PriceDisplayType.LowestPrice)
 				{
 					bool displayFromMessage;
-					price = _priceCalculationService.GetLowestPrice(product, null, out displayFromMessage);
+					price = _priceCalculationService.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
 				}
 				else if (type == PriceDisplayType.PreSelectedPrice)
 				{
-					price = _priceCalculationService.GetPreselectedPrice(product, null);
+					price = _priceCalculationService.GetPreselectedPrice(product, priceCalculationContext);
 				}
 				else if (type == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 				{
-					price = _priceCalculationService.GetFinalPrice(product, null, ctx.ProjectionCustomer, decimal.Zero, false, 1, null, null);
+					price = _priceCalculationService.GetFinalPrice(product, null, ctx.ProjectionCustomer, decimal.Zero, false, 1, null, priceCalculationContext);
 				}
 			}
 			else
@@ -197,10 +236,9 @@ namespace SmartStore.Services.DataExchange
 		{
 			var emailAccount = _emailAccountService.GetEmailAccountById(ctx.Profile.EmailAccountId);
 			var smtpContext = new SmtpContext(emailAccount);
+			var message = new EmailMessage();
 
 			var storeInfo = "{0} ({1})".FormatInvariant(ctx.Store.Name, ctx.Store.Url);
-
-			var message = new EmailMessage();
 
 			message.To.AddRange(ctx.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
 			message.From = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
@@ -216,32 +254,13 @@ namespace SmartStore.Services.DataExchange
 
 		#endregion
 
-		private void InitDependencies(TaskExecutionContext context)
-		{
-			_services = context.Resolve<ICommonServices>();
-			_exportService = context.Resolve<IExportService>();
-			_productService = context.Resolve<IProductService>();
-			_pictureService = context.Resolve<IPictureService>();
-			_mediaSettings = context.Resolve<MediaSettings>();
-			_priceCalculationService = context.Resolve<IPriceCalculationService>();
-			_taxService = context.Resolve<ITaxService>();
-			_currencyService = context.Resolve<ICurrencyService>();
-			_customerService = context.Resolve<ICustomerService>();
-			_categoryService = context.Resolve<ICategoryService>();
-			_priceFormatter = context.Resolve<IPriceFormatter>();
-			_dateTimeHelper = context.Resolve<IDateTimeHelper>();
-			_emailAccountService = context.Resolve<IEmailAccountService>();
-			_emailSender = context.Resolve<IEmailSender>();
-			_dataExchangeSettings = context.Resolve<DataExchangeSettings>();
-		}
-
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
-			// do not call DetachAll() here! It will detach everything even things you do not want to have detached.
-			// note that detached navigation properties will not navigate again. they stay null => exception.
-			// DetachAll() is actually more useful to be called after all the work is done.
-
-			//_services.DbContext.DetachAll();
+			if (ctx.DataContext != null)
+			{
+				ctx.DataContext.Clear();
+				ctx.DataContext = null;
+			}
 
 			if (!ctx.Cancellation.IsCancellationRequested)
 			{
@@ -305,26 +324,117 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Product product)
+		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Product product, IEnumerable<Product> products)
 		{
-			dynamic expando = product.ToExpando(ctx.Projection.LanguageId ?? 0);
+			// load data behind navigation properties for current page in one go
+			if (ctx.DataContext == null)
+			{
+				ctx.DataContext = new ExportDataContext(products,
+					x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
+					x => _productAttributeService.GetProductVariantAttributeCombinations(x),
+					x => _productService.GetTierPrices(x, ctx.ProjectionCustomer, ctx.Store.Id),
+					x => _categoryService.GetProductCategoriesByProductIds(x, true),
+					x => _manufacturerService.GetProductManufacturersByProductIds(x),
+					x => _productService.GetProductPicturesByProductIds(x)
+				);
+			}
 
+			var languageId = (ctx.Projection.LanguageId ?? 0);
+			var productPictures = ctx.DataContext.ProductPictures.Load(product.Id);
+			var productManufacturers = ctx.DataContext.ProductManufacturers.Load(product.Id);
+			var productCategories = ctx.DataContext.ProductCategories.Load(product.Id);
+			var productAttributes = ctx.DataContext.Attributes.Load(product.Id);
+
+			dynamic expando = product.ToExpando(languageId);
+
+			// general data
 			PrepareProductPrice(ctx, expando, product);
 
 			expando._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter, decimal.Zero, true);
 
+			expando._CategoryPath = _categoryService.GetCategoryPath(
+				product,
+				null,
+				x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
+				(id, value) => ctx.CategoryPathes[id] = value,
+				x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x)
+			);
+
+
+			// navigation properties
+			if (product.DeliveryTimeId.HasValue && ctx.DeliveryTimes.ContainsKey(product.DeliveryTimeId.Value))
+				expando.DeliveryTime = ctx.DeliveryTimes[product.DeliveryTimeId.Value].ToExpando(languageId);
+			else
+				expando.DeliveryTime = null;
+
+			if (product.QuantityUnitId.HasValue && ctx.QuantityUnits.ContainsKey(product.QuantityUnitId.Value))
+				expando.QuantityUnit = ctx.QuantityUnits[product.QuantityUnitId.Value].ToExpando(languageId);
+			else
+				expando.QuantityUnit = null;
+
+			expando.ProductPictures = productPictures
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.DisplayOrder = x.DisplayOrder;
+					exp.Picture = x.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
+
+					return exp as ExpandoObject;
+				})
+				.ToList();
+
+			expando.ProductManufacturers = productManufacturers
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.DisplayOrder = x.DisplayOrder;
+					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
+
+					return exp as ExpandoObject;
+				})
+				.ToList();
+
+			expando.ProductCategories = productCategories
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.DisplayOrder = x.DisplayOrder;
+					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.Category = x.Category.ToExpando(languageId);
+
+					return exp as ExpandoObject;
+				})
+				.ToList();
+
+			expando.ProductAttributes = productAttributes
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x => x.ToExpando(languageId))
+				.ToList();
+
+
+			// data controlled through ExportProjectionSupport attribute
 			if (ctx.Provider.Supports(ExportProjectionSupport.Description))
 			{
-				PrepareProductDescription(ctx, expando);
+				PrepareProductDescription(ctx, expando, product);
 			}
 
 			if (ctx.Provider.Supports(ExportProjectionSupport.Brand))
 			{
 				string brand = null;
-				var manu = product.ProductManufacturers.OrderBy(x => x.DisplayOrder).FirstOrDefault();
+				var productManus = ctx.DataContext.ProductManufacturers.Load(product.Id);
 
-				if (manu != null)
-					brand = manu.Manufacturer.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+				if (productManus != null && productManus.Any())
+					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
 
 				if (brand.IsEmpty())
 					brand = ctx.Projection.Brand;
@@ -337,35 +447,10 @@ namespace SmartStore.Services.DataExchange
 				expando.ManufacturerPartNumber = product.Sku;
 			}
 
-			if (ctx.Provider.Supports(ExportProjectionSupport.CategoryPath))
-			{
-				if (ctx.CategoryPathes == null)
-				{
-					ctx.CategoryPathes = new Dictionary<int, string>();
-				}
-
-				if (ctx.Categories == null)
-				{
-					var allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false);
-					ctx.Categories = allCategories.ToDictionary(x => x.Id);
-				}
-
-				expando._CategoryPath = _categoryService.GetCategoryPath(
-					product,
-					null,
-					x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
-					(id, value) => ctx.CategoryPathes[id] = value,
-					x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x)
-				);
-			}
-
 			if (ctx.Provider.Supports(ExportProjectionSupport.MainPictureUrl))
 			{
-				var picture = product.GetDefaultProductPicture(_pictureService);
-
-				// always use HTTP when getting image URL
-				if (picture != null)
-					expando._MainPictureUrl = _pictureService.GetPictureUrl(picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+				if (productPictures != null && productPictures.Any())
+					expando._MainPictureUrl = _pictureService.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
 				else
 					expando._MainPictureUrl = _pictureService.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
 			}
@@ -402,46 +487,150 @@ namespace SmartStore.Services.DataExchange
 				}
 			}
 
+			// detach entity
+			try
+			{
+				_services.DbContext.DetachEntity<Product>(product);
+			}
+			catch { }
+
 			return expando as ExpandoObject;
 		}
 
-		private void Deploy(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployFileSystem(ExportProfileTaskContext ctx, ExportDeployment deployment)
 		{
-			if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
+			string folderDestination = null;
+
+			if (deployment.IsPublic)
 			{
-				string folderDestination = null;
+				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, _publicFolder);
+			}
+			else if (deployment.FileSystemPath.IsEmpty())
+			{
+				return;
+			}
+			else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
+			{
+				folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
+			}
+			else
+			{
+				folderDestination = deployment.FileSystemPath;
+			}
 
-				if (deployment.IsPublic)
-				{
-					folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, "Content\\files\\ExportImport");
-				}
-				else if (deployment.FileSystemPath.IsEmpty())
-				{
-					return;
-				}
-				else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
-				{
-					folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
-				}
-				else
-				{
-					folderDestination = deployment.FileSystemPath;
-				}
+			if (!System.IO.Directory.Exists(folderDestination))
+			{
+				System.IO.Directory.CreateDirectory(folderDestination);
+			}
 
-				if (!System.IO.Directory.Exists(folderDestination))
+			if (deployment.CreateZip)
+			{
+				var path = Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip");
+				FileSystemHelper.Copy(ctx.ZipPath, path);
+
+				ctx.Log.Information("Copied ZIP archive " + path);
+			}
+			else
+			{
+				FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
+
+				ctx.Log.Information("Copied export data to " + folderDestination);
+			}
+		}
+
+		private void DeployEmail(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			var emailAccount = _emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
+			var smtpContext = new SmtpContext(emailAccount);
+			var count = 0;
+
+			foreach (var email in deployment.EmailAddresses.SplitSafe(",").Where(x => x.IsEmail()))
+			{
+				var queuedEmail = new QueuedEmail
 				{
-					System.IO.Directory.CreateDirectory(folderDestination);
-				}
+					From = emailAccount.Email,
+					FromName = emailAccount.DisplayName,
+					To = email,
+					Subject = deployment.EmailSubject.NaIfEmpty(),
+					CreatedOnUtc = DateTime.UtcNow,
+					EmailAccountId = deployment.EmailAccountId
+				};
 
 				if (deployment.CreateZip)
 				{
-					FileSystemHelper.Copy(ctx.ZipPath, Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip"));
+					queuedEmail.Attachments.Add(new QueuedEmailAttachment
+					{
+						StorageLocation = EmailAttachmentStorageLocation.Path,
+						Path = ctx.ZipPath,
+						Name = ctx.ZipName,
+						MimeType = "application/zip"
+					});
 				}
 				else
 				{
-					FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
+					foreach (string path in System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories))
+					{
+						string name = Path.GetFileName(path);
+
+						queuedEmail.Attachments.Add(new QueuedEmailAttachment
+						{
+							StorageLocation = EmailAttachmentStorageLocation.Path,
+							Path = path,
+							Name = name,
+							MimeType = MimeTypes.MapNameToMimeType(name)
+						});
+					}
+				}
+
+				_queuedEmailService.InsertQueuedEmail(queuedEmail);
+				++count;
+			}
+
+			ctx.Log.Information("{0} email(s) created and queued.".FormatInvariant(count));
+		}
+
+		private void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			// TODO: make async
+			var count = 0;
+			string[] filePaths = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
+
+			if (deployment.MultipartForm)
+			{
+				ICredentials credentials = null;
+
+				if (deployment.Username.HasValue())
+					credentials = new NetworkCredential(deployment.Username, deployment.Password);
+
+				using (var handler = new HttpClientHandler { Credentials = credentials })
+				using (var client = new HttpClient(handler))
+				using (var formData = new MultipartFormDataContent())
+				{
+					foreach (var path in filePaths)
+					{
+						byte[] fileData = File.ReadAllBytes(path);
+						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
+					}
+
+					var response = client.PostAsync(deployment.Url, formData).Result;
+					if (response.IsSuccessStatusCode)
+					{
+						ctx.Log.Information("{0} file(s) successfully uploaded as multipart form data.".FormatInvariant(count));
+					}
+					else if (response.Content != null)
+					{
+						ctx.Log.Error("Multipart form data upload failed. Response: " + response.Content.ReadAsStringAsync().Result.NaIfEmpty().Truncate(2000, "..."));
+					}
 				}
 			}
+			else
+			{
+			}
+		}
+
+		private void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+
 		}
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx)
@@ -498,7 +687,7 @@ namespace SmartStore.Services.DataExchange
 
 				ctx.Segmenter = new ExportSegmenter(
 					pageIndex => GetProducts(ctx, pageIndex),
-					entity => ToExpando(ctx, (Product)entity),
+					(entity, entities) => ToExpando(ctx, (Product)entity, (IEnumerable<Product>)entities),
 					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, _pageSize, anySingleProduct.TotalCount),
 					ctx.Profile.BatchSize
 				);
@@ -557,6 +746,11 @@ namespace SmartStore.Services.DataExchange
 				{
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
+					ctx.DeliveryTimes = _deliveryTimeService.GetAllDeliveryTimes().ToDictionary(x => x.Id, x => x);
+					ctx.QuantityUnits = _quantityUnitService.GetAllQuantityUnits().ToDictionary(x => x.Id, x => x);
+
+					var allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false);
+					ctx.Categories = allCategories.ToDictionary(x => x.Id);
 
 					if (ctx.Profile.ProviderConfigData.HasValue())
 					{
@@ -589,6 +783,42 @@ namespace SmartStore.Services.DataExchange
 							ExportCoreInner(ctx);
 						}
 					}
+
+					if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
+					{
+						ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
+					}
+
+					foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
+					{
+						try
+						{
+							switch (deployment.DeploymentType)
+							{
+								case ExportDeploymentType.FileSystem:
+									DeployFileSystem(ctx, deployment);
+									break;
+								case ExportDeploymentType.Email:
+									DeployEmail(ctx, deployment);
+									break;
+								case ExportDeploymentType.Http:
+									DeployHttp(ctx, deployment);
+									break;
+								case ExportDeploymentType.Ftp:
+									DeployFtp(ctx, deployment);
+									break;
+							}
+						}
+						catch (Exception exc)
+						{
+							logger.Error("Deployment \"{0}\" failed.".FormatInvariant(deployment.Name), exc);
+						}
+					}
+
+					if (ctx.Profile.EmailAccountId != 0 && ctx.Profile.CompletedEmailAddresses.HasValue())
+					{
+						SendCompletionEmail(ctx);
+					}
 				}
 				catch (Exception exc)
 				{
@@ -596,6 +826,16 @@ namespace SmartStore.Services.DataExchange
 				}
 				finally
 				{
+					try
+					{
+						if (ctx.Profile.Cleanup)
+						{
+							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+							// TODO: more cleanup if required
+						}
+					}
+					catch { }
+
 					try
 					{
 						if (ctx.Segmenter != null)
@@ -607,50 +847,6 @@ namespace SmartStore.Services.DataExchange
 					}
 					catch { }
 				}
-			}
-
-			try
-			{
-				if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
-				{
-					ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
-				}
-
-				foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
-				{
-					Deploy(ctx, deployment);
-				}
-
-				if (ctx.Profile.EmailAccountId != 0 && ctx.Profile.CompletedEmailAddresses.HasValue())
-				{
-					SendCompletionEmail(ctx);
-				}
-			}
-			catch (Exception exc)
-			{
-				using (var logger2 = new TraceLogger(ctx.LogPath))
-				{
-					logger2.Error(exc);
-				}
-			}
-			finally
-			{
-				try
-				{
-					if (ctx.Profile.Cleanup)
-					{
-						FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
-						// TODO: more cleanup if required
-					}
-				}
-				catch { }
-
-				try
-				{
-					// do not call during processing, would generate exceptions. should be the final statement.
-					_services.DbContext.DetachAll();
-				}
-				catch { }
 			}
 		}
 
@@ -700,6 +896,8 @@ namespace SmartStore.Services.DataExchange
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
+			CategoryPathes = new Dictionary<int, string>();
+
 			Export = new ExportExecuteContext(Cancellation, FolderContent);
 		}
 
@@ -717,17 +915,27 @@ namespace SmartStore.Services.DataExchange
 
 		public string FolderRoot { get; private set; }
 		public string FolderContent { get; private set; }
+		public string ZipName
+		{
+			get { return Profile.FolderName + ".zip"; }
+		}
 		public string ZipPath
 		{
-			get { return Path.Combine(FolderRoot, Profile.FolderName + ".zip");	}
+			get { return Path.Combine(FolderRoot, ZipName);	}
 		}
 		public string LogPath
 		{
 			get { return Path.Combine(FolderRoot, "log.txt"); }
 		}
 
-		public Dictionary<int, Category> Categories;
-		public Dictionary<int, string> CategoryPathes;
+		// data loaded once per export
+		public Dictionary<int, Category> Categories { get; set; }
+		public Dictionary<int, string> CategoryPathes { get; set; }
+		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
+		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
+
+		// data loaded once per page
+		public ExportDataContext DataContext { get; set; }
 
 		public ExportSegmenter Segmenter { get; set; }
 

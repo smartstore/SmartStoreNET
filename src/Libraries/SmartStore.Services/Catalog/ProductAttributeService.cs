@@ -208,9 +208,10 @@ namespace SmartStore.Services.Catalog
 		{
 			Guard.ArgumentNotNull(() => productIds);
 
-			var query = from pva in _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductVariantAttributeValues)
-						where productIds.Contains(pva.ProductId)
-						select pva;
+			var query = 
+				from pva in _productVariantAttributeRepository.TableUntracked.Expand(x => x.ProductAttribute).Expand(x => x.ProductVariantAttributeValues)
+				where productIds.Contains(pva.ProductId)
+				select pva;
 
 			if (controlType.HasValue)
 			{

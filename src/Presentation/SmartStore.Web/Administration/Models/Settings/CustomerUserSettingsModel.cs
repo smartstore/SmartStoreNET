@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.Settings
@@ -25,14 +26,13 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.UsernamesEnabled")]
             public bool UsernamesEnabled { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled")]
-            public bool CustomerNumberEnabled { get; set; }
+            [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+            public CustomerNumberMethod CustomerNumberMethod { get; set; }
+            public SelectList AvailableCustomerNumberMethods { get; set; }
 
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.DisplayCustomerNumber")]
-            public bool DisplayCustomerNumber { get; set; }
-
-            [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.CustomerCanEditNumberIfEmpty")]
-            public bool CustomerCanEditNumberIfEmpty { get; set; }
+            [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+            public CustomerNumberVisibility CustomerNumberVisibility { get; set; }
+            public SelectList AvailableCustomerNumberVisibilities { get; set; }
 
             [SmartResourceDisplayName("Admin.Configuration.Settings.CustomerUser.AllowUsersToChangeUsernames")]
             public bool AllowUsersToChangeUsernames { get; set; }

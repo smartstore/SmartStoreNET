@@ -330,7 +330,7 @@ namespace SmartStore.Admin.Controllers
             {
                 Data = customers.Select(customer =>
                 {
-                    var customerModel = new AffiliateModel.AffiliatedCustomerModel()
+                    var customerModel = new AffiliateModel.AffiliatedCustomerModel
 					{
 						Id = customer.Id,
 						Email = customer.Email,

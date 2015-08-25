@@ -158,6 +158,8 @@
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
+    <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
+    <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
     <Compile Include="Domain\DataExchange\SyncMapping.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
     <Compile Include="Domain\Common\RestrictionContextTypes.cs" />

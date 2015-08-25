@@ -105,6 +105,9 @@ namespace SmartStore.Data.Migrations
                 "Specifies the default product sort order.",
                 "Legt die Standardsortierreihenfolge für Produkte fest.");
 
+            builder.AddOrUpdate("Common.CustomerNumberAlreadyExists",
+                "Customer number already exists, please choose another.",
+				"Die von Ihnen gewählte Kundennummer existiert bereits. Bitte geben Sie eine andere Kundennummer an.");
 		}
     }
 }

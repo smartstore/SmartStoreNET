@@ -8,9 +8,8 @@ namespace SmartStore.Core.Domain.Customers
 		public CustomerSettings()
 		{
 			UsernamesEnabled = true;
-            CustomerNumberEnabled = true;
-            CustomerCanEditNumberIfEmpty = true;
-            DisplayCustomerNumber = true;
+            CustomerNumberMethod = Customers.CustomerNumberMethod.Disabled;
+            CustomerNumberVisibility = Customers.CustomerNumberVisibility.None;
 			DefaultPasswordFormat = PasswordFormat.Hashed;
 			HashedPasswordFormat = "SHA1";
 			PasswordMinLength = 6;
@@ -33,19 +32,14 @@ namespace SmartStore.Core.Domain.Customers
         public bool UsernamesEnabled { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers can enter a customer id
+        /// Gets or sets the customer number method
         /// </summary>
-        public bool CustomerNumberEnabled { get; set; }
+        public CustomerNumberMethod CustomerNumberMethod { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers can enter a customer id
+        /// Gets or sets the customer number visibility
         /// </summary>
-        public bool DisplayCustomerNumber { get; set; }
-
-        /// <summary>
-        /// Gets or sets a value indicating whether customers can enter a customer id
-        /// </summary>
-        public bool CustomerCanEditNumberIfEmpty { get; set; }
+        public CustomerNumberVisibility CustomerNumberVisibility { get; set; }
 
         /// <summary>
         /// Gets or sets a value indicating whether users can check the availability of usernames (when registering or changing in 'My Account')

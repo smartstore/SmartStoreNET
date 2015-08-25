@@ -1597,7 +1597,7 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
 					col++;
 
-                    worksheet.Cells[row, col].Value = (order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
+                    worksheet.Cells[row, col].Value = order.RedeemedRewardPointsEntry != null ? (order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "") : "";
                     col++;
 
                     var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
@@ -1736,6 +1736,7 @@ namespace SmartStore.Services.ExportImport
                 var properties = new string[]
                     {
                         "Id",
+                        "CustomerNumber",
                         "CustomerGuid",
                         "Email",
                         "Username",
@@ -1795,6 +1796,9 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = customer.Id;
                     col++;
 
+                    worksheet.Cells[row, col].Value = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+                    col++;
+                    
                     worksheet.Cells[row, col].Value = customer.CustomerGuid;
                     col++;
 
@@ -1981,6 +1985,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteStartElement("Customer");
 
                 xmlWriter.WriteElementString("Id", null, customer.Id.ToString());
+                xmlWriter.WriteElementString("CustomerNumber", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber));
                 xmlWriter.WriteElementString("CustomerGuid", null, customer.CustomerGuid.ToString());
                 xmlWriter.WriteElementString("Email", null, customer.Email);
                 xmlWriter.WriteElementString("Username", null, customer.Username);

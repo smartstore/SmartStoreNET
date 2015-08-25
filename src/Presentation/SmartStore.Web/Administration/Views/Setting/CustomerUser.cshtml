@@ -41,13 +41,9 @@
 
             $("#@Html.FieldIdFor(model => model.CustomerSettings.AllowCustomersToUploadAvatars)").click(toggleAvatar);
             $("#@Html.FieldIdFor(model => model.CustomerSettings.UsernamesEnabled)").click(toggleUsername);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberEnabled)").click(toggleCustomerNumber);
-            $("#@Html.FieldIdFor(model => model.CustomerSettings.DisplayCustomerNumber)").click(toggleEditCustomerNumber);
 
             toggleAvatar();
             toggleUsername();
-            toggleCustomerNumber();
-            toggleEditCustomerNumber();
         });
 
         function toggleAvatar() {
@@ -70,26 +66,6 @@
             }
         }
 
-        function toggleCustomerNumber() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.CustomerNumberEnabled)').is(':checked')) {
-                $('#pnlDisplayCustomerNumber').show();
-                $('#pnlCustomerCanEditNumberIfEmpty').show();
-            }
-            else {
-                $('#pnlDisplayCustomerNumber').hide();
-                $('#pnlCustomerCanEditNumberIfEmpty').hide();
-            }
-        }
-        
-        function toggleEditCustomerNumber() {
-            if ($('#@Html.FieldIdFor(model => model.CustomerSettings.DisplayCustomerNumber)').is(':checked')) {
-                $('#pnlCustomerCanEditNumberIfEmpty').show();
-            }
-            else {
-                $('#pnlCustomerCanEditNumberIfEmpty').hide();
-            }
-        }
-
     </script>
     <table class="adminContent">
         <tr>
@@ -101,33 +77,29 @@
                 @Html.ValidationMessageFor(model => model.CustomerSettings.UsernamesEnabled)
             </td>
         </tr>
+
         <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberEnabled)
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberMethod)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerNumberEnabled)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberEnabled)
+                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberMethod)
+                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberMethod, Model.CustomerSettings.AvailableCustomerNumberMethods)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberMethod)
             </td>
         </tr>
-        <tr id="pnlDisplayCustomerNumber">
+
+        <tr>
             <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.DisplayCustomerNumber)
+                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerNumberVisibility)
             </td>
             <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.DisplayCustomerNumber)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.DisplayCustomerNumber)
+                @Html.SettingOverrideCheckbox(model => Model.CustomerSettings.CustomerNumberVisibility)
+                @Html.DropDownListFor(model => model.CustomerSettings.CustomerNumberVisibility, Model.CustomerSettings.AvailableCustomerNumberVisibilities)
+                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerNumberVisibility)
             </td>
         </tr>
-        <tr id="pnlCustomerCanEditNumberIfEmpty">
-            <td class="adminTitle">
-                @Html.SmartLabelFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
-            </td>
-            <td class="adminData">
-                @Html.SettingEditorFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
-                @Html.ValidationMessageFor(model => model.CustomerSettings.CustomerCanEditNumberIfEmpty)
-            </td>
-        </tr>
+
         <tr id="pnlAllowUsersToChangeUsernames">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CustomerSettings.AllowUsersToChangeUsernames)

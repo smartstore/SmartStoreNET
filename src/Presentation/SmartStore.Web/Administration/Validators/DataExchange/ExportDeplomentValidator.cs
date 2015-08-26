@@ -20,12 +20,7 @@ namespace SmartStore.Admin.Validators.DataExchange
 
 			RuleFor(x => x.Url)
 				.NotEmpty()
-				.When(x => x.DeploymentType == ExportDeploymentType.Http)
-				.WithMessage(localization.GetResource("Admin.Validation.Url"));
-
-			RuleFor(x => x.Url)
-				.Matches(RegularExpressions.IsWebUrl)
-				.When(x => x.DeploymentType == ExportDeploymentType.Http)
+				.When(x => x.DeploymentType == ExportDeploymentType.Http || x.DeploymentType == ExportDeploymentType.Ftp)
 				.WithMessage(localization.GetResource("Admin.Validation.Url"));
 
 			RuleFor(x => x.Username)

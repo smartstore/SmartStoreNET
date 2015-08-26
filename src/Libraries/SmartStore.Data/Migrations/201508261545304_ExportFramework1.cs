@@ -9,14 +9,20 @@ namespace SmartStore.Data.Migrations
         public override void Up()
         {
             AddColumn("dbo.ExportDeployment", "CreateZip", c => c.Boolean(nullable: false));
-            AddColumn("dbo.ExportDeployment", "MultipartForm", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ExportDeployment", "HttpTransmissionTypeId", c => c.Int(nullable: false));
+            AddColumn("dbo.ExportDeployment", "HttpTransmissionType", c => c.Int(nullable: false));
+            AddColumn("dbo.ExportDeployment", "PassiveMode", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ExportDeployment", "UseSsl", c => c.Boolean(nullable: false));
             AddColumn("dbo.ExportProfile", "EmailAccountId", c => c.Int(nullable: false));
         }
         
         public override void Down()
         {
             DropColumn("dbo.ExportProfile", "EmailAccountId");
-            DropColumn("dbo.ExportDeployment", "MultipartForm");
+            DropColumn("dbo.ExportDeployment", "UseSsl");
+            DropColumn("dbo.ExportDeployment", "PassiveMode");
+            DropColumn("dbo.ExportDeployment", "HttpTransmissionType");
+            DropColumn("dbo.ExportDeployment", "HttpTransmissionTypeId");
             DropColumn("dbo.ExportDeployment", "CreateZip");
         }
 
@@ -75,11 +81,26 @@ namespace SmartStore.Data.Migrations
 				"Specifies whether to export all active attribute combinations as a standalone product in addition to each product.",
 				"Legt fest, ob zusätzlich zu jedem Produkt alle seine aktiven Attributkombinationen als eigenständiges Produkt exportiert werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.MultipartForm",
-				"Multipart form",
-				"Multipart-Form",
-				"Specifies whether to transmit the export files as multipart form data via HTTP.",
-				"Legt fest, ob die Exportdateien als Multipart-Form-Data per HTTP übertragen werden sollen.");
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.HttpTransmissionType",
+				"HTTP transmission type",
+				"HTTP Übertragungsart",
+				"Specifies how to transmit the export files via HTTP.",
+				"Legt fest, aus welcher Art die Exportdateien per HTTP übertragen werden sollen.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportHttpTransmissionType.SimplePost", "Simple POST", "Einfacher POST");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportHttpTransmissionType.MultipartFormDataPost", "Multipart form data POST", "Multipart-Form-Data POST");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.PassiveMode",
+				"Passive mode",
+				"Passiver Modus",
+				"Specifies whether to exchange data in active or passive mode.",
+				"Legt fest, ob Daten im aktiven oder passiven Modus ausgetauscht werden sollen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.UseSsl",
+				"Use SSL",
+				"SSL verwenden",
+				"Specifies whether to use a SSL (Secure Sockets Layer) connection.",
+				"Legt fest, ob einen SSL (Secure Sockets Layer) Verbindung genutzt werden soll.");
 		}
     }
 }

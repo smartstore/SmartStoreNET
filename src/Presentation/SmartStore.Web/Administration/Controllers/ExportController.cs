@@ -304,14 +304,17 @@ namespace SmartStore.Admin.Controllers
 				Username = deployment.Username,
 				Password = deployment.Password,
 				Url = deployment.Url,
-				MultipartForm = deployment.MultipartForm,
+				HttpTransmissionType = deployment.HttpTransmissionType,
 				FileSystemPath = deployment.FileSystemPath,
 				EmailAddresses = deployment.EmailAddresses,
 				EmailSubject = deployment.EmailSubject,
-				EmailAccountId = deployment.EmailAccountId
+				EmailAccountId = deployment.EmailAccountId,
+				PassiveMode = deployment.PassiveMode,
+				UseSsl = deployment.UseSsl
 			};
 
 			model.AvailableDeploymentTypes = ExportDeploymentType.FileSystem.ToSelectList(false).ToList();
+			model.AvailableHttpTransmissionTypes = ExportHttpTransmissionType.SimplePost.ToSelectList(false).ToList();
 
 			model.SerializedEmailAddresses = string.Join(",", deployment.EmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
 
@@ -338,11 +341,13 @@ namespace SmartStore.Admin.Controllers
 			deployment.Username = model.Username;
 			deployment.Password = model.Password;
 			deployment.Url = model.Url;
-			deployment.MultipartForm = model.MultipartForm;
+			deployment.HttpTransmissionType = model.HttpTransmissionType;
 			deployment.FileSystemPath = model.FileSystemPath;
 			deployment.EmailAddresses = model.EmailAddresses;
 			deployment.EmailSubject = model.EmailSubject;
-			deployment.EmailAccountId = model.EmailAccountId;			
+			deployment.EmailAccountId = model.EmailAccountId;
+			deployment.PassiveMode = model.PassiveMode;
+			deployment.UseSsl = model.UseSsl;
 		}
 
 		private ActionResult SmartRedirect(bool continueEditing, int profileId, int deploymentId)

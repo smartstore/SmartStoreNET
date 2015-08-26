@@ -19,6 +19,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		Ftp
 	}
 
+	public enum ExportHttpTransmissionType
+	{
+		SimplePost = 0,
+		MultipartFormDataPost
+	}
+
 	public enum ExportDescriptionMerging
 	{
 		None = 0,

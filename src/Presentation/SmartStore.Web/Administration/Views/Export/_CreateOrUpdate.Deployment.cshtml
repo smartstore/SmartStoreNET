@@ -92,7 +92,7 @@
 		</td>
 	</tr>
 
-	<tr class="deployment-@((int)ExportDeploymentType.Http)">
+	<tr class="deployment-@((int)ExportDeploymentType.Http)  deployment-@((int)ExportDeploymentType.Ftp)">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.Url)
 		</td>
@@ -103,11 +103,11 @@
 	</tr>
 	<tr class="deployment-@((int)ExportDeploymentType.Http)">
 		<td class="adminTitle">
-			@Html.SmartLabelFor(x => x.MultipartForm)
+			@Html.SmartLabelFor(x => x.HttpTransmissionType)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.MultipartForm)
-			@Html.ValidationMessageFor(x => x.MultipartForm)
+			@Html.DropDownListFor(x => x.HttpTransmissionType, Model.AvailableHttpTransmissionTypes)
+			@Html.ValidationMessageFor(x => x.HttpTransmissionType)
 		</td>
 	</tr>
 
@@ -127,6 +127,25 @@
 		<td class="adminData">
 			@Html.EditorFor(x => x.Password)
 			@Html.ValidationMessageFor(x => x.Password)
+		</td>
+	</tr>
+
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.PassiveMode)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.PassiveMode)
+			@Html.ValidationMessageFor(x => x.PassiveMode)
+		</td>
+	</tr>
+	<tr class="deployment-@((int)ExportDeploymentType.Ftp)">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.UseSsl)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.UseSsl)
+			@Html.ValidationMessageFor(x => x.UseSsl)
 		</td>
 	</tr>
 </table>

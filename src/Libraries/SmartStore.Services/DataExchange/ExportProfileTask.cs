@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
@@ -252,6 +251,206 @@ namespace SmartStore.Services.DataExchange
 			_emailSender.SendEmail(smtpContext, message);
 		}
 
+		private void DeployFileSystem(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			string folderDestination = null;
+
+			if (deployment.IsPublic)
+			{
+				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, _publicFolder);
+			}
+			else if (deployment.FileSystemPath.IsEmpty())
+			{
+				return;
+			}
+			else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
+			{
+				folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
+			}
+			else
+			{
+				folderDestination = deployment.FileSystemPath;
+			}
+
+			if (!System.IO.Directory.Exists(folderDestination))
+			{
+				System.IO.Directory.CreateDirectory(folderDestination);
+			}
+
+			if (deployment.CreateZip)
+			{
+				var path = Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip");
+				FileSystemHelper.Copy(ctx.ZipPath, path);
+
+				ctx.Log.Information("Copied ZIP archive " + path);
+			}
+			else
+			{
+				FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
+
+				ctx.Log.Information("Copied export data to " + folderDestination);
+			}
+		}
+
+		private void DeployEmail(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			var emailAccount = _emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
+			var smtpContext = new SmtpContext(emailAccount);
+			var count = 0;
+
+			foreach (var email in deployment.EmailAddresses.SplitSafe(",").Where(x => x.IsEmail()))
+			{
+				var queuedEmail = new QueuedEmail
+				{
+					From = emailAccount.Email,
+					FromName = emailAccount.DisplayName,
+					To = email,
+					Subject = deployment.EmailSubject.NaIfEmpty(),
+					CreatedOnUtc = DateTime.UtcNow,
+					EmailAccountId = deployment.EmailAccountId
+				};
+
+				foreach (string path in ctx.GetDeploymentFiles(deployment))
+				{
+					string name = Path.GetFileName(path);
+
+					queuedEmail.Attachments.Add(new QueuedEmailAttachment
+					{
+						StorageLocation = EmailAttachmentStorageLocation.Path,
+						Path = path,
+						Name = name,
+						MimeType = MimeTypes.MapNameToMimeType(name)
+					});
+				}
+
+				_queuedEmailService.InsertQueuedEmail(queuedEmail);
+				++count;
+			}
+
+			ctx.Log.Information("{0} email(s) created and queued.".FormatInvariant(count));
+		}
+
+		private async void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			var succeeded = 0;
+			var url = deployment.Url;
+
+			if (!url.StartsWith("http://", StringComparison.InvariantCultureIgnoreCase) && !url.StartsWith("https://", StringComparison.InvariantCultureIgnoreCase))
+				url = "http://" + url;
+
+			if (deployment.HttpTransmissionType == ExportHttpTransmissionType.MultipartFormDataPost)
+			{
+				var count = 0;
+				ICredentials credentials = null;
+
+				if (deployment.Username.HasValue())
+					credentials = new NetworkCredential(deployment.Username, deployment.Password);
+
+				using (var handler = new HttpClientHandler { Credentials = credentials })
+				using (var client = new HttpClient(handler))
+				using (var formData = new MultipartFormDataContent())
+				{
+					foreach (var path in ctx.GetDeploymentFiles(deployment))
+					{
+						byte[] fileData = File.ReadAllBytes(path);
+						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
+					}
+
+					var response = await client.PostAsync(url, formData);
+
+					if (response.IsSuccessStatusCode)
+					{
+						succeeded = count;
+					}
+					else if (response.Content != null)
+					{
+						var content = await response.Content.ReadAsStringAsync();
+
+						var msg = "Multipart form data upload failed. {0} ({1}). Response: {2}".FormatInvariant(
+							response.StatusCode.ToString(), (int)response.StatusCode, content.NaIfEmpty().Truncate(2000, "..."));
+
+						ctx.Log.Error(msg);
+					}
+				}
+			}
+			else
+			{
+				using (var webClient = new WebClient())
+				{
+					if (deployment.Username.HasValue())
+						webClient.Credentials = new NetworkCredential(deployment.Username, deployment.Password);
+
+					foreach (var path in ctx.GetDeploymentFiles(deployment))
+					{
+						await webClient.UploadFileTaskAsync(url, path);
+					}
+				}
+			}
+
+			ctx.Log.Information("{0} file(s) successfully uploaded via HTTP.".FormatInvariant(succeeded));
+		}
+
+		private async void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		{
+			var bytesRead = 0;
+			var succeededFiles = 0;
+			var url = deployment.Url;
+			var buffLength = 32768;
+			byte[] buff = new byte[buffLength];
+			var deploymentFiles = ctx.GetDeploymentFiles(deployment).ToList();
+			var lastIndex = (deploymentFiles.Count - 1);
+
+			if (!url.StartsWith("ftp://", StringComparison.InvariantCultureIgnoreCase))
+				url = "ftp://" + url;
+
+			foreach (var path in deploymentFiles)
+			{
+				var fileUrl = url.EnsureEndsWith("/") + Path.GetFileName(path);
+
+				var request = (FtpWebRequest)WebRequest.Create(fileUrl);
+				request.Method = WebRequestMethods.Ftp.UploadFile;
+				request.KeepAlive = (deploymentFiles.IndexOf(path) != lastIndex);
+				request.UseBinary = true;
+				request.Proxy = null;
+				request.UsePassive = deployment.PassiveMode;
+				request.EnableSsl = deployment.UseSsl;
+
+				if (deployment.Username.HasValue())
+					request.Credentials = new NetworkCredential(deployment.Username, deployment.Password);
+
+				request.ContentLength = (new FileInfo(path)).Length;
+
+				var requestStream = await request.GetRequestStreamAsync();
+
+				using (var stream = new FileStream(path, FileMode.Open))
+				{
+					while ((bytesRead = stream.Read(buff, 0, buffLength)) != 0)
+					{
+						await requestStream.WriteAsync(buff, 0, bytesRead);
+					}
+				}
+
+				requestStream.Close();
+
+				var response = (FtpWebResponse)await request.GetResponseAsync();
+				var statusCode = (int)response.StatusCode;
+
+				if (statusCode >= 200 && statusCode <= 299)
+				{
+					++succeededFiles;
+				}
+				else
+				{
+					var msg = "The FTP transfer might fail. {0} ({1}), {2}. File {3}".FormatInvariant(
+						response.StatusCode.ToString(), statusCode, response.StatusDescription.NaIfEmpty(), path);
+
+					ctx.Log.Error(msg);
+				}
+			}
+
+			ctx.Log.Information("{0} file(s) successfully uploaded via FTP.".FormatInvariant(succeededFiles));
+		}
+
 		#endregion
 
 		private IEnumerable<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
@@ -497,142 +696,6 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
-		private void DeployFileSystem(ExportProfileTaskContext ctx, ExportDeployment deployment)
-		{
-			string folderDestination = null;
-
-			if (deployment.IsPublic)
-			{
-				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, _publicFolder);
-			}
-			else if (deployment.FileSystemPath.IsEmpty())
-			{
-				return;
-			}
-			else if (deployment.FileSystemPath.StartsWith("/") || deployment.FileSystemPath.StartsWith("\\") || !Path.IsPathRooted(deployment.FileSystemPath))
-			{
-				folderDestination = CommonHelper.MapPath(deployment.FileSystemPath);
-			}
-			else
-			{
-				folderDestination = deployment.FileSystemPath;
-			}
-
-			if (!System.IO.Directory.Exists(folderDestination))
-			{
-				System.IO.Directory.CreateDirectory(folderDestination);
-			}
-
-			if (deployment.CreateZip)
-			{
-				var path = Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip");
-				FileSystemHelper.Copy(ctx.ZipPath, path);
-
-				ctx.Log.Information("Copied ZIP archive " + path);
-			}
-			else
-			{
-				FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
-
-				ctx.Log.Information("Copied export data to " + folderDestination);
-			}
-		}
-
-		private void DeployEmail(ExportProfileTaskContext ctx, ExportDeployment deployment)
-		{
-			var emailAccount = _emailAccountService.GetEmailAccountById(deployment.EmailAccountId);
-			var smtpContext = new SmtpContext(emailAccount);
-			var count = 0;
-
-			foreach (var email in deployment.EmailAddresses.SplitSafe(",").Where(x => x.IsEmail()))
-			{
-				var queuedEmail = new QueuedEmail
-				{
-					From = emailAccount.Email,
-					FromName = emailAccount.DisplayName,
-					To = email,
-					Subject = deployment.EmailSubject.NaIfEmpty(),
-					CreatedOnUtc = DateTime.UtcNow,
-					EmailAccountId = deployment.EmailAccountId
-				};
-
-				if (deployment.CreateZip)
-				{
-					queuedEmail.Attachments.Add(new QueuedEmailAttachment
-					{
-						StorageLocation = EmailAttachmentStorageLocation.Path,
-						Path = ctx.ZipPath,
-						Name = ctx.ZipName,
-						MimeType = "application/zip"
-					});
-				}
-				else
-				{
-					foreach (string path in System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories))
-					{
-						string name = Path.GetFileName(path);
-
-						queuedEmail.Attachments.Add(new QueuedEmailAttachment
-						{
-							StorageLocation = EmailAttachmentStorageLocation.Path,
-							Path = path,
-							Name = name,
-							MimeType = MimeTypes.MapNameToMimeType(name)
-						});
-					}
-				}
-
-				_queuedEmailService.InsertQueuedEmail(queuedEmail);
-				++count;
-			}
-
-			ctx.Log.Information("{0} email(s) created and queued.".FormatInvariant(count));
-		}
-
-		private void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
-		{
-			// TODO: make async
-			var count = 0;
-			string[] filePaths = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
-
-			if (deployment.MultipartForm)
-			{
-				ICredentials credentials = null;
-
-				if (deployment.Username.HasValue())
-					credentials = new NetworkCredential(deployment.Username, deployment.Password);
-
-				using (var handler = new HttpClientHandler { Credentials = credentials })
-				using (var client = new HttpClient(handler))
-				using (var formData = new MultipartFormDataContent())
-				{
-					foreach (var path in filePaths)
-					{
-						byte[] fileData = File.ReadAllBytes(path);
-						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
-					}
-
-					var response = client.PostAsync(deployment.Url, formData).Result;
-					if (response.IsSuccessStatusCode)
-					{
-						ctx.Log.Information("{0} file(s) successfully uploaded as multipart form data.".FormatInvariant(count));
-					}
-					else if (response.Content != null)
-					{
-						ctx.Log.Error("Multipart form data upload failed. Response: " + response.Content.ReadAsStringAsync().Result.NaIfEmpty().Truncate(2000, "..."));
-					}
-				}
-			}
-			else
-			{
-			}
-		}
-
-		private void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
-		{
-
-		}
-
 		private void ExportCoreInner(ExportProfileTaskContext ctx)
 		{
 			ctx.Export.StoreId = ctx.Store.Id;
@@ -644,6 +707,12 @@ namespace SmartStore.Services.DataExchange
 				"{1}",
 				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".")
 			);
+
+			if (ctx.Segmenter != null)
+			{
+				ctx.Segmenter.Dispose();
+				ctx.Segmenter = null;
+			}
 
 			{
 				var logHead = new StringBuilder();
@@ -841,6 +910,11 @@ namespace SmartStore.Services.DataExchange
 						if (ctx.Segmenter != null)
 							ctx.Segmenter.Dispose();
 
+						ctx.DeliveryTimes.Clear();
+						ctx.QuantityUnits.Clear();
+						ctx.CategoryPathes.Clear();
+						ctx.Categories.Clear();
+
 						ctx.Export.CustomProperties.Clear();
 						ctx.Export.Log = null;
 						ctx.Log = null;
@@ -926,6 +1000,14 @@ namespace SmartStore.Services.DataExchange
 		public string LogPath
 		{
 			get { return Path.Combine(FolderRoot, "log.txt"); }
+		}
+
+		public string[] GetDeploymentFiles(ExportDeployment deployment)
+		{
+			if (deployment.CreateZip)
+				return new string[] { ZipPath };
+
+			return System.IO.Directory.GetFiles(FolderContent, "*.*", SearchOption.AllDirectories);
 		}
 
 		// data loaded once per export

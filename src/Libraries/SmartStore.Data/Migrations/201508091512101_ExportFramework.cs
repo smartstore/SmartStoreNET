@@ -494,10 +494,10 @@ namespace SmartStore.Data.Migrations
 				"Legt das Passwort fest.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Url",
-				"URL",
-				"URL",
-				"Specifies the URL on which the data should be deployed.",
-				"Legt die URL fest, unter der die Daten bereitgestellt werden sollen.");
+				"URL\\Host",
+				"URL\\Host",
+				"Specifies the URL or host name where to send the data.",
+				"Legt die URL bzw. den Host-Namen fest, an die die Daten übermittelt werden sollen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAddresses",
 				"Email addresses",

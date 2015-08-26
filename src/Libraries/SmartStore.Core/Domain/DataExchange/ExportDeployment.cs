@@ -59,9 +59,24 @@ namespace SmartStore.Core.Domain
 		public string Url { get; set; }
 
 		/// <summary>
-		/// Whether to use a multipart form to upload files via HTTP
+		/// The type identifier of how to transmit via HTTP
 		/// </summary>
-		public bool MultipartForm { get; set; }
+		public int HttpTransmissionTypeId { get; set; }
+
+		/// <summary>
+		/// The type of how to transmit via HTTP
+		/// </summary>
+		public ExportHttpTransmissionType HttpTransmissionType
+		{
+			get
+			{
+				return (ExportHttpTransmissionType)HttpTransmissionTypeId;
+			}
+			set
+			{
+				HttpTransmissionTypeId = (int)value;
+			}
+		}
 
 		/// <summary>
 		/// The file system path
@@ -83,7 +98,15 @@ namespace SmartStore.Core.Domain
 		/// </summary>
 		public int EmailAccountId { get; set; }
 
-		// TODO: more FTP options
+		/// <summary>
+		/// Whether to use FTP active or passive mode
+		/// </summary>
+		public bool PassiveMode { get; set; }
+
+		/// <summary>
+		/// Whether to use SSL
+		/// </summary>
+		public bool UseSsl { get; set; }
 
 		public virtual ExportProfile Profile { get; set; }
 	}

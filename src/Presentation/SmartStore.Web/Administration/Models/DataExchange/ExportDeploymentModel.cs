@@ -66,8 +66,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Url")]
 		public string Url { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.MultipartForm")]
-		public bool MultipartForm { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.HttpTransmissionType")]
+		public ExportHttpTransmissionType HttpTransmissionType { get; set; }
+		public List<SelectListItem> AvailableHttpTransmissionTypes { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.FileSystemPath")]
 		public string FileSystemPath { get; set; }
@@ -82,5 +83,11 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.EmailAccountId")]
 		public int EmailAccountId { get; set; }
 		public List<SelectListItem> AvailableEmailAccounts { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.PassiveMode")]
+		public bool PassiveMode { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.UseSsl")]
+		public bool UseSsl { get; set; }
 	}
 }

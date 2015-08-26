@@ -4088,7 +4088,7 @@ namespace SmartStore.Data.Setup
 					{
 						Name = "Product.AskQuestion",
 						Subject = "%Store.Name% - Question concerning '%Product.Name%' from %ProductQuestion.SenderName%",
-						Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
+						Body = templateHeader + "<p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
 						IsActive = true,
 						EmailAccountId = eaGeneral.Id,
 					},

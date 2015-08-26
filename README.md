@@ -17,7 +17,7 @@ The state-of-the-art architecture of SmartStore.NET - with `ASP.NET 4.5` + `MVC 
 * **Website:** [http://www.smartstore.com/net](http://www.smartstore.com/net)
 * **Forum:** [http://community.smartstore.com](http://community.smartstore.com)
 * **Marketplace:** [http://community.smartstore.com/marketplace](http://community.smartstore.com/marketplace)
-* **Documentation:** [SmartStore.NET Documentation in English](http://docs.smartstore.com/display/SMNET25/SmartStore.NET+Documentation+Home)
+* **Documentation:** [SmartStore.NET Documentation in English](http://docs.smartstore.com/display/SMNET/SmartStore.NET+Documentation+Home)
 
 ## Highlights
 

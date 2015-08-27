@@ -284,6 +284,10 @@ namespace SmartStore.Web.Framework
             var yearsList = new TagBuilder("select");
 			yearsList.MergeAttribute("style", "width: 90px");
 
+            daysList.Attributes.Add("data-native-menu", "false");
+            monthsList.Attributes.Add("data-native-menu", "false");
+            yearsList.Attributes.Add("data-native-menu", "false");
+
             daysList.Attributes.Add("name", dayName);
             monthsList.Attributes.Add("name", monthName);
             yearsList.Attributes.Add("name", yearName);

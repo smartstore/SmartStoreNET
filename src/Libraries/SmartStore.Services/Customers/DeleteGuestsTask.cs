@@ -23,7 +23,6 @@ namespace SmartStore.Services.Customers
             //60*24 = 1 day
             var olderThanMinutes = 1440; // TODO: move to settings
             _customerService.DeleteGuestCustomers(null, DateTime.UtcNow.AddMinutes(-olderThanMinutes), true);
-			throw new Exception("hjhjkh kjhjkhj hjkhjkhjk");
         }
     }
 }

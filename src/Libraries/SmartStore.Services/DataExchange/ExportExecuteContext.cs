@@ -1,4 +1,5 @@
 ﻿using System.Collections.Generic;
+using System.Dynamic;
 using System.IO;
 using System.Threading;
 using SmartStore.Core.Logging;
@@ -14,9 +15,7 @@ namespace SmartStore.Services.DataExchange
 
 		bool IsCanceled { get; }
 
-		int StoreId { get; }
-
-		string StoreUrl { get; }
+		ExpandoObject Store { get; }
 
 		string Folder { get; }
 
@@ -53,9 +52,7 @@ namespace SmartStore.Services.DataExchange
 			get { return _cancellation.IsCancellationRequested; }
 		}
 
-		public int StoreId { get; internal set; }
-
-		public string StoreUrl { get; internal set; }
+		public ExpandoObject Store { get; internal set; }
 
 		public string Folder { get; private set; }
 

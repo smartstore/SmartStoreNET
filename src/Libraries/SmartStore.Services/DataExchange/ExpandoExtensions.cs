@@ -13,6 +13,57 @@ namespace SmartStore.Services.DataExchange
 {
 	public static class ExpandoExtensions
 	{
+		public static ExpandoObject ToExpando(this Currency currency, int languageId)
+		{
+			if (currency == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = currency;
+
+			expando.Id = currency.Id;
+			expando.Name = currency.GetLocalized(x => x.Name, languageId, true, false);
+			expando.CurrencyCode = currency.CurrencyCode;
+			expando.Rate = currency.Rate;
+			expando.DisplayLocale = currency.DisplayLocale;
+			expando.CustomFormatting = currency.CustomFormatting;
+			expando.LimitedToStores = currency.LimitedToStores;
+			expando.Published = currency.Published;
+			expando.DisplayOrder = currency.DisplayOrder;
+			expando.CreatedOnUtc = currency.CreatedOnUtc;
+			expando.UpdatedOnUtc = currency.UpdatedOnUtc;
+			expando.DomainEndings = currency.DomainEndings;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Store store, int languageId)
+		{
+			if (store == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = store;
+
+			expando.Id = store.Id;
+			expando.Name = store.Name;
+			expando.Url = store.Url;
+			expando.SslEnabled = store.SslEnabled;
+			expando.SecureUrl = store.SecureUrl;
+			expando.Hosts = store.Hosts;
+			expando.LogoPictureId = store.LogoPictureId;
+			expando.DisplayOrder = store.DisplayOrder;
+			expando.HtmlBodyId = store.HtmlBodyId;
+			expando.ContentDeliveryNetwork = store.ContentDeliveryNetwork;
+			expando.PrimaryStoreCurrencyId = store.PrimaryStoreCurrencyId;
+			expando.PrimaryExchangeRateCurrencyId = store.PrimaryExchangeRateCurrencyId;
+
+			expando.PrimaryStoreCurrency = store.PrimaryStoreCurrency.ToExpando(languageId);
+			expando.PrimaryExchangeRateCurrency = store.PrimaryExchangeRateCurrency.ToExpando(languageId);
+
+			return expando as ExpandoObject;
+		}
+
 		public static ExpandoObject ToExpando(this DeliveryTime deliveryTime, int languageId)
 		{
 			if (deliveryTime == null)

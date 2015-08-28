@@ -760,8 +760,7 @@ namespace SmartStore.Services.DataExchange
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx)
 		{
-			ctx.Export.StoreId = ctx.Store.Id;
-			ctx.Export.StoreUrl = ctx.Store.Url;
+			ctx.Export.Store = ctx.Store.ToExpando(ctx.Projection.LanguageId ?? 0);
 
 			ctx.Export.FileNamePattern = string.Concat(
 				"{0}-",

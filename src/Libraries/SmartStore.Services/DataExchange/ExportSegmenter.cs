@@ -10,7 +10,7 @@ namespace SmartStore.Services.DataExchange
 	{
 		int ProcessedItems { get; }
 
-		int TotalItems { get; }
+		int TotalRecords { get; }
 
 		int TotalSegments { get; }
 
@@ -24,33 +24,33 @@ namespace SmartStore.Services.DataExchange
 	}
 
 
-	public class ExportSegmenter : IExportSegmenter, IDisposable
+	public class ExportSegmenter<T> : IExportSegmenter, IDisposable where T : BaseEntity
 	{
-		private Func<int, IEnumerable<object>> _loadData;
-		private Func<object, IEnumerable<object>, ExpandoObject> _convertData;
+		private Func<int, List<T>> _loadData;
+		private Func<T, List<T>, List<ExpandoObject>> _convertData;
 		private List<ExpandoObject> _currentSegment;
 		private IPageable _pageable;
 		private int _pageIndexReset;
 		private bool _isBeginOfSegmentation;
 
-		private int _itemsPerFile;
+		private int _recordsPerFile;
 		private int _fileIndex;
-		private int _fileItemsSkip;
+		private int _fileRecordsSkip;
 		private bool _fileCaptured;
 
-		private int _itemsPerFileCount;
-		private int _itemsCount;
+		private int _recordsPerFileCount;
+		private int _recordsCount;
 
 		public ExportSegmenter(
-			Func<int, IEnumerable<object>> loadData,
-			Func<object, IEnumerable<object>, ExpandoObject> convertData,
+			Func<int, List<T>> loadData,
+			Func<T, List<T>, List<ExpandoObject>> convertData,
 			PagedList pageable,
 			int itemsPerFile)
 		{
 			_loadData = loadData;
 			_convertData = convertData;
 			_pageable = pageable;
-			_itemsPerFile = itemsPerFile;
+			_recordsPerFile = itemsPerFile;
 
 			_pageIndexReset = pageable.PageIndex;
 			_isBeginOfSegmentation = true;
@@ -72,10 +72,10 @@ namespace SmartStore.Services.DataExchange
 
 		public int ProcessedItems
 		{
-			get { return _itemsCount; }
+			get { return _recordsCount; }
 		}
 
-		public int TotalItems
+		public int TotalRecords
 		{
 			get	{ return _pageable.TotalCount; }
 		}
@@ -124,9 +124,9 @@ namespace SmartStore.Services.DataExchange
 			_isBeginOfSegmentation = true;
 			_pageable.PageIndex = _pageIndexReset;
 			_fileIndex = 0;
-			_fileItemsSkip = 0;
+			_fileRecordsSkip = 0;
 			_fileCaptured = false;
-			_itemsPerFileCount = 0;
+			_recordsPerFileCount = 0;
 		}
 
 		public bool ReadNextSegment()
@@ -136,7 +136,7 @@ namespace SmartStore.Services.DataExchange
 			if (_isBeginOfSegmentation)
 			{
 				_isBeginOfSegmentation = false;
-				//_itemsCount = 0;
+				_recordsCount = 0;
 				return _pageable.TotalCount > 0;
 			}
 
@@ -145,7 +145,7 @@ namespace SmartStore.Services.DataExchange
 				return false;
 			}
 
-			if (_fileItemsSkip > 0)
+			if (_fileRecordsSkip > 0)
 			{
 				return true;
 			}
@@ -168,29 +168,33 @@ namespace SmartStore.Services.DataExchange
 				{
 					_currentSegment = new List<ExpandoObject>();
 
+					var tmpCount = 0;
 					var data = _loadData(_pageable.PageIndex);
 
-					foreach (var item in data.Skip(_fileItemsSkip))
+					foreach (var record in data.Skip(_fileRecordsSkip))
 					{
-						if (_itemsPerFile > 0 && _itemsPerFileCount >= _itemsPerFile)
+						if (_recordsPerFile > 0 && _recordsPerFileCount >= _recordsPerFile)
 						{
 							_fileCaptured = true;
 							_fileIndex++;
-							_itemsPerFileCount = 0;
-							_fileItemsSkip = _currentSegment.Count;
+							_recordsPerFileCount = 0;
+							_fileRecordsSkip = tmpCount;
 
 							return _currentSegment.AsReadOnly();
 						}
 
-						var expando = _convertData(item, data);
+						foreach (var obj in _convertData(record, data))
+						{
+							_currentSegment.Add(obj);
 
-						_currentSegment.Add(expando);
+							++_recordsPerFileCount;
+							++_recordsCount;
+						}
 
-						++_itemsPerFileCount;
-						++_itemsCount;
+						++tmpCount;
 					}
 
-					_fileItemsSkip = 0;
+					_fileRecordsSkip = 0;
 				}
 
 				return _currentSegment.AsReadOnly();

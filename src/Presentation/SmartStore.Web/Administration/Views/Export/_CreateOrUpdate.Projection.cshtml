@@ -41,6 +41,20 @@
 				@Html.ValidationMessageFor(x => x.ProductProjection.CustomerId)
 			</td>
 		</tr>
+
+		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.AttributeCombinationAsProduct))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+				</td>
+			</tr>
+		}
+
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.ProductProjection.PriceType)
@@ -59,19 +73,6 @@
 				@Html.ValidationMessageFor(x => x.ProductProjection.ConvertNetToGrossPrices)
 			</td>
 		</tr>
-
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.AttributeCombinationAsProduct))
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationAsProduct)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.AttributeCombinationAsProduct)
-					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationAsProduct)
-				</td>
-			</tr>
-		}
 
 		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingTime))
 		{

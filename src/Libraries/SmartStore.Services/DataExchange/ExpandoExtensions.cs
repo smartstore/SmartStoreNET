@@ -74,6 +74,7 @@ namespace SmartStore.Services.DataExchange
 
 			dynamic expando = new ExpandoObject();
 			expando._Entity = pva;
+
 			expando.Id = pva.Id;
 			expando.TextPrompt = pva.TextPrompt;
 			expando.IsRequired = pva.IsRequired;
@@ -110,6 +111,33 @@ namespace SmartStore.Services.DataExchange
 				.ToList();
 
 			expando.Attribute = attribute as ExpandoObject;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this ProductVariantAttributeCombination pvac)
+		{
+			if (pvac == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = pvac;
+
+			expando.Id = pvac.Id;
+			expando.StockQuantity = pvac.StockQuantity;
+			expando.AllowOutOfStockOrders = pvac.AllowOutOfStockOrders;
+			expando.AttributesXml = pvac.AttributesXml;
+			expando.Sku = pvac.Sku;
+			expando.Gtin = pvac.Gtin;
+			expando.ManufacturerPartNumber = pvac.ManufacturerPartNumber;
+			expando.Price = pvac.Price;
+			expando.Length = pvac.Length;
+			expando.Width = pvac.Width;
+			expando.Height = pvac.Height;
+			expando.BasePriceAmount = pvac.BasePriceAmount;
+			expando.BasePriceBaseAmount = pvac.BasePriceBaseAmount;
+			expando.DeliveryTimeId = pvac.DeliveryTimeId;
+			expando.IsActive = pvac.IsActive;
 
 			return expando as ExpandoObject;
 		}

@@ -78,8 +78,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.Projection.AttributeCombinationAsProduct",
 				"Export attribute combinations",
 				"Attributkombinationen exportieren",
-				"Specifies whether to export all active attribute combinations as a standalone product in addition to each product.",
-				"Legt fest, ob zusätzlich zu jedem Produkt alle seine aktiven Attributkombinationen als eigenständiges Produkt exportiert werden sollen.");
+				"Specifies whether to export a standalone product for each active attribute combination.",
+				"Legt fest, ob für jede aktive Attributkombination ein eigenständiges Produkt exportiert werden soll.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.HttpTransmissionType",
 				"HTTP transmission type",

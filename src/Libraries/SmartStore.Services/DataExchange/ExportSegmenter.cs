@@ -23,8 +23,13 @@ namespace SmartStore.Services.DataExchange
 		ICollection<ExpandoObject> CurrentSegment { get; }
 	}
 
+	internal interface IExportExecuter
+	{
+		void Start(Func<bool> callback);
+	}
 
-	public class ExportSegmenter<T> : IExportSegmenter, IDisposable where T : BaseEntity
+
+	public class ExportSegmenter<T> : IExportSegmenter, IExportExecuter, IDisposable where T : BaseEntity
 	{
 		private Func<int, List<T>> _loadData;
 		private Func<T, List<T>, List<ExpandoObject>> _convertData;

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -172,6 +173,13 @@ namespace SmartStore.Services.Orders
            int? customerId, DateTime? startTime, DateTime? endTime,
            OrderStatus? os, PaymentStatus? ps, ShippingStatus? ss,
            bool loadDownloableProductsOnly = false);
+
+		/// <summary>
+		/// Get order items by order identifiers
+		/// </summary>
+		/// <param name="orderIds">Order identifiers</param>
+		/// <returns>Order items</returns>
+		Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds);
 
         /// <summary>
         /// Delete an order item

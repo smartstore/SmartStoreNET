@@ -34,7 +34,7 @@ namespace SmartStore.Core.Logging
 
 		public static void Error(this ILogger logger, Exception exception, Customer customer = null)
 		{
-			FilteredLog(logger, LogLevel.Error, exception.Message, exception, customer);
+			FilteredLog(logger, LogLevel.Error, exception.ToAllMessages(), exception, customer);
 		}
 
         private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
@@ -45,7 +45,7 @@ namespace SmartStore.Core.Logging
 
             if (logger.IsEnabled(level))
             {
-                string fullMessage = exception == null ? string.Empty : exception.ToAllMessages();
+                string fullMessage = exception == null ? string.Empty : exception.StackTrace;
                 logger.InsertLog(level, message, fullMessage, customer);
             }
         }

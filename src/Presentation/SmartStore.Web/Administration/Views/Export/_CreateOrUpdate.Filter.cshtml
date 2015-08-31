@@ -179,35 +179,35 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.OrderFilter.OrderStatus)
+				@Html.SmartLabelFor(x => x.OrderFilter.OrderStatusIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.OrderFilter.OrderStatus,
+				@Html.ListBoxFor(x => x.OrderFilter.OrderStatusIds,
 						new MultiSelectList(Model.OrderFilter.AvailableOrderStates, "Value", "Text"),
 						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.OrderFilter.OrderStatus)
+				@Html.ValidationMessageFor(x => x.OrderFilter.OrderStatusIds)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.OrderFilter.PaymentStatus)
+				@Html.SmartLabelFor(x => x.OrderFilter.PaymentStatusIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.OrderFilter.PaymentStatus,
+				@Html.ListBoxFor(x => x.OrderFilter.PaymentStatusIds,
 						new MultiSelectList(Model.OrderFilter.AvailablePaymentStates, "Value", "Text"),
 						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.OrderFilter.PaymentStatus)
+				@Html.ValidationMessageFor(x => x.OrderFilter.PaymentStatusIds)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.OrderFilter.ShippingStatus)
+				@Html.SmartLabelFor(x => x.OrderFilter.ShippingStatusIds)
 			</td>
 			<td class="adminData">
-				@Html.ListBoxFor(x => x.OrderFilter.ShippingStatus,
+				@Html.ListBoxFor(x => x.OrderFilter.ShippingStatusIds,
 						new MultiSelectList(Model.OrderFilter.AvailableShippingStates, "Value", "Text"),
 						new { multiple = "multiple", @class = "control-xlarge" })
-				@Html.ValidationMessageFor(x => x.OrderFilter.ShippingStatus)
+				@Html.ValidationMessageFor(x => x.OrderFilter.ShippingStatusIds)
 			</td>
 		</tr>
 		<tr>

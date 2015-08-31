@@ -163,7 +163,8 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="DataExchange\ExpandoExtensions.cs" />
-    <Compile Include="DataExchange\ExportDataContext.cs" />
+    <Compile Include="DataExchange\ExportOrderDataContext.cs" />
+    <Compile Include="DataExchange\ExportProductDataContext.cs" />
     <Compile Include="DataExchange\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\ExportExtensions.cs" />
     <Compile Include="DataExchange\ExportProfileTask.cs" />

@@ -6,7 +6,7 @@ using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.DataExchange
 {
-	public class ExportDataContext : PriceCalculationContext
+	public class ExportProductDataContext : PriceCalculationContext
 	{
 		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
@@ -14,7 +14,7 @@ namespace SmartStore.Services.DataExchange
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<ProductPicture> _productPictures;
 
-		public ExportDataContext(IEnumerable<Product> products,
+		public ExportProductDataContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,
 			Func<int[], Multimap<int, TierPrice>> tierPrices,
@@ -41,13 +41,13 @@ namespace SmartStore.Services.DataExchange
 			base.Clear();
 		}
 
-		public new void Collect(IEnumerable<int> productIds)
-		{
-			ProductManufacturers.Collect(productIds);
-			ProductPictures.Collect(productIds);
+		//public new void Collect(IEnumerable<int> productIds)
+		//{
+		//	ProductManufacturers.Collect(productIds);
+		//	ProductPictures.Collect(productIds);
 
-			base.Collect(productIds);
-		}
+		//	base.Collect(productIds);
+		//}
 
 		public LazyMultimap<ProductManufacturer> ProductManufacturers
 		{

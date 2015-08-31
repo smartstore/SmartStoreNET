@@ -312,19 +312,19 @@ namespace SmartStore.Data.Migrations
 				"Filter by product type.",
 				"Nach Produkttyp filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OrderStatus",
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OrderStatusIds",
 				"Order status",
 				"Auftragsstatus",
 				"Filter by order status.",
 				"Nach Auftragsstaus filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PaymentStatus",
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PaymentStatusIds",
 				"Payment status",
 				"Zahlungsstatus",
 				"Filter by payment status.",
 				"Nach Zahlungsstatus filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ShippingStatus",
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ShippingStatusIds",
 				"Shipping status",
 				"Versandstatus",
 				"Filter by shipping status.",

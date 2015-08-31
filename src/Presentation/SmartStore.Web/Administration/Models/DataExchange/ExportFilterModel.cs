@@ -75,16 +75,16 @@ namespace SmartStore.Admin.Models.DataExchange
 
 	public class ExportOrderFilterModel : ExportFilterModelBase
 	{
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.OrderStatus")]
-		public OrderStatus[] OrderStatus { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.OrderStatusIds")]
+		public int[] OrderStatusIds { get; set; }
 		public List<SelectListItem> AvailableOrderStates { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PaymentStatus")]
-		public PaymentStatus[] PaymentStatus { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PaymentStatusIds")]
+		public int[] PaymentStatusIds { get; set; }
 		public List<SelectListItem> AvailablePaymentStates { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ShippingStatus")]
-		public ShippingStatus[] ShippingStatus { get; set; }
+		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ShippingStatusIds")]
+		public int[] ShippingStatusIds { get; set; }
 		public List<SelectListItem> AvailableShippingStates { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CustomerRoleIds")]

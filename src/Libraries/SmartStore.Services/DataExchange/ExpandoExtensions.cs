@@ -2,8 +2,11 @@
 using System.Dynamic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -33,6 +36,87 @@ namespace SmartStore.Services.DataExchange
 			expando.CreatedOnUtc = currency.CreatedOnUtc;
 			expando.UpdatedOnUtc = currency.UpdatedOnUtc;
 			expando.DomainEndings = currency.DomainEndings;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Country country, int languageId)
+		{
+			if (country == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = country;
+
+			expando.Id = country.Id;
+			expando.Name = country.GetLocalized(x => x.Name, languageId, true, false);
+			expando.AllowsBilling = country.AllowsBilling;
+			expando.AllowsShipping = country.AllowsShipping;
+			expando.TwoLetterIsoCode = country.TwoLetterIsoCode;
+			expando.ThreeLetterIsoCode = country.ThreeLetterIsoCode;
+			expando.NumericIsoCode = country.NumericIsoCode;
+			expando.SubjectToVat = country.SubjectToVat;
+			expando.Published = country.Published;
+			expando.DisplayOrder = country.DisplayOrder;
+			expando.LimitedToStores = country.LimitedToStores;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Address address, int languageId)
+		{
+			if (address == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = address;
+
+			expando.Id = address.Id;
+			expando.FirstName = address.FirstName;
+			expando.LastName = address.LastName;
+			expando.Email = address.Email;
+			expando.Company = address.Company;
+			expando.CountryId = address.CountryId;
+			expando.StateProvinceId = address.StateProvinceId;
+			expando.City = address.City;
+			expando.Address1 = address.Address1;
+			expando.Address2 = address.Address2;
+			expando.ZipPostalCode = address.ZipPostalCode;
+			expando.PhoneNumber = address.PhoneNumber;
+			expando.FaxNumber = address.FaxNumber;
+			expando.CreatedOnUtc = address.CreatedOnUtc;
+
+			expando.Country = address.Country.ToExpando(languageId);
+
+			return expando as ExpandoObject;
+		}
+		
+		public static ExpandoObject ToExpando(this Customer customer)
+		{
+			if (customer == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = customer;
+
+			expando.Id = customer.Id;
+			expando.CustomerGuid = customer.CustomerGuid;
+			expando.Username = customer.Username;
+			expando.Email = customer.Email;
+			//Password... we not provide that data
+			expando.PasswordFormatId = customer.PasswordFormatId;
+			expando.PasswordFormat = customer.PasswordFormat;
+			expando.AdminComment = customer.AdminComment;
+			expando.IsTaxExempt = customer.IsTaxExempt;
+			expando.AffiliateId = customer.AffiliateId;
+			expando.Active = customer.Active;
+			expando.Deleted = customer.Deleted;
+			expando.IsSystemAccount = customer.IsSystemAccount;
+			expando.SystemName = customer.SystemName;
+			expando.LastIpAddress = customer.LastIpAddress;
+			expando.CreatedOnUtc = customer.CreatedOnUtc;
+			expando.LastLoginDateUtc = customer.LastLoginDateUtc;
+			expando.LastActivityDateUtc = customer.LastActivityDateUtc;
 
 			return expando as ExpandoObject;
 		}
@@ -365,6 +449,125 @@ namespace SmartStore.Services.DataExchange
 			expando.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
 			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.IsEsd = product.IsEsd;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Order order)
+		{
+			if (order == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = order;
+
+			expando.Id = order.Id;
+			expando.OrderNumber = order.OrderNumber;
+			expando.OrderGuid = order.OrderGuid;
+			expando.StoreId = order.StoreId;
+			expando.CustomerId = order.CustomerId;
+			expando.BillingAddressId = order.BillingAddressId;
+			expando.ShippingAddressId = order.ShippingAddressId;
+			expando.OrderStatusId = order.OrderStatusId;
+			expando.ShippingStatusId = order.ShippingStatusId;
+			expando.PaymentStatusId = order.PaymentStatusId;
+			expando.PaymentMethodSystemName = order.PaymentMethodSystemName;
+			expando.CustomerCurrencyCode = order.CustomerCurrencyCode;
+			expando.CurrencyRate = order.CurrencyRate;
+			expando.CustomerTaxDisplayTypeId = order.CustomerTaxDisplayTypeId;
+			expando.VatNumber = order.VatNumber;
+			expando.OrderSubtotalInclTax = order.OrderSubtotalInclTax;
+			expando.OrderSubtotalExclTax = order.OrderSubtotalExclTax;
+			expando.OrderSubTotalDiscountInclTax = order.OrderSubTotalDiscountInclTax;
+			expando.OrderSubTotalDiscountExclTax = order.OrderSubTotalDiscountExclTax;
+			expando.OrderShippingInclTax = order.OrderShippingInclTax;
+			expando.OrderShippingExclTax = order.OrderShippingExclTax;
+			expando.OrderShippingTaxRate = order.OrderShippingTaxRate;
+			expando.PaymentMethodAdditionalFeeInclTax = order.PaymentMethodAdditionalFeeInclTax;
+			expando.PaymentMethodAdditionalFeeExclTax = order.PaymentMethodAdditionalFeeExclTax;
+			expando.PaymentMethodAdditionalFeeTaxRate = order.PaymentMethodAdditionalFeeTaxRate;
+			expando.TaxRates = order.TaxRates;
+			expando.OrderTax = order.OrderTax;
+			expando.OrderDiscount = order.OrderDiscount;
+			expando.OrderTotal = order.OrderTotal;
+			expando.RefundedAmount = order.RefundedAmount;
+			expando.RewardPointsWereAdded = order.RewardPointsWereAdded;
+			expando.CheckoutAttributeDescription = order.CheckoutAttributeDescription;
+			expando.CheckoutAttributesXml = order.CheckoutAttributesXml;
+			expando.CustomerLanguageId = order.CustomerLanguageId;
+			expando.AffiliateId = order.AffiliateId;
+			expando.CustomerIp = order.CustomerIp;
+			expando.AllowStoringCreditCardNumber = order.AllowStoringCreditCardNumber;
+			expando.CardType = order.CardType;
+			expando.CardName = order.CardName;
+			expando.CardNumber = order.CardNumber;
+			expando.MaskedCreditCardNumber = order.MaskedCreditCardNumber;
+			expando.CardCvv2 = order.CardCvv2;
+			expando.CardExpirationMonth = order.CardExpirationMonth;
+			expando.CardExpirationYear = order.CardExpirationYear;
+			expando.AllowStoringDirectDebit = order.AllowStoringDirectDebit;
+			expando.DirectDebitAccountHolder = order.DirectDebitAccountHolder;
+			expando.DirectDebitAccountNumber = order.DirectDebitAccountNumber;
+			expando.DirectDebitBankCode = order.DirectDebitBankCode;
+			expando.DirectDebitBankName = order.DirectDebitBankName;
+			expando.DirectDebitBIC = order.DirectDebitBIC;
+			expando.DirectDebitCountry = order.DirectDebitCountry;
+			expando.DirectDebitIban = order.DirectDebitIban;
+			expando.CustomerOrderComment = order.CustomerOrderComment;
+			expando.AuthorizationTransactionId = order.AuthorizationTransactionId;
+			expando.AuthorizationTransactionCode = order.AuthorizationTransactionCode;
+			expando.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
+			expando.CaptureTransactionId = order.CaptureTransactionId;
+			expando.CaptureTransactionResult = order.CaptureTransactionResult;
+			expando.SubscriptionTransactionId = order.SubscriptionTransactionId;
+			expando.PurchaseOrderNumber = order.PurchaseOrderNumber;
+			expando.PaidDateUtc = order.PaidDateUtc;
+			expando.ShippingMethod = order.ShippingMethod;
+			expando.ShippingRateComputationMethodSystemName = order.ShippingRateComputationMethodSystemName;
+			expando.Deleted = order.Deleted;
+			expando.CreatedOnUtc = order.CreatedOnUtc;
+			expando.UpdatedOnUtc = order.UpdatedOnUtc;
+			expando.RewardPointsRemaining = order.RewardPointsRemaining;
+			expando.HasNewPaymentNotification = order.HasNewPaymentNotification;
+			expando.OrderStatus = order.OrderStatus;
+			expando.PaymentStatus = order.PaymentStatus;
+			expando.ShippingStatus = order.ShippingStatus;
+			expando.CustomerTaxDisplayType = order.CustomerTaxDisplayType;
+			expando.TaxRatesDictionary = order.TaxRatesDictionary;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this OrderItem orderItem, int languageId)
+		{
+			if (orderItem == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = orderItem;
+
+			expando.Id = orderItem.Id;
+			expando.OrderItemGuid = orderItem.OrderItemGuid;
+			expando.OrderId = orderItem.OrderId;
+			expando.ProductId = orderItem.ProductId;
+			expando.Quantity = orderItem.Quantity;
+			expando.UnitPriceInclTax = orderItem.UnitPriceInclTax;
+			expando.UnitPriceExclTax = orderItem.UnitPriceExclTax;
+			expando.PriceInclTax = orderItem.PriceInclTax;
+			expando.PriceExclTax = orderItem.PriceExclTax;
+			expando.TaxRate = orderItem.TaxRate;
+			expando.DiscountAmountInclTax = orderItem.DiscountAmountInclTax;
+			expando.DiscountAmountExclTax = orderItem.DiscountAmountExclTax;
+			expando.AttributeDescription = orderItem.AttributeDescription;
+			expando.AttributesXml = orderItem.AttributesXml;
+			expando.DownloadCount = orderItem.DownloadCount;
+			expando.IsDownloadActivated = orderItem.IsDownloadActivated;
+			expando.LicenseDownloadId = orderItem.LicenseDownloadId;
+			expando.ItemWeight = orderItem.ItemWeight;
+			expando.BundleData = orderItem.BundleData;
+			expando.ProductCost = orderItem.ProductCost;
+
+			expando.Product = orderItem.Product.ToExpando(languageId);
 
 			return expando as ExpandoObject;
 		}

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -468,6 +469,23 @@ namespace SmartStore.Services.Orders
             var orderItems = query.ToList();
             return orderItems;
         }
+
+		public virtual Multimap<int, OrderItem> GetOrderItemsByOrderIds(int[] orderIds)
+		{
+			Guard.ArgumentNotNull(() => orderIds);
+
+			var query =
+				from x in _orderItemRepository.TableUntracked.Expand(x => x.Product)
+				where orderIds.Contains(x.OrderId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.OrderId)
+				.ToList()
+				.ToMultimap(x => x.OrderId, x => x);
+
+			return map;
+		}
 
         /// <summary>
         /// Delete an Order item

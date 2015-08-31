@@ -268,9 +268,9 @@ namespace SmartStore.Admin.Controllers
 
 				model.OrderFilter = new ExportOrderFilterModel
 				{
-					OrderStatus = filter.OrderStatus,
-					PaymentStatus = filter.PaymentStatus,
-					ShippingStatus = filter.ShippingStatus,
+					OrderStatusIds = filter.OrderStatusIds,
+					PaymentStatusIds = filter.PaymentStatusIds,
+					ShippingStatusIds = filter.ShippingStatusIds,
 					CustomerRoleIds = filter.CustomerRoleIds
 				};
 
@@ -580,9 +580,9 @@ namespace SmartStore.Admin.Controllers
 			{
 				filter = new ExportFilter
 				{
-					OrderStatus = model.OrderFilter.OrderStatus,
-					PaymentStatus = model.OrderFilter.PaymentStatus,
-					ShippingStatus = model.OrderFilter.ShippingStatus,
+					OrderStatusIds = model.OrderFilter.OrderStatusIds,
+					PaymentStatusIds = model.OrderFilter.PaymentStatusIds,
+					ShippingStatusIds = model.OrderFilter.ShippingStatusIds,
 					CustomerRoleIds = model.OrderFilter.CustomerRoleIds
 				};
 

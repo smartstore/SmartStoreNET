@@ -104,17 +104,17 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Filter by order status
 		/// </summary>
-		public OrderStatus[] OrderStatus { get; set; }
+		public int[] OrderStatusIds { get; set; }
 
 		/// <summary>
 		/// Filter by payment status
 		/// </summary>
-		public PaymentStatus[] PaymentStatus { get; set; }
+		public int[] PaymentStatusIds { get; set; }
 
 		/// <summary>
 		/// Filter by shipping status
 		/// </summary>
-		public ShippingStatus[] ShippingStatus { get; set; }
+		public int[] ShippingStatusIds { get; set; }
 
 		/// <summary>
 		/// Identifiers of customer roles

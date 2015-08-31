@@ -94,5 +94,17 @@ namespace SmartStore.Collections
 				_collect = _collect.Union(keys).ToList();
 			}
 		}
+
+		/// <summary>
+		/// Collect single key for combinde loading
+		/// </summary>
+		/// <param name="key">Data key</param>
+		public virtual void Collect(int key)
+		{
+			if (key != 0 && !_collect.Contains(key))
+			{
+				_collect.Add(key);
+			}
+		}
 	}
 }

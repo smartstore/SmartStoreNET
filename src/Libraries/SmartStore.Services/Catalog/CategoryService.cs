@@ -592,7 +592,8 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productCategory);
         }
 
-		public virtual string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup)
+		public virtual string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup,
+			ProductCategory prodCategory = null)
 		{
 			if (product == null)
 				return string.Empty;
@@ -604,7 +605,7 @@ namespace SmartStore.Services.Catalog
 			var alreadyProcessedCategoryIds = new List<int>();
 			var path = new List<string>();
 
-			var productCategory = GetProductCategoriesByProductId(product.Id).FirstOrDefault();
+			var productCategory = prodCategory ?? GetProductCategoriesByProductId(product.Id).FirstOrDefault();
 
 			if (productCategory != null && productCategory.Category != null)
 			{

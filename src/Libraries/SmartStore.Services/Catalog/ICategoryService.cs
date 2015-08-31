@@ -133,8 +133,10 @@ namespace SmartStore.Services.Catalog
 		/// <param name="pathLookup">A delegate for fast (cached) path lookup</param>
 		/// <param name="addPathToCache">A callback that saves the resolved path to a cache (when <c>pathLookup</c> returned null)</param>
 		/// <param name="categoryLookup">A delegate for fast (cached) category lookup</param>
+		/// <param name="prodCategory">First product category of product</param>
 		/// <returns>Category breadcrumb for product</returns>
-		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup);
+		string GetCategoryPath(Product product, int? languageId, Func<int, string> pathLookup, Action<int, string> addPathToCache, Func<int, Category> categoryLookup,
+			ProductCategory prodCategory = null);
     }
 
 	public static class ICategoryServiceExtensions

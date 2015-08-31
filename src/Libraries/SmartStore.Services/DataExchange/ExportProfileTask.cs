@@ -602,7 +602,8 @@ namespace SmartStore.Services.DataExchange
 				null,
 				x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
 				(id, value) => ctx.CategoryPathes[id] = value,
-				x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x)
+				x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x),
+				productCategories.FirstOrDefault()
 			);
 
 			expando.ProductPictures = productPictures

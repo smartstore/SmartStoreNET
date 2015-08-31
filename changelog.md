@@ -51,6 +51,7 @@
 * #523 Redirecting to payment provider performed by core instead of plugin
 * Preselected price was wrong for product attributes with multiple preselected values (same on product detail page)
 * #749 Visual Studio 2015 compilation error: CS0009: Metadata file. SmartStore.Licensing.dll could not be opened -- Illegal tables in compressed metadata stream
+* PayPal Express: fixed capture method 
 
 
 ## SmartStore.NET 2.2.2

@@ -37,12 +37,12 @@ namespace SmartStore.Core.Tests
 			Assert.IsFalse(w1.IsMatch("500"));
 			Assert.IsFalse(w1.IsMatch("4000"));
 
-            w1 = new Wildcard("01000-01010");
+            w1 = new Wildcard("0001000-0005000");
             Console.WriteLine(w1.Pattern);
-            Assert.IsTrue(w1.IsMatch("01000"));
-            Assert.IsTrue(w1.IsMatch("01008"));
-            Assert.IsFalse(w1.IsMatch("02200"));
-            Assert.IsFalse(w1.IsMatch("1005"));
+            Assert.IsTrue(w1.IsMatch("0001000"));
+            Assert.IsTrue(w1.IsMatch("0002008"));
+            Assert.IsFalse(w1.IsMatch("1000"));
+            Assert.IsFalse(w1.IsMatch("5000"));
         }
 
 		[Test]

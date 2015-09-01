@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Text;
+using System.Linq;
 using System.Text.RegularExpressions;
 using System.Threading;
 
@@ -86,10 +87,11 @@ namespace SmartStore.Utilities
             foreach (Match match in collection)
             {
                 string[] split = match.Value.Split(new char[] { '-' });
+                int leadingZeroesCount = split[0].TakeWhile(x => x == '0').Count();
                 int min = Int32.Parse(split[0]);
                 int max = Int32.Parse(split[1]);
 
-                pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max));
+                pattern = pattern.Replace(match.Value, ConvertNumberRange(min, max, leadingZeroesCount));
             }
 
             return pattern;
@@ -101,21 +103,22 @@ namespace SmartStore.Utilities
         /// <param name="min">The minimum value.</param>
         /// <param name="max">The maximum value.</param>
         /// <returns>The regular expression pattern for the number range term.</returns>
-        private static string ConvertNumberRange(int min, int max)
+        private static string ConvertNumberRange(int min, int max, int leadingZeroesCount)
         {
             if (max < min)
             {
                 throw new InvalidOperationException("The minimum value could not be greater than the maximum value.");
             }
 
-			string pattern = string.Empty;
+            string prefix = new String('0', leadingZeroesCount); // for leading zeroes
+            string pattern = string.Empty;
 
 			if (min > -1 && max - min < 10)
 			{
 				// special treatment: the below function has issues with too small ranges
 				for (var i = min; i <= max; i++)
 				{
-					pattern += i.ToString() + (i < max ? "|" : "");
+					pattern += prefix + i.ToString() + (i < max ? "|" : "");
 				}
 			}
 			else
@@ -131,7 +134,7 @@ namespace SmartStore.Utilities
 
 					if (tempMax >= currentValue)
 					{
-						pattern += ParseRange(currentValue, tempMax, radix);
+						pattern += prefix + ParseRange(currentValue, tempMax, radix);
 						if (!(!m_isForward && radix == 1))
 						{
 							pattern += "|";

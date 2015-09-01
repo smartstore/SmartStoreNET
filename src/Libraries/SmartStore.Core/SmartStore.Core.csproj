@@ -178,6 +178,7 @@
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
+    <Compile Include="Localization\LocalizationHelper.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />

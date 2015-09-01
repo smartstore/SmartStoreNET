@@ -15,6 +15,7 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
@@ -45,7 +46,6 @@ namespace SmartStore.Services.DataExchange
 	public class ExportProfileTask : ITask
 	{
 		private const int _maxErrors = 20;
-		private const int _pageSize = 100;
 		// TODO: replaces Content\files\ExportImport... add it to CommonController.RobotsTextFile, CommonController.MaintenanceDeleteFiles, FilePermissionHelper.GetDirectoriesWrite
 		private const string _publicFolder = "Exchange";
 
@@ -506,11 +506,35 @@ namespace SmartStore.Services.DataExchange
 
 		#endregion
 
+		private int GetTotalRecords(ExportProfileTaskContext ctx)
+		{
+			int result = 0;
+
+			if (ctx.TotalRecords.HasValue)
+			{
+				return ctx.TotalRecords.Value;
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
+			{
+				var searchContext = GetProductSearchContext(ctx, ctx.Profile.Offset, 1);
+
+				var anySingleProduct = _productService.SearchProducts(searchContext);
+
+				result = anySingleProduct.TotalCount;
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
+			{
+				var unused = GetOrders(ctx, 0, 1, out result);
+			}
+
+			return result;
+		}
+
 		private List<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
 			var result = new List<Product>();
 
-			var searchContext = GetProductSearchContext(ctx, pageIndex, _pageSize);
+			var searchContext = GetProductSearchContext(ctx, pageIndex, ctx.PageSize);
 
 			var products = _productService.SearchProducts(searchContext);
 
@@ -522,18 +546,25 @@ namespace SmartStore.Services.DataExchange
 				}
 				else if (product.ProductType == ProductType.GroupedProduct)
 				{
-					var associatedSearchContext = new ProductSearchContext
+					if (ctx.IsPreview)
 					{
-						OrderBy = ProductSortingEnum.CreatedOn,
-						PageSize = int.MaxValue,
-						StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
-						VisibleIndividuallyOnly = false,
-						ParentGroupedProductId = product.Id
-					};
+						result.Add(product);
+					}
+					else
+					{
+						var associatedSearchContext = new ProductSearchContext
+						{
+							OrderBy = ProductSortingEnum.CreatedOn,
+							PageSize = int.MaxValue,
+							StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
+							VisibleIndividuallyOnly = false,
+							ParentGroupedProductId = product.Id
+						};
 
-					foreach (var associatedProduct in _productService.SearchProducts(associatedSearchContext))
-					{
-						result.Add(associatedProduct);
+						foreach (var associatedProduct in _productService.SearchProducts(associatedSearchContext))
+						{
+							result.Add(associatedProduct);
+						}
 					}
 				}
 			}
@@ -798,7 +829,7 @@ namespace SmartStore.Services.DataExchange
 			var addresses = ctx.OrderDataContext.Addresses.Load(order.BillingAddressId);
 			var orderItems = ctx.OrderDataContext.OrderItems.Load(order.Id);
 
-			dynamic expando = order.ToExpando();
+			dynamic expando = order.ToExpando(languageId, _services.Localization);
 
 			expando.Customer = customers
 				.FirstOrDefault(x => x.Id == order.CustomerId)
@@ -823,14 +854,6 @@ namespace SmartStore.Services.DataExchange
 				{
 					dynamic exp = e.ToExpando(languageId);
 
-					exp.Product._CategoryPath = _categoryService.GetCategoryPath(
-						e.Product,
-						null,
-						x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
-						(id, value) => ctx.CategoryPathes[id] = value,
-						x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x)
-					);
-
 					exp._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter, decimal.Zero, true);
 
 					GetDeliveryTimeAndQuantityUnit(ctx, exp, e.Product.DeliveryTimeId, e.Product.QuantityUnitId);
@@ -843,6 +866,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				_services.DbContext.DetachEntity<Order>(order);
 
+				// TODO: examine remaining attached entities
 				//foreach (var item in orderItems)
 				//	_services.DbContext.DetachEntity<Product>(item.Product);
 			}
@@ -851,8 +875,10 @@ namespace SmartStore.Services.DataExchange
 			return result;
 		}
 
-		private void ExportCoreInner(ExportProfileTaskContext ctx)
+		private void ExportCoreInner(ExportProfileTaskContext ctx, Store store)
 		{
+			ctx.Store = store;
+
 			{
 				var logHead = new StringBuilder();
 				logHead.AppendLine();
@@ -881,29 +907,26 @@ namespace SmartStore.Services.DataExchange
 				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".")
 			);
 
+			var totalCount = GetTotalRecords(ctx);
+
 			if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 			{
-				var searchContext = GetProductSearchContext(ctx, ctx.Profile.Offset, 1);
-
-				var anySingleProduct = _productService.SearchProducts(searchContext);
-
 				ctx.Export.Data = new ExportSegmenter<Product>(
 					pageIndex => GetProducts(ctx, pageIndex),
 					(entity, entities) => ToExpando(ctx, entity, entities),
-					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, _pageSize, anySingleProduct.TotalCount),
-					ctx.Profile.BatchSize
+					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
+					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
 			{
-				int totalCount = 0;
-				var unused = GetOrders(ctx, 0, 1, out totalCount);
+				int unused;
 
 				ctx.Export.Data = new ExportSegmenter<Order>(
-					pageIndex => GetOrders(ctx, pageIndex, _pageSize, out totalCount),
+					pageIndex => GetOrders(ctx, pageIndex, ctx.PageSize, out unused),
 					(entity, entities) => ToExpando(ctx, entity, entities),
-					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, _pageSize, totalCount),
-					ctx.Profile.BatchSize
+					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
+					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
 				);
 			}
 
@@ -915,11 +938,24 @@ namespace SmartStore.Services.DataExchange
 			{
 				(ctx.Export.Data as IExportExecuter).Start(() =>
 				{
+					var goOn = false;
 					ctx.Export.SuccessfulExportedRecords = 0;
 
-					bool goOn = ctx.Provider.Value.Execute(ctx.Export);
+					if (!ctx.IsPreview)
+					{
+						goOn = ctx.Provider.Value.Execute(ctx.Export);
 
-					ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.SuccessfulExportedRecords));
+						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.SuccessfulExportedRecords));
+					}
+					else if (ctx.Export.Data.ReadNextSegment())
+					{
+						var segment = ctx.Export.Data.CurrentSegment;
+
+						foreach (dynamic record in segment)
+						{
+							ctx.PreviewData(record);
+						}
+					}
 
 					if (ctx.Cancellation.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
@@ -934,9 +970,13 @@ namespace SmartStore.Services.DataExchange
 			if (ctx.Profile == null || !ctx.Profile.Enabled)
 				return;
 
-			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 			FileSystemHelper.Delete(ctx.LogPath);
-			FileSystemHelper.Delete(ctx.ZipPath);
+
+			if (!ctx.IsPreview)
+			{
+				FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+				FileSystemHelper.Delete(ctx.ZipPath);
+			}
 
 			using (var logger = new TraceLogger(ctx.LogPath))
 			{
@@ -969,9 +1009,8 @@ namespace SmartStore.Services.DataExchange
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.GetAllDeliveryTimes().ToDictionary(x => x.Id, x => x);
 						ctx.QuantityUnits = _quantityUnitService.GetAllQuantityUnits().ToDictionary(x => x.Id, x => x);
-						ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
 
-						if (ctx.Provider.Value.EntityType == ExportEntityType.Product || ctx.Provider.Value.EntityType == ExportEntityType.Order)
+						if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 						{
 							var allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false);
 							ctx.Categories = allCategories.ToDictionary(x => x.Id);
@@ -982,71 +1021,48 @@ namespace SmartStore.Services.DataExchange
 							ctx.Countries = _countryService.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
 						}
 
-						if (ctx.Projection.CurrencyId.HasValue)
-							ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
-						else
-							ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
+						var stores = Init(ctx);
 
-						if (ctx.Projection.CustomerId.HasValue)
-							ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-						else
-							ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+						stores.ForEach(x => ExportCoreInner(ctx, x));
+					}
 
-
-						if (ctx.Profile.PerStore)
+					if (!ctx.IsPreview)
+					{
+						if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
 						{
-							foreach (var store in ctx.Stores.Values.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0))
-							{
-								ctx.Store = store;
+							ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
+						}
 
-								ExportCoreInner(ctx);
+						foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
+						{
+							try
+							{
+								switch (deployment.DeploymentType)
+								{
+									case ExportDeploymentType.FileSystem:
+										DeployFileSystem(ctx, deployment);
+										break;
+									case ExportDeploymentType.Email:
+										DeployEmail(ctx, deployment);
+										break;
+									case ExportDeploymentType.Http:
+										DeployHttp(ctx, deployment);
+										break;
+									case ExportDeploymentType.Ftp:
+										DeployFtp(ctx, deployment);
+										break;
+								}
+							}
+							catch (Exception exc)
+							{
+								logger.Error("Deployment \"{0}\" failed.".FormatInvariant(deployment.Name), exc);
 							}
 						}
-						else
+
+						if (ctx.Profile.EmailAccountId != 0 && ctx.Profile.CompletedEmailAddresses.HasValue())
 						{
-							if (ctx.Filter.StoreId == 0)
-								ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == (ctx.Projection.StoreId ?? _services.StoreContext.CurrentStore.Id));
-							else
-								ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == ctx.Filter.StoreId);
-
-							ExportCoreInner(ctx);
+							SendCompletionEmail(ctx);
 						}
-					}
-
-					if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
-					{
-						ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
-					}
-
-					foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
-					{
-						try
-						{
-							switch (deployment.DeploymentType)
-							{
-								case ExportDeploymentType.FileSystem:
-									DeployFileSystem(ctx, deployment);
-									break;
-								case ExportDeploymentType.Email:
-									DeployEmail(ctx, deployment);
-									break;
-								case ExportDeploymentType.Http:
-									DeployHttp(ctx, deployment);
-									break;
-								case ExportDeploymentType.Ftp:
-									DeployFtp(ctx, deployment);
-									break;
-							}
-						}
-						catch (Exception exc)
-						{
-							logger.Error("Deployment \"{0}\" failed.".FormatInvariant(deployment.Name), exc);
-						}
-					}
-
-					if (ctx.Profile.EmailAccountId != 0 && ctx.Profile.CompletedEmailAddresses.HasValue())
-					{
-						SendCompletionEmail(ctx);
 					}
 				}
 				catch (Exception exc)
@@ -1057,7 +1073,7 @@ namespace SmartStore.Services.DataExchange
 				{
 					try
 					{
-						if (ctx.Profile.Cleanup)
+						if (!ctx.IsPreview && ctx.Profile.Cleanup)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 							// TODO: more cleanup if required
@@ -1085,6 +1101,33 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
+		private List<Store> Init(ExportProfileTaskContext ctx)
+		{
+			if (ctx.Projection.CurrencyId.HasValue)
+				ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
+			else
+				ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
+
+			if (ctx.Projection.CustomerId.HasValue)
+				ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
+			else
+				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+
+			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
+
+			if (!ctx.IsPreview && ctx.Profile.PerStore)
+			{
+				return new List<Store>(ctx.Stores.Values.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0));
+			}
+			else
+			{
+				int? storeId = (ctx.Filter.StoreId == 0 ? ctx.Projection.StoreId : ctx.Filter.StoreId);
+
+				ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == (storeId ?? _services.StoreContext.CurrentStore.Id));
+
+				return new List<Store> { ctx.Store };
+			}
+		}
 
 		public void Execute(TaskExecutionContext context)
 		{
@@ -1098,8 +1141,7 @@ namespace SmartStore.Services.DataExchange
 			ExportCoreOuter(ctx);
 		}
 
-		// TODO: is method required?
-		public void Execute(ExportProfile profile, IComponentContext context)
+		public void Preview(ExportProfile profile, IComponentContext context, int pageIndex, int pageSize, int totalRecords, Action<dynamic> previewData)
 		{
 			if (profile == null)
 				throw new ArgumentNullException("profile");
@@ -1109,11 +1151,35 @@ namespace SmartStore.Services.DataExchange
 
 			InitDependencies(new TaskExecutionContext(context, null));
 
-			var cancellation = new CancellationTokenSource(TimeSpan.FromHours(4.0));
+			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 
-			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), cancellation.Token);
+			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), cancellation.Token, pageIndex, pageSize, totalRecords, previewData);
 
 			ExportCoreOuter(ctx);
+		}
+
+		public int GetRecordCount(ExportProfile profile, Provider<IExportProvider> provider, IComponentContext context)
+		{
+			if (profile == null)
+				throw new ArgumentNullException("profile");
+
+			if (provider == null)
+				throw new ArgumentNullException("provider");
+
+			if (context == null)
+				throw new ArgumentNullException("context");
+
+			InitDependencies(new TaskExecutionContext(context, null));
+
+			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
+
+			var ctx = new ExportProfileTaskContext(profile, provider, cancellation.Token, previewData: x => { });
+
+			var unused = Init(ctx);
+
+			int result = GetTotalRecords(ctx);
+
+			return result;
 		}
 	}
 
@@ -1123,13 +1189,23 @@ namespace SmartStore.Services.DataExchange
 		private ExportProductDataContext _productDataContext;
 		private ExportOrderDataContext _orderDataContext;
 
-		public ExportProfileTaskContext(ExportProfile profile, Provider<IExportProvider> provider, CancellationToken cancellation)
+		public ExportProfileTaskContext(ExportProfile profile, 
+			Provider<IExportProvider> provider,
+			CancellationToken cancellation,
+			int pageIndex = 0,
+			int pageSize = 100,
+			int? totalRecords = null,
+			Action<dynamic> previewData = null)
 		{
 			Profile = profile;
 			Provider = provider;
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 			Cancellation = cancellation;
+			PageIndex = pageIndex;
+			PageSize = pageSize;
+			TotalRecords = totalRecords;
+			PreviewData = previewData;
 
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
@@ -1139,6 +1215,15 @@ namespace SmartStore.Services.DataExchange
 			Countries = new Dictionary<int, Country>();
 
 			Export = new ExportExecuteContext(Cancellation, FolderContent);
+		}
+
+		public int PageIndex { get; private set; }
+		public int PageSize { get; private set; }
+		public int? TotalRecords { get; set; }
+		public Action<dynamic> PreviewData { get; private set; }
+		public bool IsPreview
+		{
+			get { return PreviewData != null; }
 		}
 
 		public ExportProfile Profile { get; private set; }

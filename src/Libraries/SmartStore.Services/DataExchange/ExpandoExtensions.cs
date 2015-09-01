@@ -453,7 +453,7 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
-		public static ExpandoObject ToExpando(this Order order)
+		public static ExpandoObject ToExpando(this Order order, int languageId, ILocalizationService localization)
 		{
 			if (order == null)
 				return null;
@@ -462,7 +462,7 @@ namespace SmartStore.Services.DataExchange
 			expando._Entity = order;
 
 			expando.Id = order.Id;
-			expando.OrderNumber = order.OrderNumber;
+			expando.OrderNumber = order.GetOrderNumber();
 			expando.OrderGuid = order.OrderGuid;
 			expando.StoreId = order.StoreId;
 			expando.CustomerId = order.CustomerId;
@@ -529,9 +529,9 @@ namespace SmartStore.Services.DataExchange
 			expando.UpdatedOnUtc = order.UpdatedOnUtc;
 			expando.RewardPointsRemaining = order.RewardPointsRemaining;
 			expando.HasNewPaymentNotification = order.HasNewPaymentNotification;
-			expando.OrderStatus = order.OrderStatus;
-			expando.PaymentStatus = order.PaymentStatus;
-			expando.ShippingStatus = order.ShippingStatus;
+			expando.OrderStatus = order.OrderStatus.GetLocalizedEnum(localization, languageId);
+			expando.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(localization, languageId);
+			expando.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(localization, languageId);
 			expando.CustomerTaxDisplayType = order.CustomerTaxDisplayType;
 			expando.TaxRatesDictionary = order.TaxRatesDictionary;
 

@@ -1,10 +1,13 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using Autofac;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -15,6 +18,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
 using SmartStore.Services.Directory;
+using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
@@ -41,6 +45,9 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
+		private readonly IComponentContext _componentContext;
+		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IDateTimeHelper _dateTimeHelper;
 
 		public ExportController(
 			ICommonServices services,
@@ -53,7 +60,10 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			ILanguageService languageService,
 			ICurrencyService currencyService,
-			IEmailAccountService emailAccountService)
+			IEmailAccountService emailAccountService,
+			IComponentContext componentContext,
+			AdminAreaSettings adminAreaSettings,
+			IDateTimeHelper dateTimeHelper)
 		{
 			_services = services;
 			_exportService = exportService;
@@ -66,6 +76,9 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
+			_componentContext = componentContext;
+			_adminAreaSettings = adminAreaSettings;
+			_dateTimeHelper = dateTimeHelper;
 		}
 
 		#region Utilities
@@ -652,16 +665,96 @@ namespace SmartStore.Admin.Controllers
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 
+			var task = new ExportProfileTask();
+			var totalRecords = task.GetRecordCount(profile, provider, _componentContext);
+
 			var model = new ExportPreviewModel
 			{
 				Id = profile.Id,
 				Name = profile.Name,
-				ThumbnailUrl = GetThumbnailUrl(provider)
+				ThumbnailUrl = GetThumbnailUrl(provider),
+				GridPageSize = _adminAreaSettings.GridPageSize,
+				EntityType = provider.Value.EntityType,
+				TotalRecords = totalRecords
 			};
 
-			// TODO....
-
 			return View(model);
+		}
+
+		[HttpPost, GridAction(EnableCustomBinding = true)]
+		public ActionResult PreviewList(GridCommand command, int id, int totalRecords)
+		{
+			ExportProfile profile = null;
+			Provider<IExportProvider> provider = null;
+
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports) &&
+				(profile = _exportService.GetExportProfileById(id)) != null &&
+				(provider = _exportService.LoadProvider(profile.ProviderSystemName)) != null)
+			{
+				var productModel = new List<ExportPreviewProductModel>();
+				var orderModel = new List<ExportPreviewOrderModel>();
+				var task = new ExportProfileTask();
+
+				Action<dynamic> previewData = x =>
+				{
+					if (provider.Value.EntityType == ExportEntityType.Product)
+					{
+						var product = x._Entity as Product;
+						var pm = new ExportPreviewProductModel
+						{
+							Id = x.Id,
+							ProductTypeId = x.ProductTypeId,
+							ProductTypeName = product.GetProductTypeLabel(_services.Localization),
+							ProductTypeLabelHint = product.ProductTypeLabelHint,
+							Name = x.Name,
+							Sku = x.Sku,
+							Price = x.Price,
+							Published = x.Published,
+							StockQuantity = x.StockQuantity,
+							AdminComment = x.AdminComment
+						};
+
+						productModel.Add(pm);
+					}
+					else if (provider.Value.EntityType == ExportEntityType.Order)
+					{
+						var om = new ExportPreviewOrderModel
+						{
+							Id = x.Id,
+							OrderNumber = x.OrderNumber,
+							OrderStatus = x.OrderStatus,
+							PaymentStatus = x.PaymentStatus,
+							ShippingStatus = x.ShippingStatus,
+							CustomerEmail = x.Customer.Email,
+							StoreName = (x.Store == null ? "".NaIfEmpty() : x.Store.Name),
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
+							OrderTotal = x.OrderTotal
+						};
+
+						orderModel.Add(om);
+					}
+				};
+
+				task.Preview(profile, _componentContext, command.Page - 1, command.PageSize, totalRecords, previewData);
+
+				if (provider.Value.EntityType == ExportEntityType.Product)
+				{
+					return new JsonResult
+					{
+						Data = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = totalRecords }
+					};
+				}
+
+				if (provider.Value.EntityType == ExportEntityType.Order)
+				{
+					return new JsonResult
+					{
+						Data = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = totalRecords	}
+					};
+				}
+			}
+
+			return new EmptyResult();
 		}
 
 		public ActionResult Execute(int id)

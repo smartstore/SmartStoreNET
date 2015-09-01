@@ -36,6 +36,13 @@ namespace SmartStore.Core.Tests
 			Assert.IsTrue(w1.IsMatch("3267"));
 			Assert.IsFalse(w1.IsMatch("500"));
 			Assert.IsFalse(w1.IsMatch("4000"));
+
+            w1 = new Wildcard("01000-01010");
+            Console.WriteLine(w1.Pattern);
+            Assert.IsTrue(w1.IsMatch("01000"));
+            Assert.IsTrue(w1.IsMatch("01008"));
+            Assert.IsFalse(w1.IsMatch("02200"));
+            Assert.IsFalse(w1.IsMatch("1005"));
         }
 
 		[Test]

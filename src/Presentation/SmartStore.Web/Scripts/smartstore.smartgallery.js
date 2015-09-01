@@ -134,7 +134,8 @@
 			
 			if (opts.responsive && !isRefresh) {
 				EventBroker.subscribe("page.resized", function (data) {
-					self.reset();
+				    self.reset();
+				    self.inTransition = false;
 					self.init(true);
 			    });
 			}

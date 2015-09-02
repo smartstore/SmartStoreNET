@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Services.Seo
 {
@@ -242,6 +243,15 @@ namespace SmartStore.Services.Seo
 				}
 			}
 
+            // validate and alter sename if it could be interpreted as SEO code
+            if (LocalizationHelper.IsValidCultureCode(seName))
+            {
+                if (seName.Length == 2)
+                {
+                    seName = seName + "-0";
+                }
+            }
+            
 			// ensure this sename is not reserved yet
 			string entityName = typeof(T).Name;
 			int i = 2;

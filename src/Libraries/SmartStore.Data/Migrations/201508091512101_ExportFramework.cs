@@ -120,11 +120,6 @@ namespace SmartStore.Data.Migrations
 				"There were no export profiles found.",
 				"Es wurden keine Exportprofile gefunden.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.NoProviderConfigurationRequired",
-				"The export provider <b>{0}</b> requires no further configuration.",
-				"Der Export-Provider <b>{0}</b> benötigt keine weitergehende Konfiguration.");
-
-
 
 			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName",
 				"Provider",

@@ -427,6 +427,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var model = new ExportProfileModel();
 				model.Provider = new ExportProfileModel.ProviderModel();
+				model.Provider.ProviderDescriptions = new Dictionary<string, string>();
 
 				model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders()
 					.Select(x =>
@@ -437,8 +438,22 @@ namespace SmartStore.Admin.Controllers
 							Value = x.Metadata.SystemName
 						};
 
+						if (!model.Provider.ProviderDescriptions.ContainsKey(x.Metadata.SystemName))
+						{
+							var description = x.Metadata.Description;
+							if (description.IsEmpty())
+								description = x.Metadata.PluginDescriptor.Description;
+							if (description.IsEmpty())
+								description = T("Admin.Common.NoDescriptionAvailable");
+
+							model.Provider.ProviderDescriptions.Add(x.Metadata.SystemName, description);
+						}
+
 						return item;
 					}).ToList();
+
+				model.Provider.AvailableExportProviders.Add(new SelectListItem { Text = "Tester", Value = "Provider.Tester" });
+				model.Provider.ProviderDescriptions.Add("Provider.Tester", "Hello world!");
 
 				return PartialView(model);
 			}

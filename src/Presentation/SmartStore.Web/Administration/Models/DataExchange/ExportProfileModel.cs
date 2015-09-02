@@ -87,6 +87,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			[SmartResourceDisplayName("Admin.Configuration.Export.ProviderSystemName")]
 			public string SystemName { get; set; }
 			public List<SelectListItem> AvailableExportProviders { get; set; }
+			public Dictionary<string, string> ProviderDescriptions { get; set; }
 
 			[SmartResourceDisplayName("Common.Provider")]
 			public string FriendlyName { get; set; }

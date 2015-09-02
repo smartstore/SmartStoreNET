@@ -18,6 +18,15 @@
 					</td>
 				</tr>
 			</table>
+			
+			<p></p>
+
+			<div class="alert alert-info">
+				@foreach (var item in Model.Provider.ProviderDescriptions)
+				{
+					<div id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</div>
+				}
+			</div>
 		</form>
 	}
 	else

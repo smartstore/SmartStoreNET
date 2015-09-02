@@ -128,15 +128,6 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.FolderName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.FolderName)
-				@Html.ValidationMessageFor(x => x.FolderName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.SchedulingHours)
 			</td>
 			<td class="adminData">
@@ -214,6 +205,11 @@
 		<fieldset>
 			@if (Model.Provider.ConfigPartialViewName.HasValue())
 			{
+				<div class="alert alert-info">
+					<button type="button" class="close" data-dismiss="alert">×</button>
+					@Html.Raw(T("Admin.Configuration.Export.Configuration.Note"))
+				</div>
+				
 				var viewData = new ViewDataDictionary();
 				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
@@ -222,7 +218,7 @@
 			else
 			{
 				<div class="alert alert-info">
-					@Html.Raw(T("Admin.Configuration.Export.NoProviderConfigurationRequired", Model.Provider.FriendlyName.NaIfEmpty()))
+					@Html.Raw(T("Admin.Configuration.Export.Configuration.NotRequired", Model.Provider.FriendlyName.NaIfEmpty()))
 				</div>
 			}
 		</fieldset>
@@ -231,6 +227,11 @@
 
 @helper TabDeployment()
 {
+	<div class="alert alert-info">
+		<button type="button" class="close" data-dismiss="alert">×</button>
+		@Html.Raw(T("Admin.Configuration.Export.Deployment.Note"))
+	</div>
+	
 	<script type="text/javascript">
 		function onRowDataBound_ExportDeployments(e) {
 			if (!e.dataItem.Enabled) {
@@ -273,6 +274,15 @@
 	<p></p>
 	
 	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FolderName)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.FolderName)
+				@Html.ValidationMessageFor(x => x.FolderName)
+			</td>
+		</tr>
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.EmailAccountId)

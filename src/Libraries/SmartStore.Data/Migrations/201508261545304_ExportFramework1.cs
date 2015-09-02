@@ -38,13 +38,9 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
-			builder.AddOrUpdate("Admin.Common.ExportSelected",
-				"Export selected",
-				"Ausgewählte exportieren");
-
-			builder.AddOrUpdate("Admin.Common.ExportAll",
-				"Export all",
-				"Alle exportieren");
+			builder.AddOrUpdate("Admin.Common.ExportSelected", "Export selected", "Ausgewählte exportieren");
+			builder.AddOrUpdate("Admin.Common.ExportAll", "Export all", "Alle exportieren");
+			builder.AddOrUpdate("Admin.Common.NoDescriptionAvailable", "No description available", "Keine Beschreibung vorhanden");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.EmailAccountId",
 				"Email notification",
@@ -109,6 +105,27 @@ namespace SmartStore.Data.Migrations
 				"SSL verwenden",
 				"Specifies whether to use a SSL (Secure Sockets Layer) connection.",
 				"Legt fest, ob einen SSL (Secure Sockets Layer) Verbindung genutzt werden soll.");
+
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Filter.Note",
+				"Specify individual filters to limit the exported data.",
+				"Legen Sie individuelle Filter fest, um die zu exportierenden Daten einzugrenzen.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.Note",
+				"The following information will be taken into account during the export and integrated in the process.",
+				"Die folgenden Angaben werden beim Export berücksichtigt und an entsprechenden Stellen in den Vorgang eingebunden.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Configuration.Note",
+				"The following specific information will be taken into account by the provider during the export.",
+				"Die folgenden spezifischen Angaben werden durch den Provider beim Export berücksichtigt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Configuration.NotRequired",
+				"The export provider <b>{0}</b> requires no further configuration.",
+				"Der Export-Provider <b>{0}</b> benötigt keine weitergehende Konfiguration.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Note",
+				"Click <b>Insert</b> to add one or multiple publishing profiles to specify how to further proceed with the export files.",
+				"Legen Sie über <b>Hinzufügen</b> ein oder mehrere Veröffentlichungsprofile an, um festzulegen wie mit den Exportdateien weiter zu verfahren ist.");
 		}
     }
 }

@@ -123,6 +123,7 @@
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
 					$('select[name="Provider.SystemName"]').selectWrapper();
+					toggleProviderDescription();
 				},
 				callbackComplete: function () {
 					showPrimaryButton(true);
@@ -145,6 +146,9 @@
 			form.submit();
 		});
 
+		// selected provider changed
+		$(document).on('change', 'select[name="Provider.SystemName"]', toggleProviderDescription);
+
 
 		function refreshGrid() {
 			setTimeout(function () {
@@ -154,6 +158,12 @@
 
 		function showPrimaryButton(display) {
 			var button = $('#export-profile-dialog').find('.btn-primary').toggle(display);
+		}
+
+		function toggleProviderDescription() {
+			var val = dialog.find('select[name="Provider.SystemName"]').val().replace('.', '');
+			dialog.find('.export-provider-description').hide();
+			$('#ExportProviderDescription' + val).fadeIn('fast');
 		}
 	});
 </script>

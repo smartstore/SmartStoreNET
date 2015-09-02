@@ -15,6 +15,11 @@
     </div>
 </div>
 
+<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+	<input type="hidden" name="Id" value="" />
+	<input type="hidden" name="ExportAll" value="true" />
+</form>
+
 <script type="text/javascript">
 	function onRowDataBound_ExportProfiles(e) {
 		if (!e.dataItem.Enabled) {
@@ -53,7 +58,7 @@
 							.Centered();
 						columns.Bound(x => x.LastExecution)
 							.ClientTemplate(
-								"<!-- TODO --><a href='" + @Url.Action("Execute", new { id = "<#= Id #>" }) + "' class='btn btn-primary <#= (Enabled ? '' : 'hide') #>'>Execute</a>"
+								"<!-- TODO --><button type=\"button\" class=\"btn btn-primary export-button\" data-id=\"<#= Id #>\"><i class=\"fa fa-gears\"></i>&nbsp;" + @T("Admin.Common.ExportAll") + "</button>"
 							)
 							.ReadOnly();
 					})
@@ -81,6 +86,15 @@
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 		var dialog = $('#export-profile-dialog');
+
+		// export clicked
+		$(document).on('click', '.export-button', function (e) {
+			e.preventDefault();
+			var form = $('#ProfileExportForm');
+			form.find('input[name=Id]').val($(this).attr('data-id'));
+			form.submit();
+			return false;
+		});
 
 		// show profile dialog
 		$(document).on('click', '.export-profile-button', function (e) {

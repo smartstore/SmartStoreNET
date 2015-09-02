@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Web;
+using System.Web.Caching;
 using System.Web.Mvc;
 using Autofac;
 using SmartStore.Admin.Models.DataExchange;
@@ -757,7 +759,8 @@ namespace SmartStore.Admin.Controllers
 			return new EmptyResult();
 		}
 
-		public ActionResult Execute(int id)
+		[HttpPost]
+		public ActionResult Execute(int id, string selectedIds, bool exportAll)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
@@ -765,6 +768,13 @@ namespace SmartStore.Admin.Controllers
 			var profile = _exportService.GetExportProfileById(id);
 			if (profile == null)
 				return RedirectToAction("List");
+
+			var selectedIdsCacheKey = "ExportTaskSelectedIds" + id.ToString();
+
+			if (selectedIds.HasValue())
+				HttpRuntime.Cache.Add(selectedIdsCacheKey, selectedIds, null, DateTime.UtcNow.AddMinutes(5), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
+			else
+				HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 
 			var returnUrl = Url.Action("List", "Export", new { area = "admin" });
 

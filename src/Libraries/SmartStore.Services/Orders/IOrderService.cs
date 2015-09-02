@@ -86,10 +86,11 @@ namespace SmartStore.Services.Orders
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
 		/// <param name="billingName">Billing name. Leave empty to load all records.</param>
+		/// <param name="orderIds">Filter by order identifiers</param>
         /// <returns>Order collection</returns>
 		IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime,
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null);
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null, IList<int> orderIds = null);
 
         /// <summary>
         /// Gets all orders by affiliate identifier

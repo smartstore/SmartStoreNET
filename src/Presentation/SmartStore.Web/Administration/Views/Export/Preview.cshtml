@@ -13,11 +13,65 @@
 		@title - @Model.Name @Html.ActionLink("(" + T("Common.Back") + ")", "Edit", new { id = Model.Id })
 	</div>
 	<div class="options">
+		<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
+			<input type="hidden" name="Id" value="@Model.Id" />
+			<input type="hidden" name="SelectedIds" value="" />
+			<input type="hidden" name="ExportAll" value="false" />
+
+			<button type="button" id="ExportSelected" class="btn btn-primary">
+				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportSelected")
+			</button>
+			<button type="button" id="ExportAll" class="btn btn-primary">
+				<i class="fa fa-gears"></i>&nbsp;@T("Admin.Common.ExportAll")
+			</button>
+		</form>
 	</div>
 </div>
 
 <script type="text/javascript">
 	var selectedIds = [];
+
+	jQuery(document).ready(function () {
+
+		// export clicked
+		$('#ExportAll, #ExportSelected').click(function (e) {
+			e.preventDefault();
+			var form = $('#ProfileExportForm'),
+				exportAll = $(this).attr('name') === 'ExportAll';
+			form.find('[name=SelectedIds]').val(exportAll ? '' : selectedIds.join(','));
+			form.find('[name=ExportAll]').val(exportAll.toString());
+			form.submit();
+			return false;
+		});
+
+
+		// master checkbox clicked
+		$('input[type=checkbox].master-checkbox').click(function () {
+			$('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
+		});
+
+		// wire up checkboxes
+		$(document).on('change', 'div.preview-grid-container input[type=checkbox][class!=master-checkbox]', function (e) {
+			var $check = $(this);
+			if ($check.is(':checked') == true) {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked == -1) {
+					selectedIds.push($check.val());
+				}
+			}
+			else {
+				var checked = jQuery.inArray($check.val(), selectedIds);
+				if (checked > -1) {
+					selectedIds = $.grep(selectedIds, function (item, index) {
+						return item != $check.val();
+					});
+				}
+			}
+
+			var id = $(this).closest('[id^="export-grid-"]').attr('id').toString();
+			UpdateMasterCheckbox(id);
+		});
+	});
 
 	function OnDataBound(e) {
 		HandleOnDataBound(e.currentTarget.id.toString());
@@ -40,16 +94,16 @@
 
 @if (Model.EntityType == ExportEntityType.Product)
 {
-	<div>
+	<div class="preview-grid-container">
 		@(Html.Telerik().Grid<ExportPreviewProductModel>()
-			.Name("export-product-grid")
+			.Name("export-grid-product")
 			.DataKeys(keys => keys.Add(x => x.Id)
 			.RouteKey("Id"))
 			.Columns(columns =>
 			{
 				columns.Bound(x => x.Id)
-					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-					.Title("<input id='export-product-grid-mastercheckbox' type='checkbox'/>")
+					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
+					.Title("<input id='export-grid-product-mastercheckbox' type='checkbox' class='master-checkbox' />")
 					.Width(50)
 					.HtmlAttributes(new { style = "text-align:center" })
 					.HeaderHtmlAttributes(new { style = "text-align:center" });
@@ -78,16 +132,16 @@
 }
 else if (Model.EntityType == ExportEntityType.Product)
 {
-	<div>
+	<div class="preview-grid-container">
 		@(Html.Telerik().Grid<ExportPreviewOrderModel>()
-			.Name("export-order-grid")
+			.Name("export-grid-order")
 			.DataKeys(keys => keys.Add(x => x.Id)
 			.RouteKey("Id"))
 			.Columns(columns =>
 			{
 				columns.Bound(x => x.Id)
 					.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups' />")
-					.Title("<input id='export-order-grid-mastercheckbox' type='checkbox' />")
+					.Title("<input id='export-grid-order-mastercheckbox' type='checkbox' />")
 					.Width(50)
 					.HtmlAttributes(new { style = "text-align:center" })
 					.HeaderHtmlAttributes(new { style = "text-align:center" });

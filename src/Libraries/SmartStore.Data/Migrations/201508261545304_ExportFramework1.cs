@@ -38,6 +38,14 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Admin.Common.ExportSelected",
+				"Export selected",
+				"Ausgewählte exportieren");
+
+			builder.AddOrUpdate("Admin.Common.ExportAll",
+				"Export all",
+				"Alle exportieren");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.EmailAccountId",
 				"Email notification",
 				"E-Mail Benachrichtigung",

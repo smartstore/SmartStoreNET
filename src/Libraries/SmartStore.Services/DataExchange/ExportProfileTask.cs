@@ -113,6 +113,7 @@ namespace SmartStore.Services.DataExchange
 				OrderBy = ProductSortingEnum.CreatedOn,
 				PageIndex = pageIndex,
 				PageSize = pageSize,
+				ProductIds = ctx.SelectedEntityIds,
 				StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 				VisibleIndividuallyOnly = true,
 				PriceMin = ctx.Filter.PriceMinimum,
@@ -597,7 +598,8 @@ namespace SmartStore.Services.DataExchange
 				null,
 				pageIndex,
 				pageSize,
-				null
+				null,
+				ctx.SelectedEntityIds
 			);
 
 			totalCount = pagedList.TotalCount;
@@ -1133,10 +1135,15 @@ namespace SmartStore.Services.DataExchange
 		{
 			InitDependencies(context);
 
-			var profileId = context.ScheduleTask.Alias.ToInt();
-			var profile = _exportService.GetExportProfileById(profileId);
+			var id = context.ScheduleTask.Alias.ToInt();
+			var profile = _exportService.GetExportProfileById(id);
 
-			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), context.CancellationToken);
+			var selectedIdsCacheKey = "ExportTaskSelectedIds" + id.ToString();
+			var selectedIds = HttpRuntime.Cache[selectedIdsCacheKey] as string;
+
+			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), context.CancellationToken, selectedIds);
+
+			HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 
 			ExportCoreOuter(ctx);
 		}
@@ -1153,7 +1160,8 @@ namespace SmartStore.Services.DataExchange
 
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 
-			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), cancellation.Token, pageIndex, pageSize, totalRecords, previewData);
+			var ctx = new ExportProfileTaskContext(profile, _exportService.LoadProvider(profile.ProviderSystemName), cancellation.Token,
+				null, pageIndex, pageSize, totalRecords, previewData);
 
 			ExportCoreOuter(ctx);
 		}
@@ -1192,6 +1200,7 @@ namespace SmartStore.Services.DataExchange
 		public ExportProfileTaskContext(ExportProfile profile, 
 			Provider<IExportProvider> provider,
 			CancellationToken cancellation,
+			string selectedIds = null,
 			int pageIndex = 0,
 			int pageSize = 100,
 			int? totalRecords = null,
@@ -1202,6 +1211,7 @@ namespace SmartStore.Services.DataExchange
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 			Cancellation = cancellation;
+			SelectedEntityIds = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
 			PageIndex = pageIndex;
 			PageSize = pageSize;
 			TotalRecords = totalRecords;
@@ -1217,6 +1227,7 @@ namespace SmartStore.Services.DataExchange
 			Export = new ExportExecuteContext(Cancellation, FolderContent);
 		}
 
+		public List<int> SelectedEntityIds { get; private set; }
 		public int PageIndex { get; private set; }
 		public int PageSize { get; private set; }
 		public int? TotalRecords { get; set; }

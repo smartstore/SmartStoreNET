@@ -202,7 +202,7 @@ namespace SmartStore.Services.Orders
         /// <returns>Order collection</returns>
 		public virtual IPagedList<Order> SearchOrders(int storeId, int customerId, DateTime? startTime, DateTime? endTime, 
 			int[] orderStatusIds, int[] paymentStatusIds, int[] shippingStatusIds,
-			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null)
+			string billingEmail, string orderGuid, string orderNumber, int pageIndex, int pageSize, string billingName = null, IList<int> orderIds = null)
         {
             var query = _orderRepository.Table;
 
@@ -240,6 +240,9 @@ namespace SmartStore.Services.Orders
 
 			if (shippingStatusIds != null && shippingStatusIds.Count() > 0)
 				query = query.Where(x => shippingStatusIds.Contains(x.ShippingStatusId));
+
+			if (orderIds != null && orderIds.Count > 0)
+				query = query.Where(x => orderIds.Contains(x.Id));
 
             query = query.Where(o => !o.Deleted);
             query = query.OrderByDescending(o => o.CreatedOnUtc);

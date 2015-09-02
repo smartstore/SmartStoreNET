@@ -38,7 +38,7 @@ namespace SmartStore.Data.Migrations
 				new ScheduleTask
 				{
 					Name = "Clear transient uploads",
-					Seconds = 43200, // 12 hours
+					CronExpression = "30 1,13 * * *",
 					Type = "SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,

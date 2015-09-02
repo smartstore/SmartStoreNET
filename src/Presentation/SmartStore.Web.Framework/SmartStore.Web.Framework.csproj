@@ -275,7 +275,6 @@
     <Compile Include="Mvc\Bundles\IBundleProvider.cs" />
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />
     <Compile Include="Mvc\CommaSeparatedModelBinder.cs" />
-    <Compile Include="Mvc\UniversalResult.cs" />
     <Compile Include="Plugins\PluginDebugViewVirtualPathProvider.cs" />
     <Compile Include="Plugins\FeedPluginCore.cs" />
     <Compile Include="Plugins\FeedPluginHelper.cs" />
@@ -333,6 +332,7 @@
     <Compile Include="Mvc\SmartMetadataProvider.cs" />
     <Compile Include="Mvc\SmartModelBinder.cs" />
     <Compile Include="Localization\SmartResourceDisplayName.cs" />
+    <Compile Include="UI\WidgetZoneModel.cs" />
     <Compile Include="Validators\SmartBaseValidator.cs" />
     <Compile Include="Validators\SmartValidatorFactory.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

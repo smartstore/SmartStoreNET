@@ -563,7 +563,6 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			var textInfo = CultureInfo.InvariantCulture.TextInfo;
 
 			// there's no way to share a context instance across repositories which makes GoogleProductObjectContext pretty useless here.
-			// so let's fallback to good old sql... by the way, fastest possible paged data query ever.
 
 			var whereClause = new StringBuilder("(NOT ([t2].[Deleted] = 1)) AND ([t2].[VisibleIndividually] = 1)");
 
@@ -580,19 +579,50 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					whereClause.Append(" AND ([t2].[IsTouched] = 0 OR [t2].[IsTouched] IS NULL)");
 			}
 
-			string sql =
-"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export]" +
-" FROM (" +
-"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8]" +
-"    FROM (" +
-"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
-"        FROM [Product] AS [t0]" +
-"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
-"        ) AS [t2]" +
-"    WHERE " + whereClause.ToString() +
-"    ) AS [t3]" +
-" WHERE [t3].[ROW_NUMBER] BETWEEN {0} + 1 AND {0} + {1}" +
-" ORDER BY [t3].[ROW_NUMBER]";
+			string sql = null;
+			string sqlCount = null;
+			var isSqlServer = DataSettings.Current.IsSqlServer;
+
+			if (isSqlServer)
+			{
+				// fastest possible paged data query
+				sql =
+					"SELECT [TotalCount], [t3].[Id], [t3].[Name], [t3].[SKU], [t3].[ProductTypeId], [t3].[value] AS [Taxonomy], [t3].[value2] AS [Gender], [t3].[value3] AS [AgeGroup], [t3].[value4] AS [Color], [t3].[value5] AS [Size], [t3].[value6] AS [Material], [t3].[value7] AS [Pattern], [t3].[value8] AS [Export]" +
+					" FROM (" +
+					"    SELECT COUNT(id) OVER() [TotalCount], ROW_NUMBER() OVER (ORDER BY [t2].[Name]) AS [ROW_NUMBER], [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value], [t2].[value2], [t2].[value3], [t2].[value4], [t2].[value5], [t2].[value6], [t2].[value7], [t2].[value8]" +
+					"    FROM (" +
+					"        SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched]" +
+					"        FROM [Product] AS [t0]" +
+					"        LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+					"        ) AS [t2]" +
+					"    WHERE " + whereClause.ToString() +
+					"    ) AS [t3]" +
+					" WHERE [t3].[ROW_NUMBER] BETWEEN {0} + 1 AND {0} + {1}" +
+					" ORDER BY [t3].[ROW_NUMBER]";
+			}
+			else
+			{
+				// OFFSET... FETCH NEXT requires SQL Server 2012 or SQL CE 4
+				sql =
+					"SELECT [t2].[Id], [t2].[Name], [t2].[SKU], [t2].[ProductTypeId], [t2].[value] AS [Taxonomy], [t2].[value2] AS [Gender], [t2].[value3] AS [AgeGroup], [t2].[value4] AS [Color], [t2].[value5] AS [Size], [t2].[value6] AS [Material], [t2].[value7] AS [Pattern], [t2].[value8] AS [Export]" +
+					" FROM (" +
+					"     SELECT [t0].[Id], [t0].[Name], [t0].[SKU], [t0].[ProductTypeId], [t1].[Taxonomy] AS [value], [t1].[Gender] AS [value2], [t1].[AgeGroup] AS [value3], [t1].[Color] AS [value4], [t1].[Size] AS [value5], [t1].[Material] AS [value6], [t1].[Pattern] AS [value7], COALESCE([t1].[Export],1) AS [value8], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+					"     FROM [Product] AS [t0]" +
+					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+					" ) AS [t2]" +
+					" WHERE " + whereClause.ToString() +
+					" ORDER BY [t2].[Name]" +
+					" OFFSET {0} ROWS FETCH NEXT {1} ROWS ONLY";
+
+				sqlCount =
+					"SELECT COUNT(*)" +
+					" FROM (" +
+					"     SELECT [t0].[Id], [t0].[Name], [t0].[Deleted], [t0].[VisibleIndividually], [t1].[IsTouched] AS [IsTouched]" +
+					"     FROM [Product] AS [t0]" +
+					"     LEFT OUTER JOIN [GoogleProduct] AS [t1] ON [t0].[Id] = [t1].[ProductId]" +
+					" ) AS [t2]" +
+					" WHERE " + whereClause.ToString();
+			}
 
 
 			var data = _gpRepository.Context.SqlQuery<GoogleProductModel>(sql, (command.Page - 1) * command.PageSize, command.PageSize).ToList();
@@ -617,6 +647,18 @@ namespace SmartStore.GoogleMerchantCenter.Services
 
 			model.Data = data;
 			model.Total = (data.Count > 0 ? data.First().TotalCount : 0);
+
+			if (data.Count > 0)
+			{
+				if (isSqlServer)
+					model.Total = data.First().TotalCount;
+				else
+					model.Total = _gpRepository.Context.SqlQuery<int>(sqlCount).FirstOrDefault();
+			}
+			else
+			{
+				model.Total = 0;
+			}
 
 			return model;
 
@@ -787,8 +829,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		{
 			Helper.SetupConfigModel(model, "FeedFroogle");
 
-			model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
+			//model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
 			model.TaskEnabled = Helper.ScheduleTask.Enabled;
+			model.ScheduleTaskId = Helper.ScheduleTask.Id;
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();

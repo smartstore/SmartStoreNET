@@ -60,7 +60,6 @@
             <fieldset class="form-fields">
                 <legend>@T("Account.YourPersonalDetails")</legend>
 
-                @*codehint: sm-edit begin*@
                 @if (Model.GenderEnabled)
                 {
                     <div class="control-group">
@@ -134,6 +133,17 @@
                         }
                     </div>
                 }
+                
+                @if(Model.DisplayCustomerNumber)
+                {
+                    <div class="control-group">
+                        @Html.LabelFor(model => model.CustomerNumber, new { @class = "control-label", @for = "CustomerNumber" })
+                        <div class="controls">
+                            @Html.TextBoxFor(model => model.CustomerNumber, !Model.CustomerNumberEnabled ? new { @readonly = "true" } : null)
+                        </div>
+                    </div>
+                }
+                
            </fieldset>
             
                 if (Model.AssociatedExternalAuthRecords.Count > 0)

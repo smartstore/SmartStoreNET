@@ -26,7 +26,6 @@ namespace SmartStore.Core.Domain.Customers
         /// </summary>
         public bool TaxExempt { get; set; }
 
-        /// codehint: sm-add
         /// <summary>
         /// Gets or sets the tax display type
         /// </summary>

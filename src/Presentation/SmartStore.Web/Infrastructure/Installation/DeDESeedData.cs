@@ -283,7 +283,7 @@ namespace SmartStore.Web.Infrastructure.Installation
                 .Alter("Product.AskQuestion", x =>
                 {
                     x.Subject = "%Store.Name% - Frage zu '%Product.Name%' von %ProductQuestion.SenderName%";
-					x.Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>ID:</strong> %Product.ID%<br /><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Telefon: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter;
+					x.Body = templateHeader + "<p>%ProductQuestion.Message%</p><p><strong>ID:</strong> %Product.ID%<br /><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Telefon: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter;
                 })
 
 
@@ -2525,10 +2525,6 @@ namespace SmartStore.Web.Infrastructure.Installation
 				{
 					x.Name = "Temporäre Uploads bereinigen";
 				})
-				.Alter("SmartStore.Services.Common.KeepAliveTask, SmartStore.Services", x =>
-                    {
-                        x.Name = "Keep alive";
-                    })
 				.Alter("SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services", x =>
                     {
                         x.Name = "Gastbenutzer löschen";
@@ -2544,6 +2540,10 @@ namespace SmartStore.Web.Infrastructure.Installation
 				.Alter("SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services", x =>
                     {
                         x.Name = "Wechselkurse aktualisieren";
+                    })
+				.Alter("SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services", x =>
+                    {
+                        x.Name = "Temporäre Dateien bereinigen";
                     });
         }
 

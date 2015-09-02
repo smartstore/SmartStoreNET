@@ -240,6 +240,9 @@
 	<LocaleResource Name="Account.Fields.Country">
 		<Value>Land</Value>
 	</LocaleResource>
+	<LocaleResource Name="Account.Fields.CustomerNumber">
+		<Value>Kundennummer</Value>
+	</LocaleResource>
 	<LocaleResource Name="Account.Fields.DateOfBirth">
 		<Value>Geburtsdatum</Value>
 	</LocaleResource>
@@ -782,6 +785,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.PhoneNumber.Required">
 		<Value>Telefonnummer wird benötigt</Value>
+	</LocaleResource>
+	<LocaleResource Name="Address.Fields.Required.Hint">
+		<Value>* Eingabefelder mit Sternchen sind Pflichfelder und müssen ausgefüllt werden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Address.Fields.StateProvince">
 		<Value>Bundesland/Region</Value>
@@ -2932,6 +2938,15 @@
 	<LocaleResource Name="Admin.CheckUpdate">
 		<Value>Auf Aktualisierung prüfen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
+		<Value>Unbekannter Fehler beim Paket-Download. Bitte versuchen Sie es später erneut.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
+		<Value>AutoUpdate möglich</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
+		<Value>&lt;p&gt;Dieses Update kann automatisch installiert werden. Hierfür lädt SmartStore.NET ein Installationspaket auf Ihren Webserver herunter, führt die Installation durch und startet die Anwendung neu. Vor der Installation wird der Verzeichnisinhalt Ihres Shops gesichert, mit Ausnahme der Ordner &lt;i&gt;App_Data&lt;/i&gt; und &lt;i&gt;Media&lt;/i&gt; sowie der SQL Server Datenbank. &lt;/p&gt;&lt;p&gt;Klicken Sie die Schaltfläche &lt;b&gt;Jetzt aktualisieren&lt;/b&gt;, um das Paket downzuloaden und zu installieren. Alternativ hierzu können Sie weiter unten das Paket auf Ihren lokalen PC downloaden und die Installation zu einem späteren Zeitpunkt manuell durchführen.&lt;/p&gt;</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.CheckUpdate.CurrentVersion">
 		<Value>Aktuelle Version</Value>
 	</LocaleResource>
@@ -2947,23 +2962,14 @@
 	<LocaleResource Name="Admin.CheckUpdate.UpdateAvailable">
 		<Value>Update verfügbar</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
-		<Value>Ihre Version</Value>
-	</LocaleResource>
 	<LocaleResource Name="Admin.CheckUpdate.UpdateNow">
 		<Value>Jetzt aktualisieren</Value>
 	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossible">
-		<Value>AutoUpdate möglich</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdateFailure">
-		<Value>Unbekannter Fehler beim Paket-Download. Bitte versuchen Sie es später erneut.</Value>
-	</LocaleResource>
-	<LocaleResource Name="Admin.CheckUpdate.AutoUpdatePossibleInfo">
-		<Value>&lt;p&gt;Dieses Update kann automatisch installiert werden. Hierfür lädt SmartStore.NET ein Installationspaket auf Ihren Webserver herunter, führt die Installation durch und startet die Anwendung neu. Vor der Installation wird der Verzeichnisinhalt Ihres Shops gesichert, mit Ausnahme der Ordner &lt;i&gt;App_Data&lt;/i&gt; und &lt;i&gt;Media&lt;/i&gt; sowie der SQL Server Datenbank. &lt;/p&gt;&lt;p&gt;Klicken Sie die Schaltfläche &lt;b&gt;Jetzt aktualisieren&lt;/b&gt;, um das Paket downzuloaden und zu installieren. Alternativ hierzu können Sie weiter unten das Paket auf Ihren lokalen PC downloaden und die Installation zu einem späteren Zeitpunkt manuell durchführen.&lt;/p&gt;</Value>
+	<LocaleResource Name="Admin.CheckUpdate.YourVersion">
+		<Value>Ihre Version</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.About">
-		<Value>Über</Value>
+		<Value>Über SmartStore.NET</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Actions">
 		<Value>Aktionen</Value>
@@ -3063,6 +3069,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.Entity.Fields.Id.Hint">
 		<Value>Die eindeutige nummerische ID des Datensatzes</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Common.ErrorSendingEmail">
+		<Value>Fehler beim Senden einer E-Mail</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Common.ExcelFile">
 		<Value>Excel-Datei</Value>
@@ -3214,6 +3223,9 @@
 	<LocaleResource Name="Admin.Common.Search">
 		<Value>Suchen</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Common.SendNow">
+		<Value>Jetzt senden</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Common.SEO">
 		<Value>Suchmaschinen (SEO)</Value>
 	</LocaleResource>
@@ -3286,6 +3298,9 @@
 	<LocaleResource Name="Admin.Configuration.ACL">
 		<Value>Zugriffsrechte</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Acl.NoRolesDefined">
+		<Value>Es sind keine Kundengruppen definiert</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ACL.Permission">
 		<Value>Zugriffsrecht</Value>
 	</LocaleResource>
@@ -3345,6 +3360,24 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ActivityLog.ActivityLogType.Updated">
 		<Value>Die Ereignistypen wurden erfolgreich bearbeitet.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts">
+		<Value>Diese Konfiguration für Kindelemente übernehmen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Acl.AssignToSubCategoriesAndProducts.Hint">
+		<Value>Diese Funktion übernimmt die Zugriffsrecht-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.&lt;br/&gt;
+                    Bitte beachten Sie, dass die Änderungen der Zugriffsrechte zunächst gespeichert werden müssen, &lt;br /&gt;
+                    bevor diese für Unterkategorien und Produkte übernommen werden können. &lt;br /&gt;
+                    &lt;b&gt;Vorsicht:&lt;/b&gt; Bitte beachten Sie, &lt;b&gt;dass vorhandene Zugriffsrechte überschrieben bzw. gelöscht werden&lt;/b&gt;.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts">
+		<Value>Diese Konfiguration für Kindelemente übernehmen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Category.Stores.AssignToSubCategoriesAndProducts.Hint">
+		<Value>Diese Funktion übernimmt die Shop-Konfiguration dieser Warengruppe für alle Unterwarengruppen und Produkte.&lt;br/&gt;
+                    Bitte beachten Sie, dass die Änderungen an der Store-Konfiguration zunächst gespeichert werden müssen, &lt;br /&gt;
+                    bevor diese für Unterkategorien und Produkte übernommen werden können. &lt;br /&gt;
+                    &lt;b&gt;Vorsicht:&lt;/b&gt; Bitte beachten Sie, &lt;b&gt;dass vorhandene Store-Konfiguration überschrieben bzw. gelöscht werden&lt;/b&gt;.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.ContentSlider">
 		<Value>Content Slider</Value>
@@ -4115,7 +4148,7 @@
 		<Value>Zahlung</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.CannotActivatePaymentMethod">
-		<Value>Das Plugin erlaubt keine Aktivierung dieser Zahlungsmethode.</Value>
+		<Value>Das Plugin erlaubt keine Aktivierung dieser Zahlungsart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods">
 		<Value>Zahlungsarten</Value>
@@ -4127,10 +4160,10 @@
 		<Value>Konfiguration</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType">
-		<Value>Wiederkehrender Zahlungstyp</Value>
+		<Value>Wiederkehrende Zahlungen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportCapture">
-		<Value>Unterstützt Capture</Value>
+		<Value>Buchung möglich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportPartiallyRefund">
 		<Value>Teilerstattung möglich</Value>
@@ -4139,7 +4172,7 @@
 		<Value>Erstattung möglich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Payment.Methods.Fields.SupportVoid">
-		<Value>Kann storniert werden</Value>
+		<Value>Stornierung möglich</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Plugins">
 		<Value>Plugins</Value>
@@ -4756,6 +4789,18 @@
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPartNumber.Hint">
 		<Value>Legt fest, ob die Hersteller-Produktnummer im Shop angezeigt werden soll.</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures">
+		<Value>Zeige Herstellerbilder auf der Homepage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturerPictures.Hint">
+		<Value>Bestimmt ob Hersteller auf der Homepage als Bilder oder textuelle Links angezeigt werden.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage">
+		<Value>Zeige Hersteller auf der Homepage</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage.Hint">
+		<Value>Bestimmt ob Hersteller auf der Homepage angezeigt werden.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowProductImagesInSearchAutoComplete">
 		<Value>Produktbilder bei der Autovervollständigung anzeigen</Value>
 	</LocaleResource>
@@ -4803,6 +4848,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.ShowWeight.Hint">
 		<Value>Zeigt das Gewicht des Produktes an.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SubCategoryDisplayType">
+		<Value>Unterwarengruppen anzeigen</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SubCategoryDisplayType.Hint">
+		<Value>Legt fest, ob und wo Unterwarengruppen auf einer Warengruppenseite angezeigt werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.Catalog.SuppressSkuSearch">
 		<Value>SKU Suche unterdrücken</Value>
@@ -4995,6 +5046,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNameFormatMaxLength.Hint">
 		<Value>Legt die maximale Länge des angezeigten Benutzernamens fest.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled">
+		<Value>Kundennummer speichern</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled.Hint">
+		<Value>Bestimmt ob Kundennummern hinterlegt werden können.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Configuration.Settings.CustomerUser.CustomerSettings">
 		<Value>Kundeneinstellungen</Value>
@@ -7039,6 +7096,12 @@
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.Name.Required">
 		<Value>Ein Name für die Forengruppe ist erforderlich</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName">
+		<Value>URL-Alias</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Fields.SeName.Hint">
+		<Value>Legt einen Suchmaschinen-freundlichen Seitennamen für das Forum fest. 'Tolles Forum' resultiert bspw. in '~/tolles-forum'. Standard ist der Name des Forums.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.Forum.Updated">
 		<Value>Das Forum wurde erfolgreich aktualisiert</Value>
 	</LocaleResource>
@@ -7083,6 +7146,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.Name.Required">
 		<Value>Ein Name für die Forengruppe ist erforderlich</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName">
+		<Value>URL-Alias</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Fields.SeName.Hint">
+		<Value>Legt einen Suchmaschinen-freundlichen Seitennamen für die Forengruppe fest. 'Tolle Forengruppe' resultiert bspw. in '~/tolle-forengruppe'. Standard ist der Name der Forengruppe.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.Forums.ForumGroup.Updated">
 		<Value>Die Forengruppe wurde erfolgreich aktualisert.</Value>
@@ -7143,6 +7212,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Name.Hint">
 		<Value>Der Name der Vorlage (Schreibgeschützt)</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.SendManually">
+		<Value>Nur manuell senden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.SendManually.Hint">
+		<Value>Legt fest, ob E-Mails, die von dieser Nachrichtenvorlage abgeleitet sind, ausschließlich manuell gesendet werden sollen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.ContentManagement.MessageTemplates.Fields.Subject">
 		<Value>Betreff</Value>
@@ -8386,8 +8461,11 @@
 	<LocaleResource Name="Admin.Help">
 		<Value>Hilfe</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.Help.Documentation">
+		<Value>Dokumentation</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.Help.Forums">
-		<Value>Community-Forum</Value>
+		<Value>Community</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Help.NopCommerceNote">
 		<Value>SmartStore.NET ist ein Fork der ASP.NET Open-Source E-Commerce-Lösung {0}.</Value>
@@ -8759,10 +8837,10 @@
 		<Value>Setzt den Zahlungsstatus auf 'Bezahlt' ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderGuid">
-		<Value>Auftrags-GUID</Value>
+		<Value>Bestellreferenznummer</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderGuid.Hint">
-		<Value>Interne Referenz für den Auftrag.</Value>
+		<Value>Die interne Bestellreferenznummer. Im Gegensatz zur Auftragsnummer existiert diese bereits im Kassenbereich, d.h. vor der eigentlichen Erstelllung des Auftrags.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.OrderNumber">
 		<Value>Auftragsnummer</Value>
@@ -8858,10 +8936,10 @@
 		<Value>Setzt den Zahlungsstatus auf 'Teilweise erstattet' samt Erstattungsbetrag, ohne dabei den Zahlungsanbieter zu kontaktieren.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PaymentMethod">
-		<Value>Zahlungsmethode</Value>
+		<Value>Zahlungsart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PaymentMethod.Hint">
-		<Value>Die Zahlungsmethode für diese Transaktion</Value>
+		<Value>Die Zahlungsart für diese Transaktion</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.Fields.PaymentMethodAdditionalFeeExclTax">
 		<Value>Die Zahlungsgebühr (netto) für diesen Auftrag</Value>
@@ -9099,6 +9177,12 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Orders.OrderNotes.Fields.Note">
 		<Value>Notiz</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Payments.NewIpn">
+		<Value>Neue IPN</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Orders.Payments.NewIpn.Hint">
+		<Value>In den Auftragsnotizen ist eine neue Benachrichtigung vom Zahlungsanbieter eingetroffen.</Value>
 	</LocaleResource>
 	<LocaleResource Name="admin.orders.pdfinvoice">
 		<Value>Auftrag als PDF</Value>
@@ -9501,6 +9585,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Admin.Plugins.Manage">
 		<Value>Plugins verwalten</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.Products.BasePrice.Hint">
+		<Value>Bitte beachten Sie, dass der tatsächliche Grundpreis von verschiedenen Faktoren abhängig ist und erst im Shop zuverlässig berechnet werden kann.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.PromotionFeeds">
 		<Value>Promotion Feeds</Value>
@@ -10360,6 +10447,12 @@
 	<LocaleResource Name="Admin.System.QueuedEmails.Fields.Priority.Required">
 		<Value>Priorität eingeben</Value>
 	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SendManually">
+		<Value>Nur manuell senden</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SendManually.Hint">
+		<Value>Legt fest, ob die E-Mail ausschließlich manuell gesendet werden soll.</Value>
+	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.Fields.SentOn">
 		<Value>Gesendet um</Value>
 	</LocaleResource>
@@ -10421,13 +10514,19 @@
 		<Value>Lade nur noch nicht gesendete E-Mails</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.LoadNotSent.Hint">
-		<Value>Zeige E-Mails nur aus der Warteschlange.</Value>
+		<Value>Lade nur noch nicht gesendete E-Mails.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.MaxSentTries">
 		<Value>Maximale Sendeversuche</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.MaxSentTries.Hint">
 		<Value>Gibt die Anzahl der Zustellversuche an.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.List.SendManually">
+		<Value>Lade nur manuell zu sendende E-Mails</Value>
+	</LocaleResource>
+	<LocaleResource Name="Admin.System.QueuedEmails.List.SendManually.Hint">
+		<Value>Lade nur manuell zu sendende E-Mails.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.List.StartDate">
 		<Value>Anfangsdatum</Value>
@@ -10445,7 +10544,7 @@
 		<Value>Wiederholen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.Requeued">
-		<Value>Die Nachricht wird erneut gesendet</Value>
+		<Value>Die Nachricht wurde erfolgreich neu eingereiht.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.QueuedEmails.Updated">
 		<Value>Die E-Mail wurde erfolgreich bearbeitet</Value>
@@ -10643,10 +10742,10 @@
 		<Value>'{0}' Plugin ist nicht kompatibel mit Ihrer SmartStore.NET-Version. Löschen Sie es oder installieren Sie die richtige Version.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.PaymentMethods.NoActive">
-		<Value>Es gibt keine aktiven Zahlungsmethoden.</Value>
+		<Value>Es existieren keine aktiven Zahlungsarten.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.PaymentMethods.OK">
-		<Value>Die Zahlungsmethoden sind OK.</Value>
+		<Value>Die Zahlungsarten sind OK.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Admin.System.Warnings.PrimaryCurrency.NotSet">
 		<Value>Die Hauptwährung für den Shop wurde nicht festgelegt.</Value>
@@ -11150,7 +11249,7 @@
 		<Value>Weiter</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.NoPaymentMethods">
-		<Value>Keine Zahlungsmethoden verfügbar.</Value>
+		<Value>Es sind keine Zahlungsarten verfügbar.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.OrderHasBeenReceived">
 		<Value>Ihre Bestellung ist angekommen</Value>
@@ -11168,7 +11267,7 @@
 		<Value>Zahlungsinformation</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.PaymentMethod">
-		<Value>Zahlungsmethode</Value>
+		<Value>Zahlungsarten</Value>
 	</LocaleResource>
 	<LocaleResource Name="Checkout.PlacedOrderDetails">
 		<Value>Bestelldetails</Value>
@@ -11385,6 +11484,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Common.Error">
 		<Value>Fehler</Value>
+	</LocaleResource>
+	<LocaleResource Name="Common.Error.PreProcessPayment">
+		<Value>Die gewählte Zahlungsart verursachte leider einen Fehler. Bitte korrigieren Sie Ihre Eingaben, versuchen Sie es erneut oder wählen Sie eine andere Zahlungsart.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Common.Error.SendMail">
 		<Value>Fehler beim Versenden der Email. Bitte versuchen Sie es später erneut.</Value>
@@ -11814,6 +11916,15 @@
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.RecurringProductCyclePeriod.Years">
 		<Value>Jahre</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.AboveProductList">
+		<Value>Über der Produktliste</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Bottom">
+		<Value>Am Seitenende</Value>
+	</LocaleResource>
+	<LocaleResource Name="Enums.SmartStore.Core.Domain.Catalog.SubCategoryDisplayType.Hide">
+		<Value>Nicht anzeigen</Value>
 	</LocaleResource>
 	<LocaleResource Name="Enums.SmartStore.Core.Domain.Common.FulltextSearchMode.And">
 		<Value>Benutze CONTAINS und AND mit prefix_term</Value>
@@ -12762,7 +12873,7 @@
 		<Value>Gesamtsumme</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.PaymentMethod">
-		<Value>Zahlungsmethode</Value>
+		<Value>Zahlungsart</Value>
 	</LocaleResource>
 	<LocaleResource Name="Order.PaymentMethodAdditionalFee">
 		<Value>Zahlungsgebühr</Value>
@@ -13369,6 +13480,9 @@
 	</LocaleResource>
 	<LocaleResource Name="Products.Availability.InStockWithQuantity">
 		<Value>{0} am Lager.</Value>
+	</LocaleResource>
+	<LocaleResource Name="Products.Availability.IsNotActive">
+		<Value>Nicht im Sortiment</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.Availability.OutOfStock">
 		<Value>Nicht am Lager</Value>

@@ -14,10 +14,6 @@ namespace SmartStore.Admin.Models.Catalog
             AvailableManufacturers = new List<SelectListItem>();
 			AvailableStores = new List<SelectListItem>();
 			AvailableProductTypes = new List<SelectListItem>();
-			AvailableIsPublished = new List<SelectListItem>();
-			AvailableHomePageProducts = new List<SelectListItem>();
-			AvailableWithoutCategories = new List<SelectListItem>();
-			AvailableWithoutManufacturers = new List<SelectListItem>();
         }
 
         public GridModel<ProductModel> Products { get; set; }
@@ -62,10 +58,6 @@ namespace SmartStore.Admin.Models.Catalog
         public IList<SelectListItem> AvailableCategories { get; set; }
         public IList<SelectListItem> AvailableManufacturers { get; set; }
 		public IList<SelectListItem> AvailableStores { get; set; }
-		public IList<SelectListItem> AvailableWithoutCategories { get; set; }
-		public IList<SelectListItem> AvailableWithoutManufacturers { get; set; }
 		public IList<SelectListItem> AvailableProductTypes { get; set; }
-		public IList<SelectListItem> AvailableIsPublished { get; set; }
-		public IList<SelectListItem> AvailableHomePageProducts { get; set; }
     }
 }

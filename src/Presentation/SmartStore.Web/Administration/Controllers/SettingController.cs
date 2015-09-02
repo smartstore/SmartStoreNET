@@ -567,6 +567,9 @@ namespace SmartStore.Admin.Controllers
 				new SelectListItem { Value = "list", Text = _services.Localization.GetResource("Common.List"), Selected = model.DefaultViewMode.IsCaseInsensitiveEqual("list") }
 			);
 
+            //default sort order modes
+            model.AvailableSortOrderModes = catalogSettings.DefaultSortOrder.ToSelectList();
+
 			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
 			{
@@ -929,8 +932,12 @@ namespace SmartStore.Admin.Controllers
 
 			StoreDependingSettings.GetOverrideKeys(externalAuthenticationSettings, model.ExternalAuthenticationSettings, storeScope, _services.Settings, false);
 
+            model.CustomerSettings.AvailableCustomerNumberMethods = customerSettings.CustomerNumberMethod.ToSelectList();
+            model.CustomerSettings.AvailableCustomerNumberVisibilities = customerSettings.CustomerNumberVisibility.ToSelectList();
+
             return View(model);
         }
+
         [HttpPost]
 		public ActionResult CustomerUser(CustomerUserSettingsModel model, FormCollection form)
         {
@@ -1007,6 +1014,7 @@ namespace SmartStore.Admin.Controllers
 			model.SeoSettings.ConvertNonWesternChars = seoSettings.ConvertNonWesternChars;
 			model.SeoSettings.CanonicalUrlsEnabled = seoSettings.CanonicalUrlsEnabled;
 			model.SeoSettings.CanonicalHostNameRule = seoSettings.CanonicalHostNameRule;
+            model.SeoSettings.ExtraRobotsDisallows = String.Join(Environment.NewLine, seoSettings.ExtraRobotsDisallows);
 
 			StoreDependingSettings.GetOverrideKeys(seoSettings, model.SeoSettings, storeScope, _services.Settings, false);
 
@@ -1185,6 +1193,7 @@ namespace SmartStore.Admin.Controllers
 			seoSettings.ConvertNonWesternChars = model.SeoSettings.ConvertNonWesternChars;
 			seoSettings.CanonicalUrlsEnabled = model.SeoSettings.CanonicalUrlsEnabled;
 			seoSettings.CanonicalHostNameRule = model.SeoSettings.CanonicalHostNameRule;
+            seoSettings.ExtraRobotsDisallows = new List<string>(model.SeoSettings.ExtraRobotsDisallows.EmptyNull().Split(new string[] { Environment.NewLine }, StringSplitOptions.RemoveEmptyEntries));
 
 			StoreDependingSettings.UpdateSettings(seoSettings, form, storeScope, _services.Settings);
 

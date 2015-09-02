@@ -796,18 +796,15 @@ namespace SmartStore.Services.Orders
                 #endregion
 
 				#region Addresses & pre payment workflow
-
+				
 				// give payment processor the opportunity to fullfill billing address
 				var preProcessPaymentResult = _paymentService.PreProcessPayment(processPaymentRequest);
 
 				if (!preProcessPaymentResult.Success)
 				{
-					foreach (var paymentError in preProcessPaymentResult.Errors)
-					{
-						result.AddError(string.Format("Payment error: {0}", paymentError));
-					}
-
-					throw new SmartException("Error while pre-processing the payment");
+					result.Errors.AddRange(preProcessPaymentResult.Errors);
+					result.Errors.Add(_localizationService.GetResource("Common.Error.PreProcessPayment"));
+					return result;					
 				}
 
 				Address billingAddress = null;
@@ -1341,7 +1338,7 @@ namespace SmartStore.Services.Orders
                         #region Notifications, notes and attributes
                         
                         //notes, messages
-                        order.OrderNotes.Add(new OrderNote()
+                        order.OrderNotes.Add(new OrderNote
                             {
                                 Note = TNote("OrderPlaced"),
                                 DisplayToCustomer = false,

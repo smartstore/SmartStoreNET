@@ -63,6 +63,15 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowDefaultQuantityUnit")]
         public bool ShowDefaultQuantityUnit { get; set; }
 
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage")]
+        public bool ShowManufacturersOnHomepage { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ManufacturersBlockItemsToDisplay")]
+        public int ManufacturersBlockItemsToDisplay { get; set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures")]
+        public bool ShowManufacturerPictures { get; set; }
+
         #endregion
 
         #region Product lists
@@ -108,6 +117,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultViewMode")]
         public string DefaultViewMode { get; set; }
         public IList<SelectListItem> AvailableDefaultViewModes { get; private set; }
+
+        [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.DefaultSortOrderMode")]
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+        public SelectList AvailableSortOrderModes { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.Settings.Catalog.AllowProductViewModeChanging")]
         public bool AllowProductViewModeChanging { get; set; }

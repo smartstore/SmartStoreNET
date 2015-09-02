@@ -1,0 +1,46 @@
+﻿@model IEnumerable<DateTime>
+@using SmartStore.Core
+
+@{
+	string error = (string)ViewBag.CronScheduleParseError;
+	string description = (string)ViewBag.Description;
+}
+
+<style>
+	.future-schedules { border-collapse: separate }
+	.future-schedules td { vertical-align: top; padding-bottom: 10px }
+	.future-schedules tr td:first-child { padding-right: 20px }
+</style>
+
+@if (error.HasValue())
+{
+	<div class="text-danger"><span>@error</span></div>
+}
+else
+{
+	<h4>@T("Admin.System.ScheduleTasks.FutureSchedules")</h4>
+	if (description.HasValue())
+	{
+		<p class="text-warning">@description</p>
+	}
+	<table class="future-schedules">
+		<tbody>
+			@foreach (var day in Model.ToLookup(x => x.Date))
+			{
+				<tr>
+					<td><strong>@day.Key.ToShortDateString()</strong></td>
+					<td>
+						@foreach (var time in day)
+						{
+							<div>@time.ToShortTimeString()</div>
+						}
+					</td>
+				</tr>
+			}
+		</tbody>
+	</table>
+}
+
+
+
+

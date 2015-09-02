@@ -44,7 +44,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageActivityLog))
                 return AccessDeniedView();
 
-            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel());
+            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel()).OrderBy(x => x.Name);
             var gridModel = new GridModel<ActivityLogTypeModel>
             {
                 Data = activityLogTypeModel,

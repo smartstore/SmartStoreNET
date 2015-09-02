@@ -148,7 +148,7 @@ namespace SmartStore.PayPal
                 DoCaptureResponseType response = service.DoCapture(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
                 if (success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Paid;
@@ -193,7 +193,7 @@ namespace SmartStore.PayPal
                 RefundTransactionResponseType response = service.RefundTransaction(req);
 
                 string error = string.Empty;
-                bool Success = PayPalHelper.CheckSuccess(_helper, response, out error);
+                bool Success = PayPalHelper.CheckSuccess(Helper, response, out error);
                 if (Success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Refunded;
@@ -239,7 +239,7 @@ namespace SmartStore.PayPal
                 DoVoidResponseType response = service.DoVoid(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(_helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
                 if (success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Voided;
@@ -281,7 +281,7 @@ namespace SmartStore.PayPal
                 var response = service.ManageRecurringPaymentsProfileStatus(req);
 
                 string error = "";
-                if (!PayPalHelper.CheckSuccess(_helper, response, out error))
+                if (!PayPalHelper.CheckSuccess(Helper, response, out error))
                 {
                     result.AddError(error);
                 }

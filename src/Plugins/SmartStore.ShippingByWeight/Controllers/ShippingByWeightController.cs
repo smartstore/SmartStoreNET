@@ -107,6 +107,7 @@ namespace SmartStore.ShippingByWeight.Controllers
             sbw.From = model.From;
             sbw.To = model.To;
             sbw.UsePercentage = model.UsePercentage;
+            sbw.Zip = model.Zip == "*" ? null : model.Zip;
             sbw.ShippingChargeAmount = model.ShippingChargeAmount;
             sbw.ShippingChargePercentage = model.ShippingChargePercentage;
             sbw.SmallQuantitySurcharge = model.SmallQuantitySurcharge;
@@ -139,6 +140,7 @@ namespace SmartStore.ShippingByWeight.Controllers
 				StoreId = model.AddStoreId,
                 ShippingMethodId = model.AddShippingMethodId,
                 CountryId = model.AddCountryId,
+                Zip = model.AddZip,
 				//StateProvinceId = 0,
                 From = model.AddFrom,
                 To = model.AddTo,

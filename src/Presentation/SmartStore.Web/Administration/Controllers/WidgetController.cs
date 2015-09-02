@@ -100,29 +100,6 @@ namespace SmartStore.Admin.Controllers
 
 			return RedirectToAction("Providers");
 		}
-        
-        [ChildActionOnly]
-        public ActionResult WidgetsByZone(string widgetZone)
-        {
-            var model = new List<RenderWidgetModel>();
- 
-            var widgets = _widgetService.LoadActiveWidgetsByWidgetZone(widgetZone);
-            foreach (var widget in widgets)
-            {
-                var widgetModel = new RenderWidgetModel();
- 
-                string actionName;
-                string controllerName;
-                RouteValueDictionary routeValues;
-                widget.Value.GetDisplayWidgetRoute(widgetZone, null, 0, out actionName, out controllerName, out routeValues);
-                widgetModel.ActionName = actionName;
-                widgetModel.ControllerName = controllerName;
-                widgetModel.RouteValues = routeValues;
-
-                model.Add(widgetModel);
-            }
-            return PartialView(model);
-        }
 
         #endregion
     }

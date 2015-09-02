@@ -36,7 +36,6 @@ namespace SmartStore.Web.Models.Blogs
         public IList<BlogCommentModel> Comments { get; set; }
         public AddBlogCommentModel AddNewComment { get; set; }
 
-        // codehint: sm-add
         public int AvatarPictureSize { get; set; }
 		public bool AllowCustomersToUploadAvatars { get; set; }
     }

@@ -11,6 +11,31 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial interface ICategoryService
     {
+
+        /// <summary>
+        /// Assign acl to sub-categories and products
+        /// </summary>
+        /// <param name="categoryId">Category Id</param>
+        /// <param name="touchProductsWithMultipleCategories">Reserved for future use: Whether to assign acl's to products which are contained in multiple categories.</param>
+        /// <param name="touchExistingAcls">Reserved for future use: Whether to delete existing Acls.</param>
+        /// <param name="categoriesOnly">Reserved for future use: Whether to assign acl's only to categories.</param>
+        void InheritAclIntoChildren(int categoryId,
+            bool touchProductsWithMultipleCategories = false,
+            bool touchExistingAcls = false,
+            bool categoriesOnly = false);
+
+        /// <summary>
+        /// Assign stores to sub-categories and products
+        /// </summary>
+        /// <param name="categoryId">Category Id</param>
+        /// <param name="touchProductsWithMultipleCategories">Reserved for future use: Whether to assign acl's to products which are contained in multiple categories.</param>
+        /// <param name="touchExistingAcls">Reserved for future use: Whether to delete existing Acls.</param>
+        /// <param name="categoriesOnly">Reserved for future use: Whether to assign acl's only to categories.</param>
+        void InheritStoresIntoChildren(int categoryId,
+            bool touchProductsWithMultipleCategories = false,
+            bool touchExistingAcls = false,
+            bool categoriesOnly = false);
+
         /// <summary>
         /// Delete category
         /// </summary>

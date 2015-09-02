@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Collections;
 using System.Text;
 using System;
+using SmartStore.Utilities;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -20,7 +21,7 @@ namespace SmartStore.Web.Framework.Controllers
         /// <returns>Result</returns>
 		public static string RenderPartialViewToString(this ControllerBase controller)
         {
-            return RenderPartialViewToString(controller, null, null);
+            return RenderPartialViewToString(controller, null, null, null);
         }
         /// <summary>
         /// Render partial view to string
@@ -29,7 +30,7 @@ namespace SmartStore.Web.Framework.Controllers
         /// <returns>Result</returns>
 		public static string RenderPartialViewToString(this ControllerBase controller, string viewName)
         {
-            return RenderPartialViewToString(controller, viewName, null);
+            return RenderPartialViewToString(controller, viewName, null, null);
         }
         /// <summary>
         /// Render partial view to string
@@ -38,21 +39,37 @@ namespace SmartStore.Web.Framework.Controllers
         /// <returns>Result</returns>
 		public static string RenderPartialViewToString(this ControllerBase controller, object model)
         {
-            return RenderPartialViewToString(controller, null, model);
+            return RenderPartialViewToString(controller, null, model, null);
         }
+		/// <summary>
+		/// Render partial view to string
+		/// </summary>
+		/// <param name="viewName">View name</param>
+		/// <param name="model">Model</param>
+		/// <returns>Result</returns>
+		public static string RenderPartialViewToString(this ControllerBase controller, string viewName, object model)
+		{
+			return RenderPartialViewToString(controller, viewName, model, null);
+		}
         /// <summary>
         /// Render partial view to string
         /// </summary>
         /// <param name="viewName">View name</param>
         /// <param name="model">Model</param>
+		/// <param name="additionalViewData">Additional ViewData</param>
         /// <returns>Result</returns>
-		public static string RenderPartialViewToString(this ControllerBase controller, string viewName, object model)
+		public static string RenderPartialViewToString(this ControllerBase controller, string viewName, object model, object additionalViewData)
         {
             if (viewName.IsEmpty())
                 viewName = controller.ControllerContext.RouteData.GetRequiredString("action");
 
             controller.ViewData.Model = model;
-			
+
+			if (additionalViewData != null)
+			{
+				controller.ViewData.AddRange(CollectionHelper.ObjectToDictionary(additionalViewData));
+			}
+
             using (var sw = new StringWriter())
             {
                 ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindPartialView(controller.ControllerContext, viewName.EmptyNull());

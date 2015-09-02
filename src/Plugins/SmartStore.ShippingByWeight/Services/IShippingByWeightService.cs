@@ -23,7 +23,7 @@ namespace SmartStore.ShippingByWeight.Services
 		/// </summary>
 		IList<ShippingByWeightModel> GetShippingByWeightModels(int pageIndex, int pageSize, out int totalCount);
 
-		ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight);
+        ShippingByWeightRecord FindRecord(int shippingMethodId, int storeId, int countryId, decimal weight, string zip);
 
         ShippingByWeightRecord GetById(int shippingByWeightRecordId);
 		

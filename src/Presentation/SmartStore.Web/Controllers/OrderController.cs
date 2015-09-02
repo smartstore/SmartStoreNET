@@ -169,7 +169,7 @@ namespace SmartStore.Web.Controllers
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
-            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
             {
                 model.DisplayPurchaseOrderNumber = true;
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;

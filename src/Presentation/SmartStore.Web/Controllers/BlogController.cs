@@ -323,9 +323,6 @@ namespace SmartStore.Web.Controllers
                     includeImplicitMvcValues: true /*helps fill in the nulls above*/
                 );
                 return Redirect(url);
-
-                // codehint: sm-delete
-                //return RedirectToRoute("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) });
             }
 
             //If we got this far, something failed, redisplay form

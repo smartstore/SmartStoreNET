@@ -539,6 +539,7 @@ namespace SmartStore.Web.Infrastructure.Installation
 			
 			_ctx.Configuration.AutoDetectChangesEnabled = false;
 			_ctx.Configuration.ValidateOnSaveEnabled = false;
+			_ctx.HooksEnabled = false;
 
 			_config.ProgressMessageCallback("Progress.CreatingRequiredData");
 

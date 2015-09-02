@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Pay with Amazon 2.2.0.2
+###Bugfixes###
+* Send currency code of primary store currency (not of working currency) to payment gateway
+
 ##Pay with Amazon 2.2.0.1
 ### New Features
 * Supports order list label for new incoming IPNs

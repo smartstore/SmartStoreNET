@@ -11,6 +11,7 @@ using System.IO;
 using SmartStore.Services;
 using SmartStore.Services.Security;
 using System.Dynamic;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 
 namespace SmartStore.Admin.Controllers
@@ -113,6 +114,7 @@ namespace SmartStore.Admin.Controllers
 			catch (Exception exc)
 			{
 				NotifyError(exc);
+				Logger.Error(exc);
 				return Redirect(returnUrl);
 			}
 		}

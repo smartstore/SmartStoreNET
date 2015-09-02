@@ -146,6 +146,11 @@ namespace SmartStore.Web.Controllers
                 command.ViewMode = category.DefaultViewMode;
             }
 
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
+            
             var model = category.ToModel();
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
@@ -446,7 +451,12 @@ namespace SmartStore.Web.Controllers
             var model = manufacturer.ToModel();
 
             // prepare picture model
-            model.PictureModel = this.PrepareManufacturerPictureModel(manufacturer, model.Name);
+            model.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, model.Name);
+
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
             {
@@ -556,46 +566,17 @@ namespace SmartStore.Web.Controllers
                 var modelMan = manufacturer.ToModel();
 
                 // prepare picture model
-                modelMan.PictureModel = this.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
+                modelMan.PictureModel = _helper.PrepareManufacturerPictureModel(manufacturer, modelMan.Name);
                 model.Add(modelMan);
             }
 
             return View(model);
         }
 
-        private PictureModel PrepareManufacturerPictureModel(Manufacturer manufacturer, string localizedName)
-        {
-            var model = new PictureModel();
-
-            int pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
-            var manufacturerPictureCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_PICTURE_MODEL_KEY,
-                manufacturer.Id,
-                pictureSize,
-                true,
-                _services.WorkContext.WorkingLanguage.Id,
-                _services.WebHelper.IsCurrentConnectionSecured(),
-				_services.StoreContext.CurrentStore.Id);
-
-            model = _services.Cache.Get(manufacturerPictureCacheKey, () =>
-            {
-                var pictureModel = new PictureModel()
-                {
-					PictureId = manufacturer.PictureId.GetValueOrDefault(),
-					FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
-					ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize),
-					Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
-					AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
-                };
-                return pictureModel;
-            });
-
-            return model;
-        }
-
         [ChildActionOnly]
         public ActionResult ManufacturerNavigation(int currentManufacturerId)
         {
-			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0)
+			if (_catalogSettings.ManufacturersBlockItemsToDisplay == 0 || _catalogSettings.ShowManufacturersOnHomepage == false)
 				return Content("");
 
 			string cacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_NAVIGATION_MODEL_KEY, currentManufacturerId, _services.WorkContext.WorkingLanguage.Id, _services.StoreContext.CurrentStore.Id);
@@ -606,7 +587,9 @@ namespace SmartStore.Web.Controllers
                 var manufacturers = _manufacturerService.GetAllManufacturers();
                 var model = new ManufacturerNavigationModel()
                 {
-                    TotalManufacturers = manufacturers.Count
+                    TotalManufacturers = manufacturers.Count,
+                    DisplayManufacturers = _catalogSettings.ShowManufacturersOnHomepage,
+                    DisplayImages = _catalogSettings.ShowManufacturerPictures
                 };
 
                 foreach (var manufacturer in manufacturers.Take(_catalogSettings.ManufacturersBlockItemsToDisplay))
@@ -616,6 +599,7 @@ namespace SmartStore.Web.Controllers
                         Id = manufacturer.Id,
                         Name = manufacturer.GetLocalized(x => x.Name),
                         SeName = manufacturer.GetSeName(),
+                        PictureUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), _mediaSettings.ManufacturerThumbPictureSize),
                         IsActive = currentManufacturer != null && currentManufacturer.Id == manufacturer.Id,
                     };
                     model.Manufacturers.Add(modelMan);
@@ -738,6 +722,11 @@ namespace SmartStore.Web.Controllers
 				Id = productTag.Id,
 				TagName = productTag.GetLocalized(y => y.Name)
 			};
+
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{
@@ -962,10 +951,13 @@ namespace SmartStore.Web.Controllers
 				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
 				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
 			};
+
 			var products = _compareProductsService.GetComparedProducts();
-			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
+
+			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true, prepareFullDescription: true)
 				.ToList()
 				.ForEach(model.Products.Add);
+
 			return View(model);
 		}
 
@@ -1009,7 +1001,9 @@ namespace SmartStore.Web.Controllers
 				IncludeShortDescriptionInCompareProducts = _catalogSettings.IncludeShortDescriptionInCompareProducts,
 				IncludeFullDescriptionInCompareProducts = _catalogSettings.IncludeFullDescriptionInCompareProducts,
 			};
+
 			var products = _compareProductsService.GetComparedProducts();
+
 			_helper.PrepareProductOverviewModels(products, prepareSpecificationAttributes: true)
 				.ToList()
 				.ForEach(model.Products.Add);
@@ -1038,6 +1032,11 @@ namespace SmartStore.Web.Controllers
 				command.PageSize = _catalogSettings.SearchPageProductsPerPage;
 			if (command.PageNumber <= 0)
 				command.PageNumber = 1;
+
+            if (command.OrderBy == (int)ProductSortingEnum.Initial)
+            {
+                command.OrderBy = (int)_catalogSettings.DefaultSortOrder;
+            }
 
 			_helper.PreparePagingFilteringModel(model.PagingFilteringContext, command, new PageSizeContext
 			{

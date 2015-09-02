@@ -71,5 +71,20 @@ namespace SmartStore.DevTools.Controllers
 			return View();
 		}
 
+        public ActionResult WidgetZone(string widgetZone)
+        {
+            var storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _workContext);
+            var settings = _settingService.LoadSetting<ProfilerSettings>(storeScope);
+
+            if (settings.DisplayWidgetZones)
+            { 
+                ViewData["widgetZone"] = widgetZone;
+
+                return View();
+            }
+
+            return new EmptyResult();
+        }
+
 	}
 }

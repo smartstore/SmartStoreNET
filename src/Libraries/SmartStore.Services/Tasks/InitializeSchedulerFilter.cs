@@ -10,6 +10,7 @@ using System.Threading.Tasks;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
 using SmartStore.Core.Logging;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tasks
 {
@@ -26,24 +27,38 @@ namespace SmartStore.Services.Tasks
                 {
                     s_initializing = true;
 
+					var logger = EngineContext.Current.Resolve<ILogger>();
+
 					try
 					{
 						var taskService = EngineContext.Current.Resolve<IScheduleTaskService>();
 						var storeService = EngineContext.Current.Resolve<IStoreService>();
 						var eventPublisher = EngineContext.Current.Resolve<IEventPublisher>();
-						var taskManager = EngineContext.Current.Resolve<ITaskScheduler>();
+						var taskScheduler = EngineContext.Current.Resolve<ITaskScheduler>();
 
 						var tasks = taskService.GetAllTasks(true);
-						taskService.CalculateNextRunTimes(tasks, true /* isAppStart */);
+						taskService.CalculateFutureSchedules(tasks, true /* isAppStart */);
 
-						taskManager.SetBaseUrl(storeService, filterContext.HttpContext);
-						taskManager.Start();
+						var baseUrl = CommonHelper.GetAppSetting<string>("sm:TaskSchedulerBaseUrl");
+						if (baseUrl.IsWebUrl())
+						{
+							taskScheduler.BaseUrl = baseUrl;
+						}
+						else
+						{
+							// autoresolve base url
+							taskScheduler.SetBaseUrl(storeService, filterContext.HttpContext);
+						}
+
+						taskScheduler.SweepIntervalMinutes = CommonHelper.GetAppSetting<int>("sm:TaskSchedulerSweepInterval", 1);
+						taskScheduler.Start();
+
+						logger.Information("Initialized TaskScheduler with base url '{0}'".FormatInvariant(taskScheduler.BaseUrl));
 
 						eventPublisher.Publish(new AppInitScheduledTasksEvent { ScheduledTasks = tasks });
 					}
 					catch (Exception ex)
 					{
-						var logger = EngineContext.Current.Resolve<ILogger>();
 						logger.Error("Error while initializing Task Scheduler", ex);
 					}
 					finally

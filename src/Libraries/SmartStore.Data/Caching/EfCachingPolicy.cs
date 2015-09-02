@@ -2,9 +2,7 @@
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Data.Entity.Core.Metadata.Edm;
-using System.Diagnostics;
 using System.Linq;
-using System.Text;
 using EFCache;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
@@ -14,7 +12,9 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Logging;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Security;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Domain.Themes;
@@ -52,9 +52,11 @@ namespace SmartStore.Data.Caching
 				typeof(MeasureDimension).Name,
 				typeof(MeasureWeight).Name,
 				typeof(MessageTemplate).Name,
+				typeof(PaymentMethod).Name,
 				typeof(PermissionRecord).Name,
 				typeof(ProductTemplate).Name,
 				typeof(QuantityUnit).Name,
+				typeof(ShippingMethod).Name,
 				typeof(StateProvince).Name,
 				typeof(Store).Name,
 				typeof(StoreMapping).Name,
@@ -66,7 +68,7 @@ namespace SmartStore.Data.Caching
 		protected override bool CanBeCached(ReadOnlyCollection<EntitySetBase> affectedEntitySets, string sql, IEnumerable<KeyValuePair<string, object>> parameters)
 		{
 			var entitySets = affectedEntitySets.Select(x => x.Name);
-			var result = entitySets.Any(x => _cacheableSets.Contains(x));
+			var result = entitySets.All(x => _cacheableSets.Contains(x));
 			return result;
 		}
 

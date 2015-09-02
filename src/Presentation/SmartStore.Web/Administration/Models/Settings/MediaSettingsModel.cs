@@ -51,11 +51,10 @@ namespace SmartStore.Admin.Models.Settings
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.MaximumImageSize")]
         public int MaximumImageSize { get; set; }
 
-        // codehint: sm-add
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.DefaultPictureZoomEnabled")]
         public bool DefaultPictureZoomEnabled { get; set; }
 
-        // codehint: sm-add (window || inner || lens)
+        // (window || inner || lens)
         [SmartResourceDisplayName("Admin.Configuration.Settings.Media.PictureZoomType")]
         public string PictureZoomType { get; set; }
 

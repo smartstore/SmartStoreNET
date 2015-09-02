@@ -19,7 +19,7 @@ namespace SmartStore.Services.Tasks
         /// The interval in which the scheduler triggers the sweep url 
 		/// (which determines pending tasks and executes them in the scope of a regular HTTP request).
         /// </summary>
-		TimeSpan SweepInterval { get; set; }
+		int SweepIntervalMinutes { get; set; }
 
 		/// <summary>
 		/// The fully qualified base url
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Tasks
 		/// <summary>
 		/// Starts/initializes the scheduler
 		/// </summary>
-        void Start();
+		void Start();
 
 		/// <summary>
 		/// Stops the scheduler
@@ -74,7 +74,6 @@ namespace SmartStore.Services.Tasks
 
 		internal static void SetBaseUrl(this ITaskScheduler scheduler, IStoreService storeService, HttpContextBase httpContext)
         {
-            var path = VirtualPathUtility.ToAbsolute("~/TaskScheduler");
             string url = "";
 
             if (!httpContext.Request.IsLocal)
@@ -82,13 +81,13 @@ namespace SmartStore.Services.Tasks
                 var defaultStore = storeService.GetAllStores().FirstOrDefault(x => storeService.IsStoreDataValid(x));
                 if (defaultStore != null)
                 {
-                    url = defaultStore.Url;
+                    url = defaultStore.Url.EnsureEndsWith("/") + "TaskScheduler";
                 }
             }
 
             if (url.IsEmpty())
             {
-                url = WebHelper.GetAbsoluteUrl(path, httpContext.Request);
+				url = WebHelper.GetAbsoluteUrl(VirtualPathUtility.ToAbsolute("~/TaskScheduler"), httpContext.Request);
             }
 
             scheduler.BaseUrl = url;

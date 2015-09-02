@@ -3,8 +3,6 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Web.Models.Common
 {
-    //codehint: sm-delete (whole PagerModel class)
-
     #region Classes
 
     /// <summary>

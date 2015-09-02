@@ -1,10 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
 using System.Threading.Tasks;
-using SmartStore.Core;
 
 namespace SmartStore.Core.Data
 {
@@ -83,20 +81,21 @@ namespace SmartStore.Core.Data
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to attach</param>
         /// <returns><c>true</c> when the entity is attched already, <c>false</c> otherwise</returns>
-        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+        bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
         /// <summary>
         /// Detaches an entity from the current object context if it's attached
         /// </summary>
         /// <typeparam name="TEntity">Type of entity</typeparam>
         /// <param name="entity">The entity instance to detach</param>
-        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
 		/// <summary>
-		/// Detaches all entities from the current object context
+		/// Detaches all entities of type <c>TEntity</c> from the current object context
 		/// </summary>
+		/// <param name="unchangedEntitiesOnly">When <c>true</c>, only entities in unchanged state get detached.</param>
 		/// <returns>The count of detached entities</returns>
-		int DetachAll();
+		int DetachEntities<TEntity>(bool unchangedEntitiesOnly = true) where TEntity : class;
 
 		/// <summary>
 		/// Change the state of an entity object
@@ -104,7 +103,7 @@ namespace SmartStore.Core.Data
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
 		/// <param name="newState">The new state</param>
-		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity, new();
+		void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Reloads the entity from the database overwriting any property values with values from the database. 
@@ -112,7 +111,7 @@ namespace SmartStore.Core.Data
 		/// </summary>
 		/// <typeparam name="TEntity">Type of entity</typeparam>
 		/// <param name="entity">The entity instance</param>
-		void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new();
+		void ReloadEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Begins a transaction on the underlying store connection using the specified isolation level 
@@ -128,28 +127,4 @@ namespace SmartStore.Core.Data
 		void UseTransaction(DbTransaction transaction);
     }
 
-	public static class IDbContextExtensions
-	{
-
-		/// <summary>
-		/// Changes the object state to unchanged
-		/// </summary>
-		/// <typeparam name="TEntity">Type of entity</typeparam>
-		/// <param name="entity">The entity instance</param>
-		/// <returns>true on success, false on failure</returns>
-		public static bool SetToUnchanged<TEntity>(this IDbContext ctx, TEntity entity) where TEntity : BaseEntity, new()
-		{
-			try
-			{
-				ctx.ChangeState<TEntity>(entity, System.Data.Entity.EntityState.Unchanged);
-				return true;
-			}
-			catch (Exception ex)
-			{
-				ex.Dump();
-				return false;
-			}
-		}
-
-	}
 }

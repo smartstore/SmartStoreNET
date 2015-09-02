@@ -770,6 +770,7 @@ namespace SmartStore.Web.Controllers
         /// </summary>
         /// <param name="dontUseMobileVersion">True - use desktop version; false - use version for mobile devices</param>
         /// <returns>Action result</returns>
+        [HttpPost]
         public ActionResult ChangeDevice(bool dontUseMobileVersion)
         {
 			_genericAttributeService.Value.SaveAttribute(_services.WorkContext.CurrentCustomer,
@@ -801,55 +802,53 @@ namespace SmartStore.Web.Controllers
             {
                 "/bin/",
                 "/Content/files/",
-                "/Content/files/exportimport/",
-                "/country/getstatesbycountryid",
-                "/install",
-                "/product/setreviewhelpfulness",
+                "/Content/files/ExportImport/",
+                "/Country/GetStatesByCountryId",
+                "/Install",
+                "/Product/SetReviewHelpfulness",
             };
             var localizableDisallowPaths = new List<string>()
             {
-                "/boards/forumwatch",
-                "/boards/postedit",
-                "/boards/postdelete",
-                "/boards/postcreate",
-                "/boards/topicedit",
-                "/boards/topicdelete",
-                "/boards/topiccreate",
-                "/boards/topicmove",
-                "/boards/topicwatch",
-                "/cart",
-                "/checkout",
-                "/product/clearcomparelist",
-                "/compareproducts",
-                "/customer/avatar",
-                "/customer/activation",
-                "/customer/addresses",
-                "/customer/backinstocksubscriptions",
-                "/customer/changepassword",
-                "/customer/checkusernameavailability",
-                "/customer/downloadableproducts",
-                "/customer/forumsubscriptions",
-				"/customer/deleteforumsubscriptions",
-                "/customer/info",
-                "/customer/orders",
-                "/customer/returnrequests",
-                "/customer/rewardpoints",
-                "/privatemessages",
-                "/newsletter/subscriptionactivation",
-                "/onepagecheckout",
-                "/order",
-                "/passwordrecovery",
-                "/poll/vote",
-                "/privatemessages",
-                "/returnrequest",
-                "/newsletter/subscribe",
-                "/topic/authenticate",
-                "/wishlist",
-                "/product/askquestion",
-                "/product/emailafriend",
-				"/search",
-				"/config",
-				"/settings"
+                "/Boards/ForumWatch",
+                "/Boards/PostEdit",
+                "/Boards/PostDelete",
+                "/Boards/PostCreate",
+                "/Boards/TopicEdit",
+                "/Boards/TopicDelete",
+                "/Boards/TopicCreate",
+                "/Boards/TopicMove",
+                "/Boards/TopicWatch",
+                "/Cart",
+                "/Checkout",
+                "/Product/ClearCompareList",
+                "/CompareProducts",
+                "/Customer/Avatar",
+                "/Customer/Activation",
+                "/Customer/Addresses",
+                "/Customer/BackInStockSubscriptions",
+                "/Customer/ChangePassword",
+                "/Customer/CheckUsernameAvailability",
+                "/Customer/DownloadableProducts",
+                "/Customer/ForumSubscriptions",
+				"/Customer/DeleteForumSubscriptions",
+                "/Customer/Info",
+                "/Customer/Orders",
+                "/Customer/ReturnRequests",
+                "/Customer/RewardPoints",
+                "/PrivateMessages",
+                "/Newsletter/SubscriptionActivation",
+                "/Order",
+                "/PasswordRecovery",
+                "/Poll/Vote",
+                "/ReturnRequest",
+                "/Newsletter/Subscribe",
+                "/Topic/Authenticate",
+                "/Wishlist",
+                "/Product/AskQuestion",
+                "/Product/EmailAFriend",
+				"/Search",
+				"/Config",
+				"/Settings"
             };
 
 
@@ -860,7 +859,8 @@ namespace SmartStore.Web.Controllers
 			sb.AppendFormat("Sitemap: {0}", Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http"));
 			sb.AppendLine();
 
-            var disallows = disallowPaths.Concat(localizableDisallowPaths);
+			var disallows = disallowPaths.Concat(localizableDisallowPaths);
+
             if (_localizationSettings.SeoFriendlyUrlsForLanguagesEnabled)
             {
                 // URLs are localizable. Append SEO code
@@ -875,6 +875,9 @@ namespace SmartStore.Web.Controllers
             // append extra disallows
             disallows = disallows.Concat(seoSettings.ExtraRobotsDisallows.Select(x => x.Trim()));
 
+			// Append all lowercase variants (at least Google is case sensitive)
+			disallows = disallows.Concat(GetLowerCaseVariants(disallows));
+
             foreach (var disallow in disallows)
             {
                 sb.AppendFormat("Disallow: {0}", disallow);
@@ -885,6 +888,21 @@ namespace SmartStore.Web.Controllers
             Response.Write(sb.ToString());
             return null;
         }
+
+		private IEnumerable<string> GetLowerCaseVariants(IEnumerable<string> disallows)
+		{
+			var other = new List<string>();
+			foreach (var item in disallows)
+			{
+				var lower = item.ToLower();
+				if (lower != item)
+				{
+					other.Add(lower);
+				}
+			}
+
+			return other;
+		}
 
         public ActionResult GenericUrl()
         {

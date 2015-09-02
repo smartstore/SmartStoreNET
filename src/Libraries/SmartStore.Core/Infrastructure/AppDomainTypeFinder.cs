@@ -19,11 +19,17 @@ namespace SmartStore.Core.Infrastructure
     {
         #region Private Fields
 
+		private static object s_lock = new object();
+
 		private string _assemblySkipLoadingPattern = @"^System|^mscorlib|^Microsoft|^CppCodeProvider|^VJSharpCodeProvider|^WebDev|^Nuget|^Castle|^Iesi|^log4net|^Autofac|^AutoMapper|^EntityFramework|^EPPlus|^Fasterflect|^nunit|^TestDriven|^MbUnit|^Rhino|^QuickGraph|^TestFu|^Telerik|^Antlr3|^Recaptcha|^FluentValidation|^ImageResizer|^itextsharp|^MiniProfiler|^Newtonsoft|^Pandora|^WebGrease|^Noesis|^DotNetOpenAuth|^Facebook|^LinqToTwitter|^PerceptiveMCAPI|^CookComputing|^GCheckout|^Mono\.Math|^Org\.Mentalis|^App_Web|^BundleTransformer|^ClearScript|^JavaScriptEngineSwitcher|^MsieJavaScriptEngine|^Glimpse|^Ionic|^App_GlobalResources|^AjaxMin|^MaxMind|^NReco|^OffAmazonPayments|^UAParser";
+		private string _assemblyRestrictToLoadingPattern = ".*";
+		private readonly IDictionary<string, bool> _assemblyMatchTable = new Dictionary<string, bool>();
+
+		private Regex _assemblySkipLoadingRegex = null;
+		private Regex _assemblyRestrictToLoadingRegex = null;
 
 		private bool _ignoreReflectionErrors = true;
 		private bool _loadAppDomainAssemblies = true;
-        private string _assemblyRestrictToLoadingPattern = ".*";
         private IList<string> _customAssemblyNames = new List<string>();
 
         #endregion
@@ -45,33 +51,53 @@ namespace SmartStore.Core.Infrastructure
             get { return AppDomain.CurrentDomain; }
         }
 
-        /// <summary>Gets or sets wether SmartStore should iterate assemblies in the app domain when loading SmartStore types. Loading patterns are applied when loading these assemblies.</summary>
+        /// <summary>
+		/// Gets or sets wether SmartStore should iterate assemblies in the app domain when loading SmartStore types. Loading patterns are applied when loading these assemblies.
+		/// </summary>
         public bool LoadAppDomainAssemblies
         {
             get { return _loadAppDomainAssemblies; }
             set { _loadAppDomainAssemblies = value; }
         }
 
-        /// <summary>Gets or sets assemblies loaded at startup in addition to those loaded in the AppDomain.</summary>
+        /// <summary>
+		/// Gets or sets assemblies loaded at startup in addition to those loaded in the AppDomain.
+		/// </summary>
         public IList<string> CustomAssemblyNames
         {
             get { return _customAssemblyNames; }
             set { _customAssemblyNames = value; }
         }
 
-        /// <summary>Gets the pattern for dlls that we know don't need to be investigated.</summary>
+        /// <summary>
+		/// Gets the pattern for dlls that we know don't need to be investigated.
+		/// </summary>
         public string AssemblySkipLoadingPattern
         {
             get { return _assemblySkipLoadingPattern; }
-            set { _assemblySkipLoadingPattern = value; }
+            set 
+			{ 
+				_assemblySkipLoadingPattern = value;
+				_assemblySkipLoadingRegex = null;
+				_assemblyMatchTable.Clear();
+			}
         }
 
-        /// <summary>Gets or sets the pattern for dll that will be investigated. For ease of use this defaults to match all but to increase performance you might want to configure a pattern that includes assemblies and your own.</summary>
-        /// <remarks>If you change this so that SmartStore assemblies arn't investigated (e.g. by not including something like "^SmartStore|..." you may break core functionality.</remarks>
+        /// <summary>
+		/// Gets or sets the pattern for dll that will be investigated. For ease of use this defaults to match all but to increase performance you might want to configure a pattern that includes assemblies and your own.
+		/// </summary>
+        /// <remarks>
+		/// If you change this so that SmartStore assemblies aren't investigated (e.g. by not including something like "^SmartStore|..." you may break core functionality.
+		/// </remarks>
         public string AssemblyRestrictToLoadingPattern
         {
             get { return _assemblyRestrictToLoadingPattern; }
-            set { _assemblyRestrictToLoadingPattern = value; }
+            set 
+			{ 
+				_assemblyRestrictToLoadingPattern = value;
+				_assemblyRestrictToLoadingRegex = null;
+				_assemblyMatchTable.Clear();
+			}
         }
 
         #endregion
@@ -103,7 +129,7 @@ namespace SmartStore.Core.Infrastructure
 					}
 					catch
 					{
-						//Entity Framework 6 doesn't allow getting types (throws an exception)
+						// Entity Framework 6 doesn't allow getting types (throws an exception)
 						if (!_ignoreReflectionErrors)
 						{
 							throw;
@@ -158,12 +184,14 @@ namespace SmartStore.Core.Infrastructure
         /// </summary>
         private readonly List<Type> _assemblyAttributesSearched = new List<Type>();
 
-        /// <summary>Gets the assemblies related to the current implementation.</summary>
+        /// <summary>
+		/// Gets the assemblies related to the current implementation.
+		/// </summary>
 		/// <param name="ignoreInactivePlugins">Indicates whether uninstalled plugin's assemblies should be filtered out</param>
         /// <returns>A list of assemblies that should be loaded by the SmartStore factory.</returns>
 		public virtual IList<Assembly> GetAssemblies(bool ignoreInactivePlugins = false)
         {
-			var addedAssemblyNames = new List<string>();
+			var addedAssemblyNames = new HashSet<string>();
             var assemblies = new List<Assembly>();
 
 			if (LoadAppDomainAssemblies)
@@ -184,12 +212,15 @@ namespace SmartStore.Core.Infrastructure
 
         #endregion
 
-        /// <summary>Iterates all assemblies in the AppDomain and if it's name matches the configured patterns add it to our list.</summary>
+        /// <summary>
+		/// Iterates all assemblies in the AppDomain and if it's name matches the configured patterns add it to our list.
+		/// </summary>
         /// <param name="addedAssemblyNames"></param>
         /// <param name="assemblies"></param>
-        private void AddAssembliesInAppDomain(List<string> addedAssemblyNames, List<Assembly> assemblies)
+        private void AddAssembliesInAppDomain(HashSet<string> addedAssemblyNames, List<Assembly> assemblies)
         {
-            foreach (Assembly assembly in AppDomain.CurrentDomain.GetAssemblies())
+			var curDomainAssemblies = AppDomain.CurrentDomain.GetAssemblies();
+			foreach (var assembly in curDomainAssemblies)
             {
                 if (Matches(assembly.FullName))
                 {
@@ -202,8 +233,10 @@ namespace SmartStore.Core.Infrastructure
             }
         }
 
-        /// <summary>Adds specificly configured assemblies.</summary>
-        protected virtual void AddCustomAssemblies(List<string> addedAssemblyNames, List<Assembly> assemblies)
+        /// <summary>
+		/// Adds specificly configured assemblies.
+		/// </summary>
+        protected virtual void AddCustomAssemblies(HashSet<string> addedAssemblyNames, List<Assembly> assemblies)
         {
             foreach (string assemblyName in CustomAssemblyNames)
             {
@@ -216,25 +249,68 @@ namespace SmartStore.Core.Infrastructure
             }
         }
 
-        /// <summary>Check if a dll is one of the shipped dlls that we know don't need to be investigated.</summary>
+        /// <summary>
+		/// Check if a dll is one of the shipped dlls that we know don't need to be investigated.
+		/// </summary>
         /// <param name="assemblyFullName">The name of the assembly to check.</param>
         /// <returns>True if the assembly should be loaded into SmartStore.</returns>
         public virtual bool Matches(string assemblyFullName)
         {
-            return !Matches(assemblyFullName, AssemblySkipLoadingPattern)
-                   && Matches(assemblyFullName, AssemblyRestrictToLoadingPattern);
+			if (_assemblyMatchTable.ContainsKey(assemblyFullName))
+			{
+				return _assemblyMatchTable[assemblyFullName];
+			}
+			
+			if (_assemblySkipLoadingRegex == null)
+			{
+				lock (s_lock)
+				{
+					if (_assemblySkipLoadingRegex == null)
+					{
+						_assemblySkipLoadingRegex = new Regex(_assemblySkipLoadingPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+					}
+				}
+			}
+
+			if (_assemblySkipLoadingRegex.IsMatch(assemblyFullName))
+			{
+				_assemblyMatchTable[assemblyFullName] = false;
+				return false;
+			}
+
+			if (_assemblyRestrictToLoadingRegex == null)
+			{
+				lock (s_lock)
+				{
+					if (_assemblyRestrictToLoadingRegex == null)
+					{
+						_assemblyRestrictToLoadingRegex = new Regex(_assemblyRestrictToLoadingPattern, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+					}
+				}
+			}
+
+			var matches = _assemblyRestrictToLoadingRegex.IsMatch(assemblyFullName);
+			_assemblyMatchTable[assemblyFullName] = matches;
+
+			return matches;
+			
+			//return !Matches(assemblyFullName, AssemblySkipLoadingPattern) && Matches(assemblyFullName, AssemblyRestrictToLoadingPattern);
         }
 
-        /// <summary>Check if a dll is one of the shipped dlls that we know don't need to be investigated.</summary>
-        /// <param name="assemblyFullName">The assembly name to match.</param>
-        /// <param name="pattern">The regular expression pattern to match against the assembly name.</param>
-        /// <returns>True if the pattern matches the assembly name.</returns>
-        protected virtual bool Matches(string assemblyFullName, string pattern)
-        {
-            return Regex.IsMatch(assemblyFullName, pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled);
-        }
+		///// <summary>
+		///// Check if a dll is one of the shipped dlls that we know don't need to be investigated.
+		///// </summary>
+		///// <param name="assemblyFullName">The assembly name to match.</param>
+		///// <param name="pattern">The regular expression pattern to match against the assembly name.</param>
+		///// <returns>True if the pattern matches the assembly name.</returns>
+		//protected virtual bool Matches(string assemblyFullName, string pattern)
+		//{
+		//	return Regex.IsMatch(assemblyFullName, pattern, RegexOptions.IgnoreCase | RegexOptions.Compiled | RegexOptions.Singleline);
+		//}
 
-        /// <summary>Makes sure matching assemblies in the supplied folder are loaded in the app domain.</summary>
+        /// <summary>
+		/// Makes sure matching assemblies in the supplied folder are loaded in the app domain.
+		/// </summary>
         /// <param name="directoryPath">The physical path to a directory containing dlls to load in the app domain.</param>
         protected virtual void LoadMatchingAssemblies(string directoryPath)
         {

@@ -23,6 +23,7 @@
             $("#@Html.FieldIdFor(model => model.RecentlyViewedProductsEnabled)").click(toggleRecentlyViewedProducts);
             $("#@Html.FieldIdFor(model => model.RecentlyAddedProductsEnabled)").click(toggleRecentlyAddedProducts);
             $("#@Html.FieldIdFor(model => model.ShowBestsellersOnHomepage)").click(toggleBestsellersOnHomepage);
+            $("#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)").click(toggleManufacturersOnHomepage);
             $("#@Html.FieldIdFor(model => model.ProductsAlsoPurchasedEnabled)").click(toggleProductsAlsoPurchasedNumber);
             $("#@Html.FieldIdFor(model => model.ProductsByTagAllowCustomersToSelectPageSize)").click(toggleTagPageSize);
             $("#@Html.FieldIdFor(model => model.ProductSearchAllowCustomersToSelectPageSize)").click(toggleSearchPageSize);
@@ -43,6 +44,7 @@
             toggleCompareProducts();
             toggleHtmlTextCollapsedHeight();
             toggleFilterEnabled();
+            toggleManufacturersOnHomepage();
         });
 
         function toggleShowCategoryProductNumberIncludingSubcategories() {
@@ -87,6 +89,17 @@
             }
             else {
                 $('#pnlNumberOfBestsellersOnHomepage').hide();
+            }
+        }
+
+        function toggleManufacturersOnHomepage() {
+            if ($('#@Html.FieldIdFor(model => model.ShowManufacturersOnHomepage)').is(':checked')) {
+                $('#pnlShowManufacturerPictures').show();
+                $('#pnlManufacturersBlockItemsToDisplay').show();
+            }
+            else {
+                $('#pnlShowManufacturerPictures').hide();
+                $('#pnlManufacturersBlockItemsToDisplay').hide();
             }
         }
 
@@ -290,6 +303,36 @@
                 @Html.ValidationMessageFor(model => model.NumberOfBestsellersOnHomepage)
             </td>
         </tr>
+
+        <tr id="pnlShowManufacturersOnHomepage">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturersOnHomepage)
+                @Html.ValidationMessageFor(model => model.ShowManufacturersOnHomepage)
+            </td>
+        </tr>
+        <tr id="pnlManufacturersBlockItemsToDisplay">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ManufacturersBlockItemsToDisplay)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ManufacturersBlockItemsToDisplay)
+                @Html.ValidationMessageFor(model => model.ManufacturersBlockItemsToDisplay)
+            </td>
+        </tr>
+        <tr id="pnlShowManufacturerPictures">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.ShowManufacturerPictures)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.ShowManufacturerPictures)
+                @Html.ValidationMessageFor(model => model.ShowManufacturerPictures)
+            </td>
+        </tr>
+
+
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.EnableHtmlTextCollapser)
@@ -433,6 +476,16 @@
 				    @Html.SettingOverrideCheckbox(model => Model.DefaultViewMode)
                     @Html.DropDownListFor(model => model.DefaultViewMode, Model.AvailableDefaultViewModes)
                     @Html.ValidationMessageFor(model => model.DefaultViewMode)
+                </td>
+            </tr>
+            <tr>
+                <td class="adminTitle">
+                    @Html.SmartLabelFor(model => model.DefaultSortOrder)
+                </td>
+                <td class="adminData">
+                    @Html.SettingOverrideCheckbox(model => Model.DefaultSortOrder)
+                    @Html.DropDownListFor(model => model.DefaultSortOrder, Model.AvailableSortOrderModes)
+                    @Html.ValidationMessageFor(model => model.DefaultSortOrder)
                 </td>
             </tr>
             <tr>

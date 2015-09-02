@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -15,6 +16,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
+using SmartStore.Services.Filter;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -56,6 +58,7 @@ namespace SmartStore.Admin.Controllers
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
+        private readonly IFilterService _filterService;
 
         #endregion
 
@@ -73,7 +76,7 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
-			IEventPublisher eventPublisher)
+            IEventPublisher eventPublisher, IFilterService filterService)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -97,6 +100,7 @@ namespace SmartStore.Admin.Controllers
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
+            this._filterService = filterService;
         }
 
         #endregion
@@ -711,6 +715,22 @@ namespace SmartStore.Admin.Controllers
 			PrepareStoresMappingModel(model, category, true);
 
             return View(model);
+        }
+
+        [ValidateInput(false)]
+        public ActionResult InheritAclIntoChildren(int categoryId)
+        {
+            _categoryService.InheritAclIntoChildren(categoryId, false, true, false);
+
+            return RedirectToAction("Edit", "Category", new { id = categoryId });
+        }
+
+        [ValidateInput(false)]
+        public ActionResult InheritStoresIntoChildren(int categoryId)
+        {
+            _categoryService.InheritStoresIntoChildren(categoryId, false, true, false);
+
+            return RedirectToAction("Edit", "Category", new { id = categoryId });
         }
 
         [HttpPost]

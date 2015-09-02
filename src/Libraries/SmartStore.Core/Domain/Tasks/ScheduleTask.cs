@@ -1,5 +1,6 @@
 ﻿
 using System;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 using System.Diagnostics;
 
@@ -18,10 +19,10 @@ namespace SmartStore.Core.Domain.Tasks
         /// </summary>
         public string Alias { get; set; }
 
-        /// <summary>
-        /// Gets or sets the run period (in seconds)
-        /// </summary>
-        public int Seconds { get; set; }
+		/// <summary>
+		/// Gets or sets the CRON expression used to calculate future schedules
+		/// </summary>
+		public string CronExpression { get; set; }
 
         /// <summary>
         /// Gets or sets the type of appropriate ITask class
@@ -64,6 +65,12 @@ namespace SmartStore.Core.Domain.Tasks
 		/// Gets or sets the current progress message for a running task
 		/// </summary>
 		public string ProgressMessage { get; set; }
+
+		/// <summary>
+		/// Concurrency Token
+		/// </summary>
+		[Timestamp]
+		public byte[] RowVersion { get; set; }
 
 		/// <summary>
 		/// Gets a value indicating whether a task is running

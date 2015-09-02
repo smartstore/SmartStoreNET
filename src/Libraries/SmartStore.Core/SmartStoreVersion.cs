@@ -23,6 +23,8 @@ namespace SmartStore.Core
 			new Version("2.2")
         };
 
+		private const string HELP_BASEURL = "http://docs.smartstore.com/display/SMNET25/";
+
         static SmartStoreVersion()
         {
             s_breakingChangesHistory.Reverse();
@@ -64,6 +66,11 @@ namespace SmartStore.Core
                 return s_infoVersion;
             }
         }
+
+		public static string GenerateHelpUrl(string path)
+		{
+			return HELP_BASEURL + path.Trim().TrimStart('/', '\\');
+		}
 
         /// <summary>
         /// Gets a list of SmartStore.NET versions in which breaking changes occured,

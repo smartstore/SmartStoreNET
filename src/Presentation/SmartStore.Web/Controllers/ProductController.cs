@@ -59,6 +59,8 @@ namespace SmartStore.Web.Controllers
 		private readonly LocalizationSettings _localizationSettings;
 		private readonly CaptchaSettings _captchaSettings;
 		private readonly CatalogHelper _helper;
+        private readonly IDownloadService _downloadService;
+        private readonly ILocalizationService _localizationService;
 
 		#endregion
 
@@ -90,7 +92,9 @@ namespace SmartStore.Web.Controllers
 			ShoppingCartSettings shoppingCartSettings,
 			LocalizationSettings localizationSettings, 
 			CaptchaSettings captchaSettings,
-			CatalogHelper helper)
+			CatalogHelper helper,
+            IDownloadService downloadService,
+            ILocalizationService localizationService)
         {
 			this._services = services;
 			this._manufacturerService = manufacturerService;
@@ -118,6 +122,8 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
+			this._downloadService = downloadService;
+			this._localizationService = localizationService;
         }
         
         #endregion
@@ -226,7 +232,7 @@ namespace SmartStore.Web.Controllers
 
 			foreach (string formKey in form.AllKeys)
 			{
-				if (formKey.Equals(string.Format("addtocart_{0}.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
+                if (formKey.Equals(string.Format("addtocart_{0}.AddToCart.EnteredQuantity", productId), StringComparison.InvariantCultureIgnoreCase))
 				{
 					int.TryParse(form[formKey], out quantity);
 					break;
@@ -434,7 +440,7 @@ namespace SmartStore.Web.Controllers
 			if (products.Count == 0)
 				return Content("");
 
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -461,7 +467,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			// prepare model
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+            var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -599,6 +605,14 @@ namespace SmartStore.Web.Controllers
 			IList<ProductBundleItemData> bundleItems = null;
 			ProductBundleItemData bundleItem = (bItem == null ? null : new ProductBundleItemData(bItem));
 
+			var warnings = new List<string>();
+			var attributes = _productAttributeService.GetProductVariantAttributesByProductId(productId);
+
+			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
+				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, true);
+
+			var areAllAttributesForCombinationSelected = _shoppingCartService.AreAllAttributesForCombinationSelected(attributeXml, product);
+
 			// quantity required for tier prices
 			string quantityKey = form.AllKeys.FirstOrDefault(k => k.EndsWith("EnteredQuantity"));
 			if (quantityKey.HasValue())
@@ -656,63 +670,74 @@ namespace SmartStore.Web.Controllers
 					galleryHtml = this.RenderPartialViewToString("_PictureGallery", pictureModel);
 				}
 			}
-
+ 
 			#region data object
-			object data = new
-			{
-				Delivery = new
-				{
-					Id = 0,
-					Name = m.DeliveryTimeName,
-					Color = m.DeliveryTimeHexValue,
-					DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
-				},
-				Measure = new
-				{
-					Weight = new { Value = m.WeightValue, Text = m.Weight },
-					Height = new { Value = product.Height, Text = m.Height },
-					Width = new { Value = product.Width, Text = m.Width },
-					Length = new { Value = product.Length, Text = m.Length }
-				},
-				Number = new
-				{
-					Sku = new { Value = m.Sku, Show = m.ShowSku },
-					Gtin = new { Value = m.Gtin, Show = m.ShowGtin },
-					Mpn = new { Value = m.ManufacturerPartNumber, Show = m.ShowManufacturerPartNumber }
-				},
-				Price = new
-				{
-					Base = new
-					{
-						Enabled = m.IsBasePriceEnabled,
-						Info = m.BasePriceInfo
-					},
-					Old = new
-					{
-						Value = decimal.Zero,
-						Text = m.ProductPrice.OldPrice
-					},
-					WithoutDiscount = new
-					{
-						Value = m.ProductPrice.PriceValue,
-						Text = m.ProductPrice.Price
-					},
-					WithDiscount = new
-					{
-						Value = m.ProductPrice.PriceWithDiscountValue,
-						Text = m.ProductPrice.PriceWithDiscount
-					}
-				},
-				Stock = new
-				{
-					Quantity = new { Value = product.StockQuantity, Show = product.DisplayStockQuantity },
-					Availability = new { Text = m.StockAvailability, Show = product.DisplayStockAvailability, Available = m.IsAvailable }
-				},
 
-				DynamicThumblUrl = dynamicThumbUrl,
-				GalleryStartIndex = galleryStartIndex,
-				GalleryHtml = galleryHtml
-			};
+            object data = new
+            {
+                Delivery = new
+                {
+                    Id = 0,
+                    Name = m.DeliveryTimeName,
+                    Color = m.DeliveryTimeHexValue,
+                    DisplayAccordingToStock = m.DisplayDeliveryTimeAccordingToStock
+                },
+                Measure = new
+                {
+                    Weight = new { Value = m.WeightValue, Text = m.Weight },
+                    Height = new { Value = product.Height, Text = m.Height },
+                    Width = new { Value = product.Width, Text = m.Width },
+                    Length = new { Value = product.Length, Text = m.Length }
+                },
+                Number = new
+                {
+                    Sku = new { Value = m.Sku, Show = m.ShowSku },
+                    Gtin = new { Value = m.Gtin, Show = m.ShowGtin },
+                    Mpn = new { Value = m.ManufacturerPartNumber, Show = m.ShowManufacturerPartNumber }
+                },
+                Price = new
+                {
+                    Base = new
+                    {
+                        Enabled = m.IsBasePriceEnabled,
+                        Info = m.BasePriceInfo
+                    },
+                    Old = new
+                    {
+                        Value = decimal.Zero,
+                        Text = m.ProductPrice.OldPrice
+                    },
+                    WithoutDiscount = new
+                    {
+                        Value = m.ProductPrice.PriceValue,
+                        Text = m.ProductPrice.Price
+                    },
+                    WithDiscount = new
+                    {
+                        Value = m.ProductPrice.PriceWithDiscountValue,
+                        Text = m.ProductPrice.PriceWithDiscount
+                    }
+                },
+                Stock = new
+                {
+                    Quantity = new
+					{ 
+                        Value = product.StockQuantity,
+						Show = areAllAttributesForCombinationSelected ? product.DisplayStockQuantity : false
+                    },
+                    Availability = new
+					{ 
+                        Text = m.StockAvailability,
+						Show = areAllAttributesForCombinationSelected ? product.DisplayStockAvailability : false, 
+                        Available = m.IsAvailable
+					}
+                },
+
+                DynamicThumblUrl = dynamicThumbUrl,
+                GalleryStartIndex = galleryStartIndex,
+                GalleryHtml = galleryHtml
+            };
+
 			#endregion
 
 			return new JsonResult { Data = data };

@@ -12,7 +12,12 @@ namespace SmartStore.Core.Domain.Media
 	[DataContract]
 	public partial class Picture : BaseEntity, ITransient
     {
-        private ICollection<ProductPicture> _productPictures;
+		public Picture()
+		{
+			this.UpdatedOnUtc = DateTime.UtcNow;
+		}
+		
+		private ICollection<ProductPicture> _productPictures;
         /// <summary>
         /// Gets or sets the picture binary
         /// </summary>

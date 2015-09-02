@@ -632,7 +632,7 @@ namespace SmartStore.Web.Controllers
 			{
 				// cases where stock inventory is not functional. determined by what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory is not handling.
 				model.IsAvailable = true;
-				model.StockAvailability = "";
+                model.StockAvailability = product.ProductVariantAttributeCombinations.Count == 0 ? product.FormatStockMessage(_localizationService) : "";
 			}
 			else if (model.IsAvailable)
 			{
@@ -680,7 +680,7 @@ namespace SmartStore.Web.Controllers
 			}
 
 			var addShippingPrice = _currencyService.ConvertFromPrimaryStoreCurrency(product.AdditionalShippingCharge, _services.WorkContext.WorkingCurrency);
-			string additionalShippingCosts = "";
+			string additionalShippingCosts = String.Empty;
 			if (addShippingPrice > 0)
 			{
 				additionalShippingCosts = T("Common.AdditionalShippingSurcharge").Text.FormatWith(_priceFormatter.FormatPrice(addShippingPrice, true, false)) + ", ";
@@ -689,7 +689,7 @@ namespace SmartStore.Web.Controllers
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
             
             if (!product.IsTaxExempt && !product.IsShipEnabled)
-                model.LegalInfo += taxInfo + " " + defaultTaxRate;
+                model.LegalInfo += "{0} {1}, {2}".FormatWith(taxInfo, defaultTaxRate, T("Common.FreeShipping"));
 
             if(product.IsShipEnabled) 
             {
@@ -846,9 +846,13 @@ namespace SmartStore.Web.Controllers
 							model.ProductPrice.NoteWithoutDiscount = T(isBundle && product.BundlePerItemPricing ? "Products.Bundle.PriceWithoutDiscount.Note" : "Products.Price");
 						}
 
-						if (isBundle && product.BundlePerItemPricing && !string.IsNullOrWhiteSpace(model.ProductPrice.PriceWithDiscount))
+						if ((isBundle && product.BundlePerItemPricing && !string.IsNullOrWhiteSpace(model.ProductPrice.PriceWithDiscount)) || product.HasTierPrices)
 						{
-							model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
+                            if (!product.HasTierPrices)
+                            {
+                                model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
+                            }
+                            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - finalPriceWithDiscount) * (-1));
 						}
 					}
 				}
@@ -986,7 +990,9 @@ namespace SmartStore.Web.Controllers
 			bool prepareSpecificationAttributes = false,
 			bool forceRedirectionAfterAddingToCart = false, 
 			bool prepareColorAttributes = false,
-			bool prepareManufacturers = false)
+			bool prepareManufacturers = false,
+            bool isCompact = false,
+			bool prepareFullDescription = false)
 		{
 			if (products == null)
 				throw new ArgumentNullException("products");
@@ -1029,6 +1035,11 @@ namespace SmartStore.Web.Controllers
 					ShortDescription = product.GetLocalized(x => x.ShortDescription),
 					SeName = product.GetSeName()
 				};
+
+				if (prepareFullDescription)
+				{
+					model.FullDescription = product.GetLocalized(x => x.FullDescription);
+				}
 
 				// price
 				if (preparePriceModel)
@@ -1507,7 +1518,7 @@ namespace SmartStore.Web.Controllers
 
 				foreach (ProductSortingEnum enumValue in Enum.GetValues(typeof(ProductSortingEnum)))
 				{
-					if (enumValue == ProductSortingEnum.CreatedOnAsc)
+                    if (enumValue == ProductSortingEnum.CreatedOnAsc || enumValue == ProductSortingEnum.Initial)
 					{
 						// TODO: (MC) das von uns eingeführte "CreatedOnAsc" schmeiß ich
 						// jetzt deshalb aus der UI raus, weil wir diese Sortier-Option
@@ -1656,17 +1667,7 @@ namespace SmartStore.Web.Controllers
 
 					};
 
-					Picture pic = manufacturer.Picture;
-					if (pic != null)
-					{
-						item.PictureModel = new PictureModel
-						{
-							PictureId = pic.Id,
-							Title = T("Media.Product.ImageLinkTitleFormat", manufacturer.Name),
-							AlternateText = T("Media.Product.ImageAlternateTextFormat", manufacturer.Name),
-							ImageUrl = _pictureService.GetPictureUrl(pic),
-						};
-					}
+                    item.PictureModel = PrepareManufacturerPictureModel(manufacturer, manufacturer.GetLocalized(x => x.Name));
 
 					cachedModels.Add(item.Id, item);
 				}
@@ -1676,6 +1677,35 @@ namespace SmartStore.Web.Controllers
 
 			return model;
 		}
+
+        public PictureModel PrepareManufacturerPictureModel(Manufacturer manufacturer, string localizedName)
+        {
+            var model = new PictureModel();
+
+            int pictureSize = _mediaSettings.ManufacturerThumbPictureSize;
+            var manufacturerPictureCacheKey = string.Format(ModelCacheEventConsumer.MANUFACTURER_PICTURE_MODEL_KEY,
+                manufacturer.Id,
+                pictureSize,
+                true,
+                _services.WorkContext.WorkingLanguage.Id,
+                _services.WebHelper.IsCurrentConnectionSecured(),
+                _services.StoreContext.CurrentStore.Id);
+
+            model = _services.Cache.Get(manufacturerPictureCacheKey, () =>
+            {
+                var pictureModel = new PictureModel
+                {
+                    PictureId = manufacturer.PictureId.GetValueOrDefault(),
+                    //FullSizeImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault()),
+                    ImageUrl = _pictureService.GetPictureUrl(manufacturer.PictureId.GetValueOrDefault(), pictureSize),
+                    Title = string.Format(T("Media.Manufacturer.ImageLinkTitleFormat"), localizedName),
+                    AlternateText = string.Format(T("Media.Manufacturer.ImageAlternateTextFormat"), localizedName)
+                };
+                return pictureModel;
+            });
+
+            return model;
+        }
 
 	}
 

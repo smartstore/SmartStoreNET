@@ -40,7 +40,7 @@
 		    <Value>Use Sandbox</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="Fields.UseSandbox.Hint">
-		    <Value>Check to enable Sandbox (testing environment).</Value>
+		    <Value>Check the box to enable Sandbox (testing environment).</Value>
 	    </LocaleResource>
 	    <LocaleResource Name="Fields.TransactMode">
 		    <Value>Transaction mode</Value>
@@ -176,7 +176,7 @@
         <Value>Use Sandbox</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.UseSandbox.Hint">
-        <Value>Check to enable Sandbox (testing environment).</Value>
+        <Value>Check the box to enable Sandbox (testing environment).</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.TransactMode">
         <Value>Transaction mode</Value>
@@ -290,7 +290,7 @@
         <Value>Use Sandbox</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.UseSandbox.Hint">
-        <Value>Check to enable Sandbox (testing environment).</Value>
+        <Value>Check the box to enable Sandbox (testing environment).</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.BusinessEmail">
         <Value>Business Email</Value>
@@ -308,7 +308,7 @@
         <Value>Validate order total</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
-        <Value>Check if the PDT handler should validate PayPal's order totals.</Value>
+        <Value>Check the box if the PDT handler should validate PayPal's order totals.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.AdditionalFee">
         <Value>Additional fee</Value>
@@ -326,13 +326,13 @@
         <Value>Pass product names and order totals to PayPal</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.PassProductNamesAndTotals.Hint">
-        <Value>Check if product names and order totals should be passed to PayPal.</Value>
+        <Value>Check the box if product names and order totals should be passed to PayPal.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn">
         <Value>Enable IPN</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn.Hint">
-        <Value>Check if IPN (Instant Payment Notification) is enabled.</Value>
+        <Value>Check the box if IPN (Instant Payment Notification) is enabled.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.EnableIpn.Hint2">
         <Value>Leave blank to use the default IPN handler URL.</Value>

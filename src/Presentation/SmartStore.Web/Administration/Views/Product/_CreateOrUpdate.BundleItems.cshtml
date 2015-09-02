@@ -150,7 +150,9 @@
 		});
 
 		$(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemPricing)', function () {
-            $('#TierPriceContainer').toggle(!$(this).is(':checked'));
+			var isChecked = $(this).is(':checked');
+			$('#TierPriceContainer').toggle(!isChecked);
+			$('a[href=#tab-discounts]').parent().toggle(!isChecked);
         });
 
         $(document).on('change', '#@Html.FieldIdFor(model => model.BundlePerItemShoppingCart)', function () {

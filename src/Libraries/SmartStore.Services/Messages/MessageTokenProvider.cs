@@ -33,6 +33,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 
 namespace SmartStore.Services.Messages
@@ -67,7 +68,10 @@ namespace SmartStore.Services.Messages
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IQuantityUnitService _quantityUnitService;
-        
+        private readonly IUrlRecordService _urlRecordService;
+        private readonly IStoreService _storeService;
+        private readonly IGenericAttributeService _attrService;
+
         #endregion
 
         #region Ctor
@@ -85,7 +89,9 @@ namespace SmartStore.Services.Messages
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
             ContactDataSettings contactDataSettings, ITopicService topicService,
-            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService)
+            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService,
+            IUrlRecordService urlRecordService, IStoreService storeService,
+            IGenericAttributeService attrService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -113,6 +119,9 @@ namespace SmartStore.Services.Messages
             this._shoppingCartSettings = shoppingCartSettings;
 			this._deliveryTimeService = deliveryTimeService;
             this._quantityUnitService = quantityUnitService;
+            this._urlRecordService = urlRecordService;
+            this._storeService = storeService;
+            this._attrService = attrService;
         }
 
         #endregion
@@ -259,8 +268,6 @@ namespace SmartStore.Services.Messages
             if (!String.IsNullOrEmpty(order.CheckoutAttributeDescription))
             {
                 sb.AppendLine("<tr><td style=\"text-align:right;\" colspan=\"1\">&nbsp;</td><td colspan=\"3\" style=\"text-align:right\">");
-                //codehint: sm-edit
-                //sb.AppendLine(order.CheckoutAttributeDescription);
                 sb.AppendLine(HtmlUtils.ConvertPlainTextToTable(HtmlUtils.ConvertHtmlToPlainText(order.CheckoutAttributeDescription)));
                 sb.AppendLine("</td></tr>");
             }
@@ -524,7 +531,6 @@ namespace SmartStore.Services.Messages
             return result;
         }
 
-        //codehint: sm-add
         protected virtual string TopicToHtml(string systemName, int languageId)
         {
             var result = "";
@@ -557,7 +563,7 @@ namespace SmartStore.Services.Messages
             sb.AppendLine("<table border=\"0\" class=\"supplier-identification\">");
             sb.AppendLine("<tr valign=\"top\">");
 			
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
 
             sb.AppendLine(String.Format("{0} <br>", _companyInfoSettings.CompanyName ));
 
@@ -600,7 +606,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"50%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"33%\">");
             
             if (!String.IsNullOrEmpty(_storeContext.CurrentStore.Url)) 
             {
@@ -621,7 +627,7 @@ namespace SmartStore.Services.Messages
 
             sb.AppendLine("<td/>");
 
-            sb.AppendLine("<td class=\"smaller\" width=\"25%\">");
+            sb.AppendLine("<td class=\"smaller\" width=\"34%\">");
 
             if (!String.IsNullOrEmpty(_bankConnectionSettings.Bankname)) 
             {
@@ -988,7 +994,15 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddBackInStockTokens(IList<Token> tokens, BackInStockSubscription subscription)
         {
-            tokens.Add(new Token("BackInStockSubscription.ProductName", subscription.Product.Name));
+            var customerLangId = subscription.Customer.GetAttribute<int>(
+                        SystemCustomerAttributeNames.LanguageId,
+                        _attrService,
+                        _storeContext.CurrentStore.Id);
+
+            var store = _storeService.GetStoreById(subscription.StoreId);
+            var productLink = "{0}{1}".FormatWith(store.Url, subscription.Product.GetSeName(customerLangId, _urlRecordService, _languageService));
+
+            tokens.Add(new Token("BackInStockSubscription.ProductName", "<a href='{0}'>{1}</a>".FormatWith(productLink, subscription.Product.Name), true));
 
             //event notification
             _eventPublisher.EntityTokensAdded(subscription, tokens);
@@ -1008,7 +1022,6 @@ namespace SmartStore.Services.Messages
                 "%NewsLetterSubscription.Email%",
                 "%NewsLetterSubscription.ActivationUrl%",
                 "%NewsLetterSubscription.DeactivationUrl%",
-                //codehint: sm-add
                 "%Store.SupplierIdentification%",
             };
             return allowedTokens.ToArray();

@@ -17,6 +17,7 @@ namespace SmartStore.PayPal.Models
         [SmartResourceDisplayName("Payment.SelectCreditCard")]
         [AllowHtml]
         public string CreditCardType { get; set; }
+
         [SmartResourceDisplayName("Payment.SelectCreditCard")]
         public IList<SelectListItem> CreditCardTypes { get; set; }
 
@@ -31,9 +32,11 @@ namespace SmartStore.PayPal.Models
         [SmartResourceDisplayName("Payment.ExpirationDate")]
         [AllowHtml]
         public string ExpireMonth { get; set; }
+
         [SmartResourceDisplayName("Payment.ExpirationDate")]
         [AllowHtml]
         public string ExpireYear { get; set; }
+
         public IList<SelectListItem> ExpireMonths { get; set; }
         public IList<SelectListItem> ExpireYears { get; set; }
 

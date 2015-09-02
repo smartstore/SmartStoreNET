@@ -719,13 +719,13 @@ namespace SmartStore.Services.ExportImport
 		/// <param name="searchContext">Search context</param>
 		public virtual void ExportProductsToXml(Stream stream, ProductSearchContext searchContext)
 		{
-			var settings = new XmlWriterSettings()
+			var settings = new XmlWriterSettings
 			{
 				Encoding = new UTF8Encoding(false),
 				CheckCharacters = false
 			};
 
-			var context = new XmlExportContext()
+			var context = new XmlExportContext
 			{
 				ProductTemplates = _productTemplateService.GetAllProductTemplates(),
 				Languages = _languageService.GetAllLanguages(true),
@@ -1347,7 +1347,9 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteElementString("Deleted", null, order.Deleted.ToString());
                 xmlWriter.WriteElementString("CreatedOnUtc", null, order.CreatedOnUtc.ToString());
 				xmlWriter.WriteElementString("UpdatedOnUtc", null, order.UpdatedOnUtc.ToString());
-				xmlWriter.WriteElementString("RewardPointsRemaining", null, order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
+                xmlWriter.WriteElementString("RewardPointsUsed", null, order.RedeemedRewardPointsEntry != null && order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "");
+                var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
+                xmlWriter.WriteElementString("RewardPointsRemaining", null, remainingRewardPoints > 0 ? remainingRewardPoints.ToString() : "");
 				xmlWriter.WriteElementString("HasNewPaymentNotification", null, order.HasNewPaymentNotification.ToString());
 
                 //products
@@ -1430,7 +1432,7 @@ namespace SmartStore.Services.ExportImport
 
                 // get handle to the existing worksheet
                 var worksheet = xlPackage.Workbook.Worksheets.Add("Orders");
-                //Create Headers and format them
+                // Create Headers and format them
                 var properties = new string[]
                     {
                         //order properties
@@ -1463,6 +1465,7 @@ namespace SmartStore.Services.ExportImport
                         "VatNumber",
                         "CreatedOnUtc",
 						"UpdatedOnUtc",
+                        "RewardPointsUsed",
 						"RewardPointsRemaining",
 						"HasNewPaymentNotification",
                         //billing address
@@ -1594,7 +1597,11 @@ namespace SmartStore.Services.ExportImport
 					worksheet.Cells[row, col].Value = order.UpdatedOnUtc.ToOADate();
 					col++;
 
-					worksheet.Cells[row, col].Value = (order.RewardPointsRemaining.HasValue ? order.RewardPointsRemaining.Value.ToString() : "");
+                    worksheet.Cells[row, col].Value = order.RedeemedRewardPointsEntry != null ? (order.RedeemedRewardPointsEntry.Points != 0 ? (order.RedeemedRewardPointsEntry.Points * (-1)).ToString() : "") : "";
+                    col++;
+
+                    var remainingRewardPoints = order.Customer.GetRewardPointsBalance();
+                    worksheet.Cells[row, col].Value = (remainingRewardPoints > 0 ? remainingRewardPoints.ToString() : "");
 					col++;
 
 					worksheet.Cells[row, col].Value = order.HasNewPaymentNotification;
@@ -1729,6 +1736,7 @@ namespace SmartStore.Services.ExportImport
                 var properties = new string[]
                     {
                         "Id",
+                        "CustomerNumber",
                         "CustomerGuid",
                         "Email",
                         "Username",
@@ -1788,6 +1796,9 @@ namespace SmartStore.Services.ExportImport
                     worksheet.Cells[row, col].Value = customer.Id;
                     col++;
 
+                    worksheet.Cells[row, col].Value = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+                    col++;
+                    
                     worksheet.Cells[row, col].Value = customer.CustomerGuid;
                     col++;
 
@@ -1974,6 +1985,7 @@ namespace SmartStore.Services.ExportImport
                 xmlWriter.WriteStartElement("Customer");
 
                 xmlWriter.WriteElementString("Id", null, customer.Id.ToString());
+                xmlWriter.WriteElementString("CustomerNumber", null, customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber));
                 xmlWriter.WriteElementString("CustomerGuid", null, customer.CustomerGuid.ToString());
                 xmlWriter.WriteElementString("Email", null, customer.Email);
                 xmlWriter.WriteElementString("Username", null, customer.Username);

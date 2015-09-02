@@ -113,7 +113,7 @@ namespace SmartStore.Services.Catalog
             if (specificationAttribute == null)
                 throw new ArgumentNullException("specificationAttribute");
 
-			// codehint: sm-add (delete localized properties of options)
+			// (delete localized properties of options)
 			var options = GetSpecificationAttributeOptionsBySpecificationAttribute(specificationAttribute.Id);
 			foreach (var itm in options) {
 				DeleteSpecificationAttributeOption(itm);
@@ -356,7 +356,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityUpdated(productSpecificationAttribute);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void UpdateProductSpecificationMapping(int specificationAttributeId, string field, bool value) {
 			if (specificationAttributeId == 0 || field.IsEmpty())
 				return;

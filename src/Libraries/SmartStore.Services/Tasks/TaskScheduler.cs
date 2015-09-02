@@ -9,29 +9,34 @@ using System.Threading.Tasks;
 using System.Web.Hosting;
 using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Tasks
 {
 
 	public class DefaultTaskScheduler : DisposableObject, ITaskScheduler, IRegisteredObject
     {
-        private string _baseUrl;
+		private bool _intervalFixed;
+		private int _sweepInterval;
+		private string _baseUrl;
         private System.Timers.Timer _timer;
         private bool _shuttingDown;
+		private int _errCount;
         private readonly ConcurrentDictionary<string, bool> _authTokens = new ConcurrentDictionary<string, bool>();
 
         public DefaultTaskScheduler()
         {
-			_timer = new System.Timers.Timer(TimeSpan.FromMinutes(1).TotalMilliseconds);
+			_sweepInterval = 1;
+			_timer = new System.Timers.Timer();
             _timer.Elapsed += Elapsed;
 
             HostingEnvironment.RegisterObject(this);
         }
 
-        public TimeSpan SweepInterval
+		public int SweepIntervalMinutes
         {
-            get { return TimeSpan.FromMilliseconds(_timer.Interval); }
-            set { _timer.Interval = value.TotalMilliseconds; }
+			get { return _sweepInterval; }
+			set { _sweepInterval = value; }
         }
 
         public string BaseUrl
@@ -47,16 +52,30 @@ namespace SmartStore.Services.Tasks
 
         public void Start()
         {
-            lock (_timer)
+			if (_timer.Enabled)
+				return;
+			
+			lock (_timer)
             {
                 CheckUrl(_baseUrl);
+				_timer.Interval = GetFixedInterval();
                 _timer.Start();
             }
         }
 
+		private double GetFixedInterval()
+		{
+			// Gets seconds to next sweep minute
+			int seconds = (_sweepInterval * 60) - DateTime.Now.Second;
+			return seconds * 1000;
+		}
+
         public void Stop()
         {
-            lock (_timer)
+			if (!_timer.Enabled)
+				return;
+			
+			lock (_timer)
             {
                 _timer.Stop();
             }
@@ -96,7 +115,13 @@ namespace SmartStore.Services.Tasks
             {
                 if (_timer.Enabled)
                 {
-                    CallEndpoint(_baseUrl + "/Sweep");
+					if (!_intervalFixed)
+					{
+						_timer.Interval = TimeSpan.FromMinutes(_sweepInterval).TotalMilliseconds;
+						_intervalFixed = true;
+					}
+
+					CallEndpoint(_baseUrl + "/Sweep");
                 }
             }
             finally
@@ -114,7 +139,7 @@ namespace SmartStore.Services.Tasks
             req.UserAgent = "SmartStore.NET";
             req.Method = "POST";
             req.ContentType = "text/plain";
-            req.ContentLength = 0;
+			req.ContentLength = 0;
 
             string authToken = Guid.NewGuid().ToString();
             _authTokens.TryAdd(authToken, true);
@@ -122,13 +147,49 @@ namespace SmartStore.Services.Tasks
 
             req.GetResponseAsync().ContinueWith(t =>
             {
-                if (t.IsFaulted)
-                {
-                    // TODO: Now what?! Disable timer?
-                }
-                t.Result.Dispose();
+				if (t.IsFaulted)
+				{
+					HandleException(t.Exception, url);
+					_errCount++;
+					if (_errCount >= 10)
+					{
+						// 10 failed attempts in succession. Stop the timer!
+						this.Stop();
+						using (var logger = new TraceLogger())
+						{
+							logger.Information("Stopping TaskScheduler sweep timer. Too many failed requests in succession.");
+						}
+					}
+				}
+				else
+				{
+					_errCount = 0;
+					t.Result.Dispose();
+				}
             });
         }
+
+		private void HandleException(AggregateException exception, string url)
+		{
+			using (var logger = new TraceLogger())
+			{
+				string msg = "Error while calling TaskScheduler endpoint '{0}'.".FormatInvariant(url);
+				var wex = exception.InnerExceptions.OfType<WebException>().FirstOrDefault();
+
+				if (wex == null)
+				{
+					logger.Error(msg, exception);
+				}
+				else
+				{
+					using (var response = wex.Response as HttpWebResponse)
+					{
+						msg += " HTTP {0}, {1}".FormatCurrent((int)response.StatusCode, response.StatusDescription);
+						logger.Error(msg);
+					}
+				}
+			}
+		}
 
         private void CheckUrl(string url)
         {

@@ -99,6 +99,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			}
 			return customer;
 		}
+
 		protected virtual HmacResult IsAuthenticated(HttpActionContext actionContext, DateTime now, WebApiControllingCacheData cacheControllingData, out Customer customer)
 		{
 			customer = null;
@@ -205,7 +206,7 @@ namespace SmartStore.Web.Framework.WebApi.Security
 			if (result == HmacResult.Success)
 			{
 				// inform core about the authentication. note you cannot use IWorkContext.set_CurrentCustomer here.
-				HttpContext.Current.User = new SmartNetPrincipal(customer, HmacAuthentication.Scheme1);
+				HttpContext.Current.User = new SmartStorePrincipal(customer, HmacAuthentication.Scheme1);
 
 				var response = HttpContext.Current.Response;
 

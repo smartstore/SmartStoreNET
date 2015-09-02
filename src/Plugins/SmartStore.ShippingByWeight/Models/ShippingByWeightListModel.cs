@@ -19,6 +19,8 @@ namespace SmartStore.ShippingByWeight.Models
 
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Country")]
         public int AddCountryId { get; set; }
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Zip")]
+        public string AddZip { get; set; }
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.ShippingMethod")]
         public int AddShippingMethodId { get; set; }
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.From")]

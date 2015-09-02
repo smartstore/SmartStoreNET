@@ -271,6 +271,13 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				model.AttributeInfo = _productAttributeFormatter.FormatAttributes(product, item.AttributesXml);
+
+                var selectedAttributeValues = _productAttributeParser.ParseProductVariantAttributeValues(item.AttributesXml).ToList();
+                if (selectedAttributeValues != null)
+                {
+                    foreach (var attributeValue in selectedAttributeValues)
+                        model.Weight = decimal.Add(model.Weight, attributeValue.WeightAdjustment);
+                }
 			}
 
 			if (product.DisplayDeliveryTimeAccordingToStock(_catalogSettings))
@@ -360,6 +367,8 @@ namespace SmartStore.Web.Controllers
 					decimal shoppingCartItemDiscount = _currencyService.ConvertFromPrimaryStoreCurrency(shoppingCartItemDiscountBase, _workContext.WorkingCurrency);
 					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
 				}
+
+                model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - shoppingCartItemSubTotalWithDiscount) * (-1));
 			}
 
 			//picture

@@ -134,7 +134,8 @@
 			
 			if (opts.responsive && !isRefresh) {
 				EventBroker.subscribe("page.resized", function (data) {
-					self.reset();
+				    self.reset();
+				    self.inTransition = false;
 					self.init(true);
 			    });
 			}
@@ -152,7 +153,7 @@
 	    loader: null,
 	    preloads: null,
 	    thumbsWrapper: null,
-	    box: null,
+	    box: null, // (blueImp) image gallery element
 	    	
 	    imageWrapperWidth: 0,
 	    imageWrapperHeight: 0,
@@ -209,6 +210,12 @@
 		    }
 
 		    self.imageWrapper.find('.sg-image').remove();
+
+		    $('.smartgallery-overlay').remove();
+		    if (self.box) {
+		    	self.box.remove();
+		    }
+		    self.box = null;
 		},
 
 		loading: function(value) {
@@ -425,6 +432,8 @@
 					.append('<ol class="indicator"></ol>');
 				widget.appendTo('body');
 
+				self.box = widget;
+
 				var prevY = null;
 
 				var onMouseMove = function (e) {
@@ -452,6 +461,14 @@
 				return widget;
 			};
 
+			var getOverlay = function (widget) {
+				var gov = $('.smartgallery-overlay');
+				if (gov.length == 0) {
+					gov = $('<div class="smartgallery-overlay" style="display: none"></div>').insertBefore(widget[0]);
+				}
+				return gov;
+			};
+
 			if (this.options.displayImage) {
 				// Global click handler to open links with data-gallery attribute
 				// in the Gallery lightbox:
@@ -462,10 +479,15 @@
 						widget = getWidget(id == 'default' ? 'image-gallery-default' : id),
 						container = (widget.length && widget) || $(Gallery.prototype.options.container),
 						callbacks = {
-						    onopen: function () {
-						        container.data('gallery', this).trigger('open');
+							onopen: function () {
+								var gov = getOverlay(widget);
+								gov.on('click', function (e) {
+									widget.data('gallery').close();
+								});
+								gov.show().addClass("in");
+								container.data('gallery', this).trigger('open');
 						    },
-						    onopened: function () {
+							onopened: function () {
 						        container.trigger('opened');
 						    },
 						    onslide: function () {
@@ -478,9 +500,11 @@
 						        container.trigger('slidecomplete', arguments);
 						    },
 						    onclose: function () {
-						        container.trigger('close');
+						    	getOverlay(widget).removeClass("in");
+						    	container.trigger('close');
 						    },
 						    onclosed: function () {
+						    	getOverlay(widget).css('display', 'none');
 						        container.trigger('closed').removeData('gallery');
 						    }
 						},
@@ -494,7 +518,7 @@
                 				event: e
 							},
 							callbacks,
-							self.options
+							self.options.box || {}
 						),
 						// Select all links with the same data-gallery attribute:
 						links = $('[data-gallery="' + id + '"]').not($(this));
@@ -862,6 +886,7 @@
 		// full size image box options
 		box: {
 			enabled: true,
+			closeOnSlideClick: false
 			/* {...} blueimp image gallery options are passed through */
 		},
 		callbacks: {

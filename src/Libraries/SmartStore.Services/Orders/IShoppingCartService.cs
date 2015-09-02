@@ -171,6 +171,14 @@ namespace SmartStore.Services.Orders
 		void AddToCartStoring(AddToCartContext ctx);
 
         /// <summary>
+        /// Validates if all required attributes are selected
+        /// </summary>
+        /// <param name="selectedAttributes">Selected attributes</param>
+        /// <param name="product">Product</param>
+        /// <returns>bool</returns>
+        bool AreAllAttributesForCombinationSelected(string selectedAttributes, Product product);
+
+        /// <summary>
         /// Updates the shopping cart item
         /// </summary>
         /// <param name="customer">Customer</param>

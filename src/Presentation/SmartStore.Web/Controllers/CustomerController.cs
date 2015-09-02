@@ -239,6 +239,7 @@ namespace SmartStore.Web.Controllers
                 model.StateProvinceId = customer.GetAttribute<int>(SystemCustomerAttributeNames.StateProvinceId);
                 model.Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone);
                 model.Fax = customer.GetAttribute<string>(SystemCustomerAttributeNames.Fax);
+                model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
 
                 //newsletter
                 var newsletter = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(customer.Email, _storeContext.CurrentStore.Id);
@@ -309,6 +310,19 @@ namespace SmartStore.Web.Controllers
             model.AllowUsersToChangeUsernames = _customerSettings.AllowUsersToChangeUsernames;
             model.CheckUsernameAvailabilityEnabled = _customerSettings.CheckUsernameAvailabilityEnabled;
             model.SignatureEnabled = _forumSettings.ForumsEnabled && _forumSettings.SignaturesEnabled;
+            model.DisplayCustomerNumber = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled
+                && _customerSettings.CustomerNumberVisibility != CustomerNumberVisibility.None;
+
+            if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled
+                && (_customerSettings.CustomerNumberVisibility == CustomerNumberVisibility.Editable 
+                || (_customerSettings.CustomerNumberVisibility == CustomerNumberVisibility.EditableIfEmpty && String.IsNullOrEmpty(model.CustomerNumber))))
+            {
+                model.CustomerNumberEnabled = true;
+            }
+            else
+            {
+                model.CustomerNumberEnabled = false;
+            }
 
             //external authentication
             foreach (var ear in _openAuthenticationService.GetExternalIdentifiersFor(customer))
@@ -357,8 +371,8 @@ namespace SmartStore.Web.Controllers
                 model.Orders.Add(orderModel);
             }
 
-			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, 
-				customer.Id, 0, null);
+			var recurringPayments = _orderService.SearchRecurringPayments(_storeContext.CurrentStore.Id, customer.Id, 0, null);
+
             foreach (var recurringPayment in recurringPayments)
             {
                 var recurringPaymentModel = new CustomerOrderListModel.RecurringOrderModel()
@@ -526,15 +540,15 @@ namespace SmartStore.Web.Controllers
             
             if (_workContext.CurrentCustomer.IsRegistered())
             {
-                //Already registered customer. 
+                // Already registered customer. 
                 _authenticationService.SignOut();
                 
-                //Save a new record
+                // Save a new record
                 _workContext.CurrentCustomer = _customerService.InsertGuestCustomer();
             }
             var customer = _workContext.CurrentCustomer;
 
-            //validate CAPTCHA
+            // validate CAPTCHA
             if (_captchaSettings.Enabled && _captchaSettings.ShowOnRegistrationPage && !captchaValid)
             {
                 ModelState.AddModelError("", _localizationService.GetResource("Common.WrongCaptcha"));
@@ -607,6 +621,8 @@ namespace SmartStore.Web.Controllers
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
+                    if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber)))
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
 
                     //newsletter
                     if (_customerSettings.NewsletterEnabled)
@@ -630,7 +646,7 @@ namespace SmartStore.Web.Controllers
                         {
                             if (model.Newsletter)
                             {
-                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription()
+                                _newsLetterSubscriptionService.InsertNewsLetterSubscription(new NewsLetterSubscription
                                 {
                                     NewsLetterSubscriptionGuid = Guid.NewGuid(),
                                     Email = model.Email,
@@ -799,7 +815,7 @@ namespace SmartStore.Web.Controllers
                 default:
                     break;
             }
-            var model = new RegisterResultModel()
+            var model = new RegisterResultModel
             {
                 Result = resultText
             };
@@ -1000,9 +1016,28 @@ namespace SmartStore.Web.Controllers
 
                     //form fields
                     if (_customerSettings.GenderEnabled)
+                    {
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Gender, model.Gender);
+                    }
+
+                    if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
+                    {
+                        var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
+                        var currentCustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+
+                        if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
+                        {
+                            this.NotifyError("Common.CustomerNumberAlreadyExists");
+                        }
+                        else 
+                        {
+                            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                        }
+                    }
+
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.FirstName, model.FirstName);
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastName, model.LastName);
+
                     if (_customerSettings.DateOfBirthEnabled)
                     {
                         DateTime? dateOfBirth = null;
@@ -1546,7 +1581,7 @@ namespace SmartStore.Web.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.AvatarPictureId, customerAvatarId);
 
                     model.AvatarUrl = _pictureService.GetPictureUrl(
-                        customer.GetAttribute<int>(SystemCustomerAttributeNames.AvatarPictureId),
+                        customerAvatarId,
                         _mediaSettings.AvatarPictureSize,
                         false);
                     return View(model);

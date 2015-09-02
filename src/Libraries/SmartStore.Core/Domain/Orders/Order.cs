@@ -320,7 +320,6 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public string CardExpirationYear { get; set; }
 
-        /// codehint:sm-add begin
         /// <summary>
         /// Gets or sets a value indicating whether storing of credit card number is allowed
         /// </summary>

@@ -19,7 +19,7 @@
     <ul>
         @if (Model.CompareProductsEnabled)
         {
-            <li><a href="@Url.RouteUrl("CompareProducts")" data-role="button">@T("Products.Compare.List")</a></li>            
+            <li><a href="@Url.RouteUrl("CompareProducts")" data-role="button">@T("Products.Compare.List")</a></li>
         }
         <li><a href="@Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })" data-role="button">@T("ShippingReturns")</a></li>
     </ul>
@@ -27,12 +27,18 @@
 <div data-role="navbar">
     <ul>
         <li><a href="@Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })" data-role="button">@T("PrivacyNotice")</a></li>
-        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofUse" })" data-role="button">@T("ConditionsOfUse")</a></li>
+        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofuse" })" data-role="button">@T("ConditionsOfUse")</a></li>
+    </ul>
+</div>
+<div data-role="navbar">
+    <ul>
+        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@T("Imprint")</a></li>
+        <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@T("Disclaimer")</a></li>
     </ul>
 </div>
 @if (Model.AllowPrivateMessages)
 {
-                
+
     <div data-role="navbar">
         <ul>
             <li><a href="@Url.RouteUrl("PrivateMessages", new { tab = "inbox" })" data-role="button" rel="nofollow">@T("PrivateMessages.Inbox")</a></li>

@@ -155,8 +155,12 @@
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\QuerystringBuilder.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
+    <Compile Include="Domain\Customers\CustomerNumberVisibility.cs" />
+    <Compile Include="Domain\Customers\CustomerNumberMethod.cs" />
+    <Compile Include="Domain\DataExchange\SyncMapping.cs" />
     <Compile Include="Domain\DataExchange\DataExchangeSettings.cs" />
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
     <Compile Include="Domain\DataExchange\ExportProjection.cs" />
@@ -180,6 +184,7 @@
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
     <Compile Include="ITransient.cs" />
     <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
+    <Compile Include="Localization\LocalizationHelper.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
     <Compile Include="Plugins\Providers\DisplayOrderAttribute.cs" />
@@ -347,7 +352,6 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
-    <Compile Include="Extensions\ListExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
     <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
@@ -363,7 +367,7 @@
     <Compile Include="Caching\ICacheManager.cs" />
     <Compile Include="Caching\NullCache.cs" />
     <Compile Include="Plugins\LoadPluginResult.cs" />
-    <Compile Include="SmartNetPrincipal.cs" />
+    <Compile Include="Security\SmartStorePrincipal.cs" />
     <Compile Include="Themes\DefaultThemeRegistry.cs" />
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />

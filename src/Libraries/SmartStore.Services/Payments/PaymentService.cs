@@ -261,16 +261,8 @@ namespace SmartStore.Services.Payments
 		/// <returns>List of payment method objects</returns>
 		public virtual IList<PaymentMethod> GetAllPaymentMethods()
 		{
-			var paymentMethods = _services.Cache.Get(PAYMENTMETHOD_ALL_KEY, () =>
-			{
-				var methods = _paymentMethodRepository.TableUntracked.ToList();
-
-				methods.Each(x => _paymentMethodRepository.Context.DetachEntity<PaymentMethod>(x));
-
-				return methods;
-			});
-
-			return paymentMethods;
+			var methods = _paymentMethodRepository.TableUntracked.ToList();
+			return methods;
 		}
 
 		/// <summary>
@@ -298,8 +290,6 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Insert(paymentMethod);
 
-			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
-
 			_services.EventPublisher.EntityInserted(paymentMethod);
 		}
 
@@ -314,8 +304,6 @@ namespace SmartStore.Services.Payments
 
 			_paymentMethodRepository.Update(paymentMethod);
 
-			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
-
 			_services.EventPublisher.EntityUpdated(paymentMethod);
 		}
 
@@ -329,8 +317,6 @@ namespace SmartStore.Services.Payments
 				throw new ArgumentNullException("paymentMethod");
 
 			_paymentMethodRepository.Delete(paymentMethod);
-
-			_services.Cache.RemoveByPattern(PAYMENTMETHOD_ALL_KEY);
 
 			_services.EventPublisher.EntityDeleted(paymentMethod);
 		}

@@ -16,11 +16,8 @@ namespace SmartStore.Admin.Models.Common
 
         public DeleteGuestsModel DeleteGuests { get; set; }
         public DeleteExportedFilesModel DeleteExportedFiles { get; set; }
-
-        // codehint: sm-add
         public DeleteImageCacheModel DeleteImageCache { get; set; }
 
-        // codehint: sm-add
         [SmartResourceDisplayName("Admin.System.Maintenance.SqlQuery")]
         public string SqlQuery { get; set; }
 

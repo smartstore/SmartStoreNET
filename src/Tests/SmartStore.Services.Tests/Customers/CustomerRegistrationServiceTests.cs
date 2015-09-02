@@ -123,7 +123,7 @@ namespace SmartStore.Services.Tests.Customers
 
             _customerRegistrationService = new CustomerRegistrationService(_customerService,
                 _encryptionService, _newsLetterSubscriptionService, _localizationService,
-                _rewardPointsSettings, _customerSettings, _storeContext);
+                _rewardPointsSettings, _customerSettings, _storeContext, _eventPublisher);
         }
 
         //[Test]

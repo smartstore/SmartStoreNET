@@ -1,10 +1,10 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
 
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.PayPal" AppendRootKey="false">
-    <Value>PayPal Zahlungsmethoden</Value>
+    <Value>PayPal Zahlungsarten</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.PayPal" AppendRootKey="false">
-    <Value>Stellt die PayPal-Zahlungsmethoden PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
+    <Value>Stellt die PayPal-Zahlungsarten PayPal Express, PayPal Standard und PayPal Direct zur Verfügung.</Value>
   </LocaleResource>
 
   <LocaleResource Name="Plugins.Payments.PayPal" AppendRootKey="false">

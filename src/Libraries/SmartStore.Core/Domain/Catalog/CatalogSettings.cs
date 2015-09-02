@@ -16,6 +16,7 @@ namespace SmartStore.Core.Domain.Catalog
         {
             FileUploadAllowedExtensions = new List<string>();
 			AllowProductSorting = true;
+            DefaultSortOrder = ProductSortingEnum.Position;
 			AllowProductViewModeChanging = true;
 			DefaultViewMode = "grid";
 			CategoryBreadcrumbEnabled = true;
@@ -38,6 +39,8 @@ namespace SmartStore.Core.Domain.Catalog
 			ProductSearchAutoCompleteNumberOfProducts = 10;
 			ProductSearchTermMinimumLength = 3;
 			NumberOfBestsellersOnHomepage = 6;
+            ShowManufacturersOnHomepage = true;
+            ShowManufacturerPictures = false;
 			SearchPageProductsPerPage = 6;
 			ProductsAlsoPurchasedEnabled = true;
 			ProductsAlsoPurchasedNumber = 6;
@@ -124,12 +127,17 @@ namespace SmartStore.Core.Domain.Catalog
         public bool AllowProductSorting { get; set; }
 
         /// <summary>
+        /// Gets or sets the default sort order in product lists
+        /// </summary>
+        public ProductSortingEnum DefaultSortOrder { get; set; }
+
+        /// <summary>
         /// Gets or sets a value indicating whether customers are allowed to change product view mode
         /// </summary>
         public bool AllowProductViewModeChanging { get; set; }
 
         /// <summary>
-        /// Gets or sets a value indicating whether customers are allowed to change product view mode
+        /// Gets or sets the default view mode for product lists
         /// </summary>
         public string DefaultViewMode { get; set; }
 
@@ -282,6 +290,16 @@ namespace SmartStore.Core.Domain.Catalog
         /// Gets or sets a number of bestsellers on home page
         /// </summary>
         public int NumberOfBestsellersOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturers on home page
+        /// </summary>
+        public bool ShowManufacturersOnHomepage { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether to show manufacturer pictures or names on home page
+        /// </summary>
+        public bool ShowManufacturerPictures { get; set; }
 
         /// <summary>
         /// Gets or sets a number of products per page on search products page

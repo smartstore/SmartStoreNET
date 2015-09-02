@@ -107,7 +107,7 @@ namespace SmartStore.Web.Controllers
             model.Short = newsItem.Short;
             model.Full = newsItem.Full;
             model.AllowComments = newsItem.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; // codehint: sm-add
+            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize;
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(newsItem.CreatedOnUtc, DateTimeKind.Utc);
             model.NumberOfComments = newsItem.ApprovedCommentCount;
             model.AddNewComment.DisplayCaptcha = _captchaSettings.Enabled && _captchaSettings.ShowOnNewsCommentPage;

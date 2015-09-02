@@ -22,10 +22,10 @@ namespace SmartStore.ShippingByWeight.Domain
         ///// </summary>
         //public int StateProvinceId { get; set; }
 
-        ///// <summary>
-        ///// Gets or sets the zip
-        ///// </summary>
-        //public string Zip { get; set; }
+        /// <summary>
+        /// Gets or sets the zip
+        /// </summary>
+        public string Zip { get; set; }
 
         /// <summary>
         /// Gets or sets the shipping method identifier

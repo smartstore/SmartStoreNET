@@ -7,7 +7,6 @@ using Newtonsoft.Json;
 
 namespace SmartStore.Services.Filter
 {
-	/// <remarks>codehint: sm-add</remarks>
 	public sealed class FilterOperator
 	{
 		private const string _equal = "=";

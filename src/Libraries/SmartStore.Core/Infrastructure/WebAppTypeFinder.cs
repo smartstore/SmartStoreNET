@@ -69,7 +69,6 @@ namespace SmartStore.Core.Infrastructure
             {
                 _binFolderAssembliesLoaded = true;
                 string binPath = GetBinDirectory();
-                //binPath = _webHelper.MapPath("~/bin");
                 LoadMatchingAssemblies(binPath);
             }
 

@@ -151,7 +151,6 @@ namespace SmartStore.Services.Configuration
             _eventPublisher.EntityUpdated(setting);
         }
 
-		/// <remarks>codehint: sm-add</remarks>
 		private T LoadSettingsJson<T>(int storeId = 0)
 		{
 			Type t = typeof(T);
@@ -466,7 +465,6 @@ namespace SmartStore.Services.Configuration
 			SetSetting(key, value ?? "", storeId, false);
 		}
 
-		/// <remarks>codehint: sm-add</remarks>
 		public virtual void UpdateSetting<T, TPropType>(T settings, Expression<Func<T, TPropType>> keySelector, bool overrideForStore, int storeId = 0)  where T : ISettings, new()
 		{
 			if (overrideForStore || storeId == 0)

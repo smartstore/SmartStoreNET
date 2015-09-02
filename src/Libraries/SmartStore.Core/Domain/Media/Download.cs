@@ -10,7 +10,12 @@ namespace SmartStore.Core.Domain.Media
     [DataContract]
 	public partial class Download : BaseEntity, ITransient
     {
-        /// <summary>
+		public Download()
+		{
+			this.UpdatedOnUtc = DateTime.UtcNow;
+		}
+		
+		/// <summary>
         /// Gets or sets a GUID
         /// </summary>
 		[DataMember]

@@ -40,7 +40,7 @@ namespace SmartStore.Web.Infrastructure.Cache
         IConsumer<EntityUpdated<ProductManufacturer>>,
         IConsumer<EntityDeleted<ProductManufacturer>>,
         //categories
-        IConsumer<EntityInserted<Category>>, // codehint: sm-add
+        IConsumer<EntityInserted<Category>>,
         IConsumer<EntityUpdated<Category>>,
         IConsumer<EntityDeleted<Category>>,
         //product categories

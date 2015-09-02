@@ -1,7 +1,7 @@
 ﻿FriendlyName: Google Merchant Center (GMC)
 SystemName: SmartStore.GoogleMerchantCenter
 Group: Marketing
-Version: 2.2.0.1
+Version: 2.2.0.2
 MinAppVersion: 2.2.0
 Author: SmartStore AG
 DisplayOrder: 1

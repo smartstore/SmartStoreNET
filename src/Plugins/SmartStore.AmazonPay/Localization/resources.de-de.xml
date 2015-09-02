@@ -8,7 +8,7 @@
 
 	<LocaleResource Name="AdminInstruction">
 		<Value>
-			<![CDATA[<p>Registrieren Sie sich bei <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a> an.</p>
+			<![CDATA[<p>Registrieren Sie sich bei <a href="https://payments.amazon.de/preregistration/lpa">Amazon Payments</a>.</p>
 <p>So richten Sie "Bezahlen mit Amazon" ein:</p><ul>
 <li>Tragen Sie Ihre Amazon-Zugangsdaten unten in die dafür vorgesehenen Felder ein. Sie finden diese Daten in Ihrem <a href="https://sellercentral-europe.amazon.com" target="_blank">Amazon Seller Central</a> Konto.</li>
 <li>Ihre Händlernummer finden Sie dort rechts oben unter Einstellungen - Integrationseinstellungen.</li>
@@ -28,13 +28,13 @@ Textvorschläge:<ul>
 		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
 	</LocaleResource>
 	<LocaleResource Name="PaymentMethodNotActive">
-		<Value>Zahlungsmethode "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
+		<Value>Die Zahlungsart "Bezahlen mit Amazon" ist für Shop "{0}" nicht verfügbar.</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingCheckoutSessionState">
 		<Value>Fehlender Checkout-Sitzungsstatus für "Bezahlen mit Amazon". Ihre Zahlung kann leider nicht bearbeitet werden. Bitte gehen Sie zurück in den Warenkorb und Durchlaufen Sie den Checkout erneut.</Value>
 	</LocaleResource>
 	<LocaleResource Name="OrderNotFound">
-		<Value>Ein Auftrag mit der Zahlungsmethode "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
+		<Value>Ein Auftrag mit der Zahlungsart "Bezahlen mit Amazon" und der Kennung {0} wurde nicht gefunden.</Value>
 	</LocaleResource>
 	<LocaleResource Name="AuthorizationHardDeclineMessage">
 		<Value>

@@ -33,7 +33,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -54,7 +54,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -96,7 +96,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-            Once your order is placed, you will be contacted by our stuff to confirm the order.
+            Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -137,7 +137,7 @@
       <LocaleResource Name="PaymentInfoDescription">
         <Value>
           <![CDATA[
-             Once your order is placed, you will be contacted by our stuff to confirm the order.
+             Once your order is placed, you will be contacted by our staff to confirm the order.
           ]]>
         </Value>
       </LocaleResource>
@@ -207,5 +207,21 @@
     </Children>
   </LocaleResource>
 
+  <!-- PuchaseOrderNumber -->
+  <LocaleResource Name="Plugins.FriendlyName.Payments.PuchaseOrder" AppendRootKey="false">
+    <Value>Purchase order</Value>
+  </LocaleResource>
+  <LocaleResource Name="Plugins.Payments.PuchaseOrder" AppendRootKey="false">
+    <Children>
+      <LocaleResource Name="AdminInstruction">
+        <Value>
+          <![CDATA[ ]]>
+        </Value>
+      </LocaleResource>
+      <LocaleResource Name="PurchaseOrderNumber">
+        <Value>PO Number</Value>
+      </LocaleResource>
+    </Children>
+  </LocaleResource>
  
 </Language>

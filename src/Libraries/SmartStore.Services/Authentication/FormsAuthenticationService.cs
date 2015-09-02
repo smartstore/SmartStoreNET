@@ -82,13 +82,13 @@ namespace SmartStore.Services.Authentication
 
 			Customer customer = null;
 			FormsIdentity formsIdentity = null;
-			SmartNetIdentity smartNetIdentity = null;
+			SmartStoreIdentity smartNetIdentity = null;
 
 			if ((formsIdentity = _httpContext.User.Identity as FormsIdentity) != null)
 			{
 				customer = GetAuthenticatedCustomerFromTicket(formsIdentity.Ticket);
 			}
-			else if ((smartNetIdentity = _httpContext.User.Identity as SmartNetIdentity) != null)
+			else if ((smartNetIdentity = _httpContext.User.Identity as SmartStoreIdentity) != null)
 			{
 				customer = _customerService.GetCustomerById(smartNetIdentity.CustomerId);
 			}

@@ -132,7 +132,6 @@ namespace SmartStore.Core.Domain.Orders
         /// </summary>
         public bool RoundPricesDuringCalculation { get; set; }
 
-        // codehint: sm-add
         /// <summary>
         /// Gets or sets a value indicating whether to show a legal hint in the order summary
         /// </summary>

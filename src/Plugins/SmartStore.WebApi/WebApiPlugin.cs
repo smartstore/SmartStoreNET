@@ -34,7 +34,7 @@ namespace SmartStore.WebApi
 		{
 			_permissionService.InstallPermissions(new WebApiPermissionProvider());
 
-			var apiSettings = new WebApiSettings()
+			var apiSettings = new WebApiSettings
 			{
 				LogUnauthorized = true,
 				ValidMinutePeriod = WebApiGlobal.DefaultTimePeriodMinutes

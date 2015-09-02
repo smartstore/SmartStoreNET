@@ -891,7 +891,7 @@
                 {
                     <h4>@T("Admin.Order.CustomerComment.Heading")</h4>
                     <div class="alert alert-info fade in">
-                        @Html.Raw(Model.CustomerComment)
+                        @Model.CustomerComment
                     </div>
                 }
             </td>
@@ -1231,7 +1231,7 @@
                         .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
                         .Width(50)
                         .Centered()
-                        .HeaderTemplate(T("Admin.Common.View").Text);
+                        .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
                 })
                 .EnableCustomBinding(true))
 

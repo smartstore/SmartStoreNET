@@ -55,17 +55,22 @@ namespace SmartStore.Data
 			}
 		}
 
-        public T Create()
+        public virtual T Create()
         {
             return this.Entities.Create();
         }
 
-        public T GetById(object id)
+		public virtual T GetById(object id)
         {
             return this.Entities.Find(id);
         }
 
-        public void Insert(T entity)
+		public virtual T Attach(T entity)
+		{
+			return this.Entities.Attach(entity);
+		}
+
+		public virtual void Insert(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
@@ -76,7 +81,7 @@ namespace SmartStore.Data
                 _context.SaveChanges();
         }
 
-        public void InsertRange(IEnumerable<T> entities, int batchSize = 100)
+		public virtual void InsertRange(IEnumerable<T> entities, int batchSize = 100)
         {
             try
             {
@@ -124,61 +129,45 @@ namespace SmartStore.Data
             }
         }
 
-        public void Update(T entity)
+		public virtual void Update(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
 
+			SetEntityStateToModifiedIfApplicable(entity);
+
 			if (this.AutoCommitEnabledInternal)
-            {
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-				}
+			{
 				_context.SaveChanges();
-            }
-            else
-            {
-                try
-                {
-                    this.Entities.Attach(entity);
-                    InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-                }
-                finally { }
-            }
+			}
         }
 
-		public void UpdateRange(IEnumerable<T> entities)
+		public virtual void UpdateRange(IEnumerable<T> entities)
 		{
 			if (entities == null)
 				throw new ArgumentNullException("entities");
 
+			entities.Each(entity =>
+			{
+				SetEntityStateToModifiedIfApplicable(entity);
+			});
+
 			if (this.AutoCommitEnabledInternal)
 			{
-				if (!InternalContext.Configuration.AutoDetectChangesEnabled)
-				{
-					entities.Each(entity =>
-					{
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;
-					});
-				}
 				_context.SaveChanges();
-			}
-			else
-			{
-				try
-				{
-					entities.Each(entity =>
-					{
-						this.Entities.Attach(entity);
-						InternalContext.Entry(entity).State = System.Data.Entity.EntityState.Modified;				
-					});
-				}
-				finally { }
 			}
 		}
 
-        public void Delete(T entity)
+		private void SetEntityStateToModifiedIfApplicable(T entity)
+		{
+			var entry = InternalContext.Entry(entity);
+			if (entry.State == System.Data.Entity.EntityState.Detached || (this.AutoCommitEnabledInternal && !InternalContext.Configuration.AutoDetectChangesEnabled))
+			{
+				entry.State = System.Data.Entity.EntityState.Modified;
+			}
+		}
+
+		public virtual void Delete(T entity)
         {
             if (entity == null)
                 throw new ArgumentNullException("entity");
@@ -194,10 +183,18 @@ namespace SmartStore.Data
                 _context.SaveChanges();
         }
 
-		public void DeleteRange(IEnumerable<T> entities)
+		public virtual void DeleteRange(IEnumerable<T> entities)
 		{
 			if (entities == null)
 				throw new ArgumentNullException("entities");
+
+			entities.Each(entity =>
+			{
+				if (InternalContext.Entry(entity).State == System.Data.Entity.EntityState.Detached)
+				{
+					this.Entities.Attach(entity);
+				}
+			});
 
 			this.Entities.RemoveRange(entities);
 
@@ -223,7 +220,7 @@ namespace SmartStore.Data
             return query.Include(path);
         }
 
-		public bool IsModified(T entity)
+		public virtual bool IsModified(T entity)
 		{
 			Guard.ArgumentNotNull(() => entity);
 			var ctx = InternalContext;
@@ -238,12 +235,12 @@ namespace SmartStore.Data
 			return false;
 		}
 
-        public IDictionary<string, object> GetModifiedProperties(T entity)
+		public virtual IDictionary<string, object> GetModifiedProperties(T entity)
         {
 			return InternalContext.GetModifiedProperties(entity);
         }
 
-        public IDbContext Context
+		public virtual IDbContext Context
         {
             get { return _context; }
         }

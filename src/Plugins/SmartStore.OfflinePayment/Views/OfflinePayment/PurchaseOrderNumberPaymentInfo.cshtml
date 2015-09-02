@@ -1,0 +1,20 @@
+﻿@using SmartStore.Web.Framework;
+@using SmartStore.OfflinePayment.Models;
+
+@model PurchaseOrderNumberPaymentInfoModel
+
+@{
+    Layout = "";
+}
+
+@Html.Hidden("OfflinePaymentMethodType", "PurchaseOrderNumber")
+
+<div class="form-horizontal">
+    <div class="control-group">
+        @Html.LabelFor(model => model.PurchaseOrderNumber, new { @class="control-label required" })
+        <div class="controls">
+            @Html.TextBoxFor(model => model.PurchaseOrderNumber, new { style = "width: 165px;", autocomplete = "off" })
+            @Html.ValidationMessageFor(model => model.PurchaseOrderNumber)
+        </div>
+    </div>
+</div>

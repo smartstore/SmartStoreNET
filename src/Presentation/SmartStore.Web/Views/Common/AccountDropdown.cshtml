@@ -17,6 +17,7 @@
 @if (Model.IsAuthenticated)
 {
     <ul class="dropdown-menu shopbar-flyout-container">
+        @Html.Widget("account_dropdown_before")
         <li>
 			<a href="@Url.Action("Info", "Customer")" rel="nofollow">
 				<i class="fa fa-user"></i>
@@ -80,6 +81,8 @@
                 <i class="fa fa-sign-out"></i>
                 @T("Account.Logout")</a>
         </li>
+
+        @Html.Widget("account_dropdown_after")
     </ul>
 } 
 else 

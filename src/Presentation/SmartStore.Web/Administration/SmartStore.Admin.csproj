@@ -236,7 +236,6 @@
     <Compile Include="Models\Catalog\ProductReviewListModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\CopyProductModel.cs" />
-    <Compile Include="Models\Cms\RenderWidgetModel.cs" />
     <Compile Include="Models\Cms\WidgetModel.cs" />
     <Compile Include="Models\Common\CheckUpdateResult.cs" />
     <Compile Include="Models\Common\FeedItemModel.cs" />
@@ -505,7 +504,13 @@
     <Content Include="Views\Plugin\LicensePlugin.cshtml" />
     <Content Include="Views\Common\CheckUpdate.cshtml" />
     <Content Include="Views\Payment\Edit.cshtml" />
-    <Content Include="Views\Shared\EditorTemplates\Download2.cshtml" />
+    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
+    <Content Include="Views\ScheduleTask\Edit.cshtml" />
+    <Content Include="Views\ScheduleTask\FutureSchedules.cshtml" />
+    <Content Include="Views\ScheduleTask\_LastRun.cshtml" />
+    <Content Include="Views\ScheduleTask\_NextRun.cshtml" />
+    <Content Include="Views\ScheduleTask\MinimalTask.cshtml" />
+    <Content Include="Views\ScheduleTask\_MinimalTaskWidget.cshtml" />
     <Content Include="Views\Export\List.cshtml" />
     <Content Include="Views\Export\Create.cshtml" />
     <Content Include="Views\Export\Edit.cshtml" />
@@ -740,9 +745,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductAttributeValue.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Shared\EditorTemplates\Download.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\CheckoutAttribute\_CreateOrUpdate.cshtml" />
@@ -1107,9 +1109,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Product\_CreateOrUpdateProductTag.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Widget\WidgetsByZone.cshtml" />
   </ItemGroup>
   <ItemGroup />
   <ItemGroup>

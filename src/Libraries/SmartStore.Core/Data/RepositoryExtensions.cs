@@ -42,14 +42,24 @@ namespace SmartStore.Core.Data
             }
         }
 
-        public static void Delete<T>(this IRepository<T> rs, object id) where T : BaseEntity
+        public static void Delete<T>(this IRepository<T> rs, int id) where T : BaseEntity
         {
-            T entityToDelete = rs.GetById(id);
-            if (entityToDelete != null)
-            {
-                rs.Delete(entityToDelete);
-            }
+			Guard.ArgumentNotZero(id, "id");
+			
+			// Perf: work with stub entity
+			var entity = rs.Create();
+			entity.Id = id;
+
+			rs.Attach(entity);
+			rs.Context.ChangeState(entity, System.Data.Entity.EntityState.Deleted);
         }
+
+		public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity
+		{
+			Guard.ArgumentNotNull(() => ids);
+
+			ids.Each(id => rs.Delete(id));
+		}
 
 		/// <summary>
 		/// Truncates the table
@@ -57,15 +67,19 @@ namespace SmartStore.Core.Data
 		/// <typeparam name="T">Entity type</typeparam>
 		/// <param name="rs">The repository</param>
 		/// <param name="predicate">An optional filter</param>
+		/// <param name="cascade">
+		/// <c>false</c>: does not make any attempts to determine dependant entities, just deletes ONLY them (faster).
+		/// <c>true</c>: loads all entities into the context first and deletes them, along with their dependencies (slower).
+		/// </param>
 		/// <returns>The total number of affected entities</returns>
 		/// <remarks>
 		/// This method turns off auto detection, validation and hooking.
 		/// </remarks>
-		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null) where T : BaseEntity
+		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null, bool cascade = false) where T : BaseEntity
 		{
 			var count = 0;
 
-			using (var scope = new DbContextScope(autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
+			using (var scope = new DbContextScope(ctx: rs.Context, autoDetectChanges: false, validateOnSave: false, hooksEnabled: false, autoCommit: false))
 			{
 				var query = rs.Table;
 				if (predicate != null)
@@ -73,11 +87,23 @@ namespace SmartStore.Core.Data
 					query = query.Where(predicate);
 				}
 
-				var records = query.ToList();
-				foreach (var chunk in records.Chunk(500))
+				if (cascade)
 				{
-					rs.DeleteRange(chunk.ToList());
-					count += rs.Context.SaveChanges();
+					var records = query.ToList();
+					foreach (var chunk in records.Chunk(500))
+					{
+						rs.DeleteRange(chunk.ToList());
+						count += rs.Context.SaveChanges();
+					}
+				}
+				else
+				{
+					var ids = query.Select(x => new { Id = x.Id }).ToList();
+					foreach (var chunk in ids.Chunk(500))
+					{
+						rs.DeleteRange(chunk.Select(x => x.Id));
+						count += rs.Context.SaveChanges();
+					}
 				}
 			}
 

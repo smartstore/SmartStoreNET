@@ -149,6 +149,7 @@
     <Compile Include="Controllers\DevToolsController.cs" />
     <Compile Include="Controllers\MyCheckoutController.cs" />
     <Compile Include="DependencyRegistrar.cs" />
+    <Compile Include="Filters\WidgetZoneFilter.cs" />
     <Compile Include="Filters\Samples\SampleCheckoutFilter.cs" />
     <Compile Include="Filters\ProfilerFilter.cs" />
     <Compile Include="Filters\Samples\SampleResultFilter.cs" />
@@ -202,6 +203,9 @@
     </Content>
     <Content Include="Views\Web.config">
       <SubType>Designer</SubType>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
+    <Content Include="Views\DevTools\WidgetZone.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>
   </ItemGroup>

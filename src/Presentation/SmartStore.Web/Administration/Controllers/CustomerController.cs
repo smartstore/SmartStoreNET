@@ -234,6 +234,7 @@ namespace SmartStore.Admin.Controllers
                 Username = customer.Username,
                 FullName = customer.GetFullName(),
                 Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company),
+                CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber),
                 Phone = customer.GetAttribute<string>(SystemCustomerAttributeNames.Phone),
                 ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode),
                 CustomerRoleNames = GetCustomerRolesNames(customer.CustomerRoles.ToList()),
@@ -281,7 +282,8 @@ namespace SmartStore.Admin.Controllers
 			model.StateProvinceEnabled = _customerSettings.StateProvinceEnabled;
 			model.PhoneEnabled = _customerSettings.PhoneEnabled;
 			model.FaxEnabled = _customerSettings.FaxEnabled;
-
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
+            
 			if (_customerSettings.CountryEnabled)
 			{
 				model.AvailableCountries.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.SelectCountry"), Value = "0" });
@@ -525,6 +527,25 @@ namespace SmartStore.Admin.Controllers
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Phone, model.Phone);
                 if (_customerSettings.FaxEnabled)
                     _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
+                if (_customerSettings.CustomerNumberMethod == CustomerNumberMethod.AutomaticallySet && String.IsNullOrEmpty(model.CustomerNumber))
+                {
+                    _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, customer.Id);
+                    _eventPublisher.Publish(new CustomerRegisteredEvent { Customer = customer });
+                }
+                else
+                {
+                    var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
+
+                    if (customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
+                    {
+                        this.NotifyError("Common.CustomerNumberAlreadyExists");
+                    }
+                    else
+                    {
+                        _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                    }
+                }
+                    
 
                 //password
                 if (!String.IsNullOrWhiteSpace(model.Password))
@@ -607,6 +628,7 @@ namespace SmartStore.Admin.Controllers
             model.Gender = customer.GetAttribute<string>(SystemCustomerAttributeNames.Gender);
             model.DateOfBirth = customer.GetAttribute<DateTime?>(SystemCustomerAttributeNames.DateOfBirth);
             model.Company = customer.GetAttribute<string>(SystemCustomerAttributeNames.Company);
+            model.CustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
             model.StreetAddress = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress);
             model.StreetAddress2 = customer.GetAttribute<string>(SystemCustomerAttributeNames.StreetAddress2);
             model.ZipPostalCode = customer.GetAttribute<string>(SystemCustomerAttributeNames.ZipPostalCode);
@@ -619,6 +641,7 @@ namespace SmartStore.Admin.Controllers
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
             model.ZipPostalCodeEnabled = _customerSettings.ZipPostalCodeEnabled;
@@ -782,6 +805,21 @@ namespace SmartStore.Admin.Controllers
                     if (_customerSettings.FaxEnabled)
                         _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.Fax, model.Fax);
 
+                    //customer number
+                    if (_customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled)
+                    {
+                        var customerNumbers = _genericAttributeService.GetAttributes(SystemCustomerAttributeNames.CustomerNumber, "customer");
+                        var currentCustomerNumber = customer.GetAttribute<string>(SystemCustomerAttributeNames.CustomerNumber);
+
+                        if (model.CustomerNumber != currentCustomerNumber && customerNumbers.Where(x => x.Value == model.CustomerNumber).Any())
+                        {
+                            this.NotifyError("Common.CustomerNumberAlreadyExists");
+                        }
+                        else
+                        {
+                            _genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.CustomerNumber, model.CustomerNumber);
+                        }
+                    }
 
                     //customer roles
                     if (allowManagingCustomerRoles)
@@ -835,6 +873,7 @@ namespace SmartStore.Admin.Controllers
             //form fields
             model.GenderEnabled = _customerSettings.GenderEnabled;
             model.DateOfBirthEnabled = _customerSettings.DateOfBirthEnabled;
+            model.CustomerNumberEnabled = _customerSettings.CustomerNumberMethod != CustomerNumberMethod.Disabled;
             model.CompanyEnabled = _customerSettings.CompanyEnabled;
             model.StreetAddressEnabled = _customerSettings.StreetAddressEnabled;
             model.StreetAddress2Enabled = _customerSettings.StreetAddress2Enabled;
@@ -1000,8 +1039,8 @@ namespace SmartStore.Admin.Controllers
                 //No customer found with the specified id
                 return RedirectToAction("List");
 
-			//ensure that a non-admin user cannot impersonate as an administrator
-			//otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
+			// ensure that a non-admin user cannot impersonate as an administrator
+			// otherwise, that user can simply impersonate as an administrator and gain additional administrative privileges
 			if (!_workContext.CurrentCustomer.IsAdmin() && customer.IsAdmin())
 			{
 				NotifyError("A non-admin user cannot impersonate as an administrator");

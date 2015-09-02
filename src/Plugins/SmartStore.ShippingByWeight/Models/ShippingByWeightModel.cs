@@ -26,6 +26,9 @@ namespace SmartStore.ShippingByWeight.Models
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.To")]
         public decimal To { get; set; }
 
+        [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.Zip")]
+        public string Zip { get; set; }
+
         [SmartResourceDisplayName("Plugins.Shipping.ByWeight.Fields.UsePercentage")]
         public bool UsePercentage { get; set; }
 

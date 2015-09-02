@@ -39,7 +39,7 @@ namespace SmartStore.Core.Logging
 
         private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
         {
-            //don't log thread abort exception
+            // don't log thread abort exception
             if ((exception != null) && (exception is System.Threading.ThreadAbortException))
                 return;
 

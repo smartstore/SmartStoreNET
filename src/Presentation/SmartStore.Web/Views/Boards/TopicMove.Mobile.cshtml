@@ -16,7 +16,7 @@
         </div>
         <div class="page-body">
             @T("Forum.SelectTheForumToMoveTopic"):
-            @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"))
+            @Html.DropDownList("ForumSelected", new SelectList(Model.ForumList, "Value", "Text"), new { data_native_menu = "false" })
             <div class="options">
                 <input type="submit" value="@T("Forum.Submit")" data-inline="true" />
                 <a href="@Url.RouteUrl("TopicSlug", new { id = @Model.Id, slug = @Model.TopicSeName })" data-inline="true" data-role="button">@T("Forum.Cancel")</a>

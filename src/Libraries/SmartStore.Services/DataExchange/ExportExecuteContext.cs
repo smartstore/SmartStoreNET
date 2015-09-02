@@ -17,17 +17,17 @@ namespace SmartStore.Services.DataExchange
 
 		ExpandoObject Store { get; }
 
-		string Folder { get; }
-
-		string FileNamePattern { get; }
-
 		object ConfigurationData { get; }
 
 		Dictionary<string, object> CustomProperties { get; set; }
 
 		int SuccessfulExportedRecords { get; set; }
 
-		string GetFilePath(string fileNameSuffix = null);
+		int MaxFileNameLength { get; }
+
+		string Folder { get; }
+		string FileName { get; }
+		string FilePath { get; }
 	}
 
 
@@ -54,24 +54,32 @@ namespace SmartStore.Services.DataExchange
 
 		public ExpandoObject Store { get; internal set; }
 
-		public string Folder { get; private set; }
-
-		public string FileNamePattern { get; internal set; }
-
 		public object ConfigurationData { get; internal set; }
 
 		public Dictionary<string, object> CustomProperties { get; set; }
 
 		public int SuccessfulExportedRecords { get; set; }
 
-		public string GetFilePath(string fileNameSuffix = null)
-		{
-			var fileName = FileNamePattern.FormatInvariant(
-				(Data.FileIndex + 1).ToString("D5"),
-				SeoHelper.GetSeName(fileNameSuffix.EmptyNull(), true, false)
-			);
+		public int MaxFileNameLength { get; internal set; }
 
-			return Path.Combine(Folder, fileName);
+		public string Folder { get; private set; }
+		public string FileNamePattern { get; internal set; }
+		public string FileExtension { get; internal set; }
+		public string FileName
+		{
+			get
+			{
+				var finallyResolvedPattern = FileNamePattern
+					.Replace("%Misc.FileNumber%", (Data.FileIndex + 1).ToString("D5"))
+					.ToValidFileName("")
+					.Truncate(MaxFileNameLength);
+
+				return string.Concat(finallyResolvedPattern, FileExtension);
+			}
+		}
+		public string FilePath
+		{
+			get { return Path.Combine(Folder, FileName); }
 		}
 	}
 }

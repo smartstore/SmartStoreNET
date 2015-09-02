@@ -6,7 +6,7 @@ namespace SmartStore.Core.Domain.DataExchange
 	{
 		public DataExchangeSettings()
 		{
-			MaxFileNameLength = 32;
+			MaxFileNameLength = 50;
 		}
 
 		/// <summary>

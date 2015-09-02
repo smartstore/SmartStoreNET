@@ -102,6 +102,7 @@ namespace SmartStore.Admin.Controllers
 			model.Id = profile.Id;
 			model.Name = profile.Name;
 			model.FolderName = profile.FolderName;
+			model.FileNamePattern = profile.FileNamePattern;
 			model.Enabled = profile.Enabled;
 			model.SchedulingHours = profile.ScheduleTask.Seconds / 3600;
 
@@ -452,9 +453,6 @@ namespace SmartStore.Admin.Controllers
 						return item;
 					}).ToList();
 
-				model.Provider.AvailableExportProviders.Add(new SelectListItem { Text = "Tester", Value = "Provider.Tester" });
-				model.Provider.ProviderDescriptions.Add("Provider.Tester", "Hello world!");
-
 				return PartialView(model);
 			}
 
@@ -523,6 +521,7 @@ namespace SmartStore.Admin.Controllers
 			}
 
 			profile.Name = model.Name;
+			profile.FileNamePattern = model.FileNamePattern;
 			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
 			profile.ScheduleTask.Seconds = model.SchedulingHours * 3600;

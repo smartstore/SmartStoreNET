@@ -902,12 +902,14 @@ namespace SmartStore.Services.DataExchange
 
 			ctx.Export.Store = ctx.Store.ToExpando(ctx.Projection.LanguageId ?? 0);
 
-			ctx.Export.FileNamePattern = string.Concat(
-				"{0}-",
-				ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false).ToValidFileName("").Truncate(_dataExchangeSettings.MaxFileNameLength) : "all-stores",
-				"{1}",
-				ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".")
-			);
+			ctx.Export.MaxFileNameLength = _dataExchangeSettings.MaxFileNameLength;
+
+			ctx.Export.FileExtension = ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".");
+
+			ctx.Export.FileNamePattern = ctx.Profile.FileNamePattern
+				.Replace("%ExportProfile.Id%", ctx.Profile.Id.ToString())
+				.Replace("%Store.Name%", ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false) : "allstores");
+
 
 			var totalCount = GetTotalRecords(ctx);
 

@@ -285,6 +285,24 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.FileNamePattern)
+			</td>
+			<td class="adminData">
+				@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
+				@Html.ValidationMessageFor(x => x.FileNamePattern)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.CreateZipArchive)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.CreateZipArchive)
+				@Html.ValidationMessageFor(x => x.CreateZipArchive)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.EmailAccountId)
 			</td>
 			<td class="adminData">
@@ -299,15 +317,6 @@
 			<td class="adminData">
 				@Html.HiddenFor(model => model.CompletedEmailAddresses)
 				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.CreateZipArchive)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.CreateZipArchive)
-				@Html.ValidationMessageFor(x => x.CreateZipArchive)
 			</td>
 		</tr>
 		<tr>

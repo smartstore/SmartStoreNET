@@ -28,6 +28,11 @@ namespace SmartStore.Core.Domain
 		public string FolderName { get; set; }
 
 		/// <summary>
+		/// The pattern for file names
+		/// </summary>
+		public string FileNamePattern { get; set; }
+
+		/// <summary>
 		/// The system name of the export provider
 		/// </summary>
 		public string ProviderSystemName { get; set; }

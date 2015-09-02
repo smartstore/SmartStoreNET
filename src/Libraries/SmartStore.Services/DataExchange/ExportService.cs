@@ -53,10 +53,7 @@ namespace SmartStore.Services.DataExchange
 			if (name.IsEmpty())
 				name = systemName;
 
-			var folderName = SeoHelper.GetSeName(name, true, false)
-				.Replace("/", "")
-				.ToValidPath()
-				.Truncate(_dataExchangeSettings.MaxFileNameLength);
+			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
 
 			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
 
@@ -75,7 +72,8 @@ namespace SmartStore.Services.DataExchange
 			var profile = new ExportProfile
 			{
 				Name = name,
-				FolderName = folderName,
+				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
+				FileNamePattern = "%Misc.FileNumber%-%ExportProfile.Id%-{0}-%Store.Name%".FormatInvariant(seoName),
 				ProviderSystemName = systemName,
 				SchedulingTaskId = task.Id,
 				Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),

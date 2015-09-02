@@ -13,12 +13,14 @@ namespace SmartStore.Data.Migrations
             AddColumn("dbo.ExportDeployment", "HttpTransmissionType", c => c.Int(nullable: false));
             AddColumn("dbo.ExportDeployment", "PassiveMode", c => c.Boolean(nullable: false));
             AddColumn("dbo.ExportDeployment", "UseSsl", c => c.Boolean(nullable: false));
+            AddColumn("dbo.ExportProfile", "FileNamePattern", c => c.String(maxLength: 400));
             AddColumn("dbo.ExportProfile", "EmailAccountId", c => c.Int(nullable: false));
         }
         
         public override void Down()
         {
             DropColumn("dbo.ExportProfile", "EmailAccountId");
+            DropColumn("dbo.ExportProfile", "FileNamePattern");
             DropColumn("dbo.ExportDeployment", "UseSsl");
             DropColumn("dbo.ExportDeployment", "PassiveMode");
             DropColumn("dbo.ExportDeployment", "HttpTransmissionType");
@@ -41,6 +43,12 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.ExportSelected", "Export selected", "Ausgewählte exportieren");
 			builder.AddOrUpdate("Admin.Common.ExportAll", "Export all", "Alle exportieren");
 			builder.AddOrUpdate("Admin.Common.NoDescriptionAvailable", "No description available", "Keine Beschreibung vorhanden");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.FileNamePattern",
+				"Pattern for file names",
+				"Muster für Dateinamen",
+				"Specifies the pattern for creating file names.",
+				"Legt das Muster fest, nach dem Dateinamen erzeugt werden.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.EmailAccountId",
 				"Email notification",
@@ -68,9 +76,9 @@ namespace SmartStore.Data.Migrations
 				"Specifies the name of the folder where the data will be exported.",
 				"Legt den Namen des Ordners fest, in den die Daten exportiert werden.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.FolderName.Validate",
-				"Please enter a valid folder name.",
-				"Bitte einen gültigen Ordnernamen eingeben.");
+			builder.AddOrUpdate("Admin.Configuration.Export.FolderAndFileName.Validate",
+				"Please enter a valid folder and file name.",
+				"Bitte einen gültigen Ordner- und Dateinamen eingeben.");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.CreateZip",

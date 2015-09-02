@@ -60,7 +60,7 @@ namespace SmartStore.Services.DataExchange
 			var task = new ScheduleTask
 			{
 				Name = string.Concat(name, " Export Task"),
-				Seconds = _defaultSchedulingHours * 3600,
+				//Seconds = _defaultSchedulingHours * 3600,	// TODO cron
 				Type = taskType,
 				Enabled = false,
 				StopOnError = false,

@@ -42,7 +42,6 @@ using SmartStore.Services.DataExchange;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
-using SmartStore.Services.DataExchange;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;

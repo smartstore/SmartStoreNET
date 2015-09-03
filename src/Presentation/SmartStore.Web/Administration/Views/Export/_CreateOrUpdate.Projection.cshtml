@@ -60,11 +60,11 @@
 			</tr>
 			<tr id="AttributeCombinationAddValuesToNameContainer">
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationValueMerging)
+					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationValueMergingId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.ProductProjection.AttributeCombinationValueMerging, Model.ProductProjection.AvailableAttributeCombinationValueMerging, Model.UnspecifiedString)
-					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationValueMerging)
+					@Html.DropDownListFor(x => x.ProductProjection.AttributeCombinationValueMergingId, Model.ProductProjection.AvailableAttributeCombinationValueMerging)
+					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationValueMergingId)
 				</td>
 			</tr>
 		}
@@ -160,11 +160,11 @@
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionMerging)
+					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionMergingId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.ProductProjection.DescriptionMerging, Model.ProductProjection.AvailableDescriptionMergings, Model.UnspecifiedString)
-					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionMerging)
+					@Html.DropDownListFor(x => x.ProductProjection.DescriptionMergingId, Model.ProductProjection.AvailableDescriptionMergings)
+					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionMergingId)
 				</td>
 			</tr>
 			<tr>

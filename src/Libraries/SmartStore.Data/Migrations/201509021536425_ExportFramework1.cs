@@ -102,7 +102,7 @@ namespace SmartStore.Data.Migrations
 				"Legt fest, ob und wie die Werte der Attribute weiter verarbeitet werden sollen.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportAttributeValueMerging.None",
-				"None", "Keine");
+				"Not specified", "Nicht spezifiziert");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportAttributeValueMerging.AppendAllValuesToName",
 				"Append all values to the product name", "Alle Werte an den Produktnamen anhängen");
 

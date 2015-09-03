@@ -152,11 +152,9 @@ namespace SmartStore.Services.DataExchange
 				string description = "";
 
 				// description merging
-				if (ctx.Projection.DescriptionMerging.HasValue)
+				if (ctx.Projection.DescriptionMerging != ExportDescriptionMerging.None)
 				{
-					var type = ctx.Projection.DescriptionMerging ?? ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty;
-
-					if (type == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
+					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
 					{
 						description = expando.FullDescription;
 
@@ -165,23 +163,24 @@ namespace SmartStore.Services.DataExchange
 						if (description.IsEmpty())
 							description = expando.Name;
 					}
-					else if (type == ExportDescriptionMerging.ShortDescription)
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
 					{
 						description = expando.ShortDescription;
 					}
-					else if (type == ExportDescriptionMerging.Description)
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
 					{
 						description = expando.FullDescription;
 					}
-					else if (type == ExportDescriptionMerging.NameAndShortDescription)
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
 					{
 						description = ((string)expando.Name).Grow((string)expando.ShortDescription, " ");
 					}
-					else if (type == ExportDescriptionMerging.NameAndDescription)
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
 					{
 						description = ((string)expando.Name).Grow((string)expando.FullDescription, " ");
 					}
-					else if (type == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription || type == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
+						ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
 					{
 						var productManus = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
 
@@ -190,7 +189,7 @@ namespace SmartStore.Services.DataExchange
 
 						description = description.Grow((string)expando.Name, " ");
 
-						if (type == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
+						if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
 							description = description.Grow((string)expando.ShortDescription, " ");
 						else
 							description = description.Grow((string)expando.FullDescription, " ");

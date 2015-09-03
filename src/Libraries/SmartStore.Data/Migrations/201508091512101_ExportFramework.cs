@@ -429,7 +429,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDeploymentType.Ftp", "FTP", "FTP");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.None",
-				"None", "Keine");
+				"Not specified", "Nicht spezifiziert");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty",
 				"Short description or name if empty", "Kurzbeschreibung oder Name falls leer");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportDescriptionMerging.ShortDescription",

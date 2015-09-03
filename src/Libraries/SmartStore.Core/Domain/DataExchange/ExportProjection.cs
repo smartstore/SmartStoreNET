@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Xml.Serialization;
 using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Domain.DataExchange
@@ -27,7 +28,20 @@ namespace SmartStore.Core.Domain.DataExchange
 
 		public int? CustomerId { get; set; }
 
-		public ExportDescriptionMerging? DescriptionMerging { get; set; }
+		public int DescriptionMergingId { get; set; }
+
+		[XmlIgnore]
+		public ExportDescriptionMerging DescriptionMerging
+		{
+			get
+			{
+				return (ExportDescriptionMerging)DescriptionMergingId;
+			}
+			set
+			{
+				DescriptionMergingId = (int)value;
+			}
+		}
 
 		public bool DescriptionToPlainText { get; set; }
 
@@ -53,6 +67,19 @@ namespace SmartStore.Core.Domain.DataExchange
 
 		public bool AttributeCombinationAsProduct { get; set; }
 
-		public ExportAttributeValueMerging? AttributeCombinationValueMerging { get; set; }
+		public int AttributeCombinationValueMergingId { get; set; }
+
+		[XmlIgnore]
+		public ExportAttributeValueMerging AttributeCombinationValueMerging
+		{
+			get
+			{
+				return (ExportAttributeValueMerging)AttributeCombinationValueMergingId;
+			}
+			set
+			{
+				AttributeCombinationValueMergingId = (int)value;
+			}
+		}
 	}
 }

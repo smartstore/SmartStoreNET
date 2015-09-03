@@ -202,7 +202,7 @@ namespace SmartStore.Admin.Controllers
 					LanguageId = projection.LanguageId,
 					CurrencyId = projection.CurrencyId,
 					CustomerId = projection.CustomerId,
-					DescriptionMerging = projection.DescriptionMerging,
+					DescriptionMergingId = projection.DescriptionMergingId,
 					DescriptionToPlainText = projection.DescriptionToPlainText,
 					AppendDescriptionText = projection.AppendDescriptionText,
 					RemoveCriticalCharacters = projection.RemoveCriticalCharacters,
@@ -215,7 +215,7 @@ namespace SmartStore.Admin.Controllers
 					ShippingCosts = projection.ShippingCosts,
 					FreeShippingThreshold = projection.FreeShippingThreshold,
 					AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
-					AttributeCombinationValueMerging = projection.AttributeCombinationValueMerging
+					AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId
 				};
 
 				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
@@ -556,7 +556,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				projection = new ExportProjection
 				{
-					DescriptionMerging = model.ProductProjection.DescriptionMerging,
+					DescriptionMergingId = model.ProductProjection.DescriptionMergingId,
 					DescriptionToPlainText = model.ProductProjection.DescriptionToPlainText,
 					AppendDescriptionText = model.ProductProjection.AppendDescriptionText,
 					RemoveCriticalCharacters = model.ProductProjection.RemoveCriticalCharacters,
@@ -569,7 +569,7 @@ namespace SmartStore.Admin.Controllers
 					ShippingCosts = model.ProductProjection.ShippingCosts,
 					FreeShippingThreshold = model.ProductProjection.FreeShippingThreshold,
 					AttributeCombinationAsProduct = model.ProductProjection.AttributeCombinationAsProduct,
-					AttributeCombinationValueMerging = model.ProductProjection.AttributeCombinationValueMerging
+					AttributeCombinationValueMergingId = model.ProductProjection.AttributeCombinationValueMergingId
 				};
 
 				getProjectionBase(model.ProductProjection);

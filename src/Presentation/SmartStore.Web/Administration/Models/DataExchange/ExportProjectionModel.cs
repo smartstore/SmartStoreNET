@@ -28,7 +28,7 @@ namespace SmartStore.Admin.Models.DataExchange
 	public class ExportProductProjectionModel : ExportProjectionModelBase
 	{
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.DescriptionMerging")]
-		public ExportDescriptionMerging? DescriptionMerging { get; set; }
+		public int DescriptionMergingId { get; set; }
 		public SelectList AvailableDescriptionMergings { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.DescriptionToPlainText")]
@@ -72,7 +72,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public bool AttributeCombinationAsProduct { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AttributeCombinationValueMerging")]
-		public ExportAttributeValueMerging? AttributeCombinationValueMerging { get; set; }
+		public int AttributeCombinationValueMergingId { get; set; }
 		public SelectList AvailableAttributeCombinationValueMerging { get; set; }
 	}
 }

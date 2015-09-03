@@ -58,6 +58,15 @@
 					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationAsProduct)
 				</td>
 			</tr>
+			<tr id="AttributeCombinationAddValuesToNameContainer">
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationValueMerging)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.ProductProjection.AttributeCombinationValueMerging, Model.ProductProjection.AvailableAttributeCombinationValueMerging, Model.UnspecifiedString)
+					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationValueMerging)
+				</td>
+			</tr>
 		}
 
 		<tr>

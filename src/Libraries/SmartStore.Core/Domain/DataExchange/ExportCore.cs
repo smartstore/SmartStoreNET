@@ -37,6 +37,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		ManufacturerAndNameAndDescription
 	}
 
+	public enum ExportAttributeValueMerging
+	{
+		None = 0,
+		AppendAllValuesToName
+	}
+
 	public enum ExportProjectionSupport
 	{
 		Description = 0,

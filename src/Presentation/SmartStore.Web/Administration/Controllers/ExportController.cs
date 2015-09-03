@@ -214,11 +214,13 @@ namespace SmartStore.Admin.Controllers
 					ShippingTime = projection.ShippingTime,
 					ShippingCosts = projection.ShippingCosts,
 					FreeShippingThreshold = projection.FreeShippingThreshold,
-					AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct
+					AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
+					AttributeCombinationValueMerging = projection.AttributeCombinationValueMerging
 				};
 
 				model.ProductProjection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
 				model.ProductProjection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
+				model.ProductProjection.AvailableAttributeCombinationValueMerging = ExportAttributeValueMerging.AppendAllValuesToName.ToSelectList(false);
 
 				model.ProductProjection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
 				model.ProductProjection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
@@ -566,7 +568,8 @@ namespace SmartStore.Admin.Controllers
 					ShippingTime = model.ProductProjection.ShippingTime,
 					ShippingCosts = model.ProductProjection.ShippingCosts,
 					FreeShippingThreshold = model.ProductProjection.FreeShippingThreshold,
-					AttributeCombinationAsProduct = model.ProductProjection.AttributeCombinationAsProduct
+					AttributeCombinationAsProduct = model.ProductProjection.AttributeCombinationAsProduct,
+					AttributeCombinationValueMerging = model.ProductProjection.AttributeCombinationValueMerging
 				};
 
 				getProjectionBase(model.ProductProjection);

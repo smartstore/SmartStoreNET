@@ -7,6 +7,7 @@ using System.Xml;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Catalog
 {
@@ -140,6 +141,47 @@ namespace SmartStore.Services.Catalog
 
             return values;
         }
+
+		public IList<string> ParseProductVariantAttributeValues(string attributesXml, IEnumerable<ProductVariantAttribute> attributes, int languageId = 0)
+		{
+			var values = new List<string>();
+
+			if (attributesXml.IsEmpty())
+				return values;
+
+			var allValueIds = new List<int>();
+			var combinedAttributes = DeserializeProductVariantAttributes(attributesXml);
+
+			foreach (var pva in attributes.Where(x => x.ShouldHaveValues()).OrderBy(x => x.DisplayOrder))
+			{
+				if (combinedAttributes.ContainsKey(pva.Id))
+				{
+					var pvaValuesStr = combinedAttributes[pva.Id];
+					var ids = pvaValuesStr.Where(x => x.HasValue()).Select(x => x.ToInt());
+
+					allValueIds.AddRange(ids);
+				}
+			}
+
+			foreach (int id in allValueIds.Distinct())
+			{
+				foreach (var attribute in attributes)
+				{
+					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(x => x.Id == id);
+					if (attributeValue != null)
+					{
+						var value = attributeValue.GetLocalized(x => x.Name, languageId, true, false);
+
+						if (!values.Any(x => x.IsCaseInsensitiveEqual(value)))
+							values.Add(value);
+						break;
+					}
+				}
+			}
+
+			return values;
+		}
+
 
         /// <summary>
         /// Gets selected product variant attribute value

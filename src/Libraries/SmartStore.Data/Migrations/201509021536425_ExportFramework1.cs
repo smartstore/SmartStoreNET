@@ -79,8 +79,8 @@ namespace SmartStore.Data.Migrations
 				"Legt den Namen des Ordners fest, in den die Daten exportiert werden.");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.FolderAndFileName.Validate",
-				"Please enter a valid folder and file name.",
-				"Bitte einen gültigen Ordner- und Dateinamen eingeben.");
+				"Please enter a valid folder and file name. Example for file names: %Misc.FileNumber%-%ExportProfile.Id%-gmc-%Store.Name%",
+				"Bitte einen gültigen Ordner- und Dateinamen eingeben. Beispiel für Dateinamen: %Misc.FileNumber%-%ExportProfile.Id%-gmc-%Store.Name%");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.CreateZip",
@@ -94,6 +94,17 @@ namespace SmartStore.Data.Migrations
 				"Attributkombinationen exportieren",
 				"Specifies whether to export a standalone product for each active attribute combination.",
 				"Legt fest, ob für jede aktive Attributkombination ein eigenständiges Produkt exportiert werden soll.");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.AttributeCombinationValueMerging",
+				"Attribute values",
+				"Attributwerte",
+				"Specifies if and how to further process the attribute values.",
+				"Legt fest, ob und wie die Werte der Attribute weiter verarbeitet werden sollen.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportAttributeValueMerging.None",
+				"None", "Keine");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportAttributeValueMerging.AppendAllValuesToName",
+				"Append all values to the product name", "Alle Werte an den Produktnamen anhängen");
 
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.HttpTransmissionType",
 				"HTTP transmission type",

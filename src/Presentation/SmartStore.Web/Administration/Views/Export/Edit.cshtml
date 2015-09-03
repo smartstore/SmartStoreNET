@@ -337,14 +337,38 @@
 
 		$('#@(Html.FieldIdFor(x => x.CompletedEmailAddresses))').select2({ tags: [@(Html.Raw(Model.SerializedCompletedEmailAddresses))] });
 
+		// show/hide store projection
+		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
+			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide completion email addresses
+		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
+			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
+		}).trigger('change');
+
+
 		@if (Model.ProductProjection != null)
 		{
 		<text>
 		$('#@(Html.FieldIdFor(x => x.ProductProjection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedAppendDescriptionText))] });
 		$('#@(Html.FieldIdFor(x => x.ProductProjection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedCriticalCharacters))] });
+
+		// show/hide attribute combination value appending
+		$('#@(Html.FieldIdFor(x => x.ProductProjection.AttributeCombinationAsProduct))').change(function () {
+			$('#AttributeCombinationAddValuesToNameContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		// show/hide critical characters
+		$('#@(Html.FieldIdFor(x => x.ProductProjection.RemoveCriticalCharacters))').change(function () {
+			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
+		}).trigger('change');
 		</text>
 		}
 
+		@if (Model.ProductFilter != null)
+		{
+		<text>
 		// show/hide product category filter
 		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutCategories))').change(function () {
 			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
@@ -354,20 +378,7 @@
 		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutManufacturers))').change(function () {
 			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
-
-		// show/hide store projection
-		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
-			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide critical characters
-		$('#@(Html.FieldIdFor(x => x.ProductProjection.RemoveCriticalCharacters))').change(function () {
-			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide completion email addresses
-		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
-			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
-		}).trigger('change');
+		</text>
+		}
 	});
 </script>

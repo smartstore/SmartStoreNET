@@ -70,5 +70,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AttributeCombinationAsProduct")]
 		public bool AttributeCombinationAsProduct { get; set; }
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AttributeCombinationValueMerging")]
+		public ExportAttributeValueMerging? AttributeCombinationValueMerging { get; set; }
+		public SelectList AvailableAttributeCombinationValueMerging { get; set; }
 	}
 }

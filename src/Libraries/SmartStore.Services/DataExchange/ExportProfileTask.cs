@@ -67,6 +67,7 @@ namespace SmartStore.Services.DataExchange
 		private IEmailSender _emailSender;
 		private IQueuedEmailService _queuedEmailService;
 		private IProductAttributeService _productAttributeService;
+		private IProductAttributeParser _productAttributeParser;
 		private IDeliveryTimeService _deliveryTimeService;
 		private IQuantityUnitService _quantityUnitService;
 		private IManufacturerService _manufacturerService;
@@ -93,6 +94,7 @@ namespace SmartStore.Services.DataExchange
 			_emailSender = context.Resolve<IEmailSender>();
 			_queuedEmailService = context.Resolve<IQueuedEmailService>();
 			_productAttributeService = context.Resolve<IProductAttributeService>();
+			_productAttributeParser = context.Resolve<IProductAttributeParser>();
 			_deliveryTimeService = context.Resolve<IDeliveryTimeService>();
 			_quantityUnitService = context.Resolve<IQuantityUnitService>();
 			_manufacturerService = context.Resolve<IManufacturerService>();
@@ -745,6 +747,12 @@ namespace SmartStore.Services.DataExchange
 				exp.Height = product.Height;
 				exp.BasePriceAmount = product.BasePriceAmount;
 				exp.BasePriceBaseAmount = product.BasePriceBaseAmount;
+
+				if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+				{
+					var values = _productAttributeParser.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, languageId);
+					exp.Name = ((string)exp.Name).Grow(string.Join(", ", values), " ");
+				}
 
 				exp._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter, decimal.Zero, true);
 

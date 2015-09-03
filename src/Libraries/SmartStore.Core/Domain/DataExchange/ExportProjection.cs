@@ -52,5 +52,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		public decimal? FreeShippingThreshold { get; set; }
 
 		public bool AttributeCombinationAsProduct { get; set; }
+
+		public ExportAttributeValueMerging? AttributeCombinationValueMerging { get; set; }
 	}
 }

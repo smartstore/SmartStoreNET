@@ -803,6 +803,7 @@ namespace SmartStore.Web.Controllers
                 "/bin/",
                 "/Content/files/",
                 "/Content/files/ExportImport/",
+				"/Exchange/",
                 "/Country/GetStatesByCountryId",
                 "/Install",
                 "/Product/SetReviewHelpfulness",

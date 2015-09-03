@@ -46,7 +46,6 @@ namespace SmartStore.Services.DataExchange
 	public class ExportProfileTask : ITask
 	{
 		private const int _maxErrors = 20;
-		// TODO: replaces Content\files\ExportImport... add it to CommonController.RobotsTextFile, CommonController.MaintenanceDeleteFiles, FilePermissionHelper.GetDirectoriesWrite
 		private const string _publicFolder = "Exchange";
 
 		#region Dependencies

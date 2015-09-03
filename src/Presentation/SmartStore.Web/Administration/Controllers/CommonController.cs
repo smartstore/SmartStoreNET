@@ -849,31 +849,43 @@ namespace SmartStore.Admin.Controllers
 
 
             model.DeleteExportedFiles.NumberOfDeletedFiles = 0;
-            string path = string.Format("{0}Content\\files\\exportimport\\", this.Request.PhysicalApplicationPath);
-            foreach (var fullPath in System.IO.Directory.GetFiles(path))
-            {
-                try
-                {
-                    var fileName = Path.GetFileName(fullPath);
-                    if (fileName.Equals("index.htm", StringComparison.InvariantCultureIgnoreCase))
-                        continue;
 
-					if (fileName.Equals("placeholder", StringComparison.InvariantCultureIgnoreCase))
-						continue;
+			var appPath = this.Request.PhysicalApplicationPath;
 
-                    var info = new FileInfo(fullPath);
-                    if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc)&&
-                        (!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
-                    {
-                        System.IO.File.Delete(fullPath);
-                        model.DeleteExportedFiles.NumberOfDeletedFiles++;
-                    }
-                }
-                catch (Exception exc)
-                {
-                    NotifyError(exc, false);
-                }
-            }
+			string[] paths = new string[]
+			{
+				string.Concat(appPath, "Content\\files\\exportimport\\"),
+				string.Concat(appPath, "Exchange\\"),
+			};
+
+			foreach (var path in paths)
+			{
+				foreach (var fullPath in System.IO.Directory.GetFiles(path))
+				{
+					try
+					{
+						var fileName = Path.GetFileName(fullPath);
+						if (fileName.Equals("index.htm", StringComparison.InvariantCultureIgnoreCase))
+							continue;
+
+						if (fileName.Equals("placeholder", StringComparison.InvariantCultureIgnoreCase))
+							continue;
+
+						var info = new FileInfo(fullPath);
+
+						if ((!startDateValue.HasValue || startDateValue.Value < info.CreationTimeUtc) &&
+							(!endDateValue.HasValue || info.CreationTimeUtc < endDateValue.Value))
+						{
+							if (FileSystemHelper.Delete(fullPath))
+								++model.DeleteExportedFiles.NumberOfDeletedFiles;
+						}
+					}
+					catch (Exception exc)
+					{
+						NotifyError(exc, false);
+					}
+				}
+			}
 
             return View(model);
         }

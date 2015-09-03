@@ -44,6 +44,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.ExportAll", "Export all", "Alle exportieren");
 			builder.AddOrUpdate("Admin.Common.NoDescriptionAvailable", "No description available", "Keine Beschreibung vorhanden");
 
+			builder.AddOrUpdate("Admin.System.ScheduleTask", "Scheduled task", "Geplante Aufgabe");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.FileNamePattern",
 				"Pattern for file names",
 				"Muster für Dateinamen",

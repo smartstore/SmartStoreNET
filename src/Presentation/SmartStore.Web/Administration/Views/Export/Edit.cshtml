@@ -128,20 +128,19 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.SchedulingHours)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.SchedulingHours)
-				@Html.ValidationMessageFor(x => x.SchedulingHours)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Enabled)
 			</td>
 			<td class="adminData">
 				@Html.EditorFor(x => x.Enabled)
 				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ScheduleTaskId)
+			</td>
+			<td class="adminData">
+				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
 			</td>
 		</tr>
 	</table>

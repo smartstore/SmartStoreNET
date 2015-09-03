@@ -104,7 +104,8 @@ namespace SmartStore.Admin.Controllers
 			model.FolderName = profile.FolderName;
 			model.FileNamePattern = profile.FileNamePattern;
 			model.Enabled = profile.Enabled;
-			//model.SchedulingHours = profile.ScheduleTask.Seconds / 3600;	// TODO cron
+			model.ScheduleTaskId = profile.SchedulingTaskId;
+			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 
 			model.Provider = new ExportProfileModel.ProviderModel
 			{
@@ -524,7 +525,6 @@ namespace SmartStore.Admin.Controllers
 			profile.FileNamePattern = model.FileNamePattern;
 			profile.FolderName = model.FolderName;
 			profile.Enabled = model.Enabled;
-			//profile.ScheduleTask.Seconds = model.SchedulingHours * 3600;	// TODO cron
 			profile.Offset = model.Offset;
 			profile.Limit = model.Limit;
 			profile.BatchSize = model.BatchSize;

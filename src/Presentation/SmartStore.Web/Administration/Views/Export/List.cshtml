@@ -54,11 +54,9 @@
 						columns.Bound(x => x.Provider.EntityTypeName);
 						columns.Bound(x => x.Provider.FileExtension)
 							.Centered();
-						columns.Bound(x => x.SchedulingHours)
-							.Centered();
 						columns.Bound(x => x.LastExecution)
 							.ClientTemplate(
-								"<!-- TODO --><button type=\"button\" class=\"btn btn-primary export-button\" data-id=\"<#= Id #>\"><i class=\"fa fa-gears\"></i>&nbsp;" + @T("Admin.Common.ExportAll") + "</button>"
+								"<!-- TODO --><button type=\"button\" class=\"btn btn-primary export-button\" data-id=\"<#= Id #>\"><i class=\"fa fa-play\"></i>&nbsp;" + @T("Admin.Common.ExportAll") + "</button>"
 							)
 							.ReadOnly();
 					})

@@ -15,8 +15,6 @@ namespace SmartStore.Services.DataExchange
 {
 	public partial class ExportService : IExportService
 	{
-		private const int _defaultSchedulingHours = 6;
-
 		private readonly IRepository<ExportProfile> _exportProfileRepository;
 		private readonly IRepository<ExportDeployment> _exportDeploymentRepository;
 		private readonly IEventPublisher _eventPublisher;
@@ -60,7 +58,7 @@ namespace SmartStore.Services.DataExchange
 			var task = new ScheduleTask
 			{
 				Name = string.Concat(name, " Export Task"),
-				//Seconds = _defaultSchedulingHours * 3600,	// TODO cron
+				CronExpression = "0 */6 * * *",		// every six hours
 				Type = taskType,
 				Enabled = false,
 				StopOnError = false,

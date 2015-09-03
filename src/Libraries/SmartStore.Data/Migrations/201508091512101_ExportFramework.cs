@@ -146,12 +146,6 @@ namespace SmartStore.Data.Migrations
 				"The file type of the exported data.",
 				"Der Dateityp der exportierten Daten.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.SchedulingHours",
-				"Hours (interval)",
-				"Stunden (Intervall)",
-				"Specifies the interval in hours to which the export should execute automatically.",
-				"Legt das Intervall in Stunden fest, zu dem der Export automatisch erfolgen soll.");
-
 			builder.AddOrUpdate("Admin.Configuration.Export.LastExecution",
 				"Last execution",
 				"Letzte Ausführung",

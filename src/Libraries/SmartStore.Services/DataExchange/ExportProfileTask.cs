@@ -74,6 +74,7 @@ namespace SmartStore.Services.DataExchange
 		private IOrderService _orderService;
 		private IAddressService _addressesService;
 		private ICountryService _countryService;
+		private IRepository<Order> _orderRepository;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -101,6 +102,7 @@ namespace SmartStore.Services.DataExchange
 			_orderService = context.Resolve<IOrderService>();
 			_addressesService = context.Resolve<IAddressService>();
 			_countryService = context.Resolve<ICountryService>();
+			_orderRepository = context.Resolve<IRepository<Order>>();
 		}
 
 		#endregion
@@ -114,7 +116,7 @@ namespace SmartStore.Services.DataExchange
 				OrderBy = ProductSortingEnum.CreatedOn,
 				PageIndex = pageIndex,
 				PageSize = pageSize,
-				ProductIds = ctx.SelectedEntityIds,
+				ProductIds = ctx.EntityIdsSelected,
 				StoreId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 				VisibleIndividuallyOnly = true,
 				PriceMin = ctx.Filter.PriceMinimum,
@@ -142,6 +144,30 @@ namespace SmartStore.Services.DataExchange
 				searchContext.CreatedToUtc = _dateTimeHelper.ConvertToUtcTime(ctx.Filter.CreatedTo.Value, _dateTimeHelper.CurrentTimeZone);
 
 			return searchContext;
+		}
+
+		private int GetTotalRecords(ExportProfileTaskContext ctx)
+		{
+			int result = 0;
+
+			if (ctx.TotalRecords.HasValue)
+			{
+				return ctx.TotalRecords.Value;
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
+			{
+				var searchContext = GetProductSearchContext(ctx, ctx.Profile.Offset, 1);
+
+				var anySingleProduct = _productService.SearchProducts(searchContext);
+
+				result = anySingleProduct.TotalCount;
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
+			{
+				var unused = GetOrders(ctx, 0, 1, out result);
+			}
+
+			return result;
 		}
 
 		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando, Product product)
@@ -507,29 +533,7 @@ namespace SmartStore.Services.DataExchange
 
 		#endregion
 
-		private int GetTotalRecords(ExportProfileTaskContext ctx)
-		{
-			int result = 0;
-
-			if (ctx.TotalRecords.HasValue)
-			{
-				return ctx.TotalRecords.Value;
-			}
-			else if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
-			{
-				var searchContext = GetProductSearchContext(ctx, ctx.Profile.Offset, 1);
-
-				var anySingleProduct = _productService.SearchProducts(searchContext);
-
-				result = anySingleProduct.TotalCount;
-			}
-			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
-			{
-				var unused = GetOrders(ctx, 0, 1, out result);
-			}
-
-			return result;
-		}
+		#region Segmenter callbacks
 
 		private List<Product> GetProducts(ExportProfileTaskContext ctx, int pageIndex)
 		{
@@ -599,10 +603,18 @@ namespace SmartStore.Services.DataExchange
 				pageIndex,
 				pageSize,
 				null,
-				ctx.SelectedEntityIds
+				ctx.EntityIdsSelected
 			);
 
 			totalCount = pagedList.TotalCount;
+
+			if (ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			{
+				ctx.EntityIdsLoaded = ctx.EntityIdsLoaded
+					.Union(pagedList.Select(x => x.Id))
+					.Distinct()
+					.ToList();
+			}
 
 			var result = pagedList as List<Order>;
 
@@ -842,7 +854,7 @@ namespace SmartStore.Services.DataExchange
 			expando.Customer = customers
 				.FirstOrDefault(x => x.Id == order.CustomerId)
 				.ToExpando();
-			
+
 			expando.BillingAddress = addresses
 				.FirstOrDefault(x => x.Id == order.BillingAddressId)
 				.ToExpando(languageId);
@@ -858,7 +870,7 @@ namespace SmartStore.Services.DataExchange
 				expando.Store = null;
 
 			expando.OrderItems = orderItems
-				.Select(e => 
+				.Select(e =>
 				{
 					dynamic exp = e.ToExpando(languageId);
 
@@ -881,6 +893,36 @@ namespace SmartStore.Services.DataExchange
 			catch { }
 
 			return result;
+		}
+
+		#endregion
+
+		private List<Store> Init(ExportProfileTaskContext ctx)
+		{
+			if (ctx.Projection.CurrencyId.HasValue)
+				ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
+			else
+				ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
+
+			if (ctx.Projection.CustomerId.HasValue)
+				ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
+			else
+				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
+
+			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
+
+			if (!ctx.IsPreview && ctx.Profile.PerStore)
+			{
+				return new List<Store>(ctx.Stores.Values.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0));
+			}
+			else
+			{
+				int? storeId = (ctx.Filter.StoreId == 0 ? ctx.Projection.StoreId : ctx.Filter.StoreId);
+
+				ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == (storeId ?? _services.StoreContext.CurrentStore.Id));
+
+				return new List<Store> { ctx.Store };
+			}
 		}
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx, Store store)
@@ -1093,12 +1135,15 @@ namespace SmartStore.Services.DataExchange
 
 					try
 					{
+						(ctx.Export.Data as IExportExecuter).Dispose();
+
 						ctx.Countries.Clear();
 						ctx.Stores.Clear();
 						ctx.QuantityUnits.Clear();
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
+						ctx.EntityIdsSelected.Clear();
 						ctx.ProductDataContext = null;
 						ctx.OrderDataContext = null;
 
@@ -1109,33 +1154,40 @@ namespace SmartStore.Services.DataExchange
 					catch { }
 				}
 			}
-		}
 
-		private List<Store> Init(ExportProfileTaskContext ctx)
-		{
-			if (ctx.Projection.CurrencyId.HasValue)
-				ctx.ProjectionCurrency = _currencyService.GetCurrencyById(ctx.Projection.CurrencyId.Value);
-			else
-				ctx.ProjectionCurrency = _services.WorkContext.WorkingCurrency;
-
-			if (ctx.Projection.CustomerId.HasValue)
-				ctx.ProjectionCustomer = _customerService.GetCustomerById(ctx.Projection.CustomerId.Value);
-			else
-				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
-
-			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
-
-			if (!ctx.IsPreview && ctx.Profile.PerStore)
+			// post process order entities
+			if (!ctx.IsPreview && ctx.EntityIdsLoaded.Count > 0 && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
-				return new List<Store>(ctx.Stores.Values.Where(x => x.Id == ctx.Filter.StoreId || ctx.Filter.StoreId == 0));
-			}
-			else
-			{
-				int? storeId = (ctx.Filter.StoreId == 0 ? ctx.Projection.StoreId : ctx.Filter.StoreId);
+				using (var logger = new TraceLogger(ctx.LogPath))
+				{
+					try
+					{
+						int? orderStatusId = null;
 
-				ctx.Store = ctx.Stores.Values.FirstOrDefault(x => x.Id == (storeId ?? _services.StoreContext.CurrentStore.Id));
+						if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Processing)
+							orderStatusId = (int)OrderStatus.Processing;
+						else if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Complete)
+							orderStatusId = (int)OrderStatus.Complete;
 
-				return new List<Store> { ctx.Store };
+						using (var scope = new DbContextScope(_services.DbContext, false, null, false, false, false, false))
+						{
+							foreach (var chunk in ctx.EntityIdsLoaded.Chunk())
+							{
+								var entities = _orderRepository.Table.Where(x => chunk.Contains(x.Id)).ToList();
+
+								entities.ForEach(x => x.OrderStatusId = (orderStatusId ?? x.OrderStatusId));
+
+								_services.DbContext.SaveChanges();
+							}
+						}
+
+						logger.Information("Updated order status for {0} order(s).".FormatInvariant(ctx.EntityIdsLoaded.Count()));
+					}
+					catch (Exception exc)
+					{
+						logger.Error(exc);
+					}
+				}
 			}
 		}
 
@@ -1219,7 +1271,7 @@ namespace SmartStore.Services.DataExchange
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 			Cancellation = cancellation;
-			SelectedEntityIds = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
+			EntityIdsSelected = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
 			PageIndex = pageIndex;
 			PageSize = pageSize;
 			TotalRecords = totalRecords;
@@ -1233,9 +1285,13 @@ namespace SmartStore.Services.DataExchange
 			Countries = new Dictionary<int, Country>();
 
 			Export = new ExportExecuteContext(Cancellation, FolderContent);
+
+			EntityIdsLoaded = new List<int>();
 		}
 
-		public List<int> SelectedEntityIds { get; private set; }
+		public List<int> EntityIdsSelected { get; private set; }
+		public List<int> EntityIdsLoaded { get; set; }
+
 		public int PageIndex { get; private set; }
 		public int PageSize { get; private set; }
 		public int? TotalRecords { get; set; }

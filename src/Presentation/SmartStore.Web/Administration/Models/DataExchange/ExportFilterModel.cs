@@ -2,15 +2,14 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	public abstract class ExportFilterModelBase
+	public class ExportFilterModel
 	{
+		#region All entity types
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.StoreId")]
 		public int? StoreId { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
@@ -20,11 +19,11 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CreatedTo")]
 		public DateTime? CreatedTo { get; set; }
-	}
 
+		#endregion
 
-	public class ExportProductFilterModel : ExportFilterModelBase
-	{
+		#region Product
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IsPublished")]
 		public bool? IsPublished { get; set; }
 
@@ -70,11 +69,11 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.FeaturedProducts")]
 		public bool? FeaturedProducts { get; set; }
-	}
 
+		#endregion
 
-	public class ExportOrderFilterModel : ExportFilterModelBase
-	{
+		#region Order
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.OrderStatusIds")]
 		public int[] OrderStatusIds { get; set; }
 		public List<SelectListItem> AvailableOrderStates { get; set; }
@@ -90,5 +89,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CustomerRoleIds")]
 		public int[] CustomerRoleIds { get; set; }
 		public List<SelectListItem> AvailableCustomerRoles { get; set; }
+
+		#endregion
 	}
 }

@@ -64,10 +64,9 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ProviderModel Provider { get; set; }
 
-		public ExportProductFilterModel ProductFilter { get; set; }
-		public ExportOrderFilterModel OrderFilter { get; set; }
+		public ExportFilterModel Filter { get; set; }
 
-		public ExportProductProjectionModel ProductProjection { get; set; }
+		public ExportProjectionModel Projection { get; set; }
 
 		public List<ExportDeploymentModel> Deployments { get; set; }
 

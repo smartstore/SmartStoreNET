@@ -147,6 +147,16 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Note",
 				"Click <b>Insert</b> to add one or multiple publishing profiles to specify how to further proceed with the export files.",
 				"Legen Sie über <b>Hinzufügen</b> ein oder mehrere Veröffentlichungsprofile an, um festzulegen wie mit den Exportdateien weiter zu verfahren ist.");
+
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportOrderStatusChange.None", "None", "Keine");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportOrderStatusChange.Processing", "Processing", "Wird bearbeitet");
+			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportOrderStatusChange.Complete", "Complete", "Komplett");
+
+			builder.AddOrUpdate("Admin.Configuration.Export.Projection.OrderStatusChange",
+				"Change order status to",
+				"Auftragsstatus ändern in",
+				"Specifies if and how to change the status of the exported orders.",
+				"Legt fest, ob und wie der Status der exportierten Aufträge geändert werden soll.");
 		}
     }
 }

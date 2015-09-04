@@ -14,6 +14,8 @@ namespace SmartStore.Core.Domain.DataExchange
 			PriceType = PriceDisplayType.PreSelectedPrice;
 		}
 
+		#region All entity types
+
 		public int? StoreId { get; set; }
 
 		/// <summary>
@@ -27,6 +29,10 @@ namespace SmartStore.Core.Domain.DataExchange
 		public int? CurrencyId { get; set; }
 
 		public int? CustomerId { get; set; }
+
+		#endregion
+
+		#region Product
 
 		public int DescriptionMergingId { get; set; }
 
@@ -81,5 +87,26 @@ namespace SmartStore.Core.Domain.DataExchange
 				AttributeCombinationValueMergingId = (int)value;
 			}
 		}
+
+		#endregion
+
+		#region Order
+
+		public int OrderStatusChangeId { get; set; }
+
+		[XmlIgnore]
+		public ExportOrderStatusChange OrderStatusChange
+		{
+			get
+			{
+				return (ExportOrderStatusChange)OrderStatusChangeId;
+			}
+			set
+			{
+				OrderStatusChangeId = (int)value;
+			}
+		}
+
+		#endregion
 	}
 }

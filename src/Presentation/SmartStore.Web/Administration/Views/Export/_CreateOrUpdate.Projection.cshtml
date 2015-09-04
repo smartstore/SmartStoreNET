@@ -8,42 +8,42 @@
 </div>
 
 <table class="adminContent">
-	@if (Model.ProductProjection != null)
+	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{
 		<tr id="ProjectionStoreContainer">
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.StoreId)
+				@Html.SmartLabelFor(x => x.Projection.StoreId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.ProductProjection.StoreId, Model.ProductProjection.AvailableStores, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.ProductProjection.StoreId)
+				@Html.DropDownListFor(x => x.Projection.StoreId, Model.Projection.AvailableStores, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.Projection.StoreId)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.LanguageId)
+				@Html.SmartLabelFor(x => x.Projection.LanguageId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.ProductProjection.LanguageId, Model.ProductProjection.AvailableLanguages, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.ProductProjection.LanguageId)
+				@Html.DropDownListFor(x => x.Projection.LanguageId, Model.Projection.AvailableLanguages, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.Projection.LanguageId)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.CurrencyId)
+				@Html.SmartLabelFor(x => x.Projection.CurrencyId)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.ProductProjection.CurrencyId, Model.ProductProjection.AvailableCurrencies, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.ProductProjection.CurrencyId)
+				@Html.DropDownListFor(x => x.Projection.CurrencyId, Model.Projection.AvailableCurrencies, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.Projection.CurrencyId)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.CustomerId)
+				@Html.SmartLabelFor(x => x.Projection.CustomerId)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.ProductProjection.CustomerId)
-				@Html.ValidationMessageFor(x => x.ProductProjection.CustomerId)
+				@Html.EditorFor(x => x.Projection.CustomerId)
+				@Html.ValidationMessageFor(x => x.Projection.CustomerId)
 			</td>
 		</tr>
 
@@ -51,40 +51,40 @@
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+					@Html.SmartLabelFor(x => x.Projection.AttributeCombinationAsProduct)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.AttributeCombinationAsProduct)
-					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationAsProduct)
+					@Html.EditorFor(x => x.Projection.AttributeCombinationAsProduct)
+					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationAsProduct)
 				</td>
 			</tr>
 			<tr id="AttributeCombinationAddValuesToNameContainer">
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.AttributeCombinationValueMergingId)
+					@Html.SmartLabelFor(x => x.Projection.AttributeCombinationValueMergingId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.ProductProjection.AttributeCombinationValueMergingId, Model.ProductProjection.AvailableAttributeCombinationValueMerging)
-					@Html.ValidationMessageFor(x => x.ProductProjection.AttributeCombinationValueMergingId)
+					@Html.DropDownListFor(x => x.Projection.AttributeCombinationValueMergingId, Model.Projection.AvailableAttributeCombinationValueMerging)
+					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
 				</td>
 			</tr>
 		}
 
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.PriceType)
+				@Html.SmartLabelFor(x => x.Projection.PriceType)
 			</td>
 			<td class="adminData">
-				@Html.DropDownListFor(x => x.ProductProjection.PriceType, Model.ProductProjection.AvailablePriceTypes, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.ProductProjection.PriceType)
+				@Html.DropDownListFor(x => x.Projection.PriceType, Model.Projection.AvailablePriceTypes, Model.UnspecifiedString)
+				@Html.ValidationMessageFor(x => x.Projection.PriceType)
 			</td>
 		</tr>
 		<tr>
 			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ProductProjection.ConvertNetToGrossPrices)
+				@Html.SmartLabelFor(x => x.Projection.ConvertNetToGrossPrices)
 			</td>
 			<td class="adminData">
-				@Html.EditorFor(x => x.ProductProjection.ConvertNetToGrossPrices)
-				@Html.ValidationMessageFor(x => x.ProductProjection.ConvertNetToGrossPrices)
+				@Html.EditorFor(x => x.Projection.ConvertNetToGrossPrices)
+				@Html.ValidationMessageFor(x => x.Projection.ConvertNetToGrossPrices)
 			</td>
 		</tr>
 
@@ -92,11 +92,11 @@
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.ShippingTime)
+					@Html.SmartLabelFor(x => x.Projection.ShippingTime)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.ShippingTime)
-					@Html.ValidationMessageFor(x => x.ProductProjection.ShippingTime)
+					@Html.EditorFor(x => x.Projection.ShippingTime)
+					@Html.ValidationMessageFor(x => x.Projection.ShippingTime)
 				</td>
 			</tr>
 		}
@@ -105,20 +105,20 @@
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.ShippingCosts)
+					@Html.SmartLabelFor(x => x.Projection.ShippingCosts)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.ShippingCosts)
-					@Html.ValidationMessageFor(x => x.ProductProjection.ShippingCosts)
+					@Html.EditorFor(x => x.Projection.ShippingCosts)
+					@Html.ValidationMessageFor(x => x.Projection.ShippingCosts)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.FreeShippingThreshold)
+					@Html.SmartLabelFor(x => x.Projection.FreeShippingThreshold)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.FreeShippingThreshold)
-					@Html.ValidationMessageFor(x => x.ProductProjection.FreeShippingThreshold)
+					@Html.EditorFor(x => x.Projection.FreeShippingThreshold)
+					@Html.ValidationMessageFor(x => x.Projection.FreeShippingThreshold)
 				</td>
 			</tr>
 		}
@@ -127,11 +127,11 @@
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.PictureSize)
+					@Html.SmartLabelFor(x => x.Projection.PictureSize)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.PictureSize)
-					@Html.ValidationMessageFor(x => x.ProductProjection.PictureSize)
+					@Html.EditorFor(x => x.Projection.PictureSize)
+					@Html.ValidationMessageFor(x => x.Projection.PictureSize)
 				</td>
 			</tr>
 		}
@@ -140,11 +140,11 @@
 		{
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.Brand)
+					@Html.SmartLabelFor(x => x.Projection.Brand)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.Brand)
-					@Html.ValidationMessageFor(x => x.ProductProjection.Brand)
+					@Html.EditorFor(x => x.Projection.Brand)
+					@Html.ValidationMessageFor(x => x.Projection.Brand)
 				</td>
 			</tr>
 		}
@@ -160,49 +160,61 @@
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionMergingId)
+					@Html.SmartLabelFor(x => x.Projection.DescriptionMergingId)
 				</td>
 				<td class="adminData">
-					@Html.DropDownListFor(x => x.ProductProjection.DescriptionMergingId, Model.ProductProjection.AvailableDescriptionMergings)
-					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionMergingId)
+					@Html.DropDownListFor(x => x.Projection.DescriptionMergingId, Model.Projection.AvailableDescriptionMergings)
+					@Html.ValidationMessageFor(x => x.Projection.DescriptionMergingId)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.AppendDescriptionText)
+					@Html.SmartLabelFor(x => x.Projection.AppendDescriptionText)
 				</td>
 				<td class="adminData">
-					@Html.HiddenFor(x => x.ProductProjection.AppendDescriptionText)
-					@Html.ValidationMessageFor(x => x.ProductProjection.AppendDescriptionText)
+					@Html.HiddenFor(x => x.Projection.AppendDescriptionText)
+					@Html.ValidationMessageFor(x => x.Projection.AppendDescriptionText)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.RemoveCriticalCharacters)
+					@Html.SmartLabelFor(x => x.Projection.RemoveCriticalCharacters)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.RemoveCriticalCharacters)
-					@Html.ValidationMessageFor(x => x.ProductProjection.RemoveCriticalCharacters)
+					@Html.EditorFor(x => x.Projection.RemoveCriticalCharacters)
+					@Html.ValidationMessageFor(x => x.Projection.RemoveCriticalCharacters)
 				</td>
 			</tr>
 			<tr id="CriticalCharactersContainer">
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.CriticalCharacters)
+					@Html.SmartLabelFor(x => x.Projection.CriticalCharacters)
 				</td>
 				<td class="adminData">
-					@Html.HiddenFor(x => x.ProductProjection.CriticalCharacters)
-					@Html.ValidationMessageFor(x => x.ProductProjection.CriticalCharacters)
+					@Html.HiddenFor(x => x.Projection.CriticalCharacters)
+					@Html.ValidationMessageFor(x => x.Projection.CriticalCharacters)
 				</td>
 			</tr>
 			<tr>
 				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.ProductProjection.DescriptionToPlainText)
+					@Html.SmartLabelFor(x => x.Projection.DescriptionToPlainText)
 				</td>
 				<td class="adminData">
-					@Html.EditorFor(x => x.ProductProjection.DescriptionToPlainText)
-					@Html.ValidationMessageFor(x => x.ProductProjection.DescriptionToPlainText)
+					@Html.EditorFor(x => x.Projection.DescriptionToPlainText)
+					@Html.ValidationMessageFor(x => x.Projection.DescriptionToPlainText)
 				</td>
 			</tr>
 		}
+	}
+	else if (Model.Provider.EntityType == ExportEntityType.Order)
+	{
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Projection.OrderStatusChangeId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.Projection.OrderStatusChangeId, Model.Projection.AvailableOrderStatusChange)
+				@Html.ValidationMessageFor(x => x.Projection.OrderStatusChangeId)
+			</td>
+		</tr>
 	}
 </table>

@@ -54,4 +54,11 @@ namespace SmartStore.Core.Domain.DataExchange
 		AttributeCombinationAsProduct,
 		OldPrice
 	}
+
+	public enum ExportOrderStatusChange
+	{
+		None = 0,
+		Processing,
+		Complete
+	}
 }

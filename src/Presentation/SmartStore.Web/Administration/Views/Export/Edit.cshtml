@@ -347,24 +347,18 @@
 			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
 		}).trigger('change');
 
-
-		@if (Model.ProductProjection != null)
-		{
-		<text>
-		$('#@(Html.FieldIdFor(x => x.ProductProjection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedAppendDescriptionText))] });
-		$('#@(Html.FieldIdFor(x => x.ProductProjection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.ProductProjection.SerializedCriticalCharacters))] });
+		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });
+		$('#@(Html.FieldIdFor(x => x.Projection.CriticalCharacters))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedCriticalCharacters))] });
 
 		// show/hide attribute combination value appending
-		$('#@(Html.FieldIdFor(x => x.ProductProjection.AttributeCombinationAsProduct))').change(function () {
+		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
 			$('#AttributeCombinationAddValuesToNameContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 		// show/hide critical characters
-		$('#@(Html.FieldIdFor(x => x.ProductProjection.RemoveCriticalCharacters))').change(function () {
+		$('#@(Html.FieldIdFor(x => x.Projection.RemoveCriticalCharacters))').change(function () {
 			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
-		</text>
-		}
 
 		@if (Model.ProductFilter != null)
 		{

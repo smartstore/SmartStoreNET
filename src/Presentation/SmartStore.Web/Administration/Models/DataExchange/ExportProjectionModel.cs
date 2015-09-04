@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
 
 namespace SmartStore.Admin.Models.DataExchange
 {
-	public abstract class ExportProjectionModelBase
+	public class ExportProjectionModel
 	{
+		#region All entity types
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.StoreId")]
 		public int? StoreId { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
@@ -22,11 +23,11 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.CustomerId")]
 		public int? CustomerId { get; set; }
-	}
 
+		#endregion
 
-	public class ExportProductProjectionModel : ExportProjectionModelBase
-	{
+		#region Product
+
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.DescriptionMerging")]
 		public int DescriptionMergingId { get; set; }
 		public SelectList AvailableDescriptionMergings { get; set; }
@@ -74,5 +75,15 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.AttributeCombinationValueMerging")]
 		public int AttributeCombinationValueMergingId { get; set; }
 		public SelectList AvailableAttributeCombinationValueMerging { get; set; }
+
+		#endregion
+
+		#region Order
+
+		[SmartResourceDisplayName("Admin.Configuration.Export.Projection.OrderStatusChange")]
+		public int OrderStatusChangeId { get; set; }
+		public SelectList AvailableOrderStatusChange { get; set; }
+
+		#endregion
 	}
 }

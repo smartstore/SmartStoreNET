@@ -26,6 +26,7 @@ namespace SmartStore.Services.DataExchange
 	internal interface IExportExecuter
 	{
 		void Start(Func<bool> callback);
+		void Dispose();
 	}
 
 
@@ -33,6 +34,7 @@ namespace SmartStore.Services.DataExchange
 	{
 		private Func<int, List<T>> _loadData;
 		private Func<T, List<T>, List<ExpandoObject>> _convertData;
+		private List<T> _currentData;
 		private List<ExpandoObject> _currentSegment;
 		private IPageable _pageable;
 		private int _pageIndexReset;
@@ -67,6 +69,12 @@ namespace SmartStore.Services.DataExchange
 			{
 				_currentSegment.Clear();
 				_currentSegment = null;
+			}
+
+			if (_currentData != null)
+			{
+				_currentData.Clear();
+				_currentData = null;
 			}
 		}
 
@@ -150,7 +158,7 @@ namespace SmartStore.Services.DataExchange
 				return false;
 			}
 
-			if (_fileRecordsSkip > 0)
+			if (_fileRecordsSkip > 0)	// read rest of last segment for new file
 			{
 				return true;
 			}
@@ -174,9 +182,9 @@ namespace SmartStore.Services.DataExchange
 					_currentSegment = new List<ExpandoObject>();
 
 					var tmpCount = 0;
-					var data = _loadData(_pageable.PageIndex);
+					_currentData = _loadData(_pageable.PageIndex);
 
-					foreach (var record in data.Skip(_fileRecordsSkip))
+					foreach (var record in _currentData.Skip(_fileRecordsSkip))
 					{
 						if (_recordsPerFile > 0 && _recordsPerFileCount >= _recordsPerFile)
 						{
@@ -188,7 +196,7 @@ namespace SmartStore.Services.DataExchange
 							return _currentSegment.AsReadOnly();
 						}
 
-						foreach (var obj in _convertData(record, data))
+						foreach (var obj in _convertData(record, _currentData))
 						{
 							_currentSegment.Add(obj);
 

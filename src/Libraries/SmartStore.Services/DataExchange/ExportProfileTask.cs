@@ -584,6 +584,12 @@ namespace SmartStore.Services.DataExchange
 				x => _productService.GetProductPicturesByProductIds(x)
 			);
 
+			try
+			{
+				_services.DbContext.DetachEntities<Product>(result);
+			}
+			catch { }
+
 			return result;
 		}
 
@@ -627,10 +633,20 @@ namespace SmartStore.Services.DataExchange
 				);
 			}
 
+			try
+			{
+				_services.DbContext.DetachEntities<Order>(result);
+
+				// TODO: examine remaining attached entities
+				//foreach (var item in orderItems)
+				//	_services.DbContext.DetachEntity<Product>(item.Product);
+			}
+			catch { }
+
 			return result;
 		}
 
-		private List<ExpandoObject> ToExpando(ExportProfileTaskContext ctx, Product product, List<Product> products)
+		private List<ExpandoObject> ToExpando(ExportProfileTaskContext ctx, Product product)
 		{
 			var result = new List<ExpandoObject>();
 			var languageId = (ctx.Projection.LanguageId ?? 0);
@@ -828,17 +844,10 @@ namespace SmartStore.Services.DataExchange
 				result.Add(expando);
 			}
 
-			// finally detach entity
-			try
-			{
-				_services.DbContext.DetachEntity<Product>(product);
-			}
-			catch { }
-
 			return result;
 		}
 
-		private List<ExpandoObject> ToExpando(ExportProfileTaskContext ctx, Order order, List<Order> orders)
+		private List<ExpandoObject> ToExpando(ExportProfileTaskContext ctx, Order order)
 		{
 			var result = new List<ExpandoObject>();
 			var languageId = (ctx.Projection.LanguageId ?? 0);
@@ -881,16 +890,6 @@ namespace SmartStore.Services.DataExchange
 					return exp as ExpandoObject;
 				})
 				.ToList();
-
-			try
-			{
-				_services.DbContext.DetachEntity<Order>(order);
-
-				// TODO: examine remaining attached entities
-				//foreach (var item in orderItems)
-				//	_services.DbContext.DetachEntity<Product>(item.Product);
-			}
-			catch { }
 
 			return result;
 		}
@@ -965,7 +964,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				ctx.Export.Data = new ExportSegmenter<Product>(
 					pageIndex => GetProducts(ctx, pageIndex),
-					(entity, entities) => ToExpando(ctx, entity, entities),
+					entity => ToExpando(ctx, entity),
 					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
 					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
 				);
@@ -976,7 +975,7 @@ namespace SmartStore.Services.DataExchange
 
 				ctx.Export.Data = new ExportSegmenter<Order>(
 					pageIndex => GetOrders(ctx, pageIndex, ctx.PageSize, out unused),
-					(entity, entities) => ToExpando(ctx, entity, entities),
+					entity => ToExpando(ctx, entity),
 					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
 					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
 				);
@@ -1135,8 +1134,6 @@ namespace SmartStore.Services.DataExchange
 
 					try
 					{
-						(ctx.Export.Data as IExportExecuter).Dispose();
-
 						ctx.Countries.Clear();
 						ctx.Stores.Clear();
 						ctx.QuantityUnits.Clear();
@@ -1146,6 +1143,8 @@ namespace SmartStore.Services.DataExchange
 						ctx.EntityIdsSelected.Clear();
 						ctx.ProductDataContext = null;
 						ctx.OrderDataContext = null;
+
+						(ctx.Export.Data as IExportExecuter).Dispose();
 
 						ctx.Export.CustomProperties.Clear();
 						ctx.Export.Log = null;

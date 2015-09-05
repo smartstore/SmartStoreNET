@@ -33,7 +33,7 @@ namespace SmartStore.Services.DataExchange
 	public class ExportSegmenter<T> : IExportSegmenter, IExportExecuter, IDisposable where T : BaseEntity
 	{
 		private Func<int, List<T>> _loadData;
-		private Func<T, List<T>, List<ExpandoObject>> _convertData;
+		private Func<T, List<ExpandoObject>> _convertData;
 		private List<T> _currentData;
 		private List<ExpandoObject> _currentSegment;
 		private IPageable _pageable;
@@ -50,7 +50,7 @@ namespace SmartStore.Services.DataExchange
 
 		public ExportSegmenter(
 			Func<int, List<T>> loadData,
-			Func<T, List<T>, List<ExpandoObject>> convertData,
+			Func<T, List<ExpandoObject>> convertData,
 			PagedList pageable,
 			int itemsPerFile)
 		{
@@ -144,16 +144,7 @@ namespace SmartStore.Services.DataExchange
 
 		public bool ReadNextSegment()
 		{
-			ClearSegment();
-
-			if (_isBeginOfSegmentation)
-			{
-				_isBeginOfSegmentation = false;
-				_recordsCount = 0;
-				return _pageable.TotalCount > 0;
-			}
-
-			if (_fileCaptured)
+			if (_fileCaptured)		// do not write to current file anymore
 			{
 				return false;
 			}
@@ -161,6 +152,15 @@ namespace SmartStore.Services.DataExchange
 			if (_fileRecordsSkip > 0)	// read rest of last segment for new file
 			{
 				return true;
+			}
+
+			ClearSegment();
+
+			if (_isBeginOfSegmentation)
+			{
+				_isBeginOfSegmentation = false;
+				_recordsCount = 0;
+				return _pageable.TotalCount > 0;
 			}
 
 			if (_pageable.HasNextPage)
@@ -177,38 +177,42 @@ namespace SmartStore.Services.DataExchange
 		{
 			get
 			{
+				var tmpCount = 0;
+
 				if (_currentSegment == null)
 				{
 					_currentSegment = new List<ExpandoObject>();
+				}
 
-					var tmpCount = 0;
+				if (_currentData == null)
+				{
 					_currentData = _loadData(_pageable.PageIndex);
+				}
 
-					foreach (var record in _currentData.Skip(_fileRecordsSkip))
+				foreach (var record in _currentData.Skip(_fileRecordsSkip))
+				{
+					if (_recordsPerFile > 0 && _recordsPerFileCount >= _recordsPerFile)
 					{
-						if (_recordsPerFile > 0 && _recordsPerFileCount >= _recordsPerFile)
-						{
-							_fileCaptured = true;
-							_fileIndex++;
-							_recordsPerFileCount = 0;
-							_fileRecordsSkip = tmpCount;
+						_fileCaptured = true;
+						_fileIndex++;
+						_recordsPerFileCount = 0;
+						_fileRecordsSkip = tmpCount;
 
-							return _currentSegment.AsReadOnly();
-						}
-
-						foreach (var obj in _convertData(record, _currentData))
-						{
-							_currentSegment.Add(obj);
-
-							++_recordsPerFileCount;
-							++_recordsCount;
-						}
-
-						++tmpCount;
+						return _currentSegment.AsReadOnly();
 					}
 
-					_fileRecordsSkip = 0;
+					foreach (var obj in _convertData(record))
+					{
+						_currentSegment.Add(obj);
+
+						++_recordsPerFileCount;
+						++_recordsCount;
+					}
+
+					++tmpCount;
 				}
+
+				_fileRecordsSkip = 0;
 
 				return _currentSegment.AsReadOnly();
 			}

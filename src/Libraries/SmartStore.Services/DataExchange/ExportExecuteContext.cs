@@ -3,31 +3,80 @@ using System.Dynamic;
 using System.IO;
 using System.Threading;
 using SmartStore.Core.Logging;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange
 {
 	public interface IExportExecuteContext
 	{
+		/// <summary>
+		/// Provides the data to be exported
+		/// </summary>
 		IExportSegmenter Data { get; }
 
-		ILogger Log { get; }
-
-		bool IsCanceled { get; }
-
+		/// <summary>
+		/// The store context to be used for the export
+		/// </summary>
 		ExpandoObject Store { get; }
 
-		object ConfigurationData { get; }
+		/// <summary>
+		/// The customer context to be used for the export
+		/// </summary>
+		ExpandoObject Customer { get; }
 
-		Dictionary<string, object> CustomProperties { get; set; }
+		/// <summary>
+		/// The currency context to be used for the export
+		/// </summary>
+		ExpandoObject Currency { get; }
 
-		int SuccessfulExportedRecords { get; set; }
+		/// <summary>
+		/// The language identifier to be used for the export. Can be 0.
+		/// </summary>
+		int LanguageId { get; }
 
+		/// <summary>
+		/// To log information into the export log file
+		/// </summary>
+		ILogger Log { get; }
+
+		/// <summary>
+		/// Whether the export has been cancelled
+		/// </summary>
+		bool IsCanceled { get; }
+
+		/// <summary>
+		/// The maximum allowed file name length
+		/// </summary>
 		int MaxFileNameLength { get; }
 
+		/// <summary>
+		/// The path of the export folder
+		/// </summary>
 		string Folder { get; }
+
+		/// <summary>
+		/// The name of the current export file
+		/// </summary>
 		string FileName { get; }
+
+		/// <summary>
+		/// The path of the current export file
+		/// </summary>
 		string FilePath { get; }
+
+		/// <summary>
+		/// Provider specific configuration data
+		/// </summary>
+		object ConfigurationData { get; }
+
+		/// <summary>
+		/// Use this dictionary for any custom data required along the export
+		/// </summary>
+		Dictionary<string, object> CustomProperties { get; set; }
+
+		/// <summary>
+		/// Number of successful exported records. Should be incremented by the provider. Will be logged.
+		/// </summary>
+		int SuccessfulExportedRecords { get; set; }
 	}
 
 
@@ -45,20 +94,17 @@ namespace SmartStore.Services.DataExchange
 
 		public IExportSegmenter Data { get; internal set; }
 
+		public ExpandoObject Store { get; internal set; }
+		public ExpandoObject Customer { get; internal set; }
+		public ExpandoObject Currency { get; internal set; }
+		public int LanguageId { get; internal set; }
+
 		public ILogger Log { get; internal set; }
 
 		public bool IsCanceled
 		{
 			get { return _cancellation.IsCancellationRequested; }
 		}
-
-		public ExpandoObject Store { get; internal set; }
-
-		public object ConfigurationData { get; internal set; }
-
-		public Dictionary<string, object> CustomProperties { get; set; }
-
-		public int SuccessfulExportedRecords { get; set; }
 
 		public int MaxFileNameLength { get; internal set; }
 
@@ -81,5 +127,11 @@ namespace SmartStore.Services.DataExchange
 		{
 			get { return Path.Combine(Folder, FileName); }
 		}
+
+		public object ConfigurationData { get; internal set; }
+
+		public Dictionary<string, object> CustomProperties { get; set; }
+
+		public int SuccessfulExportedRecords { get; set; }
 	}
 }

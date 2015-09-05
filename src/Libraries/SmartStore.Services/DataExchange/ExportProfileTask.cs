@@ -1074,6 +1074,10 @@ namespace SmartStore.Services.DataExchange
 
 						var stores = Init(ctx);
 
+						ctx.Export.Customer = ctx.ProjectionCustomer.ToExpando();
+						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.Projection.LanguageId ?? 0);
+						ctx.Export.LanguageId = (ctx.Projection.LanguageId ?? 0);
+
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}
 

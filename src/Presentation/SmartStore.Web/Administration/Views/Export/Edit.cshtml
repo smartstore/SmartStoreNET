@@ -265,6 +265,9 @@
 					.Template(item => @Html.SymbolForBool(item.Enabled))
 					.ClientTemplate(@Html.SymbolForBool("Enabled"))
 					.Centered();
+				columns.Command(commands => 
+					commands.Delete().Localize(T)
+				).Width(100);
 			})
 			.ToolBar(commands =>
 			{
@@ -273,7 +276,11 @@
 					.HtmlAttributes(new { @class = "btn btn-primary", href = @Url.Action("CreateDeployment", new { id = Model.Id }) })
 					.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.AddNew"));
 			})
-			.DataBinding(dataBinding => dataBinding.Ajax().Select("DeploymentList", "Export", new { id = Model.Id }))
+			.DataBinding(dataBinding => 
+				dataBinding.Ajax()
+					.Select("DeploymentList", "Export", new { id = Model.Id })
+					.Delete("DeleteDeployment", "Export", new { id = Model.Id, fromGrid = true })
+			)
 			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportDeployments"))
 			.EnableCustomBinding(true))
 	</div>

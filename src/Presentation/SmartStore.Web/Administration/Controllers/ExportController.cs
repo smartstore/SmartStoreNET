@@ -879,7 +879,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult DeleteDeployment(int id)
+		public ActionResult DeleteDeployment(int id, bool? fromGrid, GridCommand command)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
@@ -891,6 +891,9 @@ namespace SmartStore.Admin.Controllers
 			int profileId = deployment.ProfileId;
 
 			_exportService.DeleteExportDeployment(deployment);
+
+			if (fromGrid ?? false)
+				return DeploymentList(command, id);
 
 			NotifySuccess(T("Admin.Common.TaskSuccessfullyProcessed"));
 

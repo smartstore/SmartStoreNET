@@ -1,6 +1,9 @@
 ﻿
 namespace SmartStore.Core.Domain.DataExchange
 {
+	/// <summary>
+	/// Supported entity types
+	/// </summary>
 	public enum ExportEntityType
 	{
 		Product = 0,
@@ -11,6 +14,9 @@ namespace SmartStore.Core.Domain.DataExchange
 		NewsletterSubscriber
 	}
 
+	/// <summary>
+	/// Supported deployment types
+	/// </summary>
 	public enum ExportDeploymentType
 	{
 		FileSystem = 0,
@@ -19,12 +25,18 @@ namespace SmartStore.Core.Domain.DataExchange
 		Ftp
 	}
 
+	/// <summary>
+	/// Supported HTTP transmission types
+	/// </summary>
 	public enum ExportHttpTransmissionType
 	{
 		SimplePost = 0,
 		MultipartFormDataPost
 	}
 
+	/// <summary>
+	/// Controls the merging of various data as product description
+	/// </summary>
 	public enum ExportDescriptionMerging
 	{
 		None = 0,
@@ -37,12 +49,18 @@ namespace SmartStore.Core.Domain.DataExchange
 		ManufacturerAndNameAndDescription
 	}
 
+	/// <summary>
+	/// Controls the merging of various data while exporting attribute combinations as products
+	/// </summary>
 	public enum ExportAttributeValueMerging
 	{
 		None = 0,
 		AppendAllValuesToName
 	}
 
+	/// <summary>
+	/// Projection types supported by export provider
+	/// </summary>
 	public enum ExportProjectionSupport
 	{
 		Description = 0,
@@ -55,6 +73,9 @@ namespace SmartStore.Core.Domain.DataExchange
 		OldPrice
 	}
 
+	/// <summary>
+	/// Possible order status change after order exporting
+	/// </summary>
 	public enum ExportOrderStatusChange
 	{
 		None = 0,

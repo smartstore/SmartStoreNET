@@ -16,6 +16,9 @@ namespace SmartStore.Core.Domain.DataExchange
 
 		#region All entity types
 
+		/// <summary>
+		/// Store identifier
+		/// </summary>
 		public int? StoreId { get; set; }
 
 		/// <summary>
@@ -28,14 +31,23 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// </summary>
 		public int? CurrencyId { get; set; }
 
+		/// <summary>
+		/// Customer identifier
+		/// </summary>
 		public int? CustomerId { get; set; }
 
 		#endregion
 
 		#region Product
 
+		/// <summary>
+		/// Description merging identifier
+		/// </summary>
 		public int DescriptionMergingId { get; set; }
 
+		/// <summary>
+		/// Decription merging
+		/// </summary>
 		[XmlIgnore]
 		public ExportDescriptionMerging DescriptionMerging
 		{
@@ -49,32 +61,74 @@ namespace SmartStore.Core.Domain.DataExchange
 			}
 		}
 
+		/// <summary>
+		/// Convert HTML decription to plain text
+		/// </summary>
 		public bool DescriptionToPlainText { get; set; }
 
+		/// <summary>
+		/// Comma separated text to append to the decription
+		/// </summary>
 		public string AppendDescriptionText { get; set; }
 
+		/// <summary>
+		/// Remove critical characters from the description
+		/// </summary>
 		public bool RemoveCriticalCharacters { get; set; }
 
+		/// <summary>
+		/// Comma separated list of critical characters
+		/// </summary>
 		public string CriticalCharacters { get; set; }
 
+		/// <summary>
+		/// The price type for calculating the product price
+		/// </summary>
 		public PriceDisplayType? PriceType { get; set; }
 
+		/// <summary>
+		/// Convert net to gross prices
+		/// </summary>
 		public bool ConvertNetToGrossPrices { get; set; }
 
+		/// <summary>
+		/// Fallback for product brand
+		/// </summary>
 		public string Brand { get; set; }
 
+		/// <summary>
+		/// Picture size
+		/// </summary>
 		public int PictureSize { get; set; }
 
+		/// <summary>
+		/// Fallback for shipping time
+		/// </summary>
 		public string ShippingTime { get; set; }
 
+		/// <summary>
+		/// Fallback for shipping costs
+		/// </summary>
 		public decimal? ShippingCosts { get; set; }
 
+		/// <summary>
+		/// Free shipping threshold
+		/// </summary>
 		public decimal? FreeShippingThreshold { get; set; }
 
+		/// <summary>
+		/// Whether to export attribute combinations as products
+		/// </summary>
 		public bool AttributeCombinationAsProduct { get; set; }
 
+		/// <summary>
+		/// Identifier for merging attribute values of attribute combinations
+		/// </summary>
 		public int AttributeCombinationValueMergingId { get; set; }
 
+		/// <summary>
+		/// Merging attribute values of attribute combinations
+		/// </summary>
 		[XmlIgnore]
 		public ExportAttributeValueMerging AttributeCombinationValueMerging
 		{
@@ -92,8 +146,14 @@ namespace SmartStore.Core.Domain.DataExchange
 
 		#region Order
 
+		/// <summary>
+		/// Identifier of the new state for orders
+		/// </summary>
 		public int OrderStatusChangeId { get; set; }
 
+		/// <summary>
+		/// New state for orders
+		/// </summary>
 		[XmlIgnore]
 		public ExportOrderStatusChange OrderStatusChange
 		{

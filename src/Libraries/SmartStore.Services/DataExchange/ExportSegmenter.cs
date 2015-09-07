@@ -8,18 +8,40 @@ namespace SmartStore.Services.DataExchange
 {
 	public interface IExportSegmenter
 	{
-		int ProcessedItems { get; }
+		/// <summary>
+		/// Number of processed records
+		/// </summary>
+		int RecordsCount { get; }
 
-		int TotalRecords { get; }
+		/// <summary>
+		/// Total number of records
+		/// </summary>
+		int RecordsTotal { get; }
 
-		int TotalSegments { get; }
+		/// <summary>
+		/// Total number of segments
+		/// </summary>
+		int SegmentsTotal { get; }
 
+		/// <summary>
+		/// Index of current segment
+		/// </summary>
 		int SegmentIndex { get; }
-		
+
+		/// <summary>
+		/// Index of current file
+		/// </summary>
 		int FileIndex { get; }
 
+		/// <summary>
+		/// Read next data segment
+		/// </summary>
+		/// <returns></returns>
 		bool ReadNextSegment();
 
+		/// <summary>
+		/// Gets the data of the current segment
+		/// </summary>
 		ICollection<ExpandoObject> CurrentSegment { get; }
 	}
 
@@ -83,24 +105,24 @@ namespace SmartStore.Services.DataExchange
 			ClearSegment();
 		}
 
-		public int ProcessedItems
+		public int RecordsCount
 		{
 			get { return _recordsCount; }
 		}
 
-		public int TotalRecords
+		public int RecordsTotal
 		{
 			get	{ return _pageable.TotalCount; }
 		}
 
-		public int TotalSegments
+		public int SegmentsTotal
 		{
 			get { return _pageable.TotalPages; }
 		}
 
 		public int SegmentIndex
 		{
-			get { return _isBeginOfSegmentation ? 0 : _pageable.PageNumber; }
+			get { return _isBeginOfSegmentation ? 0 : _pageable.PageIndex; }
 		}
 
 		public int FileIndex

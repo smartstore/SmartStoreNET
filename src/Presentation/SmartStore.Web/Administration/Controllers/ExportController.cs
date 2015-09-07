@@ -107,6 +107,7 @@ namespace SmartStore.Admin.Controllers
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
+			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 
 			model.Provider = new ExportProfileModel.ProviderModel
 			{

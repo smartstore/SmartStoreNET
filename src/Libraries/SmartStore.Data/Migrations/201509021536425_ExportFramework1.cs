@@ -43,6 +43,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.ExportSelected", "Export selected", "Ausgewählte exportieren");
 			builder.AddOrUpdate("Admin.Common.ExportAll", "Export all", "Alle exportieren");
 			builder.AddOrUpdate("Admin.Common.NoDescriptionAvailable", "No description available", "Keine Beschreibung vorhanden");
+			builder.AddOrUpdate("Common.Disabled", "Disabled", "Deaktiviert");
 
 			builder.AddOrUpdate("Admin.System.ScheduleTask", "Scheduled task", "Geplante Aufgabe");
 

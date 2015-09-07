@@ -140,6 +140,14 @@
 				@Html.SmartLabelFor(x => x.ScheduleTaskId)
 			</td>
 			<td class="adminData">
+				@if (Model.IsTaskEnabled)
+				{
+					<span class="label label-success">@T("Common.Enabled")</span>
+				}
+				else
+				{
+					<span class="label label-warning">@T("Common.Disabled")</span>
+				}	
 				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
 			</td>
 		</tr>

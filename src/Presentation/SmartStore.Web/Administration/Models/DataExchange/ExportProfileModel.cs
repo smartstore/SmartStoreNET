@@ -32,6 +32,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public int ScheduleTaskId { get; set; }
 		public string ScheduleTaskName { get; set; }
 		public bool IsTaskRunning { get; set; }
+		public bool IsTaskEnabled { get; set; }
 
 		[SmartResourceDisplayName("Admin.Configuration.Export.LastExecution")]
 		[AllowHtml]

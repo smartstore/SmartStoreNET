@@ -360,19 +360,14 @@
 			$('#CriticalCharactersContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
-		@if (Model.ProductFilter != null)
-		{
-		<text>
 		// show/hide product category filter
-		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutCategories))').change(function () {
+		$('#@(Html.FieldIdFor(x => x.Filter.WithoutCategories))').change(function () {
 			$('#FilterCategoryIdsContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
 
 		// show/hide product manufacturer filter
-		$('#@(Html.FieldIdFor(x => x.ProductFilter.WithoutManufacturers))').change(function () {
+		$('#@(Html.FieldIdFor(x => x.Filter.WithoutManufacturers))').change(function () {
 			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
 		}).trigger('change');
-		</text>
-		}
 	});
 </script>

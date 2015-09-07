@@ -46,6 +46,10 @@ namespace SmartStore.Data.Migrations
 
 			builder.AddOrUpdate("Admin.System.ScheduleTask", "Scheduled task", "Geplante Aufgabe");
 
+			builder.AddOrUpdate("Admin.Configuration.Export.ProgressInfo",
+				"{0} of {1} records exported",
+				"{0} von {1} Datensätzen exportiert");
+
 			builder.AddOrUpdate("Admin.Configuration.Export.FileNamePattern",
 				"Pattern for file names",
 				"Muster für Dateinamen",

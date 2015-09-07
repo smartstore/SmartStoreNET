@@ -106,6 +106,7 @@ namespace SmartStore.Admin.Controllers
 			model.Enabled = profile.Enabled;
 			model.ScheduleTaskId = profile.SchedulingTaskId;
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
+			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
 
 			model.Provider = new ExportProfileModel.ProviderModel
 			{
@@ -387,32 +388,20 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
-			return View();
-		}
+			var providers = _exportService.LoadAllExportProviders().ToList();
+			var profiles = _exportService.GetExportProfiles().ToList();
+			var model = new List<ExportProfileModel>();
 
-		[HttpPost, GridAction(EnableCustomBinding = true)]
-		public ActionResult List(GridCommand command)
-		{
-			var model = new GridModel<ExportProfileModel>();
-
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			foreach (var profile in profiles)
 			{
-				var providers = _exportService.LoadAllExportProviders().ToList();
-				var query = _exportService.GetExportProfiles();
-				var profiles = query.ToList();
+				var profileModel = new ExportProfileModel();
 
-				model.Total = profiles.Count;
+				PrepareProfileModel(profileModel, profile, providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName));
 
-				model.Data = profiles.Select(x =>
-				{
-					var profileModel = new ExportProfileModel();
-					PrepareProfileModel(profileModel, x, providers.FirstOrDefault(y => y.Metadata.SystemName == x.ProviderSystemName));
-
-					return profileModel;
-				});
+				model.Add(profileModel);
 			}
 
-			return new JsonResult {	Data = model };
+			return View(model);
 		}
 
 		public ActionResult Create()

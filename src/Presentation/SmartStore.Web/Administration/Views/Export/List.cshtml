@@ -1,6 +1,7 @@
 ﻿@using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 @using Telerik.Web.Mvc.UI;
+@model List<ExportProfileModel>
 @{
 	ViewBag.Title = T("Common.Export").Text;
 }
@@ -20,53 +21,60 @@
 	<input type="hidden" name="ExportAll" value="true" />
 </form>
 
-<script type="text/javascript">
-	function onRowDataBound_ExportProfiles(e) {
-		if (!e.dataItem.Enabled) {
-			$(e.row).find('td').wrapInner('<span class="muted" />');
-		}
-	}
-</script>
-
-<div>
-	<table class="adminContent">
+<table id="export-profile-grid" class="table admin-table">
+	<thead>
 		<tr>
-			<td>
-				@(Html.Telerik().Grid<ExportProfileModel>()
-					.Name("export-profile-grid")
-					.DataKeys(keys => keys.Add(x => x.Id)
-					.RouteKey("Id"))
-					.Columns(columns =>
-					{
-						columns.Bound(x => x.Provider.ThumbnailUrl)
-							.Width(70)
-							.Centered()
-							.ClientTemplate("<img alt='<#= Id #>' src='<#= Provider.ThumbnailUrl #>' />");
-						columns.Bound(x => x.Name)
-							.Width(400)
-							.ClientTemplate("<a href=\"Edit/<#= Id #>\"><#= Name #></a>");
-						columns.Bound(x => x.Provider.SystemName)
-							.ClientTemplate("<#= Provider.FriendlyName #> <span class='muted'>(<#= Provider.SystemName #>)</span>");
-						columns.Bound(x => x.Enabled)
-							.Width(100)
-							.ClientTemplate(@Html.SymbolForBool("Enabled"))
-							.Centered();
-						columns.Bound(x => x.Provider.EntityTypeName);
-						columns.Bound(x => x.Provider.FileExtension)
-							.Centered();
-						columns.Bound(x => x.LastExecution)
-							.ClientTemplate(
-								"<!-- TODO --><button type=\"button\" class=\"btn btn-primary export-button\" data-id=\"<#= Id #>\"><i class=\"fa fa-play\"></i>&nbsp;" + @T("Admin.Common.ExportAll") + "</button>"
-							)
-							.ReadOnly();
-					})
-			.DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Export"))
-			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportProfiles"))
-			.EnableCustomBinding(true))
-			</td>
+			<th class="centered">@T("Common.Image")</th>
+			<th>@T("Admin.Configuration.Export.Name")</th>
+			<th class="centered">@T("Common.Enabled")</th>
+			<th>@T("Admin.Configuration.Export.EntityType")</th>
+			<th class="centered">@T("Admin.Configuration.Export.FileExtension")</th>
+			<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
+			<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
+			<th>@T("Admin.Common.Actions")</th>
 		</tr>
-	</table>
-</div>
+	</thead>
+	<tbody>
+		@foreach (var profile in Model)
+		{
+			<tr data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+				<td class="centered">
+					<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" />
+				</td>
+				<td>
+					<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Provider.FriendlyName <span class="muted">(@profile.Provider.SystemName)</span></a>
+				</td>
+				<td class="centered">
+					@Html.SymbolForBool(profile.Enabled)
+				</td>
+				<td>
+					@profile.Provider.EntityTypeName
+				</td>
+				<td class="centered">
+					@profile.Provider.FileExtension
+				</td>
+				<td>
+					<div class="last-run-info"></div>
+				</td>
+				<td class="progress-info">
+					<div class="next-run-info"></div>
+					<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
+				</td>
+				<td>
+					<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning ? " hide" : "")"
+							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
+						<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
+					</button>
+
+					<a href="@Url.Action("CancelJob", "ScheduleTask", new { id = profile.ScheduleTaskId })" class="btn btn-small btn-danger btn-cancel-task@(!profile.IsTaskRunning ? " hide" : "")"
+					   data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+						@T("Common.Cancel")
+					</a>
+				</td>
+			</tr>
+		}
+	</tbody>
+</table>
 
 <div id="export-profile-dialog" class="modal modal-large hide fade" tabindex="-1" data-urldelete="@Url.Action("Delete")" data-profile="@T("Common.Profile")">
 	<div class="modal-header">
@@ -86,7 +94,7 @@
 		var dialog = $('#export-profile-dialog');
 
 		// export clicked
-		$(document).on('click', '.export-button', function (e) {
+		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
 			var form = $('#ProfileExportForm');
 			form.find('input[name=Id]').val($(this).attr('data-id'));
@@ -147,7 +155,6 @@
 		// selected provider changed
 		$(document).on('change', 'select[name="Provider.SystemName"]', toggleProviderDescription);
 
-
 		function refreshGrid() {
 			setTimeout(function () {
 				$('#export-profile-grid').data('tGrid').ajaxRequest();
@@ -163,5 +170,38 @@
 			dialog.find('.export-provider-description').hide();
 			$('#ExportProviderDescription' + val).fadeIn('fast');
 		}
+
+
+		// task stuff
+		Admin.TaskWatcher.startWatching({
+			context: $('#export-profile-grid'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
+			onTaskStarted: function (task, el) {
+				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
+				el.closest('tr').find('.next-run-info').addClass('hide');
+			},
+			onTaskCompleted: getTaskRunInfo
+		});
+
+		function getTaskRunInfo(taskId, el) {
+			el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+			$.ajax({
+				cache: false,
+				global: false,
+				type: 'POST',
+				url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
+				data: { id: taskId },
+				success: function (data) {
+					el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+					el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+				}
+			});
+		}
+
+		$.each([@(string.Join(", ", Model.Select(x => x.ScheduleTaskId)))], function (index, value) {
+			getTaskRunInfo(value, $('tr[data-task-id=' + value + ']'));
+		});
 	});
 </script>

@@ -83,6 +83,7 @@ namespace SmartStore.Services.DataExchange
 	public class ExportExecuteContext : IExportExecuteContext
 	{
 		private CancellationToken _cancellation;
+		private IExportSegmenter _segmenter;
 
 		internal ExportExecuteContext(CancellationToken cancellation, string folder)
 		{
@@ -92,7 +93,20 @@ namespace SmartStore.Services.DataExchange
 			CustomProperties = new Dictionary<string, object>();
 		}
 
-		public IExportSegmenter Data { get; internal set; }
+		public IExportSegmenter Data
+		{
+			get
+			{
+				return _segmenter;
+			}
+			internal set
+			{
+				if (_segmenter != null)
+					(_segmenter as IExportExecuter).Dispose();
+
+				_segmenter = value;
+			}
+		}
 
 		public ExpandoObject Store { get; internal set; }
 		public ExpandoObject Customer { get; internal set; }

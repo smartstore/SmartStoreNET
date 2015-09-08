@@ -1,0 +1,52 @@
+﻿@using SmartStore.Admin.Models.DataExchange
+@model ProfileInfoForProviderModel
+@{
+	Layout = null;
+}
+<div class="clearfix">
+	<table class="adminContent">
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(m => m.Profiles)
+			</td>
+			<td class="adminData">
+				@if (Model.Profiles.Count == 0)
+				{
+					@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Url.Action("List", "Export", new { area = "Admin" })))
+				}
+				else
+				{
+					<a href="@Url.Action("Edit", "Export", new { id = Model.Profiles.First().Id, area = "Admin" })">@Model.Profiles.First().Name</a>
+				}
+			</td>
+		</tr>
+		@if (Model.ScheduleTaskId.HasValue)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(m => m.ScheduleTaskId)
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId.Value, returnUrl = Model.ReturnUrl, cancellable = true, area = "admin" })
+				</td>
+			</tr>
+		}
+		@if (Model.Profiles.Count > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					&nbsp;
+				</td>
+				<td class="adminData">
+					@(T("Admin.DataExchange.Export.MoreThanOneProfile")):
+
+					@for (int i = 1; i < Model.Profiles.Count; ++i)
+					{
+						if (i > 1) {<text>, </text>}
+						<a href="@Url.Action("Edit", "Export", new { id = Model.Profiles[i].Id, area = "Admin" })">@Model.Profiles[i].Name</a>
+					}					
+				</td>
+			</tr>
+		}
+	</table>
+</div>

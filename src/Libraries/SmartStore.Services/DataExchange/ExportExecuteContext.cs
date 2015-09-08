@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Threading;
@@ -39,9 +40,9 @@ namespace SmartStore.Services.DataExchange
 		ILogger Log { get; }
 
 		/// <summary>
-		/// Whether the export has been cancelled
+		/// Indicates whether to abort the export
 		/// </summary>
-		bool IsCanceled { get; }
+		bool Abort { get; set; }
 
 		/// <summary>
 		/// The maximum allowed file name length
@@ -76,7 +77,12 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Number of successful exported records. Should be incremented by the provider. Will be logged.
 		/// </summary>
-		int SuccessfulExportedRecords { get; set; }
+		int RecordsSucceeded { get; set; }
+
+		/// <summary>
+		/// Number of failed records. Should be incremented by the provider. Will be logged.
+		/// </summary>
+		int RecordsFailed { get; set; }
 	}
 
 
@@ -84,6 +90,7 @@ namespace SmartStore.Services.DataExchange
 	{
 		private CancellationToken _cancellation;
 		private IExportSegmenter _segmenter;
+		private bool _providerAbort;
 
 		internal ExportExecuteContext(CancellationToken cancellation, string folder)
 		{
@@ -115,9 +122,21 @@ namespace SmartStore.Services.DataExchange
 
 		public ILogger Log { get; internal set; }
 
-		public bool IsCanceled
+		public bool Abort
 		{
-			get { return _cancellation.IsCancellationRequested; }
+			get
+			{
+				return (_providerAbort || IsMaxFailures || _cancellation.IsCancellationRequested);
+			}
+			set
+			{
+				_providerAbort = value;
+			}
+		}
+
+		public bool IsMaxFailures
+		{
+			get { return RecordsFailed > 11; }
 		}
 
 		public int MaxFileNameLength { get; internal set; }
@@ -146,6 +165,7 @@ namespace SmartStore.Services.DataExchange
 
 		public Dictionary<string, object> CustomProperties { get; set; }
 
-		public int SuccessfulExportedRecords { get; set; }
+		public int RecordsSucceeded { get; set; }
+		public int RecordsFailed { get; set; }
 	}
 }

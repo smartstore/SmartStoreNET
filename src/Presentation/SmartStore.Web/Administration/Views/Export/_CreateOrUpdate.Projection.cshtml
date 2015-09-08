@@ -4,49 +4,49 @@
 
 <div class="alert alert-info">
 	<button type="button" class="close" data-dismiss="alert">×</button>
-	@Html.Raw(T("Admin.Configuration.Export.Projection.Note"))
+	@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))
 </div>
 
 <table class="adminContent">
+	<tr id="ProjectionStoreContainer">
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Projection.StoreId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.Projection.StoreId, Model.Projection.AvailableStores, Model.UnspecifiedString)
+			@Html.ValidationMessageFor(x => x.Projection.StoreId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Projection.LanguageId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.Projection.LanguageId, Model.Projection.AvailableLanguages, Model.UnspecifiedString)
+			@Html.ValidationMessageFor(x => x.Projection.LanguageId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Projection.CurrencyId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(x => x.Projection.CurrencyId, Model.Projection.AvailableCurrencies, Model.UnspecifiedString)
+			@Html.ValidationMessageFor(x => x.Projection.CurrencyId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(x => x.Projection.CustomerId)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(x => x.Projection.CustomerId)
+			@Html.ValidationMessageFor(x => x.Projection.CustomerId)
+		</td>
+	</tr>
+
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{
-		<tr id="ProjectionStoreContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Projection.StoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.Projection.StoreId, Model.Projection.AvailableStores, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.Projection.StoreId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Projection.LanguageId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.Projection.LanguageId, Model.Projection.AvailableLanguages, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.Projection.LanguageId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Projection.CurrencyId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.Projection.CurrencyId, Model.Projection.AvailableCurrencies, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.Projection.CurrencyId)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Projection.CustomerId)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Projection.CustomerId)
-				@Html.ValidationMessageFor(x => x.Projection.CustomerId)
-			</td>
-		</tr>
-
 		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.AttributeCombinationAsProduct))
 		{
 			<tr>

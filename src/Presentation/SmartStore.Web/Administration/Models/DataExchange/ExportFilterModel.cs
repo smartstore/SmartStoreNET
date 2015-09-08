@@ -10,83 +10,83 @@ namespace SmartStore.Admin.Models.DataExchange
 	{
 		#region All entity types
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.StoreId")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.StoreId")]
 		public int? StoreId { get; set; }
 		public List<SelectListItem> AvailableStores { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CreatedFrom")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedFrom")]
 		public DateTime? CreatedFrom { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CreatedTo")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CreatedTo")]
 		public DateTime? CreatedTo { get; set; }
 
 		#endregion
 
 		#region Product
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IsPublished")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IsPublished")]
 		public bool? IsPublished { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductType")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ProductType")]
 		public ProductType? ProductType { get; set; }
 		public List<SelectListItem> AvailableProductTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IdMinimum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMinimum")]
 		public int? IdMinimum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.IdMaximum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.IdMaximum")]
 		public int? IdMaximum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PriceMinimum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.PriceMinimum")]
 		public decimal? PriceMinimum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PriceMaximum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.PriceMaximum")]
 		public decimal? PriceMaximum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.AvailabilityMinimum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.AvailabilityMinimum")]
 		public int? AvailabilityMinimum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.AvailabilityMaximum")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.AvailabilityMaximum")]
 		public int? AvailabilityMaximum { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CategoryIds")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CategoryIds")]
 		public int[] CategoryIds { get; set; }
 		public List<SelectListItem> AvailableCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.WithoutCategories")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutCategories")]
 		public bool? WithoutCategories { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ManufacturerId")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ManufacturerId")]
 		public int? ManufacturerId { get; set; }
 		public List<SelectListItem> AvailableManufacturers { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.WithoutManufacturers")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.WithoutManufacturers")]
 		public bool? WithoutManufacturers { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ProductTagId")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ProductTagId")]
 		public int? ProductTagId { get; set; }
 		public List<SelectListItem> AvailableProductTags { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.FeaturedProducts")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.FeaturedProducts")]
 		public bool? FeaturedProducts { get; set; }
 
 		#endregion
 
 		#region Order
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.OrderStatusIds")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.OrderStatusIds")]
 		public int[] OrderStatusIds { get; set; }
 		public List<SelectListItem> AvailableOrderStates { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.PaymentStatusIds")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.PaymentStatusIds")]
 		public int[] PaymentStatusIds { get; set; }
 		public List<SelectListItem> AvailablePaymentStates { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.ShippingStatusIds")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.ShippingStatusIds")]
 		public int[] ShippingStatusIds { get; set; }
 		public List<SelectListItem> AvailableShippingStates { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Filter.CustomerRoleIds")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Filter.CustomerRoleIds")]
 		public int[] CustomerRoleIds { get; set; }
 		public List<SelectListItem> AvailableCustomerRoles { get; set; }
 

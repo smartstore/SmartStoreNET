@@ -16,52 +16,52 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string AllString { get; set; }
 		public string UnspecifiedString { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Name")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.FolderName")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.FolderName")]
 		public string FolderName { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.FileNamePattern")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.FileNamePattern")]
 		public string FileNamePattern { get; set; }
 
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.System.ScheduleTask")]
+		[SmartResourceDisplayName("Common.Execution")]
 		public int ScheduleTaskId { get; set; }
 		public string ScheduleTaskName { get; set; }
 		public bool IsTaskRunning { get; set; }
 		public bool IsTaskEnabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.LastExecution")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.LastExecution")]
 		[AllowHtml]
 		public string LastExecution { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Offset")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Offset")]
 		public int Offset { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Limit")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Limit")]
 		public int Limit { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.BatchSize")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.BatchSize")]
 		public int BatchSize { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.PerStore")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.PerStore")]
 		public bool PerStore { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.EmailAccountId")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.EmailAccountId")]
 		public int? EmailAccountId { get; set; }
 		public List<SelectListItem> AvailableEmailAccounts { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.CompletedEmailAddresses")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.CompletedEmailAddresses")]
 		public string CompletedEmailAddresses { get; set; }
 		public string SerializedCompletedEmailAddresses { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.CreateZipArchive")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.CreateZipArchive")]
 		public bool CreateZipArchive { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Cleanup")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Cleanup")]
 		public bool Cleanup { get; set; }
 
 		public ProviderModel Provider { get; set; }
@@ -89,7 +89,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			[SmartResourceDisplayName("Admin.Configuration.Plugins.Fields.Configure")]
 			public string ConfigurationUrl { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.ProviderSystemName")]
+			[SmartResourceDisplayName("Admin.DataExchange.Export.ProviderSystemName")]
 			public string SystemName { get; set; }
 			public List<SelectListItem> AvailableExportProviders { get; set; }
 			public Dictionary<string, string> ProviderDescriptions { get; set; }
@@ -107,16 +107,16 @@ namespace SmartStore.Admin.Models.DataExchange
 			[AllowHtml]
 			public string Description { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.EntityType")]
+			[SmartResourceDisplayName("Admin.DataExchange.Export.EntityType")]
 			public ExportEntityType EntityType { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.EntityType")]
+			[SmartResourceDisplayName("Admin.DataExchange.Export.EntityType")]
 			public string EntityTypeName { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.FileExtension")]
+			[SmartResourceDisplayName("Admin.DataExchange.Export.FileExtension")]
 			public string FileExtension { get; set; }
 
-			[SmartResourceDisplayName("Admin.Configuration.Export.SupportedFileTypes")]
+			[SmartResourceDisplayName("Admin.DataExchange.Export.SupportedFileTypes")]
 			public string SupportedFileTypes { get; set; }
 		}
 	}

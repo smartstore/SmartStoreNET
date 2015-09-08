@@ -50,8 +50,9 @@
 				@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 			</td>
 			<td class="adminData">
-				<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">@Model.Provider.FriendlyName.NaIfEmpty()</a>
-				<span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+				<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
+					@Model.Provider.FriendlyName.NaIfEmpty() <span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+				</a>
 			</td>
 		</tr>
 		<tr>
@@ -140,14 +141,8 @@
 				@Html.SmartLabelFor(x => x.ScheduleTaskId)
 			</td>
 			<td class="adminData">
-				@if (Model.IsTaskEnabled)
-				{
-					<span class="label label-success">@T("Common.Enabled")</span>
-				}
-				else
-				{
-					<span class="label label-warning">@T("Common.Disabled")</span>
-				}	
+				<span class="label label-inline@(Model.IsTaskEnabled ? " label-warning" : "")">@(Model.IsTaskEnabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
+
 				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
 			</td>
 		</tr>
@@ -214,7 +209,7 @@
 			{
 				<div class="alert alert-info">
 					<button type="button" class="close" data-dismiss="alert">×</button>
-					@Html.Raw(T("Admin.Configuration.Export.Configuration.Note"))
+					@Html.Raw(T("Admin.DataExchange.Export.Configuration.Note"))
 				</div>
 				
 				var viewData = new ViewDataDictionary();
@@ -225,7 +220,7 @@
 			else
 			{
 				<div class="alert alert-info">
-					@Html.Raw(T("Admin.Configuration.Export.Configuration.NotRequired", Model.Provider.FriendlyName.NaIfEmpty()))
+					@Html.Raw(T("Admin.DataExchange.Export.Configuration.NotRequired", Model.Provider.FriendlyName.NaIfEmpty()))
 				</div>
 			}
 		</fieldset>
@@ -236,7 +231,7 @@
 {
 	<div class="alert alert-info">
 		<button type="button" class="close" data-dismiss="alert">×</button>
-		@Html.Raw(T("Admin.Configuration.Export.Deployment.Note"))
+		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
 	</div>
 	
 	<script type="text/javascript">

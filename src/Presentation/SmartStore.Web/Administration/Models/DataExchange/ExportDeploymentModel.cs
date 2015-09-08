@@ -17,17 +17,17 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Common.Image")]
 		public string ThumbnailUrl { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Name")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Name")]
 		public string Name { get; set; }
 
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.DeploymentType")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.DeploymentType")]
 		public ExportDeploymentType DeploymentType { get; set; }
 		public List<SelectListItem> AvailableDeploymentTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.DeploymentType")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.DeploymentType")]
 		public string DeploymentTypeName { get; set; }
 
 		public string DeploymentTypeIconClass
@@ -50,44 +50,44 @@ namespace SmartStore.Admin.Models.DataExchange
 			}
 		}
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.CreateZip")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.CreateZip")]
 		public bool CreateZip { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.IsPublic")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.IsPublic")]
 		public bool IsPublic { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Username")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Password")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Password")]
 		[DataType(DataType.Password)]
 		public string Password { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.Url")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Url")]
 		public string Url { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.HttpTransmissionType")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.HttpTransmissionType")]
 		public ExportHttpTransmissionType HttpTransmissionType { get; set; }
 		public List<SelectListItem> AvailableHttpTransmissionTypes { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.FileSystemPath")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.FileSystemPath")]
 		public string FileSystemPath { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.EmailAddresses")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailAddresses")]
 		public string EmailAddresses { get; set; }
 		public string SerializedEmailAddresses { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.EmailSubject")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailSubject")]
 		public string EmailSubject { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.EmailAccountId")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.EmailAccountId")]
 		public int EmailAccountId { get; set; }
 		public List<SelectListItem> AvailableEmailAccounts { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.PassiveMode")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.PassiveMode")]
 		public bool PassiveMode { get; set; }
 
-		[SmartResourceDisplayName("Admin.Configuration.Export.Deployment.UseSsl")]
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.UseSsl")]
 		public bool UseSsl { get; set; }
 	}
 }

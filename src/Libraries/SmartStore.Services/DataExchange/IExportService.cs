@@ -40,6 +40,13 @@ namespace SmartStore.Services.DataExchange
 		/// <returns>Export profile</returns>
 		ExportProfile GetExportProfileById(int id);
 
+		/// <summary>
+		/// Gets export profiles by provider system name
+		/// </summary>
+		/// <param name="systemName">Provider system name</param>
+		/// <returns>List of export profiles</returns>
+		IList<ExportProfile> GetExportProfilesBySystemName(string systemName);
+
 
 		/// <summary>
 		/// Load all export providers

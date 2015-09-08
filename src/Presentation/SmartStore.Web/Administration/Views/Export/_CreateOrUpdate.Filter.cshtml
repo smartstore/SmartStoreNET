@@ -4,24 +4,25 @@
 
 <div class="alert alert-info">
 	<button type="button" class="close" data-dismiss="alert">×</button>
-	@Html.Raw(T("Admin.Configuration.Export.Filter.Note"))
+	@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))
 </div>
 
 <table class="adminContent">
-	@if (Model.Filter != null)
+	@if (Model.StoreCount > 1)
 	{
-		if (Model.StoreCount > 1)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Filter.StoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
-					@Html.ValidationMessageFor(x => x.Filter.StoreId)
-				</td>
-			</tr>
-		}
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Filter.StoreId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+				@Html.ValidationMessageFor(x => x.Filter.StoreId)
+			</td>
+		</tr>
+	}
+
+	@if (Model.Provider.EntityType == ExportEntityType.Product)
+	{
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Filter.ProductType)
@@ -150,20 +151,8 @@
 			</td>
 		</tr>
 	}
-	else if (Model.Filter != null)
+	else if (Model.Provider.EntityType == ExportEntityType.Order)
 	{
-		if (Model.StoreCount > 1)
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Filter.StoreId)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
-					@Html.ValidationMessageFor(x => x.Filter.StoreId)
-				</td>
-			</tr>
-		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Filter.CreatedFrom)

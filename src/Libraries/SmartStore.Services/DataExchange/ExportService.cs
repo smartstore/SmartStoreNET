@@ -143,6 +143,20 @@ namespace SmartStore.Services.DataExchange
 			return profile;
 		}
 
+		public virtual IList<ExportProfile> GetExportProfilesBySystemName(string systemName)
+		{
+			if (systemName.IsEmpty())
+				return new List<ExportProfile>();
+
+			var profiles = _exportProfileRepository.Table
+				.Expand(x => x.ScheduleTask)
+				.Expand(x => x.Deployments)
+				.Where(x => x.ProviderSystemName == systemName)
+				.ToList();
+
+			return profiles;
+		}
+
 
 		public virtual IEnumerable<Provider<IExportProvider>> LoadAllExportProviders(int storeId = 0)
 		{

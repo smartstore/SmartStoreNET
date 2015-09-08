@@ -112,82 +112,82 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Validation.EmailAddress", "Please enter a valid email address", "Bitte geben Sie eine gültige E-Mail Adresse ein");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName.Validate",
+			builder.AddOrUpdate("Admin.DataExchange.Export.ProviderSystemName.Validate",
 				"There were no export provider found for system name \"{0}\". A provider is mandatory for an export profile.",
 				"Es wurde kein Export-Provider mit dem Systemnamen \"{0}\" gefunden. Ein Provider ist für ein Exportprofil zwingend erforderlich.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.NoProfiles",
+			builder.AddOrUpdate("Admin.DataExchange.Export.NoProfiles",
 				"There were no export profiles found.",
 				"Es wurden keine Exportprofile gefunden.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.ProviderSystemName",
+			builder.AddOrUpdate("Admin.DataExchange.Export.ProviderSystemName",
 				"Provider",
 				"Provider",
 				"Specifies the export provider. It is responsible for the individual formatting of the export data.",
 				"Legt den Export-Provider fest. Er ist für die individuelle Formatierung der zu exportierenden Daten zuständig.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.EntityType",
+			builder.AddOrUpdate("Admin.DataExchange.Export.EntityType",
 				"Entity",
 				"Entität",
 				"The entity type the provider processes.",
 				"Der Entitätstyp, den der Provider verarbeitet.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Name",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Name",
 				"Name of profile",
 				"Name des Profils",
 				"Specifies the name of the export profile.",
 				"Legt den Namen des Exportprofils fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.FileExtension",
+			builder.AddOrUpdate("Admin.DataExchange.Export.FileExtension",
 				"File type",
 				"Dateityp",
 				"The file type of the exported data.",
 				"Der Dateityp der exportierten Daten.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.LastExecution",
+			builder.AddOrUpdate("Admin.DataExchange.Export.LastExecution",
 				"Last execution",
 				"Letzte Ausführung",
 				"Information about the last execution of the export.",
 				"Informationen zur letzten Ausführung des Exports.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Offset",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Offset",
 				"Offset",
 				"Abstand",
 				"Specifies the number of records to be skipped.",
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Limit",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Limit",
 				"Limit",
 				"Begrenzung",
 				"Specifies how many records to be loaded at maximum.",
 				"Legt die Anzahl der Datensätze fest, die maximal geladen werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.LimitOffsetValidation",
+			builder.AddOrUpdate("Admin.DataExchange.Export.LimitOffsetValidation",
 				"The offset must be less or equal to limit.",
 				"Der Abstand muss kleiner oder gleich der Begrenzung sein.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.BatchSize",
+			builder.AddOrUpdate("Admin.DataExchange.Export.BatchSize",
 				"Batch size",
 				"Stapelgröße",
 				"Specifies the maximum number of records per export file. 0 is the default and means that all the records are exported in one file.",
 				"Legt die maximale Anzahl der Datensätze pro Exportdatei fest. 0 ist der Standard und bedeutet, dass alle Datensätze in eine Datei exportiert werden.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.PerStore",
+			builder.AddOrUpdate("Admin.DataExchange.Export.PerStore",
 				"Per store",
 				"Per Shop",
 				"Specifies whether to start a separate run-through for each store. For each shop a new file will be created.",
 				"Legt fest, ob für jeden Shop ein separater Verarbeitungsdurchlauf erfolgen soll. Für jeden Shop wird eine neue Datei erzeugt.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.CreateZipArchive",
+			builder.AddOrUpdate("Admin.DataExchange.Export.CreateZipArchive",
 				"Create ZIP archive",
 				"ZIP-Archiv erstellen",
 				"Specifies whether to combine the export files in temporary a ZIP archive. The archive remains in the temporary folder of the export profile without further processing.",
 				"Legt fest, ob die Exportdateien in einem ZIP-Archiv zusammengefasst werden sollen. Das Archiv verbleibt im temporären Ordner des Exportprofils ohne weitere Vearbeitung.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Cleanup",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Cleanup",
 				"Clean up at the end",
 				"Zum Schluss aufräumen",
 				"Specifies whether to delete unneeded files after deployment.",
@@ -199,224 +199,224 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Customer", "Customer", "Kunde");
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.Order", "Order", "Auftrag");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.StoreId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.StoreId",
 				"Store",
 				"Shop",
 				"Filter by store.",
 				"Nach Shop filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CreatedFrom",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.CreatedFrom",
 				"Created from",
 				"Erstellt von",
 				"Filter by created date.",
 				"Nach dem Erstellungsdatum filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CreatedTo",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.CreatedTo",
 				"Created to",
 				"Erstellt bis",
 				"Filter by created date.",
 				"Nach dem Erstellungsdatum filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IdMinimum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IdMinimum",
 				"Product Id from",
 				"Produkt-ID von",
 				"Filter by product identifier.",
 				"Nach der Produkt-ID filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IdMaximum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IdMaximum",
 				"Product Id to",
 				"Produkt-ID bis",
 				"Filter by product identifier.",
 				"Nach der Produkt-ID filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PriceMinimum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.PriceMinimum",
 				"Price from",
 				"Preis von",
 				"Filter by price.",
 				"Nach dem Preis filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PriceMaximum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.PriceMaximum",
 				"Price to",
 				"Preis bis",
 				"Filter by price.",
 				"Nach dem Preis filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.AvailabilityMinimum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.AvailabilityMinimum",
 				"Availability from",
 				"Verfügbar von",
 				"Filter by availability quantity.",
 				"Nach der Verfügbarkeitsmenge filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.AvailabilityMaximum",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.AvailabilityMaximum",
 				"Availability to",
 				"Verfügbar bis",
 				"Filter by availability quantity.",
 				"Nach der Verfügbarkeitsmenge filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.IsPublished",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.IsPublished",
 				"Published",
 				"Veröffentlicht",
 				"Filter by publishing.",
 				"Nach Veröffentlichung filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CategoryIds",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.CategoryIds",
 				"Categories",
 				"Warengruppen",
 				"Filter by categtories.",
 				"Nach Warengruppen filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.WithoutCategories",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.WithoutCategories",
 				"Without category mapping",
 				"Ohne Warengruppenzuordnung",
 				"Filter by missing category mapping.",
 				"Nach fehlender Warengruppenzuordnung filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ManufacturerId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ManufacturerId",
 				"Manufacturer",
 				"Hersteller",
 				"Filter by manufacturer.",
 				"Nach Hersteller filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.WithoutManufacturers",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.WithoutManufacturers",
 				"Without manufacturer mapping",
 				"Ohne Herstellerzuordnung",
 				"Filter by missing manufacturer mapping.",
 				"Nach fehlender Herstellerzuordnung filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductTagId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ProductTagId",
 				"Product tag",
 				"Produkt-Tag",
 				"Filter by product tag.",
 				"Nach Produkt-Tag filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.FeaturedProducts",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.FeaturedProducts",
 				"Only featured products",
 				"Nur empfohlene Produkte",
 				"Filter by featured products. Is only applied when the filtering by categories and manufacturers.",
 				"Nach empfohlenen Produkten filtern. Wird nur bei der Filterung nach Warengruppen und Hersteller angewendet.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ProductType",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ProductType",
 				"Product type",
 				"Produkttyp",
 				"Filter by product type.",
 				"Nach Produkttyp filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.OrderStatusIds",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.OrderStatusIds",
 				"Order status",
 				"Auftragsstatus",
 				"Filter by order status.",
 				"Nach Auftragsstaus filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.PaymentStatusIds",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.PaymentStatusIds",
 				"Payment status",
 				"Zahlungsstatus",
 				"Filter by payment status.",
 				"Nach Zahlungsstatus filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.ShippingStatusIds",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.ShippingStatusIds",
 				"Shipping status",
 				"Versandstatus",
 				"Filter by shipping status.",
 				"Nach Versandstatus filtern.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Filter.CustomerRoleIds",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Filter.CustomerRoleIds",
 				"Customer roles",
 				"Kundengruppen",
 				"Filter by customer roles.",
 				"Nach Kundengruppen filtern.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.StoreId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.StoreId",
 				"Store",
 				"Shop",
 				"Specifies the store to be applied to the export.",
 				"Legt den auf den Export anzuwendenden Shop fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.LanguageId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.LanguageId",
 				"Language",
 				"Sprache",
 				"Specifies the language to be applied to the export.",
 				"Legt die auf den Export anzuwendende Sprache fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CurrencyId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.CurrencyId",
 				"Currency",
 				"Währung",
 				"Specifies the currency to be applied to the export.",
 				"Legt die auf den Export anzuwendende Währung fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CustomerId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.CustomerId",
 				"Customer ID",
 				"Kunden-ID",
 				"Specifies the ID of the customer to be applied to the export. Is taken into account for price calculations for example.",
 				"Legt die ID des Kunden fest, auf den sich der Export beziehen soll. Wird z.B. bei Preisberechnungen berücksichtigt.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.DescriptionMerging",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.DescriptionMerging",
 				"Product description",
 				"Artikelbeschreibung",
 				"Specifies what information to use for the description of the product.",
 				"Legt fest, welche Informationen zur Beschreibung des Artikel wie verwendet werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.DescriptionToPlainText",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.DescriptionToPlainText",
 				"Remove HTML from description",
 				"HTML aus der Beschreibung entfernen",
 				"Specifies whether to remove all HTML from the product description for the export.",
 				"Legt fest, ob für den Export alle HTML-Auszeichnungen aus der Artikelbeschreibung entfernt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.AppendDescriptionText",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.AppendDescriptionText",
 				"Text to be appended",
 				"Anzuhängender Text",
 				"Specifies the text to be attached to the product description. If there are multiple texts then one of it is selected randomly.",
 				"Legt den an die Artikelbeschreibung anzuhängenden Text fest. Bei mehreren Texten wird einer per Zufall ausgewählt.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.RemoveCriticalCharacters",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.RemoveCriticalCharacters",
 				"Remove critical characters",
 				"Kritische Zeichen entfernen",
 				"Specifies whether to remove critical characters (like ½) from the detail description.",
 				"Legt fest, ob kritische Zeichen (wie z.B. ½) aus der Detailsbeschreibung entfernt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.CriticalCharacters",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.CriticalCharacters",
 				"Critical characters",
 				"Kritische Zeichen",
 				"List with characters to be removed from the detail description.",
 				"Liste mit Zeichen, die aus der Detailbeschreibung entfernt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.PriceType",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.PriceType",
 				"Product price",
 				"Produktpreis",
 				"Specifies the product price to be exported.",
 				"Legt den zu exportierenden Produktpreis fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ConvertNetToGrossPrices",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.ConvertNetToGrossPrices",
 				"Convert net into gross prices",
 				"Netto- in Bruttopreise umrechnen",
 				"Specifies to convert net into gross prices.",
 				"Legt fest, dass Netto- in Bruttopreise umgerechnet werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.Brand",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.Brand",
 				"Manufacturer\\Brand",
 				"Hersteller\\Marke",
 				"Specifies the manufacturer or brand to be exported, if a product has no manufacturer assigned.",
 				"Legt den zu exportierenden Hersteller bzw. die Marke fest, wenn für ein Produkt kein Hersteller zugeordnet ist.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.PictureSize",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.PictureSize",
 				"Product picture size",
 				"Produktbildgröße",
 				"Specifies the size (in pixel) of the product image.",
 				"Legt die Größe (in Pixel) des Produktbildes fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ShippingTime",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.ShippingTime",
 				"Shipping time",
 				"Lieferzeit",
 				"Specifies the shipping time for products where it is unspecified.",
 				"Legt die Lieferzeit für Produkte fest, wo diese nicht angegeben ist.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.ShippingCosts",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.ShippingCosts",
 				"Shipping costs",
 				"Versandkosten",
 				"The shipping costs to be exported.",
 				"Die zu exportierenden Versandkosten.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Projection.FreeShippingThreshold",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.FreeShippingThreshold",
 				"Free shipping threshold",
 				"Kostenloser Versand ab",
 				"Specifies the amount as from shipping is free.",
@@ -446,61 +446,61 @@ namespace SmartStore.Data.Migrations
 				"Manufacturer + Product name + long description", "Hersteller + Produktname + Detailbeschreibung");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Name",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Name",
 				"Name",
 				"Name",
 				"Specifies the name of the deployment.",
 				"Legt den Namen der Bereitstellung fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.IsPublic",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.IsPublic",
 				"Copy to public folder",
 				"In öffentlichen Ordner kopieren",
 				"Specifies whether to copy the exported data into a folder that is accessible through the internet.",
 				"Legt fest, ob die exportierten Daten in einen übers Internet zugänglichen Ordner kopiert werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.FileSystemPath",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.FileSystemPath",
 				"Directory path",
 				"Ordnerpfad",
 				"Specifies the path (relative or absolute) where to deploy the data.",
 				"Legt den Pfad (relativ oder absolut) zu einem Ordner fest, in den die Daten bereitgestellt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.DeploymentType",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.DeploymentType",
 				"Type of deployment",
 				"Art der Bereitstellung",
 				"Specifies the deployment type.",
 				"Legt die Art Bereitstellung fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Username",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Username",
 				"User name",
 				"Benutzername",
 				"Specifies the user name.",
 				"Legt den Benutzernamen fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Password",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Password",
 				"Password",
 				"Passwort",
 				"Specifies the password.",
 				"Legt das Passwort fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.Url",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.Url",
 				"URL\\Host",
 				"URL\\Host",
 				"Specifies the URL or host name where to send the data.",
 				"Legt die URL bzw. den Host-Namen fest, an die die Daten übermittelt werden sollen.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAddresses",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.EmailAddresses",
 				"Email addresses",
 				"E-Mail-Addressen",
 				"Specifies the email addresses where to send the data.",
 				"Legt die E-Mail Addressen fest, an die die Daten verschickt werden soll.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailSubject",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.EmailSubject",
 				"Email subject",
 				"E-Mail Betreff",
 				"Specifies the subject of the data should be sent.",
 				"Legt den Betreff der verschickten Daten fest.");
 
-			builder.AddOrUpdate("Admin.Configuration.Export.Deployment.EmailAccountId",
+			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.EmailAccountId",
 				"Email account",
 				"E-Mail Konto",
 				"Specifies the email account through which the data should be sent.",

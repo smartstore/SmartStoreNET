@@ -248,6 +248,7 @@
     <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
+    <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
     <Compile Include="Models\DataExchange\ExportPreviewModel.cs" />
     <Compile Include="Models\DataExchange\ExportProjectionModel.cs" />
     <Compile Include="Models\Directory\QuantityUnitModel.cs" />
@@ -520,6 +521,7 @@
     <Content Include="Views\Export\_CreateOrUpdate.Deployment.cshtml" />
     <Content Include="Views\Export\_CreateOrUpdate.Filter.cshtml" />
     <Content Include="Views\Export\_CreateOrUpdate.Projection.cshtml" />
+    <Content Include="Views\Export\ProfileInfo.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

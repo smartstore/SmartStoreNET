@@ -119,7 +119,7 @@ namespace SmartStore.Admin.Controllers
 				model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
 				model.Provider.Url = provider.Metadata.PluginDescriptor.Url;
-				model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", new { systemName = provider.Metadata.SystemName });
+				model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = provider.Metadata.SystemName, area = "Admin" });
 				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
 				model.Provider.Author = provider.Metadata.PluginDescriptor.Author;
 				model.Provider.Version = provider.Metadata.PluginDescriptor.Version.ToString();
@@ -407,39 +407,33 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Create()
 		{
-			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
-			{
-				var model = new ExportProfileModel();
-				model.Provider = new ExportProfileModel.ProviderModel();
-				model.Provider.ProviderDescriptions = new Dictionary<string, string>();
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return Content(T("Admin.AccessDenied.Description"));
+			
+			var model = new ExportProfileModel();
+			model.Provider = new ExportProfileModel.ProviderModel();
+			model.Provider.ProviderDescriptions = new Dictionary<string, string>();
 
-				model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders()
-					.Select(x =>
+			model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders()
+				.Select(x =>
+				{
+					var item = new SelectListItem
 					{
-						var item = new SelectListItem
-						{
-							Text = "{0} ({1})".FormatInvariant(x.Metadata.FriendlyName, x.Metadata.SystemName),
-							Value = x.Metadata.SystemName
-						};
+						Text = "{0} ({1})".FormatInvariant(x.Metadata.FriendlyName, x.Metadata.SystemName),
+						Value = x.Metadata.SystemName
+					};
 
-						if (!model.Provider.ProviderDescriptions.ContainsKey(x.Metadata.SystemName))
-						{
-							var description = x.Metadata.Description;
-							if (description.IsEmpty())
-								description = x.Metadata.PluginDescriptor.Description;
-							if (description.IsEmpty())
-								description = T("Admin.Common.NoDescriptionAvailable");
+					if (!model.Provider.ProviderDescriptions.ContainsKey(x.Metadata.SystemName))
+					{
+						var description = _pluginMediator.GetLocalizedDescription(x.Metadata);
 
-							model.Provider.ProviderDescriptions.Add(x.Metadata.SystemName, description);
-						}
+						model.Provider.ProviderDescriptions.Add(x.Metadata.SystemName, description.NaIfEmpty());
+					}
 
-						return item;
-					}).ToList();
+					return item;
+				}).ToList();
 
-				return PartialView(model);
-			}
-
-			return Content(T("Admin.AccessDenied.Description"));
+			return PartialView(model);			
 		}
 
 		[HttpPost]
@@ -459,7 +453,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			NotifyError(T("Admin.Configuration.Export.ProviderSystemName.Validate", model.Provider.SystemName.NaIfEmpty()));
+			NotifyError(T("Admin.DataExchange.Export.ProviderSystemName.Validate", model.Provider.SystemName.NaIfEmpty()));
 
 			return RedirectToAction("List");
 		}
@@ -635,6 +629,13 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			if (!profile.Enabled)
+			{
+				NotifyInfo(T("Admin.DataExchange.Export.EnableProfileForPreview"));
+
+				return RedirectToAction("Edit", new { id = profile.Id });
+			}
+
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 
 			var task = new ExportProfileTask();
@@ -749,6 +750,40 @@ namespace SmartStore.Admin.Controllers
 			var returnUrl = Url.Action("List", "Export", new { area = "admin" });
 
 			return RedirectToAction("RunJob", "ScheduleTask", new { area = "admin", id = profile.SchedulingTaskId, returnUrl = returnUrl });
+		}
+
+		[ChildActionOnly]
+		public ActionResult ProfileInfo(string systemName, string returnUrl)
+		{
+			var profiles = _exportService.GetExportProfilesBySystemName(systemName);
+
+			var model = new ProfileInfoForProviderModel
+			{
+				ReturnUrl = returnUrl
+			};
+
+			model.Profiles = profiles
+				.Select(x =>
+				{
+					var profileModel = new ProfileInfoForProviderModel.ProfileModel
+					{
+						Id = x.Id,
+						Name = x.Name,
+						Enabled = x.Enabled
+					};
+					return profileModel;
+				})
+				.ToList();
+
+			if (profiles.Count > 0)
+			{
+				var firstProfile = profiles.First();
+
+				if (firstProfile.Enabled)
+					model.ScheduleTaskId = firstProfile.SchedulingTaskId;
+			}
+
+			return PartialView(model);
 		}
 
 		#region Export deployment

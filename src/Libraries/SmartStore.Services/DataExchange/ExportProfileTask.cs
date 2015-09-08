@@ -45,7 +45,6 @@ namespace SmartStore.Services.DataExchange
 {
 	public class ExportProfileTask : ITask
 	{
-		private const int _maxErrors = 20;
 		private const string _publicFolder = "Exchange";
 
 		#region Dependencies
@@ -312,10 +311,10 @@ namespace SmartStore.Services.DataExchange
 			message.To.AddRange(ctx.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
 			message.From = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
 
-			message.Subject = _services.Localization.GetResource("Admin.Configuration.Export.CompletedEmail.Subject", ctx.Projection.LanguageId ?? 0)
+			message.Subject = _services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Subject", ctx.Projection.LanguageId ?? 0)
 				.FormatInvariant(ctx.Profile.Name);
 
-			message.Body = _services.Localization.GetResource("Admin.Configuration.Export.CompletedEmail.Body", ctx.Projection.LanguageId ?? 0)
+			message.Body = _services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Body", ctx.Projection.LanguageId ?? 0)
 				.FormatInvariant(storeInfo);
 
 			_emailSender.SendEmail(smtpContext, message);
@@ -1011,13 +1010,13 @@ namespace SmartStore.Services.DataExchange
 				(ctx.Export.Data as IExportExecuter).Start(() =>
 				{
 					var goOn = false;
-					ctx.Export.SuccessfulExportedRecords = 0;
+					ctx.Export.RecordsSucceeded = 0;
 
 					if (!ctx.IsPreview)
 					{
 						goOn = ctx.Provider.Value.Execute(ctx.Export);
 
-						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.SuccessfulExportedRecords));
+						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
 					}
 					else if (ctx.Export.Data.ReadNextSegment())
 					{
@@ -1029,10 +1028,13 @@ namespace SmartStore.Services.DataExchange
 						}
 					}
 
+					if (ctx.Export.IsMaxFailures)
+						ctx.Log.Warning("Export aborted. The maximum number of failures has been reached");
+
 					if (ctx.TaskContext.CancellationToken.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
 
-					return (goOn && !ctx.TaskContext.CancellationToken.IsCancellationRequested);
+					return (goOn && !ctx.Export.Abort);
 				});
 			}
 		}
@@ -1066,7 +1068,7 @@ namespace SmartStore.Services.DataExchange
 
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
-					ctx.ProgressInfo = _services.Localization.GetResource("Admin.Configuration.Export.ProgressInfo");
+					ctx.ProgressInfo = _services.Localization.GetResource("Admin.DataExchange.Export.ProgressInfo");
 
 					if (ctx.Profile.ProviderConfigData.HasValue())
 					{

@@ -32,7 +32,8 @@ namespace SmartStore.Core.Domain.Customers
         public static string PasswordRecoveryToken { get { return "PasswordRecoveryToken"; } }
         public static string AccountActivationToken { get { return "AccountActivationToken"; } }
         public static string LastVisitedPage { get { return "LastVisitedPage"; } }
-        public static string ImpersonatedCustomerId { get { return "ImpersonatedCustomerId"; } }
+		public static string LastUserAgent { get { return "LastUserAgent"; } }
+		public static string ImpersonatedCustomerId { get { return "ImpersonatedCustomerId"; } }
 		public static string AdminAreaStoreScopeConfiguration { get { return "AdminAreaStoreScopeConfiguration"; } }
 		public static string MostRecentlyUsedCategories { get { return "MostRecentlyUsedCategories"; } }
 		public static string MostRecentlyUsedManufacturers { get { return "MostRecentlyUsedManufacturers"; } }

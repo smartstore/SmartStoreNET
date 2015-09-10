@@ -38,10 +38,12 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Billiger.StaticFileGenerationTask, SmartStore.Billiger'");
+			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.ElmarShopinfo.StaticFileGenerationTask, SmartStore.ElmarShopinfo'");
 
 			context.MigrateSettings(x =>
 			{
 				x.DeleteGroup("BilligerSettings");
+				x.DeleteGroup("ElmarShopinfoSettings");
 			});
 		}
 
@@ -238,6 +240,52 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.Billiger.ConfigSaveNote",
 				"Plugins.Feed.Billiger.GeneratingNow",
 				"Plugins.Feed.Billiger.SuccessResult"
+			);
+
+			builder.Delete(
+				"Plugins.Feed.ElmarShopinfo.TaskEnabled",
+				"Plugins.Feed.ElmarShopinfo.TaskEnabled.Hint",
+				"Plugins.Feed.ElmarShopinfo.StaticFileUrl",
+				"Plugins.Feed.ElmarShopinfo.StaticFileUrl.Hint",
+				"Plugins.Feed.ElmarShopinfo.GenerateStaticFileEachMinutes",
+				"Plugins.Feed.ElmarShopinfo.GenerateStaticFileEachMinutes.Hint",
+				"Plugins.Feed.ElmarShopinfo.BuildDescription",
+				"Plugins.Feed.ElmarShopinfo.BuildDescription.Hint",
+				"Plugins.Feed.ElmarShopinfo.Automatic",
+				"Plugins.Feed.ElmarShopinfo.DescShort",
+				"Plugins.Feed.ElmarShopinfo.DescLong",
+				"Plugins.Feed.ElmarShopinfo.DescTitleAndShort",
+				"Plugins.Feed.ElmarShopinfo.DescTitleAndLong",
+				"Plugins.Feed.ElmarShopinfo.DescManuAndTitleAndShort",
+				"Plugins.Feed.ElmarShopinfo.DescManuAndTitleAndLong",
+				"Plugins.Feed.ElmarShopinfo.DescriptionToPlainText",
+				"Plugins.Feed.ElmarShopinfo.DescriptionToPlainText.Hint",
+				"Plugins.Feed.ElmarShopinfo.ProductPictureSize",
+				"Plugins.Feed.ElmarShopinfo.ProductPictureSize.Hint",
+				"Plugins.Feed.ElmarShopinfo.Currency",
+				"Plugins.Feed.ElmarShopinfo.Currency.Hint",
+				"Plugins.Feed.ElmarShopinfo.ShippingCost",
+				"Plugins.Feed.ElmarShopinfo.ShippingCost.Hint",
+				"Plugins.Feed.ElmarShopinfo.ShippingTime",
+				"Plugins.Feed.ElmarShopinfo.ShippingTime.Hint",
+				"Plugins.Feed.ElmarShopinfo.Brand",
+				"Plugins.Feed.ElmarShopinfo.Brand.Hint",
+				"Plugins.Feed.ElmarShopinfo.Store",
+				"Plugins.Feed.ElmarShopinfo.Store.Hint",
+				"Plugins.Feed.ElmarShopinfo.ConvertNetToGrossPrices",
+				"Plugins.Feed.ElmarShopinfo.ConvertNetToGrossPrices.Hint",
+				"Plugins.Feed.ElmarShopInfo.LanguageId",
+				"Plugins.Feed.ElmarShopInfo.LanguageId.Hint",
+				"Plugins.Feed.ElmarShopInfo.General",
+				"Plugins.Feed.ElmarShopInfo.General.Hint",
+				"Plugins.Feed.ElmarShopInfo.Automation",
+				"Plugins.Feed.ElmarShopInfo.Automation.Hint",
+				"Plugins.Feed.ElmarShopInfo.Address",
+				"Plugins.Feed.ElmarShopInfo.Address.Hint",
+				"Plugins.Feed.ElmarShopInfo.Contact",
+				"Plugins.Feed.ElmarShopInfo.Contact.Hint",
+				"Plugins.Feed.ElmarShopInfo.Generate",
+				"Plugins.Feed.ElmarShopInfo.ConfigSaveNote"
 			);
 		}
     }

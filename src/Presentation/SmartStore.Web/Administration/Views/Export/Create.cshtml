@@ -10,23 +10,25 @@
 		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
 			<table class="adminContent">
 				<tr>
-					<td class="adminTitle">
+					<td class="adminTitle" style="width: 100px !important; min-width: 100px !important; max-width: 100px !important;">
 						@Html.SmartLabelFor(model => model.Provider.SystemName)
 					</td>
 					<td class="adminData">
 						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders)
 					</td>
 				</tr>
+				<tr>
+					<td class="adminTitle" style="width: 100px !important; min-width: 100px !important; max-width: 100px !important;">
+						&nbsp;
+					</td>
+					<td class="adminData">
+						@foreach (var item in Model.Provider.ProviderDescriptions)
+						{
+							<span id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</span>
+						}
+					</td>
+				</tr>
 			</table>
-			
-			<p></p>
-
-			<div class="alert alert-info">
-				@foreach (var item in Model.Provider.ProviderDescriptions)
-				{
-					<div id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</div>
-				}
-			</div>
 		</form>
 	}
 	else

@@ -70,7 +70,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		ShippingTime,
 		ShippingCosts,
 		AttributeCombinationAsProduct,
-		OldPrice
+		OldPrice,
+		SpecialPrice
 	}
 
 	/// <summary>

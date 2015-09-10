@@ -21,8 +21,9 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="partialViewName">The partial view name for the configuration</param>
 		/// <param name="modelType">Type of the view model</param>
+		/// <param name="initialize">Callback to initialize the view model. Can be <c>null</c>.</param>
 		/// <returns>Whether configuration is required</returns>
-		bool RequiresConfiguration(out string partialViewName, out Type modelType);
+		bool RequiresConfiguration(out string partialViewName, out Type modelType, out Action<object> initialize);
 
 		/// <summary>
 		/// Export data to a file
@@ -30,5 +31,11 @@ namespace SmartStore.Services.DataExchange
 		/// <param name="context">Export execution context</param>
 		/// <returns><c>true</c> continue processing, <c>false</c> break processing</returns>
 		bool Execute(IExportExecuteContext context);
+
+		/// <summary>
+		/// Called once per store when export execution ended
+		/// </summary>
+		/// <param name="context">Export execution context</param>
+		void ExecuteEnded(IExportExecuteContext context);
 	}
 }

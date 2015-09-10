@@ -45,8 +45,6 @@ namespace SmartStore.Services.DataExchange
 {
 	public class ExportProfileTask : ITask
 	{
-		private const string _publicFolder = "Exchange";
-
 		#region Dependencies
 
 		private DataExchangeSettings _dataExchangeSettings;
@@ -235,6 +233,24 @@ namespace SmartStore.Services.DataExchange
 			catch { }
 		}
 
+		private decimal? ConvertPrice(ExportProfileTaskContext ctx, Product product, decimal? price)
+		{
+			if (price.HasValue)
+			{
+				if (ctx.Projection.ConvertNetToGrossPrices)
+				{
+					decimal taxRate;
+					price = _taxService.GetProductPrice(product, price.Value, true, ctx.ProjectionCustomer, out taxRate);
+				}
+
+				if (price != decimal.Zero)
+				{
+					price = _currencyService.ConvertFromPrimaryStoreCurrency(price.Value, ctx.ProjectionCurrency, ctx.Store);
+				}
+			}
+			return price;
+		}
+
 		private decimal CalculatePrice(ExportProfileTaskContext ctx, Product product, bool forAttributeCombination)
 		{
 			decimal price = product.Price;
@@ -258,19 +274,7 @@ namespace SmartStore.Services.DataExchange
 				}
 			}
 
-			// convert net to gross
-			if (ctx.Projection.ConvertNetToGrossPrices)
-			{
-				decimal taxRate;
-				price = _taxService.GetProductPrice(product, price, true, ctx.ProjectionCustomer, out taxRate);
-			}
-
-			if (price != decimal.Zero)
-			{
-				price = _currencyService.ConvertFromPrimaryStoreCurrency(price, ctx.ProjectionCurrency, ctx.Store);
-			}
-
-			return price;
+			return ConvertPrice(ctx, product, price) ?? price;
 		}
 
 		private void GetDeliveryTimeAndQuantityUnit(ExportProfileTaskContext ctx, dynamic expando, int? deliveryTimeId, int? quantityUnitId)
@@ -326,7 +330,7 @@ namespace SmartStore.Services.DataExchange
 
 			if (deployment.IsPublic)
 			{
-				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, _publicFolder);
+				folderDestination = Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder);
 			}
 			else if (deployment.FileSystemPath.IsEmpty())
 			{
@@ -651,6 +655,8 @@ namespace SmartStore.Services.DataExchange
 
 			dynamic expando = product.ToExpando(languageId);
 
+			expando._DetailUrl = ctx.Store.Url + expando.SeName;
+
 			expando._CategoryPath = _categoryService.GetCategoryPath(
 				product,
 				null,
@@ -812,6 +818,11 @@ namespace SmartStore.Services.DataExchange
 					{
 						exp._OldPrice = product.OldPrice;
 					}
+				}
+
+				if (ctx.Provider.Supports(ExportProjectionSupport.SpecialPrice))
+				{
+					exp._SpecialPrice = ConvertPrice(ctx, product, _priceCalculationService.GetSpecialPrice(product));
 				}
 			};
 
@@ -1074,7 +1085,8 @@ namespace SmartStore.Services.DataExchange
 					{
 						string partialName;
 						Type dataType;
-						if (ctx.Provider.Value.RequiresConfiguration(out partialName, out dataType))
+						Action<object> initialize;
+						if (ctx.Provider.Value.RequiresConfiguration(out partialName, out dataType, out initialize))
 						{
 							ctx.Export.ConfigurationData = XmlHelper.Deserialize(ctx.Profile.ProviderConfigData, dataType);
 						}
@@ -1102,7 +1114,12 @@ namespace SmartStore.Services.DataExchange
 						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.Projection.LanguageId ?? 0);
 						ctx.Export.LanguageId = (ctx.Projection.LanguageId ?? 0);
 
-						stores.ForEach(x => ExportCoreInner(ctx, x));
+						stores.ForEach(x =>
+						{
+							ExportCoreInner(ctx, x);
+
+							ctx.Provider.Value.ExecuteEnded(ctx.Export);
+						});
 					}
 
 					if (!ctx.IsPreview)
@@ -1155,7 +1172,6 @@ namespace SmartStore.Services.DataExchange
 						if (!ctx.IsPreview && ctx.Profile.Cleanup)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
-							// TODO: more cleanup if required
 						}
 					}
 					catch { }
@@ -1183,7 +1199,7 @@ namespace SmartStore.Services.DataExchange
 			}
 
 			// post process order entities
-			if (!ctx.IsPreview && ctx.EntityIdsLoaded.Count > 0 && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			if (!ctx.IsPreview && ctx.EntityIdsLoaded.Count > 0 && ctx.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				using (var logger = new TraceLogger(ctx.LogPath))
 				{
@@ -1216,6 +1232,11 @@ namespace SmartStore.Services.DataExchange
 					}
 				}
 			}
+		}
+
+		public static string PublicFolder
+		{
+			get { return "Exchange"; }
 		}
 
 		public void Execute(TaskExecutionContext context)

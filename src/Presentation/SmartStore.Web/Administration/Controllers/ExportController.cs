@@ -167,11 +167,24 @@ namespace SmartStore.Admin.Controllers
 				{
 					string partialName;
 					Type dataType;
-					if (provider.Value.RequiresConfiguration(out partialName, out dataType))
+					Action<object> initialize;
+					if (provider.Value.RequiresConfiguration(out partialName, out dataType, out initialize))
 					{
 						model.Provider.ConfigPartialViewName = partialName;
 						model.Provider.ConfigDataType = dataType;
 						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, dataType);
+
+						if (initialize != null)
+						{
+							try
+							{
+								initialize(model.Provider.ConfigData);
+							}
+							catch (Exception exc)
+							{
+								NotifyWarning(exc.ToAllMessages());
+							}
+						}
 					}
 				}
 				catch (Exception exc)
@@ -576,8 +589,8 @@ namespace SmartStore.Admin.Controllers
 			{
 				string partialName;
 				Type dataType;
-
-				if (provider.Value.RequiresConfiguration(out partialName, out dataType) && model.CustomProperties.ContainsKey("ProviderConfigData"))
+				Action<object> initialize;
+				if (provider.Value.RequiresConfiguration(out partialName, out dataType, out initialize) && model.CustomProperties.ContainsKey("ProviderConfigData"))
 				{
 					profile.ProviderConfigData = XmlHelper.Serialize(model.CustomProperties["ProviderConfigData"], dataType);
 				}

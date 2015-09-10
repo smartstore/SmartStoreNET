@@ -17,17 +17,17 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// The store context to be used for the export
 		/// </summary>
-		ExpandoObject Store { get; }
+		dynamic Store { get; }
 
 		/// <summary>
 		/// The customer context to be used for the export
 		/// </summary>
-		ExpandoObject Customer { get; }
+		dynamic Customer { get; }
 
 		/// <summary>
 		/// The currency context to be used for the export
 		/// </summary>
-		ExpandoObject Currency { get; }
+		dynamic Currency { get; }
 
 		/// <summary>
 		/// The language identifier to be used for the export. Can be 0.
@@ -58,6 +58,11 @@ namespace SmartStore.Services.DataExchange
 		/// The name of the current export file
 		/// </summary>
 		string FileName { get; }
+
+		/// <summary>
+		/// The public URL of the export file (accessible through the internet)
+		/// </summary>
+		string FileUrl { get; }
 
 		/// <summary>
 		/// The path of the current export file
@@ -115,9 +120,9 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
-		public ExpandoObject Store { get; internal set; }
-		public ExpandoObject Customer { get; internal set; }
-		public ExpandoObject Currency { get; internal set; }
+		public dynamic Store { get; internal set; }
+		public dynamic Customer { get; internal set; }
+		public dynamic Currency { get; internal set; }
 		public int LanguageId { get; internal set; }
 
 		public ILogger Log { get; internal set; }
@@ -159,6 +164,14 @@ namespace SmartStore.Services.DataExchange
 		public string FilePath
 		{
 			get { return Path.Combine(Folder, FileName); }
+		}
+		public string FileUrl
+		{
+			get
+			{
+				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder, "/", FileName);
+				return url;
+			}
 		}
 
 		public object ConfigurationData { get; internal set; }

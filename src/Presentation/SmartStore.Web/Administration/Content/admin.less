@@ -393,21 +393,28 @@ td.adminData > input[type="checkbox"] {
 	margin-top: -1px;
 }
 
-.admin-config-group .title,
-.admin-config-group .small-title {
-    font-family: @headingsFontFamily;
-    font-weight: @headingsFontWeight;
-    color: inherit; 
-	border-bottom: 1px solid #ddd;
-}
-.admin-config-group .title {
-    font-size: @fontSizeLarge;
-	margin: 12px 0;
-	padding: 8px 0;
-}
-.admin-config-group .small-title {
-	margin: 2px 0;
-	padding: 2px 0;
+.admin-config-group {
+	.title,
+	.small-title {
+		font-family: @headingsFontFamily;
+		font-weight: @headingsFontWeight;
+		color: inherit; 
+		border-bottom: 1px solid #ddd;
+	}
+	.title {
+		font-size: @fontSizeLarge;
+		margin: 12px 0;
+		padding: 8px 0;
+	}
+	.small-title {
+		margin: 2px 0;
+		padding: 2px 0;
+	}
+	.sub-title {
+		font-family: @baseFontFamily;
+		font-size: @baseFontSize;
+		font-weight: normal;
+	}
 }
 
 
@@ -814,6 +821,7 @@ tr.adminSeparator hr {
     padding: 0;
 }
 
+/* obsolete, use plugin-configuration instead */
 .plugin-intro-table {
 	width: 100%;
 	clear: both;
@@ -828,7 +836,25 @@ tr.adminSeparator hr {
 
 	td:last-child {
 		float: right;
-		padding-left: 14px;
+		padding-left: 30px;
+	}
+}
+
+.plugin-configuration {
+	display: table;
+	width: 100%;
+	clear: both;
+
+	> div {
+		display: table-cell;
+		vertical-align: top;
+	}
+	> div:first-child {
+		width: 80%;
+	}
+	> div:last-child {
+		float: right;
+		padding-left: 50px;
 	}
 }
 

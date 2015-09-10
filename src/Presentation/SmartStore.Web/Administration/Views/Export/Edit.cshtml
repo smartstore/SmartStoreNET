@@ -47,6 +47,38 @@
 	<table class="adminContent">
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Name)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Name)
+				@Html.ValidationMessageFor(x => x.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.Enabled)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(x => x.Enabled)
+				@Html.ValidationMessageFor(x => x.Enabled)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.ScheduleTaskId)
+			</td>
+			<td class="adminData">
+				<span class="label label-inline@(Model.IsTaskEnabled ? " label-warning" : "")">@(Model.IsTaskEnabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
+
+				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
+			</td>
+		</tr>
+
+		<tr>
+			<td colspan="2">&nbsp;</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 			</td>
 			<td class="adminData">
@@ -111,39 +143,6 @@
 				{
 					<span class="muted">@("".NaIfEmpty())</span>
 				}
-			</td>
-		</tr>
-
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Name)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Name)
-				@Html.ValidationMessageFor(x => x.Name)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Enabled)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Enabled)
-				@Html.ValidationMessageFor(x => x.Enabled)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ScheduleTaskId)
-			</td>
-			<td class="adminData">
-				<span class="label label-inline@(Model.IsTaskEnabled ? " label-warning" : "")">@(Model.IsTaskEnabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
-
-				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
 			</td>
 		</tr>
 	</table>
@@ -214,6 +213,7 @@
 				
 				var viewData = new ViewDataDictionary();
 				viewData.TemplateInfo.HtmlFieldPrefix = "CustomProperties[ProviderConfigData]";
+				viewData.ModelState.Merge(ViewData.ModelState);
 				@Html.Hidden("CustomProperties[ProviderConfigData].__Type__", Model.Provider.ConfigDataType.AssemblyQualifiedName)
 				@Html.Partial(Model.Provider.ConfigPartialViewName, Model.Provider.ConfigData, viewData)
 			}

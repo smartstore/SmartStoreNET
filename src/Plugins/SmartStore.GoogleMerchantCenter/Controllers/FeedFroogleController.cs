@@ -53,6 +53,10 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 				model.Pattern = entity.Pattern;
 				model.Exporting = entity.Export;
 			}
+			else
+			{
+				model.Exporting = true;
+			}
 			
 			ViewBag.DefaultCategory = _settings.DefaultGoogleCategory;
 			ViewBag.DefaultGender = T("Common.Auto");

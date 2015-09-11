@@ -83,4 +83,14 @@ namespace SmartStore.Core.Domain.DataExchange
 		Processing,
 		Complete
 	}
+
+	/// <summary>
+	/// Export abortion types
+	/// </summary>
+	public enum ExportAbortion
+	{
+		None = 0,
+		Soft,
+		Hard
+	}
 }

@@ -86,12 +86,12 @@ namespace SmartStore.Core.Logging
 		public void InsertLog(LogContext context)
 		{
 			var type = LogLevelToEventType(context.LogLevel);
-			var msg = context.ShortMessage;
-			if (context.FullMessage.HasValue())
+			var msg = context.ShortMessage.Grow(context.FullMessage, Environment.NewLine);
+
+			if (msg.HasValue())
 			{
-				msg += "{0}{1}".FormatCurrent(Environment.NewLine, context.FullMessage);
+				_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 			}
-			_traceSource.TraceEvent(type, (int)type, "{0}: {1}".FormatCurrent(type.ToString().ToUpper(), msg));
 		}
 
 		public void InsertLog(LogLevel logLevel, string shortMessage, string fullMessage = "", Customer customer = null)

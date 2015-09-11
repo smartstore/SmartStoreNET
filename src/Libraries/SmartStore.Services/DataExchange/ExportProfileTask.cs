@@ -957,6 +957,9 @@ namespace SmartStore.Services.DataExchange
 
 		private void ExportCoreInner(ExportProfileTaskContext ctx, Store store)
 		{
+			if (ctx.Export.Abort != ExportAbortion.None)
+				return;
+
 			ctx.Store = store;
 
 			{
@@ -1020,12 +1023,11 @@ namespace SmartStore.Services.DataExchange
 			{
 				(ctx.Export.Data as IExportExecuter).Start(() =>
 				{
-					var goOn = false;
 					ctx.Export.RecordsSucceeded = 0;
 
 					if (!ctx.IsPreview)
 					{
-						goOn = ctx.Provider.Value.Execute(ctx.Export);
+						ctx.Provider.Value.Execute(ctx.Export);
 
 						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
 					}
@@ -1045,8 +1047,13 @@ namespace SmartStore.Services.DataExchange
 					if (ctx.TaskContext.CancellationToken.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
 
-					return (goOn && !ctx.Export.Abort);
+					return (ctx.Export.Abort == ExportAbortion.None);
 				});
+
+				if (ctx.Export.Abort != ExportAbortion.Hard)
+				{
+					ctx.Provider.Value.ExecuteEnded(ctx.Export);
+				}
 			}
 		}
 
@@ -1112,17 +1119,11 @@ namespace SmartStore.Services.DataExchange
 
 						ctx.Export.Customer = ctx.ProjectionCustomer.ToExpando();
 						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.Projection.LanguageId ?? 0);
-						ctx.Export.LanguageId = (ctx.Projection.LanguageId ?? 0);
 
-						stores.ForEach(x =>
-						{
-							ExportCoreInner(ctx, x);
-
-							ctx.Provider.Value.ExecuteEnded(ctx.Export);
-						});
+						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}
 
-					if (!ctx.IsPreview)
+					if (!(ctx.IsPreview || ctx.Export.Abort == ExportAbortion.Hard))
 					{
 						if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
 						{
@@ -1169,7 +1170,7 @@ namespace SmartStore.Services.DataExchange
 				{
 					try
 					{
-						if (!ctx.IsPreview && ctx.Profile.Cleanup)
+						if (!ctx.IsPreview && ctx.Profile.Cleanup && ctx.Export.Abort != ExportAbortion.Hard)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
@@ -1198,8 +1199,11 @@ namespace SmartStore.Services.DataExchange
 				}
 			}
 
+			if (ctx.IsPreview || ctx.Export.Abort == ExportAbortion.Hard)
+				return;
+
 			// post process order entities
-			if (!ctx.IsPreview && ctx.EntityIdsLoaded.Count > 0 && ctx.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			if (ctx.EntityIdsLoaded.Count > 0 && ctx.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
 				using (var logger = new TraceLogger(ctx.LogPath))
 				{
@@ -1342,6 +1346,7 @@ namespace SmartStore.Services.DataExchange
 			Countries = new Dictionary<int, Country>();
 
 			Export = new ExportExecuteContext(TaskContext.CancellationToken, FolderContent);
+			Export.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();

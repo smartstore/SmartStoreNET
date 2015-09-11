@@ -39,11 +39,13 @@ namespace SmartStore.Data.Migrations
 
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Billiger.StaticFileGenerationTask, SmartStore.Billiger'");
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.ElmarShopinfo.StaticFileGenerationTask, SmartStore.ElmarShopinfo'");
+			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Guenstiger.StaticFileGenerationTask, SmartStore.Guenstiger'");
 
 			context.MigrateSettings(x =>
 			{
 				x.DeleteGroup("BilligerSettings");
 				x.DeleteGroup("ElmarShopinfoSettings");
+				x.DeleteGroup("GuenstigerSettings");
 			});
 		}
 
@@ -286,6 +288,42 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.ElmarShopInfo.Contact.Hint",
 				"Plugins.Feed.ElmarShopInfo.Generate",
 				"Plugins.Feed.ElmarShopInfo.ConfigSaveNote"
+			);
+
+			builder.Delete(
+				"Plugins.Feed.Guenstiger.TaskEnabled",
+				"Plugins.Feed.Guenstiger.TaskEnabled.Hint",
+				"Plugins.Feed.Guenstiger.StaticFileUrl",
+				"Plugins.Feed.Guenstiger.StaticFileUrl.Hint",
+				"Plugins.Feed.Guenstiger.GenerateStaticFileEachMinutes",
+				"Plugins.Feed.Guenstiger.GenerateStaticFileEachMinutes.Hint",
+				"Plugins.Feed.Guenstiger.BuildDescription",
+				"Plugins.Feed.Guenstiger.BuildDescription.Hint",
+				"Plugins.Feed.Guenstiger.Automatic",
+				"Plugins.Feed.Guenstiger.DescShort",
+				"Plugins.Feed.Guenstiger.DescLong",
+				"Plugins.Feed.Guenstiger.DescTitleAndShort",
+				"Plugins.Feed.Guenstiger.DescTitleAndLong",
+				"Plugins.Feed.Guenstiger.DescManuAndTitleAndShort",
+				"Plugins.Feed.Guenstiger.DescManuAndTitleAndLong",
+				"Plugins.Feed.Guenstiger.ProductPictureSize",
+				"Plugins.Feed.Guenstiger.ProductPictureSize.Hint",
+				"Plugins.Feed.Guenstiger.Brand",
+				"Plugins.Feed.Guenstiger.Brand.Hint",
+				"Plugins.Feed.Guenstiger.ShippingTime",
+				"Plugins.Feed.Guenstiger.ShippingTime.Hint",
+				"Plugins.Feed.Guenstiger.Store",
+				"Plugins.Feed.Guenstiger.Store.Hint",
+				"Plugins.Feed.Guenstiger.ConvertNetToGrossPrices",
+				"Plugins.Feed.Guenstiger.ConvertNetToGrossPrices.Hint",
+				"Plugins.Feed.Guenstiger.LanguageId",
+				"Plugins.Feed.Guenstiger.LanguageId.Hint",
+				"Plugins.Feed.Guenstiger.NoSpec",
+				"Plugins.Feed.Guenstiger.NoSpec.Hint",
+				"Plugins.Feed.Guenstiger.DescriptionToPlainText",
+				"Plugins.Feed.Guenstiger.DescriptionToPlainText.Hint",
+				"Plugins.Feed.Guenstiger.Generate",
+				"Plugins.Feed.Guenstiger.ConfigSaveNote"
 			);
 		}
     }

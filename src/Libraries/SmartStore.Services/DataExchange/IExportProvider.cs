@@ -29,8 +29,7 @@ namespace SmartStore.Services.DataExchange
 		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		/// <returns><c>true</c> continue processing, <c>false</c> break processing</returns>
-		bool Execute(IExportExecuteContext context);
+		void Execute(IExportExecuteContext context);
 
 		/// <summary>
 		/// Called once per store when export execution ended

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Dynamic;
 using System.IO;
 using System.Threading;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange
@@ -30,9 +31,9 @@ namespace SmartStore.Services.DataExchange
 		dynamic Currency { get; }
 
 		/// <summary>
-		/// The language identifier to be used for the export. Can be 0.
+		/// Projection data
 		/// </summary>
-		int LanguageId { get; }
+		ExportProjection Projection { get; }
 
 		/// <summary>
 		/// To log information into the export log file
@@ -40,9 +41,9 @@ namespace SmartStore.Services.DataExchange
 		ILogger Log { get; }
 
 		/// <summary>
-		/// Indicates whether to abort the export
+		/// Indicates whether and how to abort the export
 		/// </summary>
-		bool Abort { get; set; }
+		ExportAbortion Abort { get; set; }
 
 		/// <summary>
 		/// The maximum allowed file name length
@@ -95,7 +96,7 @@ namespace SmartStore.Services.DataExchange
 	{
 		private CancellationToken _cancellation;
 		private IExportSegmenter _segmenter;
-		private bool _providerAbort;
+		private ExportAbortion _providerAbort;
 
 		internal ExportExecuteContext(CancellationToken cancellation, string folder)
 		{
@@ -123,15 +124,21 @@ namespace SmartStore.Services.DataExchange
 		public dynamic Store { get; internal set; }
 		public dynamic Customer { get; internal set; }
 		public dynamic Currency { get; internal set; }
-		public int LanguageId { get; internal set; }
+		public ExportProjection Projection { get; internal set; }
 
 		public ILogger Log { get; internal set; }
 
-		public bool Abort
+		public ExportAbortion Abort
 		{
 			get
 			{
-				return (_providerAbort || IsMaxFailures || _cancellation.IsCancellationRequested);
+				if (_cancellation.IsCancellationRequested)
+					return ExportAbortion.Hard;
+				
+				if (IsMaxFailures)
+					return ExportAbortion.Soft;
+
+				return _providerAbort;
 			}
 			set
 			{

@@ -626,6 +626,47 @@ namespace SmartStore.Web.Framework
 
 			return MvcHtmlString.Create(result);
 		}
+
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension)
+		{
+			string result = null;
+
+			if (fileExtension != null && fileExtension.StartsWith("."))
+			{
+				fileExtension = fileExtension.Substring(1);
+			}
+
+			if (fileExtension.IsCaseInsensitiveEqual("xml"))
+			{
+				result = "<i class='fa fa-fw fa-file-code-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("xls"))
+			{
+				result = "<i class='fa fa-fw fa-file-excel-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("pdf"))
+			{
+				result = "<i class='fa fa-fw fa-file-pdf-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("zip"))
+			{
+				result = "<i class='fa fa-fw fa-file-archive-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("txt") || fileExtension.IsCaseInsensitiveEqual("csv"))
+			{
+				result = "<i class='fa fa-fw fa-file-text-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("doc"))
+			{
+				result = "<i class='fa fa-fw fa-file-word-o' title='{0}'></i>";
+			}
+			else if (fileExtension.IsCaseInsensitiveEqual("jpg") || fileExtension.IsCaseInsensitiveEqual("png") || fileExtension.IsCaseInsensitiveEqual("gif"))
+			{
+				result = "<i class='fa fa-fw fa-file-image-o' title='{0}'></i>";
+			}
+
+			return MvcHtmlString.Create(result.FormatInvariant(fileExtension.NaIfEmpty().ToUpper()));
+		}
     }
 }
 

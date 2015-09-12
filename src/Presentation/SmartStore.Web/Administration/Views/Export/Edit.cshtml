@@ -127,6 +127,7 @@
 				@Html.SmartLabelFor(x => x.Provider.FileExtension)
 			</td>
 			<td class="adminData">
+				@Html.IconForFileExtension(Model.Provider.FileExtension)
 				@Html.DisplayFor(x => x.Provider.FileExtension)
 			</td>
 		</tr>

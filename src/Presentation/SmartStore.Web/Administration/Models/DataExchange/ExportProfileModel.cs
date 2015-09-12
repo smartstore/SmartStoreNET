@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
+using SmartStore.Admin.Models.Tasks;
 using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
@@ -71,6 +72,8 @@ namespace SmartStore.Admin.Models.DataExchange
 		public ExportProjectionModel Projection { get; set; }
 
 		public List<ExportDeploymentModel> Deployments { get; set; }
+
+		public ScheduleTaskModel TaskModel { get; set; }
 
 		public class ProviderModel
 		{

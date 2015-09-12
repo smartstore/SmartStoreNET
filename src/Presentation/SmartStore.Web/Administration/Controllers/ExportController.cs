@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
 using Autofac;
+using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
@@ -411,6 +412,8 @@ namespace SmartStore.Admin.Controllers
 				var profileModel = new ExportProfileModel();
 
 				PrepareProfileModel(profileModel, profile, providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName));
+
+				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
 
 				model.Add(profileModel);
 			}

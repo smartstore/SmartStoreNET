@@ -1,28 +1,16 @@
 ﻿using System;
 using System.Linq;
+using System.Threading;
 using System.Web.Mvc;
-using System.Threading.Tasks;
-using System.Reflection;
-using SmartStore.Admin.Models.Directory;
+using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.Tasks;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Tasks;
-using SmartStore.Core.Localization;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Directory;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using Telerik.Web.Mvc;
-using SmartStore.Core.Async;
-using Autofac;
-using SmartStore.Core.Logging;
-using SmartStore.Core.Plugins;
-using System.Collections.Generic;
-using System.Threading;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -33,17 +21,20 @@ namespace SmartStore.Admin.Controllers
         private readonly ITaskScheduler _taskScheduler;
         private readonly IPermissionService _permissionService;
         private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly ILocalizationService _localizationService;
 
 		public ScheduleTaskController(
             IScheduleTaskService scheduleTaskService, 
             ITaskScheduler taskScheduler, 
             IPermissionService permissionService, 
-            IDateTimeHelper dateTimeHelper)
+            IDateTimeHelper dateTimeHelper,
+			ILocalizationService localizationService)
         {
             this._scheduleTaskService = scheduleTaskService;
 			this._taskScheduler = taskScheduler;
             this._permissionService = permissionService;
             this._dateTimeHelper = dateTimeHelper;
+			this._localizationService = localizationService;
         }
 
 		private bool IsTaskVisible(ScheduleTask task)
@@ -59,78 +50,6 @@ namespace SmartStore.Admin.Controllers
 			return false;
 		}
 
-        [NonAction]
-        protected ScheduleTaskModel PrepareScheduleTaskModel(ScheduleTask task)
-        {
-			var now = DateTime.UtcNow;
-			
-			TimeSpan? dueIn = null;
-			if (task.NextRunUtc.HasValue)
-			{
-				dueIn = task.NextRunUtc.Value - now;
-			}
-
-			var nextRunPretty = "";
-			bool isOverdue = false;
-			if (dueIn.HasValue)
-			{
-				if (dueIn.Value.TotalSeconds > 0)
-				{
-					nextRunPretty = dueIn.Value.Prettify();
-				}
-				else
-				{
-					nextRunPretty = T("Common.Waiting") + "...";
-					isOverdue = true;
-				}
-			}
-
-			var isRunning = task.IsRunning;
-			var lastStartOn = task.LastStartUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastStartUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var lastEndOn = task.LastEndUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastEndUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var lastSuccessOn = task.LastSuccessUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.LastSuccessUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-			var nextRunOn = task.NextRunUtc.HasValue ? _dateTimeHelper.ConvertToUserTime(task.NextRunUtc.Value, DateTimeKind.Utc) : (DateTime?)null;
-
-			var model = new ScheduleTaskModel
-			{
-				Id = task.Id,
-				Name = task.Name,
-				CronExpression = task.CronExpression,
-				CronDescription = CronExpression.GetFriendlyDescription(task.CronExpression),
-				Enabled = task.Enabled,
-				StopOnError = task.StopOnError,
-				LastStart = lastStartOn,
-				LastStartPretty = task.LastStartUtc.HasValue ? task.LastStartUtc.Value.RelativeFormat(true, "f") : "",
-				LastEnd = lastEndOn,
-				LastEndPretty = lastEndOn.HasValue ? lastEndOn.Value.ToString("G") : "",
-				LastSuccess = lastSuccessOn,
-				LastSuccessPretty = lastSuccessOn.HasValue ? lastSuccessOn.Value.ToString("G") : "",
-				NextRun = nextRunOn,
-				NextRunPretty = nextRunPretty,
-				LastError = task.LastError.EmptyNull(),
-				IsRunning = isRunning,
-				CancelUrl = Url.Action("CancelJob", new { id = task.Id }),
-				ExecuteUrl = Url.Action("RunJob", new { id = task.Id }),
-				EditUrl = Url.Action("Edit", new { id = task.Id }),
-				ProgressPercent = task.ProgressPercent,
-				ProgressMessage = task.ProgressMessage,
-				IsOverdue = isOverdue,
-				Duration = ""
-			};
-
-			var span = TimeSpan.Zero;
-			if (task.LastStartUtc.HasValue)
-			{
-				span = model.IsRunning ? now - task.LastStartUtc.Value : task.LastEndUtc.Value - task.LastStartUtc.Value;
-				if (span > TimeSpan.Zero)
-				{
-					model.Duration = span.ToString("g");
-				}
-			}
-
-            return model;
-        }
-
         public ActionResult Index()
         {
             return RedirectToAction("List");
@@ -143,7 +62,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = _scheduleTaskService.GetAllTasks(true)
 				.Where(IsTaskVisible)
-				.Select(PrepareScheduleTaskModel)
+				.Select(x => x.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url))
 				.ToList();
 
             return View(model);
@@ -179,7 +98,7 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			var model = PrepareScheduleTaskModel(task);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
 
 			return Json(new 
 			{
@@ -253,7 +172,7 @@ namespace SmartStore.Admin.Controllers
 				return HttpNotFound();
 			}
 
-			var model = PrepareScheduleTaskModel(task);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
 			ViewBag.ReturnUrl = returnUrl;
 
 			return View(model);
@@ -337,7 +256,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.ReturnUrl = returnUrl;
 			ViewBag.Cancellable = cancellable;
 
-			var model = PrepareScheduleTaskModel(task);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
 
 			return PartialView(model);
 		}
@@ -354,7 +273,7 @@ namespace SmartStore.Admin.Controllers
 			ViewBag.HasPermission = _permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks);
 			ViewBag.ReturnUrl = returnUrl;
 
-			var model = PrepareScheduleTaskModel(task);
+			var model = task.ToScheduleTaskModel(_localizationService, _dateTimeHelper, Url);
 
 			return PartialView("_MinimalTaskWidget", model);
 		}

@@ -56,10 +56,14 @@
 						@profile.Provider.FileExtension
 					</td>
 					<td>
-						<div class="last-run-info"></div>
+						<div class="last-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_LastRun.cshtml", profile.TaskModel)
+						</div>
 					</td>
 					<td class="progress-info">
-						<div class="next-run-info"></div>
+						<div class="next-run-info">
+							@Html.Partial("~/Administration/Views/ScheduleTask/_NextRun.cshtml", profile.TaskModel)
+						</div>
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>
 					<td>
@@ -102,15 +106,6 @@ else
 <script type="text/javascript">
 	jQuery(document).ready(function () {
 		var dialog = $('#export-profile-dialog');
-
-		// export clicked
-		$(document).on('click', '.btn-run-task', function (e) {
-			e.preventDefault();
-			var form = $('#ProfileExportForm');
-			form.find('input[name=Id]').val($(this).attr('data-id'));
-			form.submit();
-			return false;
-		});
 
 		// show profile dialog
 		$(document).on('click', '.export-profile-button', function (e) {
@@ -182,7 +177,15 @@ else
 		}
 
 
-		// task stuff
+		// start task
+		$(document).on('click', '.btn-run-task', function (e) {
+			e.preventDefault();
+			var form = $('#ProfileExportForm');
+			form.find('input[name=Id]').val($(this).attr('data-id'));
+			form.submit();
+			return false;
+		});
+
 		Admin.TaskWatcher.startWatching({
 			context: $('#export-profile-grid'),
 			elementsSelector: '.task-progress',
@@ -192,26 +195,20 @@ else
 				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
 				el.closest('tr').find('.next-run-info').addClass('hide');
 			},
-			onTaskCompleted: getTaskRunInfo
-		});
-
-		function getTaskRunInfo(taskId, el) {
-			el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
-			$.ajax({
-				cache: false,
-				global: false,
-				type: 'POST',
-				url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
-				data: { id: taskId },
-				success: function (data) {
-					el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
-					el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
-				}
-			});
-		}
-
-		$.each([@(string.Join(", ", Model.Select(x => x.ScheduleTaskId)))], function (index, value) {
-			getTaskRunInfo(value, $('tr[data-task-id=' + value + ']'));
+			onTaskCompleted: function (taskId, el) {
+				el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
+					data: { id: taskId },
+					success: function (data) {
+						el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+					}
+				});
+			}
 		});
 	});
 </script>

@@ -28,6 +28,7 @@
 			<tr>
 				<th class="centered">@T("Common.Image")</th>
 				<th>@T("Admin.DataExchange.Export.Name")</th>
+				<th>@T("Common.Provider")</th>
 				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.DataExchange.Export.EntityType")</th>
 				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
@@ -44,7 +45,10 @@
 						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" />
 					</td>
 					<td>
-						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Provider.FriendlyName <span class="muted">(@profile.Provider.SystemName)</span></a>
+						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+					</td>
+					<td>
+						<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty() <span class="muted">(@profile.Provider.SystemName)</span></a>
 					</td>
 					<td class="centered">
 						@Html.SymbolForBool(profile.Enabled)

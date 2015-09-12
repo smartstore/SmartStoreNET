@@ -191,10 +191,6 @@ namespace SmartStore.Data.Migrations
 				"The export profile for this export provider.",
 				"Das Exportprofil für diesen Export-Provider.");
 
-			builder.AddOrUpdate("Admin.DataExchange.Export.MoreThanOneProfile",
-				"Other profiles exist for this provider",
-				"Für diesen Provider existieren weitere Profile");
-
 
 			RemoveObsoleteResources(builder);
 		}

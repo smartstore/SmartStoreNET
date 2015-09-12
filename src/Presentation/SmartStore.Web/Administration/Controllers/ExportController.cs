@@ -779,25 +779,20 @@ namespace SmartStore.Admin.Controllers
 			};
 
 			model.Profiles = profiles
+				.OrderBy(x => x.Enabled)
 				.Select(x =>
 				{
 					var profileModel = new ProfileInfoForProviderModel.ProfileModel
 					{
 						Id = x.Id,
 						Name = x.Name,
-						Enabled = x.Enabled
+						Enabled = x.Enabled,
+						ScheduleTaskId = (x.Enabled ? x.SchedulingTaskId : (int?)null)
 					};
+
 					return profileModel;
 				})
 				.ToList();
-
-			if (profiles.Count > 0)
-			{
-				var firstProfile = profiles.First();
-
-				if (firstProfile.Enabled)
-					model.ScheduleTaskId = firstProfile.SchedulingTaskId;
-			}
 
 			return PartialView(model);
 		}

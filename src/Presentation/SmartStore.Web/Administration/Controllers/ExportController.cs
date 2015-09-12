@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
+using System.Net.Mime;
 using System.Web;
 using System.Web.Caching;
 using System.Web.Mvc;
@@ -26,6 +28,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
@@ -153,6 +156,7 @@ namespace SmartStore.Admin.Controllers
 			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
+			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
 
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -664,7 +668,8 @@ namespace SmartStore.Admin.Controllers
 				ThumbnailUrl = GetThumbnailUrl(provider),
 				GridPageSize = _adminAreaSettings.GridPageSize,
 				EntityType = provider.Value.EntityType,
-				TotalRecords = totalRecords
+				TotalRecords = totalRecords,
+				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath())
 			};
 
 			return View(model);
@@ -795,6 +800,24 @@ namespace SmartStore.Admin.Controllers
 				.ToList();
 
 			return PartialView(model);
+		}
+
+		public ActionResult DownloadLogFile(int id)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var profile = _exportService.GetExportProfileById(id);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			var path = profile.GetExportLogFilePath();
+			var stream = new FileStream(path, FileMode.Open);
+
+			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
+			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
+
+			return result;
 		}
 
 		#region Export deployment

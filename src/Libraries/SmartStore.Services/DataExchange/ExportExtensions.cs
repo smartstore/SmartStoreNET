@@ -1,6 +1,9 @@
-﻿using System.Linq;
+﻿using System.IO;
+using System.Linq;
+using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange
 {
@@ -30,6 +33,17 @@ namespace SmartStore.Services.DataExchange
 			if (provider != null)
 				return provider.Metadata.ExportProjectionSupport.Contains(type);
 			return false;
+		}
+
+		/// <summary>
+		/// Get log file path for an export profile
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <returns>Log file path</returns>
+		public static string GetExportLogFilePath(this ExportProfile profile)
+		{
+			var path = Path.Combine(FileSystemHelper.TempDir(), @"Profile\Export\{0}\log.txt".FormatInvariant(profile.FolderName));
+			return path;
 		}
 	}
 }

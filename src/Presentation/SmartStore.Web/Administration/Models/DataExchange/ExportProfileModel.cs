@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -16,6 +17,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public int StoreCount { get; set; }
 		public string AllString { get; set; }
 		public string UnspecifiedString { get; set; }
+		public bool LogFileExists { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }

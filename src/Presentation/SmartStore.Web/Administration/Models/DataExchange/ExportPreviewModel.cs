@@ -13,6 +13,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public int GridPageSize { get; set; }
 		public int TotalRecords { get; set; }
 		public ExportEntityType EntityType { get; set; }
+		public bool LogFileExists { get; set; }
 	}
 
 	public class ExportPreviewProductModel : EntityModelBase

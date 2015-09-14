@@ -361,7 +361,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				FileSystemHelper.CopyDirectory(new DirectoryInfo(ctx.FolderContent), new DirectoryInfo(folderDestination));
 
-				ctx.Log.Information("Copied export data to " + folderDestination);
+				ctx.Log.Information("Copied export data files to " + folderDestination);
 			}
 		}
 
@@ -989,7 +989,10 @@ namespace SmartStore.Services.DataExchange
 
 			ctx.Export.FileNamePattern = ctx.Profile.FileNamePattern
 				.Replace("%ExportProfile.Id%", ctx.Profile.Id.ToString())
-				.Replace("%Store.Name%", ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false) : "allstores");
+				.Replace("%ExportProfile.SeoName%", SeoHelper.GetSeName(ctx.Profile.Name, true, false).Replace("/", "").Replace("-", ""))
+				.Replace("%ExportProfile.FolderName%", ctx.Profile.FolderName)
+				.Replace("%Store.Id%", ctx.Store.Id.ToString())
+				.Replace("%Store.SeoName%", ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false) : "allstores");
 
 
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
@@ -1152,7 +1155,7 @@ namespace SmartStore.Services.DataExchange
 							}
 							catch (Exception exc)
 							{
-								logger.Error("Deployment \"{0}\" failed.".FormatInvariant(deployment.Name), exc);
+								logger.Error("Deployment \"{0}\" of type {1} failed.".FormatInvariant(deployment.Name, deployment.DeploymentType.ToString()), exc);
 							}
 						}
 

@@ -57,7 +57,7 @@ namespace SmartStore.Services.DataExchange
 
 			var task = new ScheduleTask
 			{
-				Name = string.Concat(name, " Export Task"),
+				Name = string.Concat(name, " export task"),
 				CronExpression = "0 */6 * * *",		// every six hours
 				Type = taskType,
 				Enabled = false,
@@ -71,17 +71,31 @@ namespace SmartStore.Services.DataExchange
 			{
 				Name = name,
 				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
-				FileNamePattern = "%Misc.FileNumber%-%ExportProfile.Id%-{0}-%Store.Name%".FormatInvariant(seoName),
+				FileNamePattern = "%ExportProfile.Id%-%Store.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
 				ProviderSystemName = systemName,
 				SchedulingTaskId = task.Id,
 				Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
 				Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
-			};			
+			};
 
 			_exportProfileRepository.Insert(profile);
 
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
+
+			if (systemName.StartsWith("Feeds."))
+			{
+				profile.Deployments.Add(new ExportDeployment
+				{
+					ProfileId = profile.Id,
+					Enabled = true,
+					IsPublic = true,
+					DeploymentType = ExportDeploymentType.FileSystem,
+					Name = profile.Name
+				});
+
+				UpdateExportProfile(profile);
+			}
 
 			_eventPublisher.EntityInserted(profile);
 

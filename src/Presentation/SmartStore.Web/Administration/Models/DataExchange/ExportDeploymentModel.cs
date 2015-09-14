@@ -43,7 +43,7 @@ namespace SmartStore.Admin.Models.DataExchange
 					case ExportDeploymentType.Http:
 						return "fa-globe";
 					case ExportDeploymentType.Ftp:
-						return "fa-clone";
+						return "fa-files-o";
 					default:
 						return "fa-question";
 				}
@@ -55,6 +55,8 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.IsPublic")]
 		public bool IsPublic { get; set; }
+		public string PublicRootUrl { get; set; }
+		public List<string> PublicFileNames { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }

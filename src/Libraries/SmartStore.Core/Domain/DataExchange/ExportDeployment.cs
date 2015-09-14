@@ -84,7 +84,7 @@ namespace SmartStore.Core.Domain
 		public string FileSystemPath { get; set; }
 
 		/// <summary>
-		/// Multiple email addresses can be separated by semicolon
+		/// Multiple email addresses can be separated by commas
 		/// </summary>
 		public string EmailAddresses { get; set; }
 

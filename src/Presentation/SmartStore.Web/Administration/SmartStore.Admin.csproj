@@ -520,9 +520,11 @@
     <Content Include="Views\Export\EditDeployment.cshtml" />
     <Content Include="Views\Export\CreateDeployment.cshtml" />
     <Content Include="Views\Export\_CreateOrUpdate.Deployment.cshtml" />
-    <Content Include="Views\Export\_CreateOrUpdate.Filter.cshtml" />
-    <Content Include="Views\Export\_CreateOrUpdate.Projection.cshtml" />
-    <Content Include="Views\Export\ProfileInfo.cshtml" />
+    <Content Include="Views\Export\_Tab.Filter.cshtml" />
+    <Content Include="Views\Export\_Tab.Projection.cshtml" />
+    <Content Include="Views\Export\InfoProfile.cshtml" />
+    <Content Include="Views\Export\_Tab.Deployment.cshtml" />
+    <Content Include="Views\Export\InfoDeployment.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

@@ -161,7 +161,7 @@ namespace SmartStore.Services.DataExchange
 			get
 			{
 				var finallyResolvedPattern = FileNamePattern
-					.Replace("%Misc.FileNumber%", (Data.FileIndex + 1).ToString("D5"))
+					.Replace("%Misc.FileNumber%", (Data.FileIndex + 1).ToString("D4"))
 					.ToValidFileName("")
 					.Truncate(MaxFileNameLength);
 

@@ -23,7 +23,7 @@
 
 @if(Model.Count > 0)
 {
-	<table id="export-profile-grid" class="table admin-table">
+	<table id="export-profile-list" class="table admin-table">
 		<thead>
 			<tr>
 				<th class="centered">@T("Common.Image")</th>
@@ -72,7 +72,7 @@
 						<div class="task-progress text-success@(profile.IsTaskRunning ? "" : " hide")" data-task-id="@profile.ScheduleTaskId" data-running="@(profile.IsTaskRunning ? "true" : "false")"></div>
 					</td>
 					<td>
-						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning ? " hide" : "")"
+						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
 								data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
 							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 						</button>
@@ -167,7 +167,7 @@ else
 
 		function refreshGrid() {
 			setTimeout(function () {
-				$('#export-profile-grid').data('tGrid').ajaxRequest();
+				$('#export-profile-list').data('tGrid').ajaxRequest();
 			}, 500);
 		}
 
@@ -192,7 +192,7 @@ else
 		});
 
 		Admin.TaskWatcher.startWatching({
-			context: $('#export-profile-grid'),
+			context: $('#export-profile-list'),
 			elementsSelector: '.task-progress',
 			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',

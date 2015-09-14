@@ -197,12 +197,12 @@
 
 @helper TabFilter()
 {
-	@Html.Partial("_CreateOrUpdate.Filter", Model)
+	@Html.Partial("_Tab.Filter", Model)
 }
 
 @helper TabProjection()
 {
-	@Html.Partial("_CreateOrUpdate.Projection", Model)
+	@Html.Partial("_Tab.Projection", Model)
 }
 
 @helper TabConfiguration()
@@ -234,115 +234,7 @@
 
 @helper TabDeployment()
 {
-	<div class="alert alert-info">
-		<button type="button" class="close" data-dismiss="alert">×</button>
-		@Html.Raw(T("Admin.DataExchange.Export.Deployment.Note"))
-	</div>
-	
-	<script type="text/javascript">
-		function onRowDataBound_ExportDeployments(e) {
-			if (!e.dataItem.Enabled) {
-				$(e.row).find('td').wrapInner('<span class="muted" />');
-			}
-		}
-	</script>
-	<div>
-		@(Html.Telerik().Grid<ExportDeploymentModel>()
-			.Name("export-deployment-grid")
-			.DataKeys(keys => keys.Add(x => x.Id)
-			.RouteKey("Id"))
-			.Columns(columns =>
-			{
-				columns.Bound(x => x.DeploymentTypeName)
-					.Template(x => "<i class='fa {0}'></i>&nbsp;{1}".FormatInvariant(x.DeploymentTypeIconClass, x.DeploymentTypeName))
-					.ClientTemplate("<i class='fa <#= DeploymentTypeIconClass #>'></i>&nbsp;<#= DeploymentTypeName #>")
-					.Width(280);
-				columns.Bound(x => x.Name)
-					.Template(x => Html.ActionLink(x.Name, "EditDeployment", "Export", new { id = x.Id }, null))
-					.ClientTemplate("<a href=\"/Admin/Export/EditDeployment/<#= Id #>\"><#= Name #></a>");
-				columns.Bound(x => x.Enabled)
-					.Width(100)
-					.Template(item => @Html.SymbolForBool(item.Enabled))
-					.ClientTemplate(@Html.SymbolForBool("Enabled"))
-					.Centered();
-				columns.Command(commands => 
-					commands.Delete().Localize(T)
-				).Width(100);
-			})
-			.ToolBar(commands =>
-			{
-				commands.Custom()
-					.Name("export-deployment-add-button")
-					.HtmlAttributes(new { @class = "btn btn-primary", href = @Url.Action("CreateDeployment", new { id = Model.Id }) })
-					.Text("<i class='fa fa-plus'></i>&nbsp;" + @T("Common.AddNew"));
-			})
-			.DataBinding(dataBinding => 
-				dataBinding.Ajax()
-					.Select("DeploymentList", "Export", new { id = Model.Id })
-					.Delete("DeleteDeployment", "Export", new { id = Model.Id, fromGrid = true })
-			)
-			.ClientEvents(events => events.OnRowDataBound("onRowDataBound_ExportDeployments"))
-			.EnableCustomBinding(true))
-	</div>
-	
-	<p></p>
-	
-	<table class="adminContent">
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.FolderName)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.FolderName)
-				@Html.ValidationMessageFor(x => x.FolderName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.FileNamePattern)
-			</td>
-			<td class="adminData">
-				@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
-				@Html.ValidationMessageFor(x => x.FileNamePattern)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.CreateZipArchive)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.CreateZipArchive)
-				@Html.ValidationMessageFor(x => x.CreateZipArchive)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.EmailAccountId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.EmailAccountId, Model.AvailableEmailAccounts, Model.UnspecifiedString)
-				@Html.ValidationMessageFor(x => x.EmailAccountId)
-			</td>
-		</tr>
-		<tr id="CompletedEmailAddressesContainer">
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.CompletedEmailAddresses)
-			</td>
-			<td class="adminData">
-				@Html.HiddenFor(model => model.CompletedEmailAddresses)
-				@Html.ValidationMessageFor(x => x.CompletedEmailAddresses)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Cleanup)
-			</td>
-			<td class="adminData">
-				@Html.EditorFor(x => x.Cleanup)
-				@Html.ValidationMessageFor(x => x.Cleanup)
-			</td>
-		</tr>
-	</table>
+	@Html.Partial("_Tab.Deployment", Model)
 }
 
 @Html.DeleteConfirmation("export-profile-delete")
@@ -355,11 +247,6 @@
 		// show/hide store projection
 		$('#@(Html.FieldIdFor(x => x.PerStore))').change(function () {
 			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
-		}).trigger('change');
-
-		// show/hide completion email addresses
-		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
-			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
 		}).trigger('change');
 
 		$('#@(Html.FieldIdFor(x => x.Projection.AppendDescriptionText))').select2({ tags: [@(Html.Raw(Model.Projection.SerializedAppendDescriptionText))] });
@@ -383,6 +270,11 @@
 		// show/hide product manufacturer filter
 		$('#@(Html.FieldIdFor(x => x.Filter.WithoutManufacturers))').change(function () {
 			$('#FilterManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
+		}).trigger('change');
+
+		// show/hide completion email addresses
+		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
+			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
 		}).trigger('change');
 	});
 </script>

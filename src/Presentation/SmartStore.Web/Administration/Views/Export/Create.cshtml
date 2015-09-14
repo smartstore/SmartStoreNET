@@ -14,7 +14,7 @@
 						@Html.SmartLabelFor(model => model.Provider.SystemName)
 					</td>
 					<td class="adminData">
-						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders)
+						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders, new { style = "width: 500px;" })
 					</td>
 				</tr>
 				<tr>

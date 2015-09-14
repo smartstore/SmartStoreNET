@@ -36,13 +36,24 @@ namespace SmartStore.Services.DataExchange
 		}
 
 		/// <summary>
+		/// Get temporary folder for an export profile
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <returns>Folder path</returns>
+		public static string GetExportFolder(this ExportProfile profile, bool content = false)
+		{
+			var path = Path.Combine(FileSystemHelper.TempDir(), @"Profile\Export\{0}{1}".FormatInvariant(profile.FolderName, content ? @"\Content" : ""));
+			return path;
+		}
+
+		/// <summary>
 		/// Get log file path for an export profile
 		/// </summary>
 		/// <param name="profile">Export profile</param>
 		/// <returns>Log file path</returns>
 		public static string GetExportLogFilePath(this ExportProfile profile)
 		{
-			var path = Path.Combine(FileSystemHelper.TempDir(), @"Profile\Export\{0}\log.txt".FormatInvariant(profile.FolderName));
+			var path = Path.Combine(profile.GetExportFolder(), "log.txt");
 			return path;
 		}
 	}

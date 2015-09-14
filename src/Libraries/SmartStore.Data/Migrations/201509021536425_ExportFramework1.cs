@@ -40,12 +40,14 @@ namespace SmartStore.Data.Migrations
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Billiger.StaticFileGenerationTask, SmartStore.Billiger'");
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.ElmarShopinfo.StaticFileGenerationTask, SmartStore.ElmarShopinfo'");
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Guenstiger.StaticFileGenerationTask, SmartStore.Guenstiger'");
+			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Shopwahl.StaticFileGenerationTask, SmartStore.Shopwahl'");
 
 			context.MigrateSettings(x =>
 			{
 				x.DeleteGroup("BilligerSettings");
 				x.DeleteGroup("ElmarShopinfoSettings");
 				x.DeleteGroup("GuenstigerSettings");
+				x.DeleteGroup("ShopwahlSettings");
 			});
 		}
 
@@ -53,7 +55,7 @@ namespace SmartStore.Data.Migrations
 		{
 			builder.AddOrUpdate("Admin.Common.ExportSelected", "Export selected", "Ausgewählte exportieren");
 			builder.AddOrUpdate("Admin.Common.ExportAll", "Export all", "Alle exportieren");
-			builder.AddOrUpdate("Common.Disabled", "Disabled", "Deaktiviert");
+			builder.AddOrUpdate("Common.Public", "public", "öffentlich");
 
 			builder.AddOrUpdate("Admin.System.ScheduleTask", "Scheduled task", "Geplante Aufgabe");
 
@@ -262,8 +264,6 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.ElmarShopinfo.ProductPictureSize.Hint",
 				"Plugins.Feed.ElmarShopinfo.Currency",
 				"Plugins.Feed.ElmarShopinfo.Currency.Hint",
-				"Plugins.Feed.ElmarShopinfo.ShippingCost",
-				"Plugins.Feed.ElmarShopinfo.ShippingCost.Hint",
 				"Plugins.Feed.ElmarShopinfo.ShippingTime",
 				"Plugins.Feed.ElmarShopinfo.ShippingTime.Hint",
 				"Plugins.Feed.ElmarShopinfo.Brand",
@@ -320,6 +320,15 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.Guenstiger.DescriptionToPlainText.Hint",
 				"Plugins.Feed.Guenstiger.Generate",
 				"Plugins.Feed.Guenstiger.ConfigSaveNote"
+			);
+
+			builder.Delete(
+				"Plugins.Feed.Shopwahl.TaskEnabled",
+				"Plugins.Feed.Shopwahl.TaskEnabled.Hint",
+				"Plugins.Feed.Shopwahl.StaticFileUrl",
+				"Plugins.Feed.Shopwahl.StaticFileUrl.Hint",
+				"Plugins.Feed.Shopwahl.GenerateStaticFileEachMinutes",
+				"Plugins.Feed.Shopwahl.GenerateStaticFileEachMinutes.Hint"
 			);
 		}
     }

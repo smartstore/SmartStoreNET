@@ -1,0 +1,39 @@
+﻿@using SmartStore.Core.Domain.DataExchange
+@using SmartStore.Admin.Models.DataExchange
+@model ExportDeploymentModel
+@{
+	Layout = null;
+}
+<div style="margin-bottom: 4px;">
+	<i class="fa @(Model.DeploymentTypeIconClass)"></i>&nbsp;@Model.DeploymentTypeName
+	@if (Model.DeploymentType == ExportDeploymentType.FileSystem && Model.IsPublic)
+	{
+		<text>(@T("Common.Public"))</text>
+	}
+</div>
+@if (Model.DeploymentType == ExportDeploymentType.FileSystem)
+{
+	if (Model.IsPublic)
+	{
+		foreach (var fileName in Model.PublicFileNames)
+		{
+			<div><a href="@(Model.PublicRootUrl + fileName)" download>@fileName</a></div>
+		}
+	}
+	else
+	{
+		<div>@Model.FileSystemPath</div>
+	}
+}
+else if (Model.DeploymentType == ExportDeploymentType.Email)
+{
+	<div>@Model.EmailAddresses</div>
+}
+else if (Model.DeploymentType == ExportDeploymentType.Http)
+{
+	<div>@Model.Url</div>
+}
+else if (Model.DeploymentType == ExportDeploymentType.Ftp)
+{
+	<div>@Model.Url</div>
+}

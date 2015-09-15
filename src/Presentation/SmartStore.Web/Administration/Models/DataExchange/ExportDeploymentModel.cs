@@ -55,8 +55,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.IsPublic")]
 		public bool IsPublic { get; set; }
-		public string PublicRootUrl { get; set; }
-		public List<string> PublicFileNames { get; set; }
+		public List<PublicFile> PublicFiles { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.Username")]
 		public string Username { get; set; }
@@ -91,5 +90,13 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Deployment.UseSsl")]
 		public bool UseSsl { get; set; }
+
+		public class PublicFile
+		{
+			public int StoreId { get; set; }
+			public string StoreName { get; set; }
+			public string FileName { get; set; }
+			public string FileUrl { get; set; }
+		}
 	}
 }

@@ -58,9 +58,14 @@ namespace SmartStore.Core.Domain
 		public string Projection { get; set; }
 
 		/// <summary>
-		/// Provider specific configuration data
+		/// XML with provider specific configuration data
 		/// </summary>
 		public string ProviderConfigData { get; set; }
+
+		/// <summary>
+		/// XML with information about the last export
+		/// </summary>
+		public string ResultInfo { get; set; }
 
 		/// <summary>
 		/// The number of records to be skipped

@@ -16,6 +16,7 @@ namespace SmartStore.Data.Mapping.DataExchange
 			this.Property(x => x.Filtering).IsMaxLength();
 			this.Property(x => x.Projection).IsMaxLength();
 			this.Property(x => x.ProviderConfigData).IsMaxLength();
+			this.Property(x => x.ResultInfo).IsMaxLength();
 			this.Property(x => x.CompletedEmailAddresses).HasMaxLength(400);
 			this.Property(x => x.FileNamePattern).HasMaxLength(400);
 

@@ -4,20 +4,26 @@
 @{
 	Layout = null;
 }
-<div style="margin-bottom: 4px;">
+<p>
 	<i class="fa @(Model.DeploymentTypeIconClass)"></i>&nbsp;@Model.DeploymentTypeName
 	@if (Model.DeploymentType == ExportDeploymentType.FileSystem && Model.IsPublic)
 	{
 		<text>(@T("Common.Public"))</text>
 	}
-</div>
+</p>
 @if (Model.DeploymentType == ExportDeploymentType.FileSystem)
 {
 	if (Model.IsPublic)
 	{
-		foreach (var fileName in Model.PublicFileNames)
+		foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
 		{
-			<div><a href="@(Model.PublicRootUrl + fileName)" download>@fileName</a></div>
+			<p>
+				<div>@(grp.First().StoreName):</div>
+				@foreach (var file in grp)
+				{
+					<div><a href="@file.FileUrl" download>@file.FileName</a></div>
+				}
+			</p>
 		}
 	}
 	else

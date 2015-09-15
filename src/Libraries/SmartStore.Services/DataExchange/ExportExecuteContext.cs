@@ -63,7 +63,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// The public URL of the export file (accessible through the internet)
 		/// </summary>
-		string FileUrl { get; }
+		string FilePublicUrl { get; }
 
 		/// <summary>
 		/// The path of the current export file
@@ -156,27 +156,16 @@ namespace SmartStore.Services.DataExchange
 		public string Folder { get; private set; }
 		public string FileNamePattern { get; internal set; }
 		public string FileExtension { get; internal set; }
-		public string FileName
-		{
-			get
-			{
-				var finallyResolvedPattern = FileNamePattern
-					.Replace("%Misc.FileNumber%", (Data.FileIndex + 1).ToString("D4"))
-					.ToValidFileName("")
-					.Truncate(MaxFileNameLength);
-
-				return string.Concat(finallyResolvedPattern, FileExtension);
-			}
-		}
+		public string FileName { get; internal set; }
 		public string FilePath
 		{
 			get { return Path.Combine(Folder, FileName); }
 		}
-		public string FileUrl
+		public string FilePublicUrl
 		{
 			get
 			{
-				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder, "/", FileName);
+				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), FileName);
 				return url;
 			}
 		}

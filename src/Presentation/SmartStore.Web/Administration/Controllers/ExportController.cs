@@ -327,23 +327,25 @@ namespace SmartStore.Admin.Controllers
 						try
 						{
 							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, ExportProfileTask.PublicFolder);
-							var exportFolder = profile.GetExportFolder(true);
+							var resultInfo = XmlHelper.Deserialize<ExportResultInfo>(profile.ResultInfo);
 
-							if (Directory.Exists(exportFolder))
+							if (resultInfo != null && resultInfo.Files != null)
 							{
-								foreach (var path in Directory.GetFiles(exportFolder).OrderBy(y => y))
+								foreach (var fileInfo in resultInfo.Files)
 								{
-									var fileName = Path.GetFileName(path);
-									if (System.IO.File.Exists(Path.Combine(publicFolder, fileName)))
+									if (System.IO.File.Exists(Path.Combine(publicFolder, fileInfo.FileName)) && !deploymentModel.PublicFiles.Any(y => y.FileName == fileInfo.FileName))
 									{
-										deploymentModel.PublicFileNames.Add(fileName);
+										var store = allStores.FirstOrDefault(y => y.Id == fileInfo.StoreId) ?? _services.StoreContext.CurrentStore;
+
+										deploymentModel.PublicFiles.Add(new ExportDeploymentModel.PublicFile
+										{
+											StoreId = store.Id,
+											StoreName = store.Name,
+											FileName = fileInfo.FileName,
+											FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
+										});
 									}
 								}
-
-								int? storeId = (filter.StoreId == 0 ? projection.StoreId : filter.StoreId);
-								var store = (storeId.HasValue ? _services.StoreService.GetStoreById(storeId.Value) : _services.StoreContext.CurrentStore);
-
-								deploymentModel.PublicRootUrl = store.Url.EnsureEndsWith("/") + ExportProfileTask.PublicFolder.EnsureEndsWith("/");
 							}
 						}
 						catch (Exception exc)
@@ -379,7 +381,7 @@ namespace SmartStore.Admin.Controllers
 				EmailAccountId = deployment.EmailAccountId,
 				PassiveMode = deployment.PassiveMode,
 				UseSsl = deployment.UseSsl,
-				PublicFileNames = new List<string>()
+				PublicFiles = new List<ExportDeploymentModel.PublicFile>()
 			};
 
 			if (forEdit)

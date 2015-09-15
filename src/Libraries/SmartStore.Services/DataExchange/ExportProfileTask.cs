@@ -1041,9 +1041,25 @@ namespace SmartStore.Services.DataExchange
 
 					if (!ctx.IsPreview)
 					{
+						var finallyResolvedPattern = ctx.Export.FileNamePattern
+							.Replace("%Misc.FileNumber%", (ctx.Export.Data.FileIndex + 1).ToString("D4"))
+							.ToValidFileName("")
+							.Truncate(ctx.Export.MaxFileNameLength);
+
+						ctx.Export.FileName = finallyResolvedPattern + ctx.Export.FileExtension;
+
 						ctx.Provider.Value.Execute(ctx.Export);
 
 						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
+
+						if (File.Exists(ctx.Export.FilePath))
+						{
+							ctx.ResultInfo.Files.Add(new ExportResultFileInfo
+							{
+								StoreId = ctx.Store.Id,
+								FileName = ctx.Export.FileName
+							});
+						}
 					}
 					else if (ctx.Export.Data.ReadNextSegment())
 					{
@@ -1182,6 +1198,17 @@ namespace SmartStore.Services.DataExchange
 				}
 				finally
 				{
+					try
+					{
+						if (!ctx.IsPreview)
+						{
+							ctx.Profile.ResultInfo = XmlHelper.Serialize<ExportResultInfo>(ctx.ResultInfo);
+
+							_exportService.UpdateExportProfile(ctx.Profile);
+						}
+					}
+					catch { }
+
 					try
 					{
 						if (!ctx.IsPreview && ctx.Profile.Cleanup && ctx.Export.Abort != ExportAbortion.Hard)
@@ -1364,6 +1391,11 @@ namespace SmartStore.Services.DataExchange
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
+
+			ResultInfo = new ExportResultInfo
+			{
+				Files = new List<ExportResultFileInfo>()
+			};
 		}
 
 		public List<int> EntityIdsSelected { get; private set; }
@@ -1385,8 +1417,9 @@ namespace SmartStore.Services.DataExchange
 		public TaskExecutionContext TaskContext { get; private set; }
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
-		public ExportFilter Filter { get; private set; }
+		public ExportResultInfo ResultInfo { get; set; }
 
+		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }
 		public Currency ProjectionCurrency { get; set; }
 		public Customer ProjectionCustomer { get; set; }

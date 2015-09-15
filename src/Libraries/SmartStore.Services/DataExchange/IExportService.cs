@@ -11,8 +11,9 @@ namespace SmartStore.Services.DataExchange
 		/// Inserts an export profile
 		/// </summary>
 		/// <param name="provider">Export provider</param>
+		/// <param name="name">Name of the profile</param>
 		/// <returns>New export profile</returns>
-		ExportProfile InsertExportProfile(Provider<IExportProvider> provider);
+		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name);
 
 		/// <summary>
 		/// Updates an export profile

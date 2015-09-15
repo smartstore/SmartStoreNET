@@ -572,7 +572,7 @@ namespace SmartStore.Services.DataExchange
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
 				x => _productService.GetTierPrices(x, ctx.ProjectionCustomer, ctx.Store.Id),
-				x => _categoryService.GetProductCategoriesByProductIds(x, true),
+				x => _categoryService.GetProductCategoriesByProductIds(x),
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
 				x => _productService.GetProductPicturesByProductIds(x)
 			);
@@ -657,13 +657,15 @@ namespace SmartStore.Services.DataExchange
 
 			expando._DetailUrl = ctx.Store.Url + expando.SeName;
 
+			expando._CategoryName = null;
+
 			expando._CategoryPath = _categoryService.GetCategoryPath(
 				product,
 				null,
 				x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
 				(id, value) => ctx.CategoryPathes[id] = value,
 				x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x),
-				productCategories.FirstOrDefault()
+				productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
 			);
 
 			expando.ProductPictures = productPictures
@@ -705,6 +707,9 @@ namespace SmartStore.Services.DataExchange
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
 					exp.Category = x.Category.ToExpando(languageId);
+
+					if (expando._CategoryName == null)
+						expando._CategoryName = (string)exp.Category.Name;
 
 					return exp as ExpandoObject;
 				})
@@ -806,17 +811,23 @@ namespace SmartStore.Services.DataExchange
 						exp._ShippingCosts = ctx.Projection.ShippingCosts;
 				}
 
-				if (ctx.Provider.Supports(ExportProjectionSupport.OldPrice) && product.OldPrice != decimal.Zero && product.OldPrice != (decimal)exp.Price &&
-					!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+				if (ctx.Provider.Supports(ExportProjectionSupport.OldPrice))
 				{
-					if (ctx.Projection.ConvertNetToGrossPrices)
+					if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)exp.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 					{
-						decimal taxRate;
-						exp._OldPrice = _taxService.GetProductPrice(product, product.OldPrice, true, ctx.ProjectionCustomer, out taxRate);
+						if (ctx.Projection.ConvertNetToGrossPrices)
+						{
+							decimal taxRate;
+							exp._OldPrice = _taxService.GetProductPrice(product, product.OldPrice, true, ctx.ProjectionCustomer, out taxRate);
+						}
+						else
+						{
+							exp._OldPrice = product.OldPrice;
+						}
 					}
 					else
 					{
-						exp._OldPrice = product.OldPrice;
+						exp._OldPrice = null;
 					}
 				}
 

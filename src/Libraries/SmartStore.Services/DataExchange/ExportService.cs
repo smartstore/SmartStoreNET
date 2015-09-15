@@ -40,12 +40,11 @@ namespace SmartStore.Services.DataExchange
 
 		#region Export profiles
 
-		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider)
+		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name)
 		{
 			if (provider == null)
 				throw new ArgumentNullException("provider");
 
-			var name = provider.Metadata.FriendlyName;
 			var systemName = provider.Metadata.SystemName;
 
 			if (name.IsEmpty())
@@ -71,7 +70,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				Name = name,
 				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
-				FileNamePattern = "%ExportProfile.Id%-%Store.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
+				FileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
 				ProviderSystemName = systemName,
 				SchedulingTaskId = task.Id,
 				Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
@@ -118,7 +117,7 @@ namespace SmartStore.Services.DataExchange
 				throw new ArgumentNullException("profile");
 
 			int scheduleTaskId = profile.SchedulingTaskId;
-			var folder = CommonHelper.MapPath("~/App_Data/_temp/Profile/Export/" + profile.FolderName);
+			var folder = profile.GetExportFolder();
 
 			_exportProfileRepository.Delete(profile);
 
@@ -127,7 +126,10 @@ namespace SmartStore.Services.DataExchange
 
 			_eventPublisher.EntityDeleted(profile);
 
-			FileSystemHelper.ClearDirectory(folder, true);
+			if (System.IO.Directory.Exists(folder))
+			{
+				FileSystemHelper.ClearDirectory(folder, true);
+			}
 		}
 
 		public virtual IQueryable<ExportProfile> GetExportProfiles(bool? enabled = null)

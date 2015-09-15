@@ -326,23 +326,25 @@ namespace SmartStore.Admin.Controllers
 					{
 						try
 						{
-							int? storeId = (filter.StoreId == 0 ? projection.StoreId : filter.StoreId);
-							var store = (storeId.HasValue ? _services.StoreService.GetStoreById(storeId.Value) : _services.StoreContext.CurrentStore);
-
-							deploymentModel.PublicRootUrl = store.Url.EnsureEndsWith("/") + ExportProfileTask.PublicFolder.EnsureEndsWith("/");
-
 							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, ExportProfileTask.PublicFolder);
+							var exportFolder = profile.GetExportFolder(true);
 
-							foreach (var path in Directory.GetFiles(profile.GetExportFolder(true)))
+							if (Directory.Exists(exportFolder))
 							{
-								var fileName = Path.GetFileName(path);
-								if (System.IO.File.Exists(Path.Combine(publicFolder, fileName)))
+								foreach (var path in Directory.GetFiles(exportFolder).OrderBy(y => y))
 								{
-									deploymentModel.PublicFileNames.Add(fileName);
+									var fileName = Path.GetFileName(path);
+									if (System.IO.File.Exists(Path.Combine(publicFolder, fileName)))
+									{
+										deploymentModel.PublicFileNames.Add(fileName);
+									}
 								}
-							}
 
-							deploymentModel.PublicFileNames = deploymentModel.PublicFileNames.OrderBy(y => y).ToList();
+								int? storeId = (filter.StoreId == 0 ? projection.StoreId : filter.StoreId);
+								var store = (storeId.HasValue ? _services.StoreService.GetStoreById(storeId.Value) : _services.StoreContext.CurrentStore);
+
+								deploymentModel.PublicRootUrl = store.Url.EnsureEndsWith("/") + ExportProfileTask.PublicFolder.EnsureEndsWith("/");
+							}
 						}
 						catch (Exception exc)
 						{
@@ -510,7 +512,7 @@ namespace SmartStore.Admin.Controllers
 				var provider = _exportService.LoadProvider(model.Provider.SystemName);
 				if (provider != null)
 				{
-					var profile = _exportService.InsertExportProfile(provider);
+					var profile = _exportService.InsertExportProfile(provider, _pluginMediator.GetLocalizedFriendlyName(provider.Metadata));
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}

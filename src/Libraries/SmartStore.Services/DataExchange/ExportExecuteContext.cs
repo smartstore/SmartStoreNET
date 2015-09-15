@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Threading;
 using SmartStore.Core.Domain.DataExchange;
@@ -61,14 +59,14 @@ namespace SmartStore.Services.DataExchange
 		string FileName { get; }
 
 		/// <summary>
-		/// The public URL of the export file (accessible through the internet)
-		/// </summary>
-		string FilePublicUrl { get; }
-
-		/// <summary>
 		/// The path of the current export file
 		/// </summary>
 		string FilePath { get; }
+
+		/// <summary>
+		/// The public URL of the export file (accessible through the internet)
+		/// </summary>
+		string FilePublicUrl { get; }
 
 		/// <summary>
 		/// Provider specific configuration data
@@ -154,9 +152,8 @@ namespace SmartStore.Services.DataExchange
 		public int MaxFileNameLength { get; internal set; }
 
 		public string Folder { get; private set; }
-		public string FileNamePattern { get; internal set; }
-		public string FileExtension { get; internal set; }
 		public string FileName { get; internal set; }
+		public string FileExtension { get; internal set; }
 		public string FilePath
 		{
 			get { return Path.Combine(Folder, FileName); }

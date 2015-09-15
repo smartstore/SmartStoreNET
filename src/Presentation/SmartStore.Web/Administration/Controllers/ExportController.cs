@@ -28,7 +28,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
-using SmartStore.Utilities;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
@@ -54,6 +53,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IComponentContext _componentContext;
 		private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IDateTimeHelper _dateTimeHelper;
+		private readonly DataExchangeSettings _dataExchangeSettings;
 
 		public ExportController(
 			ICommonServices services,
@@ -69,7 +69,8 @@ namespace SmartStore.Admin.Controllers
 			IEmailAccountService emailAccountService,
 			IComponentContext componentContext,
 			AdminAreaSettings adminAreaSettings,
-			IDateTimeHelper dateTimeHelper)
+			IDateTimeHelper dateTimeHelper,
+			DataExchangeSettings dataExchangeSettings)
 		{
 			_services = services;
 			_exportService = exportService;
@@ -85,6 +86,7 @@ namespace SmartStore.Admin.Controllers
 			_componentContext = componentContext;
 			_adminAreaSettings = adminAreaSettings;
 			_dateTimeHelper = dateTimeHelper;
+			_dataExchangeSettings = dataExchangeSettings;
 		}
 
 		#region Utilities
@@ -157,6 +159,8 @@ namespace SmartStore.Admin.Controllers
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
+
+			model.FileNamePatternExample = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
 
 			model.AvailableEmailAccounts = allEmailAccounts
 				.Select(x => new SelectListItem { Text = x.FriendlyName, Value = x.Id.ToString() })
@@ -865,6 +869,20 @@ namespace SmartStore.Admin.Controllers
 			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;
+		}
+
+		public ActionResult ResolveFileNamePatternExample(int id, string pattern)
+		{
+			var profile = _exportService.GetExportProfileById(id);
+			
+			_services.DbContext.DetachEntity<ExportProfile>(profile);
+			profile.FileNamePattern = pattern.EmptyNull();
+
+			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
+
+			var resolvedPattern = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
+
+			return this.Content(resolvedPattern);
 		}
 
 		#region Export deployment

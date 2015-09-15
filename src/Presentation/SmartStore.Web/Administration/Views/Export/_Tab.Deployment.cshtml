@@ -17,8 +17,17 @@
 			@Html.SmartLabelFor(x => x.FileNamePattern)
 		</td>
 		<td class="adminData">
-			@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
-			@Html.ValidationMessageFor(x => x.FileNamePattern)
+			<div>
+				@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
+				@Html.ValidationMessageFor(x => x.FileNamePattern)
+			</div>
+			<div id="FileNamePatternExample" class="btn-below">
+				<button type="button" class="btn btn-small pull-left">
+					<i class="fa fa-refresh"></i>&nbsp;@T("Common.Example")
+				</button>
+				<span class="pull-left">&nbsp;&nbsp;</span>
+				<div class="pull-left" style="padding-top: 4px;">@Model.FileNamePatternExample</div>
+			</div>
 		</td>
 	</tr>
 	<tr>

@@ -2,6 +2,7 @@
 using System.Linq;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 using SmartStore.Utilities;
 
@@ -55,6 +56,29 @@ namespace SmartStore.Services.DataExchange
 		{
 			var path = Path.Combine(profile.GetExportFolder(), "log.txt");
 			return path;
+		}
+
+		/// <summary>
+		/// Resolves the file name pattern for an export profile
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <param name="store">Store</param>
+		/// <param name="fileNumber">File number</param>
+		/// <param name="maxFileNameLength">The maximum length of the file name</param>
+		/// <returns>Resolved file name pattern</returns>
+		public static string ResolveFileNamePattern(this ExportProfile profile, Store store, int fileNumber, int maxFileNameLength)
+		{
+			var result = profile.FileNamePattern
+				.Replace("%ExportProfile.Id%", profile.Id.ToString())
+				.Replace("%ExportProfile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""))
+				.Replace("%ExportProfile.FolderName%", profile.FolderName)
+				.Replace("%Store.Id%", store.Id.ToString())
+				.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores")
+				.Replace("%Misc.FileNumber%", fileNumber.ToString("D4"))
+				.ToValidFileName("")
+				.Truncate(maxFileNameLength);
+
+			return result;
 		}
 	}
 }

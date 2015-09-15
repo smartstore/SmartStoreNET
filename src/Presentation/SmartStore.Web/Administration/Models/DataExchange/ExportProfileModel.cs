@@ -27,6 +27,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.FileNamePattern")]
 		public string FileNamePattern { get; set; }
+		public string FileNamePatternExample { get; set; }
 
 		[SmartResourceDisplayName("Common.Enabled")]
 		public bool Enabled { get; set; }

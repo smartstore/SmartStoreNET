@@ -27,6 +27,7 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
 		}
     }
 }

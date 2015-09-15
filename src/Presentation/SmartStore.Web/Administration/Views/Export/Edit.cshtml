@@ -276,5 +276,17 @@
 		$('#@(Html.FieldIdFor(x => x.EmailAccountId))').change(function () {
 			$('#CompletedEmailAddressesContainer').toggle(!_.isEmpty($(this).val()));
 		}).trigger('change');
+
+		// resolve file name pattern example
+		$('#FileNamePatternExample').find('button:first').click(function () {
+			var pattern = $('#@(Html.FieldIdFor(x => x.FileNamePattern))').val();
+			$(this).doAjax({
+				type: 'GET',
+				url: '@Url.Action("ResolveFileNamePatternExample", new { id = Model.Id })' + '?pattern=' + encodeURIComponent(pattern),
+				callbackSuccess: function (resp) {
+					$('#FileNamePatternExample').find('div:first').text(resp);
+				}
+			});
+		});
 	});
 </script>

@@ -998,14 +998,6 @@ namespace SmartStore.Services.DataExchange
 
 			ctx.Export.FileExtension = ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".");
 
-			ctx.Export.FileNamePattern = ctx.Profile.FileNamePattern
-				.Replace("%ExportProfile.Id%", ctx.Profile.Id.ToString())
-				.Replace("%ExportProfile.SeoName%", SeoHelper.GetSeName(ctx.Profile.Name, true, false).Replace("/", "").Replace("-", ""))
-				.Replace("%ExportProfile.FolderName%", ctx.Profile.FolderName)
-				.Replace("%Store.Id%", ctx.Store.Id.ToString())
-				.Replace("%Store.SeoName%", ctx.Profile.PerStore ? SeoHelper.GetSeName(ctx.Store.Name, true, false) : "allstores");
-
-
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
 			if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
@@ -1041,12 +1033,9 @@ namespace SmartStore.Services.DataExchange
 
 					if (!ctx.IsPreview)
 					{
-						var finallyResolvedPattern = ctx.Export.FileNamePattern
-							.Replace("%Misc.FileNumber%", (ctx.Export.Data.FileIndex + 1).ToString("D4"))
-							.ToValidFileName("")
-							.Truncate(ctx.Export.MaxFileNameLength);
+						var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ctx.Export.Data.FileIndex + 1, ctx.Export.MaxFileNameLength);
 
-						ctx.Export.FileName = finallyResolvedPattern + ctx.Export.FileExtension;
+						ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension;
 
 						ctx.Provider.Value.Execute(ctx.Export);
 

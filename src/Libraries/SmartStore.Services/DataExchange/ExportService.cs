@@ -40,58 +40,89 @@ namespace SmartStore.Services.DataExchange
 
 		#region Export profiles
 
-		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name)
+		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name, int cloneFromProfileId = 0)
 		{
 			if (provider == null)
 				throw new ArgumentNullException("provider");
 
+			var cloneProfile = GetExportProfileById(cloneFromProfileId);
+			
 			var systemName = provider.Metadata.SystemName;
 
 			if (name.IsEmpty())
 				name = systemName;
 
+			ScheduleTask task = null;
+			ExportProfile profile = null;
 			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
-
-			var taskType = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion();
-
-			var task = new ScheduleTask
+			
+			if (cloneProfile == null)
 			{
-				Name = string.Concat(name, " export task"),
-				CronExpression = "0 */6 * * *",		// every six hours
-				Type = taskType,
-				Enabled = false,
-				StopOnError = false,
-				IsHidden = true
-			};
+				task = new ScheduleTask
+				{
+					CronExpression = "0 */6 * * *",		// every six hours
+					Type = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion(),
+					Enabled = false,
+					StopOnError = false,
+					IsHidden = true
+				};
+			}
+			else
+			{
+				task = cloneProfile.ScheduleTask.Clone();
+				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
+			}
 
+			task.Name = string.Concat(name, " export task");
+			
 			_scheduleTaskService.InsertTask(task);
 
-			var profile = new ExportProfile
+			if (cloneProfile == null)
 			{
-				Name = name,
-				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
-				FileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
-				ProviderSystemName = systemName,
-				SchedulingTaskId = task.Id,
-				Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
-				Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
-			};
+				profile = new ExportProfile
+				{
+					FileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
+					Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
+					Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
+				};
+			}
+			else
+			{
+				profile = cloneProfile.Clone();				
+			}
+
+			profile.Name = name;
+			profile.FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength);
+			profile.ProviderSystemName = systemName;
+			profile.SchedulingTaskId = task.Id;
 
 			_exportProfileRepository.Insert(profile);
 
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
 
-			if (systemName.StartsWith("Feeds."))
+			if (cloneProfile == null)
 			{
-				profile.Deployments.Add(new ExportDeployment
+				if (systemName.StartsWith("Feeds."))
 				{
-					ProfileId = profile.Id,
-					Enabled = true,
-					IsPublic = true,
-					DeploymentType = ExportDeploymentType.FileSystem,
-					Name = profile.Name
-				});
+					profile.Deployments.Add(new ExportDeployment
+					{
+						ProfileId = profile.Id,
+						Enabled = true,
+						IsPublic = true,
+						DeploymentType = ExportDeploymentType.FileSystem,
+						Name = profile.Name
+					});
+
+					UpdateExportProfile(profile);
+				}
+			}
+			else
+			{
+				foreach (var deployment in cloneProfile.Deployments)
+				{
+					profile.Deployments.Add(deployment.Clone());
+				}
 
 				UpdateExportProfile(profile);
 			}

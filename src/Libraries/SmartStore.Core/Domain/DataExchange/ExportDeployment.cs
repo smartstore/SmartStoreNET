@@ -1,8 +1,9 @@
-﻿using SmartStore.Core.Domain.DataExchange;
+﻿using System;
+using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Core.Domain
 {
-	public class ExportDeployment : BaseEntity
+	public class ExportDeployment : BaseEntity, ICloneable<ExportDeployment>
 	{
 		/// <summary>
 		/// The profile identifier
@@ -109,5 +110,33 @@ namespace SmartStore.Core.Domain
 		public bool UseSsl { get; set; }
 
 		public virtual ExportProfile Profile { get; set; }
+
+		public ExportDeployment Clone()
+		{
+			var deployment = new ExportDeployment
+			{
+				Name = this.Name,
+				Enabled = this.Enabled,
+				IsPublic = this.IsPublic,
+				CreateZip = this.CreateZip,
+				DeploymentTypeId = this.DeploymentTypeId,
+				Username = this.Username,
+				Password = this.Password,
+				Url = this.Url,
+				HttpTransmissionTypeId = this.HttpTransmissionTypeId,
+				FileSystemPath = this.FileSystemPath,
+				EmailAddresses = this.EmailAddresses,
+				EmailSubject = this.EmailSubject,
+				EmailAccountId = this.EmailAccountId,
+				PassiveMode = this.PassiveMode,
+				UseSsl = this.UseSsl
+			};
+			return deployment;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
+		}
 	}
 }

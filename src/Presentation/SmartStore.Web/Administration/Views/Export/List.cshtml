@@ -139,6 +139,7 @@ else
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
 					$('select[name="Provider.SystemName"]').selectWrapper();
+					$('select[name="CloneProfileId"]').selectWrapper();
 					toggleProviderDescription();
 				},
 				callbackComplete: function () {

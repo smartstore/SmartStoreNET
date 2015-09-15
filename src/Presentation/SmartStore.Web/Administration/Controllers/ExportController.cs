@@ -482,6 +482,8 @@ namespace SmartStore.Admin.Controllers
 				return Content(T("Admin.AccessDenied.Description"));
 			
 			var model = new ExportProfileModel();
+			model.UnspecifiedString = T("Common.Unspecified");
+
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ProviderDescriptions = new Dictionary<string, string>();
 
@@ -504,6 +506,19 @@ namespace SmartStore.Admin.Controllers
 					return item;
 				}).ToList();
 
+			model.AvailableProfiles = _exportService.GetExportProfiles()
+				.ToList()
+				.Select(x =>
+				{
+					var item = new SelectListItem
+					{
+						Text = "{0} ({1})".FormatInvariant(x.Name, x.ProviderSystemName),
+						Value = x.Id.ToString()
+					};
+					return item;
+				})
+				.ToList();
+
 			return PartialView(model);			
 		}
 
@@ -518,7 +533,7 @@ namespace SmartStore.Admin.Controllers
 				var provider = _exportService.LoadProvider(model.Provider.SystemName);
 				if (provider != null)
 				{
-					var profile = _exportService.InsertExportProfile(provider, _pluginMediator.GetLocalizedFriendlyName(provider.Metadata));
+					var profile = _exportService.InsertExportProfile(provider, _pluginMediator.GetLocalizedFriendlyName(provider.Metadata), model.CloneProfileId ?? 0);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}

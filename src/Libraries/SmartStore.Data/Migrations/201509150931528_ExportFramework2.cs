@@ -28,6 +28,12 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.CloneProfile",
+				"Apply settings from",
+				"Einstellungen übernehmen von",
+				"Specifies an export profile from which to apply the settings.",
+				"Legt das Exportprofil fest, von welchem die Einstellungen übernommen werden sollen.");
 		}
     }
 }

@@ -5,7 +5,7 @@ using SmartStore.Core.Domain.Tasks;
 
 namespace SmartStore.Core.Domain
 {
-	public class ExportProfile : BaseEntity
+	public class ExportProfile : BaseEntity, ICloneable<ExportProfile>
 	{
 		private ICollection<ExportDeployment> _deployments;
 
@@ -120,6 +120,37 @@ namespace SmartStore.Core.Domain
 		{
 			get { return _deployments ?? (_deployments = new HashSet<ExportDeployment>()); }
 			set { _deployments = value; }
+		}
+
+		public ExportProfile Clone()
+		{
+			var profile = new ExportProfile
+			{
+				Name = this.Name,
+				FolderName = null,
+				FileNamePattern = this.FileNamePattern,
+				ProviderSystemName = this.ProviderSystemName,
+				Enabled = this.Enabled,
+				SchedulingTaskId = 0,
+				Filtering = this.Filtering,
+				Projection = this.Projection,
+				ProviderConfigData = this.ProviderConfigData,
+				ResultInfo = null,
+				Offset = this.Offset,
+				Limit = this.Limit,
+				BatchSize = this.BatchSize,
+				PerStore = this.PerStore,
+				EmailAccountId = this.EmailAccountId,
+				CompletedEmailAddresses = this.CompletedEmailAddresses,
+				CreateZipArchive = this.CreateZipArchive,
+				Cleanup = this.Cleanup
+			};
+			return profile;
+		}
+
+		object ICloneable.Clone()
+		{
+			return this.Clone();
 		}
 	}
 }

@@ -12,8 +12,9 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="provider">Export provider</param>
 		/// <param name="name">Name of the profile</param>
+		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
 		/// <returns>New export profile</returns>
-		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name);
+		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name, int cloneFromProfileId = 0);
 
 		/// <summary>
 		/// Updates an export profile

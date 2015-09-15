@@ -68,6 +68,10 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Cleanup")]
 		public bool Cleanup { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.CloneProfile")]
+		public int? CloneProfileId { get; set; }
+		public List<SelectListItem> AvailableProfiles { get; set; }
+
 		public ProviderModel Provider { get; set; }
 
 		public ExportFilterModel Filter { get; set; }

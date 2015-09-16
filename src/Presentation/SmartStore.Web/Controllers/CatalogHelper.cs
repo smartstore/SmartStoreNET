@@ -687,11 +687,15 @@ namespace SmartStore.Web.Controllers
 			}
 
 			string shippingInfoLink = _urlHelper.RouteUrl("Topic", new { SystemName = "shippinginfo" });
-            
-            if (!product.IsTaxExempt && !product.IsShipEnabled)
-                model.LegalInfo += "{0} {1}, {2}".FormatWith(taxInfo, defaultTaxRate, T("Common.FreeShipping"));
 
-            if(product.IsShipEnabled) 
+            if (!product.IsShipEnabled || (addShippingPrice == 0 && product.IsFreeShipping))
+            {
+                model.LegalInfo += "{0} {1}, {2}".FormatWith(
+                    product.IsTaxExempt ? "" : taxInfo,
+                    product.IsTaxExempt ? "" : defaultTaxRate,
+                    T("Common.FreeShipping"));
+            }
+            else
             {
                 model.LegalInfo = T("Tax.LegalInfoProductDetail",
                     product.IsTaxExempt ? "" : taxInfo,

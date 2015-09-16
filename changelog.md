@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.5
 
@@ -45,14 +45,16 @@
 * #62 free shipping info on product detail page
 * Display base price in CompactProductBox
 * Automatically redirect to referrer after login
-* #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows' 
+* #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
+* Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin
 * Preselected price was wrong for product attributes with multiple preselected values (same on product detail page)
 * #749 Visual Studio 2015 compilation error: CS0009: Metadata file. SmartStore.Licensing.dll could not be opened -- Illegal tables in compressed metadata stream
 * PayPal Express: fixed capture method
-* #770 Resizing browser with product details page causes product image to disappear  
+* #770 Resizing browser with product details page causes product image to disappear
+* GMC feed: Availability value "available for order" deprecated
 
 
 ## SmartStore.NET 2.2.2

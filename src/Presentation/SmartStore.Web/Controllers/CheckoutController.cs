@@ -692,7 +692,7 @@ namespace SmartStore.Web.Controllers
 				_genericAttributeService.SaveAttribute<string>(
 					_workContext.CurrentCustomer,
 					SystemCustomerAttributeNames.SelectedPaymentMethod,
-					(!isPaymentWorkflowRequired || !model.PaymentMethods.Any()) ? null : model.PaymentMethods[0].PaymentMethodSystemName,
+					!model.PaymentMethods.Any() ? null : model.PaymentMethods[0].PaymentMethodSystemName,
 					_storeContext.CurrentStore.Id);
 
 				_httpContext.GetCheckoutState().IsPaymentSelectionSkipped = true;

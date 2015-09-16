@@ -346,6 +346,10 @@
     <Compile Include="Migrations\201508142203054_CronExpressions.Designer.cs">
       <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201509031112324_Merge3.cs" />
+    <Compile Include="Migrations\201509031112324_Merge3.Designer.cs">
+      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Migrations\201508091512101_ExportFramework.cs" />
     <Compile Include="Migrations\201508091512101_ExportFramework.Designer.cs">
       <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>
@@ -671,6 +675,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508142203054_CronExpressions.resx">
       <DependentUpon>201508142203054_CronExpressions.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201509031112324_Merge3.resx">
+      <DependentUpon>201509031112324_Merge3.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201508091512101_ExportFramework.resx">
       <DependentUpon>201508091512101_ExportFramework.cs</DependentUpon>

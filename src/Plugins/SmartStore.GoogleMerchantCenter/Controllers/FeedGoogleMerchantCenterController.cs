@@ -13,14 +13,14 @@ using Telerik.Web.Mvc;
 namespace SmartStore.GoogleMerchantCenter.Controllers
 {
 	[AdminAuthorize]
-	public class FeedFroogleController : PluginControllerBase
+	public class FeedGoogleMerchantCenterController : PluginControllerBase
 	{
 		private readonly FroogleSettings _settings;
 		private readonly IGoogleFeedService _googleService;
 		private readonly ISettingService _settingService;
 		private readonly IPermissionService _permissionService;
 
-		public FeedFroogleController(
+		public FeedGoogleMerchantCenterController(
 			FroogleSettings settings,
 			IGoogleFeedService googleService,
 			ISettingService settingService,

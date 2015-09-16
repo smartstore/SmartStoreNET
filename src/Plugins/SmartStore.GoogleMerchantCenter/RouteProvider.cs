@@ -10,11 +10,12 @@ namespace SmartStore.GoogleMerchantCenter
         {
 			routes.MapRoute("SmartStore.GoogleMerchantCenter",
 				 "Plugins/SmartStore.GoogleMerchantCenter/{action}",
-                 new { controller = "FeedFroogle", action = "Configure" },
+				 new { controller = "FeedGoogleMerchantCenter", action = "Configure" },
 				 new[] { "SmartStore.GoogleMerchantCenter.Controllers" }
             )
-			.DataTokens["area"] = "SmartStore.GoogleMerchantCenter";
+			.DataTokens["area"] = GoogleMerchantCenterFeedPlugin.SystemName;
         }
+
         public int Priority
         {
             get

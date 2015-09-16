@@ -1,4 +1,8 @@
-﻿#Release Notes#
+﻿#Release Notes
+
+##Google Merchant Center (GMC) 2.2.0.4
+###Improvements
+* Supports new export framework
 
 ##Google Merchant Center (GMC) 2.2.0.3
 ###Bugfixes

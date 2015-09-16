@@ -17,7 +17,7 @@
 }
 
 <a href="http://www.google.com/merchants/" rel="nofollow" target="_blank" class="pull-right">
-	<img src="@Url.Content("~/Plugins/SmartStore.GoogleMerchantCenter/Content/images/mc_logo.png")" alt="Google Merchant Center" class="config-logo" />
+	<img src="@Url.Content("~/Plugins/SmartStore.GoogleMerchantCenter/Content/branding.png")" alt="Google Merchant Center" class="config-logo" />
 </a>
 
 @(Html.SmartStore().TabStrip().Name("googlebase-configure").Items(x => {
@@ -38,7 +38,7 @@
         }
     </script>
 	
-	<form method="POST" action="@Url.Action("ConfigurePlugin", "Plugin", new { area = "Admin", systemName = Model.Helper.SystemName })" novalidate="novalidate">
+	<form method="POST" action="@Url.Action("ConfigurePlugin", "Plugin", new { area = "Admin", systemName = GoogleMerchantCenterFeedPlugin.SystemName })" novalidate="novalidate">
     <table class="adminContent">
     <tr>
         <td colspan="2">
@@ -491,7 +491,7 @@
 				})
 				.DataBinding(dataBinding =>
 				{
-					dataBinding.Ajax().Select("GoogleProductList", "FeedFroogle");
+					dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
 				})
 				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 				.PreserveGridState()

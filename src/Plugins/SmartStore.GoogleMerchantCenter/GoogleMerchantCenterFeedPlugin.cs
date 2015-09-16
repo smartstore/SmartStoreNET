@@ -7,18 +7,23 @@ using SmartStore.Services;
 
 namespace SmartStore.GoogleMerchantCenter
 {
-    public class FroogleFeedPlugin : BasePlugin, IConfigurable
+    public class GoogleMerchantCenterFeedPlugin : BasePlugin, IConfigurable
     {
         private readonly IGoogleFeedService _googleService;
 		private readonly ICommonServices _services;
 
-        public FroogleFeedPlugin(
+        public GoogleMerchantCenterFeedPlugin(
 			IGoogleFeedService googleService,
 			ICommonServices services)
         {
             _googleService = googleService;
 			_services = services;
         }
+
+		public static string SystemName
+		{
+			get { return "SmartStore.GoogleMerchantCenter"; }
+		}
 
         /// <summary>
         /// Gets a route for provider configuration
@@ -30,7 +35,7 @@ namespace SmartStore.GoogleMerchantCenter
         {
             actionName = "Configure";
             controllerName = "FeedFroogle";
-			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", "SmartStore.GoogleMerchantCenter" } };
+			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
         }
 
         /// <summary>

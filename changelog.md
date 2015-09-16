@@ -53,7 +53,8 @@
 * Preselected price was wrong for product attributes with multiple preselected values (same on product detail page)
 * #749 Visual Studio 2015 compilation error: CS0009: Metadata file. SmartStore.Licensing.dll could not be opened -- Illegal tables in compressed metadata stream
 * PayPal Express: fixed capture method
-* #770 Resizing browser with product details page causes product image to disappear  
+* #770 Resizing browser with product details page causes product image to disappear
+* GMC feed: Availability value "available for order" deprecated
 
 
 ## SmartStore.NET 2.2.2

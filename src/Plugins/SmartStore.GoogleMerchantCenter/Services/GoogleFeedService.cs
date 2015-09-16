@@ -171,7 +171,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 							return "out of stock";
 						case BackorderMode.AllowQtyBelow0:
 						case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-							return "available for order";
+							if (product.AvailableForPreOrder)
+								return "preorder";
+							return "out of stock";
 					}
 				}
 				return "in stock";

@@ -80,7 +80,10 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.Froogle.LanguageId.Hint",
 				"Plugins.Feed.Froogle.Generate",
 				"Plugins.Feed.Froogle.ConfigSaveNote",
-				"Plugins.Feed.Froogle.AvailabilityAvailableForOrder"
+				"Plugins.Feed.Froogle.AvailabilityAvailableForOrder",
+				"Plugins.Feed.Froogle.GridEditNote",
+				"Plugins.Feed.Froogle.General",
+				"Plugins.Feed.Froogle.ProductData"
 			);
 		}
     }

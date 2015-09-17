@@ -10,16 +10,16 @@ namespace SmartStore.GoogleMerchantCenter
 			string displayText = null;
 
 			if (fieldName == "Gender" || fieldName == "AgeGroup" || fieldName == "Exporting")
-				displayText = "<#= {0}Localize #>".FormatWith(fieldName);
+				displayText = "<#= {0}Localize #>".FormatInvariant(fieldName);
 			else
-				displayText = "<#= {0} #>".FormatWith(fieldName);
+				displayText = "<#= {0} #>".FormatInvariant(fieldName);
 
 			string skeleton =
 				"<a href=\"#\" title=\"<#= {0} #>\" class=\"edit-link-{1}\"" +
 				" data-pk=\"<#= ProductId #>\" data-name=\"{0}\" data-value=\"<#= {0} #>\" data-inputclass=\"edit-{1}\" data-type=\"{2}\">" +
 				"{3}</a>";
 
-			return skeleton.FormatWith(fieldName, fieldName.ToLower(), type, displayText);
+			return skeleton.FormatInvariant(fieldName, fieldName.ToLower(), type, displayText);
 		}
 
 		public static bool IsTouched(this GoogleProductRecord product)

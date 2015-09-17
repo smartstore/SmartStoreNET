@@ -10,18 +10,12 @@
 	Layout = "";
 	
 	Html.AddCssFileParts(true, "~/Content/x-editable/bootstrap-editable.css");
+	Html.AddCssFileParts(true, "~/Plugins/SmartStore.GoogleMerchantCenter/Content/smartstore.gmc.css");
 	Html.AppendScriptParts(true, "~/Content/x-editable/bootstrap-editable.js");
 }
 
-@(Html.SmartStore().TabStrip().Name("googlebase-configure").Items(x =>
-{
-	x.Add().Text(T("Plugins.Feed.Froogle.General").Text).Content(@TabGeneral()).Selected(true);
-	x.Add().Text(T("Plugins.Feed.Froogle.ProductData").Text).Content(@TabProductData());
-}))
-
-@helper TabGeneral()
-{
-	<div class="plugin-configuration">
+<div class="plugin-configuration">
+	<div>
 		<div class="alert alert-info">
 			<button class="close" data-dismiss="alert">×</button>
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
@@ -29,169 +23,165 @@
 		<div>
 			@Html.Action("InfoProfile", "Export", new { systemName = GoogleMerchantCenterFeedPlugin.SystemName, returnUrl = Request.RawUrl, area = "admin" })
 		</div>
-		<div>
-			<a href="http://www.google.com/merchants/" rel="nofollow" target="_blank">
-				<img src="@Url.Content("~/Plugins/SmartStore.GoogleMerchantCenter/Content/branding.png")" alt="Google Merchant Center" />
-			</a>
-		</div>
 	</div>
-}
-
-@helper TabProductData()
-{
-	<div class="alert alert-info">
-		<button class="close" data-dismiss="alert">×</button>
-		@Html.Raw(@T("Plugins.Feed.Froogle.GridEditNote"))
+	<div>
+		<a href="http://www.google.com/merchants/" rel="nofollow" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.GoogleMerchantCenter/Content/branding.png")" alt="Google Merchant Center" />
+		</a>
 	</div>
+</div>
 
-    <table class="adminContent">
-	<tr>
-		<td>
+<p>&nbsp;</p>
 
-			<table class="adminContent" style="margin-bottom: 8px !important;">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(m => m.SearchProductName)
-				</td>
-				<td class="adminData">
-					@Html.EditorFor(m => m.SearchProductName)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(m => m.SearchIsTouched)
-				</td>
-				<td class="adminData">
-					@Html.DropDownList("SearchIsTouched", new List<SelectListItem> {
-						new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
-						new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
-						new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+<div>
+	<table class="adminContent">
+		<tr>
+			<td>
+
+				<table class="adminContent gmc-product-search">
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(m => m.SearchProductName)
+						</td>
+						<td class="adminData">
+							@Html.EditorFor(m => m.SearchProductName)
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">
+							@Html.SmartLabelFor(m => m.SearchIsTouched)
+						</td>
+						<td class="adminData">
+							@Html.DropDownList("SearchIsTouched", new List<SelectListItem> {
+								new SelectListItem { Text = T("Common.Unspecified"), Value = "" },
+								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Touched"), Value = "touched" },
+								new SelectListItem { Text = T("Plugins.Feed.Froogle.SearchIsTouched.Untouched"), Value = "untouched" }
+							})
+						</td>
+					</tr>
+					<tr>
+						<td class="adminTitle">&nbsp;</td>
+						<td class="adminData">
+							<button type="submit" id="search-products" value="search-product" class="btn">
+								<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
+							</button>
+						</td>
+					</tr>
+				</table>
+
+			</td>
+		</tr>
+		<tr>
+			<td>
+				@(Html.Telerik().Grid<GoogleProductModel>()
+					.Name("gmc-products-grid")
+					.DataKeys(keys =>
+					{
+						keys.Add(x => x.ProductId).RouteKey("ProductId");
 					})
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">&nbsp;</td>
-				<td class="adminData">
-					<button type="submit" id="search-products" value="search-product" class="btn">
-						<i class="fa fa-search"></i>&nbsp;@T("Admin.Common.Search")
-					</button>
-				</td>
-			</tr>
-			</table>
+					.Columns(c =>
+					{
+						c.Bound(x => x.ProductId).ReadOnly().Visible(false);
+						c.Bound(x => x.Name)
+							.ReadOnly().Visible(true).Width(420)
+							.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
+							.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
+						c.Bound(x => x.SKU).ReadOnly().Visible(true);
+						c.Bound(x => x.Exporting).ClientTemplate(Html.XEditableLink("Exporting", "select2"));
+						c.Bound(x => x.Taxonomy).ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
+						c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
+						c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);
+						c.Bound(x => x.Color).ClientTemplate(Html.XEditableLink("Color", "text"));
+						c.Bound(x => x.Size).ClientTemplate(Html.XEditableLink("Size", "text"));
+						c.Bound(x => x.Material).ClientTemplate(Html.XEditableLink("Material", "text"));
+						c.Bound(x => x.Pattern).ClientTemplate(Html.XEditableLink("Pattern", "text"));
+					})
+					.ClientEvents(e =>
+					{
+						e.OnDataBound("OnGridDataBound");
+						e.OnDataBinding("OnGridDataBinding");
+					})
+					.DataBinding(dataBinding =>
+					{
+						dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.PreserveGridState()
+					.EnableCustomBinding(true)
+				)
+			</td>
+		</tr>
+	</table>
+</div>
 
-		</td>
-	</tr>
-    <tr>
-        <td>
-            @(Html.Telerik().Grid<GoogleProductModel>()
-				.Name("gmc-products-grid")
-				.DataKeys(keys =>
-				{
-					keys.Add(x => x.ProductId).RouteKey("ProductId");
-				})
-				.Columns(c =>
-				{
-					c.Bound(x => x.ProductId).ReadOnly().Visible(false);
-					c.Bound(x => x.Name)
-						.ReadOnly().Visible(true).Width(420)
-						.Template(x => @Html.LabeledProductName(x.ProductId, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
-						.ClientTemplate(@Html.LabeledProductName("ProductId", "Name"));
-					c.Bound(x => x.SKU).ReadOnly().Visible(true);
-					c.Bound(x => x.Exporting).ClientTemplate(Html.XEditableLink("Exporting", "select2"));
-					c.Bound(x => x.Taxonomy).ClientTemplate(Html.XEditableLink("Taxonomy", "typeahead"));
-					c.Bound(x => x.Gender).ClientTemplate(Html.XEditableLink("Gender", "select2")).Width(100);
-					c.Bound(x => x.AgeGroup).ClientTemplate(Html.XEditableLink("AgeGroup", "select2")).Width(100);
-					c.Bound(x => x.Color).ClientTemplate(Html.XEditableLink("Color", "text"));
-					c.Bound(x => x.Size).ClientTemplate(Html.XEditableLink("Size", "text"));
-					c.Bound(x => x.Material).ClientTemplate(Html.XEditableLink("Material", "text"));
-					c.Bound(x => x.Pattern).ClientTemplate(Html.XEditableLink("Pattern", "text"));
-				})
-				.ClientEvents(e =>
-				{
-					e.OnDataBound("OnGridDataBound");
-					e.OnDataBinding("OnGridDataBinding");
-				})
-				.DataBinding(dataBinding =>
-				{
-					dataBinding.Ajax().Select("GoogleProductList", "FeedGoogleMerchantCenter");
-				})
-				.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-				.PreserveGridState()
-				.EnableCustomBinding(true)
-			)
-        </td>
-    </tr>
-    </table>
-	
-    <script type="text/javascript">
-    	$(document).ready(function () {
-    		$.fn.editable.defaults.mode = 'inline';
-    	});
+<script type="text/javascript">
+	$(document).ready(function () {
+		$.fn.editable.defaults.mode = 'inline';
+	});
 
-    	$('#search-products').click(function () {
-    		var grid = $('#gmc-products-grid').data('tGrid');
-    		grid.currentPage = 1;
-    		grid.ajaxRequest();
-    		return false;
-    	});
+	$('#search-products').click(function () {
+		var grid = $('#gmc-products-grid').data('tGrid');
+		grid.currentPage = 1;
+		grid.ajaxRequest();
+		return false;
+	});
 
-    	function OnGridDataBinding(e) {
-    		e.data = {
-    			searchProductName: $('#SearchProductName').val(),
-				touched: $('#SearchIsTouched').val()
-    		};
-    	}
+	function OnGridDataBinding(e) {
+		e.data = {
+			searchProductName: $('#SearchProductName').val(),
+			touched: $('#SearchIsTouched').val()
+		};
+	}
 
-    	function OnGridDataBound(e) {
-    		var grid = $('#gmc-products-grid'),
-				options = {
-					emptytext: '@T("Plugins.Feed.Froogle.EmptyGridCell")',
-					url: '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })'
-				},
-    			select2Options = {
-    				placeholder: '@T("Plugins.Feed.Froogle.EmptyGridCell")',
-    				minimumResultsForSearch: 20,
-    				allowClear: true
-    			};
+	function OnGridDataBound(e) {
+		var grid = $('#gmc-products-grid'),
+			options = {
+				emptytext: '@T("Plugins.Feed.Froogle.EmptyGridCell")',
+				url: '@Url.Action("GoogleProductEdit", "FeedGoogleMerchantCenter", new { Namespaces = "SmartStore.GoogleMerchantCenter.Controllers", area = GoogleMerchantCenterFeedPlugin.SystemName })'
+			},
+			select2Options = {
+				placeholder: '@T("Plugins.Feed.Froogle.EmptyGridCell")',
+				minimumResultsForSearch: 20,
+				allowClear: true
+			};
 
-    		grid.find('a.edit-link-exporting').editable($.extend(options, {
-    			select2: {
-    				minimumResultsForSearch: 20
-    			},
-    			source: [
-					{ id: 'true', text: '@T("Admin.Common.Yes")' },
-    				{ id: 'false', text: '@T("Admin.Common.No")' }
-    			]
-    		}));
+		grid.find('a.edit-link-exporting').editable($.extend(options, {
+			select2: {
+				minimumResultsForSearch: 20
+			},
+			source: [
+				{ id: 'true', text: '@T("Admin.Common.Yes")' },
+				{ id: 'false', text: '@T("Admin.Common.No")' }
+			]
+		}));
 
-    		grid.find('a.edit-link-taxonomy').editable($.extend(options, {
-    			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)
-    		}));
+		grid.find('a.edit-link-gender').editable($.extend(options, {
+			select2: select2Options,
+			source: [
+				{ id: 'male', text: '@T("Plugins.Feed.Froogle.GenderMale")' },
+				{ id: 'female', text: '@T("Plugins.Feed.Froogle.GenderFemale")' },
+				{ id: 'unisex', text: '@T("Plugins.Feed.Froogle.GenderUnisex")' }
+			]
+		}));
 
-    		grid.find('a.edit-link-gender').editable($.extend(options, {
-    			select2: select2Options,
-    			source: [
-					{ id: 'male', text: '@T("Plugins.Feed.Froogle.GenderMale")' },
-					{ id: 'female', text: '@T("Plugins.Feed.Froogle.GenderFemale")' },
-					{ id: 'unisex', text: '@T("Plugins.Feed.Froogle.GenderUnisex")' }
-				]
-			}));
+		grid.find('a.edit-link-agegroup').editable($.extend(options, {
+			select2: select2Options,
+			source: [
+				{ id: 'adult', text: '@T("Plugins.Feed.Froogle.AgeGroupAdult").Text' },
+				{ id: 'kids', text: '@T("Plugins.Feed.Froogle.AgeGroupKids").Text' }
+			]
+		}));
 
-    		grid.find('a.edit-link-agegroup').editable($.extend(options, {
-    			select2: select2Options,
-    			source: [
-					{ id: 'adult', text: '@T("Plugins.Feed.Froogle.AgeGroupAdult")' },
-					{ id: 'kids', text: '@T("Plugins.Feed.Froogle.AgeGroupKids")' }
-    			]
-			}));
+		grid.find('a.edit-link-color').editable(options);
 
-    		grid.find('a.edit-link-color').editable(options);
+		grid.find('a.edit-link-size').editable(options);
 
-    		grid.find('a.edit-link-size').editable(options);
+		grid.find('a.edit-link-material').editable(options);
 
-    		grid.find('a.edit-link-material').editable(options);
+		grid.find('a.edit-link-pattern').editable(options);
 
-    		grid.find('a.edit-link-pattern').editable(options);
-		}
-    </script>
-}
+		grid.find('a.edit-link-taxonomy').editable($.extend(options, {
+			source: @Html.Raw(Model.AvailableGoogleCategoriesAsJson)
+		}));
+	}
+</script>

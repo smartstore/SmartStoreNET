@@ -18,12 +18,8 @@
 <li>Either the GTIN (such as UPC, EAN, etc.) or manufacturer and manufacturer part number (MPN) are required for product identification. Google recommends that all three pieces of information be specified.</li>
 <li>Specify default tax and shipping values in your Google Merchant Center account settings.</li>
 <li>In order to get more info about required fields look at the following article <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=188494" target="_blank">Product feed specification</a>.</li>
+<li>You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.</li>
 </ul>]]>
-		</Value>
-	</LocaleResource>
-	<LocaleResource Name="GridEditNote">
-		<Value>
-			<![CDATA[You can find a list of all Google categories <a href="http://support.google.com/merchants/bin/answer.py?hl=en&answer=160081" target="_blank">here</a>.]]>
 		</Value>
 	</LocaleResource>
 	<LocaleResource Name="MissingDefaultCategory">
@@ -34,12 +30,6 @@
 	</LocaleResource>
 	<LocaleResource Name="DefaultGoogleCategory.Hint">
 		<Value>Will be used if there is no category specified on produkt level.</Value>
-	</LocaleResource>
-	<LocaleResource Name="General">
-		<Value>General</Value>
-	</LocaleResource>
-	<LocaleResource Name="ProductData">
-		<Value>Product specific data</Value>
 	</LocaleResource>
 	<LocaleResource Name="Products.ProductName">
 		<Value>Product</Value>

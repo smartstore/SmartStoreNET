@@ -205,6 +205,9 @@
     <EmbeddedResource Include="Data\Migrations\201403112356126_Initial.resx">
       <DependentUpon>201403112356126_Initial.cs</DependentUpon>
     </EmbeddedResource>
+    <Content Include="Content\smartstore.gmc.css">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </Content>
     <Content Include="Views\FeedGoogleMerchantCenter\Configure.cshtml">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Content>

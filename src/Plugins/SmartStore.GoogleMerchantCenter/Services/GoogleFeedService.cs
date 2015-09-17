@@ -220,7 +220,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					x.GenderLocalize = T("Plugins.Feed.Froogle.Gender" + textInfo.ToTitleCase(x.Gender));
 
 				if (x.AgeGroup.HasValue())
-					x.AgeGroupLocalize = T("Plugins.Feed.Froogle-AgeGroup" + textInfo.ToTitleCase(x.AgeGroup));
+					x.AgeGroupLocalize = T("Plugins.Feed.Froogle.AgeGroup" + textInfo.ToTitleCase(x.AgeGroup));
 
 				x.ExportingLocalize = (x.Export == 0 ? no : yes);
 			});

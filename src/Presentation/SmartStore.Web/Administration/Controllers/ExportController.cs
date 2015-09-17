@@ -840,7 +840,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[ChildActionOnly]
-		public ActionResult ProfileInfo(string systemName, string returnUrl)
+		public ActionResult InfoProfile(string systemName, string returnUrl)
 		{
 			var profiles = _exportService.GetExportProfilesBySystemName(systemName);
 

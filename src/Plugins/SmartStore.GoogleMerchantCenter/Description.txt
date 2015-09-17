@@ -1,4 +1,4 @@
-﻿FriendlyName: Google Merchant Center (GMC)
+﻿FriendlyName: Google Merchant Center (GMC) feed
 SystemName: SmartStore.GoogleMerchantCenter
 Group: Marketing
 Version: 2.2.0.4

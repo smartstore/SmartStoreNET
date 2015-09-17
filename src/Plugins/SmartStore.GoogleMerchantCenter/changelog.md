@@ -3,6 +3,8 @@
 ##Google Merchant Center (GMC) 2.2.0.4
 ###Improvements
 * Supports new export framework
+###Bugfixes
+* Availability value "available for order" deprecated
 
 ##Google Merchant Center (GMC) 2.2.0.3
 ###Bugfixes

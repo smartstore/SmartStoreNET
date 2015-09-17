@@ -1,13 +1,14 @@
 ﻿using System.Collections.Generic;
 using System.Globalization;
+using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core.Localization;
+using SmartStore.Core;
+using SmartStore.Core.Domain.Common;
 using SmartStore.GoogleMerchantCenter.Models;
+using SmartStore.GoogleMerchantCenter.Providers;
 using SmartStore.GoogleMerchantCenter.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Security;
+using SmartStore.Services.DataExchange;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Plugins;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Controllers
@@ -15,32 +16,25 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 	[AdminAuthorize]
 	public class FeedGoogleMerchantCenterController : PluginControllerBase
 	{
-		private readonly FroogleSettings _settings;
-		private readonly IGoogleFeedService _googleService;
-		private readonly ISettingService _settingService;
-		private readonly IPermissionService _permissionService;
+		private readonly IGoogleFeedService _googleFeedService;
+		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly IExportService _exportService;
 
 		public FeedGoogleMerchantCenterController(
-			FroogleSettings settings,
-			IGoogleFeedService googleService,
-			ISettingService settingService,
-			IPermissionService permissionService)
+			IGoogleFeedService googleFeedService,
+			AdminAreaSettings adminAreaSettings,
+			IExportService exportService)
 		{
-			_settings = settings;
-			_googleService = googleService;
-			_settingService = settingService;
-			_permissionService = permissionService;
-		}
-
-		private ActionResult RedirectToConfig()
-		{
-			return RedirectToAction("ConfigurePlugin", "Plugin", new { systemName = _googleService.Helper.SystemName, area = "Admin" });
+			_googleFeedService = googleFeedService;
+			_adminAreaSettings = adminAreaSettings;
+			_exportService = exportService;
 		}
 
 		public ActionResult ProductEditTab(int productId)
 		{
+			var culture = CultureInfo.InvariantCulture;
 			var model = new GoogleProductModel { ProductId = productId };
-			var entity = _googleService.GetGoogleProductRecord(productId);
+			var entity = _googleFeedService.GetGoogleProductRecord(productId);
 
 			if (entity != null)
 			{
@@ -57,27 +51,39 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			{
 				model.Exporting = true;
 			}
-			
-			ViewBag.DefaultCategory = _settings.DefaultGoogleCategory;
+
+			ViewBag.DefaultCategory = "";
+			ViewBag.DefaultColor = "";
+			ViewBag.DefaultSize = "";
+			ViewBag.DefaultMaterial = "";
+			ViewBag.DefaultPattern = "";
 			ViewBag.DefaultGender = T("Common.Auto");
-			ViewBag.DefaultAgeGroup = T("Common.Auto");
-			ViewBag.DefaultColor = _settings.Color;
-			ViewBag.DefaultSize = _settings.Size;
-			ViewBag.DefaultMaterial = _settings.Material;
-			ViewBag.DefaultPattern = _settings.Pattern;
+			ViewBag.DefaultAgeGroup = T("Common.Auto");		
 
-			var ci = CultureInfo.InvariantCulture;
-
-			if (_settings.Gender.HasValue() && _settings.Gender != PluginHelper.NotSpecified)
+			// we do not have export profile context here, so we simply use the first profile
+			var profile = _exportService.GetExportProfilesBySystemName("Feeds.GoogleMerchantCenterProductXml").FirstOrDefault();
+			if (profile != null)
 			{
-				ViewBag.DefaultGender = T("Plugins.Feed.Froogle.Gender" + ci.TextInfo.ToTitleCase(_settings.Gender));
-			}
+				var config = XmlHelper.Deserialize(profile.ProviderConfigData, typeof(ProfileConfigurationModel)) as ProfileConfigurationModel;
+				if (config != null)
+				{
+					ViewBag.DefaultCategory = config.DefaultGoogleCategory;
+					ViewBag.DefaultColor = config.Color;
+					ViewBag.DefaultSize = config.Size;
+					ViewBag.DefaultMaterial = config.Material;
+					ViewBag.DefaultPattern = config.Pattern;
 
-			if (_settings.AgeGroup.HasValue() && _settings.AgeGroup != PluginHelper.NotSpecified)
-			{
-				ViewBag.DefaultAgeGroup = T("Plugins.Feed.Froogle.AgeGroup" + ci.TextInfo.ToTitleCase(_settings.AgeGroup));
-			}
-			
+					if (config.Gender.HasValue() && config.Gender != ProductExportXmlProvider.Unspecified)
+					{
+						ViewBag.DefaultGender = T("Plugins.Feed.Froogle.Gender" + culture.TextInfo.ToTitleCase(config.Gender));
+					}
+
+					if (config.AgeGroup.HasValue() && config.AgeGroup != ProductExportXmlProvider.Unspecified)
+					{
+						ViewBag.DefaultAgeGroup = T("Plugins.Feed.Froogle.AgeGroup" + culture.TextInfo.ToTitleCase(config.AgeGroup));
+					}
+				}
+			}		
 
 			ViewBag.AvailableGenders = new List<SelectListItem>
 			{ 
@@ -99,71 +105,24 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 
 		public ActionResult GoogleCategories()
 		{
-			var categories = _googleService.GetTaxonomyList();
+			var categories = _googleFeedService.GetTaxonomyList();
 			return Json(categories, JsonRequestBehavior.AllowGet);
 		}
 
 		public ActionResult Configure()
 		{
-			var model = new FeedFroogleModel();
-			model.Copy(_googleService.Settings, true);
+			var model = new FeedGoogleMerchantCenterModel();
 
-			if (TempData["GenerateFeedRunning"] != null)
-				model.IsRunning = (bool)TempData["GenerateFeedRunning"];
-
-			_googleService.SetupModel(model);
+			model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
+			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
 			return View(model);
-		}
-
-		[HttpPost]
-		[FormValueRequired("save")]
-		public ActionResult Configure(FeedFroogleModel model)
-		{
-			if (!ModelState.IsValid)
-				return Configure();
-
-			model.Copy(_googleService.Settings, false);
-			_settingService.SaveSetting(_googleService.Settings);
-			
-			_googleService.Helper.UpdateScheduleTask(model.TaskEnabled);
-
-			NotifySuccess(_googleService.Helper.GetResource("ConfigSaveNote"), true);
-
-			_googleService.SetupModel(model);
-
-			return View(model);
-		}
-
-		public ActionResult GenerateFeed()
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageScheduleTasks))
-				return AccessDeniedView();
-
-			if (_googleService.Helper.RunScheduleTask())
-				TempData["GenerateFeedRunning"] = true;
-
-			return RedirectToConfig();
-		}
-
-		[HttpPost]
-		public ActionResult GenerateFeedProgress()
-		{
-			string message = _googleService.Helper.GetProgressInfo(true);
-			return Json(new { message = message	}, JsonRequestBehavior.DenyGet);
-		}
-
-		public ActionResult DeleteFiles()
-		{
-			_googleService.Helper.DeleteFeedFiles();
-
-			return RedirectToConfig();
 		}
 
 		[HttpPost]
 		public ActionResult GoogleProductEdit(int pk, string name, string value)
 		{
-			_googleService.UpdateInsert(pk, name, value);
+			_googleFeedService.Upsert(pk, name, value);
 
 			return this.Content("");
 		}
@@ -173,7 +132,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 		{
 			return new JsonResult
 			{
-				Data = _googleService.GetGridModel(command, searchProductName, touched)
+				Data = _googleFeedService.GetGridModel(command, searchProductName, touched)
 			};
 		}
 	}

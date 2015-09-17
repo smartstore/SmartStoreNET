@@ -9,14 +9,14 @@ namespace SmartStore.GoogleMerchantCenter
 {
     public class GoogleMerchantCenterFeedPlugin : BasePlugin, IConfigurable
     {
-        private readonly IGoogleFeedService _googleService;
+        private readonly IGoogleFeedService _googleFeedService;
 		private readonly ICommonServices _services;
 
         public GoogleMerchantCenterFeedPlugin(
-			IGoogleFeedService googleService,
+			IGoogleFeedService googleFeedService,
 			ICommonServices services)
         {
-            _googleService = googleService;
+            _googleFeedService = googleFeedService;
 			_services = services;
         }
 
@@ -34,7 +34,7 @@ namespace SmartStore.GoogleMerchantCenter
         public void GetConfigurationRoute(out string actionName, out string controllerName, out RouteValueDictionary routeValues)
         {
             actionName = "Configure";
-            controllerName = "FeedFroogle";
+			controllerName = "FeedGoogleMerchantCenter";
 			routeValues = new RouteValueDictionary() { { "Namespaces", "SmartStore.GoogleMerchantCenter.Controllers" }, { "area", SystemName } };
         }
 
@@ -43,14 +43,7 @@ namespace SmartStore.GoogleMerchantCenter
         /// </summary>
         public override void Install()
         {
-			var settings = new FroogleSettings();
-			settings.CurrencyId = _services.StoreContext.CurrentStore.PrimaryStoreCurrencyId;
-
-			_services.Settings.SaveSetting(settings);
-
 			_services.Localization.ImportPluginResourcesFromXml(this.PluginDescriptor);
-
-		 	_googleService.Helper.InsertScheduleTask();
 
             base.Install();
         }
@@ -60,11 +53,6 @@ namespace SmartStore.GoogleMerchantCenter
         /// </summary>
         public override void Uninstall()
         {
-			_googleService.Helper.DeleteFeedFiles();
-			_googleService.Helper.DeleteScheduleTask();
-
-			_services.Settings.DeleteSetting<FroogleSettings>();
-
 			_services.Localization.DeleteLocaleStringResources(PluginDescriptor.ResourceRootKey);
 
 			var migrator = new DbMigrator(new Configuration());

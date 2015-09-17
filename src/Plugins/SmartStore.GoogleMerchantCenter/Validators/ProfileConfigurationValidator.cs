@@ -4,9 +4,9 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.GoogleMerchantCenter.Validators
 {
-	public class ConfigurationValidator : AbstractValidator<FeedFroogleModel>
+	public class ProfileConfigurationValidator : AbstractValidator<ProfileConfigurationModel>
 	{
-		public ConfigurationValidator(ILocalizationService localize)
+		public ProfileConfigurationValidator(ILocalizationService localize)
         {
             RuleFor(x => x.ExpirationDays).InclusiveBetween(0, 29)
 				.WithMessage(localize.GetResource("Plugins.Feed.Froogle.ExpirationDays.Validate"));

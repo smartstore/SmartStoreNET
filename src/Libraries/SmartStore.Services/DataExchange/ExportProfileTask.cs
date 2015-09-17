@@ -254,11 +254,12 @@ namespace SmartStore.Services.DataExchange
 		private decimal CalculatePrice(ExportProfileTaskContext ctx, Product product, bool forAttributeCombination)
 		{
 			decimal price = product.Price;
-			var priceCalculationContext = ctx.ProductDataContext as PriceCalculationContext;
 
 			// price type
 			if (ctx.Projection.PriceType.HasValue && !forAttributeCombination)
 			{
+				var priceCalculationContext = ctx.ProductDataContext as PriceCalculationContext;
+
 				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
 				{
 					bool displayFromMessage;
@@ -672,11 +673,16 @@ namespace SmartStore.Services.DataExchange
 				.OrderBy(x => x.DisplayOrder)
 				.Select(x =>
 				{
+					int pictureSize = _mediaSettings.ProductDetailsPictureSize;
+
+					if (ctx.Provider.Supports(ExportProjectionSupport.MainPictureUrl) && ctx.Projection.PictureSize > 0)
+						pictureSize = ctx.Projection.PictureSize;
+
 					dynamic exp = new ExpandoObject();
 					exp._Entity = x;
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
-					exp.Picture = x.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
+					exp.Picture = x.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.ProductThumbPictureSize, pictureSize);
 
 					return exp as ExpandoObject;
 				})
@@ -833,7 +839,25 @@ namespace SmartStore.Services.DataExchange
 
 				if (ctx.Provider.Supports(ExportProjectionSupport.SpecialPrice))
 				{
-					exp._SpecialPrice = ConvertPrice(ctx, product, _priceCalculationService.GetSpecialPrice(product));
+					exp._SpecialPrice = null;
+					exp._RegularPrice = null;	// price if a special price would not exist
+
+					if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+					{
+						var specialPrice = _priceCalculationService.GetSpecialPrice(product);
+
+						exp._SpecialPrice = ConvertPrice(ctx, product, specialPrice);
+
+						if (specialPrice.HasValue)
+						{
+							decimal tmpSpecialPrice = product.SpecialPrice.Value;
+							product.SpecialPrice = null;
+							exp._RegularPrice = CalculatePrice(ctx, product, combination != null);
+							product.SpecialPrice = tmpSpecialPrice;
+
+							_services.DbContext.SetToUnchanged<Product>(product);
+						}
+					}
 				}
 			};
 

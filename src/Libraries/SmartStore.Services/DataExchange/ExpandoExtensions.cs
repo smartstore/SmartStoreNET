@@ -441,6 +441,7 @@ namespace SmartStore.Services.DataExchange
 			expando.BasePriceMeasureUnit = product.BasePriceMeasureUnit;
 			expando.BasePriceAmount = product.BasePriceAmount;
 			expando.BasePriceBaseAmount = product.BasePriceBaseAmount;
+			expando.BasePriceHasValue = product.BasePriceHasValue;
 			expando.VisibleIndividually = product.VisibleIndividually;
 			expando.DisplayOrder = product.DisplayOrder;
 			expando.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, languageId, true, false);

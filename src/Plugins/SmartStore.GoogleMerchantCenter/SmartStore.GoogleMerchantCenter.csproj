@@ -174,15 +174,14 @@
     <Compile Include="Events.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="GoogleMerchantCenterFeedPlugin.cs" />
-    <Compile Include="FroogleSettings.cs" />
     <Compile Include="Models\ProfileConfigurationModel.cs" />
     <Compile Include="Providers\ProductExportXmlProvider.cs" />
-    <Compile Include="Models\FeedFroogleModel.cs" />
+    <Compile Include="Models\FeedGoogleMerchantCenterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />
     <Compile Include="Services\IGoogleFeedService.cs" />
     <Compile Include="Services\GoogleFeedService.cs" />
-    <Compile Include="Validators\ConfigurationValidator.cs" />
+    <Compile Include="Validators\ProfileConfigurationValidator.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\Libraries\SmartStore.Core\SmartStore.Core.csproj">
@@ -219,9 +218,6 @@
   <ItemGroup>
     <Content Include="Content\branding.png">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Content>
-    <Content Include="Content\smartstore.feed.froogle.css">
-      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </Content>
     <Content Include="Description.txt">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>

@@ -27,8 +27,7 @@ namespace SmartStore.GoogleMerchantCenter
 			if (product != null)
 			{
 				return product.Taxonomy.HasValue() || product.Gender.HasValue() || product.AgeGroup.HasValue() || product.Color.HasValue() ||
-					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue() ||
-					!product.Export;
+					product.Size.HasValue() || product.Material.HasValue() || product.Pattern.HasValue() || product.ItemGroupId.HasValue() || !product.Export;
 			}
 			return false;
 		}

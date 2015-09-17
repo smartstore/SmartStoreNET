@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Web.Routing;
-using System.Web.Mvc;
+﻿using SmartStore.Collections;
 using SmartStore.Web.Framework.UI;
-using SmartStore.Collections;
 
 namespace SmartStore.DevTools
 {
@@ -20,6 +14,15 @@ namespace SmartStore.DevTools
 				.ToItem();
 
 			pluginsNode.Prepend(menuItem);
+
+			// uncomment to add to admin menu (see plugin sub-menu)
+			//var backendExtensionItem = new MenuItem().ToBuilder()
+			//	.Text("Backend extension")
+			//	.Icon("area-chart")
+			//	.Action("BackendExtension", "DevTools", new { area = "SmartStore.DevTools" })
+			//	.ToItem();
+
+			//pluginsNode.Append(backendExtensionItem);
 		}
 	}
 }

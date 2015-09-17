@@ -1,4 +1,4 @@
-﻿# Release Notes
+# Release Notes
 
 ## SmartStore.NET 2.5
 
@@ -55,6 +55,7 @@
 * PayPal Express: fixed capture method
 * #770 Resizing browser with product details page causes product image to disappear
 * GMC feed: Availability value "available for order" deprecated
+* Mobile: Shopping cart warnings weren't displayed to customers
 
 
 ## SmartStore.NET 2.2.2

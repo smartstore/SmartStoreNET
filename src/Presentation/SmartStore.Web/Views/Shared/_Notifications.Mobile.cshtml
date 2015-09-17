@@ -5,7 +5,11 @@
     var successMessages = this.GetMessages(NotifyType.Success).ToList();
 
 	// error messages
-	var errorMessages = this.GetMessages(NotifyType.Error).ToList();
+    var errorMessages = this.GetMessages(NotifyType.Error).ToList();
+
+    // warning messages
+    var warningMessages = this.GetMessages(NotifyType.Warning).ToList();
+
 }
 
 @if (successMessages.Count > 0)
@@ -39,6 +43,24 @@
     <script type="text/javascript">
         $(document).ready(function () {
             alert('@Html.Raw(errorsSb.ToString())');
+        });
+    </script>
+}
+
+@if (warningMessages.Count > 0)
+{
+    var warningsSb = new System.Text.StringBuilder();
+    for (int i = 0; i < errorMessages.Count; i++)
+    {
+        warningsSb.Append(warningMessages[i]);
+        if (i != warningMessages.Count - 1)
+        {
+            warningsSb.Append("\\n");
+        }
+    }
+    <script type="text/javascript">
+        $(document).ready(function () {
+            alert('@Html.Raw(warningsSb.ToString())');
         });
     </script>
 }

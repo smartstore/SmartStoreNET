@@ -101,30 +101,33 @@ namespace SmartStore.Services.DataExchange
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
 
-			if (cloneProfile == null)
+			if (provider.Value.FileExtension.HasValue())
 			{
-				if (systemName.StartsWith("Feeds."))
+				if (cloneProfile == null)
 				{
-					profile.Deployments.Add(new ExportDeployment
+					if (systemName.StartsWith("Feeds."))
 					{
-						ProfileId = profile.Id,
-						Enabled = true,
-						IsPublic = true,
-						DeploymentType = ExportDeploymentType.FileSystem,
-						Name = profile.Name
-					});
+						profile.Deployments.Add(new ExportDeployment
+						{
+							ProfileId = profile.Id,
+							Enabled = true,
+							IsPublic = true,
+							DeploymentType = ExportDeploymentType.FileSystem,
+							Name = profile.Name
+						});
+
+						UpdateExportProfile(profile);
+					}
+				}
+				else
+				{
+					foreach (var deployment in cloneProfile.Deployments)
+					{
+						profile.Deployments.Add(deployment.Clone());
+					}
 
 					UpdateExportProfile(profile);
 				}
-			}
-			else
-			{
-				foreach (var deployment in cloneProfile.Deployments)
-				{
-					profile.Deployments.Add(deployment.Clone());
-				}
-
-				UpdateExportProfile(profile);
 			}
 
 			_eventPublisher.EntityInserted(profile);

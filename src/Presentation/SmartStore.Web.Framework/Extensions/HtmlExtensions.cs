@@ -627,9 +627,9 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result);
 		}
 
-		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension)
+		public static MvcHtmlString IconForFileExtension(this HtmlHelper helper, string fileExtension, bool renderExtensionText)
 		{
-			string result = null;
+			string result = "";
 
 			if (fileExtension != null && fileExtension.StartsWith("."))
 			{
@@ -638,31 +638,39 @@ namespace SmartStore.Web.Framework
 
 			if (fileExtension.IsCaseInsensitiveEqual("xml"))
 			{
-				result = "<i class='fa fa-fw fa-file-code-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-code-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("xls"))
 			{
-				result = "<i class='fa fa-fw fa-file-excel-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-excel-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("pdf"))
 			{
-				result = "<i class='fa fa-fw fa-file-pdf-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-pdf-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("zip"))
 			{
-				result = "<i class='fa fa-fw fa-file-archive-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-archive-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("txt") || fileExtension.IsCaseInsensitiveEqual("csv"))
 			{
-				result = "<i class='fa fa-fw fa-file-text-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-text-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("doc"))
 			{
-				result = "<i class='fa fa-fw fa-file-word-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-word-o' title='{0}'></i>";
 			}
 			else if (fileExtension.IsCaseInsensitiveEqual("jpg") || fileExtension.IsCaseInsensitiveEqual("png") || fileExtension.IsCaseInsensitiveEqual("gif"))
 			{
-				result = "<i class='fa fa-fw fa-file-image-o' title='{0}'></i>";
+				result = "<i class='fa fa-file-image-o' title='{0}'></i>";
+			}
+
+			if (renderExtensionText)
+			{
+				if (fileExtension.IsEmpty())
+					result = "<span class='muted'>{0}</span>".FormatInvariant("".NaIfEmpty());
+				else
+					result = result + "<span class='ml4'>{0}</span>";
 			}
 
 			return MvcHtmlString.Create(result.FormatInvariant(fileExtension.NaIfEmpty().ToUpper()));

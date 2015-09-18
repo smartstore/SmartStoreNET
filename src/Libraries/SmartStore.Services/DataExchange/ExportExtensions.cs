@@ -17,10 +17,7 @@ namespace SmartStore.Services.DataExchange
 		/// <returns><c>true</c> provider is valid, <c>false</c> provider is invalid.</returns>
 		public static bool IsValid(this Provider<IExportProvider> provider)
 		{
-			return (
-				provider != null &&
-				provider.Value.FileExtension.HasValue()
-			);
+			return (provider != null);
 		}
 
 		/// <summary>

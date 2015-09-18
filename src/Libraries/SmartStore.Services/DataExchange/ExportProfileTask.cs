@@ -354,9 +354,9 @@ namespace SmartStore.Services.DataExchange
 			if (deployment.CreateZip)
 			{
 				var path = Path.Combine(folderDestination, ctx.Profile.FolderName + ".zip");
-				FileSystemHelper.Copy(ctx.ZipPath, path);
 
-				ctx.Log.Information("Copied ZIP archive " + path);
+				if (FileSystemHelper.Copy(ctx.ZipPath, path))
+					ctx.Log.Information("Copied ZIP archive " + path);
 			}
 			else
 			{
@@ -854,8 +854,6 @@ namespace SmartStore.Services.DataExchange
 							product.SpecialPrice = null;
 							exp._RegularPrice = CalculatePrice(ctx, product, combination != null);
 							product.SpecialPrice = tmpSpecialPrice;
-
-							_services.DbContext.SetToUnchanged<Product>(product);
 						}
 					}
 				}
@@ -1020,7 +1018,10 @@ namespace SmartStore.Services.DataExchange
 
 			ctx.Export.MaxFileNameLength = _dataExchangeSettings.MaxFileNameLength;
 
-			ctx.Export.FileExtension = ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".");
+			if (ctx.Provider.Value.FileExtension.HasValue())
+			{
+				ctx.Export.FileExtension = ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".");
+			}
 
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
@@ -1057,15 +1058,18 @@ namespace SmartStore.Services.DataExchange
 
 					if (!ctx.IsPreview)
 					{
-						var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ctx.Export.Data.FileIndex + 1, ctx.Export.MaxFileNameLength);
+						if (ctx.IsFileBasedExport)
+						{
+							var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ctx.Export.Data.FileIndex + 1, ctx.Export.MaxFileNameLength);
 
-						ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension;
+							ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension.EmptyNull();
+						}
 
 						ctx.Provider.Value.Execute(ctx.Export);
 
 						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
 
-						if (File.Exists(ctx.Export.FilePath))
+						if (ctx.IsFileBasedExport && File.Exists(ctx.Export.FilePath))
 						{
 							ctx.ResultInfo.Files.Add(new ExportResultFileInfo
 							{
@@ -1166,36 +1170,39 @@ namespace SmartStore.Services.DataExchange
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}
 
-					if (!(ctx.IsPreview || ctx.Export.Abort == ExportAbortion.Hard))
+					if (!ctx.IsPreview && ctx.Export.Abort != ExportAbortion.Hard)
 					{
-						if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
+						if (ctx.IsFileBasedExport)
 						{
-							ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
-						}
-
-						foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
-						{
-							try
+							if (ctx.Profile.CreateZipArchive || ctx.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
 							{
-								switch (deployment.DeploymentType)
-								{
-									case ExportDeploymentType.FileSystem:
-										DeployFileSystem(ctx, deployment);
-										break;
-									case ExportDeploymentType.Email:
-										DeployEmail(ctx, deployment);
-										break;
-									case ExportDeploymentType.Http:
-										DeployHttp(ctx, deployment);
-										break;
-									case ExportDeploymentType.Ftp:
-										DeployFtp(ctx, deployment);
-										break;
-								}
+								ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
 							}
-							catch (Exception exc)
+
+							foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 							{
-								logger.Error("Deployment \"{0}\" of type {1} failed.".FormatInvariant(deployment.Name, deployment.DeploymentType.ToString()), exc);
+								try
+								{
+									switch (deployment.DeploymentType)
+									{
+										case ExportDeploymentType.FileSystem:
+											DeployFileSystem(ctx, deployment);
+											break;
+										case ExportDeploymentType.Email:
+											DeployEmail(ctx, deployment);
+											break;
+										case ExportDeploymentType.Http:
+											DeployHttp(ctx, deployment);
+											break;
+										case ExportDeploymentType.Ftp:
+											DeployFtp(ctx, deployment);
+											break;
+									}
+								}
+								catch (Exception exc)
+								{
+									logger.Error("Deployment \"{0}\" of type {1} failed.".FormatInvariant(deployment.Name, deployment.DeploymentType.ToString()), exc);
+								}
 							}
 						}
 
@@ -1224,7 +1231,7 @@ namespace SmartStore.Services.DataExchange
 
 					try
 					{
-						if (!ctx.IsPreview && ctx.Profile.Cleanup && ctx.Export.Abort != ExportAbortion.Hard)
+						if (!ctx.IsPreview && ctx.IsFileBasedExport && ctx.Export.Abort != ExportAbortion.Hard && ctx.Profile.Cleanup)
 						{
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
@@ -1455,8 +1462,15 @@ namespace SmartStore.Services.DataExchange
 			get { return Path.Combine(FolderRoot, "log.txt"); }
 		}
 
+		public bool IsFileBasedExport
+		{
+			get { return Provider.Value.FileExtension.HasValue(); }
+		}
 		public string[] GetDeploymentFiles(ExportDeployment deployment)
 		{
+			if (!IsFileBasedExport)
+				return new string[0];
+
 			if (deployment.CreateZip)
 				return new string[] { ZipPath };
 

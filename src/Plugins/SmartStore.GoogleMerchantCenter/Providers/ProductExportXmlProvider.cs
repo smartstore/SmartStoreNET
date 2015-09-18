@@ -9,7 +9,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
-using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services.DataExchange;

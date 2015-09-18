@@ -156,13 +156,13 @@ namespace SmartStore.Services.DataExchange
 		public string FileExtension { get; internal set; }
 		public string FilePath
 		{
-			get { return Path.Combine(Folder, FileName); }
+			get { return Path.Combine(Folder, FileName.EmptyNull()); }
 		}
 		public string FilePublicUrl
 		{
 			get
 			{
-				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), FileName);
+				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), FileName.EmptyNull());
 				return url;
 			}
 		}

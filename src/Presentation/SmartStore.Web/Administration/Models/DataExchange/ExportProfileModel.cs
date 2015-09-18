@@ -126,6 +126,11 @@ namespace SmartStore.Admin.Models.DataExchange
 			[SmartResourceDisplayName("Admin.DataExchange.Export.FileExtension")]
 			public string FileExtension { get; set; }
 
+			public bool IsFileBasedExport
+			{
+				get { return FileExtension.HasValue(); }
+			}
+
 			[SmartResourceDisplayName("Admin.DataExchange.Export.SupportedFileTypes")]
 			public string SupportedFileTypes { get; set; }
 		}

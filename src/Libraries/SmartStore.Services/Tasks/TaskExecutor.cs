@@ -9,6 +9,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using System.Diagnostics;
 
 namespace SmartStore.Services.Tasks
 {
@@ -61,6 +62,12 @@ namespace SmartStore.Services.Tasks
 			try
 			{
 				taskType = Type.GetType(task.Type);
+
+				Debug.WriteLineIf(taskType == null, "Invalid task type: " + task.Type.NaIfEmpty());
+
+				if (taskType == null)
+					return;
+
 				if (!PluginManager.IsActivePluginAssembly(taskType.Assembly))
 					return;
 			}

@@ -133,7 +133,7 @@ namespace SmartStore.Admin.Controllers
 
 				model.Provider.EntityType = provider.Value.EntityType;
 				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
-				model.Provider.FileExtension = provider.Value.FileExtension.ToUpper();
+				model.Provider.FileExtension = provider.Value.FileExtension;
 			}
 		}
 

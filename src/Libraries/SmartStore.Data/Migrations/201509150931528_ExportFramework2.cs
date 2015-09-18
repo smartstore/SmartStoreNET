@@ -42,6 +42,9 @@ namespace SmartStore.Data.Migrations
 				"Specifies an export profile from which to apply the settings.",
 				"Legt das Exportprofil fest, von welchem die Einstellungen übernommen werden sollen.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.NonFileBasedExport.Note",
+				"The export provider does not explicit support any file type. Therefore, the export provider is responsible for futher deployment of export data.",
+				"Der Export-Provider unterstützt keinen expliziten Dateityp. Für eine weitere Bereitstellung der Exportdaten ist daher der Export-Provider verantwortlich.");
 
 
 			builder.Delete(

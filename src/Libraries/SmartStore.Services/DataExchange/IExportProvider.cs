@@ -12,7 +12,7 @@ namespace SmartStore.Services.DataExchange
 		ExportEntityType EntityType { get; }
 
 		/// <summary>
-		/// Extension of the export files (without dot)
+		/// File extension of the export files (without dot). Return <c>null</c> for a non file based, on-the-fly export.
 		/// </summary>
 		string FileExtension { get; }
 

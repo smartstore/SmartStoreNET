@@ -114,6 +114,7 @@ namespace SmartStore.Admin.Controllers
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
+			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
 
 			model.Provider = new ExportProfileModel.ProviderModel
 			{
@@ -158,7 +159,6 @@ namespace SmartStore.Admin.Controllers
 			model.CompletedEmailAddresses = profile.CompletedEmailAddresses;
 			model.CreateZipArchive = profile.CreateZipArchive;
 			model.Cleanup = profile.Cleanup;
-			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
 
 			model.FileNamePatternExample = profile.ResolveFileNamePattern(_services.StoreContext.CurrentStore, 1, _dataExchangeSettings.MaxFileNameLength);
 

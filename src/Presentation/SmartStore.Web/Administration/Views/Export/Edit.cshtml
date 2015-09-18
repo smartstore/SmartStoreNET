@@ -17,13 +17,21 @@
 				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 			</div>
 			<div class="options">
-				<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn"><i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")</a>
+				<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
+					<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
+				</a>
 				@if (Model.LogFileExists)
 				{
-					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn"><i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")</a>
+					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn">
+						<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+					</a>
 				}
-				<button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
-				<button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
+				<button type="submit" name="save" value="save" class="btn btn-primary">
+					<i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")
+				</button>
+				<button type="submit" name="save" value="save-continue" class="btn">
+					@T("Admin.Common.SaveContinue")
+				</button>
 				<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
 					<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
 				</button>

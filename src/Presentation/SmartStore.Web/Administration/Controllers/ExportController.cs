@@ -846,7 +846,8 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ProfileInfoForProviderModel
 			{
-				ReturnUrl = returnUrl
+				ReturnUrl = returnUrl,
+				SystemName = systemName
 			};
 
 			model.Profiles = profiles

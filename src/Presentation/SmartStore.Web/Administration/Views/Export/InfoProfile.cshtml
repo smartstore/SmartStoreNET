@@ -8,7 +8,7 @@
 	{
 		<tr>
 			<td colspan="2">
-				@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Url.Action("List", "Export", new { area = "Admin" })))
+				@Html.Raw(T("Admin.DataExchange.Export.NoProfilesForProvider", Model.SystemName, Url.Action("List", "Export", new { area = "Admin" })))
 			</td>
 		</tr>
 	}
@@ -21,7 +21,6 @@
 			<td class="adminData">
 				<a href="@Url.Action("Edit", "Export", new { id = profile.Id, area = "Admin" })">
 					@profile.Name
-					
 				</a>
 			</td>
 		</tr>

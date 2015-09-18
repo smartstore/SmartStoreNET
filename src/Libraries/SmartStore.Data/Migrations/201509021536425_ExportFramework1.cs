@@ -184,8 +184,8 @@ namespace SmartStore.Data.Migrations
 				"Das Exportprofil ist deaktiviert. Für eine Exportvorschau muss das Exportprofil aktiviert sein.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NoProfilesForProvider",
-				"There were no export profile found. Create now a <a href=\"{0}\">new export profile</a>.",
-				"Es wurde kein Exportprofil gefunden. Jetzt ein <a href=\"{0}\">neues Exportprofil anlegen</a>.");
+				"There was no export profile of type \"{0}\" found. Create now a <a href=\"{1}\">new export profile</a>.",
+				"Es wurde kein Exportprofil vom Type \"{0}\" gefunden. Jetzt ein <a href=\"{1}\">neues Exportprofil anlegen</a>.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.ProfileForProvider",
 				"Export profile",

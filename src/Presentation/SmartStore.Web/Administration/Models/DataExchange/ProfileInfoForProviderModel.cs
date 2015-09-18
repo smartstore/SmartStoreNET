@@ -6,6 +6,8 @@ namespace SmartStore.Admin.Models.DataExchange
 {
 	public class ProfileInfoForProviderModel : ModelBase
 	{
+		public string SystemName { get; set; }
+
 		[SmartResourceDisplayName("Admin.DataExchange.Export.ProfileForProvider")]
 		public List<ProfileModel> Profiles { get; set; }
 		

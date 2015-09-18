@@ -21,7 +21,7 @@
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
 		</div>
 		<div>
-			@Html.Action("InfoProfile", "Export", new { systemName = GoogleMerchantCenterFeedPlugin.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+			@Html.Action("InfoProfile", "Export", new { systemName = "Feeds.GoogleMerchantCenterProductXml", returnUrl = Request.RawUrl, area = "admin" })
 		</div>
 	</div>
 	<div>

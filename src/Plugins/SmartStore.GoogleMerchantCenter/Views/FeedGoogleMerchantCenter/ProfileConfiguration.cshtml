@@ -11,8 +11,27 @@
 			@Html.SmartLabelFor(m => m.DefaultGoogleCategory)
 		</td>
 		<td class="adminData">
-			<input type="text" id="DefaultGoogleCategory" name="DefaultGoogleCategory" class="text-box single-line valid" style="width:98%;" data-provide="typeahead" data-items="18" autocomplete="off"
-				value="@Model.DefaultGoogleCategory" data-source="@Model.AvailableGoogleCategoriesAsJson" />
+			@Html.TextBoxFor(m => m.DefaultGoogleCategory, new { data_provide = "typeahead", placeholder = Model.DefaultGoogleCategory, style = "width: 98%", autocomplete = "off",
+				data_items = 18, data_source = Model.AvailableGoogleCategoriesAsJson })
+			@Html.ValidationMessageFor(m => m.DefaultGoogleCategory)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.OnlineOnly)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.OnlineOnly)
+			@Html.ValidationMessageFor(m => m.OnlineOnly)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ExpirationDays)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(m => m.ExpirationDays)
+			@Html.ValidationMessageFor(m => m.ExpirationDays)
 		</td>
 	</tr>
 	<tr>
@@ -108,24 +127,6 @@
 		<td class="adminData">
 			@Html.EditorFor(m => m.Pattern)
 			@Html.ValidationMessageFor(m => m.Pattern)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.ExpirationDays)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.ExpirationDays)
-			@Html.ValidationMessageFor(m => m.ExpirationDays)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(m => m.OnlineOnly)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(m => m.OnlineOnly)
-			@Html.ValidationMessageFor(m => m.OnlineOnly)
 		</td>
 	</tr>
 	<tr>

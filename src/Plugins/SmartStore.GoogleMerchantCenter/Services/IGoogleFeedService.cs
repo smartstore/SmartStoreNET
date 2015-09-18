@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
 using Telerik.Web.Mvc;
@@ -7,6 +8,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
     public partial interface IGoogleFeedService
     {
 		GoogleProductRecord GetGoogleProductRecord(int productId);
+
+		List<GoogleProductRecord> GetGoogleProductRecords(int[] productIds);
 
 		void InsertGoogleProductRecord(GoogleProductRecord record);
 

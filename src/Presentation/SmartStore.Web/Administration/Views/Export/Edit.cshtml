@@ -91,6 +91,28 @@
 				</a>
 			</td>
 		</tr>
+		@if (Model.Provider.Description.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.Description)
+				</td>
+				<td class="adminData">
+					@Html.Raw(Model.Provider.Description)
+				</td>
+			</tr>
+		}
+		@if (Model.Provider.Url.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.Url)
+				</td>
+				<td class="adminData">
+					<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
+				</td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Provider.Author)
@@ -107,17 +129,6 @@
 				@Html.DisplayFor(x => x.Provider.Version)
 			</td>
 		</tr>
-		@if (Model.Provider.Url.HasValue())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Provider.Url)
-				</td>
-				<td class="adminData">
-					<a href="@Model.Provider.Url" target="PluginWebsiteWnd" rel="nofollow">@Model.Provider.Url</a>
-				</td>
-			</tr>
-		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Provider.EntityTypeName)
@@ -133,21 +144,6 @@
 			<td class="adminData">
 				@Html.IconForFileExtension(Model.Provider.FileExtension)
 				@Html.DisplayFor(x => x.Provider.FileExtension)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.Description)
-			</td>
-			<td class="adminData">
-				@if (Model.Provider.Description.HasValue())
-				{
-					@Html.Raw(Model.Provider.Description)
-				}
-				else
-				{
-					<span class="muted">@("".NaIfEmpty())</span>
-				}
 			</td>
 		</tr>
 	</table>

@@ -1,12 +1,12 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
   <LocaleResource Name="Plugins.FriendlyName.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
-    <Value>Google Merchant Center (GMC) feed</Value>
+    <Value>Google Merchant Center feed</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.SmartStore.GoogleMerchantCenter" AppendRootKey="false">
     <Value>Allows you to export product data in the feed format of Google Merchant Center (GMC).</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.FriendlyName.Feeds.GoogleMerchantCenterProductXml" AppendRootKey="false">
-    <Value>Google Merchant Center (GMC) XML feed</Value>
+    <Value>Google Merchant Center XML feed</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.Feeds.GoogleMerchantCenterProductXml" AppendRootKey="false">
     <Value>Allows you to export product data in the XML feed format of Google Merchant Center (GMC).</Value>

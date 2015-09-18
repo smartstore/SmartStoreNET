@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using System.Linq;
@@ -49,6 +50,15 @@ namespace SmartStore.GoogleMerchantCenter.Services
             var record = query.FirstOrDefault();
             return record;
         }
+
+		public List<GoogleProductRecord> GetGoogleProductRecords(int[] productIds)
+		{
+			if (productIds == null || productIds.Length == 0)
+				return new List<GoogleProductRecord>();
+
+			var lst = _gpRepository.TableUntracked.Where(x => productIds.Contains(x.ProductId)).ToList();
+			return lst;
+		}
 
         public void InsertGoogleProductRecord(GoogleProductRecord record)
         {

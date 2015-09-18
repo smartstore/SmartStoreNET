@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Linq;
 using System.Text;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
@@ -185,23 +186,16 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 				{
 					var segment = context.Data.CurrentSegment;
 
+					int[] productIds = segment.Select(x => (int)((dynamic)x).Id).ToArray();
+					var googleProducts = _googleFeedService.GetGoogleProductRecords(productIds);
+
 					foreach (dynamic product in segment)
 					{
 						if (context.Abort != ExportAbortion.None)
 							break;
 
 						int productId = product.Id;
-						GoogleProductRecord gmc = null;
-
-						try
-						{
-							gmc = _googleFeedService.GetGoogleProductRecord(productId);
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while loading google product with id {0}: {1}".FormatInvariant(productId, exc.Message), exc);
-							++context.RecordsFailed;
-						}
+						var gmc = googleProducts.FirstOrDefault(x => x.ProductId == productId);
 
 						if (gmc != null && !gmc.Export)
 							continue;
@@ -339,7 +333,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							writer.WriteCData("item_group_id", gmc != null && gmc.ItemGroupId.HasValue() ? gmc.ItemGroupId : "", "g", _googleNamespace);
 
 							writer.WriteElementString("g", "online_only", _googleNamespace, config.OnlineOnly ? "y" : "n");
-							writer.WriteElementString("g", "identifier_exists", _googleNamespace, product.Gtin.HasValue() || brand.HasValue() || mpn.HasValue() ? "TRUE" : "FALSE");
+							writer.WriteElementString("g", "identifier_exists", _googleNamespace, gtin.HasValue() || brand.HasValue() || mpn.HasValue() ? "TRUE" : "FALSE");
 
 							if (config.ExpirationDays > 0)
 							{

@@ -301,9 +301,10 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//Errors
-				foreach (string error in addToCartContext.Warnings)
-					ModelState.AddModelError("", error);
-
+                foreach (string error in addToCartContext.Warnings)
+                {
+                    this.NotifyError(error);
+                }
 				//If we got this far, something failed, redisplay form
 				var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 

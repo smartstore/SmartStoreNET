@@ -1,0 +1,18 @@
+﻿@using SmartStore.DevTools.Models;
+@model BackendExtensionModel
+@{
+	Layout = "~/Administration/Views/Shared/_AdminLayout.cshtml";
+
+	ViewBag.Title = "My SmartStore.NET backend extension page";
+}
+
+<div class="section-header">
+	<div class="title">
+		<i class="fa fa-area-chart"></i>
+		My SmartStore.NET backend extension page
+	</div>
+</div>
+
+<div>
+	@Model.Welcome
+</div>

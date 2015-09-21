@@ -19,6 +19,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
@@ -72,6 +73,7 @@ namespace SmartStore.Services.DataExchange
 		private IAddressService _addressesService;
 		private ICountryService _countryService;
 		private IRepository<Order> _orderRepository;
+		private ILanguageService _languageService;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -100,6 +102,7 @@ namespace SmartStore.Services.DataExchange
 			_addressesService = context.Resolve<IAddressService>();
 			_countryService = context.Resolve<ICountryService>();
 			_orderRepository = context.Resolve<IRepository<Order>>();
+			_languageService = context.Resolve<ILanguageService>();
 		}
 
 		#endregion
@@ -947,6 +950,11 @@ namespace SmartStore.Services.DataExchange
 			else
 				ctx.ProjectionCustomer = _services.WorkContext.CurrentCustomer;
 
+			if (ctx.Projection.LanguageId.HasValue)
+				ctx.ProjectionLanguage = _languageService.GetLanguageById(ctx.Projection.LanguageId.Value);
+			else
+				ctx.ProjectionLanguage = _services.WorkContext.WorkingLanguage;
+
 			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
 
 			if (!ctx.IsPreview && ctx.Profile.PerStore)
@@ -1018,10 +1026,11 @@ namespace SmartStore.Services.DataExchange
 
 			ctx.Export.MaxFileNameLength = _dataExchangeSettings.MaxFileNameLength;
 
-			if (ctx.Provider.Value.FileExtension.HasValue())
-			{
-				ctx.Export.FileExtension = ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".");
-			}
+			ctx.Export.FileExtension = (ctx.Provider.Value.FileExtension.HasValue() ? ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
+
+			ctx.Export.HasPublicDeployment = ctx.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
+
+			ctx.Export.PublicFolderPath = (ctx.Export.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
 
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
@@ -1062,13 +1071,18 @@ namespace SmartStore.Services.DataExchange
 						{
 							var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ctx.Export.Data.FileIndex + 1, ctx.Export.MaxFileNameLength);
 
-							ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension.EmptyNull();
+							ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension;
+							ctx.Export.FilePath = Path.Combine(ctx.Export.Folder, ctx.Export.FileName);
+
+							if (ctx.Export.HasPublicDeployment)
+								ctx.Export.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.Export.FileName;
 						}
 
 						ctx.Provider.Value.Execute(ctx.Export);
 
 						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
 
+						// create info for deployment list in profile edit
 						if (ctx.IsFileBasedExport && File.Exists(ctx.Export.FilePath))
 						{
 							ctx.ResultInfo.Files.Add(new ExportResultFileInfo
@@ -1165,7 +1179,8 @@ namespace SmartStore.Services.DataExchange
 						var stores = Init(ctx);
 
 						ctx.Export.Customer = ctx.ProjectionCustomer.ToExpando();
-						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.Projection.LanguageId ?? 0);
+						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.ProjectionLanguage.Id);
+						ctx.Export.Language = ctx.ProjectionLanguage.ToExpando();
 
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}
@@ -1443,6 +1458,7 @@ namespace SmartStore.Services.DataExchange
 		public ExportProjection Projection { get; private set; }
 		public Currency ProjectionCurrency { get; set; }
 		public Customer ProjectionCustomer { get; set; }
+		public Language ProjectionLanguage { get; set; }
 
 		public TraceLogger Log { get; set; }
 		public Store Store { get; set; }

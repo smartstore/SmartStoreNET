@@ -81,12 +81,10 @@
 							@T("Common.Cancel")
 						</a>
 
-						@if (!profile.IsTaskRunning && profile.LogFileExists)
-						{
-							<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })" class="btn btn-small">
-								<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
-							</a>
-						}
+						<a href="@Url.Action("DownloadLogFile", new { id = profile.Id })"
+						   class="btn btn-small btn-log@(profile.IsTaskRunning || !profile.Enabled || !profile.LogFileExists ? " hide" : "")">
+							<i class="fa fa-file-text-o"></i>&nbsp;@T("Admin.Configuration.ActivityLog")
+						</a>
 					</td>
 				</tr>
 			}
@@ -204,11 +202,17 @@ else
 			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
 			pollUrl: '@Url.Action("GetRunningTasks", "ScheduleTask")',
 			onTaskStarted: function (task, el) {
-				el.closest('tr').find('.btn-run-task').addClass('hide').next().removeClass('hide');
-				el.closest('tr').find('.next-run-info').addClass('hide');
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').addClass('hide');
+				tr.find('.btn-cancel-task').removeClass('hide');
+				tr.find('.btn-log').addClass('hide');
+				tr.find('.next-run-info').addClass('hide');
 			},
 			onTaskCompleted: function (taskId, el) {
-				el.closest('tr').find('.btn-run-task').removeClass('hide').next().addClass('hide');
+				var tr = el.closest('tr');
+				tr.find('.btn-run-task').removeClass('hide');
+				tr.find('.btn-cancel-task').addClass('hide');
+				tr.find('.btn-log').removeClass('hide');
 				$.ajax({
 					cache: false,
 					global: false,
@@ -216,8 +220,8 @@ else
 					url: '@Url.Action("GetTaskRunInfo", "ScheduleTask")',
 					data: { id: taskId },
 					success: function (data) {
-						el.closest('tr').find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
-						el.closest('tr').find('.last-run-info').html(data.lastRunHtml);
+						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
+						tr.find('.last-run-info').html(data.lastRunHtml);
 					}
 				});
 			}

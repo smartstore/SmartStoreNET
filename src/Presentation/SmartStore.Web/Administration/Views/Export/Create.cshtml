@@ -4,7 +4,7 @@
 	Layout = null;
 }
 
-<div style="padding-bottom: 5px;">
+<div>
 	@if(Model.Provider.AvailableExportProviders.Count > 0)
 	{
 		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
@@ -15,17 +15,6 @@
 					</td>
 					<td class="adminData">
 						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders, new { style = "width: 500px;" })
-					</td>
-				</tr>
-				<tr>
-					<td class="adminTitle">
-						&nbsp;
-					</td>
-					<td class="adminData">
-						@foreach (var item in Model.Provider.ProviderDescriptions)
-						{
-							<span id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</span>
-						}
 					</td>
 				</tr>
 				@if(Model.AvailableProfiles.Count > 0)
@@ -39,6 +28,17 @@
 						</td>
 					</tr>
 				}
+				<tr>
+					<td class="adminTitle">
+						&nbsp;
+					</td>
+					<td class="adminData" style="width: 510px; max-width: 510px;">
+						@foreach (var item in Model.Provider.ProviderDescriptions)
+						{
+							<span id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</span>
+						}
+					</td>
+				</tr>
 			</table>
 		</form>
 	}

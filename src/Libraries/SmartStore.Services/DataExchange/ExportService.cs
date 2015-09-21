@@ -105,7 +105,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				if (cloneProfile == null)
 				{
-					if (systemName.StartsWith("Feeds."))
+					if (provider.Supports(ExportProjectionSupport.CreateInitialPublicDeployment))
 					{
 						profile.Deployments.Add(new ExportDeployment
 						{

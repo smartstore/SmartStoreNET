@@ -29,6 +29,11 @@ namespace SmartStore.Services.DataExchange
 		dynamic Currency { get; }
 
 		/// <summary>
+		/// The language context to be used for the export
+		/// </summary>
+		dynamic Language { get; }
+
+		/// <summary>
 		/// Projection data
 		/// </summary>
 		ExportProjection Projection { get; }
@@ -43,13 +48,14 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		ExportAbortion Abort { get; set; }
 
+
 		/// <summary>
 		/// The maximum allowed file name length
 		/// </summary>
 		int MaxFileNameLength { get; }
 
 		/// <summary>
-		/// The path of the export folder
+		/// The path of the export content folder
 		/// </summary>
 		string Folder { get; }
 
@@ -63,10 +69,22 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		string FilePath { get; }
 
+
 		/// <summary>
-		/// The public URL of the export file (accessible through the internet)
+		/// Whether the profile has a public deployment into "Exchange" folder
 		/// </summary>
-		string FilePublicUrl { get; }
+		bool HasPublicDeployment { get; }
+
+		/// <summary>
+		/// The local path to the public export folder "Exchange". <c>null</c> if the profile has no public deployment.
+		/// </summary>
+		string PublicFolderPath { get; }
+
+		/// <summary>
+		/// The public URL of the export file (accessible through the internet). <c>null</c> if the profile has no public deployment.
+		/// </summary>
+		string PublicFileUrl { get; }
+
 
 		/// <summary>
 		/// Provider specific configuration data
@@ -122,6 +140,7 @@ namespace SmartStore.Services.DataExchange
 		public dynamic Store { get; internal set; }
 		public dynamic Customer { get; internal set; }
 		public dynamic Currency { get; internal set; }
+		public dynamic Language { get; internal set; }
 		public ExportProjection Projection { get; internal set; }
 
 		public ILogger Log { get; internal set; }
@@ -154,18 +173,11 @@ namespace SmartStore.Services.DataExchange
 		public string Folder { get; private set; }
 		public string FileName { get; internal set; }
 		public string FileExtension { get; internal set; }
-		public string FilePath
-		{
-			get { return Path.Combine(Folder, FileName.EmptyNull()); }
-		}
-		public string FilePublicUrl
-		{
-			get
-			{
-				var url = string.Concat(((string)Store.Url).EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), FileName.EmptyNull());
-				return url;
-			}
-		}
+		public string FilePath { get; internal set; }
+
+		public bool HasPublicDeployment { get; internal set; }
+		public string PublicFolderPath { get; internal set; }
+		public string PublicFileUrl { get; internal set; }
 
 		public object ConfigurationData { get; internal set; }
 

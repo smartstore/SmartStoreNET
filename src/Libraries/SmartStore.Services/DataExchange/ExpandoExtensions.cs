@@ -1,10 +1,10 @@
-﻿using System.Collections.Generic;
-using System.Dynamic;
+﻿using System.Dynamic;
 using System.Linq;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
@@ -36,6 +36,27 @@ namespace SmartStore.Services.DataExchange
 			expando.CreatedOnUtc = currency.CreatedOnUtc;
 			expando.UpdatedOnUtc = currency.UpdatedOnUtc;
 			expando.DomainEndings = currency.DomainEndings;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Language language)
+		{
+			if (language == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = language;
+
+			expando.Id = language.Id;
+			expando.Name = language.Name;
+			expando.LanguageCulture = language.LanguageCulture;
+			expando.UniqueSeoCode = language.UniqueSeoCode;
+			expando.FlagImageFileName = language.FlagImageFileName;
+			expando.Rtl = language.Rtl;
+			expando.LimitedToStores = language.LimitedToStores;
+			expando.Published = language.Published;
+			expando.DisplayOrder = language.DisplayOrder;
 
 			return expando as ExpandoObject;
 		}
@@ -192,7 +213,7 @@ namespace SmartStore.Services.DataExchange
 			expando._Entity = picture;
 
 			expando.Id = picture.Id;
-			expando.SeoFileName = picture.SeoFilename;
+			expando.SeoFilename = picture.SeoFilename;
 			expando.MimeType = picture.MimeType;
 
 			expando._ThumbImageUrl = pictureService.GetPictureUrl(picture, thumbPictureSize, false, store.Url);

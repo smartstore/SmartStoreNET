@@ -71,7 +71,8 @@ namespace SmartStore.Core.Domain.DataExchange
 		ShippingCosts,
 		AttributeCombinationAsProduct,
 		OldPrice,
-		SpecialPrice
+		SpecialPrice,
+		CreateInitialPublicDeployment
 	}
 
 	/// <summary>

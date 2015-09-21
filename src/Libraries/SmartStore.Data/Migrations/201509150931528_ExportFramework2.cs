@@ -25,10 +25,12 @@ namespace SmartStore.Data.Migrations
 			context.MigrateLocaleResources(MigrateLocaleResources);
 
 			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.GoogleMerchantCenter.StaticFileGenerationTask, SmartStore.GoogleMerchantCenter'");
+			context.Execute("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.BMEcat.StaticFileGenerationTask, SmartStore.BMEcat'");
 
 			context.MigrateSettings(x =>
 			{
 				x.DeleteGroup("FroogleSettings");
+				x.DeleteGroup("BMEcatExportSettings");
 			});
 		}
 
@@ -87,6 +89,52 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.Froogle.GridEditNote",
 				"Plugins.Feed.Froogle.General",
 				"Plugins.Feed.Froogle.ProductData"
+			);
+
+			builder.Delete(
+				"Plugins.Feed.BMEcat.TaskEnabled",
+				"Plugins.Feed.BMEcat.TaskEnabled.Hint",
+				"Plugins.Feed.BMEcat.StaticFileUrl",
+				"Plugins.Feed.BMEcat.StaticFileUrl.Hint",
+				"Plugins.Feed.BMEcat.GenerateStaticFileEachMinutes",
+				"Plugins.Feed.BMEcat.GenerateStaticFileEachMinutes.Hint",
+				"Plugins.Feed.BMEcat.UseOwnProductNo",
+				"Plugins.Feed.BMEcat.UseOwnProductNo.Hint",
+				"Plugins.Feed.BMEcat.ShippingCostAustria",
+				"Plugins.Feed.BMEcat.ShippingCostAustria.Hint",
+				"Plugins.Feed.BMEcat.Currency",
+				"Plugins.Feed.BMEcat.Currency.Hint",
+				"Plugins.Feed.BMEcat.ProductPictureSize",
+				"Plugins.Feed.BMEcat.ProductPictureSize.Hint",
+				"Plugins.Feed.BMEcat.AppendDescriptionText",
+				"Plugins.Feed.BMEcat.AppendDescriptionText.Hint",
+				"Plugins.Feed.BMEcat.BuildDescription",
+				"Plugins.Feed.BMEcat.BuildDescription.Hint",
+				"Plugins.Feed.BMEcat.Automatic",
+				"Plugins.Feed.BMEcat.DescShort",
+				"Plugins.Feed.BMEcat.DescLong",
+				"Plugins.Feed.BMEcat.DescTitleAndShort",
+				"Plugins.Feed.BMEcat.DescTitleAndLong",
+				"Plugins.Feed.BMEcat.DescManuAndTitleAndShort",
+				"Plugins.Feed.BMEcat.DescManuAndTitleAndLong",
+				"Plugins.Feed.BMEcat.UseOwnProductNo",
+				"Plugins.Feed.BMEcat.UseOwnProductNo.Hint",
+				"Plugins.Feed.BMEcat.DescriptionToPlainText",
+				"Plugins.Feed.BMEcat.DescriptionToPlainText.Hint",
+				"Plugins.Feed.BMEcat.ShippingCost",
+				"Plugins.Feed.BMEcat.ShippingCost.Hint",
+				"Plugins.Feed.BMEcat.ShippingTime",
+				"Plugins.Feed.BMEcat.ShippingTime.Hint",
+				"Plugins.Feed.BMEcat.Brand",
+				"Plugins.Feed.BMEcat.Brand.Hint",
+				"Plugins.Feed.BMEcat.Store",
+				"Plugins.Feed.BMEcat.Store.Hint",
+				"Plugins.Feed.BMEcat.ConvertNetToGrossPrices",
+				"Plugins.Feed.BMEcat.ConvertNetToGrossPrices.Hint",
+				"Plugins.Feed.BMEcat.LanguageId",
+				"Plugins.Feed.BMEcat.LanguageId.Hint",
+				"Plugins.Feed.BMEcat.Generate",
+				"Plugins.Feed.BMEcat.ConfigSaveNote"
 			);
 		}
     }

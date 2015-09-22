@@ -8,9 +8,6 @@
     //title
     Html.AddTitleParts(T("PageTitle.Checkout").Text);
 
-    //string termsLink = "<a id='terms-of-service-trigger' data-rel='dialog' href='#terms-of-service-modal'>";
-    //string disclaimerLink = "<a id='disclaimer-trigger' data-rel='dialog' href='#terms-of-service-modal'>";
-
     string termsLink = "<a id='terms-of-service-trigger' data-rel='dialog' href='" + Url.RouteUrl("TopicPopup", new { SystemName = "ConditionsOfUse" }) + "'>";
     string disclaimerLink = "<a id='disclaimer-trigger' data-rel='dialog' href='" + Url.RouteUrl("TopicPopup", new { SystemName = "Disclaimer" }) + "'>";
     string terms = string.Format(T("Checkout.TermsOfService.IAccept"), termsLink, "</a>", disclaimerLink);

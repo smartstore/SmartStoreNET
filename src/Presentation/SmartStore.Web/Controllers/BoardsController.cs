@@ -318,7 +318,7 @@ namespace SmartStore.Web.Controllers
                     if (forumSubscription != null)
                     {
                         model.WatchForumText = _localizationService.GetResource("Forum.UnwatchForum");
-                        model.WatchForumSubscribed = true; // codehint: sm-add
+                        model.WatchForumSubscribed = true;
                     }
                 }
 

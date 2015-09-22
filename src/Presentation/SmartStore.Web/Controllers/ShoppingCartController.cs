@@ -368,7 +368,11 @@ namespace SmartStore.Web.Controllers
 					model.Discount = _priceFormatter.FormatPrice(shoppingCartItemDiscount);
 				}
 
-                model.BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - shoppingCartItemSubTotalWithDiscount) * (-1));
+                model.BasePrice = product.GetBasePriceInfo(
+                    _localizationService, 
+                    _priceFormatter, 
+                    (product.Price - _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)) * (-1)
+                );
 			}
 
 			//picture

@@ -39,6 +39,14 @@ namespace SmartStore.Data.Migrations
 		{
 			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
 
+			builder.AddOrUpdate("Admin.Common.FilesDeleted",
+				"{0} files were deleted",
+				"{0} Dateien wurden gelöscht");
+
+			builder.AddOrUpdate("Admin.Common.FoldersDeleted",
+				"{0} folders were deleted",
+				"{0} Verzeichnisse wurden gelöscht");
+
 			builder.AddOrUpdate("Admin.DataExchange.Export.CloneProfile",
 				"Apply settings from",
 				"Einstellungen übernehmen von",
@@ -139,6 +147,7 @@ namespace SmartStore.Data.Migrations
 			);
 
 			builder.Delete("Plugins.Widgets.OpenTrans.IsLexwareCompatibe");
+			builder.Delete("Admin.System.Maintenance.DeleteExportedFolders.TotalDeleted");
 		}
     }
 }

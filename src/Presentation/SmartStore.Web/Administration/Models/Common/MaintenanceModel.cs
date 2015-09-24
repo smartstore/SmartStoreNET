@@ -1,5 +1,4 @@
 ﻿using System;
-using System.ComponentModel.DataAnnotations;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -20,7 +19,6 @@ namespace SmartStore.Admin.Models.Common
 
         [SmartResourceDisplayName("Admin.System.Maintenance.SqlQuery")]
         public string SqlQuery { get; set; }
-
 
         #region Nested classes
 
@@ -47,9 +45,9 @@ namespace SmartStore.Admin.Models.Common
             public DateTime? EndDate { get; set; }
 
             public int? NumberOfDeletedFiles { get; set; }
+			public int? NumberOfDeletedFolders { get; set; }
         }
 
-        // codehint: sm-add
         public class DeleteImageCacheModel : ModelBase
         {
             [SmartResourceDisplayName("Admin.System.Maintenance.DeleteImageCache.FileCount")]
@@ -58,6 +56,7 @@ namespace SmartStore.Admin.Models.Common
             [SmartResourceDisplayName("Admin.System.Maintenance.DeleteImageCache.TotalSize")]
             public string TotalSize { get; set; }
         }
+
         #endregion
     }
 }

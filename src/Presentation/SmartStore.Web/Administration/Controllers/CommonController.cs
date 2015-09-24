@@ -842,20 +842,22 @@ namespace SmartStore.Admin.Controllers
                 return AccessDeniedView();
 
             DateTime? startDateValue = (model.DeleteExportedFiles.StartDate == null) ? null
-							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
+				: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.StartDate.Value, _dateTimeHelper.Value.CurrentTimeZone);
 
             DateTime? endDateValue = (model.DeleteExportedFiles.EndDate == null) ? null
-							: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
+				: (DateTime?)_dateTimeHelper.Value.ConvertToUtcTime(model.DeleteExportedFiles.EndDate.Value, _dateTimeHelper.Value.CurrentTimeZone).AddDays(1);
 
 
             model.DeleteExportedFiles.NumberOfDeletedFiles = 0;
+			model.DeleteExportedFiles.NumberOfDeletedFolders = 0;
 
 			var appPath = this.Request.PhysicalApplicationPath;
 
 			string[] paths = new string[]
 			{
-				string.Concat(appPath, "Content\\files\\exportimport\\"),
-				string.Concat(appPath, "Exchange\\"),
+				appPath + @"Content\files\exportimport\",
+				appPath + @"Exchange\",
+				appPath + @"App_Data\_temp\Profile\Export\"
 			};
 
 			foreach (var path in paths)
@@ -883,6 +885,18 @@ namespace SmartStore.Admin.Controllers
 					catch (Exception exc)
 					{
 						NotifyError(exc, false);
+					}
+				}
+
+				var dir = new DirectoryInfo(path);
+
+				foreach (var dirInfo in dir.GetDirectories())
+				{
+					if ((!startDateValue.HasValue || startDateValue.Value < dirInfo.LastWriteTimeUtc) &&
+						(!endDateValue.HasValue || dirInfo.LastWriteTimeUtc < endDateValue.Value))
+					{
+						FileSystemHelper.ClearDirectory(dirInfo.FullName, true);
+						++model.DeleteExportedFiles.NumberOfDeletedFolders;
 					}
 				}
 			}

@@ -276,8 +276,6 @@
     <Compile Include="Mvc\Bundles\IBundlePublisher.cs" />
     <Compile Include="Mvc\CommaSeparatedModelBinder.cs" />
     <Compile Include="Plugins\PluginDebugViewVirtualPathProvider.cs" />
-    <Compile Include="Plugins\FeedPluginCore.cs" />
-    <Compile Include="Plugins\FeedPluginHelper.cs" />
     <Compile Include="Plugins\PluginHelper.cs" />
     <Compile Include="Controllers\PublicStoreAllowNavigationAttribute.cs" />
     <Compile Include="Mvc\Routes\GuidConstraint.cs" />

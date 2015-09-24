@@ -83,39 +83,42 @@
 		<i class="fa fa-plus"></i>&nbsp;@T("Common.AddNew")
 	</a>
 
-	<div>
-		<table id="export-deployment-list" class="table admin-table">
-			<thead>
-				<tr>
-					<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
-					<th class="centered">@T("Common.Enabled")</th>
-					<th>@T("Admin.DataExchange.Export.Deployment.DeploymentType")</th>
-					<th>@T("Admin.Common.Actions")</th>
-				</tr>
-			</thead>
-			<tbody>
-				@foreach (var deployment in Model.Deployments)
-				{
-					<tr class="@(deployment.Enabled ? "" : "disabled")">
-						<td>
-							<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
-						</td>
-						<td class="centered">
-							@Html.SymbolForBool(deployment.Enabled)
-						</td>
-						<td style="width: 50%;">
-							@Html.Partial("InfoDeployment", deployment)
-						</td>
-						<td>
-							<a href="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-								@T("Common.Delete")
-							</a>
-						</td>
+	if (Model.Deployments.Count > 0)
+	{
+		<div>
+			<table id="export-deployment-list" class="table admin-table">
+				<thead>
+					<tr>
+						<th>@T("Admin.DataExchange.Export.Deployment.Name")</th>
+						<th class="centered">@T("Common.Enabled")</th>
+						<th>@T("Admin.DataExchange.Export.Deployment.DeploymentType")</th>
+						<th>@T("Admin.Common.Actions")</th>
 					</tr>
-				}
-			</tbody>
-		</table>
-	</div>
+				</thead>
+				<tbody>
+					@foreach (var deployment in Model.Deployments)
+					{
+						<tr class="@(deployment.Enabled ? "" : "disabled")">
+							<td>
+								<a href="@Url.Action("EditDeployment", new { id = deployment.Id })">@deployment.Name</a>
+							</td>
+							<td class="centered">
+								@Html.SymbolForBool(deployment.Enabled)
+							</td>
+							<td style="width: 50%;">
+								@Html.Partial("InfoDeployment", deployment)
+							</td>
+							<td>
+								<a href="@Url.Action("DeleteDeployment", new { id = deployment.Id })" class="btn btn-small btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+									@T("Common.Delete")
+								</a>
+							</td>
+						</tr>
+					}
+				</tbody>
+			</table>
+		</div>
+	}
 }
 else
 {

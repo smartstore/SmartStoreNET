@@ -4,9 +4,9 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Services.Catalog;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.ExportTask
 {
-	public class ExportProductDataContext : PriceCalculationContext
+	internal class ExportProductDataContext : PriceCalculationContext
 	{
 		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;

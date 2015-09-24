@@ -8,13 +8,21 @@ namespace SmartStore.Services.DataExchange
 	public interface IExportService
 	{
 		/// <summary>
+		/// Creates a volatile export project
+		/// </summary>
+		/// <param name="provider">Export provider</param>
+		/// <param name="providerConfigData">Provider configuration data</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>New export profile</returns>
+		ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider, string providerConfigData, int storeId);
+
+		/// <summary>
 		/// Inserts an export profile
 		/// </summary>
 		/// <param name="provider">Export provider</param>
-		/// <param name="name">Name of the profile</param>
 		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
 		/// <returns>New export profile</returns>
-		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name, int cloneFromProfileId = 0);
+		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, int cloneFromProfileId = 0);
 
 		/// <summary>
 		/// Updates an export profile

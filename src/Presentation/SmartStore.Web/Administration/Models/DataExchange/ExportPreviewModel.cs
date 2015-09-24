@@ -45,6 +45,8 @@ namespace SmartStore.Admin.Models.DataExchange
 
 	public class ExportPreviewOrderModel : EntityModelBase
 	{
+		public bool HasNewPaymentNotification { get; set; }
+
 		[SmartResourceDisplayName("Admin.Orders.Fields.OrderNumber")]
 		public string OrderNumber { get; set; }
 

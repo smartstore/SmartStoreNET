@@ -4,7 +4,6 @@ using System.IO;
 using System.Linq;
 using System.Net.Mime;
 using System.Web;
-using System.Web.Caching;
 using System.Web.Mvc;
 using Autofac;
 using SmartStore.Admin.Extensions;
@@ -22,6 +21,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
+using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -126,7 +126,7 @@ namespace SmartStore.Admin.Controllers
 				model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
 				model.Provider.Url = provider.Metadata.PluginDescriptor.Url;
-				model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = provider.Metadata.SystemName, area = "Admin" });
+				model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = provider.Metadata.PluginDescriptor.SystemName, area = "Admin" });
 				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
 				model.Provider.Author = provider.Metadata.PluginDescriptor.Author;
 				model.Provider.Version = provider.Metadata.PluginDescriptor.Version.ToString();
@@ -175,20 +175,18 @@ namespace SmartStore.Admin.Controllers
 
 				try
 				{
-					string partialName;
-					Type dataType;
-					Action<object> initialize;
-					if (provider.Value.RequiresConfiguration(out partialName, out dataType, out initialize))
+					var configInfo = provider.Value.ConfigurationInfo;
+					if (configInfo != null)
 					{
-						model.Provider.ConfigPartialViewName = partialName;
-						model.Provider.ConfigDataType = dataType;
-						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, dataType);
+						model.Provider.ConfigPartialViewName = configInfo.PartialViewName;
+						model.Provider.ConfigDataType = configInfo.ModelType;
+						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, configInfo.ModelType);
 
-						if (initialize != null)
+						if (configInfo.Initialize != null)
 						{
 							try
 							{
-								initialize(model.Provider.ConfigData);
+								configInfo.Initialize(model.Provider.ConfigData);
 							}
 							catch (Exception exc)
 							{
@@ -331,7 +329,7 @@ namespace SmartStore.Admin.Controllers
 						try
 						{
 							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, ExportProfileTask.PublicFolder);
-							var resultInfo = XmlHelper.Deserialize<ExportResultInfo>(profile.ResultInfo);
+							var resultInfo = XmlHelper.Deserialize<ExportExecuteResult>(profile.ResultInfo);
 
 							if (resultInfo != null && resultInfo.Files != null)
 							{
@@ -533,7 +531,7 @@ namespace SmartStore.Admin.Controllers
 				var provider = _exportService.LoadProvider(model.Provider.SystemName);
 				if (provider != null)
 				{
-					var profile = _exportService.InsertExportProfile(provider, _pluginMediator.GetLocalizedFriendlyName(provider.Metadata), model.CloneProfileId ?? 0);
+					var profile = _exportService.InsertExportProfile(provider, model.CloneProfileId ?? 0);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}
@@ -660,12 +658,10 @@ namespace SmartStore.Admin.Controllers
 			profile.ProviderConfigData = null;
 			try
 			{
-				string partialName;
-				Type dataType;
-				Action<object> initialize;
-				if (provider.Value.RequiresConfiguration(out partialName, out dataType, out initialize) && model.CustomProperties.ContainsKey("ProviderConfigData"))
+				var configInfo = provider.Value.ConfigurationInfo;
+				if (configInfo != null && model.CustomProperties.ContainsKey("ProviderConfigData"))
 				{
-					profile.ProviderConfigData = XmlHelper.Serialize(model.CustomProperties["ProviderConfigData"], dataType);
+					profile.ProviderConfigData = XmlHelper.Serialize(model.CustomProperties["ProviderConfigData"], configInfo.ModelType);
 				}
 			}
 			catch (Exception exc)
@@ -781,6 +777,7 @@ namespace SmartStore.Admin.Controllers
 						var om = new ExportPreviewOrderModel
 						{
 							Id = x.Id,
+							HasNewPaymentNotification = x.HasNewPaymentNotification,
 							OrderNumber = x.OrderNumber,
 							OrderStatus = x.OrderStatus,
 							PaymentStatus = x.PaymentStatus,
@@ -827,12 +824,7 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			var selectedIdsCacheKey = "ExportTaskSelectedIds" + id.ToString();
-
-			if (selectedIds.HasValue())
-				HttpRuntime.Cache.Add(selectedIdsCacheKey, selectedIds, null, DateTime.UtcNow.AddMinutes(5), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
-			else
-				HttpRuntime.Cache.Remove(selectedIdsCacheKey);
+			profile.CacheSelectedEntityIds(selectedIds);
 
 			var returnUrl = Url.Action("List", "Export", new { area = "admin" });
 

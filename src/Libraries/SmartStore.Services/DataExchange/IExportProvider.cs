@@ -1,5 +1,4 @@
-﻿using System;
-using SmartStore.Core.Domain.DataExchange;
+﻿using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
@@ -17,13 +16,9 @@ namespace SmartStore.Services.DataExchange
 		string FileExtension { get; }
 
 		/// <summary>
-		/// Get configuration information
+		/// Get provider specific configuration information. Return <c>null</c> when no provider specific configuration is required.
 		/// </summary>
-		/// <param name="partialViewName">The partial view name for the configuration</param>
-		/// <param name="modelType">Type of the view model</param>
-		/// <param name="initialize">Callback to initialize the view model. Can be <c>null</c>.</param>
-		/// <returns>Whether configuration is required</returns>
-		bool RequiresConfiguration(out string partialViewName, out Type modelType, out Action<object> initialize);
+		ExportConfigurationInfo ConfigurationInfo { get; }
 
 		/// <summary>
 		/// Export data to a file

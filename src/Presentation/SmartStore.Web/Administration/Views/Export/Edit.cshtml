@@ -95,8 +95,8 @@
 			</td>
 			<td class="adminData">
 				<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
-					@Model.Provider.FriendlyName.NaIfEmpty() <span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
-				</a>
+					@Model.Provider.FriendlyName.NaIfEmpty()</a>
+				<span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
 			</td>
 		</tr>
 		@if (Model.Provider.Description.HasValue())

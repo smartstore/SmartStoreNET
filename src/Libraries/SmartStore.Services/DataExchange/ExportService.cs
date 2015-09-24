@@ -8,6 +8,8 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.DataExchange.ExportTask;
+using SmartStore.Services.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 
@@ -15,12 +17,15 @@ namespace SmartStore.Services.DataExchange
 {
 	public partial class ExportService : IExportService
 	{
+		private const string _defaultFileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%";
+
 		private readonly IRepository<ExportProfile> _exportProfileRepository;
 		private readonly IRepository<ExportDeployment> _exportDeploymentRepository;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IScheduleTaskService _scheduleTaskService;
 		private readonly IProviderManager _providerManager;
 		private readonly DataExchangeSettings _dataExchangeSettings;
+		private readonly ILocalizationService _localizationService;
 
 		public ExportService(
 			IRepository<ExportProfile> exportProfileRepository,
@@ -28,7 +33,8 @@ namespace SmartStore.Services.DataExchange
 			IEventPublisher eventPublisher,
 			IScheduleTaskService scheduleTaskService,
 			IProviderManager providerManager,
-			DataExchangeSettings dataExchangeSettings)
+			DataExchangeSettings dataExchangeSettings,
+			ILocalizationService localizationService)
 		{
 			_exportProfileRepository = exportProfileRepository;
 			_exportDeploymentRepository = exportDeploymentRepository;
@@ -36,24 +42,51 @@ namespace SmartStore.Services.DataExchange
 			_scheduleTaskService = scheduleTaskService;
 			_providerManager = providerManager;
 			_dataExchangeSettings = dataExchangeSettings;
+			_localizationService = localizationService;
 		}
 
 		#region Export profiles
 
-		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, string name, int cloneFromProfileId = 0)
+		public virtual ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider, string providerConfigData, int storeId)
+		{
+			var name = provider.GetName(_localizationService);
+			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
+
+			var profile = new ExportProfile
+			{
+				Id = 0,
+				Name = name,
+				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
+				FileNamePattern = _defaultFileNamePattern,
+				ProviderSystemName = provider.Metadata.SystemName,
+				Enabled = true,
+				SchedulingTaskId = 0,
+				ProviderConfigData = providerConfigData,
+				PerStore = false,
+				CreateZipArchive = false,
+				Cleanup = false,
+				ScheduleTask = null,
+				Deployments = new List<ExportDeployment>()
+			};
+
+			if (storeId != 0)
+			{
+				profile.Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter { StoreId = storeId });
+			}
+
+			return profile;
+		}
+
+		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, int cloneFromProfileId = 0)
 		{
 			if (provider == null)
 				throw new ArgumentNullException("provider");
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
 			
-			var systemName = provider.Metadata.SystemName;
-
-			if (name.IsEmpty())
-				name = systemName;
-
 			ScheduleTask task = null;
 			ExportProfile profile = null;
+			var name = provider.GetName(_localizationService);
 			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
 			
 			if (cloneProfile == null)
@@ -81,7 +114,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				profile = new ExportProfile
 				{
-					FileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%",
+					FileNamePattern = _defaultFileNamePattern,
 					Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
 					Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
 				};
@@ -93,7 +126,7 @@ namespace SmartStore.Services.DataExchange
 
 			profile.Name = name;
 			profile.FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength);
-			profile.ProviderSystemName = systemName;
+			profile.ProviderSystemName = provider.Metadata.SystemName;
 			profile.SchedulingTaskId = task.Id;
 
 			_exportProfileRepository.Insert(profile);

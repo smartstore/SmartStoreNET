@@ -31,6 +31,7 @@ namespace SmartStore.Data.Migrations
 			{
 				x.DeleteGroup("FroogleSettings");
 				x.DeleteGroup("BMEcatExportSettings");
+				x.DeleteGroup("OpenTransSettings");
 			});
 		}
 
@@ -136,6 +137,8 @@ namespace SmartStore.Data.Migrations
 				"Plugins.Feed.BMEcat.Generate",
 				"Plugins.Feed.BMEcat.ConfigSaveNote"
 			);
+
+			builder.Delete("Plugins.Widgets.OpenTrans.IsLexwareCompatibe");
 		}
     }
 }

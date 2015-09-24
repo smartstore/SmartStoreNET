@@ -121,24 +121,32 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			return false;
 		}
 
+		public static string SystemName
+		{
+			get { return "Feeds.GoogleMerchantCenterProductXml"; }
+		}
+
 		public static string Unspecified
 		{
 			get { return "__nospec__"; }
 		}
 
-		public bool RequiresConfiguration(out string partialViewName, out Type modelType, out Action<object> initialize)
+		public ExportConfigurationInfo ConfigurationInfo
 		{
-			partialViewName = "~/Plugins/SmartStore.GoogleMerchantCenter/Views/FeedGoogleMerchantCenter/ProfileConfiguration.cshtml";
-			modelType = typeof(ProfileConfigurationModel);
-
-			initialize = obj =>
+			get
 			{
-				var model = (obj as ProfileConfigurationModel);
+				return new ExportConfigurationInfo
+				{
+					PartialViewName = "~/Plugins/SmartStore.GoogleMerchantCenter/Views/FeedGoogleMerchantCenter/ProfileConfiguration.cshtml",
+					ModelType = typeof(ProfileConfigurationModel),
+					Initialize = obj =>
+					{
+						var model = (obj as ProfileConfigurationModel);
 
-				model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
-			};
-
-			return true;
+						model.AvailableGoogleCategories = _googleFeedService.GetTaxonomyList();
+					}
+				};
+			}
 		}
 
 		public ExportEntityType EntityType
@@ -377,7 +385,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						}
 						catch (Exception exc)
 						{
-							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.Message), exc);
+							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.ToAllMessages()), exc);
 							++context.RecordsFailed;
 						}
 

@@ -61,7 +61,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			ViewBag.DefaultAgeGroup = T("Common.Auto");		
 
 			// we do not have export profile context here, so we simply use the first profile
-			var profile = _exportService.GetExportProfilesBySystemName("Feeds.GoogleMerchantCenterProductXml").FirstOrDefault();
+			var profile = _exportService.GetExportProfilesBySystemName(ProductExportXmlProvider.SystemName).FirstOrDefault();
 			if (profile != null)
 			{
 				var config = XmlHelper.Deserialize(profile.ProviderConfigData, typeof(ProfileConfigurationModel)) as ProfileConfigurationModel;

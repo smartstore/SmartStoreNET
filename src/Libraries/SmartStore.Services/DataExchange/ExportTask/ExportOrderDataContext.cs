@@ -6,9 +6,9 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.ExportTask
 {
-	public class ExportOrderDataContext
+	internal class ExportOrderDataContext
 	{
 		protected List<int> _orderIds;
 		protected List<int> _customerIds;

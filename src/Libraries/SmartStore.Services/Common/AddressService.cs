@@ -121,7 +121,7 @@ namespace SmartStore.Services.Common
 			Guard.ArgumentNotNull(() => addressIds);
 
 			var query =
-				from x in _addressRepository.TableUntracked.Expand(x => x.Country)
+				from x in _addressRepository.TableUntracked.Expand(x => x.Country).Expand(x => x.StateProvince)
 				where addressIds.Contains(x.Id)
 				select x;
 

@@ -134,7 +134,7 @@
 			.EnableCustomBinding(true))
 	</div>
 }
-else if (Model.EntityType == ExportEntityType.Product)
+else if (Model.EntityType == ExportEntityType.Order)
 {
 	<div class="preview-grid-container">
 		@(Html.Telerik().Grid<ExportPreviewOrderModel>()
@@ -160,7 +160,9 @@ else if (Model.EntityType == ExportEntityType.Product)
 				columns.Bound(x => x.CustomerEmail);
 				columns.Bound(x => x.StoreName);
 				columns.Bound(x => x.CreatedOn);
-				columns.Bound(x => x.OrderTotal);
+				columns.Bound(x => x.OrderTotal)
+					.Format("{0:0.00}")
+					.RightAlign();
 			})
 			.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
 			.DataBinding(dataBinding => dataBinding.Ajax().Select("PreviewList", "Export", new { id = Model.Id, totalRecords = Model.TotalRecords }))

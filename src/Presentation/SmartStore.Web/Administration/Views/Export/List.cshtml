@@ -48,7 +48,8 @@
 						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
 					</td>
 					<td>
-						<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty() <span class="muted">(@profile.Provider.SystemName)</span></a>
+						<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
+						<div class="muted">@profile.Provider.SystemName</div>
 					</td>
 					<td class="centered">
 						@Html.SymbolForBool(profile.Enabled)
@@ -181,7 +182,7 @@ else
 		}
 
 		function toggleProviderDescription() {
-			var val = dialog.find('select[name="Provider.SystemName"]').val().replace('.', '');
+			var val = dialog.find('select[name="Provider.SystemName"]').val().replace(/\./g, '');
 			dialog.find('.export-provider-description').hide();
 			$('#ExportProviderDescription' + val).fadeIn('fast');
 		}

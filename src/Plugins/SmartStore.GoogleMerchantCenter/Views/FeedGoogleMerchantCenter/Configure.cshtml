@@ -1,6 +1,7 @@
 ﻿@model FeedGoogleMerchantCenterModel
 @using SmartStore.GoogleMerchantCenter;
 @using SmartStore.GoogleMerchantCenter.Models;
+@using SmartStore.GoogleMerchantCenter.Providers;
 @using SmartStore.Web.Framework;
 @using SmartStore.Web.Framework.Plugins;
 @using Telerik.Web.Mvc.UI;
@@ -21,7 +22,7 @@
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
 		</div>
 		<div>
-			@Html.Action("InfoProfile", "Export", new { systemName = "Feeds.GoogleMerchantCenterProductXml", returnUrl = Request.RawUrl, area = "admin" })
+			@Html.Action("InfoProfile", "Export", new { systemName = ProductExportXmlProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
 		</div>
 	</div>
 	<div>

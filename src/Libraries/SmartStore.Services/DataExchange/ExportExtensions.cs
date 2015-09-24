@@ -1,9 +1,13 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Linq;
+using System.Web;
+using System.Web.Caching;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange
@@ -31,6 +35,21 @@ namespace SmartStore.Services.DataExchange
 			if (provider != null)
 				return provider.Metadata.ExportProjectionSupport.Contains(type);
 			return false;
+		}
+
+		/// <summary>
+		/// Gets the localized friendly name or the system name as fallback
+		/// </summary>
+		/// <param name="provider">Export provider</param>
+		/// <param name="localizationService">Localization service</param>
+		/// <returns>Provider name</returns>
+		public static string GetName(this Provider<IExportProvider> provider, ILocalizationService localizationService)
+		{
+			var systemName = provider.Metadata.SystemName;
+			var resourceName = provider.Metadata.ResourceKeyPattern.FormatInvariant(systemName, "FriendlyName");
+			var name = localizationService.GetResource(resourceName, 0, false, systemName, true);
+
+			return (name.IsEmpty() ? systemName : name);
 		}
 
 		/// <summary>
@@ -76,6 +95,32 @@ namespace SmartStore.Services.DataExchange
 				.Truncate(maxFileNameLength);
 
 			return result;
+		}
+
+		/// <summary>
+		/// Gets the cache key for selected entity identifiers
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <returns>Cache key for selected entity identifiers</returns>
+		public static string GetSelectedEntityIdsCacheKey(this ExportProfile profile)
+		{
+			// do not use profile.Id because it can be 0
+			return "ExportProfile_SelectedEntityIds_" + profile.ProviderSystemName;
+		}
+
+		/// <summary>
+		/// Caches selected entity identifiers to be considered during following export
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <param name="selectedIds">Comma separated entity identifiers</param>
+		public static void CacheSelectedEntityIds(this ExportProfile profile, string selectedIds)
+		{
+			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
+
+			if (selectedIds.HasValue())
+				HttpRuntime.Cache.Add(selectedIdsCacheKey, selectedIds, null, DateTime.UtcNow.AddMinutes(5), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
+			else
+				HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 		}
 	}
 }

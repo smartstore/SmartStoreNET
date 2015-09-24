@@ -84,6 +84,24 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
+		public static ExpandoObject ToExpando(this StateProvince stateProvince, int languageId)
+		{
+			if (stateProvince == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = stateProvince;
+
+			expando.Id = stateProvince.Id;
+			expando.CountryId = stateProvince.CountryId;
+			expando.Name = stateProvince.GetLocalized(x => x.Name, languageId, true, false);
+			expando.Abbreviation = stateProvince.Abbreviation;
+			expando.Published = stateProvince.Published;
+			expando.DisplayOrder = stateProvince.DisplayOrder;
+
+			return expando as ExpandoObject;
+		}
+
 		public static ExpandoObject ToExpando(this Address address, int languageId)
 		{
 			if (address == null)
@@ -108,11 +126,12 @@ namespace SmartStore.Services.DataExchange
 			expando.CreatedOnUtc = address.CreatedOnUtc;
 
 			expando.Country = address.Country.ToExpando(languageId);
+			expando.StateProvince = address.StateProvince.ToExpando(languageId);
 
 			return expando as ExpandoObject;
 		}
-		
-		public static ExpandoObject ToExpando(this Customer customer)
+
+		public static ExpandoObject ToExpando(this Customer customer, int languageId)
 		{
 			if (customer == null)
 				return null;
@@ -124,7 +143,7 @@ namespace SmartStore.Services.DataExchange
 			expando.CustomerGuid = customer.CustomerGuid;
 			expando.Username = customer.Username;
 			expando.Email = customer.Email;
-			//Password... we not provide that data
+			//Password... we do not provide that data
 			expando.PasswordFormatId = customer.PasswordFormatId;
 			expando.PasswordFormat = customer.PasswordFormat;
 			expando.AdminComment = customer.AdminComment;
@@ -138,6 +157,9 @@ namespace SmartStore.Services.DataExchange
 			expando.CreatedOnUtc = customer.CreatedOnUtc;
 			expando.LastLoginDateUtc = customer.LastLoginDateUtc;
 			expando.LastActivityDateUtc = customer.LastActivityDateUtc;
+
+			expando.BillingAddress = customer.BillingAddress.ToExpando(languageId);
+			expando.ShippingAddress = customer.ShippingAddress.ToExpando(languageId);
 
 			return expando as ExpandoObject;
 		}
@@ -556,6 +578,10 @@ namespace SmartStore.Services.DataExchange
 			expando.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(localization, languageId);
 			expando.CustomerTaxDisplayType = order.CustomerTaxDisplayType;
 			expando.TaxRatesDictionary = order.TaxRatesDictionary;
+
+			expando.BillingAddress = null;
+			expando.ShippingAddress = null;
+			expando.Store = null;
 
 			return expando as ExpandoObject;
 		}

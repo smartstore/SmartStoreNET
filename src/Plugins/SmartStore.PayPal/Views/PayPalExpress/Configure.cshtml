@@ -7,21 +7,19 @@
 	Html.AddCssFileParts(true, "~/Plugins/SmartStore.PayPal/Content/smartstore.paypal.css");
 }
 
-<table class="plugin-intro-table">
-	<tr>
-		<td>
-			<div class="alert alert-info">
-				<button class="close" data-dismiss="alert">×</button>
-				@Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
-			</div>
-		</td>
-		<td>
-			<a href="https://www.paypal.com/" target="_blank">
-				<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
-			</a>
-		</td>
-	</tr>
-</table>
+<div class="plugin-configuration">
+	<div>
+		<div class="alert alert-info">
+			<button class="close" data-dismiss="alert">×</button>
+			@Html.Raw(T("Plugins.Payments.PayPalExpress.AdminInstruction"))
+		</div>
+	</div>
+	<div>
+		<a href="https://www.paypal.com/" target="_blank">
+			<img src="@Url.Content("~/Plugins/SmartStore.PayPal/Content/images/logo200x53.png")" alt="PayPal" class="logo" />
+		</a>
+	</div>
+</div>
 
 @Html.Action("StoreScopeConfiguration", "Setting", new { area = "Admin" })
 

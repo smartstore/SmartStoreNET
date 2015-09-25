@@ -6,7 +6,6 @@ using System.Net;
 using System.Text;
 using System.Web;
 using System.Web.Routing;
-using Autofac;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -18,7 +17,6 @@ using SmartStore.PayPal.Settings;
 using SmartStore.Services;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.PayPal
 {
@@ -37,22 +35,7 @@ namespace SmartStore.PayPal
 
         public IOrderTotalCalculationService OrderTotalCalculationService { get; set; }
 
-		public IComponentContext ComponentContext { get; set; }
-
 		protected abstract string GetResourceRootKey();
-
-		private PluginHelper _helper;
-		public PluginHelper Helper 
-		{
-			get
-			{
-				if (_helper == null)
-				{
-					_helper = new PluginHelper(this.ComponentContext, "SmartStore.PayPal", GetResourceRootKey());
-				}
-				return _helper;
-			}
-		}
 
         /// <summary>
         /// Verifies IPN
@@ -130,7 +113,8 @@ namespace SmartStore.PayPal
 			};
 
 			var settings = Services.Settings.LoadSetting<TSetting>(capturePaymentRequest.Order.StoreId);
-            string authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
+            var authorizationId = capturePaymentRequest.Order.AuthorizationTransactionId;
+			var currencyCode = Services.WorkContext.WorkingCurrency.CurrencyCode ?? "EUR";
 
             var req = new DoCaptureReq();
             req.DoCaptureRequest = new DoCaptureRequestType();
@@ -138,7 +122,7 @@ namespace SmartStore.PayPal
             req.DoCaptureRequest.AuthorizationID = authorizationId;
             req.DoCaptureRequest.Amount = new BasicAmountType();
             req.DoCaptureRequest.Amount.Value = Math.Round(capturePaymentRequest.Order.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
-            req.DoCaptureRequest.Amount.currencyID = (CurrencyCodeType)Enum.Parse(typeof(CurrencyCodeType), Helper.CurrencyCode, true);
+            req.DoCaptureRequest.Amount.currencyID = (CurrencyCodeType)Enum.Parse(typeof(CurrencyCodeType), currencyCode, true);
             req.DoCaptureRequest.CompleteType = CompleteCodeType.Complete;
 
             using (var service = new PayPalAPIAASoapBinding())
@@ -148,7 +132,7 @@ namespace SmartStore.PayPal
                 DoCaptureResponseType response = service.DoCapture(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
                 if (success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Paid;
@@ -193,7 +177,7 @@ namespace SmartStore.PayPal
                 RefundTransactionResponseType response = service.RefundTransaction(req);
 
                 string error = string.Empty;
-                bool Success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool Success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
                 if (Success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Refunded;
@@ -239,7 +223,7 @@ namespace SmartStore.PayPal
                 DoVoidResponseType response = service.DoVoid(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
                 if (success)
                 {
                     result.NewPaymentStatus = PaymentStatus.Voided;
@@ -281,7 +265,7 @@ namespace SmartStore.PayPal
                 var response = service.ManageRecurringPaymentsProfileStatus(req);
 
                 string error = "";
-                if (!PayPalHelper.CheckSuccess(Helper, response, out error))
+                if (!PayPalHelper.CheckSuccess(Services.Localization, response, out error))
                 {
                     result.AddError(error);
                 }

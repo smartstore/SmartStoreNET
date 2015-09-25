@@ -5,7 +5,6 @@ using System.Globalization;
 using System.Linq;
 using System.Text;
 using System.Web.Mvc;
-using Autofac;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Logging;
@@ -16,51 +15,46 @@ using SmartStore.PayPal.Validators;
 using SmartStore.Services;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.PayPal.Controllers
 {
 	public class PayPalDirectController : PaymentControllerBase
 	{
-		private readonly PluginHelper _helper;
 		private readonly IPaymentService _paymentService;
 		private readonly IOrderService _orderService;
 		private readonly IOrderProcessingService _orderProcessingService;
         private readonly ICommonServices _services;
-        private readonly IStoreService _storeService;
 
 		public PayPalDirectController(
-			IPaymentService paymentService, IOrderService orderService,
+			IPaymentService paymentService,
+			IOrderService orderService,
 			IOrderProcessingService orderProcessingService,
 			PaymentSettings paymentSettings, 
-            IComponentContext ctx, ICommonServices services,
-            IStoreService storeService)
+			ICommonServices services)
 		{
 			_paymentService = paymentService;
 			_orderService = orderService;
 			_orderProcessingService = orderProcessingService;
             _services = services;
-            _storeService = storeService;
-			_helper = new PluginHelper(ctx, "SmartStore.PayPal", "Plugins.Payments.PayPalDirect");
 		}
 
 		private SelectList TransactModeValues(TransactMode selected)
 		{
-			return new SelectList(new List<object>()
+			return new SelectList(new List<object>
 			{
-				new { ID = (int)TransactMode.Authorize, Name = _helper.GetResource("ModeAuth") },
-				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = _helper.GetResource("ModeAuthAndCapture") }
-			}, "ID", "Name", (int)selected);
+				new { ID = (int)TransactMode.Authorize, Name = T("Plugins.Payments.PayPalDirect.ModeAuth") },
+				new { ID = (int)TransactMode.AuthorizeAndCapture, Name = T("Plugins.Payments.PayPalDirect.ModeAuthAndCapture") }
+			},
+			"ID", "Name", (int)selected);
 		}
 
 		[AdminAuthorize, ChildActionOnly]
 		public ActionResult Configure()
 		{
             var model = new PayPalDirectConfigurationModel();
-            int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+            int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
             var settings = _services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
 
             model.Copy(settings, true);
@@ -82,7 +76,7 @@ namespace SmartStore.PayPal.Controllers
 			ModelState.Clear();
 
             var storeDependingSettingHelper = new StoreDependingSettingHelper(ViewData);
-            int storeScope = this.GetActiveStoreScopeConfiguration(_storeService, _services.WorkContext);
+            int storeScope = this.GetActiveStoreScopeConfiguration(_services.StoreService, _services.WorkContext);
 			var settings = _services.Settings.LoadSetting<PayPalDirectPaymentSettings>(storeScope);
 
             model.Copy(settings, false);
@@ -223,7 +217,7 @@ namespace SmartStore.PayPal.Controllers
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalDirect", true);
 			var processor = provider != null ? provider.Value as PayPalDirectProvider : null;
 			if (processor == null)
-				throw new SmartException(_helper.GetResource("NoModuleLoading"));
+				throw new SmartException(T("Plugins.Payments.PayPalDirect.NoModuleLoading"));
 
 			if (processor.VerifyIPN(strRequest, out values))
 			{
@@ -270,7 +264,7 @@ namespace SmartStore.PayPal.Controllers
 				}
 
                 var newPaymentStatus = PayPalHelper.GetPaymentStatus(payment_status, pending_reason);
-				sb.AppendLine("{0}: {1}".FormatWith(_helper.GetResource("NewPaymentStatus"), newPaymentStatus));
+				sb.AppendLine("{0}: {1}".FormatInvariant(T("Plugins.Payments.PayPalDirect.NewPaymentStatus"), newPaymentStatus));
 
 				switch (txn_type)
 				{
@@ -324,11 +318,11 @@ namespace SmartStore.PayPal.Controllers
 								}
 
 								//this.OrderService.InsertOrderNote(newOrder.OrderId, sb.ToString(), DateTime.UtcNow);
-								Logger.Information(_helper.GetResource("IpnLogInfo"), new SmartException(sb.ToString()));
+								Logger.Information(T("Plugins.Payments.PayPalDirect.IpnLogInfo"), new SmartException(sb.ToString()));
 							}
 							else
 							{
-								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(T("Plugins.Payments.PayPalDirect.IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -405,7 +399,7 @@ namespace SmartStore.PayPal.Controllers
 							}
 							else
 							{
-								Logger.Error(_helper.GetResource("IpnOrderNotFound"), new SmartException(sb.ToString()));
+								Logger.Error(T("Plugins.Payments.PayPalDirect.IpnOrderNotFound"), new SmartException(sb.ToString()));
 							}
 						}
 						#endregion
@@ -414,7 +408,7 @@ namespace SmartStore.PayPal.Controllers
 			}
 			else
 			{
-				Logger.Error(_helper.GetResource("IpnFailed"), new SmartException(strRequest));
+				Logger.Error(T("Plugins.Payments.PayPalDirect.IpnFailed"), new SmartException(strRequest));
 			}
 
 			//nothing should be rendered to visitor

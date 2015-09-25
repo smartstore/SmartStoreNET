@@ -14,6 +14,7 @@ using SmartStore.PayPal.Controllers;
 using SmartStore.PayPal.PayPalSvc;
 using SmartStore.PayPal.Services;
 using SmartStore.PayPal.Settings;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -60,7 +61,6 @@ namespace SmartStore.PayPal
             _customerService = customerService;
             _countryService = countryService;
             _httpContext = httpContext;
-
         }
 
 		protected override string GetResourceRootKey()
@@ -119,6 +119,7 @@ namespace SmartStore.PayPal
         {
             var result = new DoCaptureResponseType();
             var settings = Services.Settings.LoadSetting<PayPalExpressPaymentSettings>(capturePaymentRequest.Order.StoreId);
+			var currencyCode = Services.WorkContext.WorkingCurrency.CurrencyCode ?? "EUR";
 
             // build the request
             var req = new DoCaptureReq
@@ -127,9 +128,10 @@ namespace SmartStore.PayPal
                 {
                     Version = PayPalHelper.GetApiVersion(),
                     AuthorizationID = capturePaymentRequest.Order.CaptureTransactionId,
-                    Amount = new BasicAmountType { 
+                    Amount = new BasicAmountType
+					{ 
                         Value = Math.Round(capturePaymentRequest.Order.OrderTotal, 2).ToString("N", new CultureInfo("en-us")),
-                        currencyID = (CurrencyCodeType)Enum.Parse(typeof(CurrencyCodeType), Helper.CurrencyCode, true)
+                        currencyID = (CurrencyCodeType)Enum.Parse(typeof(CurrencyCodeType), currencyCode, true)
                     },
                     CompleteType = CompleteCodeType.NotComplete
                 }

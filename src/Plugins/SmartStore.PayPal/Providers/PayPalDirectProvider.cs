@@ -138,7 +138,7 @@ namespace SmartStore.PayPal
                 DoDirectPaymentResponseType response = service.DoDirectPayment(req);
 
                 string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
                 if (success)
                 {
                     result.AvsResult = response.AVSCode;
@@ -220,7 +220,7 @@ namespace SmartStore.PayPal
 
 			//schedule
 			details.ScheduleDetails = new ScheduleDetailsType();
-			details.ScheduleDetails.Description = Helper.GetResource("RecurringPayment");
+			details.ScheduleDetails.Description = T("Plugins.Payments.PayPalDirect.RecurringPayment");
 			details.ScheduleDetails.PaymentPeriod = new BillingPeriodDetailsType();
 			details.ScheduleDetails.PaymentPeriod.Amount = new BasicAmountType();
 			details.ScheduleDetails.PaymentPeriod.Amount.Value = Math.Round(processPaymentRequest.OrderTotal, 2).ToString("N", new CultureInfo("en-us"));
@@ -241,7 +241,7 @@ namespace SmartStore.PayPal
 					details.ScheduleDetails.PaymentPeriod.BillingPeriod = BillingPeriodType.Year;
 					break;
 				default:
-                    throw new SmartException(Helper.GetResource("NotSupportedPeriod"));
+					throw new SmartException(T("Plugins.Payments.PayPalDirect.NotSupportedPeriod"));
 			}
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCycles = processPaymentRequest.RecurringTotalCycles;
 			details.ScheduleDetails.PaymentPeriod.TotalBillingCyclesSpecified = true;
@@ -253,7 +253,7 @@ namespace SmartStore.PayPal
 				CreateRecurringPaymentsProfileResponseType response = service.CreateRecurringPaymentsProfile(req);
 
 				string error = "";
-                bool success = PayPalHelper.CheckSuccess(Helper, response, out error);
+                bool success = PayPalHelper.CheckSuccess(Services.Localization, response, out error);
 				if (success)
 				{
 					result.NewPaymentStatus = PaymentStatus.Pending;

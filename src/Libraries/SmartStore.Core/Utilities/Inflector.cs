@@ -6,7 +6,7 @@ namespace SmartStore.Utilities
 {
 
     ///<summary>
-    /// Implementation of the Infelctor in Ruby that transforms words from singular to plural, 
+    /// Implementation of the Inflector in Ruby that transforms words from singular to plural, 
     /// class names to table names, modularized class names to ones without, and class names to foreign keys
     ///</summary>
     // TODO: Inflector ist leider Englisch! Irgend 'ne Chance das zu lokalisieren??!!

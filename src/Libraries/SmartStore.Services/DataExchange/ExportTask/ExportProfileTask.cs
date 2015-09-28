@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
@@ -644,10 +645,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			try
 			{
 				_services.DbContext.DetachEntities<Order>(result);
-
-				// TODO: examine remaining attached entities
-				//foreach (var item in orderItems)
-				//	_services.DbContext.DetachEntity<Product>(item.Product);
 			}
 			catch { }
 
@@ -912,6 +909,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			dynamic expando = order.ToExpando(languageId, _services.Localization);
 
+			if (ctx.Stores.ContainsKey(order.StoreId))
+			{
+				expando.Store = ctx.Stores[order.StoreId]
+					.ToExpando(languageId);
+			}
+
 			expando.Customer = customers
 				.FirstOrDefault(x => x.Id == order.CustomerId)
 				.ToExpando(languageId);
@@ -937,12 +940,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			{
 				expando.ShippingAddress = addresses
 					.FirstOrDefault(x => x.Id == order.ShippingAddressId.Value)
-					.ToExpando(languageId);
-			}
-
-			if (ctx.Stores.ContainsKey(order.StoreId))
-			{
-				expando.Store = ctx.Stores[order.StoreId]
 					.ToExpando(languageId);
 			}
 
@@ -1231,9 +1228,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 						var stores = Init(ctx);
 
+						ctx.Export.Language = ctx.ProjectionLanguage.ToExpando();
 						ctx.Export.Customer = ctx.ProjectionCustomer.ToExpando(ctx.ProjectionLanguage.Id);
 						ctx.Export.Currency = ctx.ProjectionCurrency.ToExpando(ctx.ProjectionLanguage.Id);
-						ctx.Export.Language = ctx.ProjectionLanguage.ToExpando();
 
 						stores.ForEach(x => ExportCoreInner(ctx, x));
 					}

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
@@ -774,6 +773,19 @@ namespace SmartStore.Admin.Controllers
 			}
 		}
 
+		private ActionResult Export(string providerSystemName, string selectedIds)
+		{
+			string error = null;
+			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, "smnet-orders", out error);
+
+			if (fileStreamResult != null)
+				return fileStreamResult;
+
+			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+
+			return RedirectToAction("List");
+		}
+
         #endregion
 
         #region Order list
@@ -882,15 +894,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			string error = null;
-			var fileStreamResult = ExportProfileTask.Export(OrderExportXmlProvider.SystemName, null, "smnet-orders", out error);
-
-			if (fileStreamResult != null)
-				return fileStreamResult;
-
-			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
-
-			return RedirectToAction("List");
+			return Export(OrderExportXmlProvider.SystemName, null);
         }
 
 		[HttpPost, Compress]
@@ -899,65 +903,25 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-			string error = null;
-			var fileStreamResult = ExportProfileTask.Export(OrderExportXmlProvider.SystemName, selectedIds, "smnet-orders", out error);
-
-			if (fileStreamResult != null)
-				return fileStreamResult;
-
-			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
-
-			return RedirectToAction("List");
+			return Export(OrderExportXmlProvider.SystemName, selectedIds);
         }
 
+		[Compress]
 	    public ActionResult ExportExcelAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
-                
-                byte[] bytes = null;
-                using (var stream = new MemoryStream())
-                {
-                    _exportManager.ExportOrdersToXlsx(stream, orders);
-                    bytes = stream.ToArray();
-                }
-                return File(bytes, "text/xls", "orders.xlsx");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(OrderExportXlsxProvider.SystemName, null);
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
-
-            byte[] bytes = null;
-            using (var stream = new MemoryStream())
-            {
-                _exportManager.ExportOrdersToXlsx(stream, orders);
-                bytes = stream.ToArray();
-            }
-            return File(bytes, "text/xls", "orders.xlsx");
+			return Export(OrderExportXlsxProvider.SystemName, selectedIds);
         }
 
 		public ActionResult ExportPdf(bool all, string selectedIds = null)

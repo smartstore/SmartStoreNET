@@ -11,7 +11,7 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
 	[SystemName("Exports.SmartStoreNetOrderXml")]
-	[FriendlyName("SmartStore.NET order export")]
+	[FriendlyName("SmartStore.NET XML order export")]
 	[IsHidden(true)]
 	public class OrderExportXmlProvider : IExportProvider
 	{
@@ -243,6 +243,29 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 			writer.WriteEndElement();	// node
 		}
 
+		private void WriteRewardPointsHistory(XmlWriter writer, string node, dynamic rewardPoints, CultureInfo culture)
+		{
+			if (rewardPoints == null)
+				return;
+
+			writer.WriteStartElement(node);
+
+			foreach (dynamic rewardPoint in rewardPoints)
+			{
+				writer.WriteStartElement("RewardPoint");
+				writer.WriteElementString("Id", ((int)rewardPoint.Id).ToString());
+				writer.WriteElementString("CustomerId", ((int)rewardPoint.CustomerId).ToString());
+				writer.WriteElementString("Points", ((int)rewardPoint.Points).ToString());
+				writer.WriteElementString("PointsBalance", ((int)rewardPoint.PointsBalance).ToString());
+				writer.WriteElementString("UsedAmount", ((decimal)rewardPoint.UsedAmount).ToString(culture));
+				writer.WriteElementString("Message", (string)rewardPoint.Message);
+				writer.WriteElementString("CreatedOnUtc", ((DateTime)rewardPoint.CreatedOnUtc).ToString(culture));
+				writer.WriteEndElement();	// RewardPoint
+			}
+
+			writer.WriteEndElement();	// node
+		}
+
 		public static string SystemName
 		{
 			get { return "Exports.SmartStoreNetOrderXml"; }
@@ -399,7 +422,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteElementString("CreatedOnUtc", ((DateTime)customer.CreatedOnUtc).ToString(invariantCulture));
 								writer.WriteElementString("LastLoginDateUtc", lastLoginDateUtc.HasValue ? lastLoginDateUtc.Value.ToString(invariantCulture) : "");
 								writer.WriteElementString("LastActivityDateUtc", ((DateTime)customer.LastActivityDateUtc).ToString(invariantCulture));
+								writer.WriteElementString("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
 
+								WriteRewardPointsHistory(writer, "RewardPointsHistory", customer.RewardPointsHistory, invariantCulture);
 								WriteAddress(writer, "BillingAddress", customer.BillingAddress, invariantCulture);
 								WriteAddress(writer, "ShippingAddress", customer.ShippingAddress, invariantCulture);
 								writer.WriteEndElement();	// Customer

@@ -632,6 +632,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			{
 				ctx.OrderDataContext = new ExportOrderDataContext(result,
 					x => _customerService.GetCustomersByIds(x),
+					x => _customerService.GetRewardPointsHistoriesByCustomerIds(x),
 					x => _addressesService.GetAddressByIds(x),
 					x => _orderService.GetOrderItemsByOrderIds(x),
 					x => _shipmentService.GetShipmentsByOrderIds(x)
@@ -905,6 +906,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			var addresses = ctx.OrderDataContext.Addresses.Load(order.BillingAddressId);
 			var customers = ctx.OrderDataContext.Customers.Load(order.CustomerId);
+			var rewardPointsHistories = ctx.OrderDataContext.RewardPointsHistories.Load(order.CustomerId);
 			var orderItems = ctx.OrderDataContext.OrderItems.Load(order.Id);
 			var shipments = ctx.OrderDataContext.Shipments.Load(order.Id);
 
@@ -913,6 +915,19 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Customer = customers
 				.FirstOrDefault(x => x.Id == order.CustomerId)
 				.ToExpando(languageId);
+
+			expando.Customer.RewardPointsHistory = rewardPointsHistories
+				.Select(x => x.ToExpando())
+				.ToList();
+
+			if (rewardPointsHistories.Count > 0)
+			{
+				expando.Customer._RewardPointsBalance = rewardPointsHistories
+					.OrderByDescending(x => x.CreatedOnUtc)
+					.ThenByDescending(x => x.Id)
+					.FirstOrDefault()
+					.PointsBalance;
+			}
 
 			expando.BillingAddress = addresses
 				.FirstOrDefault(x => x.Id == order.BillingAddressId)

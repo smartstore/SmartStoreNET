@@ -640,7 +640,7 @@ namespace SmartStore.Web.Framework
 			{
 				result = "<i class='fa fa-file-code-o' title='{0}'></i>";
 			}
-			else if (fileExtension.IsCaseInsensitiveEqual("xls"))
+			else if (fileExtension.IsCaseInsensitiveEqual("xls") || fileExtension.IsCaseInsensitiveEqual("xlsx"))
 			{
 				result = "<i class='fa fa-file-excel-o' title='{0}'></i>";
 			}

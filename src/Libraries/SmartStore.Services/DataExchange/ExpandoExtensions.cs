@@ -132,6 +132,25 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
+		public static ExpandoObject ToExpando(this RewardPointsHistory history)
+		{
+			if (history == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = history;
+
+			expando.Id = history.Id;
+			expando.CustomerId = history.CustomerId;
+			expando.Points = history.Points;
+			expando.PointsBalance = history.PointsBalance;
+			expando.UsedAmount = history.UsedAmount;
+			expando.Message = history.Message;
+			expando.CreatedOnUtc = history.CreatedOnUtc;
+
+			return expando as ExpandoObject;
+		}
+
 		public static ExpandoObject ToExpando(this Customer customer, int languageId)
 		{
 			if (customer == null)
@@ -160,6 +179,9 @@ namespace SmartStore.Services.DataExchange
 
 			expando.BillingAddress = customer.BillingAddress.ToExpando(languageId);
 			expando.ShippingAddress = customer.ShippingAddress.ToExpando(languageId);
+
+			expando.RewardPointsHistory = null;
+			expando._RewardPointsBalance = 0;
 
 			return expando as ExpandoObject;
 		}
@@ -577,10 +599,12 @@ namespace SmartStore.Services.DataExchange
 			expando.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(localization, languageId);
 			expando.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(localization, languageId);
 
+			expando.Customer = null;
 			expando.BillingAddress = null;
 			expando.ShippingAddress = null;
 			expando.Store = null;
 			expando.Shipments = null;
+			expando.RedeemedRewardPointsEntry = order.RedeemedRewardPointsEntry.ToExpando();
 
 			return expando as ExpandoObject;
 		}

@@ -4,20 +4,17 @@ using System.Diagnostics;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
-using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Orders;
-using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
@@ -42,6 +39,7 @@ namespace SmartStore.Services.Customers
         private readonly IRepository<Customer> _customerRepository;
         private readonly IRepository<CustomerRole> _customerRoleRepository;
         private readonly IRepository<GenericAttribute> _gaRepository;
+		private readonly IRepository<RewardPointsHistory> _rewardPointsHistoryRepository;
         private readonly IGenericAttributeService _genericAttributeService;
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
@@ -55,6 +53,7 @@ namespace SmartStore.Services.Customers
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
             IRepository<GenericAttribute> gaRepository,
+			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IGenericAttributeService genericAttributeService,
             IEventPublisher eventPublisher,
 			RewardPointsSettings rewardPointsSettings)
@@ -63,6 +62,7 @@ namespace SmartStore.Services.Customers
             this._customerRepository = customerRepository;
             this._customerRoleRepository = customerRoleRepository;
             this._gaRepository = gaRepository;
+			this._rewardPointsHistoryRepository = rewardPointsHistoryRepository;
             this._genericAttributeService = genericAttributeService;
             this._eventPublisher = eventPublisher;
 			this._rewardPointsSettings = rewardPointsSettings;
@@ -648,6 +648,25 @@ namespace SmartStore.Services.Customers
 
 				UpdateCustomer(customer);
 			}
+		}
+
+		public virtual Multimap<int, RewardPointsHistory> GetRewardPointsHistoriesByCustomerIds(int[] customerIds)
+		{
+			Guard.ArgumentNotNull(() => customerIds);
+
+			var query =
+				from x in _rewardPointsHistoryRepository.TableUntracked
+				where customerIds.Contains(x.CustomerId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.CustomerId)
+				.ThenByDescending(x => x.CreatedOnUtc)
+				.ThenByDescending(x => x.Id)
+				.ToList()
+				.ToMultimap(x => x.CustomerId, x => x);
+
+			return map;
 		}
 
 		#endregion Reward points

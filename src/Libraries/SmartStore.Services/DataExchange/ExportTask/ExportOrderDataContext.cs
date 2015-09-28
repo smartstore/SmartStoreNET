@@ -5,6 +5,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.Services.DataExchange.ExportTask
 {
@@ -17,15 +18,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private Func<int[], IList<Customer>> _funcCustomers;
 		private Func<int[], IList<Address>> _funcAddresses;
 		private Func<int[], Multimap<int, OrderItem>> _funcOrderItems;
+		private Func<int[], Multimap<int, Shipment>> _funcShipments;
 
 		private LazyMultimap<Customer> _customers;
 		private LazyMultimap<Address> _addresses;
 		private LazyMultimap<OrderItem> _orderItems;
+		private LazyMultimap<Shipment> _shipments;
 
 		public ExportOrderDataContext(IEnumerable<Order> orders,
 			Func<int[], IList<Customer>> customers,
 			Func<int[], IList<Address>> addresses,
-			Func<int[], Multimap<int, OrderItem>> orderItems)
+			Func<int[], Multimap<int, OrderItem>> orderItems,
+			Func<int[], Multimap<int, Shipment>> shipments)
 		{
 			if (orders == null)
 			{
@@ -48,6 +52,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_funcCustomers = customers;
 			_funcAddresses = addresses;
 			_funcOrderItems = orderItems;
+			_funcShipments = shipments;
 		}
 
 		public void Clear()
@@ -58,6 +63,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_addresses.Clear();
 			if (_orderItems != null)
 				_orderItems.Clear();
+			if (_shipments != null)
+				_shipments.Clear();
 		}
 
 		public LazyMultimap<Customer> Customers
@@ -93,6 +100,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					_orderItems = new LazyMultimap<OrderItem>(keys => _funcOrderItems(keys), _orderIds);
 				}
 				return _orderItems;
+			}
+		}
+
+		public LazyMultimap<Shipment> Shipments
+		{
+			get
+			{
+				if (_shipments == null)
+				{
+					_shipments = new LazyMultimap<Shipment>(keys => _funcShipments(keys), _orderIds);
+				}
+				return _shipments;
 			}
 		}
 	}

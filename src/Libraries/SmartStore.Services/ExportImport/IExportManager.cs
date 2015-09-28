@@ -49,13 +49,6 @@ namespace SmartStore.Services.ExportImport
         void ExportProductsToXlsx(Stream stream, IList<Product> products);
 
         /// <summary>
-        /// Export order list to xml
-        /// </summary>
-        /// <param name="orders">Orders</param>
-        /// <returns>Result in XML format</returns>
-        string ExportOrdersToXml(IList<Order> orders);
-
-        /// <summary>
         /// Export orders to XLSX
         /// </summary>
         /// <param name="stream">Stream</param>

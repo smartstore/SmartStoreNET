@@ -170,6 +170,7 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\ExportProvider\OrderExportXmlProvider.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />
     <Compile Include="DataExchange\ExportExecuteResult.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />

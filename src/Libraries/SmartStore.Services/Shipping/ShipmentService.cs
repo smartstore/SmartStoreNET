@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
@@ -122,6 +123,24 @@ namespace SmartStore.Services.Shipping
             }
             return sortedOrders;
         }
+
+		public virtual Multimap<int, Shipment> GetShipmentsByOrderIds(int[] orderIds)
+		{
+			Guard.ArgumentNotNull(() => orderIds);
+
+			var query =
+				from x in _shipmentRepository.TableUntracked.Expand(x => x.ShipmentItems)
+				where orderIds.Contains(x.OrderId)
+				select x;
+
+			var map = query
+				.OrderBy(x => x.OrderId)
+				.ThenBy(x => x.CreatedOnUtc)
+				.ToList()
+				.ToMultimap(x => x.OrderId, x => x);
+
+			return map;
+		}
 
         /// <summary>
         /// Gets a shipment

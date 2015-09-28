@@ -49,6 +49,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			Categories = new Dictionary<int, Category>();
 			CategoryPathes = new Dictionary<int, string>();
 			Countries = new Dictionary<int, Country>();
+			ProductTemplates = new Dictionary<int, ProductTemplate>();
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
@@ -56,12 +57,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			Export = new ExportExecuteContext(TaskContext.CancellationToken, FolderContent);
 			Export.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 
-			Result = new ExportExecuteResult();
-
-			if (IsFileBasedExport)
+			Result = new ExportExecuteResult
 			{
-				Result.FileFolder = FolderContent;
-			}
+				FileFolder = (IsFileBasedExport ? FolderContent : null)
+			};
 		}
 
 		public List<int> EntityIdsSelected { get; private set; }
@@ -130,6 +129,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
 		public Dictionary<int, Store> Stores { get; set; }
 		public Dictionary<int, Country> Countries { get; set; }
+		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
 
 		// data loaded once per page
 		public ExportProductDataContext ProductDataContext

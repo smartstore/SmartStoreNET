@@ -485,7 +485,7 @@ namespace SmartStore.Admin.Controllers
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ProviderDescriptions = new Dictionary<string, string>();
 
-			model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders()
+			model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders(0, false)
 				.Select(x =>
 				{
 					var item = new SelectListItem

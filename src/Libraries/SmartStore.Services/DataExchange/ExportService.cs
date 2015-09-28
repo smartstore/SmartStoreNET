@@ -210,7 +210,11 @@ namespace SmartStore.Services.DataExchange
 				query = query.Where(x => x.Enabled == enabled.Value);
 			}
 
-			return query.OrderBy(x => x.Name);
+			query = query
+				.OrderBy(x => x.ProviderSystemName)
+				.ThenBy(x => x.Name);
+
+			return query;
 		}
 
 		public virtual ExportProfile GetExportProfileById(int id)
@@ -241,10 +245,12 @@ namespace SmartStore.Services.DataExchange
 		}
 
 
-		public virtual IEnumerable<Provider<IExportProvider>> LoadAllExportProviders(int storeId = 0)
+		public virtual IEnumerable<Provider<IExportProvider>> LoadAllExportProviders(int storeId = 0, bool showHidden = true)
 		{
 			var allProviders = _providerManager.GetAllProviders<IExportProvider>(storeId)
-				.Where(x => x.IsValid());
+				.Where(x => x.IsValid() && (showHidden || !x.Metadata.IsHidden))
+				.OrderBy(x => x.Metadata.SystemName)
+				.ThenBy(x => x.Metadata.FriendlyName);
 
 			return allProviders;
 		}

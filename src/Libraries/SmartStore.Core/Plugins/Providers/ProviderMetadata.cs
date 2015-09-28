@@ -69,6 +69,11 @@ namespace SmartStore.Core.Plugins
 		public bool IsEditable { get; set; }
 
 		/// <summary>
+		/// Gets or sets a value indicating whether the provider is hidden (by decorating with <see cref="IsHiddenAttribute"/>)
+		/// </summary>
+		public bool IsHidden { get; set; }
+
+		/// <summary>
 		/// Gets or sets an array of values that reflects what export projection is supported by a provider
 		/// </summary>
 		public ExportProjectionSupport[] ExportProjectionSupport { get; set; }

@@ -21,6 +21,8 @@ using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.ExportProvider;
+using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
@@ -874,44 +876,38 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            try
-            {
-				var orders = _orderService.SearchOrders(0, 0, null, null, null,
-                    null, null, null, null, null, 0, int.MaxValue);
+			string error = null;
+			var fileStreamResult = ExportProfileTask.Export(OrderExportXmlProvider.SystemName, null, "smnet-orders", out error);
 
-                var xml = _exportManager.ExportOrdersToXml(orders);
-                return new XmlDownloadResult(xml, "orders.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			if (fileStreamResult != null)
+				return fileStreamResult;
+
+			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+
+			return RedirectToAction("List");
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var orders = new List<Order>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                orders.AddRange(_orderService.GetOrdersByIds(ids));
-            }
+			string error = null;
+			var fileStreamResult = ExportProfileTask.Export(OrderExportXmlProvider.SystemName, selectedIds, "smnet-orders", out error);
 
-            var xml = _exportManager.ExportOrdersToXml(orders);
-            return new XmlDownloadResult(xml, "orders.xml");
+			if (fileStreamResult != null)
+				return fileStreamResult;
+
+			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+
+			return RedirectToAction("List");
         }
 
 	    public ActionResult ExportExcelAll()

@@ -7,6 +7,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -145,7 +146,6 @@ namespace SmartStore.Services.DataExchange
 			expando.Email = customer.Email;
 			//Password... we do not provide that data
 			expando.PasswordFormatId = customer.PasswordFormatId;
-			expando.PasswordFormat = customer.PasswordFormat;
 			expando.AdminComment = customer.AdminComment;
 			expando.IsTaxExempt = customer.IsTaxExempt;
 			expando.AffiliateId = customer.AffiliateId;
@@ -433,7 +433,7 @@ namespace SmartStore.Services.DataExchange
 			expando.UnlimitedDownloads = product.UnlimitedDownloads;
 			expando.MaxNumberOfDownloads = product.MaxNumberOfDownloads;
 			expando.DownloadExpirationDays = product.DownloadExpirationDays;
-			expando.DownloadActivationType = product.DownloadActivationType;
+			expando.DownloadActivationTypeId = product.DownloadActivationTypeId;
 			expando.HasSampleDownload = product.HasSampleDownload;
 			expando.SampleDownloadId = product.SampleDownloadId;
 			expando.HasUserAgreement = product.HasUserAgreement;
@@ -576,12 +576,11 @@ namespace SmartStore.Services.DataExchange
 			expando.OrderStatus = order.OrderStatus.GetLocalizedEnum(localization, languageId);
 			expando.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(localization, languageId);
 			expando.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(localization, languageId);
-			expando.CustomerTaxDisplayType = order.CustomerTaxDisplayType;
-			expando.TaxRatesDictionary = order.TaxRatesDictionary;
 
 			expando.BillingAddress = null;
 			expando.ShippingAddress = null;
 			expando.Store = null;
+			expando.Shipments = null;
 
 			return expando as ExpandoObject;
 		}
@@ -616,6 +615,43 @@ namespace SmartStore.Services.DataExchange
 			expando.ProductCost = orderItem.ProductCost;
 
 			expando.Product = orderItem.Product.ToExpando(languageId);
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Shipment shipment)
+		{
+			if (shipment == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = shipment;
+
+			expando.Id = shipment.Id;
+			expando.OrderId = shipment.OrderId;
+			expando.TrackingNumber = shipment.TrackingNumber;
+			expando.TotalWeight = shipment.TotalWeight;
+			expando.ShippedDateUtc = shipment.ShippedDateUtc;
+			expando.DeliveryDateUtc = shipment.DeliveryDateUtc;
+			expando.CreatedOnUtc = shipment.CreatedOnUtc;
+
+			expando.ShipmentItems = null;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this ShipmentItem shipmentItem)
+		{
+			if (shipmentItem == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = shipmentItem;
+
+			expando.Id = shipmentItem.Id;
+			expando.ShipmentId = shipmentItem.ShipmentId;
+			expando.OrderItemId = shipmentItem.OrderItemId;
+			expando.Quantity = shipmentItem.Quantity;
 
 			return expando as ExpandoObject;
 		}

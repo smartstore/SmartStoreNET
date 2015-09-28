@@ -773,6 +773,7 @@ namespace SmartStore.Web.Framework
 				var settingPattern = (pluginDescriptor != null ? "Plugins" : "Providers") + ".{0}.{1}"; // e.g. Plugins.MySystemName.DisplayOrder
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
+				var isHidden = GetIsHidden(type);
 				var exportProjectionSupport = GetExportProjectionSupport(type);				
 
 				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
@@ -789,6 +790,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.DependentWidgets, dependentWidgets);
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
+					m.For(em => em.IsHidden, isHidden);
 					m.For(em => em.ExportProjectionSupport, exportProjectionSupport);
 				});
 
@@ -854,6 +856,17 @@ namespace SmartStore.Web.Framework
 			}
 
 			return 0;
+		}
+
+		private bool GetIsHidden(Type type)
+		{
+			var attr = type.GetAttribute<IsHiddenAttribute>(false);
+			if (attr != null)
+			{
+				return attr.IsHidden;
+			}
+
+			return false;
 		}
 
 		private ExportProjectionSupport[] GetExportProjectionSupport(Type type)

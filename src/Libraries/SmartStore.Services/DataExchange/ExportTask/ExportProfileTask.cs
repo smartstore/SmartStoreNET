@@ -8,9 +8,12 @@ using System.Net;
 using System.Net.Http;
 using System.Text;
 using System.Threading;
+using System.Threading.Tasks;
 using System.Web;
+using System.Web.Mvc;
 using Autofac;
 using SmartStore.Core;
+using SmartStore.Core.Async;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -22,6 +25,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
 using SmartStore.Core.Html;
 using SmartStore.Core.IO;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -33,6 +37,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
+using SmartStore.Services.Shipping;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
@@ -70,6 +75,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private ICountryService _countryService;
 		private IRepository<Order> _orderRepository;
 		private ILanguageService _languageService;
+		private IShipmentService _shipmentService;
+		private IProductTemplateService _productTemplateService;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -99,6 +106,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_countryService = context.Resolve<ICountryService>();
 			_orderRepository = context.Resolve<IRepository<Order>>();
 			_languageService = context.Resolve<ILanguageService>();
+			_shipmentService = context.Resolve<IShipmentService>();
+			_productTemplateService = context.Resolve<IProductTemplateService>();
 		}
 
 		#endregion
@@ -624,7 +633,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.OrderDataContext = new ExportOrderDataContext(result,
 					x => _customerService.GetCustomersByIds(x),
 					x => _addressesService.GetAddressByIds(x),
-					x => _orderService.GetOrderItemsByOrderIds(x)
+					x => _orderService.GetOrderItemsByOrderIds(x),
+					x => _shipmentService.GetShipmentsByOrderIds(x)
 				);
 
 				SetProgress(ctx, orders.Count);
@@ -652,8 +662,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productCategories = ctx.ProductDataContext.ProductCategories.Load(product.Id);
 			var productAttributes = ctx.ProductDataContext.Attributes.Load(product.Id);
 			var productAttributeCombinations = ctx.ProductDataContext.AttributeCombinations.Load(product.Id);
+			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 
 			dynamic expando = product.ToExpando(languageId);
+
+			expando._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
 			expando._DetailUrl = ctx.Store.Url + expando.SeName;
 
@@ -893,6 +906,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var addresses = ctx.OrderDataContext.Addresses.Load(order.BillingAddressId);
 			var customers = ctx.OrderDataContext.Customers.Load(order.CustomerId);
 			var orderItems = ctx.OrderDataContext.OrderItems.Load(order.Id);
+			var shipments = ctx.OrderDataContext.Shipments.Load(order.Id);
 
 			dynamic expando = order.ToExpando(languageId, _services.Localization);
 
@@ -921,10 +935,26 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(e =>
 				{
 					dynamic exp = e.ToExpando(languageId);
+					var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == e.Product.ProductTemplateId);
+
+					exp.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
 					exp.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter, decimal.Zero, true);
 
 					GetDeliveryTimeAndQuantityUnit(ctx, exp.Product, e.Product.DeliveryTimeId, e.Product.QuantityUnitId);
+
+					return exp as ExpandoObject;
+				})
+				.ToList();
+
+			expando.Shipments = shipments
+				.Select(e =>
+				{
+					dynamic exp = e.ToExpando();
+
+					exp.ShipmentItems = e.ShipmentItems
+						.Select(x => x.ToExpando())
+						.ToList();
 
 					return exp as ExpandoObject;
 				})
@@ -1171,6 +1201,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.GetAllDeliveryTimes().ToDictionary(x => x.Id, x => x);
 						ctx.QuantityUnits = _quantityUnitService.GetAllQuantityUnits().ToDictionary(x => x.Id, x => x);
+						ctx.ProductTemplates = _productTemplateService.GetAllProductTemplates().ToDictionary(x => x.Id, x => x);
 
 						if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 						{
@@ -1263,6 +1294,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					try
 					{
+						ctx.ProductTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Stores.Clear();
 						ctx.QuantityUnits.Clear();
@@ -1323,11 +1355,67 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
+
+		/// <summary>
+		/// The name of the public export folder
+		/// </summary>
 		public static string PublicFolder
 		{
 			get { return "Exchange"; }
 		}
 
+		/// <summary>
+		/// Exports with a volatile profile
+		/// </summary>
+		/// <param name="providerSystemName">Provider system name</param>
+		/// <param name="selectedEntityIds">Entity identifiers of entities to be exported. Can be <c>null</c> to export all entities.</param>
+		/// <param name="error">Last error</param>
+		/// <returns>File stream result of the first export data file</returns>
+		public static FileStreamResult Export(string providerSystemName, string selectedEntityIds, string downloadFileName, out string error)
+		{
+			Guard.ArgumentNotEmpty(() => providerSystemName);
+
+			error = null;
+			var cancellation = new CancellationTokenSource(TimeSpan.FromHours(3.0));
+
+			var task = AsyncRunner.Run<ExportExecuteResult>((container, ct) =>
+			{
+				var exportTask = new ExportProfileTask();
+				return exportTask.Execute(providerSystemName, container, ct, null, selectedEntityIds);
+			},
+			cancellation.Token, TaskCreationOptions.LongRunning, TaskScheduler.Default);
+
+			task.Wait();
+
+			if (task.Result != null && task.Result.Succeeded && task.Result.FileFolder.HasValue() && task.Result.Files.Count > 0)
+			{
+				var fileName = task.Result.Files.First().FileName;
+				var filePath = Path.Combine(task.Result.FileFolder, fileName);
+
+				var stream = new FileStream(filePath, FileMode.Open, FileAccess.Read, FileShare.Read);
+				var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(fileName));
+
+				if (downloadFileName.IsEmpty())
+					downloadFileName = providerSystemName;
+				
+				if (selectedEntityIds.HasValue() && !selectedEntityIds.Contains(","))
+					downloadFileName = string.Concat(downloadFileName, "-", selectedEntityIds);
+
+				result.FileDownloadName = downloadFileName.ToValidFileName() + Path.GetExtension(filePath);
+
+				return result;
+			}
+
+			if (task.Result != null)
+				error = task.Result.LastError;
+
+			return null;
+		}
+
+		/// <summary>
+		/// Executes the export profile task
+		/// </summary>
+		/// <param name="taskContext"></param>
 		public void Execute(TaskExecutionContext taskContext)
 		{
 			InitDependencies(taskContext);
@@ -1347,6 +1435,16 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			taskContext.CancellationToken.ThrowIfCancellationRequested();
 		}
 
+		/// <summary>
+		/// Executes the export profile task with a volatile profile
+		/// </summary>
+		/// <param name="providerSystemName">Provider system name</param>
+		/// <param name="context">Component context</param>
+		/// <param name="cancellationToken">Cancellation token</param>
+		/// <param name="providerConfigData">Provider specific configuration data. Cane be <c>null</c>.</param>
+		/// <param name="selectedEntityIds">Entity identifiers of entities to be exported. Can be <c>null</c> to export all entities.</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Export execute result</returns>
 		public ExportExecuteResult Execute(string providerSystemName, IComponentContext context, CancellationToken cancellationToken, 
 			string providerConfigData = null, string selectedEntityIds = null, int storeId = 0)
 		{
@@ -1369,6 +1467,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return ctx.Result;
 		}
 
+		/// <summary>
+		/// Executes the export profile task to get preview data
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <param name="context">Component context</param>
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
+		/// <param name="totalRecords">Number of total records</param>
+		/// <param name="previewData">Action to process preview data</param>
 		public void Preview(ExportProfile profile, IComponentContext context, int pageIndex, int pageSize, int totalRecords, Action<dynamic> previewData)
 		{
 			Guard.ArgumentNotNull(() => profile);
@@ -1387,6 +1494,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			ExportCoreOuter(ctx);
 		}
 
+		/// <summary>
+		/// Get the number of total records
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <param name="provider">Export provider</param>
+		/// <param name="context">Component context</param>
+		/// <returns>Number of total records</returns>
 		public int GetRecordCount(ExportProfile profile, Provider<IExportProvider> provider, IComponentContext context)
 		{
 			Guard.ArgumentNotNull(() => profile);

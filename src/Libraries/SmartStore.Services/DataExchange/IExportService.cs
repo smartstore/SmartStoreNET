@@ -62,8 +62,9 @@ namespace SmartStore.Services.DataExchange
 		/// Load all export providers
 		/// </summary>
 		/// <param name="storeId">Store identifier</param>
+		/// <param name="showHidden">Whether to load hidden providers</param>
 		/// <returns>Export providers</returns>
-		IEnumerable<Provider<IExportProvider>> LoadAllExportProviders(int storeId = 0);
+		IEnumerable<Provider<IExportProvider>> LoadAllExportProviders(int storeId = 0, bool showHidden = true);
 
 		/// <summary>
 		/// Load export provider by system name

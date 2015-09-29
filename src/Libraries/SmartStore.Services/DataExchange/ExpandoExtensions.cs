@@ -132,21 +132,21 @@ namespace SmartStore.Services.DataExchange
 			return expando as ExpandoObject;
 		}
 
-		public static ExpandoObject ToExpando(this RewardPointsHistory history)
+		public static ExpandoObject ToExpando(this RewardPointsHistory points)
 		{
-			if (history == null)
+			if (points == null)
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = history;
+			expando._Entity = points;
 
-			expando.Id = history.Id;
-			expando.CustomerId = history.CustomerId;
-			expando.Points = history.Points;
-			expando.PointsBalance = history.PointsBalance;
-			expando.UsedAmount = history.UsedAmount;
-			expando.Message = history.Message;
-			expando.CreatedOnUtc = history.CreatedOnUtc;
+			expando.Id = points.Id;
+			expando.CustomerId = points.CustomerId;
+			expando.Points = points.Points;
+			expando.PointsBalance = points.PointsBalance;
+			expando.UsedAmount = points.UsedAmount;
+			expando.Message = points.Message;
+			expando.CreatedOnUtc = points.CreatedOnUtc;
 
 			return expando as ExpandoObject;
 		}

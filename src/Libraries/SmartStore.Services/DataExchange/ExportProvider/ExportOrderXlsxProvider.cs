@@ -12,7 +12,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreNetOrderXlsx")]
 	[FriendlyName("SmartStore.NET Excel order export")]
 	[IsHidden(true)]
-	public class OrderExportXlsxProvider : IExportProvider
+	public class ExportOrderXlsxProvider : IExportProvider
 	{
 		private string[] Properties
 		{

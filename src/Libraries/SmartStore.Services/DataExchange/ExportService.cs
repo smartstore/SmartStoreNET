@@ -69,10 +69,9 @@ namespace SmartStore.Services.DataExchange
 				Deployments = new List<ExportDeployment>()
 			};
 
-			var filter = new ExportFilter
-			{
-				StoreId = storeId
-			};
+			var filter = new ExportFilter();
+			filter.IsPublished = null;
+			filter.StoreId = storeId;
 
 			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
 

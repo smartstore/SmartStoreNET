@@ -69,10 +69,12 @@ namespace SmartStore.Services.DataExchange
 				Deployments = new List<ExportDeployment>()
 			};
 
-			if (storeId != 0)
+			var filter = new ExportFilter
 			{
-				profile.Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter { StoreId = storeId });
-			}
+				StoreId = storeId
+			};
+
+			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
 
 			return profile;
 		}

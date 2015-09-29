@@ -140,6 +140,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				AvailabilityMaximum = ctx.Filter.AvailabilityMaximum
 			};
 
+			if (!ctx.Filter.IsPublished.HasValue)
+				searchContext.ShowHidden = true;
+
 			if (ctx.Filter.CategoryIds != null && ctx.Filter.CategoryIds.Length > 0)
 				searchContext.CategoryIds = ctx.Filter.CategoryIds.ToList();
 

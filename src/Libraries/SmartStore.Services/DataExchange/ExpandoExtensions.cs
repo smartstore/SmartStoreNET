@@ -265,6 +265,9 @@ namespace SmartStore.Services.DataExchange
 			expando._ImageUrl = pictureService.GetPictureUrl(picture, detailsPictureSize, false, store.Url);
 			expando._FullSizeImageUrl = pictureService.GetPictureUrl(picture, 0, false, store.Url);
 
+            var relativeUrl = pictureService.GetPictureUrl(picture);
+            expando._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
+
 			return expando as ExpandoObject;
 		}
 

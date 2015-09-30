@@ -589,7 +589,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
 				x => _productService.GetProductPicturesByProductIds(x),
 				x => _productService.GetProductTagsByProductIds(x),
-				x => _productService.GetAppliedDiscountsByProductIds(x)
+				x => _productService.GetAppliedDiscountsByProductIds(x),
+				x => _productService.GetProductSpecificationAttributesByProductIds(x),
+				x => _productService.GetBundleItemsByProductIds(x)
 			);
 
 			SetProgress(ctx, products.Count);
@@ -671,8 +673,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productCategories = ctx.ProductDataContext.ProductCategories.Load(product.Id);
 			var productAttributes = ctx.ProductDataContext.Attributes.Load(product.Id);
 			var productAttributeCombinations = ctx.ProductDataContext.AttributeCombinations.Load(product.Id);
-			var appliedDiscounts = ctx.ProductDataContext.AppliedDiscounts.Load(product.Id);
-			var tierPrices = ctx.ProductDataContext.TierPrices.Load(product.Id);
 
 			dynamic expando = product.ToExpando(languageId);
 
@@ -778,13 +778,31 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				})
 				.ToList();
 
-			expando.AppliedDiscounts = appliedDiscounts
-				.Select(x => x.ToExpando())
-				.ToList();
+			if (product.HasDiscountsApplied)
+			{
+				var appliedDiscounts = ctx.ProductDataContext.AppliedDiscounts.Load(product.Id);
 
-			expando.TierPrices = tierPrices
-				.Select(x => x.ToExpando())
-				.ToList();
+				expando.AppliedDiscounts = appliedDiscounts
+					.Select(x => x.ToExpando())
+					.ToList();
+			}
+			else
+			{
+				expando.AppliedDiscounts = new List<ExpandoObject>();
+			}
+
+			if (product.HasTierPrices)
+			{
+				var tierPrices = ctx.ProductDataContext.TierPrices.Load(product.Id);
+
+				expando.TierPrices = tierPrices
+					.Select(x => x.ToExpando())
+					.ToList();
+			}
+			else
+			{
+				expando.TierPrices = new List<ExpandoObject>();
+			}
 
 			#endregion
 
@@ -793,14 +811,34 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			if (ctx.Provider.Supports(ExportProjectionSupport.HighDataDepth))
 			{
 				var productTags = ctx.ProductDataContext.ProductTags.Load(product.Id);
+				var specificationAttributes = ctx.ProductDataContext.ProductSpecificationAttributes.Load(product.Id);
 
 				expando.ProductTags = productTags
 					.Select(x => x.ToExpando(languageId))
 					.ToList();
+
+				expando.ProductSpecificationAttributes = specificationAttributes
+					.Select(x => x.ToExpando(languageId))
+					.ToList();
+
+				if (product.ProductType == ProductType.BundledProduct)
+				{
+					var bundleItems = ctx.ProductDataContext.ProductBundleItems.Load(product.Id);
+
+					expando.ProductBundleItems = bundleItems
+						.Select(x => x.ToExpando((string)expando.Name, languageId))
+						.ToList();
+				}
+				else
+				{
+					expando.ProductBundleItems = new List<ExpandoObject>();
+				}
 			}
 			else
 			{
 				expando.ProductTags = new List<ExpandoObject>();
+				expando.ProductSpecificationAttributes = new List<ExpandoObject>();
+				expando.ProductBundleItems = new List<ExpandoObject>();
 			}
 
 			#endregion

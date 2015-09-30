@@ -1429,6 +1429,8 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
 		{
+			Guard.ArgumentNotNull(() => productIds);
+
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.ProductTags)
 				.Where(x => productIds.Contains(x.Id))
@@ -1451,6 +1453,8 @@ namespace SmartStore.Services.Catalog
 
 		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
 		{
+			Guard.ArgumentNotNull(() => productIds);
+
 			var query = _productRepository.TableUntracked
 				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
 				.Where(x => productIds.Contains(x.Id))
@@ -1460,8 +1464,6 @@ namespace SmartStore.Services.Catalog
 					Discounts = x.AppliedDiscounts
 				});
 
-			query.ToString().Dump();
-
 			var map = new Multimap<int, Discount>();
 
 			foreach (var item in query.ToList())
@@ -1469,6 +1471,23 @@ namespace SmartStore.Services.Catalog
 				foreach (var discount in item.Discounts)
 					map.Add(item.ProductId, discount);
 			}
+
+			return map;
+		}
+
+		public virtual Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query = _productSpecificationAttributeRepository.TableUntracked
+				.Expand(x => x.SpecificationAttributeOption)
+				.Expand(x => x.SpecificationAttributeOption.SpecificationAttribute)
+				.Where(x => productIds.Contains(x.ProductId));
+
+			var map = query
+				.OrderBy(x => x.DisplayOrder)
+				.ToList()
+				.ToMultimap(x => x.ProductId, x => x);
 
 			return map;
 		}
@@ -2033,6 +2052,24 @@ namespace SmartStore.Services.Catalog
 			query.ToList().Each(x => bundleItemData.Add(new ProductBundleItemData(x)));
 
 			return bundleItemData;
+		}
+
+		public virtual Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false)
+		{
+			Guard.ArgumentNotNull(() => productIds);
+
+			var query =
+				from pbi in _productBundleItemRepository.TableUntracked
+				join p in _productRepository.TableUntracked on pbi.ProductId equals p.Id
+				where productIds.Contains(pbi.BundleProductId) && !p.Deleted && (showHidden || (pbi.Published && p.Published))
+				orderby pbi.DisplayOrder
+				select pbi;
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.BundleProductId, x => x);
+
+			return map;
 		}
 
 		#endregion

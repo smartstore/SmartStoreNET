@@ -604,6 +604,62 @@ namespace SmartStore.Services.DataExchange
 			_writer.WriteEndElement();	// ProductManufacturers
 
 
+			_writer.WriteStartElement("ProductSpecificationAttributes");
+			foreach (dynamic psa in product.ProductSpecificationAttributes)
+			{
+				_writer.WriteStartElement("ProductSpecificationAttribute");
+
+				_writer.Write("Id", ((int)psa.Id).ToString());
+				_writer.Write("ProductId", ((int)psa.ProductId).ToString());
+				_writer.Write("SpecificationAttributeOptionId", ((int)psa.SpecificationAttributeOptionId).ToString());
+				_writer.Write("AllowFiltering", ((bool)psa.AllowFiltering).ToString());
+				_writer.Write("ShowOnProductPage", ((bool)psa.ShowOnProductPage).ToString());
+				_writer.Write("DisplayOrder", ((int)psa.DisplayOrder).ToString());
+
+				dynamic option = psa.SpecificationAttributeOption;
+
+				_writer.WriteStartElement("SpecificationAttributeOption");
+				_writer.Write("Id", ((int)option.Id).ToString());
+				_writer.Write("SpecificationAttributeId", ((int)option.SpecificationAttributeId).ToString());
+				_writer.Write("DisplayOrder", ((int)option.DisplayOrder).ToString());
+				_writer.Write("Name", (string)option.Name);
+
+				_writer.WriteStartElement("SpecificationAttribute");
+				_writer.Write("Id", ((int)option.SpecificationAttribute.Id).ToString());
+				_writer.Write("Name", (string)option.SpecificationAttribute.Name);
+				_writer.Write("DisplayOrder", ((int)option.SpecificationAttribute.DisplayOrder).ToString());
+				_writer.WriteEndElement();	// SpecificationAttribute
+				_writer.WriteEndElement();	// SpecificationAttributeOption
+
+				_writer.WriteEndElement();	// ProductSpecificationAttribute
+			}
+			_writer.WriteEndElement();	// ProductSpecificationAttributes
+
+
+			_writer.WriteStartElement("ProductBundleItems");
+			foreach (var bundleItem in product.ProductBundleItems)
+			{
+				decimal? bundleItemDiscount = bundleItem.Discount;
+
+				_writer.WriteStartElement("ProductBundleItem");
+				_writer.Write("Id", ((int)bundleItem.Id).ToString());
+				_writer.Write("ProductId", ((int)bundleItem.ProductId).ToString());
+				_writer.Write("BundleProductId", ((int)bundleItem.BundleProductId).ToString());
+				_writer.Write("Quantity", ((int)bundleItem.Quantity).ToString());
+				_writer.Write("Discount", bundleItemDiscount.HasValue ? bundleItemDiscount.Value.ToString(_culture) : "");
+				_writer.Write("DiscountPercentage", ((bool)bundleItem.DiscountPercentage).ToString());
+				_writer.Write("Name", (string)bundleItem.Name);
+				_writer.Write("ShortDescription", (string)bundleItem.ShortDescription);
+				_writer.Write("FilterAttributes", ((bool)bundleItem.FilterAttributes).ToString());
+				_writer.Write("HideThumbnail", ((bool)bundleItem.HideThumbnail).ToString());
+				_writer.Write("Visible", ((bool)bundleItem.Visible).ToString());
+				_writer.Write("Published", ((bool)bundleItem.Published).ToString());
+				_writer.Write("DisplayOrder", ((int)bundleItem.DisplayOrder).ToString());
+				_writer.Write("CreatedOnUtc", ((DateTime)bundleItem.CreatedOnUtc).ToString(_culture));
+				_writer.Write("UpdatedOnUtc", ((DateTime)bundleItem.UpdatedOnUtc).ToString(_culture));
+				_writer.WriteEndElement();	// ProductBundleItem
+			}
+			_writer.WriteEndElement();	// ProductBundleItems
 
 
 			if (node.HasValue())

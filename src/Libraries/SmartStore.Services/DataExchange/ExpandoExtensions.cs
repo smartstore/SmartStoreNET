@@ -738,5 +738,67 @@ namespace SmartStore.Services.DataExchange
 
 			return expando as ExpandoObject;
 		}
+
+		public static ExpandoObject ToExpando(this ProductSpecificationAttribute psa, int languageId)
+		{
+			if (psa == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = psa;
+
+			expando.Id = psa.Id;
+			expando.ProductId = psa.ProductId;
+			expando.SpecificationAttributeOptionId = psa.SpecificationAttributeOptionId;
+			expando.AllowFiltering = psa.AllowFiltering;
+			expando.ShowOnProductPage = psa.ShowOnProductPage;
+			expando.DisplayOrder = psa.DisplayOrder;
+
+			var option = psa.SpecificationAttributeOption;
+
+			expando.SpecificationAttributeOption._Entity = option;
+			expando.SpecificationAttributeOption.Id = option.Id;
+			expando.SpecificationAttributeOption.SpecificationAttributeId = option.SpecificationAttributeId;
+			expando.SpecificationAttributeOption.Name = option.GetLocalized(x => x.Name, languageId, true, false);
+			expando.SpecificationAttributeOption.DisplayOrder = option.DisplayOrder;
+
+			expando.SpecificationAttributeOption.SpecificationAttribute._Entity = option.SpecificationAttribute;
+			expando.SpecificationAttributeOption.SpecificationAttribute.Id = option.SpecificationAttribute.Id;
+			expando.SpecificationAttributeOption.SpecificationAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, languageId, true, false);
+			expando.SpecificationAttributeOption.SpecificationAttribute.DisplayOrder = option.SpecificationAttribute.DisplayOrder;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this ProductBundleItem bundleItem, string productName, int languageId)
+		{
+			if (bundleItem == null)
+				return null;
+
+			var name = bundleItem.GetLocalized(x => x.Name, languageId, true, false);
+			if (name.IsEmpty())
+				name = productName;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = bundleItem;
+
+			expando.Id = bundleItem.Id;
+			expando.ProductId = bundleItem.ProductId;
+			expando.BundleProductId = bundleItem.BundleProductId;
+			expando.Quantity = bundleItem.Quantity;
+			expando.Discount = bundleItem.Discount;
+			expando.DiscountPercentage = bundleItem.DiscountPercentage;
+			expando.Name = name;
+			expando.ShortDescription = bundleItem.GetLocalized(x => x.ShortDescription, languageId, true, false);
+			expando.FilterAttributes = bundleItem.FilterAttributes;
+			expando.HideThumbnail = bundleItem.HideThumbnail;
+			expando.Visible = bundleItem.Visible;
+			expando.Published = bundleItem.Published;
+			expando.DisplayOrder = bundleItem.DisplayOrder;
+			expando.CreatedOnUtc = bundleItem.CreatedOnUtc;
+			expando.UpdatedOnUtc = bundleItem.UpdatedOnUtc;
+
+			return expando as ExpandoObject;
+		}
 	}
 }

@@ -177,6 +177,13 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map of applied discounts</returns>
 		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
 
+		/// <summary>
+		/// Get product specification attributes by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of product specification attributes</returns>
+		Multimap<int, ProductSpecificationAttribute> GetProductSpecificationAttributesByProductIds(int[] productIds);
+
         #endregion
 
         #region Related products
@@ -390,6 +397,14 @@ namespace SmartStore.Services.Catalog
 		/// <param name="showHidden">A value indicating whether to show hidden records</param>
 		/// <returns>List of bundle items</returns>
 		IList<ProductBundleItemData> GetBundleItems(int bundleProductId, bool showHidden = false);
+
+		/// <summary>
+		/// Get bundle items by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <returns>Map of bundle items</returns>
+		Multimap<int, ProductBundleItem> GetBundleItemsByProductIds(int[] productIds, bool showHidden = false);
 
 		#endregion
 

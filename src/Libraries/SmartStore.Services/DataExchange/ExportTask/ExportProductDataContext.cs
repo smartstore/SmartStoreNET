@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Linq;
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
@@ -9,13 +10,19 @@ namespace SmartStore.Services.DataExchange.ExportTask
 {
 	internal class ExportProductDataContext : PriceCalculationContext
 	{
+		private List<int> _productIdsBundleItems;
+
 		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
 		private Func<int[], Multimap<int, ProductTag>> _funcProductTags;
+		private Func<int[], Multimap<int, ProductSpecificationAttribute>> _funcProductSpecificationAttributes;
+		private Func<int[], Multimap<int, ProductBundleItem>> _funcProductBundleItems;
 
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<ProductPicture> _productPictures;
 		private LazyMultimap<ProductTag> _productTags;
+		private LazyMultimap<ProductSpecificationAttribute> _productSpecificationAttributes;
+		private LazyMultimap<ProductBundleItem> _productBundleItems;
 
 		public ExportProductDataContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
@@ -25,18 +32,30 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], Multimap<int, ProductPicture>> productPictures,
 			Func<int[], Multimap<int, ProductTag>> productTags,
-			Func<int[], Multimap<int, Discount>> productAppliedDiscounts)
+			Func<int[], Multimap<int, Discount>> productAppliedDiscounts,
+			Func<int[], Multimap<int, ProductSpecificationAttribute>> productSpecificationAttributes,
+			Func<int[], Multimap<int, ProductBundleItem>> productBundleItems)
 			: base(products,
 				attributes,
 				attributeCombinations,
 				tierPrices,
 				productCategories,
-				productAppliedDiscounts
-			)
+				productAppliedDiscounts)
 		{
+			if (products == null)
+			{
+				_productIdsBundleItems = new List<int>();
+			}
+			else
+			{
+				_productIdsBundleItems = new List<int>(products.Where(x => x.ProductType == ProductType.BundledProduct).Select(x => x.Id));
+			}
+
 			_funcProductManufacturers = productManufacturers;
 			_funcProductPictures = productPictures;
 			_funcProductTags = productTags;
+			_funcProductSpecificationAttributes = productSpecificationAttributes;
+			_funcProductBundleItems = productBundleItems;
 		}
 
 		public new void Clear()
@@ -47,6 +66,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_productPictures.Clear();
 			if (_productTags != null)
 				_productTags.Clear();
+			if (_productSpecificationAttributes != null)
+				_productSpecificationAttributes.Clear();
+			if (_productBundleItems != null)
+				_productBundleItems.Clear();
 
 			base.Clear();
 		}
@@ -92,6 +115,30 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					_productTags = new LazyMultimap<ProductTag>(keys => _funcProductTags(keys), _productIds);
 				}
 				return _productTags;
+			}
+		}
+
+		public LazyMultimap<ProductSpecificationAttribute> ProductSpecificationAttributes
+		{
+			get
+			{
+				if (_productSpecificationAttributes == null)
+				{
+					_productSpecificationAttributes = new LazyMultimap<ProductSpecificationAttribute>(keys => _funcProductSpecificationAttributes(keys), _productIds);
+				}
+				return _productSpecificationAttributes;
+			}
+		}
+
+		public LazyMultimap<ProductBundleItem> ProductBundleItems
+		{
+			get
+			{
+				if (_productBundleItems == null)
+				{
+					_productBundleItems = new LazyMultimap<ProductBundleItem>(keys => _funcProductBundleItems(keys), _productIdsBundleItems);
+				}
+				return _productBundleItems;
 			}
 		}
 	}

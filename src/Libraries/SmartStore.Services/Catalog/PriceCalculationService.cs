@@ -74,13 +74,23 @@ namespace SmartStore.Services.Catalog
 			if (product.HasDiscountsApplied)
             {
                 //we use this property ("HasDiscountsApplied") for performance optimziation to avoid unnecessary database calls
-				foreach (var discount in product.AppliedDiscounts)
-                {
-					if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+				IEnumerable<Discount> appliedDiscounts = null;
+
+				if (context == null)
+					appliedDiscounts = product.AppliedDiscounts;
+				else
+					appliedDiscounts = context.AppliedDiscounts.Load(product.Id);
+
+				if (appliedDiscounts != null)
+				{
+					foreach (var discount in appliedDiscounts)
 					{
-						result.Add(discount);
+						if (discount.DiscountType == DiscountType.AssignedToSkus && !result.Any(x => x.Id == discount.Id) && _discountService.IsDiscountValid(discount, customer))
+						{
+							result.Add(discount);
+						}
 					}
-                }
+				}
             }
 
             //performance optimization. load all category discounts just to ensure that we have at least one
@@ -270,7 +280,8 @@ namespace SmartStore.Services.Catalog
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
 				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
-				x => _categoryService.GetProductCategoriesByProductIds(x, true)
+				x => _categoryService.GetProductCategoriesByProductIds(x, true),
+				x => _productService.GetAppliedDiscountsByProductIds(x)
 			);
 
 			return context;

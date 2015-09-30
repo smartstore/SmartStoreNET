@@ -587,7 +587,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => _productService.GetTierPrices(x, ctx.ProjectionCustomer, ctx.Store.Id),
 				x => _categoryService.GetProductCategoriesByProductIds(x),
 				x => _manufacturerService.GetProductManufacturersByProductIds(x),
-				x => _productService.GetProductPicturesByProductIds(x)
+				x => _productService.GetProductPicturesByProductIds(x),
+				x => _productService.GetProductTagsByProductIds(x),
+				x => _productService.GetAppliedDiscountsByProductIds(x)
 			);
 
 			SetProgress(ctx, products.Count);
@@ -658,14 +660,23 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		{
 			var result = new List<ExpandoObject>();
 			var languageId = (ctx.Projection.LanguageId ?? 0);
+			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
+			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
+
+			if (ctx.Provider.Supports(ExportProjectionSupport.MainPictureUrl) && ctx.Projection.PictureSize > 0)
+				pictureSize = ctx.Projection.PictureSize;
+
 			var productPictures = ctx.ProductDataContext.ProductPictures.Load(product.Id);
 			var productManufacturers = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
 			var productCategories = ctx.ProductDataContext.ProductCategories.Load(product.Id);
 			var productAttributes = ctx.ProductDataContext.Attributes.Load(product.Id);
 			var productAttributeCombinations = ctx.ProductDataContext.AttributeCombinations.Load(product.Id);
-			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
+			var appliedDiscounts = ctx.ProductDataContext.AppliedDiscounts.Load(product.Id);
+			var tierPrices = ctx.ProductDataContext.TierPrices.Load(product.Id);
 
 			dynamic expando = product.ToExpando(languageId);
+
+			#region gerneral data
 
 			expando._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
@@ -686,11 +697,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.OrderBy(x => x.DisplayOrder)
 				.Select(x =>
 				{
-					int pictureSize = _mediaSettings.ProductDetailsPictureSize;
-
-					if (ctx.Provider.Supports(ExportProjectionSupport.MainPictureUrl) && ctx.Projection.PictureSize > 0)
-						pictureSize = ctx.Projection.PictureSize;
-
 					dynamic exp = new ExpandoObject();
 					exp._Entity = x;
 					exp.Id = x.Id;
@@ -712,6 +718,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
 					exp.Manufacturer = x.Manufacturer.ToExpando(languageId);
 
+					if (x.Manufacturer != null && x.Manufacturer.PictureId.HasValue)
+						exp.Manufacturer.Picture = x.Manufacturer.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+					else
+						exp.Manufacturer.Picture = null;
+
 					return exp as ExpandoObject;
 				})
 				.ToList();
@@ -726,6 +737,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
 					exp.Category = x.Category.ToExpando(languageId);
+
+					if (x.Category != null && x.Category.PictureId.HasValue)
+						exp.Category.Picture = x.Category.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+					else
+						exp.Category.Picture = null;
 
 					if (expando._CategoryName == null)
 						expando._CategoryName = (string)exp.Category.Name;
@@ -743,15 +759,54 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = x.ToExpando();
+					var assignedPictures = new List<ExpandoObject>();
 
 					GetDeliveryTimeAndQuantityUnit(ctx, expando, x.DeliveryTimeId, x.QuantityUnitId);
+
+					foreach (int pictureId in x.GetAssignedPictureIds())
+					{
+						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
+						if (assignedPicture != null && assignedPicture.Picture != null)
+						{
+							assignedPictures.Add(assignedPicture.Picture.ToExpando(_pictureService, ctx.Store, _mediaSettings.ProductThumbPictureSize, pictureSize));
+						}
+					}
+
+					exp.Pictures = assignedPictures;
 
 					return exp as ExpandoObject;
 				})
 				.ToList();
 
+			expando.AppliedDiscounts = appliedDiscounts
+				.Select(x => x.ToExpando())
+				.ToList();
 
-			// data controlled through ExportProjectionSupport attribute
+			expando.TierPrices = tierPrices
+				.Select(x => x.ToExpando())
+				.ToList();
+
+			#endregion
+
+			#region high data depth
+
+			if (ctx.Provider.Supports(ExportProjectionSupport.HighDataDepth))
+			{
+				var productTags = ctx.ProductDataContext.ProductTags.Load(product.Id);
+
+				expando.ProductTags = productTags
+					.Select(x => x.ToExpando(languageId))
+					.ToList();
+			}
+			else
+			{
+				expando.ProductTags = new List<ExpandoObject>();
+			}
+
+			#endregion
+
+			#region more attribute controlled data
+
 			if (ctx.Provider.Supports(ExportProjectionSupport.Description))
 			{
 				PrepareProductDescription(ctx, expando, product);
@@ -779,6 +834,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					expando._MainPictureUrl = _pictureService.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
 			}
 
+			#endregion
+
+			#region matter of data merging
 
 			Action<dynamic, ProductVariantAttributeCombination> matterOfDataMerging = (exp, combination) =>
 			{
@@ -872,8 +930,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				}
 			};
 
+			#endregion
 
-			// yield return expando
 			if (ctx.Projection.AttributeCombinationAsProduct && productAttributeCombinations.Where(x => x.IsActive).Count() > 0)
 			{
 				// EF does not support entities to be cconstructed in a LINQ to entities query.

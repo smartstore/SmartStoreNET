@@ -63,16 +63,17 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// </summary>
 	public enum ExportProjectionSupport
 	{
-		Description = 0,
+		HighDataDepth = 0,
+		AttributeCombinationAsProduct,
+		CreateInitialPublicDeployment,
+		Description,
 		Brand,
 		MainPictureUrl,
 		UseOwnProductNo,
 		ShippingTime,
 		ShippingCosts,
-		AttributeCombinationAsProduct,
 		OldPrice,
-		SpecialPrice,
-		CreateInitialPublicDeployment
+		SpecialPrice
 	}
 
 	/// <summary>

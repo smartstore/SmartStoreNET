@@ -4,6 +4,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
@@ -336,6 +337,7 @@ namespace SmartStore.Services.DataExchange
 			expando.Height = pvac.Height;
 			expando.BasePriceAmount = pvac.BasePriceAmount;
 			expando.BasePriceBaseAmount = pvac.BasePriceBaseAmount;
+			expando.AssignedPictureIds = pvac.AssignedPictureIds;
 			expando.DeliveryTimeId = pvac.DeliveryTimeId;
 			expando.IsActive = pvac.IsActive;
 
@@ -391,6 +393,7 @@ namespace SmartStore.Services.DataExchange
 			expando.MetaTitle = category.GetLocalized(x => x.MetaTitle, languageId, true, false);
 			expando.SeName = category.GetSeName(languageId, true, false);
 			expando.ParentCategoryId = category.ParentCategoryId;
+			expando.PictureId = category.PictureId;
 			expando.PageSize = category.PageSize;
 			expando.AllowCustomersToSelectPageSize = category.AllowCustomersToSelectPageSize;
 			expando.PageSizeOptions = category.PageSizeOptions;
@@ -515,6 +518,20 @@ namespace SmartStore.Services.DataExchange
 			expando.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
 			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.IsEsd = product.IsEsd;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this ProductTag productTag, int languageId)
+		{
+			if (productTag == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = productTag;
+
+			expando.Id = productTag.Id;
+			expando.Name = productTag.GetLocalized(x => x.Name, languageId, true, false);
 
 			return expando as ExpandoObject;
 		}
@@ -676,6 +693,48 @@ namespace SmartStore.Services.DataExchange
 			expando.ShipmentId = shipmentItem.ShipmentId;
 			expando.OrderItemId = shipmentItem.OrderItemId;
 			expando.Quantity = shipmentItem.Quantity;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this Discount discount)
+		{
+			if (discount == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = discount;
+
+			expando.Id = discount.Id;
+			expando.Name = discount.Name;
+			expando.DiscountTypeId = discount.DiscountTypeId;
+			expando.UsePercentage = discount.UsePercentage;
+			expando.DiscountPercentage = discount.DiscountPercentage;
+			expando.DiscountAmount = discount.DiscountAmount;
+			expando.StartDateUtc = discount.StartDateUtc;
+			expando.EndDateUtc = discount.EndDateUtc;
+			expando.RequiresCouponCode = discount.RequiresCouponCode;
+			expando.CouponCode = discount.CouponCode;
+			expando.DiscountLimitationId = discount.DiscountLimitationId;
+			expando.LimitationTimes = discount.LimitationTimes;
+
+			return expando as ExpandoObject;
+		}
+
+		public static ExpandoObject ToExpando(this TierPrice tierPrice)
+		{
+			if (tierPrice == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = tierPrice;
+
+			expando.Id = tierPrice.Id;
+			expando.ProductId = tierPrice.ProductId;
+			expando.StoreId = tierPrice.StoreId;
+			expando.CustomerRoleId = tierPrice.CustomerRoleId;
+			expando.Quantity = tierPrice.Quantity;
+			expando.Price = tierPrice.Price;
 
 			return expando as ExpandoObject;
 		}

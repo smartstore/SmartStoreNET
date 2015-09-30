@@ -142,6 +142,161 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
+		public void WriteDeliveryTime(dynamic deliveryTime, string node)
+		{
+			if (deliveryTime == null)
+				return;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", ((int)deliveryTime.Id).ToString());
+			_writer.Write("Name", (string)deliveryTime.Name);
+			_writer.Write("DisplayLocale", (string)deliveryTime.DisplayLocale);
+			_writer.Write("ColorHexValue", (string)deliveryTime.ColorHexValue);
+			_writer.Write("DisplayOrder", ((int)deliveryTime.DisplayOrder).ToString());
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WriteQuantityUnit(dynamic quantityUnit, string node)
+		{
+			if (quantityUnit == null)
+				return;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", ((int)quantityUnit.Id).ToString());
+			_writer.Write("Name", (string)quantityUnit.Name);
+			_writer.Write("Description", (string)quantityUnit.Description);
+			_writer.Write("DisplayLocale", (string)quantityUnit.DisplayLocale);
+			_writer.Write("DisplayOrder", ((int)quantityUnit.DisplayOrder).ToString());
+			_writer.Write("IsDefault", ((bool)quantityUnit.IsDefault).ToString());
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WritePicture(dynamic picture, string node)
+		{
+			if (picture == null)
+				return;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", ((int)picture.Id).ToString());
+			_writer.Write("SeoFilename", (string)picture.SeoFilename);
+			_writer.Write("MimeType", (string)picture.MimeType);
+			_writer.Write("ThumbImageUrl", (string)picture._ThumbImageUrl);
+			_writer.Write("ImageUrl", (string)picture._ImageUrl);
+			_writer.Write("FullSizeImageUrl", (string)picture._FullSizeImageUrl);
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WriteCategory(dynamic category, string node)
+		{
+			if (category == null)
+				return;
+
+			int? pictureId = category.PictureId;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", ((int)category.Id).ToString());
+			_writer.Write("Name", (string)category.Name);
+			_writer.Write("FullName", (string)category.FullName);
+			_writer.Write("Description", (string)category.Description);
+			_writer.Write("BottomDescription", (string)category.BottomDescription);
+			_writer.Write("CategoryTemplateId", ((int)category.CategoryTemplateId).ToString());
+			_writer.Write("MetaKeywords", (string)category.MetaKeywords);
+			_writer.Write("MetaDescription", (string)category.MetaDescription);
+			_writer.Write("MetaTitle", (string)category.MetaTitle);
+			_writer.Write("SeName", (string)category.SeName);
+			_writer.Write("ParentCategoryId", ((int)category.ParentCategoryId).ToString());
+			_writer.Write("PictureId", pictureId.HasValue ? pictureId.Value.ToString() : "");
+			_writer.Write("PageSize", ((int)category.PageSize).ToString());
+			_writer.Write("AllowCustomersToSelectPageSize", ((bool)category.AllowCustomersToSelectPageSize).ToString());
+			_writer.Write("PageSizeOptions", (string)category.PageSizeOptions);
+			_writer.Write("PriceRanges", (string)category.PriceRanges);
+			_writer.Write("ShowOnHomePage", ((bool)category.ShowOnHomePage).ToString());
+			_writer.Write("HasDiscountsApplied", ((bool)category.HasDiscountsApplied).ToString());
+			_writer.Write("Published", ((bool)category.Published).ToString());
+			_writer.Write("Deleted", ((bool)category.Deleted).ToString());
+			_writer.Write("DisplayOrder", ((int)category.DisplayOrder).ToString());
+			_writer.Write("CreatedOnUtc", ((DateTime)category.CreatedOnUtc).ToString(_culture));
+			_writer.Write("UpdatedOnUtc", ((DateTime)category.UpdatedOnUtc).ToString(_culture));
+			_writer.Write("SubjectToAcl", ((bool)category.SubjectToAcl).ToString());
+			_writer.Write("LimitedToStores", ((bool)category.LimitedToStores).ToString());
+			_writer.Write("Alias", (string)category.Alias);
+			_writer.Write("DefaultViewMode", (string)category.DefaultViewMode);
+
+			WritePicture(category.Picture, "Picture");
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
+		public void WriteManufacturer(dynamic manufacturer, string node)
+		{
+			if (manufacturer == null)
+				return;
+
+			int? pictureId = manufacturer.PictureId;
+
+			if (node.HasValue())
+			{
+				_writer.WriteStartElement(node);
+			}
+
+			_writer.Write("Id", ((int)manufacturer.Id).ToString());
+			_writer.Write("Name", (string)manufacturer.Name);
+			_writer.Write("SeName", (string)manufacturer.SeName);
+			_writer.Write("Description", (string)manufacturer.Description);
+			_writer.Write("ManufacturerTemplateId", ((int)manufacturer.ManufacturerTemplateId).ToString());
+			_writer.Write("MetaKeywords", (string)manufacturer.MetaKeywords);
+			_writer.Write("MetaDescription", (string)manufacturer.MetaDescription);
+			_writer.Write("MetaTitle", (string)manufacturer.MetaTitle);
+			_writer.Write("PictureId", pictureId.HasValue ? pictureId.Value.ToString() : "");
+			_writer.Write("PageSize", ((int)manufacturer.PageSize).ToString());
+			_writer.Write("AllowCustomersToSelectPageSize", ((bool)manufacturer.AllowCustomersToSelectPageSize).ToString());
+			_writer.Write("PageSizeOptions", (string)manufacturer.PageSizeOptions);
+			_writer.Write("PriceRanges", (string)manufacturer.PriceRanges);
+			_writer.Write("Published", ((bool)manufacturer.Published).ToString());
+			_writer.Write("Deleted", ((bool)manufacturer.Deleted).ToString());
+			_writer.Write("DisplayOrder", ((int)manufacturer.DisplayOrder).ToString());
+			_writer.Write("CreatedOnUtc", ((DateTime)manufacturer.CreatedOnUtc).ToString(_culture));
+			_writer.Write("UpdatedOnUtc", ((DateTime)manufacturer.UpdatedOnUtc).ToString(_culture));
+
+			WritePicture(manufacturer.Picture, "Picture");
+
+			if (node.HasValue())
+			{
+				_writer.WriteEndElement();
+			}
+		}
+
 		public void WriteProduct(dynamic product, string node)
 		{
 			if (product == null)
@@ -263,32 +418,193 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
 			_writer.Write("IsEsd", ((bool)product.IsEsd).ToString());
 
-			if (product.DeliveryTime != null)
+			WriteDeliveryTime(product.DeliveryTime, "DeliveryTime");
+
+			WriteQuantityUnit(product.QuantityUnit, "QuantityUnit");
+
+
+			_writer.WriteStartElement("AppliedDiscounts");
+			foreach (var discount in product.AppliedDiscounts)
 			{
-				_writer.WriteStartElement("DeliveryTime");
+				DateTime? startDateUtc = discount.StartDateUtc;
+				DateTime? endDateUtc = discount.EndDateUtc;
 
-				_writer.Write("Id", ((int)product.DeliveryTime.Id).ToString());
-				_writer.Write("Name", (string)product.DeliveryTime.Name);
-				_writer.Write("DisplayLocale", (string)product.DeliveryTime.DisplayLocale);
-				_writer.Write("ColorHexValue", (string)product.DeliveryTime.ColorHexValue);
-				_writer.Write("DisplayOrder", ((int)product.DeliveryTime.DisplayOrder).ToString());
-
-				_writer.WriteEndElement();	// DeliveryTime
+				_writer.WriteStartElement("AppliedDiscount");
+				_writer.Write("Id", ((int)discount.Id).ToString());
+				_writer.Write("Name", (string)discount.Name);
+				_writer.Write("DiscountTypeId", ((int)discount.DiscountTypeId).ToString());
+				_writer.Write("UsePercentage", ((bool)discount.UsePercentage).ToString());
+				_writer.Write("DiscountPercentage", ((decimal)discount.DiscountPercentage).ToString(_culture));
+				_writer.Write("DiscountAmount", ((decimal)discount.DiscountAmount).ToString(_culture));
+				_writer.Write("StartDateUtc", startDateUtc.HasValue ? startDateUtc.Value.ToString(_culture) : "");
+				_writer.Write("EndDateUtc", endDateUtc.HasValue ? endDateUtc.Value.ToString(_culture) : "");
+				_writer.Write("RequiresCouponCode", ((bool)discount.RequiresCouponCode).ToString());
+				_writer.Write("CouponCode", (string)discount.CouponCode);
+				_writer.Write("DiscountLimitationId", ((int)discount.DiscountLimitationId).ToString());
+				_writer.Write("LimitationTimes", ((int)discount.LimitationTimes).ToString());
+				_writer.WriteEndElement();	// AppliedDiscount
 			}
+			_writer.WriteEndElement();	// AppliedDiscounts
 
-			if (product.QuantityUnit != null)
+
+			_writer.WriteStartElement("TierPrices");
+			foreach (dynamic tierPrice in product.ProductTags)
 			{
-				_writer.WriteStartElement("QuantityUnit");
+				int? customerRoleId = tierPrice.CustomerRoleId;
 
-				_writer.Write("Id", ((int)product.QuantityUnit.Id).ToString());
-				_writer.Write("Name", (string)product.QuantityUnit.Name);
-				_writer.Write("Description", (string)product.QuantityUnit.Description);
-				_writer.Write("DisplayLocale", (string)product.QuantityUnit.DisplayLocale);
-				_writer.Write("DisplayOrder", ((int)product.QuantityUnit.DisplayOrder).ToString());
-				_writer.Write("IsDefault", ((bool)product.QuantityUnit.IsDefault).ToString());
-
-				_writer.WriteEndElement();	// QuantityUnit
+				_writer.WriteStartElement("TierPrice");
+				_writer.Write("ProductId", ((int)tierPrice.ProductId).ToString());
+				_writer.Write("StoreId", ((int)tierPrice.StoreId).ToString());
+				_writer.Write("CustomerRoleId", customerRoleId.HasValue ? customerRoleId.Value.ToString() : "");
+				_writer.Write("Quantity", ((int)tierPrice.Quantity).ToString());
+				_writer.Write("Price", ((decimal)tierPrice.Price).ToString(_culture));
+				_writer.WriteEndElement();	// TierPrice
 			}
+			_writer.WriteEndElement();	// TierPrices
+
+			
+			_writer.WriteStartElement("ProductTags");
+			foreach (dynamic tag in product.ProductTags)
+			{
+				_writer.WriteStartElement("ProductTag");
+				_writer.Write("Id", ((int)tag.Id).ToString());
+				_writer.Write("Name", (string)tag.Name);
+				_writer.WriteEndElement();	// ProductTag
+			}
+			_writer.WriteEndElement();	// ProductTags
+
+
+			_writer.WriteStartElement("ProductAttributes");
+			foreach (var pa in product.ProductAttributes)
+			{
+				_writer.WriteStartElement("ProductAttribute");
+				_writer.Write("Id", ((int)pa.Id).ToString());
+				_writer.Write("TextPrompt", (string)pa.TextPrompt);
+				_writer.Write("IsRequired", ((bool)pa.IsRequired).ToString());
+				_writer.Write("AttributeControlTypeId", ((int)pa.AttributeControlTypeId).ToString());
+				_writer.Write("DisplayOrder", ((int)pa.DisplayOrder).ToString());
+
+				_writer.WriteStartElement("Attribute");
+				_writer.Write("Id", ((int)pa.Attribute.Id).ToString());
+				_writer.Write("Alias", (string)pa.Attribute.Alias);
+				_writer.Write("Name", (string)pa.Attribute.Name);
+				_writer.Write("Description", (string)pa.Attribute.Description);
+				_writer.WriteEndElement();	// Attribute
+
+				_writer.WriteStartElement("AttributeValues");
+				foreach (var value in pa.Attribute.Values)
+				{
+					_writer.WriteStartElement("AttributeValue");
+					_writer.Write("Id", ((int)value.Id).ToString());
+					_writer.Write("Alias", (string)value.Alias);
+					_writer.Write("Name", (string)value.Name);
+					_writer.Write("ColorSquaresRgb", (string)value.ColorSquaresRgb);
+					_writer.Write("PriceAdjustment", ((decimal)value.PriceAdjustment).ToString(_culture));
+					_writer.Write("WeightAdjustment", ((decimal)value.WeightAdjustment).ToString(_culture));
+					_writer.Write("IsPreSelected", ((bool)value.IsPreSelected).ToString());
+					_writer.Write("DisplayOrder", ((int)value.DisplayOrder).ToString());
+					_writer.Write("ValueTypeId", ((int)value.ValueTypeId).ToString());
+					_writer.Write("LinkedProductId", ((int)value.LinkedProductId).ToString());
+					_writer.Write("Quantity", ((int)value.Quantity).ToString());
+					_writer.WriteEndElement();	// AttributeValue
+				}
+				_writer.WriteEndElement();	// AttributeValues
+
+				_writer.WriteEndElement();	// ProductAttribute
+			}
+			_writer.WriteEndElement();	// ProductAttributes
+
+
+			_writer.WriteStartElement("ProductAttributeCombinations");
+			foreach (dynamic combination in product.ProductAttributeCombinations)
+			{
+				decimal? price = combination.Price;
+				decimal? length = combination.Length;
+				decimal? width = combination.Width;
+				decimal? height = combination.Height;
+				decimal? bpAmount = combination.BasePriceAmount;
+				int? bpbAmount = combination.BasePriceBaseAmount;
+				int? dlvTimeId = combination.DeliveryTimeId;
+
+				_writer.WriteStartElement("ProductAttributeCombination");
+				_writer.Write("Id", ((int)combination.Id).ToString());
+				_writer.Write("StockQuantity", ((int)combination.StockQuantity).ToString());
+				_writer.Write("AllowOutOfStockOrders", ((bool)combination.AllowOutOfStockOrders).ToString());
+				_writer.Write("AttributesXml", (string)combination.AttributesXml);
+				_writer.Write("Sku", (string)combination.Sku);
+				_writer.Write("Gtin", (string)combination.Gtin);
+				_writer.Write("ManufacturerPartNumber", (string)combination.ManufacturerPartNumber);
+				_writer.Write("Price", price.HasValue ? price.Value.ToString(_culture) : "");
+				_writer.Write("Length", length.HasValue ? length.Value.ToString(_culture) : "");
+				_writer.Write("Width", width.HasValue ? width.Value.ToString(_culture) : "");
+				_writer.Write("Height", height.HasValue ? height.Value.ToString(_culture) : "");
+				_writer.Write("BasePriceAmount", bpAmount.HasValue ? bpAmount.Value.ToString(_culture) : "");
+				_writer.Write("BasePriceBaseAmount", bpbAmount.HasValue ? bpbAmount.Value.ToString() : "");
+				_writer.Write("AssignedPictureIds", (string)combination.AssignedPictureIds);
+				_writer.Write("DeliveryTimeId", dlvTimeId.HasValue ? dlvTimeId.Value.ToString() : "");
+				_writer.Write("IsActive", ((bool)combination.IsActive).ToString());
+
+				WriteDeliveryTime(combination.DeliveryTime, "DeliveryTime");
+
+				WriteQuantityUnit(combination.QuantityUnit, "QuantityUnit");
+
+				_writer.WriteStartElement("Pictures");
+				foreach (dynamic assignedPicture in combination.Pictures)
+				{
+					WritePicture(assignedPicture, "Picture");
+				}
+				_writer.WriteEndElement();	// Pictures
+
+				_writer.WriteEndElement();	// ProductAttributeCombination
+			}
+			_writer.WriteEndElement(); // ProductAttributeCombinations
+
+
+			_writer.WriteStartElement("ProductPictures");
+			foreach (dynamic productPicture in product.ProductPictures)
+			{
+				_writer.WriteStartElement("ProductPicture");
+				_writer.Write("Id", ((int)productPicture.Id).ToString());
+				_writer.Write("DisplayOrder", ((int)productPicture.DisplayOrder).ToString());
+
+				WritePicture(productPicture.Picture, "Picture");
+
+				_writer.WriteEndElement();	// ProductPicture
+			}
+			_writer.WriteEndElement();	// ProductPictures
+
+
+			_writer.WriteStartElement("ProductCategories");
+			foreach (dynamic productCategory in product.ProductCategories)
+			{
+				_writer.WriteStartElement("ProductCategory");
+				_writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
+				_writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
+
+				WriteCategory(productCategory.Category, "Category");
+
+				_writer.WriteEndElement();	// ProductCategory
+			}
+			_writer.WriteEndElement();	// ProductCategories
+
+
+			_writer.WriteStartElement("ProductManufacturers");
+			foreach (dynamic productManu in product.ProductManufacturers)
+			{
+				_writer.WriteStartElement("ProductManufacturer");
+
+				_writer.Write("Id", ((int)productManu.Id).ToString());
+				_writer.Write("DisplayOrder", ((int)productManu.DisplayOrder).ToString());
+				_writer.Write("IsFeaturedProduct", ((bool)productManu.IsFeaturedProduct).ToString());
+
+				WriteManufacturer(productManu.Manufacturer, "Manufacturer");
+
+				_writer.WriteEndElement();	// ProductManufacturer
+			}
+			_writer.WriteEndElement();	// ProductManufacturers
+
+
+
 
 			if (node.HasValue())
 			{

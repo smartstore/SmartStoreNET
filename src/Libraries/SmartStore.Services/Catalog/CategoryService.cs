@@ -655,7 +655,7 @@ namespace SmartStore.Services.Catalog
 			Guard.ArgumentNotNull(() => productIds);
 
 			var query = 
-				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category)
+				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category).Expand(x => x.Category.Picture)
 				join c in _categoryRepository.Table on pc.CategoryId equals c.Id
 				where productIds.Contains(pc.ProductId) && !c.Deleted && (showHidden || c.Published)
 				orderby pc.DisplayOrder

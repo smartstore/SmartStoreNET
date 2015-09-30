@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.DataExchange.ExportTask
@@ -10,9 +11,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 	{
 		private Func<int[], Multimap<int, ProductManufacturer>> _funcProductManufacturers;
 		private Func<int[], Multimap<int, ProductPicture>> _funcProductPictures;
+		private Func<int[], Multimap<int, ProductTag>> _funcProductTags;
 
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<ProductPicture> _productPictures;
+		private LazyMultimap<ProductTag> _productTags;
 
 		public ExportProductDataContext(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
@@ -20,15 +23,20 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			Func<int[], Multimap<int, TierPrice>> tierPrices,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
-			Func<int[], Multimap<int, ProductPicture>> productPictures)
+			Func<int[], Multimap<int, ProductPicture>> productPictures,
+			Func<int[], Multimap<int, ProductTag>> productTags,
+			Func<int[], Multimap<int, Discount>> productAppliedDiscounts)
 			: base(products,
-			attributes,
-			attributeCombinations,
-			tierPrices,
-			productCategories)
+				attributes,
+				attributeCombinations,
+				tierPrices,
+				productCategories,
+				productAppliedDiscounts
+			)
 		{
 			_funcProductManufacturers = productManufacturers;
 			_funcProductPictures = productPictures;
+			_funcProductTags = productTags;
 		}
 
 		public new void Clear()
@@ -37,6 +45,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_productManufacturers.Clear();
 			if (_productPictures != null)
 				_productPictures.Clear();
+			if (_productTags != null)
+				_productTags.Clear();
 
 			base.Clear();
 		}
@@ -70,6 +80,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					_productPictures = new LazyMultimap<ProductPicture>(keys => _funcProductPictures(keys), _productIds);
 				}
 				return _productPictures;
+			}
+		}
+
+		public LazyMultimap<ProductTag> ProductTags
+		{
+			get
+			{
+				if (_productTags == null)
+				{
+					_productTags = new LazyMultimap<ProductTag>(keys => _funcProductTags(keys), _productIds);
+				}
+				return _productTags;
 			}
 		}
 	}

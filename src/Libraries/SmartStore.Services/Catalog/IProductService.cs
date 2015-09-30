@@ -7,6 +7,7 @@ using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Utilities;
 
@@ -161,6 +162,20 @@ namespace SmartStore.Services.Catalog
 		/// <param name="urlHelper">UrlHelper to generate URLs</param>
 		/// <returns>SmartSyndicationFeed object</returns>
 		SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper);
+
+		/// <summary>
+		/// Get product tags by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of product tags</returns>
+		Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds);
+
+		/// <summary>
+		/// Get applied discounts by product identifiers
+		/// </summary>
+		/// <param name="productIds">Product identifiers</param>
+		/// <returns>Map of applied discounts</returns>
+		Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds);
 
         #endregion
 

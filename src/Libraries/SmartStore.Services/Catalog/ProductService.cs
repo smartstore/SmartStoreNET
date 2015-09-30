@@ -13,6 +13,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
@@ -1424,6 +1425,52 @@ namespace SmartStore.Services.Catalog
 			feed.Items = items;
 
 			return feed;
+		}
+
+		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
+		{
+			var query = _productRepository.TableUntracked
+				.Expand(x => x.ProductTags)
+				.Where(x => productIds.Contains(x.Id))
+				.Select(x => new
+				{
+					ProductId = x.Id,
+					Tags = x.ProductTags
+				});
+
+			var map = new Multimap<int, ProductTag>();
+
+			foreach (var item in query.ToList())
+			{
+				foreach (var tag in item.Tags)
+					map.Add(item.ProductId, tag);
+			}
+
+			return map;
+		}
+
+		public virtual Multimap<int, Discount> GetAppliedDiscountsByProductIds(int[] productIds)
+		{
+			var query = _productRepository.TableUntracked
+				.Expand(x => x.AppliedDiscounts.Select(y => y.DiscountRequirements))
+				.Where(x => productIds.Contains(x.Id))
+				.Select(x => new
+				{
+					ProductId = x.Id,
+					Discounts = x.AppliedDiscounts
+				});
+
+			query.ToString().Dump();
+
+			var map = new Multimap<int, Discount>();
+
+			foreach (var item in query.ToList())
+			{
+				foreach (var discount in item.Discounts)
+					map.Add(item.ProductId, discount);
+			}
+
+			return map;
 		}
 
         #endregion

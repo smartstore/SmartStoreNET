@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -146,6 +147,21 @@ namespace SmartStore.Services.Localization
             var props = query.ToList();
             return props;
         }
+
+		public virtual IList<LocalizedProperty> GetLocalizedProperties(string localeKeyGroup, int[] entityIds)
+		{
+			Guard.ArgumentNotEmpty(() => localeKeyGroup);
+
+			var query = _localizedPropertyRepository.Table
+				.Where(x => x.LocaleKeyGroup == localeKeyGroup);
+
+			if (entityIds != null && entityIds.Length > 0)
+			{
+				query = query.Where(x => entityIds.Contains(x.EntityId));
+			}
+
+			return query.ToList();
+		}
 
         /// <summary>
         /// Inserts a localized property

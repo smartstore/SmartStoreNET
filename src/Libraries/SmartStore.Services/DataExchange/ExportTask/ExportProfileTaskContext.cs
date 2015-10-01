@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
@@ -43,6 +44,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			TotalRecords = totalRecords;
 			PreviewData = previewData;
 
+			Supporting = Enum.GetValues(typeof(ExportProjectionSupport))
+				.Cast<ExportProjectionSupport>()
+				.ToDictionary(x => x, x => Provider.Supports(x));
+
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
@@ -50,6 +55,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			CategoryPathes = new Dictionary<int, string>();
 			Countries = new Dictionary<int, Country>();
 			ProductTemplates = new Dictionary<int, ProductTemplate>();
+
+			Localized = new LocalizedProperties
+			{
+				DeliveryTimes = new Multimap<int, LocalizedProperty>(),
+				QuantityUnits = new Multimap<int, LocalizedProperty>(),
+				ProductAttributes = new Multimap<int, LocalizedProperty>()
+			};
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
@@ -82,6 +94,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public TaskExecutionContext TaskContext { get; private set; }
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
+		public Dictionary<ExportProjectionSupport, bool> Supporting { get; private set; }
 
 		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }
@@ -130,6 +143,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public Dictionary<int, Store> Stores { get; set; }
 		public Dictionary<int, Country> Countries { get; set; }
 		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
+		public LocalizedProperties Localized { get; set; }
 
 		// data loaded once per page
 		public ExportProductDataContext ProductDataContext
@@ -163,5 +177,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		public ExportExecuteContext Export { get; set; }
 		public ExportExecuteResult Result { get; set; }
+
+		public class LocalizedProperties
+		{
+			public Multimap<int, LocalizedProperty> DeliveryTimes { get; set; }
+			public Multimap<int, LocalizedProperty> QuantityUnits { get; set; }
+			public Multimap<int, LocalizedProperty> ProductAttributes { get; set; }
+		}
 	}
 }

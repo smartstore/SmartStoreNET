@@ -178,7 +178,6 @@
     <Compile Include="DataExchange\ExportXmlHelper.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
-    <Compile Include="DataExchange\ExpandoExtensions.cs" />
     <Compile Include="DataExchange\ExportTask\ExportOrderDataContext.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProductDataContext.cs" />
     <Compile Include="DataExchange\ExportExecuteContext.cs" />

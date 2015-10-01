@@ -42,14 +42,6 @@ namespace SmartStore.Services.Localization
         /// <returns>Localized properties</returns>
         IList<LocalizedProperty> GetLocalizedProperties(int entityId, string localeKeyGroup);
 
-		/// <summary>
-		/// Gets localized properties
-		/// </summary>
-		/// <param name="localeKeyGroup">Locale key group</param>
-		/// <param name="entityIds">Entity identifiers. Can be <c>null</c>.</param>
-		/// <returns>Localized properties</returns>
-		IList<LocalizedProperty> GetLocalizedProperties(string localeKeyGroup, int[] entityIds);
-
         /// <summary>
         /// Inserts a localized property
         /// </summary>

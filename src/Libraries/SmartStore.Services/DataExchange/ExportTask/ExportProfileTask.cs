@@ -1,21 +1,17 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
 using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web;
 using System.Web.Mvc;
 using Autofac;
-using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Async;
 using SmartStore.Core.Data;
@@ -125,27 +121,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		#endregion
 
 		#region Utilities
-
-		private TPropType GetLocalized<T, TPropType>(Multimap<int, LocalizedProperty> map, T entity, Expression<Func<T, TPropType>> keySelector, int languageId)
-			where T : BaseEntity, ILocalizedEntity
-		{
-			if (languageId > 0 && map.ContainsKey(entity.Id))
-			{
-				var member = keySelector.Body as MemberExpression;
-				var propInfo = member.Member as PropertyInfo;
-
-				var property = map[entity.Id].FirstOrDefault(x => x.LocaleKey == propInfo.Name && x.LanguageId == languageId);
-				if (property != null)
-				{
-					Debug.Assert(property.LocaleKeyGroup.IsCaseInsensitiveEqual(entity.GetType().Name), "Wrong localized map for entity " + entity.GetType().Name);
-
-					return property.LocaleValue.Convert<TPropType>();
-				}
-			}
-
-			var localizer = keySelector.Compile();
-			return localizer(entity);
-		}
 
 		private ProductSearchContext GetProductSearchContext(ExportProfileTaskContext ctx, int pageIndex, int pageSize)
 		{
@@ -770,7 +745,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando._Entity = deliveryTime;
 
 			expando.Id = deliveryTime.Id;
-			expando.Name = GetLocalized(ctx.Localized.DeliveryTimes, deliveryTime, x => x.Name, ctx.Projection.LanguageId ?? 0);
+			expando.Name = deliveryTime.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.DisplayLocale = deliveryTime.DisplayLocale;
 			expando.ColorHexValue = deliveryTime.ColorHexValue;
 			expando.DisplayOrder = deliveryTime.DisplayOrder;
@@ -787,8 +762,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando._Entity = quantityUnit;
 
 			expando.Id = quantityUnit.Id;
-			expando.Name = GetLocalized(ctx.Localized.QuantityUnits, quantityUnit, x => x.Name, ctx.Projection.LanguageId ?? 0);
-			expando.Description = GetLocalized(ctx.Localized.QuantityUnits, quantityUnit, x => x.Description, ctx.Projection.LanguageId ?? 0);
+			expando.Name = quantityUnit.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+			expando.Description = quantityUnit.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.DisplayLocale = quantityUnit.DisplayLocale;
 			expando.DisplayOrder = quantityUnit.DisplayOrder;
 			expando.IsDefault = quantityUnit.IsDefault;
@@ -836,8 +811,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			attribute._Entity = pva.ProductAttribute;
 			attribute.Id = pva.ProductAttribute.Id;
 			attribute.Alias = pva.ProductAttribute.Alias;
-			attribute.Name = GetLocalized(ctx.Localized.ProductAttributes, pva.ProductAttribute, x => x.Name, ctx.Projection.LanguageId ?? 0);
-			attribute.Description = GetLocalized(ctx.Localized.ProductAttributes, pva.ProductAttribute, x => x.Description, ctx.Projection.LanguageId ?? 0);
+			attribute.Name = pva.ProductAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+			attribute.Description = pva.ProductAttribute.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
 
 			attribute.Values = pva.ProductVariantAttributeValues
 				.OrderBy(x => x.DisplayOrder)
@@ -2085,10 +2060,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						ctx.QuantityUnits = _quantityUnitService.GetAllQuantityUnits().ToDictionary(x => x.Id, x => x);
 						ctx.ProductTemplates = _productTemplateService.GetAllProductTemplates().ToDictionary(x => x.Id, x => x);
 
-						ctx.Localized.DeliveryTimes = _localizedEntityService.GetLocalizedProperties("DeliveryTime", null).ToMultimap(x => x.EntityId, x => x);
-						ctx.Localized.QuantityUnits = _localizedEntityService.GetLocalizedProperties("QuantityUnit", null).ToMultimap(x => x.EntityId, x => x);
-						ctx.Localized.ProductAttributes = _localizedEntityService.GetLocalizedProperties("ProductAttribute", null).ToMultimap(x => x.EntityId, x => x);
-
 						if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 						{
 							var allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false);
@@ -2180,9 +2151,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					try
 					{
-						ctx.Localized.DeliveryTimes.Clear();
-						ctx.Localized.QuantityUnits.Clear();
-						ctx.Localized.ProductAttributes.Clear();
 						ctx.ProductTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Stores.Clear();

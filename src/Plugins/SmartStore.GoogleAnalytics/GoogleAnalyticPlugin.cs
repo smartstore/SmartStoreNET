@@ -82,23 +82,44 @@ namespace SmartStore.GoogleAnalytics
             var settings = new GoogleAnalyticsSettings()
             {
                 GoogleId = "UA-0000000-0",
-                //TrackingScript = "<script type=\"text/javascript\"> var gaJsHost = ((\"https:\" == document.location.protocol) ? \"https://ssl.\" : \"http://www.\"); document.write(unescape(\"%3Cscript src='\" + gaJsHost + \"google-analytics.com/ga.js' type='text/javascript'%3E%3C/script%3E\")); </script> <script type=\"text/javascript\"> try { var pageTracker = _gat._getTracker(\"UA-0000000-0\"); pageTracker._trackPageview(); } catch(err) {}</script>",
                 TrackingScript = @"<!-- Google code for Analytics tracking -->
-                    <script type=""text/javascript"">
-                    var _gaq = _gaq || [];
-                    _gaq.push(['_setAccount', '{GOOGLEID}']);
-                    _gaq.push(['_trackPageview']);
-                    {ECOMMERCE}
-                    (function() {
-                        var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-                        ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-                        var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-                    })();
+                    <script>
+                        (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){
+                        (i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),
+                        m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)
+                        })(window,document,'script','//www.google-analytics.com/analytics.js','ga');
+
+                        ga('create', '{GOOGLEID}', 'auto');
+                        ga('send', 'pageview');
+
+                        {ECOMMERCE}
                     </script>",
-                EcommerceScript = @"_gaq.push(['_addTrans', '{ORDERID}', '{SITE}', '{TOTAL}', '{TAX}', '{SHIP}', '{CITY}', '{STATEPROVINCE}', '{COUNTRY}']);
-                    {DETAILS} 
-                    _gaq.push(['_trackTrans']); ",
-                EcommerceDetailScript = @"_gaq.push(['_addItem', '{ORDERID}', '{PRODUCTSKU}', '{PRODUCTNAME}', '{CATEGORYNAME}', '{UNITPRICE}', '{QUANTITY}' ]); ",
+                EcommerceScript = @"
+                    ga('require', 'ecommerce');
+
+                    ga('ecommerce:addTransaction', {
+                        'id': '{ORDERID}',
+                        'affiliation': '{SITE}',
+                        'revenue': '{TOTAL}',
+                        'shipping': '{SHIP}',
+                        'tax': '{TAX}',
+                        'currency': '{CURRENCY}'
+                    });
+
+                    {DETAILS}
+
+                    ga('ecommerce:send');
+                    ",
+                EcommerceDetailScript = @"
+                    ga('ecommerce:addItem', {
+                        'id': '{ORDERID}',
+                        'name': '{PRODUCTNAME}',
+                        'sku': '{PRODUCTSKU}',
+                        'category': '{CATEGORYNAME}',
+                        'price': '{UNITPRICE}',
+                        'quantity': '{QUANTITY}'
+                    });
+                ",
 
             };
             _settingService.SaveSetting(settings);

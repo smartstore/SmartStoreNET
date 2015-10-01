@@ -88,7 +88,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			public Type ConfigDataType { get; set; }
 			public object ConfigData { get; set; }
 
-			public ExportProjectionSupport[] ProjectionSupport { get; set; }
+			public ExportSupport[] Supporting { get; set; }
 
 			[SmartResourceDisplayName("Common.Image")]
 			public string ThumbnailUrl { get; set; }

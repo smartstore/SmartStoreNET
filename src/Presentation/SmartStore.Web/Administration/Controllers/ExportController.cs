@@ -171,7 +171,7 @@ namespace SmartStore.Admin.Controllers
 			// get and initialize provider specific configuration data
 			if (provider != null)
 			{
-				model.Provider.ProjectionSupport = provider.Metadata.ExportProjectionSupport;
+				model.Provider.Supporting = provider.Metadata.ExportSupport;
 
 				try
 				{

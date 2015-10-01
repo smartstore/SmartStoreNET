@@ -59,21 +59,21 @@ namespace SmartStore.Core.Domain.DataExchange
 	}
 
 	/// <summary>
-	/// Projection types supported by export provider
+	/// Controls data processing supported by export provider
 	/// </summary>
-	public enum ExportProjectionSupport
+	public enum ExportSupport
 	{
 		HighDataDepth = 0,
 		AttributeCombinationAsProduct,
 		CreateInitialPublicDeployment,
-		Description,
-		Brand,
-		MainPictureUrl,
-		UseOwnProductNo,
-		ShippingTime,
-		ShippingCosts,
-		OldPrice,
-		SpecialPrice
+		ProjectionDescription,
+		ProjectionBrand,
+		ProjectionMainPictureUrl,
+		ProjectionUseOwnProductNo,
+		ProjectionShippingTime,
+		ProjectionShippingCosts,
+		ProjectionOldPrice,
+		ProjectionSpecialPrice
 	}
 
 	/// <summary>

@@ -139,7 +139,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				if (cloneProfile == null)
 				{
-					if (provider.Supports(ExportProjectionSupport.CreateInitialPublicDeployment))
+					if (provider.Supports(ExportSupport.CreateInitialPublicDeployment))
 					{
 						profile.Deployments.Add(new ExportDeployment
 						{

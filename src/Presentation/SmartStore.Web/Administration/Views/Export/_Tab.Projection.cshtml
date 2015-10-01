@@ -47,7 +47,7 @@
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.AttributeCombinationAsProduct))
+		if (Model.Provider.Supporting.Contains(ExportSupport.AttributeCombinationAsProduct))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -88,7 +88,7 @@
 			</td>
 		</tr>
 
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingTime))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionShippingTime))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -101,7 +101,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.ShippingCosts))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionShippingCosts))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -123,7 +123,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.MainPictureUrl))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionMainPictureUrl))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -136,7 +136,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.Brand))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionBrand))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -149,7 +149,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.ProjectionSupport.Contains(ExportProjectionSupport.Description))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionDescription))
 		{
 			<tr>
 				<td colspan="2">

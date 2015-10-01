@@ -74,9 +74,9 @@ namespace SmartStore.Core.Plugins
 		public bool IsHidden { get; set; }
 
 		/// <summary>
-		/// Gets or sets an array of values that reflects what export projection is supported by a provider
+		/// Gets or sets an array of values that reflects what export data processing is supported by a provider
 		/// </summary>
-		public ExportProjectionSupport[] ExportProjectionSupport { get; set; }
+		public ExportSupport[] ExportSupport { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of widget system names, which depend on the current provider

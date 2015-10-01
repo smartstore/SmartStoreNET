@@ -43,8 +43,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			TotalRecords = totalRecords;
 			PreviewData = previewData;
 
-			Supporting = Enum.GetValues(typeof(ExportProjectionSupport))
-				.Cast<ExportProjectionSupport>()
+			Supporting = Enum.GetValues(typeof(ExportSupport))
+				.Cast<ExportSupport>()
 				.ToDictionary(x => x, x => Provider.Supports(x));
 
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
@@ -86,7 +86,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public TaskExecutionContext TaskContext { get; private set; }
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
-		public Dictionary<ExportProjectionSupport, bool> Supporting { get; private set; }
+		public Dictionary<ExportSupport, bool> Supporting { get; private set; }
 
 		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }
@@ -133,6 +133,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public Dictionary<int, DeliveryTime> DeliveryTimes { get; set; }
 		public Dictionary<int, QuantityUnit> QuantityUnits { get; set; }
 		public Dictionary<int, Store> Stores { get; set; }
+		public Dictionary<int, Language> Languages { get; set; }
 		public Dictionary<int, Country> Countries { get; set; }
 		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
 

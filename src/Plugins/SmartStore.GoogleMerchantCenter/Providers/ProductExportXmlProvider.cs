@@ -19,14 +19,14 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 	[SystemName("Feeds.GoogleMerchantCenterProductXml")]
 	[FriendlyName("Google Merchant Center XML product feed")]
 	[DisplayOrder(1)]
-	[ExportProjectionSupport(
-		ExportProjectionSupport.CreateInitialPublicDeployment,
-		ExportProjectionSupport.AttributeCombinationAsProduct,
-		ExportProjectionSupport.Description,
-		ExportProjectionSupport.UseOwnProductNo,
-		ExportProjectionSupport.Brand,
-		ExportProjectionSupport.MainPictureUrl,
-		ExportProjectionSupport.SpecialPrice)]
+	[ExportSupporting(
+		ExportSupport.CreateInitialPublicDeployment,
+		ExportSupport.AttributeCombinationAsProduct,
+		ExportSupport.ProjectionDescription,
+		ExportSupport.ProjectionUseOwnProductNo,
+		ExportSupport.ProjectionBrand,
+		ExportSupport.ProjectionMainPictureUrl,
+		ExportSupport.ProjectionSpecialPrice)]
 	public class ProductExportXmlProvider : IExportProvider
 	{
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";

@@ -4,8 +4,10 @@ using System.Dynamic;
 using System.IO;
 using System.IO.Compression;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
+using System.Reflection;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -26,6 +28,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
+using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
@@ -84,6 +87,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private IShipmentService _shipmentService;
 		private IProductTemplateService _productTemplateService;
 		private ILocalizedEntityService _localizedEntityService;
+		private IUrlRecordService _urlRecordService;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -116,11 +120,65 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_shipmentService = context.Resolve<IShipmentService>();
 			_productTemplateService = context.Resolve<IProductTemplateService>();
 			_localizedEntityService = context.Resolve<ILocalizedEntityService>();
+			_urlRecordService = context.Resolve<IUrlRecordService>();
 		}
 
 		#endregion
 
 		#region Utilities
+
+		private List<ExpandoObject> GetLocalized<T>(ExportProfileTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
+			where T : BaseEntity, ILocalizedEntity
+		{
+			if (ctx.Languages.Count <= 1 || !ctx.Supporting[ExportSupport.HighDataDepth])
+				return null;
+
+			var localized = new List<ExpandoObject>();
+
+			var localeKeyGroup = typeof(T).Name;
+			var isSlugSupported = typeof(ISlugSupported).IsAssignableFrom(typeof(T));
+
+			foreach (var language in ctx.Languages)
+			{
+				var languageCulture = language.Value.LanguageCulture.EmptyNull().ToLower();
+
+				// add SeName
+				if (isSlugSupported)
+				{
+					var value = _urlRecordService.GetActiveSlug(entity.Id, localeKeyGroup, language.Value.Id);
+					if (value.HasValue())
+					{
+						dynamic exp = new ExpandoObject();
+						exp.Culture = languageCulture;
+						exp.LocaleKey = "SeName";
+						exp.LocaleValue = value;
+
+						localized.Add(exp as ExpandoObject);
+					}
+				}
+
+				foreach (var keySelector in keySelectors)
+				{
+					var member = keySelector.Body as MemberExpression;
+					var propInfo = member.Member as PropertyInfo;
+					string localeKey = propInfo.Name;
+					var value = _localizedEntityService.GetLocalizedValue(language.Value.Id, entity.Id, localeKeyGroup, localeKey);
+
+					// we better not export empty values. the risk is to high that they are imported and unnecessary fill databases.
+					if (value.HasValue())
+					{
+						dynamic exp = new ExpandoObject();
+						exp.Culture = languageCulture;
+						exp.LocaleKey = localeKey;
+						exp.LocaleValue = value;
+
+						localized.Add(exp as ExpandoObject);
+					}
+				}
+			}
+
+			return localized;
+		}
 
 		private ProductSearchContext GetProductSearchContext(ExportProfileTaskContext ctx, int pageIndex, int pageSize)
 		{
@@ -569,6 +627,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.UpdatedOnUtc = currency.UpdatedOnUtc;
 			expando.DomainEndings = currency.DomainEndings;
 
+			expando._Localized = GetLocalized(ctx, currency, x => x.Name);
+
 			return expando as ExpandoObject;
 		}
 
@@ -613,6 +673,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.DisplayOrder = country.DisplayOrder;
 			expando.LimitedToStores = country.LimitedToStores;
 
+			expando._Localized = GetLocalized(ctx, country, x => x.Name);
+
 			return expando as ExpandoObject;
 		}
 
@@ -649,6 +711,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			sp.Abbreviation = address.StateProvince.Abbreviation;
 			sp.Published = address.StateProvince.Published;
 			sp.DisplayOrder = address.StateProvince.DisplayOrder;
+
+			sp._Localized = GetLocalized(ctx, address.StateProvince, x => x.Name);
 
 			expando.StateProvince = sp as ExpandoObject;
 
@@ -750,6 +814,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.ColorHexValue = deliveryTime.ColorHexValue;
 			expando.DisplayOrder = deliveryTime.DisplayOrder;
 
+			expando._Localized = GetLocalized(ctx, deliveryTime, x => x.Name);
+
 			return expando as ExpandoObject;
 		}
 
@@ -767,6 +833,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.DisplayLocale = quantityUnit.DisplayLocale;
 			expando.DisplayOrder = quantityUnit.DisplayOrder;
 			expando.IsDefault = quantityUnit.IsDefault;
+
+			expando._Localized = GetLocalized(ctx, quantityUnit,
+				x => x.Name,
+				x => x.Description);
 
 			return expando as ExpandoObject;
 		}
@@ -832,9 +902,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					value.LinkedProductId = x.LinkedProductId;
 					value.Quantity = x.Quantity;
 
+					value._Localized = GetLocalized(ctx, x, y => y.Name);
+
 					return value as ExpandoObject;
 				})
 				.ToList();
+
+			attribute._Localized = GetLocalized(ctx, pva.ProductAttribute,
+				x => x.Name,
+				x => x.Description);
 
 			expando.Attribute = attribute as ExpandoObject;
 
@@ -896,6 +972,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.CreatedOnUtc = manufacturer.CreatedOnUtc;
 			expando.UpdatedOnUtc = manufacturer.UpdatedOnUtc;
 
+			expando._Localized = GetLocalized(ctx, manufacturer,
+				x => x.Name,
+				x => x.Description,
+				x => x.MetaKeywords,
+				x => x.MetaDescription,
+				x => x.MetaTitle);
+
 			return expando as ExpandoObject;
 		}
 
@@ -909,6 +992,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.Id = category.Id;
 			expando.Name = category.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+			expando.SeName = category.GetSeName(ctx.Projection.LanguageId ?? 0, true, false);
 			expando.FullName = category.GetLocalized(x => x.FullName, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.Description = category.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.BottomDescription = category.GetLocalized(x => x.BottomDescription, ctx.Projection.LanguageId ?? 0, true, false);
@@ -916,7 +1000,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.MetaKeywords = category.GetLocalized(x => x.MetaKeywords, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.MetaDescription = category.GetLocalized(x => x.MetaDescription, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.MetaTitle = category.GetLocalized(x => x.MetaTitle, ctx.Projection.LanguageId ?? 0, true, false);
-			expando.SeName = category.GetSeName(ctx.Projection.LanguageId ?? 0, true, false);
 			expando.ParentCategoryId = category.ParentCategoryId;
 			expando.PictureId = category.PictureId;
 			expando.PageSize = category.PageSize;
@@ -934,6 +1017,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.LimitedToStores = category.LimitedToStores;
 			expando.Alias = category.Alias;
 			expando.DefaultViewMode = category.DefaultViewMode;
+
+			expando._Localized = GetLocalized(ctx, category,
+				x => x.Name,
+				x => x.FullName,
+				x => x.Description,
+				x => x.BottomDescription,
+				x => x.MetaKeywords,
+				x => x.MetaDescription,
+				x => x.MetaTitle);
 
 			return expando as ExpandoObject;
 		}
@@ -1043,6 +1135,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
 			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.IsEsd = product.IsEsd;
+
+			expando._Localized = GetLocalized(ctx, product,
+				x => x.Name,
+				x => x.ShortDescription,
+				x => x.FullDescription,
+				x => x.MetaKeywords,
+				x => x.MetaDescription,
+				x => x.MetaTitle,
+				x => x.BundleTitleText);
 
 			return expando as ExpandoObject;
 		}
@@ -1250,10 +1351,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.SpecificationAttributeOption.Name = option.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.SpecificationAttributeOption.DisplayOrder = option.DisplayOrder;
 
+			expando.SpecificationAttributeOption._Localized = GetLocalized(ctx, option, x => x.Name);
+
 			expando.SpecificationAttributeOption.SpecificationAttribute._Entity = option.SpecificationAttribute;
 			expando.SpecificationAttributeOption.SpecificationAttribute.Id = option.SpecificationAttribute.Id;
 			expando.SpecificationAttributeOption.SpecificationAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.SpecificationAttributeOption.SpecificationAttribute.DisplayOrder = option.SpecificationAttribute.DisplayOrder;
+
+			expando.SpecificationAttributeOption.SpecificationAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Name);
 
 			return expando as ExpandoObject;
 		}
@@ -1386,7 +1491,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
 
-			if (ctx.Supporting[ExportProjectionSupport.MainPictureUrl] && ctx.Projection.PictureSize > 0)
+			if (ctx.Supporting[ExportSupport.ProjectionMainPictureUrl] && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
 			var productPictures = ctx.ProductDataContext.ProductPictures.Load(product.Id);
@@ -1540,7 +1645,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			#region high data depth
 
-			if (ctx.Supporting[ExportProjectionSupport.HighDataDepth])
+			if (ctx.Supporting[ExportSupport.HighDataDepth])
 			{
 				var productTags = ctx.ProductDataContext.ProductTags.Load(product.Id);
 				var specificationAttributes = ctx.ProductDataContext.ProductSpecificationAttributes.Load(product.Id);
@@ -1552,6 +1657,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp._Entity = x;
 						exp.Id = x.Id;
 						exp.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
+						exp.SeName = x.GetSeName(ctx.Projection.LanguageId ?? 0);
+						exp._Localized = GetLocalized(ctx, x, y => y.Name);
 						return exp as ExpandoObject;
 					})
 					.ToList();
@@ -1588,6 +1695,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 							exp.DisplayOrder = x.DisplayOrder;
 							exp.CreatedOnUtc = x.CreatedOnUtc;
 							exp.UpdatedOnUtc = x.UpdatedOnUtc;
+							exp._Localized = GetLocalized(ctx, x, y => y.Name, y => y.ShortDescription);
 							return exp as ExpandoObject;
 						})
 						.ToList();
@@ -1608,12 +1716,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			#region more attribute controlled data
 
-			if (ctx.Supporting[ExportProjectionSupport.Description])
+			if (ctx.Supporting[ExportSupport.ProjectionDescription])
 			{
 				PrepareProductDescription(ctx, expando, product);
 			}
 
-			if (ctx.Supporting[ExportProjectionSupport.Brand])
+			if (ctx.Supporting[ExportSupport.ProjectionBrand])
 			{
 				string brand = null;
 				var productManus = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
@@ -1627,7 +1735,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				expando._Brand = brand;
 			}
 
-			if (ctx.Supporting[ExportProjectionSupport.MainPictureUrl])
+			if (ctx.Supporting[ExportSupport.ProjectionMainPictureUrl])
 			{
 				if (productPictures != null && productPictures.Any())
 					expando._MainPictureUrl = _pictureService.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
@@ -1668,18 +1776,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				// navigation properties
 				GetDeliveryTimeAndQuantityUnit(ctx, exp, product.DeliveryTimeId, product.QuantityUnitId);
 
-				if (ctx.Supporting[ExportProjectionSupport.UseOwnProductNo] && product.ManufacturerPartNumber.IsEmpty())
+				if (ctx.Supporting[ExportSupport.ProjectionUseOwnProductNo] && product.ManufacturerPartNumber.IsEmpty())
 				{
 					exp.ManufacturerPartNumber = product.Sku;
 				}
 
-				if (ctx.Supporting[ExportProjectionSupport.ShippingTime])
+				if (ctx.Supporting[ExportSupport.ProjectionShippingTime])
 				{
 					dynamic deliveryTime = exp.DeliveryTime;
 					exp._ShippingTime = (deliveryTime == null ? ctx.Projection.ShippingTime : deliveryTime.Name);
 				}
 
-				if (ctx.Supporting[ExportProjectionSupport.ShippingCosts])
+				if (ctx.Supporting[ExportSupport.ProjectionShippingCosts])
 				{
 					exp._FreeShippingThreshold = ctx.Projection.FreeShippingThreshold;
 
@@ -1689,7 +1797,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp._ShippingCosts = ctx.Projection.ShippingCosts;
 				}
 
-				if (ctx.Supporting[ExportProjectionSupport.OldPrice])
+				if (ctx.Supporting[ExportSupport.ProjectionOldPrice])
 				{
 					if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)exp.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 					{
@@ -1709,7 +1817,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					}
 				}
 
-				if (ctx.Supporting[ExportProjectionSupport.SpecialPrice])
+				if (ctx.Supporting[ExportSupport.ProjectionSpecialPrice])
 				{
 					exp._SpecialPrice = null;
 					exp._RegularPrice = null;	// price if a special price would not exist
@@ -1825,6 +1933,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private List<Store> Init(ExportProfileTaskContext ctx)
 		{
+			// Init base things that are even required for preview. Init all other things in ExportCoreOuter.
 			List<Store> result = null;
 
 			if (ctx.Projection.CurrencyId.HasValue)
@@ -1843,6 +1952,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.ProjectionLanguage = _services.WorkContext.WorkingLanguage;
 
 			ctx.Stores = _services.StoreService.GetAllStores().ToDictionary(x => x.Id, x => x);
+			ctx.Languages = _languageService.GetAllLanguages(true).ToDictionary(x => x.Id, x => x);
 
 			if (!ctx.IsPreview && ctx.Profile.PerStore)
 			{

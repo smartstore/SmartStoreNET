@@ -17,6 +17,22 @@ namespace SmartStore.Services.DataExchange
 			_culture = culture;
 		}
 
+		public void WriteLocalized(dynamic parentNode)
+		{
+			if (parentNode == null || parentNode._Localized == null)
+				return;
+
+			_writer.WriteStartElement("Localized");
+			foreach (dynamic item in parentNode._Localized)
+			{
+				_writer.WriteStartElement((string)item.LocaleKey);
+				_writer.WriteAttributeString("culture", (string)item.Culture);
+				_writer.WriteString(((string)item.LocaleValue).RemoveInvalidXmlChars());
+				_writer.WriteEndElement();	// item.LocaleKey
+			}
+			_writer.WriteEndElement();	// Localized
+		}
+
 		public void WriteAddress(dynamic address, string node)
 		{
 			if (address == null)
@@ -61,6 +77,9 @@ namespace SmartStore.Services.DataExchange
 				_writer.Write("Published", ((bool)country.Published).ToString());
 				_writer.Write("DisplayOrder", ((int)country.DisplayOrder).ToString());
 				_writer.Write("LimitedToStores", ((bool)country.LimitedToStores).ToString());
+
+				WriteLocalized(country);
+
 				_writer.WriteEndElement();	// Country
 			}
 
@@ -75,6 +94,9 @@ namespace SmartStore.Services.DataExchange
 				_writer.Write("Abbreviation", (string)stateProvince.Abbreviation);
 				_writer.Write("Published", ((bool)stateProvince.Published).ToString());
 				_writer.Write("DisplayOrder", ((int)stateProvince.DisplayOrder).ToString());
+
+				WriteLocalized(stateProvince);
+
 				_writer.WriteEndElement();	// StateProvince
 			}
 
@@ -106,6 +128,8 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("CreatedOnUtc", ((DateTime)currency.CreatedOnUtc).ToString(_culture));
 			_writer.Write("UpdatedOnUtc", ((DateTime)currency.UpdatedOnUtc).ToString(_culture));
 			_writer.Write("DomainEndings", (string)currency.DomainEndings);
+
+			WriteLocalized(currency);
 
 			if (node.HasValue())
 			{
@@ -158,6 +182,8 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("ColorHexValue", (string)deliveryTime.ColorHexValue);
 			_writer.Write("DisplayOrder", ((int)deliveryTime.DisplayOrder).ToString());
 
+			WriteLocalized(deliveryTime);
+
 			if (node.HasValue())
 			{
 				_writer.WriteEndElement();
@@ -181,6 +207,8 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("DisplayOrder", ((int)quantityUnit.DisplayOrder).ToString());
 			_writer.Write("IsDefault", ((bool)quantityUnit.IsDefault).ToString());
 
+			WriteLocalized(quantityUnit);
+
 			if (node.HasValue())
 			{
 				_writer.WriteEndElement();
@@ -203,6 +231,7 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("ThumbImageUrl", (string)picture._ThumbImageUrl);
 			_writer.Write("ImageUrl", (string)picture._ImageUrl);
 			_writer.Write("FullSizeImageUrl", (string)picture._FullSizeImageUrl);
+			_writer.Write("FileName", (string)picture._FileName);
 
 			if (node.HasValue())
 			{
@@ -252,6 +281,8 @@ namespace SmartStore.Services.DataExchange
 
 			WritePicture(category.Picture, "Picture");
 
+			WriteLocalized(category);
+
 			if (node.HasValue())
 			{
 				_writer.WriteEndElement();
@@ -288,6 +319,8 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("DisplayOrder", ((int)manufacturer.DisplayOrder).ToString());
 			_writer.Write("CreatedOnUtc", ((DateTime)manufacturer.CreatedOnUtc).ToString(_culture));
 			_writer.Write("UpdatedOnUtc", ((DateTime)manufacturer.UpdatedOnUtc).ToString(_culture));
+
+			WriteLocalized(manufacturer);
 
 			WritePicture(manufacturer.Picture, "Picture");
 
@@ -418,6 +451,8 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("LowestAttributeCombinationPrice", lowestAttributeCombinationPrice.HasValue ? lowestAttributeCombinationPrice.Value.ToString(_culture) : "");
 			_writer.Write("IsEsd", ((bool)product.IsEsd).ToString());
 
+			WriteLocalized(product);
+
 			WriteDeliveryTime(product.DeliveryTime, "DeliveryTime");
 
 			WriteQuantityUnit(product.QuantityUnit, "QuantityUnit");
@@ -469,6 +504,10 @@ namespace SmartStore.Services.DataExchange
 				_writer.WriteStartElement("ProductTag");
 				_writer.Write("Id", ((int)tag.Id).ToString());
 				_writer.Write("Name", (string)tag.Name);
+				_writer.Write("SeName", (string)tag.SeName);
+
+				WriteLocalized(tag);
+
 				_writer.WriteEndElement();	// ProductTag
 			}
 			_writer.WriteEndElement();	// ProductTags
@@ -489,6 +528,9 @@ namespace SmartStore.Services.DataExchange
 				_writer.Write("Alias", (string)pa.Attribute.Alias);
 				_writer.Write("Name", (string)pa.Attribute.Name);
 				_writer.Write("Description", (string)pa.Attribute.Description);
+
+				WriteLocalized(pa.Attribute);
+
 				_writer.WriteEndElement();	// Attribute
 
 				_writer.WriteStartElement("AttributeValues");
@@ -506,6 +548,9 @@ namespace SmartStore.Services.DataExchange
 					_writer.Write("ValueTypeId", ((int)value.ValueTypeId).ToString());
 					_writer.Write("LinkedProductId", ((int)value.LinkedProductId).ToString());
 					_writer.Write("Quantity", ((int)value.Quantity).ToString());
+
+					WriteLocalized(value);
+
 					_writer.WriteEndElement();	// AttributeValue
 				}
 				_writer.WriteEndElement();	// AttributeValues
@@ -624,10 +669,15 @@ namespace SmartStore.Services.DataExchange
 				_writer.Write("DisplayOrder", ((int)option.DisplayOrder).ToString());
 				_writer.Write("Name", (string)option.Name);
 
+				WriteLocalized(option);
+
 				_writer.WriteStartElement("SpecificationAttribute");
 				_writer.Write("Id", ((int)option.SpecificationAttribute.Id).ToString());
 				_writer.Write("Name", (string)option.SpecificationAttribute.Name);
 				_writer.Write("DisplayOrder", ((int)option.SpecificationAttribute.DisplayOrder).ToString());
+
+				WriteLocalized(option.SpecificationAttribute);
+
 				_writer.WriteEndElement();	// SpecificationAttribute
 				_writer.WriteEndElement();	// SpecificationAttributeOption
 
@@ -657,6 +707,9 @@ namespace SmartStore.Services.DataExchange
 				_writer.Write("DisplayOrder", ((int)bundleItem.DisplayOrder).ToString());
 				_writer.Write("CreatedOnUtc", ((DateTime)bundleItem.CreatedOnUtc).ToString(_culture));
 				_writer.Write("UpdatedOnUtc", ((DateTime)bundleItem.UpdatedOnUtc).ToString(_culture));
+
+				WriteLocalized(bundleItem);
+
 				_writer.WriteEndElement();	// ProductBundleItem
 			}
 			_writer.WriteEndElement();	// ProductBundleItems

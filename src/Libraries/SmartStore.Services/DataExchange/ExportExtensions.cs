@@ -30,10 +30,10 @@ namespace SmartStore.Services.DataExchange
 		/// <param name="provider">Export provider</param>
 		/// <param name="type">The type to check</param>
 		/// <returns><c>true</c> provider supports type, <c>false</c> provider does not support type.</returns>
-		public static bool Supports(this Provider<IExportProvider> provider, ExportProjectionSupport type)
+		public static bool Supports(this Provider<IExportProvider> provider, ExportSupport type)
 		{
 			if (provider != null)
-				return provider.Metadata.ExportProjectionSupport.Contains(type);
+				return provider.Metadata.ExportSupport.Contains(type);
 			return false;
 		}
 

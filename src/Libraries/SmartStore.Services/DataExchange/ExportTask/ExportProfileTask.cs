@@ -812,6 +812,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando._ImageUrl = _pictureService.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
 			expando._FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, false, ctx.Store.Url);
 
+			var relativeUrl = _pictureService.GetPictureUrl(picture);
+			expando._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
+
 			return expando as ExpandoObject;
 		}
 

@@ -10,15 +10,15 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
-	[SystemName("Exports.SmartStoreNetProductXml")]
-	[FriendlyName("SmartStore.NET XML product export")]
+	[SystemName("Exports.SmartStoreProductXml")]
+	[FriendlyName("SmartStore XML product export")]
 	[IsHidden(true)]
 	[ExportSupporting(ExportSupport.HighDataDepth)]
 	public class ExportProductXmlProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreNetProductXml"; }
+			get { return "Exports.SmartStoreProductXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo

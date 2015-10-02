@@ -10,14 +10,14 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
-	[SystemName("Exports.SmartStoreNetOrderXml")]
-	[FriendlyName("SmartStore.NET XML order export")]
+	[SystemName("Exports.SmartStoreOrderXml")]
+	[FriendlyName("SmartStore XML order export")]
 	[IsHidden(true)]
 	public class ExportOrderXmlProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreNetOrderXml"; }
+			get { return "Exports.SmartStoreOrderXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo

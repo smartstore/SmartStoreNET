@@ -304,7 +304,7 @@ namespace SmartStore.Services.Catalog
 		/// <param name="customer">Filter tier prices by customer</param>
 		/// <param name="storeId">Filter tier prices by store</param>
 		/// <returns>Map of tier prices</returns>
-		Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0);
+		Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0);
 
         /// <summary>
         /// Inserts a tier price

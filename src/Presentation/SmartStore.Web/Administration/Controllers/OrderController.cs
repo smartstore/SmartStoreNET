@@ -776,7 +776,7 @@ namespace SmartStore.Admin.Controllers
 		private ActionResult Export(string providerSystemName, string selectedIds)
 		{
 			string error = null;
-			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, "smnet-orders", out error);
+			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
 
 			if (fileStreamResult != null)
 				return fileStreamResult;

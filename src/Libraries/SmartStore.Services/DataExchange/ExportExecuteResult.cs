@@ -37,6 +37,12 @@ namespace SmartStore.Services.DataExchange
 		[XmlIgnore]
 		public string FileFolder { get; set; }
 
+		/// <summary>
+		/// Suggested download file name
+		/// </summary>
+		[XmlIgnore]
+		public string DownloadFileName { get; set; }
+
 		[Serializable]
 		public class ExportFileInfo
 		{

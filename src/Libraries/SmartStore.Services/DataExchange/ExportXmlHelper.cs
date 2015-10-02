@@ -483,11 +483,12 @@ namespace SmartStore.Services.DataExchange
 
 
 			_writer.WriteStartElement("TierPrices");
-			foreach (dynamic tierPrice in product.ProductTags)
+			foreach (dynamic tierPrice in product.TierPrices)
 			{
 				int? customerRoleId = tierPrice.CustomerRoleId;
 
 				_writer.WriteStartElement("TierPrice");
+				_writer.Write("Id", ((int)tierPrice.Id).ToString());
 				_writer.Write("ProductId", ((int)tierPrice.ProductId).ToString());
 				_writer.Write("StoreId", ((int)tierPrice.StoreId).ToString());
 				_writer.Write("CustomerRoleId", customerRoleId.HasValue ? customerRoleId.Value.ToString() : "");
@@ -623,6 +624,7 @@ namespace SmartStore.Services.DataExchange
 			foreach (dynamic productCategory in product.ProductCategories)
 			{
 				_writer.WriteStartElement("ProductCategory");
+				_writer.Write("Id", ((int)productCategory.Id).ToString());
 				_writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
 				_writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
 

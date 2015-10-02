@@ -9,8 +9,8 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
-	[SystemName("Exports.SmartStoreNetOrderXlsx")]
-	[FriendlyName("SmartStore.NET Excel order export")]
+	[SystemName("Exports.SmartStoreOrderXlsx")]
+	[FriendlyName("SmartStore Excel order export")]
 	[IsHidden(true)]
 	public class ExportOrderXlsxProvider : IExportProvider
 	{
@@ -90,7 +90,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreNetOrderXlsx"; }
+			get { return "Exports.SmartStoreOrderXlsx"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo

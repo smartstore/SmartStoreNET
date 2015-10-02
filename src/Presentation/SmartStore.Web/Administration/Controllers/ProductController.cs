@@ -29,6 +29,8 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.ExportProvider;
+using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
@@ -827,6 +829,19 @@ namespace SmartStore.Admin.Controllers
                 model.NoThumb = defaultProductPicture == null;
             }
         }
+
+		private ActionResult Export(string providerSystemName, string selectedIds)
+		{
+			string error = null;
+			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
+
+			if (fileStreamResult != null)
+				return fileStreamResult;
+
+			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+
+			return RedirectToAction("List");
+		}
 
 		#endregion Utitilies
 
@@ -2771,76 +2786,22 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
-				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-				{
-					var searchContext = new ProductSearchContext
-					{
-						LanguageId = _workContext.WorkingLanguage.Id,
-						OrderBy = ProductSortingEnum.Position,
-						PageSize = 100,
-						ShowHidden = true
-					};
-
-					var stream = new MemoryStream();
-					_exportManager.ExportProductsToXml(stream, searchContext);
-
-					var result = new FileStreamResult(stream, MediaTypeNames.Text.Xml);
-					result.FileDownloadName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-
-					return result;
-				}
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-            }
-			return RedirectToAction("List");
+			return Export(ExportProductXmlProvider.SystemName, null);
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
-				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-				{
-					var searchContext = new ProductSearchContext
-					{
-						LanguageId = _workContext.WorkingLanguage.Id,
-						OrderBy = ProductSortingEnum.Position,
-						PageSize = 100,
-						ShowHidden = true
-					};
-
-					searchContext.ProductIds = selectedIds
-						.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-						.Select(x => Convert.ToInt32(x))
-						.ToList();
-
-					var stream = new MemoryStream();
-					_exportManager.ExportProductsToXml(stream, searchContext);
-
-					var result = new FileStreamResult(stream, MediaTypeNames.Text.Xml);
-					result.FileDownloadName = string.Format("products_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-
-					return result;
-				}
-			}
-			catch (Exception exc)
-			{
-				NotifyError(exc);
-			}
-			return RedirectToAction("List");
+			return Export(ExportProductXmlProvider.SystemName, selectedIds);
         }
 
         public ActionResult ExportExcelAll()

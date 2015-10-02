@@ -1773,7 +1773,7 @@ namespace SmartStore.Services.Catalog
             return tierPrice;
         }
 
-		public virtual Multimap<int, TierPrice> GetTierPrices(int[] productIds, Customer customer = null, int storeId = 0)
+		public virtual Multimap<int, TierPrice> GetTierPricesByProductIds(int[] productIds, Customer customer = null, int storeId = 0)
 		{
 			Guard.ArgumentNotNull(() => productIds);
 
@@ -1793,7 +1793,6 @@ namespace SmartStore.Services.Catalog
 				list = list.FilterForCustomer(customer).ToList();
 
 			var map = list
-				.RemoveDuplicatedQuantities()
 				.ToMultimap(x => x.ProductId, x => x);
 
 			return map;

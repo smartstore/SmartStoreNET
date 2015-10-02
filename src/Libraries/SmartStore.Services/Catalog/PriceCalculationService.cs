@@ -154,7 +154,8 @@ namespace SmartStore.Services.Catalog
 			}
 			else
 			{
-				tierPrices = context.TierPrices.Load(product.Id);
+				tierPrices = context.TierPrices.Load(product.Id)
+					.RemoveDuplicatedQuantities();
 			}
 
 			if (tierPrices == null)
@@ -279,7 +280,7 @@ namespace SmartStore.Services.Catalog
 			var context = new PriceCalculationContext(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
-				x => _productService.GetTierPrices(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
+				x => _productService.GetTierPricesByProductIds(x, _services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id),
 				x => _categoryService.GetProductCategoriesByProductIds(x, true),
 				x => _productService.GetAppliedDiscountsByProductIds(x)
 			);
@@ -480,7 +481,8 @@ namespace SmartStore.Services.Catalog
 
 			if (!displayFromMessage && product.HasTierPrices && !isBundlePerItemPricing)
 			{
-				var tierPrices = context.TierPrices.Load(product.Id);
+				var tierPrices = context.TierPrices.Load(product.Id)
+					.RemoveDuplicatedQuantities();
 
 				displayFromMessage = (tierPrices.Count > 0 && !(tierPrices.Count == 1 && tierPrices.First().Quantity <= 1));
 			}

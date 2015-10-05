@@ -11,10 +11,8 @@ namespace SmartStore.Services.DataExchange
 		/// Creates a volatile export project
 		/// </summary>
 		/// <param name="provider">Export provider</param>
-		/// <param name="providerConfigData">Provider configuration data</param>
-		/// <param name="storeId">Store identifier</param>
 		/// <returns>New export profile</returns>
-		ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider, string providerConfigData, int storeId);
+		ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider);
 
 		/// <summary>
 		/// Inserts an export profile

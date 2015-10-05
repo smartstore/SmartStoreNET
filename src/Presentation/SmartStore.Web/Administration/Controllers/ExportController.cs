@@ -222,6 +222,7 @@ namespace SmartStore.Admin.Controllers
 				FreeShippingThreshold = projection.FreeShippingThreshold,
 				AttributeCombinationAsProduct = projection.AttributeCombinationAsProduct,
 				AttributeCombinationValueMergingId = projection.AttributeCombinationValueMergingId,
+				NoGroupedProducts = projection.NoGroupedProducts,
 				OrderStatusChangeId = projection.OrderStatusChangeId
 			};
 
@@ -621,6 +622,7 @@ namespace SmartStore.Admin.Controllers
 				FreeShippingThreshold = model.Projection.FreeShippingThreshold,
 				AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
 				AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
+				NoGroupedProducts = model.Projection.NoGroupedProducts,
 				OrderStatusChangeId = model.Projection.OrderStatusChangeId
 			};
 

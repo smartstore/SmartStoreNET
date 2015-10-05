@@ -76,6 +76,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public int RecordCount { get; set; }
 		public Dictionary<int, int> RecordsPerStore { get; set; }
 		public string ProgressInfo { get; set; }
+		public IQueryable<Product> QueryProducts { get; set; }
 
 		public Action<dynamic> PreviewData { get; private set; }
 		public bool IsPreview
@@ -90,9 +91,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }
-		public Currency ProjectionCurrency { get; set; }
-		public Customer ProjectionCustomer { get; set; }
-		public Language ProjectionLanguage { get; set; }
+		public Currency ContextCurrency { get; set; }
+		public Customer ContextCustomer { get; set; }
+		public Language ContextLanguage { get; set; }
 
 		public TraceLogger Log { get; set; }
 		public Store Store { get; set; }

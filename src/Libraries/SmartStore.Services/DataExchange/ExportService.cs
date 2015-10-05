@@ -4,6 +4,7 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
@@ -47,7 +48,7 @@ namespace SmartStore.Services.DataExchange
 
 		#region Export profiles
 
-		public virtual ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider, string providerConfigData, int storeId)
+		public virtual ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider)
 		{
 			var name = provider.GetName(_localizationService);
 			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
@@ -61,19 +62,14 @@ namespace SmartStore.Services.DataExchange
 				ProviderSystemName = provider.Metadata.SystemName,
 				Enabled = true,
 				SchedulingTaskId = 0,
-				ProviderConfigData = providerConfigData,
 				PerStore = false,
 				CreateZipArchive = false,
 				Cleanup = false,
-				ScheduleTask = null,
+				ScheduleTask = null,	// volatile schedule task impossible cause of database accesses by core
 				Deployments = new List<ExportDeployment>()
 			};
 
-			var filter = new ExportFilter();
-			filter.IsPublished = null;
-			filter.StoreId = storeId;
-
-			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+			// profile.Projection and profile.Filtering should be null here
 
 			return profile;
 		}
@@ -113,11 +109,26 @@ namespace SmartStore.Services.DataExchange
 
 			if (cloneProfile == null)
 			{
+				// what we do here is to preset typical settings for feed creation
+				// but on the other hand they may be untypical for generic data export\exchange
+				var projection = new ExportProjection
+				{
+					RemoveCriticalCharacters = true,
+					CriticalCharacters = "¼,½,¾",
+					PriceType = PriceDisplayType.PreSelectedPrice,
+					NoGroupedProducts = (provider.Supports(ExportSupport.ProjectionNoGroupedProducts) ? true : false)
+				};
+
+				var filter = new ExportFilter
+				{
+					IsPublished = true
+				};
+
 				profile = new ExportProfile
 				{
 					FileNamePattern = _defaultFileNamePattern,
-					Filtering = XmlHelper.Serialize<ExportFilter>(new ExportFilter()),
-					Projection = XmlHelper.Serialize<ExportProjection>(new ExportProjection())
+					Filtering = XmlHelper.Serialize<ExportFilter>(filter),
+					Projection = XmlHelper.Serialize<ExportProjection>(projection)
 				};
 			}
 			else

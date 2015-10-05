@@ -76,6 +76,9 @@ namespace SmartStore.Admin.Models.DataExchange
 		public int AttributeCombinationValueMergingId { get; set; }
 		public SelectList AvailableAttributeCombinationValueMerging { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.Projection.NoGroupedProducts")]
+		public bool NoGroupedProducts { get; set; }
+
 		#endregion
 
 		#region Order

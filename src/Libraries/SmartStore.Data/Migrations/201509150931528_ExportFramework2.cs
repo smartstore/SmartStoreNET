@@ -58,6 +58,16 @@ namespace SmartStore.Data.Migrations
 				"The export provider does not explicit support any file type. Therefore, the export provider is responsible for futher deployment of export data.",
 				"Der Export-Provider unterstützt keinen expliziten Dateityp. Für eine weitere Bereitstellung der Exportdaten ist daher der Export-Provider verantwortlich.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NoGroupedProducts",
+				"Do not export grouped products",
+				"Keine Gruppenprodukte exportieren",
+				"Specifies whether to export grouped products. If this option is deactivated, then the associated products will be deactivated.",
+				"Legt fest, ob Gruppenprodukte exportiert werden sollen. Ist diese Option deaktiviert, so werden die zur Gruppe gehörenden Produkte exportiert.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NoGroupedProducts.Note",
+				"In the preview group products are always displayed regardless of this option. Therefore, the displayed product number may vary from the number of exported products.",
+				"In der Vorschau werden Gruppenprodukte ungeachtet dieser Option immer angezeigt. Daher kann die dort angezeigte Produktanzahl von der Anzahl der exportierten Produkte abweichen.");
+
 
 			builder.Delete(
 				"Plugins.Feed.Froogle.TaskEnabled",

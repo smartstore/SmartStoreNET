@@ -198,26 +198,29 @@ namespace SmartStore
 		{
 			var sb = new StringBuilder();
 
-			foreach (string str in nvc)
+			if (nvc != null)
 			{
-				if (sb.Length > 0)
-					sb.Append('&');
+				foreach (string str in nvc)
+				{
+					if (sb.Length > 0)
+						sb.Append('&');
 
-				if (!encode)
-					sb.Append(str);
-				else if (encoding == null)
-					sb.Append(HttpUtility.UrlEncode(str));
-				else
-					sb.Append(HttpUtility.UrlEncode(str, encoding));
+					if (!encode)
+						sb.Append(str);
+					else if (encoding == null)
+						sb.Append(HttpUtility.UrlEncode(str));
+					else
+						sb.Append(HttpUtility.UrlEncode(str, encoding));
 
-				sb.Append('=');
+					sb.Append('=');
 
-				if (!encode)
-					sb.Append(nvc[str]);
-				else if (encoding == null)
-					sb.Append(HttpUtility.UrlEncode(nvc[str]));
-				else
-					sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+					if (!encode)
+						sb.Append(nvc[str]);
+					else if (encoding == null)
+						sb.Append(HttpUtility.UrlEncode(nvc[str]));
+					else
+						sb.Append(HttpUtility.UrlEncode(nvc[str], encoding));
+				}
 			}
 
 			return sb.ToString();

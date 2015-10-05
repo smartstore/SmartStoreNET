@@ -4,16 +4,13 @@ using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Core.Domain.DataExchange
 {
+	/// <summary>
+	/// Settings projected onto an export
+	/// </summary>
+	/// <remarks>Note possible projection controlling: a) developer controls, b) merchant controls, c) developer controls what the merchant can control</remarks>
 	[Serializable]
 	public class ExportProjection
 	{
-		public ExportProjection()
-		{
-			RemoveCriticalCharacters = true;
-			CriticalCharacters = "¼,½,¾";
-			PriceType = PriceDisplayType.PreSelectedPrice;
-		}
-
 		#region All entity types
 
 		/// <summary>
@@ -141,6 +138,11 @@ namespace SmartStore.Core.Domain.DataExchange
 				AttributeCombinationValueMergingId = (int)value;
 			}
 		}
+
+		/// <summary>
+		/// Whether to export grouped products
+		/// </summary>
+		public bool NoGroupedProducts { get; set; }
 
 		#endregion
 

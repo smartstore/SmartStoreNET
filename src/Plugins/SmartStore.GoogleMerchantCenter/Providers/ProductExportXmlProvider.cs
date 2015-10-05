@@ -21,7 +21,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 	[DisplayOrder(1)]
 	[ExportSupporting(
 		ExportSupport.CreateInitialPublicDeployment,
-		ExportSupport.AttributeCombinationAsProduct,
+		ExportSupport.ProjectionNoGroupedProducts,
+		ExportSupport.ProjectionAttributeCombinationAsProduct,
 		ExportSupport.ProjectionDescription,
 		ExportSupport.ProjectionUseOwnProductNo,
 		ExportSupport.ProjectionBrand,

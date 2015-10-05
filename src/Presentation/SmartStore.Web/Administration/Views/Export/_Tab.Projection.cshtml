@@ -47,7 +47,7 @@
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{
-		if (Model.Provider.Supporting.Contains(ExportSupport.AttributeCombinationAsProduct))
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionAttributeCombinationAsProduct))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -65,6 +65,26 @@
 				<td class="adminData">
 					@Html.DropDownListFor(x => x.Projection.AttributeCombinationValueMergingId, Model.Projection.AvailableAttributeCombinationValueMerging)
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
+				</td>
+			</tr>
+		}
+
+		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionNoGroupedProducts))
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Projection.NoGroupedProducts)
+				</td>
+				<td class="adminData">
+					@Html.EditorFor(x => x.Projection.NoGroupedProducts)
+					@Html.ValidationMessageFor(x => x.Projection.NoGroupedProducts)
+				</td>
+			</tr>
+			<tr id="NoGroupedProductsNote">
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@T("Admin.DataExchange.Export.Projection.NoGroupedProducts.Note")
+					</div>
 				</td>
 			</tr>
 		}

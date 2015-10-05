@@ -127,13 +127,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Utilities
 
-		private List<ExpandoObject> GetLocalized<T>(ExportProfileTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
+		private List<dynamic> GetLocalized<T>(ExportProfileTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
 		{
 			if (ctx.Languages.Count <= 1 || !ctx.Supporting[ExportSupport.HighDataDepth])
 				return null;
 
-			var localized = new List<ExpandoObject>();
+			var localized = new List<dynamic>();
 
 			var localeKeyGroup = typeof(T).Name;
 			var isSlugSupported = typeof(ISlugSupported).IsAssignableFrom(typeof(T));
@@ -153,7 +153,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp.LocaleKey = "SeName";
 						exp.LocaleValue = value;
 
-						localized.Add(exp as ExpandoObject);
+						localized.Add(exp);
 					}
 				}
 
@@ -172,7 +172,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp.LocaleKey = localeKey;
 						exp.LocaleValue = value;
 
-						localized.Add(exp as ExpandoObject);
+						localized.Add(exp);
 					}
 				}
 			}
@@ -617,7 +617,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Entity to expando
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Currency currency)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Currency currency)
 		{
 			if (currency == null)
 				return null;
@@ -640,10 +640,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando._Localized = GetLocalized(ctx, currency, x => x.Name);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Language language)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Language language)
 		{
 			if (language == null)
 				return null;
@@ -661,10 +661,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Published = language.Published;
 			expando.DisplayOrder = language.DisplayOrder;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Country country)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Country country)
 		{
 			if (country == null)
 				return null;
@@ -686,10 +686,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando._Localized = GetLocalized(ctx, country, x => x.Name);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Address address)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Address address)
 		{
 			if (address == null)
 				return null;
@@ -725,12 +725,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			sp._Localized = GetLocalized(ctx, address.StateProvince, x => x.Name);
 
-			expando.StateProvince = sp as ExpandoObject;
+			expando.StateProvince = sp;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, RewardPointsHistory points)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, RewardPointsHistory points)
 		{
 			if (points == null)
 				return null;
@@ -746,10 +746,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Message = points.Message;
 			expando.CreatedOnUtc = points.CreatedOnUtc;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Customer customer)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Customer customer)
 		{
 			if (customer == null)
 				return null;
@@ -781,10 +781,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.RewardPointsHistory = null;
 			expando._RewardPointsBalance = 0;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Store store)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Store store)
 		{
 			if (store == null)
 				return null;
@@ -808,10 +808,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.PrimaryStoreCurrency = ToExpando(ctx, store.PrimaryStoreCurrency);
 			expando.PrimaryExchangeRateCurrency = ToExpando(ctx, store.PrimaryExchangeRateCurrency);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, DeliveryTime deliveryTime)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, DeliveryTime deliveryTime)
 		{
 			if (deliveryTime == null)
 				return null;		
@@ -827,10 +827,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando._Localized = GetLocalized(ctx, deliveryTime, x => x.Name);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, QuantityUnit quantityUnit)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, QuantityUnit quantityUnit)
 		{
 			if (quantityUnit == null)
 				return null;
@@ -849,10 +849,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => x.Name,
 				x => x.Description);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
 		{
 			if (picture == null)
 				return null;
@@ -871,10 +871,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var relativeUrl = _pictureService.GetPictureUrl(picture);
 			expando._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
 
-			return expando as ExpandoObject;
+			expando._ThumbLocalPath = _pictureService.GetThumbLocalPath(picture);
+
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, ProductVariantAttribute pva)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductVariantAttribute pva)
 		{
 			if (pva == null)
 				return null;
@@ -915,7 +917,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					value._Localized = GetLocalized(ctx, x, y => y.Name);
 
-					return value as ExpandoObject;
+					return value;
 				})
 				.ToList();
 
@@ -923,12 +925,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => x.Name,
 				x => x.Description);
 
-			expando.Attribute = attribute as ExpandoObject;
+			expando.Attribute = attribute;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, ProductVariantAttributeCombination pvac)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductVariantAttributeCombination pvac)
 		{
 			if (pvac == null)
 				return null;
@@ -955,10 +957,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			GetDeliveryTimeAndQuantityUnit(ctx, expando, pvac.DeliveryTimeId, pvac.QuantityUnitId);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Manufacturer manufacturer)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Manufacturer manufacturer)
 		{
 			if (manufacturer == null)
 				return null;
@@ -992,10 +994,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => x.MetaDescription,
 				x => x.MetaTitle);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Category category)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Category category)
 		{
 			if (category == null)
 				return null;
@@ -1040,10 +1042,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => x.MetaDescription,
 				x => x.MetaTitle);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Product product)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Product product)
 		{
 			if (product == null)
 				return null;
@@ -1052,6 +1054,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando._Entity = product;
 
 			expando.Id = product.Id;
+			expando.ProductTypeId = product.ProductTypeId;
+			expando.ParentGroupedProductId = product.ParentGroupedProductId;
+			expando.VisibleIndividually = product.VisibleIndividually;
 			expando.Name = product.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			expando.SeName = product.GetSeName(ctx.Projection.LanguageId ?? 0, true, false);
 			expando.ShortDescription = product.GetLocalized(x => x.ShortDescription, ctx.Projection.LanguageId ?? 0, true, false);
@@ -1068,13 +1073,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.NotApprovedRatingSum = product.NotApprovedRatingSum;
 			expando.ApprovedTotalReviews = product.ApprovedTotalReviews;
 			expando.NotApprovedTotalReviews = product.NotApprovedTotalReviews;
-			expando.Published = product.Published;
-			expando.CreatedOnUtc = product.CreatedOnUtc;
-			expando.UpdatedOnUtc = product.UpdatedOnUtc;
 			expando.SubjectToAcl = product.SubjectToAcl;
 			expando.LimitedToStores = product.LimitedToStores;
-			expando.ProductTypeId = product.ProductTypeId;
-			expando.ParentGroupedProductId = product.ParentGroupedProductId;
 			expando.Sku = product.Sku;
 			expando.ManufacturerPartNumber = product.ManufacturerPartNumber;
 			expando.Gtin = product.Gtin;
@@ -1101,6 +1101,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.IsFreeShipping = product.IsFreeShipping;
 			expando.AdditionalShippingCharge = product.AdditionalShippingCharge;
 			expando.IsTaxExempt = product.IsTaxExempt;
+			expando.IsEsd = product.IsEsd;
 			expando.TaxCategoryId = product.TaxCategoryId;
 			expando.ManageInventoryMethodId = product.ManageInventoryMethodId;
 			expando.StockQuantity = product.StockQuantity;
@@ -1128,6 +1129,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.MinimumCustomerEnteredPrice = product.MinimumCustomerEnteredPrice;
 			expando.MaximumCustomerEnteredPrice = product.MaximumCustomerEnteredPrice;
 			expando.HasTierPrices = product.HasTierPrices;
+			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
 			expando.HasDiscountsApplied = product.HasDiscountsApplied;
 			expando.Weight = product.Weight;
 			expando.Length = product.Length;
@@ -1135,19 +1137,22 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Height = product.Height;
 			expando.AvailableStartDateTimeUtc = product.AvailableStartDateTimeUtc;
 			expando.AvailableEndDateTimeUtc = product.AvailableEndDateTimeUtc;
+			expando.DisplayOrder = product.DisplayOrder;
+			expando.Published = product.Published;
+			expando.Deleted = product.Deleted;
+			expando.CreatedOnUtc = product.CreatedOnUtc;
+			expando.UpdatedOnUtc = product.UpdatedOnUtc;
+			expando.DeliveryTimeId = product.DeliveryTimeId;
+			expando.QuantityUnitId = product.QuantityUnitId;
 			expando.BasePriceEnabled = product.BasePriceEnabled;
 			expando.BasePriceMeasureUnit = product.BasePriceMeasureUnit;
 			expando.BasePriceAmount = product.BasePriceAmount;
 			expando.BasePriceBaseAmount = product.BasePriceBaseAmount;
 			expando.BasePriceHasValue = product.BasePriceHasValue;
-			expando.VisibleIndividually = product.VisibleIndividually;
-			expando.DisplayOrder = product.DisplayOrder;
 			expando.BundleTitleText = product.GetLocalized(x => x.BundleTitleText, ctx.Projection.LanguageId ?? 0, true, false);
-			expando.BundlePerItemPricing = product.BundlePerItemPricing;
 			expando.BundlePerItemShipping = product.BundlePerItemShipping;
+			expando.BundlePerItemPricing = product.BundlePerItemPricing;
 			expando.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
-			expando.LowestAttributeCombinationPrice = product.LowestAttributeCombinationPrice;
-			expando.IsEsd = product.IsEsd;
 
 			expando._Localized = GetLocalized(ctx, product,
 				x => x.Name,
@@ -1158,10 +1163,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				x => x.MetaTitle,
 				x => x.BundleTitleText);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Order order)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Order order)
 		{
 			if (order == null)
 				return null;
@@ -1248,10 +1253,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Shipments = null;
 			expando.RedeemedRewardPointsEntry = ToExpando(ctx, order.RedeemedRewardPointsEntry);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, OrderItem orderItem)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, OrderItem orderItem)
 		{
 			if (orderItem == null)
 				return null;
@@ -1282,10 +1287,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.Product = ToExpando(ctx, orderItem.Product);
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Shipment shipment)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Shipment shipment)
 		{
 			if (shipment == null)
 				return null;
@@ -1310,14 +1315,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.ShipmentId = x.ShipmentId;
 					exp.OrderItemId = x.OrderItemId;
 					exp.Quantity = x.Quantity;
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, Discount discount)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, Discount discount)
 		{
 			if (discount == null)
 				return null;
@@ -1338,10 +1343,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.DiscountLimitationId = discount.DiscountLimitationId;
 			expando.LimitationTimes = discount.LimitationTimes;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
-		private ExpandoObject ToExpando(ExportProfileTaskContext ctx, ProductSpecificationAttribute psa)
+		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductSpecificationAttribute psa)
 		{
 			if (psa == null)
 				return null;
@@ -1376,7 +1381,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.SpecificationAttributeOption = expOption;
 
-			return expando as ExpandoObject;
+			return expando;
 		}
 
 		#endregion
@@ -1498,9 +1503,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<ExpandoObject> ConvertToExpando(ExportProfileTaskContext ctx, Product product)
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Product product)
 		{
-			var result = new List<ExpandoObject>();
+			var result = new List<dynamic>();
 
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
@@ -1541,9 +1546,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp._Entity = x;
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
+					exp.PictureId = x.PictureId;
 					exp.Picture = ToExpando(ctx, x.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize);
 
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
@@ -1556,6 +1562,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.ManufacturerId = x.ManufacturerId;
 					exp.Manufacturer = ToExpando(ctx, x.Manufacturer);
 
 					if (x.Manufacturer != null && x.Manufacturer.PictureId.HasValue)
@@ -1563,7 +1570,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					else
 						exp.Manufacturer.Picture = null;
 
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
@@ -1576,6 +1583,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.Id = x.Id;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.CategoryId = x.CategoryId;
 					exp.Category = ToExpando(ctx, x.Category);
 
 					if (x.Category != null && x.Category.PictureId.HasValue)
@@ -1586,7 +1594,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					if (expando._CategoryName == null)
 						expando._CategoryName = (string)exp.Category.Name;
 
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
@@ -1599,7 +1607,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = ToExpando(ctx, x);
-					var assignedPictures = new List<ExpandoObject>();
+					var assignedPictures = new List<dynamic>();
 
 					foreach (int pictureId in x.GetAssignedPictureIds())
 					{
@@ -1612,7 +1620,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					exp.Pictures = assignedPictures;
 
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
@@ -1632,13 +1640,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp.CustomerRoleId = x.CustomerRoleId;
 						exp.Quantity = x.Quantity;
 						exp.Price = x.Price;
-						return exp as ExpandoObject;
+						return exp;
 					})
 					.ToList();
 			}
 			else
 			{
-				expando.TierPrices = new List<ExpandoObject>();
+				expando.TierPrices = new List<dynamic>();
 			}
 
 			if (product.HasDiscountsApplied)
@@ -1651,7 +1659,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 			else
 			{
-				expando.AppliedDiscounts = new List<ExpandoObject>();
+				expando.AppliedDiscounts = new List<dynamic>();
 			}
 
 			#endregion
@@ -1672,7 +1680,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
 						exp.SeName = x.GetSeName(ctx.Projection.LanguageId ?? 0);
 						exp._Localized = GetLocalized(ctx, x, y => y.Name);
-						return exp as ExpandoObject;
+						return exp;
 					})
 					.ToList();
 
@@ -1705,20 +1713,20 @@ namespace SmartStore.Services.DataExchange.ExportTask
 							exp.CreatedOnUtc = x.CreatedOnUtc;
 							exp.UpdatedOnUtc = x.UpdatedOnUtc;
 							exp._Localized = GetLocalized(ctx, x, y => y.Name, y => y.ShortDescription);
-							return exp as ExpandoObject;
+							return exp;
 						})
 						.ToList();
 				}
 				else
 				{
-					expando.ProductBundleItems = new List<ExpandoObject>();
+					expando.ProductBundleItems = new List<dynamic>();
 				}
 			}
 			else
 			{
-				expando.ProductTags = new List<ExpandoObject>();
-				expando.ProductSpecificationAttributes = new List<ExpandoObject>();
-				expando.ProductBundleItems = new List<ExpandoObject>();
+				expando.ProductTags = new List<dynamic>();
+				expando.ProductSpecificationAttributes = new List<dynamic>();
+				expando.ProductBundleItems = new List<dynamic>();
 			}
 
 			#endregion
@@ -1873,9 +1881,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<ExpandoObject> ConvertToExpando(ExportProfileTaskContext ctx, Order order)
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Order order)
 		{
-			var result = new List<ExpandoObject>();
+			var result = new List<dynamic>();
 
 			ctx.OrderDataContext.Addresses.Collect(order.ShippingAddressId ?? 0);
 
@@ -1926,7 +1934,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					GetDeliveryTimeAndQuantityUnit(ctx, exp.Product, e.Product.DeliveryTimeId, e.Product.QuantityUnitId);
 
-					return exp as ExpandoObject;
+					return exp;
 				})
 				.ToList();
 
@@ -2013,7 +2021,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
 				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-				logHead.AppendLine("Export profile:\t\t{0} (Id {1})".FormatInvariant(ctx.Profile.Name, ctx.Profile.Id));
+				logHead.AppendLine("Export profile:\t\t{0} (Id {1})".FormatInvariant(ctx.Profile.Name, ctx.Profile.Id == 0 ? "volatile" : ctx.Profile.Id.ToString()));
 
 				var plugin = ctx.Provider.Metadata.PluginDescriptor;
 				logHead.Append("Plugin:\t\t\t\t");

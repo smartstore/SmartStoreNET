@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
@@ -23,7 +22,6 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -2804,65 +2802,22 @@ namespace SmartStore.Admin.Controllers
 			return Export(ExportProductXmlProvider.SystemName, selectedIds);
         }
 
+		[Compress]
         public ActionResult ExportExcelAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
-				using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-				{
-					var ctx = new ProductSearchContext();
-					ctx.LanguageId = _workContext.WorkingLanguage.Id;
-					ctx.OrderBy = ProductSortingEnum.Position;
-					ctx.PageSize = int.MaxValue;
-					ctx.ShowHidden = true;
-
-					var products = _productService.SearchProducts(ctx);
-
-					byte[] bytes = null;
-					using (var stream = new MemoryStream())
-					{
-						_exportManager.ExportProductsToXlsx(stream, products);
-						bytes = stream.ToArray();
-					}
-					return File(bytes, "text/xls", "products.xlsx");
-				}
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(ExportProductXlsxProvider.SystemName, null);
         }
 
-		[HttpPost]
+		[HttpPost, Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-			{
-				var products = new List<Product>();
-				if (selectedIds != null)
-				{
-					var ids = selectedIds
-						.Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-						.Select(x => Convert.ToInt32(x))
-						.ToArray();
-					products.AddRange(_productService.GetProductsByIds(ids));
-				}
-
-				byte[] bytes = null;
-				using (var stream = new MemoryStream())
-				{
-					_exportManager.ExportProductsToXlsx(stream, products);
-					bytes = stream.ToArray();
-				}
-				return File(bytes, "text/xls", "products.xlsx");
-			}
+			return Export(ExportProductXlsxProvider.SystemName, selectedIds);
         }
 
 		public ActionResult ExportPdf(bool all, string selectedIds = null)

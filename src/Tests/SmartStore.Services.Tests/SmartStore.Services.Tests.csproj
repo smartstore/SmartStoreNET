@@ -102,7 +102,6 @@
     <Compile Include="Discounts\DiscountExtensionsTests.cs" />
     <Compile Include="Discounts\DiscountServiceTests.cs" />
     <Compile Include="Discounts\TestDiscountRequirementRule.cs" />
-    <Compile Include="ExportImport\ExportManagerTests.cs" />
     <Compile Include="Helpers\DateTimeHelperTests.cs" />
     <Compile Include="Localization\LanguageServiceTests.cs" />
     <Compile Include="Logging\CustomerActivityServiceTests.cs" />

@@ -42,7 +42,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Gets the data of the current segment
 		/// </summary>
-		ICollection<ExpandoObject> CurrentSegment { get; }
+		ICollection<dynamic> CurrentSegment { get; }
 	}
 
 	internal interface IExportExecuter
@@ -55,9 +55,9 @@ namespace SmartStore.Services.DataExchange
 	public class ExportSegmenter<T> : IExportSegmenter, IExportExecuter, IDisposable where T : BaseEntity
 	{
 		private Func<int, List<T>> _loadData;
-		private Func<T, List<ExpandoObject>> _convertData;
+		private Func<T, List<dynamic>> _convertData;
 		private List<T> _currentData;
-		private List<ExpandoObject> _currentSegment;
+		private List<dynamic> _currentSegment;
 		private IPageable _pageable;
 		private int _pageIndexReset;
 		private bool _isBeginOfSegmentation;
@@ -72,7 +72,7 @@ namespace SmartStore.Services.DataExchange
 
 		public ExportSegmenter(
 			Func<int, List<T>> loadData,
-			Func<T, List<ExpandoObject>> convertData,
+			Func<T, List<dynamic>> convertData,
 			PagedList pageable,
 			int itemsPerFile)
 		{
@@ -195,7 +195,7 @@ namespace SmartStore.Services.DataExchange
 			return false;
 		}
 
-		public ICollection<ExpandoObject> CurrentSegment
+		public ICollection<dynamic> CurrentSegment
 		{
 			get
 			{
@@ -203,7 +203,7 @@ namespace SmartStore.Services.DataExchange
 
 				if (_currentSegment == null)
 				{
-					_currentSegment = new List<ExpandoObject>();
+					_currentSegment = new List<dynamic>();
 				}
 
 				if (_currentData == null)

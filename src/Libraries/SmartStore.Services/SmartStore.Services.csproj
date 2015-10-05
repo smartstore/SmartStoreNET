@@ -171,6 +171,7 @@
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportOrderXlsxProvider.cs" />
+    <Compile Include="DataExchange\ExportProvider\ExportProductXlsxProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportProductXmlProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportOrderXmlProvider.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />

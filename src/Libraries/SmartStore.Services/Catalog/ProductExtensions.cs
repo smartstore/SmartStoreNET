@@ -1,13 +1,17 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.Catalog
 {
@@ -306,7 +310,8 @@ namespace SmartStore.Services.Catalog
 		/// <param name="languageIndependent">Whether the result string should be language independent</param>
         /// <returns>The base price</returns>
         public static string GetBasePriceInfo(this Product product, ILocalizationService localizationService, IPriceFormatter priceFormatter,
-			decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
+            ICurrencyService currencyService, ITaxService taxService, IPriceCalculationService priceCalculationService,
+            Currency currency, decimal priceAdjustment = decimal.Zero, bool languageIndependent = false)
         {
             if (product == null)
                 throw new ArgumentNullException("product");
@@ -316,10 +321,17 @@ namespace SmartStore.Services.Catalog
 
             if (product.BasePriceHasValue && product.BasePriceAmount != Decimal.Zero)
             {
-				decimal price = decimal.Add(product.Price, priceAdjustment);
+                var workContext = EngineContext.Current.Resolve<IWorkContext>();
+
+                var taxrate = decimal.Zero;
+                var currentPrice = priceCalculationService.GetFinalPrice(product, workContext.CurrentCustomer, true);
+                decimal price = taxService.GetProductPrice(product, decimal.Add(currentPrice, priceAdjustment), out taxrate);
+                
+                price = currencyService.ConvertFromPrimaryStoreCurrency(price, currency);
+
 				decimal basePriceValue = Convert.ToDecimal((price / product.BasePriceAmount) * product.BasePriceBaseAmount);
 
-				string basePrice = priceFormatter.FormatPrice(basePriceValue, true, false);
+                string basePrice = priceFormatter.FormatPrice(basePriceValue, true, currency);
 				string unit = "{0} {1}".FormatWith(product.BasePriceBaseAmount, product.BasePriceMeasureUnit);
 
 				if (languageIndependent)

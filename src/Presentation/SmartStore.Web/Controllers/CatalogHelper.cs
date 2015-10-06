@@ -659,7 +659,7 @@ namespace SmartStore.Web.Controllers
 			model.HasSampleDownload = product.IsDownload && product.HasSampleDownload;
 			model.IsCurrentCustomerRegistered = _services.WorkContext.CurrentCustomer.IsRegistered();
 			model.IsBasePriceEnabled = product.BasePriceEnabled;
-			model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter);
+            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _services.WorkContext.WorkingCurrency);
 			model.ShowLegalInfo = _taxSettings.ShowLegalHintsInProductDetails;
 			model.BundleTitleText = product.GetLocalized(x => x.BundleTitleText);
 			model.BundlePerItemPricing = product.BundlePerItemPricing;
@@ -843,7 +843,14 @@ namespace SmartStore.Web.Controllers
 
 						model.ProductPrice.PriceValue = finalPriceWithoutDiscount;
 						model.ProductPrice.PriceWithDiscountValue = finalPriceWithDiscount;
-						model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, attributesTotalPriceBase);
+                        model.BasePriceInfo = product.GetBasePriceInfo(
+                            _localizationService, 
+                            _priceFormatter, 
+                            _currencyService, 
+                            _taxService, 
+                            _priceCalculationService,
+                            _services.WorkContext.WorkingCurrency, 
+                            attributesTotalPriceBase);
 
 						if (!string.IsNullOrWhiteSpace(model.ProductPrice.OldPrice) || !string.IsNullOrWhiteSpace(model.ProductPrice.PriceWithDiscount))
 						{
@@ -856,7 +863,14 @@ namespace SmartStore.Web.Controllers
                             {
                                 model.ProductPrice.NoteWithDiscount = T("Products.Bundle.PriceWithDiscount.Note");
                             }
-                            model.BasePriceInfo = product.GetBasePriceInfo(_localizationService, _priceFormatter, (product.Price - finalPriceWithDiscount) * (-1));
+                            model.BasePriceInfo = product.GetBasePriceInfo(
+                                _localizationService, 
+                                _priceFormatter, 
+                                _currencyService,
+                                _taxService, 
+                                _priceCalculationService,
+                                _services.WorkContext.WorkingCurrency, 
+                                (product.Price - finalPriceWithDiscount) * (-1));
 						}
 					}
 				}
@@ -1320,7 +1334,7 @@ namespace SmartStore.Web.Controllers
 
 				if (_catalogSettings.ShowBasePriceInProductLists)
 				{
-					model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter);
+                    model.BasePriceInfo = contextProduct.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService,  workingCurrency);
 				}
 
 				var addShippingPrice = _currencyService.ConvertCurrency(contextProduct.AdditionalShippingCharge, currentStore.PrimaryStoreCurrency, workingCurrency);

@@ -235,7 +235,7 @@ namespace SmartStore.Web.Controllers
 				IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter),
+                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
                 Weight = product.Weight
 			};
 
@@ -370,8 +370,12 @@ namespace SmartStore.Web.Controllers
 
                 model.BasePrice = product.GetBasePriceInfo(
                     _localizationService, 
-                    _priceFormatter, 
-                    (product.Price - _taxService.GetProductPrice(product, _priceCalculationService.GetUnitPrice(sci, true), out taxRate)) * (-1)
+                    _priceFormatter,
+                    _currencyService,
+                    _taxService,
+                    _priceCalculationService,
+                    _workContext.WorkingCurrency,
+                    (product.Price - _priceCalculationService.GetUnitPrice(sci, true)) * (-1)
                 );
 			}
 

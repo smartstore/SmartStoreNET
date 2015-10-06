@@ -11,13 +11,6 @@ namespace SmartStore.Services.ExportImport
     public interface IExportManager
     {
         /// <summary>
-        /// Export manufacturer list to xml
-        /// </summary>
-        /// <param name="manufacturers">Manufacturers</param>
-        /// <returns>Result in XML format</returns>
-        string ExportManufacturersToXml(IList<Manufacturer> manufacturers);
-
-        /// <summary>
         /// Export category list to xml
         /// </summary>
         /// <returns>Result in XML format</returns>

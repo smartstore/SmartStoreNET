@@ -82,7 +82,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.Write("Id", ((int)productManu.Id).ToString());
 								writer.Write("ProductId", ((int)productManu.ProductId).ToString());
 								writer.Write("DisplayOrder", ((int)productManu.DisplayOrder).ToString());
-								writer.Write("IsFeaturedProduct", ((int)productManu.IsFeaturedProduct).ToString());
+								writer.Write("IsFeaturedProduct", ((bool)productManu.IsFeaturedProduct).ToString());
 								writer.Write("ManufacturerId", ((int)productManu.ManufacturerId).ToString());
 								writer.WriteEndElement();	// ProductManufacturer
 							}

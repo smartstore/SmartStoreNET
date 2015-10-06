@@ -20,6 +20,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -440,6 +441,7 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportXml()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))

@@ -64,7 +64,7 @@ namespace SmartStore.Core.Domain.DataExchange
 	public enum ExportSupport
 	{
 		/// <summary>
-		/// Whether to get more data like localized properties, product tags, bundle items etc.
+		/// Whether to get more data like product tags, bundle items etc.
 		/// </summary>
 		HighDataDepth = 0,
 

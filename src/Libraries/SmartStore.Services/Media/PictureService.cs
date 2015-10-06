@@ -15,7 +15,6 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Configuration;
 using SmartStore.Utilities;
-using SmartStore.Data;
 
 namespace SmartStore.Services.Media
 {   
@@ -551,6 +550,16 @@ namespace SmartStore.Services.Media
             var pics = query.ToList();
             return pics;
         }
+
+		public virtual IList<Picture> GetPicturesByIds(int[] pictureIds)
+		{
+			Guard.ArgumentNotNull(() => pictureIds);
+
+			var query = _pictureRepository.Table
+				.Where(x => pictureIds.Contains(x.Id));
+
+			return query.ToList();
+		}
 
         public virtual Picture InsertPicture(byte[] pictureBinary, string mimeType, string seoFilename, bool isNew, bool isTransient = true, bool validateBinary = true)
         {

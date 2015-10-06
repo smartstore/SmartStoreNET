@@ -8,7 +8,7 @@ using SmartStore.Services.Catalog;
 
 namespace SmartStore.Services.DataExchange.ExportTask
 {
-	internal class ExportProductDataContext : PriceCalculationContext
+	internal class ExportDataContextProduct : PriceCalculationContext
 	{
 		private List<int> _productIdsBundleItems;
 
@@ -24,7 +24,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<ProductSpecificationAttribute> _productSpecificationAttributes;
 		private LazyMultimap<ProductBundleItem> _productBundleItems;
 
-		public ExportProductDataContext(IEnumerable<Product> products,
+		public ExportDataContextProduct(IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,
 			Func<int[], Multimap<int, TierPrice>> tierPrices,

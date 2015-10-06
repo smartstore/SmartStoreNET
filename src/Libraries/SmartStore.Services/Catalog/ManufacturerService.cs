@@ -337,6 +337,21 @@ namespace SmartStore.Services.Catalog
 				});
         }
 
+		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds)
+		{
+			Guard.ArgumentNotNull(() => manufacturerIds);
+
+			var query = _productManufacturerRepository.TableUntracked
+				.Where(x => manufacturerIds.Contains(x.ManufacturerId))
+				.OrderBy(x => x.DisplayOrder);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.ManufacturerId, x => x);
+
+			return map;
+		}
+
 		public virtual Multimap<int, ProductManufacturer> GetProductManufacturersByProductIds(int[] productIds)
 		{
 			Guard.ArgumentNotNull(() => productIds);

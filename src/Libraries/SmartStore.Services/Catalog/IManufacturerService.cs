@@ -87,7 +87,14 @@ namespace SmartStore.Services.Catalog
         IList<ProductManufacturer> GetProductManufacturersByProductId(int productId, bool showHidden = false);
 
 		/// <summary>
-		/// Get product manufacturer by product identifiers
+		/// Get product manufacturers by manufacturer identifiers
+		/// </summary>
+		/// <param name="manufacturerIds">Manufacturer identifiers</param>
+		/// <returns>Product manufacturers</returns>
+		Multimap<int, ProductManufacturer> GetProductManufacturersByManufacturerIds(int[] manufacturerIds);
+
+		/// <summary>
+		/// Get product manufacturers by product identifiers
 		/// </summary>
 		/// <param name="productIds">Product identifiers</param>
 		/// <returns>Product manufacturers</returns>

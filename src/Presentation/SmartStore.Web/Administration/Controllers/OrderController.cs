@@ -21,7 +21,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.ExportProvider;
-using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
@@ -771,19 +770,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Address.AvailableStates.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Address.OtherNonUS"), Value = "0" });
 			}
-		}
-
-		private ActionResult Export(string providerSystemName, string selectedIds)
-		{
-			string error = null;
-			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
-
-			if (fileStreamResult != null)
-				return fileStreamResult;
-
-			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
-
-			return RedirectToAction("List");
 		}
 
         #endregion

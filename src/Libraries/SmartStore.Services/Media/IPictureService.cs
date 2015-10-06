@@ -138,6 +138,13 @@ namespace SmartStore.Services.Media
         IList<Picture> GetPicturesByProductId(int productId, int recordsToReturn = 0);
 
 		/// <summary>
+		/// Gets pictures by picture identifier
+		/// </summary>
+		/// <param name="pictureIds">Picture identifier</param>
+		/// <returns>Pictures</returns>
+		IList<Picture> GetPicturesByIds(int[] pictureIds);
+
+		/// <summary>
 		/// Inserts a picture
 		/// </summary>
 		/// <param name="pictureBinary">The picture binary</param>

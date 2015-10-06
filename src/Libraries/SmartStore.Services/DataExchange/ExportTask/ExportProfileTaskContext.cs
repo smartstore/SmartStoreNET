@@ -19,8 +19,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 {
 	internal class ExportProfileTaskContext
 	{
-		private ExportProductDataContext _productDataContext;
-		private ExportOrderDataContext _orderDataContext;
+		private ExportDataContextProduct _dataContextProduct;
+		private ExportDataContextOrder _dataContextOrder;
+		private ExportDataContextManufacturer _dataContextManufacturer;
 
 		public ExportProfileTaskContext(
 			TaskExecutionContext taskContext,
@@ -139,32 +140,46 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
 
 		// data loaded once per page
-		public ExportProductDataContext ProductDataContext
+		public ExportDataContextProduct DataContextProduct
 		{
 			get
 			{
-				return _productDataContext;
+				return _dataContextProduct;
 			}
 			set
 			{
-				if (_productDataContext != null)
-					_productDataContext.Clear();
+				if (_dataContextProduct != null)
+					_dataContextProduct.Clear();
 
-				_productDataContext = value;
+				_dataContextProduct = value;
 			}
 		}
-		public ExportOrderDataContext OrderDataContext
+		public ExportDataContextOrder DataContextOrder
 		{
 			get
 			{
-				return _orderDataContext;
+				return _dataContextOrder;
 			}
 			set
 			{
-				if (_orderDataContext != null)
-					_orderDataContext.Clear();
+				if (_dataContextOrder != null)
+					_dataContextOrder.Clear();
 
-				_orderDataContext = value;
+				_dataContextOrder = value;
+			}
+		}
+		public ExportDataContextManufacturer DataContextManufacturer
+		{
+			get
+			{
+				return _dataContextManufacturer;
+			}
+			set
+			{
+				if (_dataContextManufacturer != null)
+					_dataContextManufacturer.Clear();
+
+				_dataContextManufacturer = value;
 			}
 		}
 

@@ -130,7 +130,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private List<dynamic> GetLocalized<T>(ExportProfileTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
 		{
-			if (ctx.Languages.Count <= 1 || !ctx.Supporting[ExportSupport.HighDataDepth])
+			if (ctx.Languages.Count <= 1)
 				return null;
 
 			var localized = new List<dynamic>();
@@ -269,7 +269,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
 						ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
 					{
-						var productManus = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
+						var productManus = ctx.DataContextProduct.ProductManufacturers.Load(product.Id);
 
 						if (productManus != null && productManus.Any())
 							description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
@@ -346,7 +346,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			// price type
 			if (ctx.Projection.PriceType.HasValue && !forAttributeCombination)
 			{
-				var priceCalculationContext = ctx.ProductDataContext as PriceCalculationContext;
+				var priceCalculationContext = ctx.DataContextProduct as PriceCalculationContext;
 
 				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
 				{
@@ -987,6 +987,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.CreatedOnUtc = manufacturer.CreatedOnUtc;
 			expando.UpdatedOnUtc = manufacturer.UpdatedOnUtc;
 
+			expando.Picture = null;
+
 			expando._Localized = GetLocalized(ctx, manufacturer,
 				x => x.Name,
 				x => x.Description,
@@ -1426,7 +1428,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 
 			// load data behind navigation properties for current page in one go
-			ctx.ProductDataContext = new ExportProductDataContext(products,
+			ctx.DataContextProduct = new ExportDataContextProduct(products,
 				x => _productAttributeService.GetProductVariantAttributesByProductIds(x, null),
 				x => _productAttributeService.GetProductVariantAttributeCombinations(x),
 				x => _productService.GetTierPricesByProductIds(x, (ctx.Projection.CurrencyId ?? 0) != 0 ? ctx.ContextCustomer : null, ctx.Store.Id),
@@ -1483,7 +1485,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			if (pageSize > 1)
 			{
-				ctx.OrderDataContext = new ExportOrderDataContext(result,
+				ctx.DataContextOrder = new ExportDataContextOrder(result,
 					x => _customerService.GetCustomersByIds(x),
 					x => _customerService.GetRewardPointsHistoriesByCustomerIds(x),
 					x => _addressesService.GetAddressByIds(x),
@@ -1503,6 +1505,33 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
+		private List<Manufacturer> GetManufacturers(ExportProfileTaskContext ctx, int pageIndex, int pageSize, out int totalCount)
+		{
+			var manus = _manufacturerService.GetAllManufacturers(null, pageIndex, ctx.PageSize, true);
+
+			totalCount = manus.TotalCount;
+
+			var result = manus as List<Manufacturer>;
+
+			if (pageSize > 1)
+			{
+				ctx.DataContextManufacturer = new ExportDataContextManufacturer(result,
+					x => _manufacturerService.GetProductManufacturersByManufacturerIds(x),
+					x => _pictureService.GetPicturesByIds(x)
+				);
+
+				SetProgress(ctx, manus.Count);
+			}
+
+			try
+			{
+				_services.DbContext.DetachEntities<Manufacturer>(result);
+			}
+			catch { }
+
+			return result;
+		}
+
 		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
@@ -1513,11 +1542,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			if (ctx.Supporting[ExportSupport.ProjectionMainPictureUrl] && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
-			var productPictures = ctx.ProductDataContext.ProductPictures.Load(product.Id);
-			var productManufacturers = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
-			var productCategories = ctx.ProductDataContext.ProductCategories.Load(product.Id);
-			var productAttributes = ctx.ProductDataContext.Attributes.Load(product.Id);
-			var productAttributeCombinations = ctx.ProductDataContext.AttributeCombinations.Load(product.Id);
+			var productPictures = ctx.DataContextProduct.ProductPictures.Load(product.Id);
+			var productManufacturers = ctx.DataContextProduct.ProductManufacturers.Load(product.Id);
+			var productCategories = ctx.DataContextProduct.ProductCategories.Load(product.Id);
+			var productAttributes = ctx.DataContextProduct.Attributes.Load(product.Id);
+			var productAttributeCombinations = ctx.DataContextProduct.AttributeCombinations.Load(product.Id);
 
 			dynamic expando = ToExpando(ctx, product);
 
@@ -1545,6 +1574,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					dynamic exp = new ExpandoObject();
 					exp._Entity = x;
 					exp.Id = x.Id;
+					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.PictureId = x.PictureId;
 					exp.Picture = ToExpando(ctx, x.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize);
@@ -1560,6 +1590,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					dynamic exp = new ExpandoObject();
 					exp._Entity = x;
 					exp.Id = x.Id;
+					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
 					exp.ManufacturerId = x.ManufacturerId;
@@ -1581,6 +1612,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					dynamic exp = new ExpandoObject();
 					exp._Entity = x;
 					exp.Id = x.Id;
+					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
 					exp.IsFeaturedProduct = x.IsFeaturedProduct;
 					exp.CategoryId = x.CategoryId;
@@ -1626,7 +1658,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			if (product.HasTierPrices)
 			{
-				var tierPrices = ctx.ProductDataContext.TierPrices.Load(product.Id)
+				var tierPrices = ctx.DataContextProduct.TierPrices.Load(product.Id)
 					.RemoveDuplicatedQuantities();
 
 				expando.TierPrices = tierPrices
@@ -1651,7 +1683,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			if (product.HasDiscountsApplied)
 			{
-				var appliedDiscounts = ctx.ProductDataContext.AppliedDiscounts.Load(product.Id);
+				var appliedDiscounts = ctx.DataContextProduct.AppliedDiscounts.Load(product.Id);
 
 				expando.AppliedDiscounts = appliedDiscounts
 					.Select(x => ToExpando(ctx, x))
@@ -1668,8 +1700,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			if (ctx.Supporting[ExportSupport.HighDataDepth])
 			{
-				var productTags = ctx.ProductDataContext.ProductTags.Load(product.Id);
-				var specificationAttributes = ctx.ProductDataContext.ProductSpecificationAttributes.Load(product.Id);
+				var productTags = ctx.DataContextProduct.ProductTags.Load(product.Id);
+				var specificationAttributes = ctx.DataContextProduct.ProductSpecificationAttributes.Load(product.Id);
 
 				expando.ProductTags = productTags
 					.Select(x =>
@@ -1690,7 +1722,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 				if (product.ProductType == ProductType.BundledProduct)
 				{
-					var bundleItems = ctx.ProductDataContext.ProductBundleItems.Load(product.Id);
+					var bundleItems = ctx.DataContextProduct.ProductBundleItems.Load(product.Id);
 
 					expando.ProductBundleItems = bundleItems
 						.Select(x =>
@@ -1741,7 +1773,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			if (ctx.Supporting[ExportSupport.ProjectionBrand])
 			{
 				string brand = null;
-				var productManus = ctx.ProductDataContext.ProductManufacturers.Load(product.Id);
+				var productManus = ctx.DataContextProduct.ProductManufacturers.Load(product.Id);
 
 				if (productManus != null && productManus.Any())
 					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -1885,13 +1917,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		{
 			var result = new List<dynamic>();
 
-			ctx.OrderDataContext.Addresses.Collect(order.ShippingAddressId ?? 0);
+			ctx.DataContextOrder.Addresses.Collect(order.ShippingAddressId ?? 0);
 
-			var addresses = ctx.OrderDataContext.Addresses.Load(order.BillingAddressId);
-			var customers = ctx.OrderDataContext.Customers.Load(order.CustomerId);
-			var rewardPointsHistories = ctx.OrderDataContext.RewardPointsHistories.Load(order.CustomerId);
-			var orderItems = ctx.OrderDataContext.OrderItems.Load(order.Id);
-			var shipments = ctx.OrderDataContext.Shipments.Load(order.Id);
+			var addresses = ctx.DataContextOrder.Addresses.Load(order.BillingAddressId);
+			var customers = ctx.DataContextOrder.Customers.Load(order.CustomerId);
+			var rewardPointsHistories = ctx.DataContextOrder.RewardPointsHistories.Load(order.CustomerId);
+			var orderItems = ctx.DataContextOrder.OrderItems.Load(order.Id);
+			var shipments = ctx.DataContextOrder.Shipments.Load(order.Id);
 
 			dynamic expando = ToExpando(ctx, order);
 
@@ -1940,6 +1972,42 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.Shipments = shipments
 				.Select(x => ToExpando(ctx, x))
+				.ToList();
+
+			result.Add(expando);
+			return result;
+		}
+
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Manufacturer manu)
+		{
+			var result = new List<dynamic>();
+
+			var productManufacturers = ctx.DataContextManufacturer.ProductManufacturers.Load(manu.Id);
+			
+			dynamic expando = ToExpando(ctx, manu);
+
+			if (manu.PictureId.HasValue)
+			{
+				var pictures = ctx.DataContextManufacturer.Pictures.Load(manu.PictureId.Value);
+
+				if (pictures.Count > 0)
+					expando.Picture = ToExpando(ctx, pictures.First(), _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+			}
+
+			expando.ProductManufacturers = productManufacturers
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.ProductId = x.ProductId;
+					exp.DisplayOrder = x.DisplayOrder;
+					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.ManufacturerId = x.ManufacturerId;
+
+					return exp;
+				})
 				.ToList();
 
 			result.Add(expando);
@@ -2004,6 +2072,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					var unused = GetOrders(ctx, 0, 1, out totalCount);
 					ctx.RecordsPerStore.Add(store.Id, totalCount);
 				}
+				else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
+				{
+					ctx.Store = store;
+					int totalCount = 0;
+					var unused = GetManufacturers(ctx, 0, 1, out totalCount);
+					ctx.RecordsPerStore.Add(store.Id, totalCount);
+				}
 			}
 
 			return result;
@@ -2021,7 +2096,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				logHead.AppendLine();
 				logHead.AppendLine(new string('-', 40));
 				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
-				logHead.AppendLine("Export profile:\t\t{0} (Id {1})".FormatInvariant(ctx.Profile.Name, ctx.Profile.Id == 0 ? "volatile" : ctx.Profile.Id.ToString()));
+				logHead.Append("Export profile:\t\t" + ctx.Profile.Name);
+				logHead.AppendLine(ctx.Profile.Id == 0 ? " volatile" : " (Id {0})".FormatInvariant(ctx.Profile.Id));
 
 				var plugin = ctx.Provider.Metadata.PluginDescriptor;
 				logHead.Append("Plugin:\t\t\t\t");
@@ -2045,6 +2121,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			ctx.Export.PublicFolderPath = (ctx.Export.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
 
+			int unused;
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
 
 			if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
@@ -2058,10 +2135,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
 			{
-				int unused;
-
 				ctx.Export.Data = new ExportSegmenter<Order>(
 					pageIndex => GetOrders(ctx, pageIndex, ctx.PageSize, out unused),
+					entity => ConvertToExpando(ctx, entity),
+					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
+					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
+				);
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
+			{
+				ctx.Export.Data = new ExportSegmenter<Manufacturer>(
+					pageIndex => GetManufacturers(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
 					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
 					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
@@ -2285,8 +2369,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
 						ctx.EntityIdsSelected.Clear();
-						ctx.ProductDataContext = null;
-						ctx.OrderDataContext = null;
+						ctx.DataContextProduct = null;
+						ctx.DataContextOrder = null;
+						ctx.DataContextManufacturer = null;
 
 						(ctx.Export.Data as IExportExecuter).Dispose();
 

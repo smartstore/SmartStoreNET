@@ -2,11 +2,6 @@
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 
-<div class="alert alert-info">
-	<button type="button" class="close" data-dismiss="alert">×</button>
-	@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))
-</div>
-
 <table class="adminContent">
 	<tr id="ProjectionStoreContainer">
 		<td class="adminTitle">
@@ -46,7 +41,7 @@
 	</tr>
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
-	{
+	{	
 		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionAttributeCombinationAsProduct))
 		{
 			<tr>
@@ -226,7 +221,7 @@
 		}
 	}
 	else if (Model.Provider.EntityType == ExportEntityType.Order)
-	{
+	{	
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Projection.OrderStatusChangeId)

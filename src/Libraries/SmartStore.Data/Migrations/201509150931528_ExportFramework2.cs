@@ -68,6 +68,18 @@ namespace SmartStore.Data.Migrations
 				"In the preview group products are always displayed regardless of this option. Therefore, the displayed product number may vary from the number of exported products.",
 				"In der Vorschau werden Gruppenprodukte ungeachtet dieser Option immer angezeigt. Daher kann die dort angezeigte Produktanzahl von der Anzahl der exportierten Produkte abweichen.");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.NoFiltering",
+				"There is no filtering available.",
+				"Möglichkeiten der Filterung stehen nicht zur Verfügung.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.NoProjection",
+				"There is no projection available.",
+				"Möglichkeiten der Projektion stehen nicht zur Verfügung.");
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.NoPreview",
+				"There is no preview available for this entity type.",
+				"Eine Vorschau steht für diesen Entitätstyp nicht zur Verfügung.");
+
 
 			builder.Delete(
 				"Plugins.Feed.Froogle.TaskEnabled",

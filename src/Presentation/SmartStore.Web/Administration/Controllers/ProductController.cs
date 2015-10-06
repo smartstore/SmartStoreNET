@@ -28,7 +28,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.ExportProvider;
-using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
@@ -827,19 +826,6 @@ namespace SmartStore.Admin.Controllers
                 model.NoThumb = defaultProductPicture == null;
             }
         }
-
-		private ActionResult Export(string providerSystemName, string selectedIds)
-		{
-			string error = null;
-			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
-
-			if (fileStreamResult != null)
-				return fileStreamResult;
-
-			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
-
-			return RedirectToAction("List");
-		}
 
 		#endregion Utitilies
 

@@ -10,6 +10,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
+using SmartStore.Services.DataExchange.ExportProvider;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -19,7 +20,6 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -445,17 +445,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
-                var manufacturers = _manufacturerService.GetAllManufacturers(true);
-                var xml = _exportManager.ExportManufacturersToXml(manufacturers);
-                return new XmlDownloadResult(xml, "manufacturers.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(ExportManufacturerXmlProvider.SystemName, null);
         }
 
         #endregion

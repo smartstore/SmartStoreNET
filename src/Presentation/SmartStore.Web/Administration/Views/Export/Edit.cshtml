@@ -200,12 +200,28 @@
 
 @helper TabFilter()
 {
-	@Html.Partial("_Tab.Filter", Model)
+	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	{
+		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))</div>
+		@Html.Partial("_Tab.Filter", Model)
+	}
+	else
+	{
+		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoFiltering")</div>
+	}
 }
 
 @helper TabProjection()
 {
-	@Html.Partial("_Tab.Projection", Model)
+	if (Model.Provider.EntityType == ExportEntityType.Product || Model.Provider.EntityType == ExportEntityType.Order)
+	{
+		<div class="alert alert-info">@Html.Raw(T("Admin.DataExchange.Export.Projection.Note"))</div>
+		@Html.Partial("_Tab.Projection", Model)
+	}
+	else
+	{
+		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoProjection")</div>	
+	}
 }
 
 @helper TabConfiguration()

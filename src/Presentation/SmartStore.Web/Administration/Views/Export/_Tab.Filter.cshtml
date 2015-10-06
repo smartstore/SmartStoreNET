@@ -2,27 +2,21 @@
 @using SmartStore.Core.Domain.DataExchange;
 @using SmartStore.Admin.Models.DataExchange;
 
-<div class="alert alert-info">
-	<button type="button" class="close" data-dismiss="alert">×</button>
-	@Html.Raw(T("Admin.DataExchange.Export.Filter.Note"))
-</div>
-
 <table class="adminContent">
-	@if (Model.StoreCount > 1)
-	{
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Filter.StoreId)
-			</td>
-			<td class="adminData">
-				@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
-				@Html.ValidationMessageFor(x => x.Filter.StoreId)
-			</td>
-		</tr>
-	}
-
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{
+		if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Filter.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+					@Html.ValidationMessageFor(x => x.Filter.StoreId)
+				</td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Filter.ProductType)
@@ -153,6 +147,18 @@
 	}
 	else if (Model.Provider.EntityType == ExportEntityType.Order)
 	{
+		if (Model.StoreCount > 1)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Filter.StoreId)
+				</td>
+				<td class="adminData">
+					@Html.DropDownListFor(x => x.Filter.StoreId, Model.Filter.AvailableStores, Model.AllString)
+					@Html.ValidationMessageFor(x => x.Filter.StoreId)
+				</td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Filter.CreatedFrom)

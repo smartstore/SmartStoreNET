@@ -9,6 +9,9 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
+	/// <summary>
+	/// Exports Excel formatted order data to a file
+	/// </summary>
 	[SystemName("Exports.SmartStoreOrderXlsx")]
 	[FriendlyName("SmartStore Excel order export")]
 	[IsHidden(true)]

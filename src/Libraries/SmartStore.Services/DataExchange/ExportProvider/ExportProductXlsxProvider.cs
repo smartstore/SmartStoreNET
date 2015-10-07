@@ -16,6 +16,9 @@ using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
+	/// <summary>
+	/// Exports Excel formatted product data to a file
+	/// </summary>
 	[SystemName("Exports.SmartStoreProductXlsx")]
 	[FriendlyName("SmartStore Excel product export")]
 	[IsHidden(true)]

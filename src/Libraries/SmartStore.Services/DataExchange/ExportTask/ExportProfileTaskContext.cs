@@ -22,6 +22,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private ExportDataContextProduct _dataContextProduct;
 		private ExportDataContextOrder _dataContextOrder;
 		private ExportDataContextManufacturer _dataContextManufacturer;
+		private ExportDataContextCategory _dataContextCategory;
 
 		public ExportProfileTaskContext(
 			TaskExecutionContext taskContext,
@@ -180,6 +181,20 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					_dataContextManufacturer.Clear();
 
 				_dataContextManufacturer = value;
+			}
+		}
+		public ExportDataContextCategory DataContextCategory
+		{
+			get
+			{
+				return _dataContextCategory;
+			}
+			set
+			{
+				if (_dataContextCategory != null)
+					_dataContextCategory.Clear();
+
+				_dataContextCategory = value;
 			}
 		}
 

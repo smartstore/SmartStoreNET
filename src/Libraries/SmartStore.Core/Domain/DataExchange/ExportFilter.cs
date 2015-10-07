@@ -10,11 +10,6 @@ namespace SmartStore.Core.Domain.DataExchange
 	[Serializable]
 	public class ExportFilter
 	{
-		public ExportFilter()
-		{
-			IsPublished = true;
-		}
-
 		/// <summary>
 		/// Store identifier; 0 to load all records
 		/// </summary>

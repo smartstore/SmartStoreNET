@@ -131,6 +131,13 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Map with product category mappings</returns>
 		Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false);
 
+		/// <summary>
+		/// Gets product category mappings
+		/// </summary>
+		/// <param name="categoryIds">Category identifiers</param>
+		/// <returns>Map with product category mappings</returns>
+		Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds);
+
         /// <summary>
         /// Gets a product category mapping 
         /// </summary>

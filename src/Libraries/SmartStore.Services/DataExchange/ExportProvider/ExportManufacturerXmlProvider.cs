@@ -10,6 +10,9 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
+	/// <summary>
+	/// Exports XML formatted manufacturer data to a file
+	/// </summary>
 	[SystemName("Exports.SmartStoreManufacturerXml")]
 	[FriendlyName("SmartStore XML manufacturer export")]
 	[IsHidden(true)]

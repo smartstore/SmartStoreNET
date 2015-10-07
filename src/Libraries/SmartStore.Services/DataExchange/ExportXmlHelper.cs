@@ -320,9 +320,9 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("CreatedOnUtc", ((DateTime)manufacturer.CreatedOnUtc).ToString(_culture));
 			_writer.Write("UpdatedOnUtc", ((DateTime)manufacturer.UpdatedOnUtc).ToString(_culture));
 
-			WriteLocalized(manufacturer);
-
 			WritePicture(manufacturer.Picture, "Picture");
+
+			WriteLocalized(manufacturer);
 
 			if (node.HasValue())
 			{

@@ -1035,6 +1035,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.Alias = category.Alias;
 			expando.DefaultViewMode = category.DefaultViewMode;
 
+			expando.Picture = null;
+
 			expando._Localized = GetLocalized(ctx, category,
 				x => x.Name,
 				x => x.FullName,
@@ -1507,7 +1509,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private List<Manufacturer> GetManufacturers(ExportProfileTaskContext ctx, int pageIndex, int pageSize, out int totalCount)
 		{
-			var manus = _manufacturerService.GetAllManufacturers(null, pageIndex, ctx.PageSize, true);
+			var showHidden = !ctx.Filter.IsPublished.HasValue;
+			var manus = _manufacturerService.GetAllManufacturers(null, pageIndex, ctx.PageSize, showHidden);
 
 			totalCount = manus.TotalCount;
 
@@ -1526,6 +1529,36 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			try
 			{
 				_services.DbContext.DetachEntities<Manufacturer>(result);
+			}
+			catch { }
+
+			return result;
+		}
+
+		private List<Category> GetCategories(ExportProfileTaskContext ctx, int pageIndex, int pageSize, out int totalCount)
+		{
+			var showHidden = !ctx.Filter.IsPublished.HasValue;
+			var storeId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+
+			var categories = _categoryService.GetAllCategories(null, pageIndex, pageSize, showHidden, null, true, false, storeId);
+
+			totalCount = categories.TotalCount;
+
+			var result = categories as List<Category>;
+
+			if (pageSize > 1)
+			{
+				ctx.DataContextCategory = new ExportDataContextCategory(result,
+					x => _categoryService.GetProductCategoriesByCategoryIds(x),
+					x => _pictureService.GetPicturesByIds(x)
+				);
+
+				SetProgress(ctx, categories.Count);
+			}
+
+			try
+			{
+				_services.DbContext.DetachEntities<Category>(result);
 			}
 			catch { }
 
@@ -1620,8 +1653,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					if (x.Category != null && x.Category.PictureId.HasValue)
 						exp.Category.Picture = ToExpando(ctx, x.Category.Picture, _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
-					else
-						exp.Category.Picture = null;
 
 					if (expando._CategoryName == null)
 						expando._CategoryName = (string)exp.Category.Name;
@@ -2014,6 +2045,42 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Category category)
+		{
+			var result = new List<dynamic>();
+
+			var productCategories = ctx.DataContextCategory.ProductCategories.Load(category.Id);
+
+			dynamic expando = ToExpando(ctx, category);
+
+			if (category.PictureId.HasValue)
+			{
+				var pictures = ctx.DataContextCategory.Pictures.Load(category.PictureId.Value);
+
+				if (pictures.Count > 0)
+					expando.Picture = ToExpando(ctx, pictures.First(), _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+			}
+
+			expando.ProductCategories = productCategories
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.ProductId = x.ProductId;
+					exp.DisplayOrder = x.DisplayOrder;
+					exp.IsFeaturedProduct = x.IsFeaturedProduct;
+					exp.CategoryId = x.CategoryId;
+
+					return exp;
+				})
+				.ToList();
+
+			result.Add(expando);
+			return result;
+		}
+
 		#endregion
 
 		private List<Store> Init(ExportProfileTaskContext ctx)
@@ -2079,6 +2146,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					var unused = GetManufacturers(ctx, 0, 1, out totalCount);
 					ctx.RecordsPerStore.Add(store.Id, totalCount);
 				}
+				else if (ctx.Provider.Value.EntityType == ExportEntityType.Category)
+				{
+					ctx.Store = store;
+					int totalCount = 0;
+					var unused = GetCategories(ctx, 0, 1, out totalCount);
+					ctx.RecordsPerStore.Add(store.Id, totalCount);
+				}
 			}
 
 			return result;
@@ -2122,15 +2196,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			ctx.Export.PublicFolderPath = (ctx.Export.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
 
 			int unused;
+			var itemsPerFile = (ctx.IsPreview ? 0 : ctx.Profile.BatchSize);
 			var totalCount = ctx.RecordsPerStore.First(x => x.Key == ctx.Store.Id).Value;
+			var pageable = new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount);
 
 			if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 			{
 				ctx.Export.Data = new ExportSegmenter<Product>(
 					pageIndex => GetProducts(ctx, pageIndex),
 					entity => ConvertToExpando(ctx, entity),
-					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
-					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
+					pageable,
+					itemsPerFile
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
@@ -2138,8 +2214,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Order>(
 					pageIndex => GetOrders(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
-					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
-					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
+					pageable,
+					itemsPerFile
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
@@ -2147,8 +2223,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Manufacturer>(
 					pageIndex => GetManufacturers(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
-					new PagedList(ctx.Profile.Offset, ctx.Profile.Limit, ctx.PageIndex, ctx.PageSize, totalCount),
-					ctx.IsPreview ? 0 : ctx.Profile.BatchSize
+					pageable,
+					itemsPerFile
+				);
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Category)
+			{
+				ctx.Export.Data = new ExportSegmenter<Category>(
+					pageIndex => GetCategories(ctx, pageIndex, ctx.PageSize, out unused),
+					entity => ConvertToExpando(ctx, entity),
+					pageable,
+					itemsPerFile
 				);
 			}
 
@@ -2372,6 +2457,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						ctx.DataContextProduct = null;
 						ctx.DataContextOrder = null;
 						ctx.DataContextManufacturer = null;
+						ctx.DataContextCategory = null;
 
 						(ctx.Export.Data as IExportExecuter).Dispose();
 

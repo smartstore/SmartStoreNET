@@ -678,6 +678,21 @@ namespace SmartStore.Services.Catalog
 			return map;
 		}
 
+		public virtual Multimap<int, ProductCategory> GetProductCategoriesByCategoryIds(int[] categoryIds)
+		{
+			Guard.ArgumentNotNull(() => categoryIds);
+
+			var query = _productCategoryRepository.TableUntracked
+				.Where(x => categoryIds.Contains(x.CategoryId))
+				.OrderBy(x => x.DisplayOrder);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.CategoryId, x => x);
+
+			return map;
+		}
+
 		protected virtual IQueryable<ProductCategory> ApplyHiddenProductCategoriesFilter(IQueryable<ProductCategory> query, int storeId = 0)
         {
 			bool group = false;

@@ -11,17 +11,16 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
 	/// <summary>
-	/// Exports XML formatted product data to a file
+	/// Exports XML formatted category data to a file
 	/// </summary>
-	[SystemName("Exports.SmartStoreProductXml")]
-	[FriendlyName("SmartStore XML product export")]
+	[SystemName("Exports.SmartStoreCategoryXml")]
+	[FriendlyName("SmartStore XML category export")]
 	[IsHidden(true)]
-	[ExportSupporting(ExportSupport.HighDataDepth)]
-	public class ExportProductXmlProvider : IExportProvider
+	public class ExportCategoryXmlProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreProductXml"; }
+			get { return "Exports.SmartStoreCategoryXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo
@@ -31,7 +30,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 		public ExportEntityType EntityType
 		{
-			get { return ExportEntityType.Product; }
+			get { return ExportEntityType.Category; }
 		}
 
 		public string FileExtension
@@ -59,35 +58,52 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 				var xmlHelper = new ExportXmlHelper(writer, CultureInfo.InvariantCulture);
 
 				writer.WriteStartDocument();
-				writer.WriteStartElement("Products");
+				writer.WriteStartElement("Categories");
 				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
 				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
 				{
 					var segment = context.Data.CurrentSegment;
 
-					foreach (dynamic product in segment)
+					foreach (dynamic category in segment)
 					{
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int productId = product.Id;
+						int categoryId = category.Id;
+
+						writer.WriteStartElement("Category");
 
 						try
 						{
-							xmlHelper.WriteProduct(product, "Product");
+							xmlHelper.WriteCategory(category, null);
+
+							writer.WriteStartElement("ProductCategories");
+							foreach (dynamic productCategory in category.ProductCategories)
+							{
+								writer.WriteStartElement("ProductCategory");
+								writer.Write("Id", ((int)productCategory.Id).ToString());
+								writer.Write("ProductId", ((int)productCategory.ProductId).ToString());
+								writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
+								writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
+								writer.Write("CategoryId", ((int)productCategory.CategoryId).ToString());
+								writer.WriteEndElement();	// ProductCategory
+							}
+							writer.WriteEndElement();	// ProductCategories
 
 							++context.RecordsSucceeded;
 						}
 						catch (Exception exc)
 						{
-							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.ToAllMessages()), exc);
+							context.Log.Error("Error while processing category with id {0}: {1}".FormatInvariant(categoryId, exc.ToAllMessages()), exc);
 							++context.RecordsFailed;
 						}
+
+						writer.WriteEndElement();	// Category
 					}
 				}
 
-				writer.WriteEndElement();	// Products
+				writer.WriteEndElement();	// Categories
 				writer.WriteEndDocument();
 			}
 		}

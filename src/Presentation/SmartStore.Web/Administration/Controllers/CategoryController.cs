@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
@@ -14,8 +13,8 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.ExportProvider;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -51,7 +50,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IAclService _aclService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly IExportManager _exportManager;
         private readonly IWorkContext _workContext;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IDateTimeHelper _dateTimeHelper;
@@ -71,7 +69,7 @@ namespace SmartStore.Admin.Controllers
             ILocalizationService localizationService, ILocalizedEntityService localizedEntityService,
             IDiscountService discountService, IPermissionService permissionService,
 			IAclService aclService, IStoreService storeService, IStoreMappingService storeMappingService,
-            IExportManager exportManager, IWorkContext workContext,
+            IWorkContext workContext,
             ICustomerActivityService customerActivityService,
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
@@ -93,7 +91,6 @@ namespace SmartStore.Admin.Controllers
             this._aclService = aclService;
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
-            this._exportManager = exportManager;
             this._workContext = workContext;
             this._customerActivityService = customerActivityService;
 			this._dateTimeHelper = dateTimeHelper;
@@ -756,22 +753,13 @@ namespace SmartStore.Admin.Controllers
 
         #region Export / Import
 
+		[Compress]
         public ActionResult ExportXml()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            try
-            {
-                var fileName = string.Format("categories_{0}.xml", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"));
-                var xml = _exportManager.ExportCategoriesToXml();
-                return new XmlDownloadResult(xml, "categories.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(ExportCategoryXmlProvider.SystemName, null);
         }
 
         #endregion

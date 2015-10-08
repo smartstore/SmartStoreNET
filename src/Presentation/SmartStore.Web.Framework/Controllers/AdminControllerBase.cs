@@ -87,10 +87,13 @@ namespace SmartStore.Web.Framework.Controllers
 			string error = null;
 			var fileStreamResult = ExportProfileTask.Export(providerSystemName, selectedIds, null, out error);
 
+			if (error.HasValue() || fileStreamResult == null)
+			{
+				NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
+			}
+
 			if (fileStreamResult != null)
 				return fileStreamResult;
-
-			NotifyError(string.Concat("<p>", T("Admin.Common.UnknownError"), "</p>", error.NaIfEmpty()));
 
 			return RedirectToAction("List");
 		}

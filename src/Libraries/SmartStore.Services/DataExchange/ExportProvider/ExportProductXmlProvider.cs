@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -73,17 +72,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 						int productId = product.Id;
 
-						try
-						{
-							xmlHelper.WriteProduct(product, "Product");
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						context.ProcessRecord((int)product.Id, () => xmlHelper.WriteProduct(product, "Product"));
 					}
 				}
 

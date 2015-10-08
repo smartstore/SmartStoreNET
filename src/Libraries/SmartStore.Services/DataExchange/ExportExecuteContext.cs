@@ -1,5 +1,5 @@
-﻿using System.Collections.Generic;
-using System.IO;
+﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
@@ -97,25 +97,34 @@ namespace SmartStore.Services.DataExchange
 		Dictionary<string, object> CustomProperties { get; set; }
 
 		/// <summary>
-		/// Number of successful exported records. Should be incremented by the provider. Will be logged.
+		/// Number of successful processed records
 		/// </summary>
-		int RecordsSucceeded { get; set; }
+		int RecordsSucceeded { get; }
 
 		/// <summary>
-		/// Number of failed records. Should be incremented by the provider. Will be logged.
+		/// Number of failed records
 		/// </summary>
-		int RecordsFailed { get; set; }
+		int RecordsFailed { get; }
+
+		/// <summary>
+		/// Try-catch closure for exporting a single record
+		/// </summary>
+		/// <param name="entityId">Entity identifier</param>
+		/// <param name="export">Callback</param>
+		void ProcessRecord(int entityId, Action export);
 	}
 
 
 	public class ExportExecuteContext : IExportExecuteContext
 	{
+		private ExportExecuteResult _result;
 		private CancellationToken _cancellation;
 		private IExportSegmenter _segmenter;
 		private ExportAbortion _providerAbort;
 
-		internal ExportExecuteContext(CancellationToken cancellation, string folder)
+		internal ExportExecuteContext(ExportExecuteResult result, CancellationToken cancellation, string folder)
 		{
+			_result = result;
 			_cancellation = cancellation;
 			Folder = folder;
 
@@ -185,5 +194,24 @@ namespace SmartStore.Services.DataExchange
 
 		public int RecordsSucceeded { get; set; }
 		public int RecordsFailed { get; set; }
+
+		public void ProcessRecord(int entityId, Action process)
+		{
+			try
+			{
+				process();
+
+				++RecordsSucceeded;
+			}
+			catch (Exception exc)
+			{
+				++RecordsFailed;
+
+				Log.Error("Error while processing record with id {0}: {1}".FormatInvariant(entityId, exc.ToAllMessages()), exc);
+
+				if (IsMaxFailures)
+					_result.LastError = exc.ToString();
+			}
+		}
 	}
 }

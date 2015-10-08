@@ -148,14 +148,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int column = 1;
-						int orderId = order.Id;
-						dynamic customer = order.Customer;
-						dynamic billingAddress = order.BillingAddress;
-						dynamic shippingAddress = order.ShippingAddress;
-
-						try
+						context.ProcessRecord((int)order.Id, () =>
 						{
+							int column = 1;
+							dynamic customer = order.Customer;
+							dynamic billingAddress = order.BillingAddress;
+							dynamic shippingAddress = order.ShippingAddress;
+
 							int rewardPointsUsed = 0;
 							int rewardPointsRemaining = customer._RewardPointsBalance;
 
@@ -220,14 +219,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.ZipPostalCode : "");
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.PhoneNumber : "");
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.FaxNumber : "");
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing order with id {0}: {1}".FormatInvariant(orderId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						});
 
 						++row;
 					}

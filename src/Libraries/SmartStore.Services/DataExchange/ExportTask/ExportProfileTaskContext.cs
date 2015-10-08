@@ -23,6 +23,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private ExportDataContextOrder _dataContextOrder;
 		private ExportDataContextManufacturer _dataContextManufacturer;
 		private ExportDataContextCategory _dataContextCategory;
+		private ExportDataContextCustomer _dataContextCustomer;
 
 		public ExportProfileTaskContext(
 			TaskExecutionContext taskContext,
@@ -60,13 +61,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
 
-			Export = new ExportExecuteContext(TaskContext.CancellationToken, FolderContent);
-			Export.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
-
 			Result = new ExportExecuteResult
 			{
 				FileFolder = (IsFileBasedExport ? FolderContent : null)
 			};
+
+			Export = new ExportExecuteContext(Result, TaskContext.CancellationToken, FolderContent);
+			Export.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 		}
 
 		public List<int> EntityIdsSelected { get; private set; }
@@ -195,6 +196,20 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					_dataContextCategory.Clear();
 
 				_dataContextCategory = value;
+			}
+		}
+		public ExportDataContextCustomer DataContextCustomer
+		{
+			get
+			{
+				return _dataContextCustomer;
+			}
+			set
+			{
+				if (_dataContextCustomer != null)
+					_dataContextCustomer.Clear();
+
+				_dataContextCustomer = value;
 			}
 		}
 

@@ -211,7 +211,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 						writer.WriteStartElement("item");
 
-						try
+						context.ProcessRecord((int)product.Id, () =>
 						{
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
@@ -381,14 +381,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 									writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
 								}
 							}
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						});
 
 						writer.WriteEndElement(); // item
 					}

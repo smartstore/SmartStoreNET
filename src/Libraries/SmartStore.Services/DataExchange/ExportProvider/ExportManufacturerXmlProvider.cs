@@ -1,5 +1,4 @@
-﻿using System;
-using System.Globalization;
+﻿using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -70,11 +69,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int manufacturerId = manufacturer.Id;
-
 						writer.WriteStartElement("Manufacturer");
 
-						try
+						context.ProcessRecord((int)manufacturer.Id, () =>
 						{
 							xmlHelper.WriteManufacturer(manufacturer, null);
 
@@ -90,14 +87,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteEndElement();	// ProductManufacturer
 							}
 							writer.WriteEndElement();	// ProductManufacturers
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing manufacturer with id {0}: {1}".FormatInvariant(manufacturerId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						});
 
 						writer.WriteEndElement();	// Manufacturer
 					}

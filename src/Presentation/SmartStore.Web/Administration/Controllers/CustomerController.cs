@@ -25,6 +25,7 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.ExportProvider;
 using SmartStore.Services.Directory;
 using SmartStore.Services.ExportImport;
 using SmartStore.Services.Forums;
@@ -1779,44 +1780,22 @@ namespace SmartStore.Admin.Controllers
             return File(bytes, "text/xls", "customers.xlsx");
         }
 
+		[Compress]
         public ActionResult ExportXmlAll()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            try
-            {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
-                
-                var xml = _exportManager.ExportCustomersToXml(customers);
-                return new XmlDownloadResult(xml, "customers.xml");
-            }
-            catch (Exception exc)
-            {
-                NotifyError(exc);
-                return RedirectToAction("List");
-            }
+			return Export(ExportCustomerXmlProvider.SystemName, null);
         }
 
+		[Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-            var customers = new List<Customer>();
-            if (selectedIds != null)
-            {
-                var ids = selectedIds
-                    .Split(new char[] { ',' }, StringSplitOptions.RemoveEmptyEntries)
-                    .Select(x => Convert.ToInt32(x))
-                    .ToArray();
-                customers.AddRange(_customerService.GetCustomersByIds(ids));
-            }
-
-            var xml = _exportManager.ExportCustomersToXml(customers);
-            return new XmlDownloadResult(xml, "customers.xml");
+			return Export(ExportCustomerXmlProvider.SystemName, selectedIds);
         }
 
         #endregion

@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -164,6 +165,20 @@ namespace SmartStore.Services.Common
                 return attributes;
             });
         }
+
+		public virtual Multimap<int, GenericAttribute> GetAttributesForEntity(int[] entityIds, string keyGroup)
+		{
+			Guard.ArgumentNotNull(() => entityIds);
+
+			var query = _genericAttributeRepository.TableUntracked
+				.Where(x => entityIds.Contains(x.EntityId) && x.KeyGroup == keyGroup);
+
+			var map = query
+				.ToList()
+				.ToMultimap(x => x.EntityId, x => x);
+
+			return map;
+		}
 
 		/// <summary>
 		/// Get queryable attributes

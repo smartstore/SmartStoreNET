@@ -68,6 +68,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private ITaxService _taxService;
 		private ICurrencyService _currencyService;
 		private ICustomerService _customerService;
+		private IRepository<Customer> _customerRepository;
 		private ICategoryService _categoryService;
 		private IPriceFormatter _priceFormatter;
 		private IDateTimeHelper _dateTimeHelper;
@@ -88,6 +89,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private IProductTemplateService _productTemplateService;
 		private ILocalizedEntityService _localizedEntityService;
 		private IUrlRecordService _urlRecordService;
+		private IGenericAttributeService _genericAttributeService;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -101,6 +103,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_taxService = context.Resolve<ITaxService>();
 			_currencyService = context.Resolve<ICurrencyService>();
 			_customerService = context.Resolve<ICustomerService>();
+			_customerRepository = context.Resolve<IRepository<Customer>>();
 			_categoryService = context.Resolve<ICategoryService>();
 			_priceFormatter = context.Resolve<IPriceFormatter>();
 			_dateTimeHelper = context.Resolve<IDateTimeHelper>();
@@ -121,6 +124,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_productTemplateService = context.Resolve<IProductTemplateService>();
 			_localizedEntityService = context.Resolve<ILocalizedEntityService>();
 			_urlRecordService = context.Resolve<IUrlRecordService>();
+			_genericAttributeService = context.Resolve<IGenericAttributeService>();
 		}
 
 		#endregion
@@ -714,18 +718,25 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.Country = ToExpando(ctx, address.Country);
 
-			dynamic sp = new ExpandoObject();
-			sp._Entity = address.StateProvince;
-			sp.Id = address.StateProvince.Id;
-			sp.CountryId = address.StateProvince.CountryId;
-			sp.Name = address.StateProvince.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			sp.Abbreviation = address.StateProvince.Abbreviation;
-			sp.Published = address.StateProvince.Published;
-			sp.DisplayOrder = address.StateProvince.DisplayOrder;
+			if (address.StateProvince != null)
+			{
+				dynamic sp = new ExpandoObject();
+				sp._Entity = address.StateProvince;
+				sp.Id = address.StateProvince.Id;
+				sp.CountryId = address.StateProvince.CountryId;
+				sp.Name = address.StateProvince.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+				sp.Abbreviation = address.StateProvince.Abbreviation;
+				sp.Published = address.StateProvince.Published;
+				sp.DisplayOrder = address.StateProvince.DisplayOrder;
 
-			sp._Localized = GetLocalized(ctx, address.StateProvince, x => x.Name);
+				sp._Localized = GetLocalized(ctx, address.StateProvince, x => x.Name);
 
-			expando.StateProvince = sp;
+				expando.StateProvince = sp;
+			}
+			else
+			{
+				expando.StateProvince = null;
+			}
 
 			return expando;
 		}
@@ -775,11 +786,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.LastLoginDateUtc = customer.LastLoginDateUtc;
 			expando.LastActivityDateUtc = customer.LastActivityDateUtc;
 
-			expando.BillingAddress = ToExpando(ctx, customer.BillingAddress);
-			expando.ShippingAddress = ToExpando(ctx, customer.ShippingAddress);
+			expando.BillingAddress = null;
+			expando.ShippingAddress = null;
+			expando.Addresses = null;
 
 			expando.RewardPointsHistory = null;
 			expando._RewardPointsBalance = 0;
+
+			expando._GenericAttributes = null;
 
 			return expando;
 		}
@@ -1158,6 +1172,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.BundlePerItemPricing = product.BundlePerItemPricing;
 			expando.BundlePerItemShoppingCart = product.BundlePerItemShoppingCart;
 
+			expando.AppliedDiscounts = null;
+			expando.TierPrices = null;
+			expando.ProductTags = null;
+			expando.ProductAttributes = null;
+			expando.ProductAttributeCombinations = null;
+			expando.ProductPictures = null;
+			expando.ProductCategories = null;
+			expando.ProductManufacturers = null;
+			expando.ProductSpecificationAttributes = null;
+			expando.ProductBundleItems = null;
+
 			expando._Localized = GetLocalized(ctx, product,
 				x => x.Name,
 				x => x.ShortDescription,
@@ -1388,6 +1413,24 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
+		private dynamic ToExpando(ExportProfileTaskContext ctx, GenericAttribute genericAttribute)
+		{
+			if (genericAttribute == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = genericAttribute;
+
+			expando.Id = genericAttribute.Id;
+			expando.EntityId = genericAttribute.EntityId;
+			expando.KeyGroup = genericAttribute.KeyGroup;
+			expando.Key = genericAttribute.Key;
+			expando.Value = genericAttribute.Value;
+			expando.StoreId = genericAttribute.StoreId;
+
+			return expando;
+		}
+
 		#endregion
 
 		#region Segmenter callbacks
@@ -1565,6 +1608,44 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
+		private List<Customer> GetCustomers(ExportProfileTaskContext ctx, int pageIndex, int pageSize, out int totalCount)
+		{
+			var query = _customerRepository.TableUntracked
+				.Expand(x => x.BillingAddress)
+				.Expand(x => x.ShippingAddress)
+				.Expand(x => x.Addresses.Select(y => y.Country))
+				.Expand(x => x.Addresses.Select(y => y.StateProvince))
+				.Where(x => !x.Deleted);
+
+			if (ctx.EntityIdsSelected.Count > 0)
+			{
+				query = query.Where(x => ctx.EntityIdsSelected.Contains(x.Id));
+			}
+
+			var customers = new PagedList<Customer>(query.OrderByDescending(x => x.CreatedOnUtc), pageIndex, pageSize);
+
+			totalCount = customers.TotalCount;
+
+			var result = customers as List<Customer>;
+
+			if (pageSize > 1)
+			{
+				ctx.DataContextCustomer = new ExportDataContextCustomer(result,
+					x => _genericAttributeService.GetAttributesForEntity(x, "Customer")
+				);
+
+				SetProgress(ctx, customers.Count);
+			}
+
+			try
+			{
+				_services.DbContext.DetachEntities<Customer>(result);
+			}
+			catch { }
+
+			return result;
+		}
+
 		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
@@ -1707,10 +1788,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					})
 					.ToList();
 			}
-			else
-			{
-				expando.TierPrices = new List<dynamic>();
-			}
 
 			if (product.HasDiscountsApplied)
 			{
@@ -1719,10 +1796,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				expando.AppliedDiscounts = appliedDiscounts
 					.Select(x => ToExpando(ctx, x))
 					.ToList();
-			}
-			else
-			{
-				expando.AppliedDiscounts = new List<dynamic>();
 			}
 
 			#endregion
@@ -1780,16 +1853,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						})
 						.ToList();
 				}
-				else
-				{
-					expando.ProductBundleItems = new List<dynamic>();
-				}
-			}
-			else
-			{
-				expando.ProductTags = new List<dynamic>();
-				expando.ProductSpecificationAttributes = new List<dynamic>();
-				expando.ProductBundleItems = new List<dynamic>();
 			}
 
 			#endregion
@@ -2081,6 +2144,29 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Customer customer)
+		{
+			var result = new List<dynamic>();
+
+			var genericAttributes = ctx.DataContextCustomer.GenericAttributes.Load(customer.Id);
+
+			dynamic expando = ToExpando(ctx, customer);
+
+			expando.BillingAddress = ToExpando(ctx, customer.BillingAddress);
+			expando.ShippingAddress = ToExpando(ctx, customer.ShippingAddress);
+
+			expando.Addresses = customer.Addresses
+				.Select(x => ToExpando(ctx, x))
+				.ToList();
+
+			expando._GenericAttributes = genericAttributes
+				.Select(x => ToExpando(ctx, x))
+				.ToList();
+
+			result.Add(expando);
+			return result;
+		}
+
 		#endregion
 
 		private List<Store> Init(ExportProfileTaskContext ctx)
@@ -2126,32 +2212,37 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				{
 					ctx.RecordsPerStore.Add(store.Id, ctx.TotalRecords.Value);
 				}
-				else if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
+				else
 				{
 					ctx.Store = store;
-					var anySingleProduct = GetProductPage(ctx, ctx.Profile.Offset, 1);
-					ctx.RecordsPerStore.Add(store.Id, anySingleProduct.TotalCount);
-				}
-				else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
-				{
-					ctx.Store = store;
+
 					int totalCount = 0;
-					var unused = GetOrders(ctx, 0, 1, out totalCount);
-					ctx.RecordsPerStore.Add(store.Id, totalCount);
-				}
-				else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
-				{
-					ctx.Store = store;
-					int totalCount = 0;
-					var unused = GetManufacturers(ctx, 0, 1, out totalCount);
-					ctx.RecordsPerStore.Add(store.Id, totalCount);
-				}
-				else if (ctx.Provider.Value.EntityType == ExportEntityType.Category)
-				{
-					ctx.Store = store;
-					int totalCount = 0;
-					var unused = GetCategories(ctx, 0, 1, out totalCount);
-					ctx.RecordsPerStore.Add(store.Id, totalCount);
+
+					if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
+					{
+						var anySingleProduct = GetProductPage(ctx, ctx.Profile.Offset, 1);
+						ctx.RecordsPerStore.Add(store.Id, anySingleProduct.TotalCount);
+					}
+					else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
+					{
+						var unused = GetOrders(ctx, 0, 1, out totalCount);
+						ctx.RecordsPerStore.Add(store.Id, totalCount);
+					}
+					else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
+					{
+						var unused = GetManufacturers(ctx, 0, 1, out totalCount);
+						ctx.RecordsPerStore.Add(store.Id, totalCount);
+					}
+					else if (ctx.Provider.Value.EntityType == ExportEntityType.Category)
+					{
+						var unused = GetCategories(ctx, 0, 1, out totalCount);
+						ctx.RecordsPerStore.Add(store.Id, totalCount);
+					}
+					else if (ctx.Provider.Value.EntityType == ExportEntityType.Customer)
+					{
+						var unused = GetCustomers(ctx, 0, 1, out totalCount);
+						ctx.RecordsPerStore.Add(store.Id, totalCount);
+					}
 				}
 			}
 
@@ -2205,8 +2296,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Product>(
 					pageIndex => GetProducts(ctx, pageIndex),
 					entity => ConvertToExpando(ctx, entity),
-					pageable,
-					itemsPerFile
+					pageable, itemsPerFile
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Order)
@@ -2214,8 +2304,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Order>(
 					pageIndex => GetOrders(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
-					pageable,
-					itemsPerFile
+					pageable, itemsPerFile
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Manufacturer)
@@ -2223,8 +2312,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Manufacturer>(
 					pageIndex => GetManufacturers(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
-					pageable,
-					itemsPerFile
+					pageable, itemsPerFile
 				);
 			}
 			else if (ctx.Provider.Value.EntityType == ExportEntityType.Category)
@@ -2232,8 +2320,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				ctx.Export.Data = new ExportSegmenter<Category>(
 					pageIndex => GetCategories(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
-					pageable,
-					itemsPerFile
+					pageable, itemsPerFile
+				);
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.Customer)
+			{
+				ctx.Export.Data = new ExportSegmenter<Customer>(
+					pageIndex => GetCustomers(ctx, pageIndex, ctx.PageSize, out unused),
+					entity => ConvertToExpando(ctx, entity),
+					pageable, itemsPerFile
 				);
 			}
 
@@ -2458,6 +2553,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						ctx.DataContextOrder = null;
 						ctx.DataContextManufacturer = null;
 						ctx.DataContextCategory = null;
+						ctx.DataContextCustomer = null;
 
 						(ctx.Export.Data as IExportExecuter).Dispose();
 

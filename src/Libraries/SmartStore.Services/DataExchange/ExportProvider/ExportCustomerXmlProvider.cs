@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -10,16 +11,16 @@ using SmartStore.Core.Plugins;
 namespace SmartStore.Services.DataExchange.ExportProvider
 {
 	/// <summary>
-	/// Exports XML formatted category data to a file
+	/// Exports XML formatted customer data to a file
 	/// </summary>
-	[SystemName("Exports.SmartStoreCategoryXml")]
-	[FriendlyName("SmartStore XML category export")]
+	[SystemName("Exports.SmartStoreCustomerXml")]
+	[FriendlyName("SmartStore XML customer export")]
 	[IsHidden(true)]
-	public class ExportCategoryXmlProvider : IExportProvider
+	public class ExportCustomerXmlProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreCategoryXml"; }
+			get { return "Exports.SmartStoreCustomerXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo
@@ -29,7 +30,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 		public ExportEntityType EntityType
 		{
-			get { return ExportEntityType.Category; }
+			get { return ExportEntityType.Customer; }
 		}
 
 		public string FileExtension
@@ -57,43 +58,23 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 				var xmlHelper = new ExportXmlHelper(writer, CultureInfo.InvariantCulture);
 
 				writer.WriteStartDocument();
-				writer.WriteStartElement("Categories");
+				writer.WriteStartElement("Customers");
 				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
 				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
 				{
 					var segment = context.Data.CurrentSegment;
 
-					foreach (dynamic category in segment)
+					foreach (dynamic customer in segment)
 					{
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						writer.WriteStartElement("Category");
-
-						context.ProcessRecord((int)category.Id, () =>
-						{
-							xmlHelper.WriteCategory(category, null);
-
-							writer.WriteStartElement("ProductCategories");
-							foreach (dynamic productCategory in category.ProductCategories)
-							{
-								writer.WriteStartElement("ProductCategory");
-								writer.Write("Id", ((int)productCategory.Id).ToString());
-								writer.Write("ProductId", ((int)productCategory.ProductId).ToString());
-								writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
-								writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
-								writer.Write("CategoryId", ((int)productCategory.CategoryId).ToString());
-								writer.WriteEndElement();	// ProductCategory
-							}
-							writer.WriteEndElement();	// ProductCategories
-						});
-
-						writer.WriteEndElement();	// Category
+						context.ProcessRecord((int)customer.Id, () => xmlHelper.WriteCustomer(customer, "Customer"));
 					}
 				}
 
-				writer.WriteEndElement();	// Categories
+				writer.WriteEndElement();	// Customers
 				writer.WriteEndDocument();
 			}
 		}

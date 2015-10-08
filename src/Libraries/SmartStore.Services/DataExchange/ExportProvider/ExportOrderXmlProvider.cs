@@ -71,19 +71,16 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int orderId = order.Id;
-						dynamic customer = order.Customer;
-						dynamic store = order.Store;
-
 						writer.WriteStartElement("Order");
 
-						try
+						context.ProcessRecord((int)order.Id, () =>
 						{
+							dynamic store = order.Store;
 							int? shippingAddressId = order.ShippingAddressId;
 							DateTime? paidDateUtc = order.PaidDateUtc;
 							int? rewardPointsRemaining = order.RewardPointsRemaining;
 
-							writer.Write("Id", orderId.ToString());
+							writer.Write("Id", ((int)order.Id).ToString());
 							writer.Write("OrderNumber", (string)order.OrderNumber);
 							writer.Write("OrderGuid", ((Guid)order.OrderGuid).ToString());
 							writer.Write("StoreId", ((int)order.StoreId).ToString());
@@ -155,35 +152,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 							writer.Write("PaymentStatus", (string)order.PaymentStatus);
 							writer.Write("ShippingStatus", (string)order.ShippingStatus);
 
-							if (customer != null)
-							{
-								DateTime? lastLoginDateUtc = customer.LastLoginDateUtc;
-
-								writer.WriteStartElement("Customer");
-								writer.Write("Id", ((int)customer.Id).ToString());
-								writer.Write("CustomerGuid", ((Guid)customer.CustomerGuid).ToString());
-								writer.Write("Username", (string)customer.Username);
-								writer.Write("Email", (string)customer.Email);
-								writer.Write("PasswordFormatId", ((int)customer.PasswordFormatId).ToString());
-								writer.Write("AdminComment", (string)customer.AdminComment);
-								writer.Write("IsTaxExempt", ((bool)customer.IsTaxExempt).ToString());
-								writer.Write("AffiliateId", ((int)customer.AffiliateId).ToString());
-								writer.Write("Active", ((bool)customer.Active).ToString());
-								writer.Write("Deleted", ((bool)customer.Deleted).ToString());
-								writer.Write("IsSystemAccount", ((bool)customer.IsSystemAccount).ToString());
-								writer.Write("SystemName", (string)customer.SystemName);
-								writer.Write("LastIpAddress", (string)customer.LastIpAddress);
-								writer.Write("CreatedOnUtc", ((DateTime)customer.CreatedOnUtc).ToString(invariantCulture));
-								writer.Write("LastLoginDateUtc", lastLoginDateUtc.HasValue ? lastLoginDateUtc.Value.ToString(invariantCulture) : "");
-								writer.Write("LastActivityDateUtc", ((DateTime)customer.LastActivityDateUtc).ToString(invariantCulture));
-								writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
-
-								xmlHelper.WriteRewardPointsHistory(customer.RewardPointsHistory, "RewardPointsHistories");
-								xmlHelper.WriteAddress(customer.BillingAddress, "BillingAddress");
-								xmlHelper.WriteAddress(customer.ShippingAddress, "ShippingAddress");
-
-								writer.WriteEndElement();	// Customer
-							}
+							xmlHelper.WriteCustomer(order.Customer, "Customer");
 
 							xmlHelper.WriteAddress(order.BillingAddress, "BillingAddress");
 							xmlHelper.WriteAddress(order.ShippingAddress, "ShippingAddress");
@@ -216,7 +185,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								int? licenseDownloadId = orderItem.LicenseDownloadId;
 								decimal? itemWeight = orderItem.ItemWeight;
 
-								writer.WriteStartElement("OrderItem");								
+								writer.WriteStartElement("OrderItem");
 								writer.Write("Id", ((int)orderItem.Id).ToString());
 								writer.Write("OrderItemGuid", ((Guid)orderItem.OrderItemGuid).ToString());
 								writer.Write("OrderId", ((int)orderItem.OrderId).ToString());
@@ -275,14 +244,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteEndElement();	// Shipment
 							}
 							writer.WriteEndElement();	// Shipments
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing order with id {0}: {1}".FormatInvariant(orderId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						});
 
 						writer.WriteEndElement();	// Order
 					}

@@ -233,11 +233,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int column = 1;
-						int productId = product.Id;
-
-						try
+						context.ProcessRecord((int)product.Id, () =>
 						{
+							int column = 1;
 							DateTime? specialPriceStartDateTimeUtc = product.SpecialPriceStartDateTimeUtc;
 							DateTime? specialPriceEndDateTimeUtc = product.SpecialPriceEndDateTimeUtc;
 
@@ -363,7 +361,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 							if ((bool)product.LimitedToStores)
 							{
-								var storeIds = _storeMappingService.GetStoreMappingsFor("Product", productId)
+								var storeIds = _storeMappingService.GetStoreMappingsFor("Product", (int)product.Id)
 									.Select(x => x.StoreId)
 									.ToList();
 
@@ -382,14 +380,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								WriteCell(worksheet, row, ref column, GetLocalized(localized, lang, "ShortDescription"));
 								WriteCell(worksheet, row, ref column, GetLocalized(localized, lang, "FullDescription"));
 							}
-
-							++context.RecordsSucceeded;
-						}
-						catch (Exception exc)
-						{
-							context.Log.Error("Error while processing product with id {0}: {1}".FormatInvariant(productId, exc.ToAllMessages()), exc);
-							++context.RecordsFailed;
-						}
+						});
 
 						++row;
 					}

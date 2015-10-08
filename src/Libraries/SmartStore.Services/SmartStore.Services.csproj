@@ -170,6 +170,7 @@
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\ExportProvider\ExportCustomerXmlProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportCategoryXmlProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportOrderXlsxProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportManufacturerXmlProvider.cs" />
@@ -177,6 +178,7 @@
     <Compile Include="DataExchange\ExportProvider\ExportProductXmlProvider.cs" />
     <Compile Include="DataExchange\ExportProvider\ExportOrderXmlProvider.cs" />
     <Compile Include="DataExchange\ExportTask\ExportDataContextCategory.cs" />
+    <Compile Include="DataExchange\ExportTask\ExportDataContextCustomer.cs" />
     <Compile Include="DataExchange\ExportTask\ExportDataContextManufacturer.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />
     <Compile Include="DataExchange\ExportExecuteResult.cs" />

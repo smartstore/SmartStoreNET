@@ -8,6 +8,7 @@ using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Data.Entity;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
@@ -4064,11 +4065,14 @@ namespace SmartStore.Admin.Controllers
 
 		#region Product variant attribute combinations
 
-		private void PrepareProductAttributeCombinationModel(ProductVariantAttributeCombinationModel model, ProductVariantAttributeCombination entity,
+		private void PrepareProductAttributeCombinationModel(
+			ProductVariantAttributeCombinationModel model, 
+			ProductVariantAttributeCombination entity,
 			Product product, bool formatAttributes = false)
 		{
 			if (model == null)
 				throw new ArgumentNullException("model");
+			
 			if (product == null)
 				throw new ArgumentNullException("variant");
 
@@ -4168,13 +4172,17 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
-			var productVariantAttributeCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productId);
+			////var allCombinations = new PagedList<ProductVariantAttributeCombination>(product.ProductVariantAttributeCombinations.AsQueryable(), command.Page - 1, command.PageSize);
+			//var take = command.PageSize;
+			//var skip = (command.Page - 1) * take;
+			//var allCombinations = product.ProductVariantAttributeCombinations.Take(take).Skip(skip);
+			var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id, command.Page - 1, command.PageSize);
 
 			var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
 			var productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() });
 			productUrl = "{0}{1}attributes=".FormatWith(productUrl, productUrl.Contains("?") ? "&" : "?");
 
-			var productVariantAttributesModel = productVariantAttributeCombinations.Select(x =>
+			var productVariantAttributesModel = allCombinations.Select(x =>
 			{
 				var pvacModel = x.ToModel();
 				PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
@@ -4185,7 +4193,7 @@ namespace SmartStore.Admin.Controllers
 				try
 				{
 					var firstAttribute = _productAttributeParser.DeserializeProductVariantAttributes(x.AttributesXml).FirstOrDefault();
-
+					
 					var attribute = x.Product.ProductVariantAttributes.FirstOrDefault(y => y.Id == firstAttribute.Key);
 					var attributeValue = attribute.ProductVariantAttributeValues.FirstOrDefault(y => y.Id == int.Parse(firstAttribute.Value.First()));
 
@@ -4200,7 +4208,13 @@ namespace SmartStore.Admin.Controllers
 				//	pvacModel.AttributesXml = "<b>{0}</b>".FormatWith(pvacModel.AttributesXml);
 
 				//warnings
-				var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, x.Product, x.AttributesXml);
+				var warnings = _shoppingCartService.GetShoppingCartItemAttributeWarnings(
+					_workContext.CurrentCustomer, 
+					ShoppingCartType.ShoppingCart, 
+					x.Product, 
+					x.AttributesXml,
+					combination: x);
+				
 				pvacModel.Warnings.AddRange(warnings);
 
 				return pvacModel;
@@ -4210,7 +4224,8 @@ namespace SmartStore.Admin.Controllers
 			var model = new GridModel<ProductVariantAttributeCombinationModel>
 			{
 				Data = productVariantAttributesModel,
-				Total = productVariantAttributesModel.Count
+				Total = allCombinations.TotalCount,
+				//Total = allCombinations.Count()
 			};
 
 			return new JsonResult
@@ -4273,12 +4288,20 @@ namespace SmartStore.Admin.Controllers
 			var warnings = new List<string>();
 			var variantAttributes = _productAttributeService.GetProductVariantAttributesByProductId(product.Id);
 
-			string attributeXml = form.CreateSelectedAttributesXml(product.Id, variantAttributes, _productAttributeParser, _localizationService,
-				_downloadService, _catalogSettings, this.Request, warnings, false);
+			string attributeXml = form.CreateSelectedAttributesXml(
+				product.Id, 
+				variantAttributes, 
+				_productAttributeParser, 
+				_localizationService,
+				_downloadService, 
+				_catalogSettings, 
+				this.Request, 
+				warnings, 
+				false);
 
 			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 
-			if (null != _productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml))
+			if (_productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml) != null)
 			{
 				warnings.Add(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists"));
 			}
@@ -4388,7 +4411,7 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
-			foreach (var combination in _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id))
+			foreach (var combination in product.ProductVariantAttributeCombinations)
 			{
 				_productAttributeService.DeleteProductVariantAttributeCombination(combination);
 			}
@@ -4409,7 +4432,7 @@ namespace SmartStore.Admin.Controllers
 			string attributeXml = form.CreateSelectedAttributesXml(productId, attributes, _productAttributeParser,
 				_localizationService, _downloadService, _catalogSettings, this.Request, warnings, false);
 
-			bool exists = (null != _productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml));
+			bool exists = (_productAttributeParser.FindProductVariantAttributeCombination(productId, attributeXml) != null);
 
 			if (!exists)
 			{

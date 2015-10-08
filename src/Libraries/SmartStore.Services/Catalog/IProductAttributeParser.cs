@@ -58,21 +58,14 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
 		bool AreProductAttributesEqual(string attributeXml1, string attributeXml2, IEnumerable<ProductVariantAttribute> attributes = null);
 
-        /// <summary>
-        /// Finds a product variant attribute combination by attributes stored in XML 
-        /// </summary>
-		/// <param name="product">Product</param>
-		/// <param name="attributesXml">XML formatted attributes</param>
-        /// <returns>Found product variant attribute combination</returns>
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml);
-
 		/// <summary>
 		/// Finds a product variant attribute combination by attributes stored in XML 
 		/// </summary>
 		/// <param name="productId">Product identifier</param>
 		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database round trips</param>
 		/// <returns>Found product variant attribute combination</returns>
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml);
+		ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml, IEnumerable<ProductVariantAttribute> attributes = null);
 
 		/// <summary>
 		/// Deserializes attribute data from an URL query string
@@ -122,4 +115,24 @@ namespace SmartStore.Services.Catalog
 
         #endregion
     }
+
+	public static class IProductAttributeParserExtensions
+	{
+		/// <summary>
+		/// Finds a product variant attribute combination by attributes stored in XML 
+		/// </summary>
+		/// <param name="product">Product</param>
+		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <returns>Found product variant attribute combination</returns>
+		public static ProductVariantAttributeCombination FindProductVariantAttributeCombination(
+			this IProductAttributeParser service, 
+			Product product, 
+			string attributesXml,
+			IEnumerable<ProductVariantAttribute> attributes = null)
+		{
+			Guard.ArgumentNotNull(() => product);
+
+			return service.FindProductVariantAttributeCombination(product.Id, attributesXml, attributes);
+		}
+	}
 }

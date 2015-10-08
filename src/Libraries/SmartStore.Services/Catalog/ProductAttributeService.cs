@@ -7,28 +7,28 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Events;
 using SmartStore.Services.Media;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Catalog
 {
 
     public partial class ProductAttributeService : IProductAttributeService
     {
-        #region Constants
         private const string PRODUCTATTRIBUTES_ALL_KEY = "SmartStore.productattribute.all";
-        private const string PRODUCTVARIANTATTRIBUTES_ALL_KEY = "SmartStore.productvariantattribute.all-{0}";
-        private const string PRODUCTVARIANTATTRIBUTEVALUES_ALL_KEY = "SmartStore.productvariantattributevalue.all-{0}";
-        private const string PRODUCTATTRIBUTES_PATTERN_KEY = "SmartStore.productattribute.";
-        private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
-        private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalue.";
-        private const string PRODUCTATTRIBUTES_BY_ID_KEY = "SmartStore.productattribute.id-{0}";
-        private const string PRODUCTVARIANTATTRIBUTES_BY_ID_KEY = "SmartStore.productvariantattribute.id-{0}";
-        private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.productvariantattributevalue.id-{0}";
+		private const string PRODUCTATTRIBUTES_BY_ID_KEY = "SmartStore.productattribute.id-{0}";
+		private const string PRODUCTATTRIBUTES_PATTERN_KEY = "SmartStore.productattribute.";
 
-        #endregion
+		private const string PRODUCTVARIANTATTRIBUTES_ALL_KEY = "SmartStore.productvariantattribute.all-{0}";
+		private const string PRODUCTVARIANTATTRIBUTES_BY_ID_KEY = "SmartStore.productvariantattribute.id-{0}";
+		// 0 = ProductId, 1 = PageIndex, 2 = PageSize
+		private const string PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY = "SmartStore.productvariantattribute.combinations.id-{0}-{1}-{2}";
+		private const string PRODUCTVARIANTATTRIBUTES_PATTERN_KEY = "SmartStore.productvariantattribute.";
 
-        #region Fields
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_ALL_KEY = "SmartStore.productvariantattributevalue.all-{0}";
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_BY_ID_KEY = "SmartStore.productvariantattributevalue.id-{0}";
+		private const string PRODUCTVARIANTATTRIBUTEVALUES_PATTERN_KEY = "SmartStore.productvariantattributevalue.";	
 
-        private readonly IRepository<ProductAttribute> _productAttributeRepository;
+		private readonly IRepository<ProductAttribute> _productAttributeRepository;
         private readonly IRepository<ProductVariantAttribute> _productVariantAttributeRepository;
         private readonly IRepository<ProductVariantAttributeCombination> _productVariantAttributeCombinationRepository;
         private readonly IRepository<ProductVariantAttributeValue> _productVariantAttributeValueRepository;
@@ -37,9 +37,6 @@ namespace SmartStore.Services.Catalog
         private readonly ICacheManager _cacheManager;
 		private readonly IPictureService _pictureService;
 
-        #endregion
-
-        #region Ctor
 
         /// <summary>
         /// Ctor
@@ -68,8 +65,6 @@ namespace SmartStore.Services.Catalog
             _eventPublisher = eventPublisher;
 			_pictureService = pictureService;
         }
-
-        #endregion
 
 		#region Utilities
 
@@ -416,19 +411,59 @@ namespace SmartStore.Services.Catalog
             _eventPublisher.EntityDeleted(combination);
         }
 
-		public virtual IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId)
-        {
+		public virtual IPagedList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(
+			int productId, 
+			int pageIndex, 
+			int pageSize,
+			bool untracked = true)
+		{
 			if (productId == 0)
-                return new List<ProductVariantAttributeCombination>();
+			{
+				return new PagedList<ProductVariantAttributeCombination>(new List<ProductVariantAttributeCombination>(), pageIndex, pageSize);
+			}
 
-            var query = from pvac in _productVariantAttributeCombinationRepository.Table
-                        orderby pvac.Id
-						where pvac.ProductId == productId
-                        select pvac;
+			string key = string.Format(PRODUCTVARIANTATTRIBUTES_COMBINATIONS_BY_ID_KEY, productId, 0, int.MaxValue);
+			return _cacheManager.Get(key, () =>
+			{
+				var query = from pvac in (untracked ? _productVariantAttributeCombinationRepository.TableUntracked : _productVariantAttributeCombinationRepository.Table)
+							orderby pvac.Id
+							where pvac.ProductId == productId
+							select pvac;
 
-            var combinations = query.ToList();
-            return combinations;
-        }
+				var combinations = new PagedList<ProductVariantAttributeCombination>(query, pageIndex, pageSize);
+				return combinations;
+			});
+		}
+
+		//public virtual IList<int> GetAllProductVariantAttributeCombinationPictureIds(int productId)
+		//{
+		//	var imageIds = new List<int>();
+
+		//	if (productId == 0)
+		//		return imageIds;
+
+		//	var query = from pvac in _productVariantAttributeCombinationRepository.TableUntracked
+		//				where 
+		//					pvac.ProductId == productId
+		//					&& pvac.IsActive
+		//					&& !String.IsNullOrEmpty(pvac.AssignedPictureIds)
+		//				select pvac.AssignedPictureIds;
+
+		//	var data = query.ToList();
+		//	if (data.Any())
+		//	{
+		//		int id;
+		//		var ids = string.Join(",", data).SplitSafe(",").Distinct();
+
+		//		foreach (string str in ids)
+		//		{
+		//			if (int.TryParse(str, out id) && !imageIds.Exists(i => i == id))
+		//				imageIds.Add(id);
+		//		}
+		//	}
+
+		//	return imageIds;
+		//}
 
 		public virtual Multimap<int, ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int[] productIds)
 		{
@@ -534,7 +569,7 @@ namespace SmartStore.Services.Catalog
 		public virtual void CreateAllProductVariantAttributeCombinations(Product product)
 		{
 			// delete all existing combinations
-			foreach(var itm in GetAllProductVariantAttributeCombinations(product.Id))
+			foreach(var itm in product.ProductVariantAttributeCombinations)
 			{
 				DeleteProductVariantAttributeCombination(itm);
 			}
@@ -566,7 +601,7 @@ namespace SmartStore.Services.Catalog
 						attrXml = attributes[values.IndexOf(x)].AddProductAttribute(attrXml, x.Id.ToString());
 					}
 
-					var combination = new ProductVariantAttributeCombination()
+					var combination = new ProductVariantAttributeCombination
 					{
 						ProductId = product.Id,
 						AttributesXml = attrXml,

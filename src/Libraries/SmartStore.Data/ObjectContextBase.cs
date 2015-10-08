@@ -7,19 +7,16 @@ using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
-using System.Threading;
 using System.Threading.Tasks;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using Microsoft.SqlServer;
 using Microsoft.SqlServer.Management.Common;
 using Microsoft.SqlServer.Management.Smo;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
-using System.Data.Entity.Core.Objects;
 
 namespace SmartStore.Data
 {

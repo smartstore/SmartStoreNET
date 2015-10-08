@@ -411,7 +411,7 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// attribute combinations
-			foreach (var combination in _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id))
+			foreach (var combination in product.ProductVariantAttributeCombinations)
 			{
 				//generate new AttributesXml according to new value IDs
 				string newAttributesXml = "";

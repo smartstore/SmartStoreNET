@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Catalog
 {
@@ -147,12 +148,15 @@ namespace SmartStore.Services.Catalog
         /// <param name="combination">Product variant attribute combination</param>
         void DeleteProductVariantAttributeCombination(ProductVariantAttributeCombination combination);
 
-        /// <summary>
-        /// Gets all product variant attribute combinations
-        /// </summary>
+		/// <summary>
+		/// Gets all product variant attribute combinations
+		/// </summary>
 		/// <param name="productId">Product identifier</param>
-        /// <returns>Product variant attribute combination collection</returns>
-        IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId);
+		/// <param name="pageIndex">Page index</param>
+		/// <param name="pageSize">Page size</param>
+		/// <param name="untracked">Specifies whether loaded entities should be tracked by the state manager</param>
+		/// <returns>Product variant attribute combination collection</returns>
+		IPagedList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId, int pageIndex, int pageSize, bool untracked = true);
 
 		/// <summary>
 		/// Gets product variant attribute combinations by multiple product identifiers
@@ -247,4 +251,17 @@ namespace SmartStore.Services.Catalog
 
 		#endregion
     }
+
+	public static class IProductAttributeServiceExtensions
+	{
+		/// <summary>
+		/// Gets all product variant attribute combinations
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <returns>Product variant attribute combination collection</returns>
+		public static IList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(this IProductAttributeService service, int productId)
+		{
+			return service.GetAllProductVariantAttributeCombinations(productId, 0, int.MaxValue, true);
+		}
+	}
 }

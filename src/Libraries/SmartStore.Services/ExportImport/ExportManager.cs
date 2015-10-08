@@ -25,6 +25,7 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -38,6 +39,7 @@ namespace SmartStore.Services.ExportImport
         private readonly ICategoryService _categoryService;
         private readonly IManufacturerService _manufacturerService;
         private readonly IProductService _productService;
+		private readonly IProductAttributeService _productAttributeService;
 		private readonly IProductTemplateService _productTemplateService;
         private readonly IPictureService _pictureService;
         private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
@@ -53,7 +55,8 @@ namespace SmartStore.Services.ExportImport
         public ExportManager(ICategoryService categoryService,
             IManufacturerService manufacturerService,
             IProductService productService,
-			IProductTemplateService productTemplateService,
+			IProductAttributeService productAttributeService,
+            IProductTemplateService productTemplateService,
             IPictureService pictureService,
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILanguageService languageService,
@@ -61,16 +64,17 @@ namespace SmartStore.Services.ExportImport
 			ICommonServices services,
             IStoreMappingService storeMappingService)
         {
-            this._categoryService = categoryService;
-            this._manufacturerService = manufacturerService;
-            this._productService = productService;
-			this._productTemplateService = productTemplateService;
-            this._pictureService = pictureService;
-            this._newsLetterSubscriptionService = newsLetterSubscriptionService;
-            this._languageService = languageService;
-			this._mediaSettings = mediaSettings;
-			this._services = services;
-            this._storeMappingService = storeMappingService;
+            _categoryService = categoryService;
+            _manufacturerService = manufacturerService;
+            _productService = productService;
+			_productAttributeService = productAttributeService;
+			_productTemplateService = productTemplateService;
+            _pictureService = pictureService;
+            _newsLetterSubscriptionService = newsLetterSubscriptionService;
+            _languageService = languageService;
+			_mediaSettings = mediaSettings;
+			_services = services;
+            _storeMappingService = storeMappingService;
 
 			Logger = NullLogger.Instance;
         }
@@ -504,41 +508,46 @@ namespace SmartStore.Services.ExportImport
 
 				writer.WriteEndElement();	// ProductAttribute
 			}
-			writer.WriteEndElement();	// ProductAttributes
+			writer.WriteEndElement();   // ProductAttributes
 
-			writer.WriteStartElement("ProductAttributeCombinations");
-			foreach (var combination in product.ProductVariantAttributeCombinations)
+			using (var scope = new DbContextScope(proxyCreation: false, forceNoTracking: true))
 			{
-				writer.WriteStartElement("ProductAttributeCombination");
+				var allCombinations = product.ProductVariantAttributeCombinations;
 
-				writer.Write("Id", combination.Id.ToString());
-				writer.Write("StockQuantity", combination.StockQuantity.ToString());
-				writer.Write("AllowOutOfStockOrders", combination.AllowOutOfStockOrders.ToString());
-				writer.Write("AttributesXml", combination.AttributesXml, null, true);
-				writer.Write("Sku", combination.Sku);
-				writer.Write("Gtin", combination.Gtin);
-				writer.Write("ManufacturerPartNumber", combination.ManufacturerPartNumber);
-				writer.Write("Price", combination.Price.HasValue ? combination.Price.Value.ToString(culture) : "");
-				writer.Write("Length", combination.Length.HasValue ? combination.Length.Value.ToString(culture) : "");
-				writer.Write("Width", combination.Width.HasValue ? combination.Width.Value.ToString(culture) : "");
-				writer.Write("Height", combination.Height.HasValue ? combination.Height.Value.ToString(culture) : "");
-				writer.Write("BasePriceAmount", combination.BasePriceAmount.HasValue ? combination.BasePriceAmount.Value.ToString(culture) : "");
-				writer.Write("BasePriceBaseAmount", combination.BasePriceBaseAmount.HasValue ? combination.BasePriceBaseAmount.Value.ToString() : "");
-				writer.Write("DeliveryTimeId", combination.DeliveryTimeId.HasValue ? combination.DeliveryTimeId.Value.ToString() : "");
-				writer.Write("IsActive", combination.IsActive.ToString());
-
-				WriteQuantityUnit(writer, context, combination.QuantityUnit);
-
-				writer.WriteStartElement("Pictures");
-				foreach (int pictureId in combination.GetAssignedPictureIds())
+				writer.WriteStartElement("ProductAttributeCombinations");
+				foreach (var combination in allCombinations)
 				{
-					WritePicture(writer, context, _pictureService.GetPictureById(pictureId), _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
-				}
-				writer.WriteEndElement();	// Pictures
+					writer.WriteStartElement("ProductAttributeCombination");
 
-				writer.WriteEndElement();	// ProductAttributeCombination
+					writer.Write("Id", combination.Id.ToString());
+					writer.Write("StockQuantity", combination.StockQuantity.ToString());
+					writer.Write("AllowOutOfStockOrders", combination.AllowOutOfStockOrders.ToString());
+					writer.Write("AttributesXml", combination.AttributesXml, null, true);
+					writer.Write("Sku", combination.Sku);
+					writer.Write("Gtin", combination.Gtin);
+					writer.Write("ManufacturerPartNumber", combination.ManufacturerPartNumber);
+					writer.Write("Price", combination.Price.HasValue ? combination.Price.Value.ToString(culture) : "");
+					writer.Write("Length", combination.Length.HasValue ? combination.Length.Value.ToString(culture) : "");
+					writer.Write("Width", combination.Width.HasValue ? combination.Width.Value.ToString(culture) : "");
+					writer.Write("Height", combination.Height.HasValue ? combination.Height.Value.ToString(culture) : "");
+					writer.Write("BasePriceAmount", combination.BasePriceAmount.HasValue ? combination.BasePriceAmount.Value.ToString(culture) : "");
+					writer.Write("BasePriceBaseAmount", combination.BasePriceBaseAmount.HasValue ? combination.BasePriceBaseAmount.Value.ToString() : "");
+					writer.Write("DeliveryTimeId", combination.DeliveryTimeId.HasValue ? combination.DeliveryTimeId.Value.ToString() : "");
+					writer.Write("IsActive", combination.IsActive.ToString());
+
+					WriteQuantityUnit(writer, context, combination.QuantityUnit);
+
+					writer.WriteStartElement("Pictures");
+					foreach (int pictureId in combination.GetAssignedPictureIds())
+					{
+						WritePicture(writer, context, _pictureService.GetPictureById(pictureId), _mediaSettings.ProductThumbPictureSize, _mediaSettings.ProductDetailsPictureSize);
+					}
+					writer.WriteEndElement();   // Pictures
+
+					writer.WriteEndElement();   // ProductAttributeCombination
+				}
+				writer.WriteEndElement(); // ProductAttributeCombinations
 			}
-			writer.WriteEndElement(); // ProductAttributeCombinations
 
 			writer.WriteStartElement("ProductPictures");
 			foreach (var productPicture in product.ProductPictures.OrderBy(x => x.DisplayOrder))

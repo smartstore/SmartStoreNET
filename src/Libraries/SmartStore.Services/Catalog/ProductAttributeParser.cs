@@ -7,6 +7,9 @@ using System.Xml;
 using Newtonsoft.Json;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Data;
+using SmartStore.Core.Caching;
+using System.Text;
 
 namespace SmartStore.Services.Catalog
 {
@@ -15,11 +18,21 @@ namespace SmartStore.Services.Catalog
     /// </summary>
     public partial class ProductAttributeParser : IProductAttributeParser
     {
-        private readonly IProductAttributeService _productAttributeService;
+		// 0 = ProductId, 1 = AttributeXml Hash
+		private const string ATTRIBUTECOMBINATION_BY_ID_HASH = "SmartStore.parsedattributecombination.id-{0}-{1}";
 
-        public ProductAttributeParser(IProductAttributeService productAttributeService)
+		private readonly IProductAttributeService _productAttributeService;
+		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
+		private readonly ICacheManager _cacheManager;
+
+		public ProductAttributeParser(
+			IProductAttributeService productAttributeService,
+			IRepository<ProductVariantAttributeCombination> pvacRepository,
+			ICacheManager cacheManager)
         {
-            this._productAttributeService = productAttributeService;
+            _productAttributeService = productAttributeService;
+			_pvacRepository = pvacRepository;
+			_cacheManager = cacheManager;
         }
 
 		#region Product attributes
@@ -244,30 +257,41 @@ namespace SmartStore.Services.Catalog
             return true;
         }
 
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml)
-        {
-			if (product == null)
-				throw new ArgumentNullException("product");
-
-            return FindProductVariantAttributeCombination(product.Id, attributesXml);
-        }
-
-		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(int productId, string attributesXml)
+		public virtual ProductVariantAttributeCombination FindProductVariantAttributeCombination(
+			int productId, 
+			string attributesXml,
+			IEnumerable<ProductVariantAttribute> attributes = null)
 		{
-			if (attributesXml.HasValue())
+			if (attributesXml.IsEmpty())
+				return null;
+
+			var cacheKey = ATTRIBUTECOMBINATION_BY_ID_HASH.FormatInvariant(productId, attributesXml.Hash(Encoding.UTF8));
+
+			var result = _cacheManager.Get(cacheKey, () => 
 			{
-				var combinations = _productAttributeService.GetAllProductVariantAttributeCombinations(productId);
+				var query = from x in _pvacRepository.TableUntracked
+							where x.ProductId == productId
+							select new
+							{
+								x.Id,
+								x.AttributesXml
+							};
+
+				var combinations = query.ToList();
 				if (combinations.Count == 0)
 					return null;
 
 				foreach (var combination in combinations)
 				{
-					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml);
+					bool attributesEqual = AreProductAttributesEqual(combination.AttributesXml, attributesXml, attributes);
 					if (attributesEqual)
-						return combination;
+						return _productAttributeService.GetProductVariantAttributeCombinationById(combination.Id);
 				}
-			}
-			return null;
+
+				return null;
+			});
+
+			return result;
 		}
 
 		/// <summary>

@@ -30,12 +30,9 @@ namespace SmartStore.Services.Catalog
 				return null;
 
             // let's find appropriate record
-			var combination = product
-                .ProductVariantAttributeCombinations
-                .Where(x => x.IsActive == true)
-                .FirstOrDefault(x => productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
+			var combination = productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 
-            if (combination != null)
+			if (combination != null && combination.IsActive)
             {
 				product.MergeWithCombination(combination);
             }
@@ -91,9 +88,9 @@ namespace SmartStore.Services.Catalog
 				product.MergedDataValues.Add("BasePriceBaseAmount", combination.BasePriceBaseAmount);
 		}
 
-		public static void GetAllCombinationImageIds(this IList<ProductVariantAttributeCombination> combinations, List<int> imageIds)
+		public static IList<int> GetAllCombinationPictureIds(this IEnumerable<ProductVariantAttributeCombination> combinations)
 		{
-			Guard.ArgumentNotNull(imageIds, "imageIds");
+			var pictureIds = new List<int>();
 
 			if (combinations != null)
 			{
@@ -109,21 +106,23 @@ namespace SmartStore.Services.Catalog
 
 					foreach (string str in ids)
 					{
-						if (int.TryParse(str, out id) && !imageIds.Exists(i => i == id))
-							imageIds.Add(id);
+						if (int.TryParse(str, out id) && !pictureIds.Exists(i => i == id))
+							pictureIds.Add(id);
 					}
 				}
 			}
+
+			return pictureIds;
 		}
 
-        /// <summary>
-        /// Finds a related product item by specified identifiers
-        /// </summary>
-        /// <param name="source">Source</param>
-        /// <param name="productId1">The first product identifier</param>
-        /// <param name="productId2">The second product identifier</param>
-        /// <returns>Related product</returns>
-        public static RelatedProduct FindRelatedProduct(this IList<RelatedProduct> source,
+		/// <summary>
+		/// Finds a related product item by specified identifiers
+		/// </summary>
+		/// <param name="source">Source</param>
+		/// <param name="productId1">The first product identifier</param>
+		/// <param name="productId2">The second product identifier</param>
+		/// <returns>Related product</returns>
+		public static RelatedProduct FindRelatedProduct(this IList<RelatedProduct> source,
             int productId1, int productId2)
         {
             foreach (RelatedProduct relatedProduct in source)

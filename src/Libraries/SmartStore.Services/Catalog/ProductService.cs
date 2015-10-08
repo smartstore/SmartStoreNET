@@ -1015,24 +1015,25 @@ namespace SmartStore.Services.Catalog
         /// <returns>Result</returns>
         public virtual IList<Product> GetLowStockProducts()
         {
-			//Track inventory for product
+			// Track inventory for product
 			var query1 = from p in _productRepository.Table
 						 orderby p.MinStockQuantity
 						 where !p.Deleted &&
-						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
-						 p.MinStockQuantity >= p.StockQuantity
+							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock &&
+							p.MinStockQuantity >= p.StockQuantity
 						 select p;
 			var products1 = query1.ToList();
 
-			//Track inventory for product by product attributes
+			// Track inventory for product by product attributes
 			var query2 = from p in _productRepository.Table
 						 from pvac in p.ProductVariantAttributeCombinations
 						 where !p.Deleted &&
-						 p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
-						 pvac.StockQuantity <= 0
+							p.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStockByAttributes &&
+							pvac.StockQuantity <= 0
 						 select p;
-			//only distinct products (group by ID)
-			//if we use standard Distinct() method, then all fields will be compared (low performance)
+
+			// only distinct products (group by ID)
+			// if we use standard Distinct() method, then all fields will be compared (low performance)
 			query2 = from p in query2
 					 group p by p.Id into pGroup
 					 orderby pGroup.Key

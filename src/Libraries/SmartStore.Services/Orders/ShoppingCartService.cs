@@ -71,8 +71,10 @@ namespace SmartStore.Services.Orders
         /// <param name="aclService">ACL service</param>
 		/// <param name="storeMappingService">Store mapping service</param>
 		/// <param name="genericAttributeService">Generic attribute service</param>
-        public ShoppingCartService(IRepository<ShoppingCartItem> sciRepository,
-			IWorkContext workContext, IStoreContext storeContext, 
+        public ShoppingCartService(
+			IRepository<ShoppingCartItem> sciRepository,
+			IWorkContext workContext, 
+			IStoreContext storeContext, 
 			ICurrencyService currencyService,
             IProductService productService, ILocalizationService localizationService,
             IProductAttributeParser productAttributeParser,
@@ -423,10 +425,9 @@ namespace SmartStore.Services.Orders
                         break;
                     case ManageInventoryMethod.ManageStockByAttributes:
                         {
-                            var combination = product.ProductVariantAttributeCombinations
-                                .FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes));
+                            var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 
-                            if (combination != null)
+							if (combination != null)
                             {
 								if (!combination.AllowOutOfStockOrders && combination.StockQuantity < quantity)
 								{
@@ -469,21 +470,16 @@ namespace SmartStore.Services.Orders
             return warnings;
         }
 
-        /// <summary>
-        /// Validates shopping cart item attributes
-        /// </summary>
-		/// <param name="customer">The customer</param>
-        /// <param name="shoppingCartType">Shopping cart type</param>
-		/// <param name="product">Product</param>
-        /// <param name="selectedAttributes">Selected attributes</param>
-		/// <param name="quantity">Quantity</param>
-		/// <param name="bundleItem">Product bundle item</param>
-        /// <returns>Warnings</returns>
-		public virtual IList<string> GetShoppingCartItemAttributeWarnings(Customer customer, ShoppingCartType shoppingCartType,
-			Product product, string selectedAttributes, int quantity = 1, ProductBundleItem bundleItem = null)
+		public virtual IList<string> GetShoppingCartItemAttributeWarnings(
+			Customer customer, 
+			ShoppingCartType shoppingCartType,
+			Product product, 
+			string selectedAttributes, 
+			int quantity = 1, 
+			ProductBundleItem bundleItem = null,
+			ProductVariantAttributeCombination combination = null)
         {
-            if (product == null)
-                throw new ArgumentNullException("product");
+			Guard.ArgumentNotNull(() => product);
 
             var warnings = new List<string>();
 
@@ -546,9 +542,10 @@ namespace SmartStore.Services.Orders
 			// check if there is a selected attribute combination and if it is active
 			if (warnings.Count == 0 && selectedAttributes.HasValue())
 			{
-				var combination = product
-					.ProductVariantAttributeCombinations
-					.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, selectedAttributes, pva1Collection));
+				if (combination == null)
+				{
+					combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes, pva1Collection);
+				}
 
 				if (combination != null && !combination.IsActive)
 				{
@@ -599,8 +596,10 @@ namespace SmartStore.Services.Orders
         /// <returns>bool</returns>
         public virtual bool AreAllAttributesForCombinationSelected(string selectedAttributes, Product product) 
         {
-            if (product.ProductVariantAttributeCombinations.Count == 0)
-                return true;
+			Guard.ArgumentNotNull(() => product);
+
+			if (!product.ProductVariantAttributeCombinations.Any())
+				return true;
 
             //selected attributes
             var pva1Collection = _productAttributeParser.ParseProductVariantAttributes(selectedAttributes);

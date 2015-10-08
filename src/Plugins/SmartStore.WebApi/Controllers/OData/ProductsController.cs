@@ -5,6 +5,7 @@ using System.Net;
 using System.Net.Http;
 using System.Web.Http;
 using System.Web.Http.OData;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Directory;
@@ -224,8 +225,16 @@ namespace SmartStore.WebApi.Controllers.OData
 		public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
 		{
 			var entity = GetExpandedEntity<ICollection<ProductVariantAttributeCombination>>(key, x => x.ProductVariantAttributeCombinations);
-
 			return entity.ProductVariantAttributeCombinations.AsQueryable();
+
+			//var ctx = (DbContext)Repository.Context;
+			//var product = GetEntityByKey(key);
+			//var entry = ctx.Entry(product);
+			//var query = entry.Collection(p => p.ProductVariantAttributeCombinations).Query();
+			//return query;
+
+			//var query = GetEntitySet().Where(x => x.Id.Equals(key));
+			//return query.SelectMany(x => x.ProductVariantAttributeCombinations);
 		}
 
 		[WebApiQueryable]

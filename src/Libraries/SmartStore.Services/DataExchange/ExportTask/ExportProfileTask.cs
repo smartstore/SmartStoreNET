@@ -1436,6 +1436,24 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
+		private dynamic ToExpando(ExportProfileTaskContext ctx, NewsLetterSubscription subscription)
+		{
+			if (subscription == null)
+				return null;
+
+			dynamic expando = new ExpandoObject();
+			expando._Entity = subscription;
+
+			expando.Id = subscription.Id;
+			expando.NewsLetterSubscriptionGuid = subscription.NewsLetterSubscriptionGuid;
+			expando.Email = subscription.Email;
+			expando.Active = subscription.Active;
+			expando.CreatedOnUtc = subscription.CreatedOnUtc;
+			expando.StoreId = subscription.StoreId;
+
+			return expando;
+		}
+
 		#endregion
 
 		#region Segmenter callbacks
@@ -1646,6 +1664,37 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			try
 			{
 				_services.DbContext.DetachEntities<Customer>(result);
+			}
+			catch { }
+
+			return result;
+		}
+
+		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(ExportProfileTaskContext ctx, int pageIndex, int pageSize, out int totalCount)
+		{
+			var storeId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
+
+			var query = _subscriptionRepository.TableUntracked;
+
+			if (storeId > 0)
+			{
+				query = query.Where(x => x.StoreId == storeId);
+			}
+
+			var subscriptions = new PagedList<NewsLetterSubscription>(query.OrderBy(x => x.StoreId).ThenBy(x => x.Email), pageIndex, pageSize);
+
+			totalCount = subscriptions.TotalCount;
+
+			var result = subscriptions as List<NewsLetterSubscription>;
+
+			if (pageSize > 1)
+			{
+				SetProgress(ctx, subscriptions.Count);
+			}
+
+			try
+			{
+				_services.DbContext.DetachEntities<NewsLetterSubscription>(result);
 			}
 			catch { }
 
@@ -2193,6 +2242,16 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
+		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, NewsLetterSubscription subscription)
+		{
+			var result = new List<dynamic>();
+
+			dynamic expando = ToExpando(ctx, subscription);
+
+			result.Add(expando);
+			return result;
+		}
+
 		#endregion
 
 		private List<Store> Init(ExportProfileTaskContext ctx)
@@ -2267,6 +2326,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					else if (ctx.Provider.Value.EntityType == ExportEntityType.Customer)
 					{
 						var unused = GetCustomers(ctx, 0, 1, out totalCount);
+						ctx.RecordsPerStore.Add(store.Id, totalCount);
+					}
+					else if (ctx.Provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+					{
+						var unused = GetNewsLetterSubscriptions(ctx, 0, 1, out totalCount);
 						ctx.RecordsPerStore.Add(store.Id, totalCount);
 					}
 				}
@@ -2355,6 +2419,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			{
 				ctx.Export.Data = new ExportSegmenter<Customer>(
 					pageIndex => GetCustomers(ctx, pageIndex, ctx.PageSize, out unused),
+					entity => ConvertToExpando(ctx, entity),
+					pageable, itemsPerFile
+				);
+			}
+			else if (ctx.Provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+			{
+				ctx.Export.Data = new ExportSegmenter<NewsLetterSubscription>(
+					pageIndex => GetNewsLetterSubscriptions(ctx, pageIndex, ctx.PageSize, out unused),
 					entity => ConvertToExpando(ctx, entity),
 					pageable, itemsPerFile
 				);
@@ -2781,7 +2853,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					prefix = _services.Localization.GetResource("Admin.Catalog.Manufacturers");
 				else if (provider.Value.EntityType == ExportEntityType.Customer)
 					prefix = _services.Localization.GetResource("Admin.Customers");
-				else if (provider.Value.EntityType == ExportEntityType.NewsletterSubscriber)
+				else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
 					prefix = _services.Localization.GetResource("Admin.Promotions.NewsLetterSubscriptions");
 				else
 					prefix = provider.Value.EntityType.ToString();

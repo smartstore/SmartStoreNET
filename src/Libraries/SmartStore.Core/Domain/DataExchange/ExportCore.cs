@@ -11,7 +11,7 @@ namespace SmartStore.Core.Domain.DataExchange
 		Manufacturer,
 		Customer,
 		Order,
-		NewsletterSubscriber
+		NewsLetterSubscription
 	}
 
 	/// <summary>

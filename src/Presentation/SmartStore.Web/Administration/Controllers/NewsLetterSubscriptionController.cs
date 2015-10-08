@@ -1,18 +1,17 @@
 ﻿using System;
 using System.Linq;
-using System.Text;
 using System.Web.Mvc;
-using Telerik.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
-using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Controllers;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Services.DataExchange.ExportProvider;
 using SmartStore.Services.Helpers;
-using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Utilities;
+using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Mvc;
+using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -21,19 +20,18 @@ namespace SmartStore.Admin.Controllers
 	{
 		private readonly INewsLetterSubscriptionService _newsLetterSubscriptionService;
 		private readonly IDateTimeHelper _dateTimeHelper;
-        private readonly ILocalizationService _localizationService;
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IStoreService _storeService;
 
 		public NewsLetterSubscriptionController(INewsLetterSubscriptionService newsLetterSubscriptionService,
-			IDateTimeHelper dateTimeHelper,ILocalizationService localizationService,
-            IPermissionService permissionService, AdminAreaSettings adminAreaSettings,
+			IDateTimeHelper dateTimeHelper,
+            IPermissionService permissionService,
+			AdminAreaSettings adminAreaSettings,
 			IStoreService storeService)
 		{
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
 			this._dateTimeHelper = dateTimeHelper;
-            this._localizationService = localizationService;
             this._permissionService = permissionService;
             this._adminAreaSettings = adminAreaSettings;
 			this._storeService = storeService;
@@ -45,9 +43,8 @@ namespace SmartStore.Admin.Controllers
 
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
-			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
+			model.AvailableStores.Add(new SelectListItem { Text = T("Admin.Common.All"), Value = "0" });
 			model.AvailableStores.AddRange(stores.ToSelectListItems());
-
 		}
 
 		public ActionResult Index()
@@ -153,34 +150,13 @@ namespace SmartStore.Admin.Controllers
 			return SubscriptionList(command, listModel);
         }
 
-		public ActionResult ExportCsv(NewsLetterSubscriptionListModel model)
+		[Compress]
+		public ActionResult ExportCsv()
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
                 return AccessDeniedView();
 
-			string fileName = String.Format("newsletter_emails_{0}_{1}.txt", DateTime.Now.ToString("yyyy-MM-dd-HH-mm-ss"), CommonHelper.GenerateRandomDigitCode(4));
-
-			var sb = new StringBuilder();
-			var newsLetterSubscriptions = _newsLetterSubscriptionService.GetAllNewsLetterSubscriptions(model.SearchEmail, 0, int.MaxValue, true, model.StoreId);
-
-			if (newsLetterSubscriptions.Count == 0)
-			{
-				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			foreach (var subscription in newsLetterSubscriptions)
-			{
-				sb.Append(subscription.Email);
-                sb.Append(",");
-                sb.Append(subscription.Active);
-				sb.Append(",");
-				sb.Append(subscription.StoreId);
-                sb.Append(Environment.NewLine);
-			}
-			string result = sb.ToString();
-
-			return File(Encoding.UTF8.GetBytes(result), "text/csv", fileName);
+			return Export(ExportNewsSubscriptionCsvProvider.SystemName, null);
 		}
 
         [HttpPost]
@@ -192,25 +168,23 @@ namespace SmartStore.Admin.Controllers
             try
             {            
                 var file = Request.Files["importcsvfile"];
-                if (file != null && file.ContentLength > 0)
-                {
-                    var result = _newsLetterSubscriptionService.ImportSubscribers(file.InputStream);
+				if (file != null && file.ContentLength > 0)
+				{
+					var result = _newsLetterSubscriptionService.ImportSubscribers(file.InputStream);
 
-					NotifySuccess(
-						_localizationService.GetResource("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess").FormatWith(result.NewRecords, result.ModifiedRecords)
-					);
-
-                    return RedirectToAction("List");
-                }
-
-				NotifyError(_localizationService.GetResource("Admin.Common.UploadFile"));
-                return RedirectToAction("List");
+					NotifySuccess(T("Admin.Promotions.NewsLetterSubscriptions.ImportEmailsSuccess", result.NewRecords, result.ModifiedRecords));
+				}
+				else
+				{
+					NotifyError(T("Admin.Common.UploadFile"));
+				}
             }
             catch (Exception exc)
             {
                 NotifyError(exc);
-                return RedirectToAction("List");
             }
+
+			return RedirectToAction("List");
         }
 	}
 }

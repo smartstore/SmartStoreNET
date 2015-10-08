@@ -218,12 +218,6 @@ namespace SmartStore.Web.Framework
 
             builder.RegisterType<ScheduleTaskService>().As<IScheduleTaskService>().InstancePerRequest();
 
-			builder.RegisterType<ExportManager>().As<IExportManager>()
-				.WithParameter(ResolvedParameter.ForNamed<IProductService>("nocache"))
-				.WithParameter(ResolvedParameter.ForNamed<ICategoryService>("nocache"))
-				.WithParameter(ResolvedParameter.ForNamed<IManufacturerService>("nocache"))
-				.InstancePerRequest();
-
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
 

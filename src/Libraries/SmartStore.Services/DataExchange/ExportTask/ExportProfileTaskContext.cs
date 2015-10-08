@@ -57,6 +57,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			CategoryPathes = new Dictionary<int, string>();
 			Countries = new Dictionary<int, Country>();
 			ProductTemplates = new Dictionary<int, ProductTemplate>();
+			NewsletterSubscriptions = new HashSet<string>();
 
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
@@ -140,6 +141,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public Dictionary<int, Language> Languages { get; set; }
 		public Dictionary<int, Country> Countries { get; set; }
 		public Dictionary<int, ProductTemplate> ProductTemplates { get; set; }
+		public HashSet<string> NewsletterSubscriptions { get; set; }
 
 		// data loaded once per page
 		public ExportDataContextProduct DataContextProduct

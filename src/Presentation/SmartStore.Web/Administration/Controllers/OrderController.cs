@@ -22,7 +22,6 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.ExportProvider;
 using SmartStore.Services.Directory;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -63,7 +62,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ICountryService _countryService;
         private readonly IStateProvinceService _stateProvinceService;
         private readonly IProductService _productService;
-        private readonly IExportManager _exportManager;
         private readonly IPermissionService _permissionService;
 	    private readonly IWorkflowMessageService _workflowMessageService;
 	    private readonly ICategoryService _categoryService;
@@ -107,7 +105,7 @@ namespace SmartStore.Admin.Controllers
             IMeasureService measureService,
             IAddressService addressService, ICountryService countryService,
             IStateProvinceService stateProvinceService, IProductService productService,
-            IExportManager exportManager, IPermissionService permissionService,
+            IPermissionService permissionService,
             IWorkflowMessageService workflowMessageService,
             ICategoryService categoryService, IManufacturerService manufacturerService,
             IProductAttributeService productAttributeService, IProductAttributeParser productAttributeParser,
@@ -140,7 +138,6 @@ namespace SmartStore.Admin.Controllers
             this._countryService = countryService;
             this._stateProvinceService = stateProvinceService;
             this._productService = productService;
-            this._exportManager = exportManager;
             this._permissionService = permissionService;
             this._workflowMessageService = workflowMessageService;
             this._categoryService = categoryService;

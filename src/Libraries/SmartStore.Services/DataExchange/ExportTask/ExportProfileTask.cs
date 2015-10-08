@@ -90,6 +90,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private ILocalizedEntityService _localizedEntityService;
 		private IUrlRecordService _urlRecordService;
 		private IGenericAttributeService _genericAttributeService;
+		private IRepository<NewsLetterSubscription> _subscriptionRepository;
 
 		private void InitDependencies(TaskExecutionContext context)
 		{
@@ -125,6 +126,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_localizedEntityService = context.Resolve<ILocalizedEntityService>();
 			_urlRecordService = context.Resolve<IUrlRecordService>();
 			_genericAttributeService = context.Resolve<IGenericAttributeService>();
+			_subscriptionRepository = context.Resolve<IRepository<NewsLetterSubscription>>();
 		}
 
 		#endregion
@@ -772,8 +774,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.CustomerGuid = customer.CustomerGuid;
 			expando.Username = customer.Username;
 			expando.Email = customer.Email;
-			//Password... we do not provide that data
+			expando.Password = customer.Password;	// not so good but referenced in Excel export
 			expando.PasswordFormatId = customer.PasswordFormatId;
+			expando.PasswordSalt = customer.PasswordSalt;
 			expando.AdminComment = customer.AdminComment;
 			expando.IsTaxExempt = customer.IsTaxExempt;
 			expando.AffiliateId = customer.AffiliateId;
@@ -789,11 +792,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.BillingAddress = null;
 			expando.ShippingAddress = null;
 			expando.Addresses = null;
+			expando.CustomerRoles = null;
 
 			expando.RewardPointsHistory = null;
 			expando._RewardPointsBalance = 0;
 
 			expando._GenericAttributes = null;
+			expando._HasNewsletterSubscription = false;
 
 			return expando;
 		}
@@ -1615,6 +1620,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Expand(x => x.ShippingAddress)
 				.Expand(x => x.Addresses.Select(y => y.Country))
 				.Expand(x => x.Addresses.Select(y => y.StateProvince))
+				.Expand(x => x.CustomerRoles)
 				.Where(x => !x.Deleted);
 
 			if (ctx.EntityIdsSelected.Count > 0)
@@ -2159,9 +2165,29 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x => ToExpando(ctx, x))
 				.ToList();
 
+			expando.CustomerRoles = customer.CustomerRoles
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.Name = x.Name;
+					exp.FreeShipping = x.FreeShipping;
+					exp.TaxExempt = x.TaxExempt;
+					exp.TaxDisplayType = x.TaxDisplayType;
+					exp.Active = x.Active;
+					exp.IsSystemRole = x.IsSystemRole;
+					exp.SystemName = x.SystemName;
+
+					return exp;
+				})
+				.ToList();
+
 			expando._GenericAttributes = genericAttributes
 				.Select(x => ToExpando(ctx, x))
 				.ToList();
+
+			expando._HasNewsletterSubscription = ctx.NewsletterSubscriptions.Contains(customer.Email, StringComparer.CurrentCultureIgnoreCase);
 
 			result.Add(expando);
 			return result;
@@ -2264,13 +2290,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				logHead.Append("Export profile:\t\t" + ctx.Profile.Name);
 				logHead.AppendLine(ctx.Profile.Id == 0 ? " volatile" : " (Id {0})".FormatInvariant(ctx.Profile.Id));
 
+				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Provider.Metadata.FriendlyName, ctx.Profile.ProviderSystemName));
+
 				var plugin = ctx.Provider.Metadata.PluginDescriptor;
 				logHead.Append("Plugin:\t\t\t\t");
 				logHead.AppendLine(plugin == null ? "".NaIfEmpty() : "{0} ({1}) v.{2}".FormatInvariant(plugin.FriendlyName, plugin.SystemName, plugin.Version.ToString()));
 
-				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Provider == null ? "".NaIfEmpty() : ctx.Provider.Metadata.FriendlyName, ctx.Profile.ProviderSystemName));
+				logHead.AppendLine("Entity:\t\t\t\t" + ctx.Provider.Value.EntityType.ToString());
 
-				var storeInfo = (ctx.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(ctx.Store.Name, ctx.Store.Id) : "all stores");
+				var storeInfo = (ctx.Profile.PerStore ? "{0} (Id {1})".FormatInvariant(ctx.Store.Name, ctx.Store.Id) : "All stores");
 				logHead.Append("Store:\t\t\t\t" + storeInfo);
 
 				ctx.Log.Information(logHead.ToString());
@@ -2461,6 +2489,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 							ctx.Countries = _countryService.GetAllCountries(true).ToDictionary(x => x.Id, x => x);
 						}
 
+						if (ctx.Provider.Value.EntityType == ExportEntityType.Customer)
+						{
+							var subscriptionEmails = _subscriptionRepository.TableUntracked
+								.Where(x => x.Active)
+								.Select(x => x.Email)
+								.Distinct()
+								.ToList();
+
+							ctx.NewsletterSubscriptions = new HashSet<string>(subscriptionEmails, StringComparer.OrdinalIgnoreCase);
+						}
+
 						var stores = Init(ctx);
 
 						ctx.Export.Language = ToExpando(ctx, ctx.ContextLanguage);
@@ -2541,6 +2580,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					try
 					{
+						ctx.NewsletterSubscriptions.Clear();
 						ctx.ProductTemplates.Clear();
 						ctx.Countries.Clear();
 						ctx.Stores.Clear();

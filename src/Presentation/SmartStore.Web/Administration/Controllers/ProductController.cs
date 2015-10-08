@@ -68,7 +68,6 @@ namespace SmartStore.Admin.Controllers
         private readonly ITaxCategoryService _taxCategoryService;
         private readonly IProductTagService _productTagService;
         private readonly ICopyProductService _copyProductService;
-        private readonly IExportManager _exportManager;
         private readonly ICustomerActivityService _customerActivityService;
         private readonly IPermissionService _permissionService;
         private readonly IAclService _aclService;
@@ -119,7 +118,6 @@ namespace SmartStore.Admin.Controllers
             ITaxCategoryService taxCategoryService,
 			IProductTagService productTagService,
             ICopyProductService copyProductService,
-            IExportManager exportManager,
 			IImportManager importManager,
             ICustomerActivityService customerActivityService,
             IPermissionService permissionService,
@@ -166,7 +164,6 @@ namespace SmartStore.Admin.Controllers
             this._taxCategoryService = taxCategoryService;
             this._productTagService = productTagService;
             this._copyProductService = copyProductService;
-            this._exportManager = exportManager;
             this._customerActivityService = customerActivityService;
             this._permissionService = permissionService;
             this._aclService = aclService;

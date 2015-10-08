@@ -792,6 +792,27 @@ namespace SmartStore.Services.DataExchange
 			_writer.Write("LastActivityDateUtc", ((DateTime)customer.LastActivityDateUtc).ToString(_culture));
 			_writer.Write("RewardPointsBalance", ((int)customer._RewardPointsBalance).ToString());
 
+			if (customer.CustomerRoles != null)
+			{
+				_writer.WriteStartElement("CustomerRoles");
+				foreach (dynamic role in customer.CustomerRoles)
+				{
+					int? taxDisplayType = role.TaxDisplayType;
+
+					_writer.WriteStartElement("CustomerRole");
+					_writer.Write("Id", ((int)role.Id).ToString());
+					_writer.Write("Name", (string)role.Name);
+					_writer.Write("FreeShipping", ((bool)role.FreeShipping).ToString());
+					_writer.Write("TaxExempt", ((bool)role.TaxExempt).ToString());
+					_writer.Write("TaxDisplayType", taxDisplayType.HasValue ? taxDisplayType.Value.ToString() : "");
+					_writer.Write("Active", ((bool)role.Active).ToString());
+					_writer.Write("IsSystemRole", ((bool)role.IsSystemRole).ToString());
+					_writer.Write("SystemName", (string)role.SystemName);
+					_writer.WriteEndElement();	// CustomerRole
+				}
+				_writer.WriteEndElement();	// CustomerRoles
+			}
+
 			WriteRewardPointsHistory(customer.RewardPointsHistory, "RewardPointsHistories");
 			WriteAddress(customer.BillingAddress, "BillingAddress");
 			WriteAddress(customer.ShippingAddress, "ShippingAddress");

@@ -22,7 +22,6 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreProductXlsx")]
 	[FriendlyName("SmartStore Excel product export")]
 	[IsHidden(true)]
-	[ExportSupporting(ExportSupport.HighDataDepth)]
 	public class ExportProductXlsxProvider : IExportProvider
 	{
 		private readonly ILanguageService _languageService;

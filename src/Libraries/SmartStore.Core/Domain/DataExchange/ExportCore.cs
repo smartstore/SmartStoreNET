@@ -64,14 +64,9 @@ namespace SmartStore.Core.Domain.DataExchange
 	public enum ExportSupport
 	{
 		/// <summary>
-		/// Whether to get more data like product tags, bundle items etc.
-		/// </summary>
-		HighDataDepth = 0,
-
-		/// <summary>
 		/// Whether to automatically create a file based public deployment when an export profile is created
 		/// </summary>
-		CreateInitialPublicDeployment,
+		CreateInitialPublicDeployment = 0,
 
 		/// <summary>
 		/// Whether to offer option to include\exclude grouped products

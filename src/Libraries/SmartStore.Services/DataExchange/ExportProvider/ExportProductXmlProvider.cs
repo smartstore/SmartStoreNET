@@ -15,7 +15,6 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreProductXml")]
 	[FriendlyName("SmartStore XML product export")]
 	[IsHidden(true)]
-	[ExportSupporting(ExportSupport.HighDataDepth)]
 	public class ExportProductXmlProvider : IExportProvider
 	{
 		public static string SystemName

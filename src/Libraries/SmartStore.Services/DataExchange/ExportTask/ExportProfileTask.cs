@@ -1705,6 +1705,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		{
 			var result = new List<dynamic>();
 
+			var languageId = (ctx.Projection.LanguageId ?? 0);
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
 
@@ -1716,6 +1717,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productCategories = ctx.DataContextProduct.ProductCategories.Load(product.Id);
 			var productAttributes = ctx.DataContextProduct.Attributes.Load(product.Id);
 			var productAttributeCombinations = ctx.DataContextProduct.AttributeCombinations.Load(product.Id);
+			var productTags = ctx.DataContextProduct.ProductTags.Load(product.Id);
+			var specificationAttributes = ctx.DataContextProduct.ProductSpecificationAttributes.Load(product.Id);
 
 			dynamic expando = ToExpando(ctx, product);
 
@@ -1853,61 +1856,51 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					.ToList();
 			}
 
-			#endregion
+			expando.ProductTags = productTags
+				.Select(x =>
+				{
+					dynamic exp = new ExpandoObject();
+					exp._Entity = x;
+					exp.Id = x.Id;
+					exp.Name = x.GetLocalized(y => y.Name, languageId, true, false);
+					exp.SeName = x.GetSeName(languageId);
+					exp._Localized = GetLocalized(ctx, x, y => y.Name);
+					return exp;
+				})
+				.ToList();
 
-			#region high data depth
+			expando.ProductSpecificationAttributes = specificationAttributes
+				.Select(x => ToExpando(ctx, x))
+				.ToList();
 
-			if (ctx.Supporting[ExportSupport.HighDataDepth])
+			if (product.ProductType == ProductType.BundledProduct)
 			{
-				var productTags = ctx.DataContextProduct.ProductTags.Load(product.Id);
-				var specificationAttributes = ctx.DataContextProduct.ProductSpecificationAttributes.Load(product.Id);
+				var bundleItems = ctx.DataContextProduct.ProductBundleItems.Load(product.Id);
 
-				expando.ProductTags = productTags
+				expando.ProductBundleItems = bundleItems
 					.Select(x =>
 					{
 						dynamic exp = new ExpandoObject();
 						exp._Entity = x;
 						exp.Id = x.Id;
-						exp.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
-						exp.SeName = x.GetSeName(ctx.Projection.LanguageId ?? 0);
-						exp._Localized = GetLocalized(ctx, x, y => y.Name);
+						exp.ProductId = x.ProductId;
+						exp.BundleProductId = x.BundleProductId;
+						exp.Quantity = x.Quantity;
+						exp.Discount = x.Discount;
+						exp.DiscountPercentage = x.DiscountPercentage;
+						exp.Name = x.GetLocalized(y => y.Name, languageId, true, false);
+						exp.ShortDescription = x.GetLocalized(y => y.ShortDescription, languageId, true, false);
+						exp.FilterAttributes = x.FilterAttributes;
+						exp.HideThumbnail = x.HideThumbnail;
+						exp.Visible = x.Visible;
+						exp.Published = x.Published;
+						exp.DisplayOrder = x.DisplayOrder;
+						exp.CreatedOnUtc = x.CreatedOnUtc;
+						exp.UpdatedOnUtc = x.UpdatedOnUtc;
+						exp._Localized = GetLocalized(ctx, x, y => y.Name, y => y.ShortDescription);
 						return exp;
 					})
 					.ToList();
-
-				expando.ProductSpecificationAttributes = specificationAttributes
-					.Select(x => ToExpando(ctx, x))
-					.ToList();
-
-				if (product.ProductType == ProductType.BundledProduct)
-				{
-					var bundleItems = ctx.DataContextProduct.ProductBundleItems.Load(product.Id);
-
-					expando.ProductBundleItems = bundleItems
-						.Select(x =>
-						{
-							dynamic exp = new ExpandoObject();
-							exp._Entity = x;
-							exp.Id = x.Id;
-							exp.ProductId = x.ProductId;
-							exp.BundleProductId = x.BundleProductId;
-							exp.Quantity = x.Quantity;
-							exp.Discount = x.Discount;
-							exp.DiscountPercentage = x.DiscountPercentage;
-							exp.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
-							exp.ShortDescription = x.GetLocalized(y => y.ShortDescription, ctx.Projection.LanguageId ?? 0, true, false);
-							exp.FilterAttributes = x.FilterAttributes;
-							exp.HideThumbnail = x.HideThumbnail;
-							exp.Visible = x.Visible;
-							exp.Published = x.Published;
-							exp.DisplayOrder = x.DisplayOrder;
-							exp.CreatedOnUtc = x.CreatedOnUtc;
-							exp.UpdatedOnUtc = x.UpdatedOnUtc;
-							exp._Localized = GetLocalized(ctx, x, y => y.Name, y => y.ShortDescription);
-							return exp;
-						})
-						.ToList();
-				}
 			}
 
 			#endregion
@@ -1925,7 +1918,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				var productManus = ctx.DataContextProduct.ProductManufacturers.Load(product.Id);
 
 				if (productManus != null && productManus.Any())
-					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
+					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
 
 				if (brand.IsEmpty())
 					brand = ctx.Projection.Brand;
@@ -1965,7 +1958,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 				if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
 				{
-					var values = _productAttributeParser.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
+					var values = _productAttributeParser.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, languageId);
 					exp.Name = ((string)exp.Name).Grow(string.Join(", ", values), " ");
 				}
 

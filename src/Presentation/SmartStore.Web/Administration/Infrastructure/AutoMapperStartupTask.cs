@@ -616,11 +616,12 @@ namespace SmartStore.Admin.Infrastructure
             Mapper.CreateMap<ShippingSettingsModel, ShippingSettings>()
                 .ForMember(dest => dest.ActiveShippingRateComputationMethodSystemNames, mo => mo.Ignore())
                 .ForMember(dest => dest.ReturnValidOptionsIfThereAreAny, mo => mo.Ignore());
-            Mapper.CreateMap<CatalogSettings, CatalogSettingsModel>()
+			Mapper.CreateMap<CatalogSettings, CatalogSettingsModel>()
 				.ForMember(dest => dest.AvailableSubCategoryDisplayTypes, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailablePriceDisplayTypes, mo => mo.Ignore())
-                .ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableDefaultViewModes, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableDeliveryTimes, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableSortOrderModes, mo => mo.Ignore());
             Mapper.CreateMap<CatalogSettingsModel, CatalogSettings>()
                 .ForMember(dest => dest.PageShareCode, mo => mo.Ignore())
                 .ForMember(dest => dest.DefaultProductRatingValue, mo => mo.Ignore())
@@ -660,7 +661,9 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.DefaultImageQuality, mo => mo.Ignore())
                 .ForMember(dest => dest.MultipleThumbDirectories, mo => mo.Ignore())
                 .ForMember(dest => dest.AutoCompleteSearchThumbPictureSize, mo => mo.Ignore());
-            Mapper.CreateMap<CustomerSettings,  CustomerUserSettingsModel.CustomerSettingsModel>();
+			Mapper.CreateMap<CustomerSettings, CustomerUserSettingsModel.CustomerSettingsModel>()
+				.ForMember(dest => dest.AvailableCustomerNumberMethods, mo => mo.Ignore())
+				.ForMember(dest => dest.AvailableCustomerNumberVisibilities, mo => mo.Ignore());
             Mapper.CreateMap<CustomerUserSettingsModel.CustomerSettingsModel, CustomerSettings>()
                 .ForMember(dest => dest.HashedPasswordFormat, mo => mo.Ignore())
                 .ForMember(dest => dest.PasswordMinLength, mo => mo.Ignore())

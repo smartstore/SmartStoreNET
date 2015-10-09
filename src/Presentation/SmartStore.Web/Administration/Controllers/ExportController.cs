@@ -123,15 +123,20 @@ namespace SmartStore.Admin.Controllers
 
 			if (provider != null)
 			{
+				var descriptor = provider.Metadata.PluginDescriptor;
+
 				model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
-				model.Provider.Url = provider.Metadata.PluginDescriptor.Url;
-				model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = provider.Metadata.PluginDescriptor.SystemName, area = "Admin" });
-				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
-				model.Provider.Author = provider.Metadata.PluginDescriptor.Author;
-				model.Provider.Version = provider.Metadata.PluginDescriptor.Version.ToString();
-				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
+				if (descriptor != null)
+				{
+					model.Provider.Url = descriptor.Url;
+					model.Provider.ConfigurationUrl = Url.Action("ConfigurePlugin", "Plugin", new { systemName = descriptor.SystemName, area = "Admin" });
+					model.Provider.Author = descriptor.Author;
+					model.Provider.Version = descriptor.Version.ToString();
+				}
 
+				model.Provider.FriendlyName = _pluginMediator.GetLocalizedFriendlyName(provider.Metadata);
+				model.Provider.Description = _pluginMediator.GetLocalizedDescription(provider.Metadata);
 				model.Provider.EntityType = provider.Value.EntityType;
 				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.Provider.FileExtension = provider.Value.FileExtension;
@@ -602,59 +607,65 @@ namespace SmartStore.Admin.Controllers
 				profile.Name = provider.Metadata.SystemName;
 
 			// projection
-			var projection = new ExportProjection
+			if (model.Projection != null)
 			{
-				StoreId = model.Projection.StoreId,
-				LanguageId = model.Projection.LanguageId,
-				CurrencyId = model.Projection.CurrencyId,
-				CustomerId = model.Projection.CustomerId,
-				DescriptionMergingId = model.Projection.DescriptionMergingId,
-				DescriptionToPlainText = model.Projection.DescriptionToPlainText,
-				AppendDescriptionText = model.Projection.AppendDescriptionText,
-				RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
-				CriticalCharacters = model.Projection.CriticalCharacters,
-				PriceType = model.Projection.PriceType,
-				ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
-				Brand = model.Projection.Brand,
-				PictureSize = model.Projection.PictureSize,
-				ShippingTime = model.Projection.ShippingTime,
-				ShippingCosts = model.Projection.ShippingCosts,
-				FreeShippingThreshold = model.Projection.FreeShippingThreshold,
-				AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
-				AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
-				NoGroupedProducts = model.Projection.NoGroupedProducts,
-				OrderStatusChangeId = model.Projection.OrderStatusChangeId
-			};
+				var projection = new ExportProjection
+				{
+					StoreId = model.Projection.StoreId,
+					LanguageId = model.Projection.LanguageId,
+					CurrencyId = model.Projection.CurrencyId,
+					CustomerId = model.Projection.CustomerId,
+					DescriptionMergingId = model.Projection.DescriptionMergingId,
+					DescriptionToPlainText = model.Projection.DescriptionToPlainText,
+					AppendDescriptionText = model.Projection.AppendDescriptionText,
+					RemoveCriticalCharacters = model.Projection.RemoveCriticalCharacters,
+					CriticalCharacters = model.Projection.CriticalCharacters,
+					PriceType = model.Projection.PriceType,
+					ConvertNetToGrossPrices = model.Projection.ConvertNetToGrossPrices,
+					Brand = model.Projection.Brand,
+					PictureSize = model.Projection.PictureSize,
+					ShippingTime = model.Projection.ShippingTime,
+					ShippingCosts = model.Projection.ShippingCosts,
+					FreeShippingThreshold = model.Projection.FreeShippingThreshold,
+					AttributeCombinationAsProduct = model.Projection.AttributeCombinationAsProduct,
+					AttributeCombinationValueMergingId = model.Projection.AttributeCombinationValueMergingId,
+					NoGroupedProducts = model.Projection.NoGroupedProducts,
+					OrderStatusChangeId = model.Projection.OrderStatusChangeId
+				};
 
-			profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
+				profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
+			}
 
 			// filtering
-			var filter = new ExportFilter
+			if (model.Filter != null)
 			{
-				StoreId = model.Filter.StoreId ?? 0,
-				CreatedFrom = model.Filter.CreatedFrom,
-				CreatedTo = model.Filter.CreatedTo,
-				PriceMinimum = model.Filter.PriceMinimum,
-				PriceMaximum = model.Filter.PriceMaximum,
-				AvailabilityMinimum = model.Filter.AvailabilityMinimum,
-				AvailabilityMaximum = model.Filter.AvailabilityMaximum,
-				IsPublished = model.Filter.IsPublished,
-				CategoryIds = model.Filter.CategoryIds,
-				WithoutCategories = model.Filter.WithoutCategories,
-				ManufacturerId = model.Filter.ManufacturerId,
-				WithoutManufacturers = model.Filter.WithoutManufacturers,
-				ProductTagId = model.Filter.ProductTagId,
-				FeaturedProducts = model.Filter.FeaturedProducts,
-				ProductType = model.Filter.ProductType,
-				IdMinimum = model.Filter.IdMinimum,
-				IdMaximum = model.Filter.IdMaximum,
-				OrderStatusIds = model.Filter.OrderStatusIds,
-				PaymentStatusIds = model.Filter.PaymentStatusIds,
-				ShippingStatusIds = model.Filter.ShippingStatusIds,
-				CustomerRoleIds = model.Filter.CustomerRoleIds
-			};
+				var filter = new ExportFilter
+				{
+					StoreId = model.Filter.StoreId ?? 0,
+					CreatedFrom = model.Filter.CreatedFrom,
+					CreatedTo = model.Filter.CreatedTo,
+					PriceMinimum = model.Filter.PriceMinimum,
+					PriceMaximum = model.Filter.PriceMaximum,
+					AvailabilityMinimum = model.Filter.AvailabilityMinimum,
+					AvailabilityMaximum = model.Filter.AvailabilityMaximum,
+					IsPublished = model.Filter.IsPublished,
+					CategoryIds = model.Filter.CategoryIds,
+					WithoutCategories = model.Filter.WithoutCategories,
+					ManufacturerId = model.Filter.ManufacturerId,
+					WithoutManufacturers = model.Filter.WithoutManufacturers,
+					ProductTagId = model.Filter.ProductTagId,
+					FeaturedProducts = model.Filter.FeaturedProducts,
+					ProductType = model.Filter.ProductType,
+					IdMinimum = model.Filter.IdMinimum,
+					IdMaximum = model.Filter.IdMaximum,
+					OrderStatusIds = model.Filter.OrderStatusIds,
+					PaymentStatusIds = model.Filter.PaymentStatusIds,
+					ShippingStatusIds = model.Filter.ShippingStatusIds,
+					CustomerRoleIds = model.Filter.CustomerRoleIds
+				};
 
-			profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+				profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+			}
 
 			// provider configuration
 			profile.ProviderConfigData = null;

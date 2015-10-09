@@ -94,9 +94,16 @@
 				@Html.SmartLabelFor(x => x.Provider.FriendlyName)
 			</td>
 			<td class="adminData">
-				<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
-					@Model.Provider.FriendlyName.NaIfEmpty()</a>
-				<span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+				@if (Model.Provider.ConfigurationUrl.HasValue())
+				{
+					<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
+						@Model.Provider.FriendlyName.NaIfEmpty()</a>
+					<span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+				}
+				else
+				{
+					<span>@Model.Provider.FriendlyName.NaIfEmpty()</span> <span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+				}
 			</td>
 		</tr>
 		@if (Model.Provider.Description.HasValue())
@@ -121,22 +128,28 @@
 				</td>
 			</tr>
 		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.Author)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(x => x.Provider.Author)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.Version)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(x => x.Provider.Version)
-			</td>
-		</tr>
+		@if (Model.Provider.Author.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.Author)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(x => x.Provider.Author)
+				</td>
+			</tr>
+		}
+		@if (Model.Provider.Version.HasValue())
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.Version)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(x => x.Provider.Version)
+				</td>
+			</tr>
+		}
 		<tr>
 			<td class="adminTitle">
 				@Html.SmartLabelFor(x => x.Provider.EntityTypeName)

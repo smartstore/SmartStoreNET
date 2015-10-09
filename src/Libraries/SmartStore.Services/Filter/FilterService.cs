@@ -24,7 +24,7 @@ namespace SmartStore.Services.Filter
 		private readonly IRepository<Product> _productRepository;
 		private readonly IRepository<ProductCategory> _productCategoryRepository;
 		private readonly ILocalizedEntityService _localizedEntityService;
-		private readonly ICommonServices _commonServices;
+		private readonly ICommonServices _services;
 
 		private IQueryable<Product> _products;
 
@@ -34,7 +34,7 @@ namespace SmartStore.Services.Filter
 			IRepository<Product> productRepository,
 			IRepository<ProductCategory> productCategoryRepository,
 			ILocalizedEntityService localizedEntityService,
-			ICommonServices commonServices)
+			ICommonServices services)
 		{
 			_productService = productService;
 			_categoryService = categoryService;
@@ -42,7 +42,7 @@ namespace SmartStore.Services.Filter
 			_productRepository = productRepository;
 			_productCategoryRepository = productCategoryRepository;
 			_localizedEntityService = localizedEntityService;
-			_commonServices = commonServices;
+			_services = services;
 		}
 
 		public static string ShortcutPrice { get { return "_Price"; } }
@@ -166,7 +166,7 @@ namespace SmartStore.Services.Filter
 				var searchContext = new ProductSearchContext()
 				{
 					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
-					StoreId = _commonServices.StoreContext.CurrentStoreIdIfMultiStoreMode,
+					StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
 				};
 
@@ -316,7 +316,7 @@ namespace SmartStore.Services.Filter
 
 
 			var lst = grouped.OrderByDescending(a => a.MatchCount).ToList();
-			int languageId = _commonServices.WorkContext.WorkingLanguage.Id;
+			int languageId = _services.WorkContext.WorkingLanguage.Id;
 
 			lst.ForEach(c =>
 			{

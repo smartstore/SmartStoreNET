@@ -194,7 +194,7 @@
 					}
 					else
 					{
-						<a href='@Url.RouteUrl("Login")' rel="nofollow">
+						<a href='@Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl })' rel="nofollow">
 							@T("BackInStockSubscriptions.NotifyMeWhenAvailable")
 							<i class="fa fa-phone"></i>
 						</a>

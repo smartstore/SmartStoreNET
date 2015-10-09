@@ -45,4 +45,8 @@ namespace SmartStore.OfflinePayment.Models
 	public class PrepaymentConfigurationModel : ConfigurationModelBase
 	{
 	}
+
+    public class PurchaseOrderNumberConfigurationModel : ConfigurationModelBase
+    {
+    }
 }

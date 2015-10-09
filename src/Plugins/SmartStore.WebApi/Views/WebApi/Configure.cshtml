@@ -98,6 +98,15 @@
                 @Html.ValidationMessageFor(model => model.ValidMinutePeriod)
             </td>
         </tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.NoRequestTimestampValidation)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => model.NoRequestTimestampValidation)
+				@Html.ValidationMessageFor(model => model.NoRequestTimestampValidation)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.LogUnauthorized)

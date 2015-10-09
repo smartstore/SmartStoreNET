@@ -84,10 +84,20 @@
 							<div class="btn-group">
 								@if (item.IsEditable)
 								{
-									<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
-										<i class="fa fa-pencil-square-o"></i>
-										@T("Admin.Common.Edit")
-									</a>
+									if (item.IsPaymentMethod)
+									{
+										<a class="btn btn-small" href='@Url.Action("Edit", "Payment", new { systemName = item.SystemName })'>
+											<i class="fa fa-pencil-square-o"></i>
+											@T("Admin.Common.Edit")
+										</a>
+									}
+									else
+									{
+										<a class="btn btn-small module-edit" href='@Url.Action("EditProviderPopup", "Plugin", new { systemName = item.SystemName, btnId = "btnRefresh" })'>
+											<i class="fa fa-pencil-square-o"></i>
+											@T("Admin.Common.Edit")
+										</a>
+									}
 								}
 								@if (item.IsConfigurable)
 								{

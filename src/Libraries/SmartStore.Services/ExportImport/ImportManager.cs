@@ -18,6 +18,7 @@ using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -162,7 +163,7 @@ namespace SmartStore.Services.ExportImport
 						    var batch = segmenter.CurrentBatch;
 
 						    // Perf: detach all entities
-						    _rsProduct.Context.DetachAll();
+						    _rsProduct.Context.DetachAll(false);
 
 						    // Update progress for calling thread
 						    if (progress != null)
@@ -366,6 +367,7 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.FullDescription);
 				row.SetProperty(result, product, (x) => x.ProductTemplateId);
 				row.SetProperty(result, product, (x) => x.ShowOnHomePage);
+				row.SetProperty(result, product, (x) => x.HomePageDisplayOrder);
 				row.SetProperty(result, product, (x) => x.MetaKeywords);
 				row.SetProperty(result, product, (x) => x.MetaDescription);
 				row.SetProperty(result, product, (x) => x.MetaTitle);
@@ -660,7 +662,7 @@ namespace SmartStore.Services.ExportImport
 								var manufacturer = _manufacturerService.GetManufacturerById(id);
 								if (manufacturer != null)
 								{
-									var productManufacturer = new ProductManufacturer()
+									var productManufacturer = new ProductManufacturer
 									{
 										ProductId = row.Entity.Id,
 										ManufacturerId = manufacturer.Id,
@@ -724,10 +726,10 @@ namespace SmartStore.Services.ExportImport
 						if (pictureBinary != null && pictureBinary.Length > 0)
 						{
 							// no equal picture found in sequence
-							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, true);
+							var newPicture = _pictureService.InsertPicture(pictureBinary, "image/jpeg", _pictureService.GetPictureSeName(row.EntityDisplayName), true, false, false);
 							if (newPicture != null)
 							{
-								var mapping = new ProductPicture()
+								var mapping = new ProductPicture
 								{
 									ProductId = row.Entity.Id,
 									PictureId = newPicture.Id,

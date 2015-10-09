@@ -102,7 +102,7 @@ namespace SmartStore.Data.Setup
 				toUpdate.Each(x => _ctx.Entry(x).State = System.Data.Entity.EntityState.Modified);
 
 				// save now
-				_ctx.SaveChanges();
+				int affectedRows = _ctx.SaveChanges();
 			}
 		}
 

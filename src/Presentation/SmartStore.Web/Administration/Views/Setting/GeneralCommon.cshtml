@@ -176,6 +176,15 @@
 				@Html.ValidationMessageFor(model => model.SeoSettings.CanonicalHostNameRule)
 			</td>
 		</tr>
+        <tr>
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.SeoSettings.ExtraRobotsDisallows)
+            </td>
+            <td class="adminData">
+                @Html.TextAreaFor(model => model.SeoSettings.ExtraRobotsDisallows, new { @class = "input-large", style = "height:250px" })
+                @Html.ValidationMessageFor(model => model.SeoSettings.ExtraRobotsDisallows)
+            </td>
+        </tr>
     </table>
 }
 @helper TabSecuritySettings()
@@ -355,10 +364,33 @@
                 @Html.SmartLabelFor(model => model.PdfSettings.LogoPictureId)
             </td>
             <td class="adminData" id="pdf-logo-picture">
-                @Html.SettingEditorFor(model => model.PdfSettings.LogoPictureId, "#pdf-logo-picture")
+                @Html.SettingEditorFor(model => model.PdfSettings.LogoPictureId, "#pdf-logo-picture", new { transientUpload = true })
                 @Html.ValidationMessageFor(model => model.PdfSettings.LogoPictureId)
             </td>
         </tr>
+		<tr>
+			<td colspan="2">
+				<hr />
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+				@Html.ValidationMessageFor(model => model.PdfSettings.AttachOrderPdfToOrderPlacedEmail)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+				@Html.ValidationMessageFor(model => model.PdfSettings.AttachOrderPdfToOrderCompletedEmail)
+			</td>
+		</tr>
     </table>
 }
 @helper TabLocalizationSettings()

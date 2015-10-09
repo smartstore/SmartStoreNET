@@ -104,6 +104,12 @@ namespace SmartStore.Core.Domain.Catalog
 		[DataMember]
 		public bool ShowOnHomePage { get; set; }
 
+		/// <summary>
+		/// Gets or sets the display order for homepage products
+		/// </summary>
+		[DataMember]
+		public int HomePageDisplayOrder { get; set; }
+
         /// <summary>
         /// Gets or sets the meta keywords
         /// </summary>
@@ -246,7 +252,7 @@ namespace SmartStore.Core.Domain.Catalog
 		public bool AutomaticallyAddRequiredProducts { get; set; }
 
 		/// <summary>
-		/// Gets or sets a value indicating whether the product is download
+		/// Gets or sets a value indicating whether the product is a download
 		/// </summary>
 		[DataMember]
 		public bool IsDownload { get; set; }
@@ -559,7 +565,7 @@ namespace SmartStore.Core.Domain.Catalog
 		/// Gets or sets a value indicating whether this product has tier prices configured
 		/// <remarks>The same as if we run this.TierPrices.Count > 0
 		/// We use this property for performance optimization:
-		/// if this property is set to false, then we do not need to load tier prices navifation property
+		/// if this property is set to false, then we do not need to load tier prices navigation property
 		/// </remarks>
 		/// </summary>
 		[DataMember]

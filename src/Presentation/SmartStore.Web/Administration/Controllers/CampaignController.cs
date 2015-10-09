@@ -200,14 +200,14 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
 
                 var subscription = _newsLetterSubscriptionService.GetNewsLetterSubscriptionByEmail(model.TestEmail);
                 if (subscription != null)
                 {
-                    //there's a subscription. let's use it
+                    // there's a subscription. let's use it
                     var subscriptions = new List<NewsLetterSubscription>();
                     subscriptions.Add(subscription);
                     _campaignService.SendCampaign(campaign, emailAccount, subscriptions);
@@ -245,7 +245,7 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
+				var emailAccount = _emailAccountService.GetDefaultEmailAccount();
                 if (emailAccount == null)
                     throw new SmartException("Email account could not be loaded");
 

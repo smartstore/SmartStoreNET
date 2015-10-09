@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using System.Web.Routing;
+using System.Web.SessionState;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -95,10 +96,7 @@ namespace SmartStore.Web.Controllers
 			this._pluginMediator = pluginMediator;
 			this._services = services;
             this._quantityUnitService = quantityUnitService;
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
         #endregion
 
@@ -171,7 +169,7 @@ namespace SmartStore.Web.Controllers
             model.CanRePostProcessPayment = _paymentService.CanRePostProcessPayment(order);
 
             //purchase order number (we have to find a better to inject this information because it's related to a certain plugin)
-            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("Payments.PurchaseOrder", StringComparison.InvariantCultureIgnoreCase))
+            if (paymentMethod != null && paymentMethod.Metadata.SystemName.Equals("SmartStore.PurchaseOrderNumber", StringComparison.InvariantCultureIgnoreCase))
             {
                 model.DisplayPurchaseOrderNumber = true;
                 model.PurchaseOrderNumber = order.PurchaseOrderNumber;
@@ -516,8 +514,9 @@ namespace SmartStore.Web.Controllers
 				return new HttpUnauthorizedResult();
 
 			var model = PrepareOrderDetailsModel(order);
+			var fileName = T("Order.PdfInvoiceFileName", order.Id);
 
-			return PrintCore(new List<OrderDetailsModel> { model }, pdf, "order-{0}.pdf".FormatWith(order.Id));
+			return PrintCore(new List<OrderDetailsModel> { model }, pdf, fileName);
 		}
 
 		[AdminAuthorize]
@@ -612,27 +611,22 @@ namespace SmartStore.Web.Controllers
 			if (IsUnauthorizedOrder(order))
 				return new HttpUnauthorizedResult();
 
-            if (!_paymentService.CanRePostProcessPayment(order))
-				return RedirectToAction("Details", "Order", new { id = order.Id });
+			if (_paymentService.CanRePostProcessPayment(order))
+			{
+				var postProcessPaymentRequest = new PostProcessPaymentRequest
+				{
+					Order = order,
+					IsRePostProcessPayment = true
+				};
 
-            var postProcessPaymentRequest = new PostProcessPaymentRequest()
-            {
-                Order = order,
-				IsRePostProcessPayment = true
-            };
-            _paymentService.PostProcessPayment(postProcessPaymentRequest);
+				_paymentService.PostProcessPayment(postProcessPaymentRequest);
 
-            if (_services.WebHelper.IsRequestBeingRedirected || _services.WebHelper.IsPostBeingDone)
-            {
-                //redirection or POST has been done in PostProcessPayment
-                return Content("Redirected");
-            }
-            else
-            {
-                //if no redirection has been done (to a third-party payment page)
-                //theoretically it's not possible
-				return RedirectToAction("Details", "Order", new { id = order.Id });
-            }
+				if (postProcessPaymentRequest.RedirectUrl.HasValue())
+				{
+					return Redirect(postProcessPaymentRequest.RedirectUrl);
+				}
+			}
+			return RedirectToAction("Details", "Order", new { id = order.Id });
         }
 
         [RequireHttpsByConfigAttribute(SslRequirement.Yes)]

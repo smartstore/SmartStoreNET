@@ -33,11 +33,7 @@ namespace SmartStore.OfflinePayment.Controllers
 			this._services = services;
 			this._storeService = storeService;
 			this._ctx = ctx;
-
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
 
 		#region Global
 
@@ -195,6 +191,10 @@ namespace SmartStore.OfflinePayment.Controllers
 					paymentInfo.DirectDebitCountry = form["DirectDebitCountry"];
 					paymentInfo.DirectDebitIban = form["DirectDebitIban"];
 				}
+                else if (type == "PurchaseOrderNumber")
+                {
+                    paymentInfo.PurchaseOrderNumber = form["PurchaseOrderNumber"];
+                }
 			}
 
 			return paymentInfo;
@@ -233,6 +233,10 @@ namespace SmartStore.OfflinePayment.Controllers
 						return number.Mask(8);
 					}
 				}
+                else if (type == "PurchaseOrderNumber")
+                {
+                    return form["PurchaseOrderNumber"];
+                }
 			}
 
 			return null;
@@ -499,5 +503,38 @@ namespace SmartStore.OfflinePayment.Controllers
 
 		#endregion
 
-	}
+        #region PurchaseOrderNumber
+
+        [AdminAuthorize]
+        [ChildActionOnly]
+        public ActionResult PurchaseOrderNumberConfigure()
+        {
+            var model = ConfigureGet<PurchaseOrderNumberConfigurationModel, PurchaseOrderNumberPaymentSettings>();
+
+            return View("GenericConfigure", model);
+        }
+
+        [HttpPost, AdminAuthorize, ChildActionOnly, ValidateInput(false)]
+        public ActionResult PurchaseOrderNumberConfigure(PurchaseOrderNumberConfigurationModel model, FormCollection form)
+        {
+            if (!ModelState.IsValid)
+                return InvoiceConfigure();
+
+            ConfigurePost<PurchaseOrderNumberConfigurationModel, InvoicePaymentSettings>(model, form);
+
+            return PurchaseOrderNumberConfigure();
+        }
+
+        public ActionResult PurchaseOrderNumberPaymentInfo()
+        {
+            var model = PaymentInfoGet<PurchaseOrderNumberPaymentInfoModel, InvoicePaymentSettings>();
+
+            var form = this.GetPaymentData();
+            model.PurchaseOrderNumber = form["PurchaseOrderNumber"];
+
+            return PartialView("PurchaseOrderNumberPaymentInfo", model);
+        }
+
+        #endregion
+    }
 }

@@ -34,17 +34,14 @@ namespace SmartStore.Web.Framework.Controllers
 
                 if (affiliateId > 0)
                 {
-                    var affiliateService = AffiliateService.Value;
-                    var affiliate = affiliateService.GetAffiliateById(affiliateId);
+                    var affiliate = AffiliateService.Value.GetAffiliateById(affiliateId);
                     if (affiliate != null && !affiliate.Deleted && affiliate.Active)
                     {
-                        var workContext = WorkContext.Value;
-                        if (workContext.CurrentCustomer != null &&
-                            workContext.CurrentCustomer.AffiliateId != affiliate.Id)
+                        var customer = WorkContext.Value.CurrentCustomer;
+                        if (customer != null && !customer.IsSystemAccount && customer.AffiliateId != affiliate.Id)
                         {
-                            workContext.CurrentCustomer.AffiliateId = affiliate.Id;
-                            var customerService = CustomerService.Value;
-                            customerService.UpdateCustomer(workContext.CurrentCustomer);
+							customer.AffiliateId = affiliate.Id;
+							CustomerService.Value.UpdateCustomer(customer);
                         }
                     }
                 }

@@ -47,13 +47,13 @@
                                     <label for="paymentmethod_@(i)">
 										@paymentMethodName
 									</label>
-									@if (!String.IsNullOrWhiteSpace(paymentMethod.Description))
-									{
-										<div class="payment-method-desc">
-											@Html.Raw(paymentMethod.Description)
-										</div>
-									}
                                 </div>
+								@if (paymentMethod.FullDescription.HasValue())
+								{
+									<div class="payment-method-description">
+										@Html.Raw(paymentMethod.FullDescription)
+									</div>
+								}
                                 @if (!paymentMethod.RequiresInteraction || (paymentMethod.Selected && infoRoute != null))
                                 {
                                     <div class="payment-method-item payment-method-info"
@@ -65,7 +65,10 @@
                                                 @Html.ValidationSummary(false)
                                             </div>
                                         }
-                                        @Html.Action(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues)
+										@if (!(paymentMethod.FullDescription.HasValue() && !paymentMethod.RequiresInteraction))
+										{
+											@Html.Action(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues)
+										}
                                     </div>
                                 }
                             </div> 

@@ -1,16 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Runtime.Serialization.Formatters.Binary;
-using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
+using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Security;
-using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -23,11 +16,13 @@ namespace SmartStore.Web.Framework.Controllers
 		protected SmartController()
 		{
 			this.Logger = NullLogger.Instance;
+			this.T = NullLocalizer.Instance;
+
 			this._notifier = EngineContext.Current.Resolve<Lazy<INotifier>>();
 		}
 
-
 		public ILogger Logger { get; set; }
+		public Localizer T { get; set; }
 		
 		/// <summary>
 		/// Pushes an info message to the notification queue
@@ -82,7 +77,7 @@ namespace SmartStore.Web.Framework.Controllers
 				LogException(exception);
 			}
 
-			_notifier.Value.Error(exception.Message, durable);
+			_notifier.Value.Error(exception.ToAllMessages(), durable);
 		}
 
 		protected virtual ActionResult RedirectToReferrer()
@@ -91,6 +86,15 @@ namespace SmartStore.Web.Framework.Controllers
 			{
 				return Redirect(Request.UrlReferrer.ToString());
 			}
+
+			return RedirectToRoute("HomePage");
+		}
+
+		protected virtual ActionResult RedirectToHomePageWithError(string reason, bool durable = true)
+		{
+			string message = T("Common.RequestProcessingFailed", this.RouteData.Values["controller"], this.RouteData.Values["action"], reason.NaIfEmpty());
+
+			_notifier.Value.Error(message, durable);
 
 			return RedirectToRoute("HomePage");
 		}

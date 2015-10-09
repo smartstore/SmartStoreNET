@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Syndication;
+using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Seo;
+using SmartStore.Utilities;
 
 namespace SmartStore.Services.Blogs
 {
@@ -15,13 +19,14 @@ namespace SmartStore.Services.Blogs
     /// </summary>
     public partial class BlogService : IBlogService
     {
-
         #region Fields
 
         private readonly IRepository<BlogPost> _blogPostRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
-        private readonly ICacheManager _cacheManager;
-        private readonly IEventPublisher _eventPublisher;
+		private readonly ICommonServices _services;
+		private readonly ILanguageService _languageService;
+
+		private readonly BlogSettings _blogSettings;
 
         #endregion
 
@@ -29,13 +34,15 @@ namespace SmartStore.Services.Blogs
 
         public BlogService(IRepository<BlogPost> blogPostRepository,
 			IRepository<StoreMapping> storeMappingRepository,
-			ICacheManager cacheManager, 
-			IEventPublisher eventPublisher)
+			ICommonServices services,
+			ILanguageService languageService,
+			BlogSettings blogSettings)
         {
             _blogPostRepository = blogPostRepository;
 			_storeMappingRepository = storeMappingRepository;
-            _cacheManager = cacheManager;
-            _eventPublisher = eventPublisher;
+			_services = services;
+			_languageService = languageService;
+			_blogSettings = blogSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
         }
@@ -58,7 +65,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Delete(blogPost);
 
             //event notification
-            _eventPublisher.EntityDeleted(blogPost);
+            _services.EventPublisher.EntityDeleted(blogPost);
         }
 
         /// <summary>
@@ -84,17 +91,25 @@ namespace SmartStore.Services.Blogs
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
         /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="maxAge">The maximum age of returned blog posts</param>
         /// <returns>Blog posts</returns>
 		public virtual IPagedList<BlogPost> GetAllBlogPosts(int storeId, int languageId,
-            DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false)
+			DateTime? dateFrom, DateTime? dateTo, int pageIndex, int pageSize, bool showHidden = false, DateTime? maxAge = null)
         {
             var query = _blogPostRepository.Table;
+
             if (dateFrom.HasValue)
                 query = query.Where(b => dateFrom.Value <= b.CreatedOnUtc);
+
             if (dateTo.HasValue)
                 query = query.Where(b => dateTo.Value >= b.CreatedOnUtc);
+
             if (languageId > 0)
                 query = query.Where(b => languageId == b.LanguageId);
+
+			if (maxAge.HasValue)
+				query = query.Where(b => b.CreatedOnUtc >= maxAge.Value);
+
             if (!showHidden)
             {
                 var utcNow = DateTime.UtcNow;
@@ -202,7 +217,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Insert(blogPost);
 
             //event notification
-            _eventPublisher.EntityInserted(blogPost);
+            _services.EventPublisher.EntityInserted(blogPost);
         }
 
         /// <summary>
@@ -217,7 +232,7 @@ namespace SmartStore.Services.Blogs
             _blogPostRepository.Update(blogPost);
 
             //event notification
-            _eventPublisher.EntityUpdated(blogPost);
+            _services.EventPublisher.EntityUpdated(blogPost);
         }
         
         /// <summary>
@@ -244,6 +259,53 @@ namespace SmartStore.Services.Blogs
             blogPost.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateBlogPost(blogPost);
         }
+
+		/// <summary>
+		/// Creates a RSS feed with blog posts
+		/// </summary>
+		/// <param name="urlHelper">UrlHelper to generate URLs</param>
+		/// <param name="languageId">Language identifier</param>
+		/// <returns>SmartSyndicationFeed object</returns>
+		public virtual SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId)
+		{
+			if (urlHelper == null)
+				throw new ArgumentNullException("urlHelper");
+
+			DateTime? maxAge = null;
+			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = urlHelper.RouteUrl("BlogRSS", new { languageId = languageId }, protocol);
+			var blogLink = urlHelper.RouteUrl("Blog", null, protocol);
+
+			var title = "{0} - Blog".FormatInvariant(_services.StoreContext.CurrentStore.Name);
+
+			if (_blogSettings.MaxAgeInDays > 0)
+				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_blogSettings.MaxAgeInDays, 0, 0, 0));
+
+			var language = _languageService.GetLanguageById(languageId);
+			var feed = new SmartSyndicationFeed(new Uri(blogLink), title);
+
+			feed.AddNamespaces(false);
+			feed.Init(selfLink, language);
+
+			if (!_blogSettings.Enabled)
+				return feed;
+
+			var items = new List<SyndicationItem>();
+			var blogPosts = GetAllBlogPosts(_services.StoreContext.CurrentStore.Id, languageId, null, null, 0, int.MaxValue, false, maxAge);
+
+			foreach (var blogPost in blogPosts)
+			{
+				var blogPostUrl = urlHelper.RouteUrl("BlogPost", new { SeName = blogPost.GetSeName(blogPost.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+
+				var item = feed.CreateItem(blogPost.Title, blogPost.Body, blogPostUrl, blogPost.CreatedOnUtc);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
+
+			return feed;
+		}
 
         #endregion
     }

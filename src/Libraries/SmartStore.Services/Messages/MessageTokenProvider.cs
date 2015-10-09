@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Globalization;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Text;
 using System.Web;
 using SmartStore.Core;
@@ -10,6 +11,7 @@ using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Forums;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.News;
@@ -17,12 +19,13 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
+using SmartStore.Core.Events;
 using SmartStore.Core.Html;
+using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Directory;
-using SmartStore.Core.Events;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -30,10 +33,8 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Seo;
+using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
-using SmartStore.Core.Domain.Directory;
-using SmartStore.Core.Plugins;
-using System.Linq.Expressions;
 
 namespace SmartStore.Services.Messages
 {
@@ -52,7 +53,7 @@ namespace SmartStore.Services.Messages
 		private readonly IStoreContext _storeContext;
         private readonly IDownloadService _downloadService;
         private readonly IOrderService _orderService;
-        private readonly IPaymentService _paymentService;
+		private readonly IProviderManager _providerManager;
         private readonly IProductAttributeParser _productAttributeParser;
         private readonly StoreInformationSettings _storeSettings;
         private readonly MessageTemplatesSettings _templatesSettings;
@@ -67,7 +68,10 @@ namespace SmartStore.Services.Messages
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IDeliveryTimeService _deliveryTimeService;
         private readonly IQuantityUnitService _quantityUnitService;
-        
+        private readonly IUrlRecordService _urlRecordService;
+        private readonly IStoreService _storeService;
+        private readonly IGenericAttributeService _attrService;
+
         #endregion
 
         #region Ctor
@@ -78,14 +82,16 @@ namespace SmartStore.Services.Messages
             IPriceFormatter priceFormatter, ICurrencyService currencyService, IWebHelper webHelper,
             IWorkContext workContext, IStoreContext storeContext,
 			IDownloadService downloadService, ShoppingCartSettings shoppingCartSettings,
-            IOrderService orderService, IPaymentService paymentService,
+            IOrderService orderService, IProviderManager providerManager,
             IProductAttributeParser productAttributeParser,
             StoreInformationSettings storeSettings, MessageTemplatesSettings templatesSettings,
             EmailAccountSettings emailAccountSettings, CatalogSettings catalogSettings,
             TaxSettings taxSettings, IEventPublisher eventPublisher,
             CompanyInformationSettings companyInfoSettings, BankConnectionSettings bankConnectionSettings,
             ContactDataSettings contactDataSettings, ITopicService topicService,
-            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService)
+            IDeliveryTimeService deliveryTimeService, IQuantityUnitService quantityUnitService,
+            IUrlRecordService urlRecordService, IStoreService storeService,
+            IGenericAttributeService attrService)
         {
             this._languageService = languageService;
             this._localizationService = localizationService;
@@ -98,7 +104,7 @@ namespace SmartStore.Services.Messages
 			this._storeContext = storeContext;
             this._downloadService = downloadService;
             this._orderService = orderService;
-            this._paymentService = paymentService;
+			this._providerManager = providerManager;
             this._productAttributeParser = productAttributeParser;
             this._storeSettings = storeSettings;
             this._templatesSettings = templatesSettings;
@@ -113,6 +119,9 @@ namespace SmartStore.Services.Messages
             this._shoppingCartSettings = shoppingCartSettings;
 			this._deliveryTimeService = deliveryTimeService;
             this._quantityUnitService = quantityUnitService;
+            this._urlRecordService = urlRecordService;
+            this._storeService = storeService;
+            this._attrService = attrService;
         }
 
         #endregion
@@ -666,9 +675,7 @@ namespace SmartStore.Services.Messages
         {
 			tokens.Add(new Token("Store.Name", store.Name));
 			tokens.Add(new Token("Store.URL", store.Url, true));
-            var defaultEmailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-            if (defaultEmailAccount == null)
-                defaultEmailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+			var defaultEmailAccount = _emailAccountService.GetDefaultEmailAccount();
             tokens.Add(new Token("Store.SupplierIdentification", GetSupplierIdentification(), true));
             tokens.Add(new Token("Store.Email", defaultEmailAccount.Email));
         }
@@ -717,11 +724,11 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddOrderTokens(IList<Token> tokens, Order order, int languageId)
         {
-            tokens.Add(new Token("Order.OrderNumber", order.GetOrderNumber()));
+			tokens.Add(new Token("Order.ID", order.Id.ToString()));
+			tokens.Add(new Token("Order.OrderNumber", order.GetOrderNumber()));
 
             tokens.Add(new Token("Order.CustomerFullName", string.Format("{0} {1}", order.BillingAddress.FirstName, order.BillingAddress.LastName)));
             tokens.Add(new Token("Order.CustomerEmail", order.BillingAddress.Email));
-
 
             tokens.Add(new Token("Order.BillingFirstName", order.BillingAddress.FirstName));
             tokens.Add(new Token("Order.BillingLastName", order.BillingAddress.LastName));
@@ -750,8 +757,9 @@ namespace SmartStore.Services.Messages
             tokens.Add(new Token("Order.ShippingZipPostalCode", order.ShippingAddress != null ? order.ShippingAddress.ZipPostalCode : ""));
             tokens.Add(new Token("Order.ShippingCountry", order.ShippingAddress != null && order.ShippingAddress.Country != null ? order.ShippingAddress.Country.GetLocalized(x => x.Name) : ""));
 
-            var paymentMethod = _paymentService.LoadPaymentMethodBySystemName(order.PaymentMethodSystemName);
+			var paymentMethod = _providerManager.GetProvider<IPaymentMethod>(order.PaymentMethodSystemName);
 			var paymentMethodName = paymentMethod != null ? GetLocalizedValue(paymentMethod.Metadata, "FriendlyName", x => x.FriendlyName) : order.PaymentMethodSystemName;
+
             tokens.Add(new Token("Order.PaymentMethod", paymentMethodName));
             tokens.Add(new Token("Order.VatNumber", order.VatNumber));
             tokens.Add(new Token("Order.Product(s)", ProductListToHtmlTable(order, languageId), true));
@@ -768,7 +776,7 @@ namespace SmartStore.Services.Messages
                 tokens.Add(new Token("Order.CreatedOn", order.CreatedOnUtc.ToString("D")));
             }
 
-            //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
+            // TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
             tokens.Add(new Token("Order.OrderURLForCustomer", string.Format("{0}order/details/{1}", _webHelper.GetStoreLocation(false), order.Id), true));
 
             tokens.Add(new Token("Order.Disclaimer", TopicToHtml("Disclaimer", languageId), true));
@@ -857,12 +865,12 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddCustomerTokens(IList<Token> tokens, Customer customer)
         {
-            tokens.Add(new Token("Customer.Email", customer.Email));
+			tokens.Add(new Token("Customer.ID", customer.Id.ToString()));
+			tokens.Add(new Token("Customer.Email", customer.Email));
             tokens.Add(new Token("Customer.Username", customer.Username));
             tokens.Add(new Token("Customer.FullName", customer.GetFullName()));
 			tokens.Add(new Token("Customer.VatNumber", customer.GetAttribute<string>(SystemCustomerAttributeNames.VatNumber)));
 			tokens.Add(new Token("Customer.VatNumberStatus", ((VatNumberStatus)customer.GetAttribute<int>(SystemCustomerAttributeNames.VatNumberStatusId)).ToString()));
-
 
             //note: we do not use SEO friendly URLS because we can get errors caused by having .(dot) in the URL (from the emauk address)
             //TODO add a method for getting URL (use routing because it handles all SEO friendly URLs)
@@ -986,7 +994,15 @@ namespace SmartStore.Services.Messages
 
         public virtual void AddBackInStockTokens(IList<Token> tokens, BackInStockSubscription subscription)
         {
-            tokens.Add(new Token("BackInStockSubscription.ProductName", subscription.Product.Name));
+            var customerLangId = subscription.Customer.GetAttribute<int>(
+                        SystemCustomerAttributeNames.LanguageId,
+                        _attrService,
+                        _storeContext.CurrentStore.Id);
+
+            var store = _storeService.GetStoreById(subscription.StoreId);
+            var productLink = "{0}{1}".FormatWith(store.Url, subscription.Product.GetSeName(customerLangId, _urlRecordService, _languageService));
+
+            tokens.Add(new Token("BackInStockSubscription.ProductName", "<a href='{0}'>{1}</a>".FormatWith(productLink, subscription.Product.Name), true));
 
             //event notification
             _eventPublisher.EntityTokensAdded(subscription, tokens);

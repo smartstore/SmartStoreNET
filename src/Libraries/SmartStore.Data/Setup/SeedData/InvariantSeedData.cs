@@ -56,7 +56,7 @@ namespace SmartStore.Data.Setup
 
 		public IList<Picture> Pictures()
 		{
-			var entities = new List<Picture>() 
+			var entities = new List<Picture> 
 			{ 
 				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "company_logo.png"), "image/png", GetSeName("company-logo")),
  				CreatePicture(File.ReadAllBytes(_sampleImagesPath + "clouds.png"), "image/png", GetSeName("slider-bg")),
@@ -73,6 +73,10 @@ namespace SmartStore.Data.Setup
 			var seName = GetSeName("company-logo");
 			var imgCompanyLogo = _ctx.Set<Picture>().Where(x => x.SeoFilename == seName).FirstOrDefault();
 			
+			var currency = _ctx.Set<Currency>().FirstOrDefault(x => x.CurrencyCode == "EUR");
+			if (currency == null)
+				currency = _ctx.Set<Currency>().First();
+			
 			var entities = new List<Store>()
 			{
 				new Store()
@@ -82,7 +86,9 @@ namespace SmartStore.Data.Setup
 					Hosts = "yourstore.com,www.yourstore.com",
 					SslEnabled = false,
 					DisplayOrder = 1,
-					LogoPictureId = imgCompanyLogo.Id
+					LogoPictureId = imgCompanyLogo.Id,
+					PrimaryStoreCurrencyId = currency.Id,
+					PrimaryExchangeRateCurrencyId = currency.Id
 				}
 			};
 			this.Alter(entities);
@@ -4082,7 +4088,7 @@ namespace SmartStore.Data.Setup
 					{
 						Name = "Product.AskQuestion",
 						Subject = "%Store.Name% - Question concerning '%Product.Name%' from %ProductQuestion.SenderName%",
-						Body = templateHeader + "<p>%ProductQuestion.Message%</p><p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
+						Body = templateHeader + "<p>%ProductQuestion.Message%</p><p><strong>SKU:</strong> %Product.Sku%<br /><strong>Email:</strong> %ProductQuestion.SenderEmail%<br /><strong>Name: </strong>%ProductQuestion.SenderName%<br /><strong>Phone: </strong>%ProductQuestion.SenderPhone%</p>" + templateFooter,
 						IsActive = true,
 						EmailAccountId = eaGeneral.Id,
 					},
@@ -4244,8 +4250,6 @@ namespace SmartStore.Data.Setup
 				},
 				new CurrencySettings()
 				{
-					PrimaryStoreCurrencyId = _ctx.Set<Currency>().First().Id,
-					PrimaryExchangeRateCurrencyId = _ctx.Set<Currency>().First().Id,
 				},
 				new MeasureSettings()
 				{
@@ -4767,23 +4771,15 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Send emails",
-					Seconds = 60,
+					CronExpression = "* * * * *", // every Minute
 					Type = "SmartStore.Services.Messages.QueuedMessagesSendTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
 				},
 				new ScheduleTask
 				{
-					Name = "Keep alive",
-					Seconds = 300,
-					Type = "SmartStore.Services.Common.KeepAliveTask, SmartStore.Services",
-					Enabled = true,
-					StopOnError = false,
-				},
-				new ScheduleTask
-				{
 					Name = "Delete guests",
-					Seconds = 600,
+					CronExpression = "*/10 * * * *", // Every 10 minutes
 					Type = "SmartStore.Services.Customers.DeleteGuestsTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4791,7 +4787,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Delete logs",
-					Seconds = 86400, // 1 day
+					CronExpression = "0 1 * * *", // At 01:00
 					Type = "SmartStore.Services.Logging.DeleteLogsTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
@@ -4799,7 +4795,7 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Clear cache",
-					Seconds = 600,
+					CronExpression = "0 */4 * * *", // Every 04 hours
 					Type = "SmartStore.Services.Caching.ClearCacheTask, SmartStore.Services",
 					Enabled = false,
 					StopOnError = false,
@@ -4807,11 +4803,35 @@ namespace SmartStore.Data.Setup
 				new ScheduleTask
 				{
 					Name = "Update currency exchange rates",
-					Seconds = 900,
+					CronExpression = "0/15 * * * *", // Every 15 minutes
 					Type = "SmartStore.Services.Directory.UpdateExchangeRateTask, SmartStore.Services",
 					Enabled = true,
 					StopOnError = false,
 				},
+				new ScheduleTask
+				{
+					Name = "Clear transient uploads",
+					CronExpression = "30 1,13 * * *", // At 01:30 and 13:30
+					Type = "SmartStore.Services.Media.TransientMediaClearTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
+				new ScheduleTask
+				{
+					Name = "Clear email queue",
+					CronExpression = "0 2 * * *", // At 02:00
+					Type = "SmartStore.Services.Messages.QueuedMessagesClearTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false,
+				},
+				new ScheduleTask
+				{
+					Name = "Cleanup temporary files",
+					CronExpression = "30 3 * * *", // At 03:30
+					Type = "SmartStore.Services.Common.TempFileCleanupTask, SmartStore.Services",
+					Enabled = true,
+					StopOnError = false
+				}
 			};
 			this.Alter(entities);
 			return entities;
@@ -7894,7 +7914,7 @@ namespace SmartStore.Data.Setup
 
 			#region Antonio Vivaldi: then spring
 
-			var productInstantDownloadVivaldi = new Product()
+			var productInstantDownloadVivaldi = new Product
 			{
 				ProductType = ProductType.SimpleProduct,
 				VisibleIndividually = true,
@@ -7918,7 +7938,7 @@ namespace SmartStore.Data.Setup
 				AllowBackInStockSubscriptions = false,
 				IsDownload = true,
 				HasSampleDownload = true,
-				SampleDownload = new Download()
+				SampleDownload = new Download
 				{
 					DownloadGuid = Guid.NewGuid(),
 					ContentType = "audio/mp3",

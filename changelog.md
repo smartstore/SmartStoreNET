@@ -1,5 +1,64 @@
 ﻿# Release Notes
 
+## SmartStore.NET 2.5
+
+### New Features
+* #141 Payment and shipping methods by customer roles
+* #67 Restrict payment methods to countries
+* #94 Restrict payment methods to shipping methods
+* #584 Email attachment support for message templates
+* Attach order invoice PDF automatically to order notification emails
+* #526 Min/Max amount option for which the payment method should be offered during checkout
+* (Dev) New _SyncMapping_ service: enables easier entity synchronization with external systems 
+* #718 ShopConnector: Import option for "Published" and "Disable buy\wishlist button"
+* #702 Facebook and Twitter external authentication suitable for multi-stores
+* New scheduled task: Clear e-mail queue
+* New scheduled task: Clear uploadeded transient media files
+* #704 Make primary store currency suitable for multi-stores
+* #727 Web-API: Option to deactivate TimestampOlderThanLastRequest validation
+* #731 Web-API: Allow deletion and inserting of product category and manufacturer assignments
+* #733 Option to set a display order for homepage products
+* #607 HTML capable full description for payment methods displayed in checkout
+* #732 Product list: Option to display the pre-selected price instead of the lowest price
+* New payment provider for Offline Payment Plugin: Purchase Order Number
+* #202 Implement option for product list 'default sort order' 
+
+### Improvements
+* (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.
+* (Perf) Significantly reduced number of database reads during product list rendering. Increases request speed by up to 10%.
+* (Perf) Implemented 2nd level cache for infrequently changed entities. Increases request speed by up to 10%.
+* TaskScheduler: Rewritten from scratch to be suitable for Web Farms
+* TaskScheduler: Supports cron expressions to define task execution frequency
+* TaskScheduler: Editing tasks does not require app restart anymore
+* TaskScheduler: Enhanced UI
+* #721 Message Queue: implemented "Delete all"
+* #725 Prevent LowestProductPrice being 0
+* #709 News feed produced invalid RSS feed. Added content:encoded. Added maximum news age setting for feed export.
+* #735 Include SKUs of attribute combinations when filtering the backend product list
+* Filter for homepage and published\unpublished products in backend product list
+* Reduce database round trips initiated by price calculation
+* Google Analytics: added support for mobile devices
+* (Dev) TaskScheduler: Tasks can propagate progress info (percentage & message)
+* (Dev) TaskScheduler: Cancellation request is sent to tasks on app shutdown
+* ShippingByWeight & ShippingByTotal: Support for multiple zip ranges (comma separated)
+* Two more options to handle customer numbers: display customer number in frontend & let customers enter their customer number if it's still empty
+* #62 free shipping info on product detail page
+* Display base price in CompactProductBox
+* Automatically redirect to referrer after login
+* #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
+* Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
+
+### Bugfixes
+* #523 Redirecting to payment provider performed by core instead of plugin
+* Preselected price was wrong for product attributes with multiple preselected values (same on product detail page)
+* #749 Visual Studio 2015 compilation error: CS0009: Metadata file. SmartStore.Licensing.dll could not be opened -- Illegal tables in compressed metadata stream
+* PayPal Express: fixed capture method
+* #770 Resizing browser with product details page causes product image to disappear
+* GMC feed: Availability value "available for order" deprecated
+* Mobile: Shopping cart warnings weren't displayed to customers
+* Tax provider and payment method were automatically activated when there were no active provider\method
+
+
 ## SmartStore.NET 2.2.2
 
 ### New Features
@@ -8,6 +67,8 @@
 * Added zip code to shipping by weight computation method
 * Skrill payment plugin (distributed via Marketplace)
 * (Dev) DevTool plugin: added option to display all widget zones in public store
+* New options for manufacturer display on the homepage
+* Added optional customer number field
 
 ### Improvements
 * (Perf) several minor optimizations for faster app startup and page rendering

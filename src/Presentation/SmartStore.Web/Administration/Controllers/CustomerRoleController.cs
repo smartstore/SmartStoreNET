@@ -197,7 +197,7 @@ namespace SmartStore.Admin.Controllers
                     return continueEditing ? RedirectToAction("Edit", customerRole.Id) : RedirectToAction("List");
                 }
 
-                //If we got this far, something failed, redisplay form
+                // If we got this far, something failed, redisplay form
                 return View(model);
             }
             catch (Exception exc)

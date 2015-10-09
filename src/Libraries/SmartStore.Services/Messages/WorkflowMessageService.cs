@@ -16,6 +16,7 @@ using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Customers;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Stores;
 
 namespace SmartStore.Services.Messages
@@ -36,21 +37,26 @@ namespace SmartStore.Services.Messages
         private readonly IEventPublisher _eventPublisher;
         private readonly IWorkContext _workContext;
         private readonly HttpRequestBase _httpRequest;
+		private readonly IDownloadService _downloadServioce;
 
         #endregion
 
         #region Ctor
 
-        public WorkflowMessageService(IMessageTemplateService messageTemplateService,
-            IQueuedEmailService queuedEmailService, ILanguageService languageService,
-            ITokenizer tokenizer, IEmailAccountService emailAccountService,
+        public WorkflowMessageService(
+			IMessageTemplateService messageTemplateService,
+            IQueuedEmailService queuedEmailService, 
+			ILanguageService languageService,
+            ITokenizer tokenizer, 
+			IEmailAccountService emailAccountService,
             IMessageTokenProvider messageTokenProvider,
 			IStoreService storeService,
 			IStoreContext storeContext,
             EmailAccountSettings emailAccountSettings,
             IEventPublisher eventPublisher,
             IWorkContext workContext,
-            HttpRequestBase httpRequest)
+            HttpRequestBase httpRequest,
+			IDownloadService downloadServioce)
         {
             this._messageTemplateService = messageTemplateService;
             this._queuedEmailService = queuedEmailService;
@@ -63,7 +69,8 @@ namespace SmartStore.Services.Messages
             this._emailAccountSettings = emailAccountSettings;
             this._eventPublisher = eventPublisher;
             this._workContext = workContext;
-            _httpRequest = httpRequest;
+            this._httpRequest = httpRequest;
+			this._downloadServioce = downloadServioce;
         }
 
         #endregion
@@ -74,7 +81,7 @@ namespace SmartStore.Services.Messages
 			MessageTemplate messageTemplate,
             EmailAccount emailAccount, 
 			int languageId, 
-			IEnumerable<Token> tokens,
+			IList<Token> tokens,
             string toEmailAddress, 
 			string toName,
 			string replyTo = null,
@@ -90,7 +97,7 @@ namespace SmartStore.Services.Messages
             var bodyReplaced = _tokenizer.Replace(body, tokens, true);
 			
             bodyReplaced = WebHelper.MakeAllUrlsAbsolute(bodyReplaced, _httpRequest);
-
+			
             var email = new QueuedEmail
             {
                 Priority = 5,
@@ -109,16 +116,52 @@ namespace SmartStore.Services.Messages
 				SendManually = messageTemplate.SendManually
             };
 
+			// create attachments if any
+			var fileIds = (new int?[] 
+				{ 
+					messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId),
+					messageTemplate.GetLocalized(x => x.Attachment2FileId, languageId),
+					messageTemplate.GetLocalized(x => x.Attachment3FileId, languageId)
+				})
+				.Where(x => x.HasValue)
+				.Select(x => x.Value)
+				.ToArray();
+
+			if (fileIds.Any())
+			{
+				var files = _downloadServioce.GetDownloadsByIds(fileIds);
+				foreach (var file in files)
+				{
+					email.Attachments.Add(new QueuedEmailAttachment
+					{
+						StorageLocation = EmailAttachmentStorageLocation.FileReference,
+						FileId = file.Id,
+						Name = (file.Filename.NullEmpty() ?? file.Id.ToString()) + file.Extension.EmptyNull(),
+						MimeType = file.ContentType.NullEmpty() ?? "application/octet-stream"
+					});
+				}
+			}
+			
+
+			// publish event so that integrators can add attachments, alter the email etc.
+			_eventPublisher.Publish(new QueuingEmailEvent
+			{
+				EmailAccount = emailAccount,
+				LanguageId = languageId,
+				MessageTemplate = messageTemplate,
+				QueuedEmail = email,
+				Tokens = tokens
+			});
+
             _queuedEmailService.InsertQueuedEmail(email);
+
             return email.Id;
         }
 
-        protected MessageTemplate GetLocalizedActiveMessageTemplate(string messageTemplateName, int languageId, int storeId)
+        protected MessageTemplate GetActiveMessageTemplate(string messageTemplateName, int storeId)
         {
-			//TODO remove languageId parameter
 			var messageTemplate = _messageTemplateService.GetMessageTemplateByName(messageTemplateName, storeId);
 
-			//no template found
 			if (messageTemplate == null)
 				return null;
 
@@ -135,9 +178,7 @@ namespace SmartStore.Services.Messages
             var emailAccounId = messageTemplate.GetLocalized(mt => mt.EmailAccountId, languageId);
             var emailAccount = _emailAccountService.GetEmailAccountById(emailAccounId);
             if (emailAccount == null)
-                emailAccount = _emailAccountService.GetEmailAccountById(_emailAccountSettings.DefaultEmailAccountId);
-            if (emailAccount == null)
-                emailAccount = _emailAccountService.GetAllEmailAccounts().FirstOrDefault();
+				emailAccount = _emailAccountService.GetDefaultEmailAccount();
 
             return emailAccount;
         }
@@ -232,7 +273,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("NewCustomer.Notification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("NewCustomer.Notification", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -271,7 +312,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.WelcomeMessage", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.WelcomeMessage", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -305,7 +346,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.EmailValidationMessage", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.EmailValidationMessage", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -339,7 +380,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.PasswordRecovery", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.PasswordRecovery", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -377,7 +418,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("OrderPlaced.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -422,7 +463,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderPlaced.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("OrderPlaced.CustomerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -436,7 +477,7 @@ namespace SmartStore.Services.Messages
             _messageTokenProvider.AddBankConnectionTokens(tokens);
             _messageTokenProvider.AddContactDataTokens(tokens);
             
-            //event notification
+            // event notification
             _eventPublisher.MessageTokensAdded(messageTemplate, tokens);
 
             var emailAccount = GetEmailAccountOfMessageTemplate(messageTemplate, languageId);
@@ -465,7 +506,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentSent.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("ShipmentSent.CustomerNotification", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -505,7 +546,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("ShipmentDelivered.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("ShipmentDelivered.CustomerNotification", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -541,7 +582,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCompleted.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("OrderCompleted.CustomerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -580,7 +621,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("OrderCancelled.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("OrderCancelled.CustomerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -617,7 +658,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(order.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewOrderNote", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.NewOrderNote", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -653,7 +694,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(recurringPayment.InitialOrder.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("RecurringPaymentCancelled.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -695,7 +736,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("NewsLetterSubscription.ActivationMessage", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -730,7 +771,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 			
-            var messageTemplate = GetLocalizedActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", languageId, store.Id);
+            var messageTemplate = GetActiveMessageTemplate("NewsLetterSubscription.DeactivationMessage", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -775,7 +816,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
             
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Service.EmailAFriend", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Service.EmailAFriend", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -813,7 +854,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 			
-            var messageTemplate = GetLocalizedActiveMessageTemplate("Product.AskQuestion", languageId, store.Id);
+            var messageTemplate = GetActiveMessageTemplate("Product.AskQuestion", store.Id);
             if (messageTemplate == null)
                 return 0;
 
@@ -855,7 +896,7 @@ namespace SmartStore.Services.Messages
             var store = _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Wishlist.EmailAFriend", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Wishlist.EmailAFriend", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -896,7 +937,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("NewReturnRequest.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
             
@@ -937,7 +978,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(orderItem.Order.StoreId) ?? _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("ReturnRequestStatusChanged.CustomerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -982,7 +1023,7 @@ namespace SmartStore.Services.Messages
 
 			var store = _storeContext.CurrentStore;
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumTopic", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumTopic", store.Id);
 			if (messageTemplate == null)
 			{
 				return 0;
@@ -1026,7 +1067,7 @@ namespace SmartStore.Services.Messages
 
 			var store = _storeContext.CurrentStore;
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Forums.NewForumPost", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Forums.NewForumPost", store.Id);
             if (messageTemplate == null)
             {
                 return 0;
@@ -1065,7 +1106,7 @@ namespace SmartStore.Services.Messages
 
 			var store = _storeService.GetStoreById(privateMessage.StoreId) ?? _storeContext.CurrentStore;
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.NewPM", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.NewPM", store.Id);
             if (messageTemplate == null)
             {
                 return 0;
@@ -1124,7 +1165,7 @@ namespace SmartStore.Services.Messages
 
             ctx.LanguageId = EnsureLanguageIsActive(ctx.LanguageId.Value, ctx.StoreId.Value);
 
-            var messageTemplate = GetLocalizedActiveMessageTemplate(messageTemplateName, ctx.LanguageId.Value, ctx.StoreId.Value);
+            var messageTemplate = GetActiveMessageTemplate(messageTemplateName, ctx.StoreId.Value);
             if (messageTemplate == null)
                 return 0;
 
@@ -1165,7 +1206,7 @@ namespace SmartStore.Services.Messages
 
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("GiftCard.Notification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("GiftCard.Notification", store.Id);
 			if (messageTemplate == null)
 				return 0;
 
@@ -1199,7 +1240,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
 			languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Product.ProductReview", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Product.ProductReview", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -1238,7 +1279,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("QuantityBelow.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -1274,7 +1315,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("NewVATSubmitted.StoreOwnerNotification", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -1315,7 +1356,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Blog.BlogComment", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Blog.BlogComment", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -1354,7 +1395,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 			
-			var messageTemplate = GetLocalizedActiveMessageTemplate("News.NewsComment", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("News.NewsComment", store.Id);
 			if (messageTemplate == null)
                 return 0;
 
@@ -1393,7 +1434,7 @@ namespace SmartStore.Services.Messages
 			var store = _storeService.GetStoreById(subscription.StoreId) ?? _storeContext.CurrentStore;
             languageId = EnsureLanguageIsActive(languageId, store.Id);
 
-			var messageTemplate = GetLocalizedActiveMessageTemplate("Customer.BackInStock", languageId, store.Id);
+			var messageTemplate = GetActiveMessageTemplate("Customer.BackInStock", store.Id);
 			if (messageTemplate == null)
                 return 0;
 

@@ -27,7 +27,7 @@ namespace SmartStore.ShippingByWeight
         private readonly ShippingByWeightObjectContext _objectContext;
         private readonly ILocalizationService _localizationService;
         private readonly IPriceFormatter _priceFormatter;
-        private readonly ICommonServices _commonServices;
+        private readonly ICommonServices _services;
         
         #endregion
 
@@ -40,7 +40,7 @@ namespace SmartStore.ShippingByWeight
             ShippingByWeightObjectContext objectContext,
             ILocalizationService localizationService,
             IPriceFormatter priceFormatter,
-            ICommonServices commonServices)
+            ICommonServices services)
         {
             this._shippingService = shippingService;
 			this._storeContext = storeContext;
@@ -50,7 +50,7 @@ namespace SmartStore.ShippingByWeight
             this._objectContext = objectContext;
             this._localizationService = localizationService;
             this._priceFormatter = priceFormatter;
-            this._commonServices = commonServices;
+            this._services = services;
         }
         #endregion
 
@@ -143,7 +143,7 @@ namespace SmartStore.ShippingByWeight
             }
             decimal weight = _shippingService.GetShoppingCartTotalWeight(getShippingOptionRequest.Items);
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(countryId);
+            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest.Customer);
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);
@@ -152,6 +152,7 @@ namespace SmartStore.ShippingByWeight
                 if (rate.HasValue)
                 {
                     var shippingOption = new ShippingOption();
+					shippingOption.ShippingMethodId = shippingMethod.Id;
                     shippingOption.Name = shippingMethod.GetLocalized(x => x.Name);
 
                     if (record != null && record.SmallQuantityThreshold > subTotal)

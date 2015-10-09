@@ -15,7 +15,8 @@ namespace SmartStore.Web.Framework.Controllers
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<CustomerSettings> CustomerSettings { get; set; }
 		public Lazy<IGenericAttributeService> GenericAttributeService { get; set; }
-		
+		public Lazy<IUserAgent> UserAgent { get; set; }
+
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
         {
 			if (!DataSettings.DatabaseIsInstalled())
@@ -24,7 +25,7 @@ namespace SmartStore.Web.Framework.Controllers
             if (filterContext == null || filterContext.HttpContext == null || filterContext.HttpContext.Request == null)
                 return;
 
-            //don't apply filter to child methods
+            // don't apply filter to child methods
             if (filterContext.IsChildAction)
                 return;
 
@@ -32,23 +33,36 @@ namespace SmartStore.Web.Framework.Controllers
             if (!String.Equals(filterContext.HttpContext.Request.HttpMethod, "GET", StringComparison.OrdinalIgnoreCase))
                 return;
 
-            var customerSettings = CustomerSettings.Value;
-            if (!customerSettings.StoreLastVisitedPage)
+            if (!CustomerSettings.Value.StoreLastVisitedPage)
                 return;
 
-            var webHelper = this.WebHelper.Value;
-            var pageUrl = webHelper.GetThisPageUrl(true);
-            if (!String.IsNullOrEmpty(pageUrl))
-            {
-                var workContext = WorkContext.Value;
-                var genericAttributeService = GenericAttributeService.Value;
+			var customer = WorkContext.Value.CurrentCustomer;
 
-                var previousPageUrl = workContext.CurrentCustomer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
-                if (!pageUrl.Equals(previousPageUrl))
-                {
-                    genericAttributeService.SaveAttribute(workContext.CurrentCustomer, SystemCustomerAttributeNames.LastVisitedPage, pageUrl);
-                }
+			if (customer == null || customer.IsSystemAccount)
+				return;
+
+			var pageUrl = WebHelper.Value.GetThisPageUrl(true);
+			var userAgent = UserAgent.Value.RawValue;
+
+			var genericAttributeService = GenericAttributeService.Value;
+
+			if (pageUrl.HasValue())
+            {
+				var previousPageUrl = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastVisitedPage);
+				if (!pageUrl.IsCaseInsensitiveEqual(previousPageUrl))
+				{
+					genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastVisitedPage, pageUrl);
+				}
             }
-        }
+
+			if (userAgent.HasValue())
+			{
+				var previousUserAgent = customer.GetAttribute<string>(SystemCustomerAttributeNames.LastUserAgent);
+				if (!userAgent.IsCaseInsensitiveEqual(previousUserAgent))
+				{
+					genericAttributeService.SaveAttribute(customer, SystemCustomerAttributeNames.LastUserAgent, userAgent);
+				}
+			}
+		}
     }
 }

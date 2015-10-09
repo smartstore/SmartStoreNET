@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
@@ -581,24 +582,27 @@ namespace SmartStore.Services.Catalog
             if (categoryId == 0)
                 return new PagedList<ProductCategory>(new List<ProductCategory>(), pageIndex, pageSize);
 
-			string key = string.Format(PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, _storeContext.CurrentStore.Id);
+			int storeId = _storeContext.CurrentStore.Id;
+			string key = string.Format(PRODUCTCATEGORIES_ALLBYCATEGORYID_KEY, showHidden, categoryId, pageIndex, pageSize, _workContext.CurrentCustomer.Id, storeId);
+
             return _cacheManager.Get(key, () =>
             {
                 var query = from pc in _productCategoryRepository.Table
                             join p in _productRepository.Table on pc.ProductId equals p.Id
-                            where pc.CategoryId == categoryId &&
-                                  !p.Deleted &&
-                                  (showHidden || p.Published)
-                            orderby pc.DisplayOrder
+                            where pc.CategoryId == categoryId && !p.Deleted && (showHidden || p.Published)
                             select pc;
 
                 if (!showHidden)
                 {
-                    query = ApplyHiddenProductCategoriesFilter(query);
-					query = query.OrderBy(pc => pc.DisplayOrder);
+                    query = ApplyHiddenProductCategoriesFilter(query, storeId);
                 }
 
+				query = query
+					.OrderBy(pc => pc.DisplayOrder)
+					.ThenBy(pc => pc.Id);	// required for paging!
+
                 var productCategories = new PagedList<ProductCategory>(query, pageIndex, pageSize);
+
                 return productCategories;
             });
         }
@@ -646,35 +650,74 @@ namespace SmartStore.Services.Catalog
             });
         }
 
-		protected virtual IQueryable<ProductCategory> ApplyHiddenProductCategoriesFilter(IQueryable<ProductCategory> query)
-        {
-            //ACL (access control list)
-            var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles
-                .Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+		public virtual Multimap<int, ProductCategory> GetProductCategoriesByProductIds(int[] productIds, bool? hasDiscountsApplied = null, bool showHidden = false)
+		{
+			Guard.ArgumentNotNull(() => productIds);
 
-            query = from pc in query
-					join c in _categoryRepository.Table on pc.CategoryId equals c.Id
-					join acl in _aclRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
-					from acl in c_acl.DefaultIfEmpty()
-					where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
-                    select pc;
+			var query = 
+				from pc in _productCategoryRepository.TableUntracked.Expand(x => x.Category)
+				join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+				where productIds.Contains(pc.ProductId) && !c.Deleted && (showHidden || c.Published)
+				orderby pc.DisplayOrder
+				select pc;
+
+			if (hasDiscountsApplied.HasValue)
+			{
+				query = query.Where(x => x.Category.HasDiscountsApplied == hasDiscountsApplied);
+			}
+
+			var list = query.ToList();
+
+			if (!showHidden)
+			{
+				list = list.Where(x => _aclService.Authorize(x.Category) && _storeMappingService.Authorize(x.Category)).ToList();
+			}
+
+			var map = list.ToMultimap(x => x.ProductId, x => x);
+				
+			return map;
+		}
+
+		protected virtual IQueryable<ProductCategory> ApplyHiddenProductCategoriesFilter(IQueryable<ProductCategory> query, int storeId = 0)
+        {
+			bool group = false;
+
+            //ACL (access control list)
+			if (!QuerySettings.IgnoreAcl)
+			{
+				group = true;
+				var allowedCustomerRolesIds = _workContext.CurrentCustomer.CustomerRoles.Where(cr => cr.Active).Select(cr => cr.Id).ToList();
+
+				query = from pc in query
+						join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+						join acl in _aclRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = acl.EntityId, c2 = acl.EntityName } into c_acl
+						from acl in c_acl.DefaultIfEmpty()
+						where !c.SubjectToAcl || allowedCustomerRolesIds.Contains(acl.CustomerRoleId)
+						select pc;
+			}
 
             //Store mapping
-            var currentStoreId = _storeContext.CurrentStore.Id;
-            query = from pc in query
-					join c in _categoryRepository.Table on pc.CategoryId equals c.Id
-					join sm in _storeMappingRepository.Table
-					on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
-					from sm in c_sm.DefaultIfEmpty()
-					where !c.LimitedToStores || currentStoreId == sm.StoreId
-                    select pc;
+			if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+			{
+				group = true;
+				query = from pc in query
+						join c in _categoryRepository.Table on pc.CategoryId equals c.Id
+						join sm in _storeMappingRepository.Table
+						on new { c1 = c.Id, c2 = "Category" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into c_sm
+						from sm in c_sm.DefaultIfEmpty()
+						where !c.LimitedToStores || storeId == sm.StoreId
+						select pc;
+			}
 
-            //only distinct categories (group by ID)
-            query = from pc in query
-                    group pc by pc.Id into pcGroup
-                    orderby pcGroup.Key
-                    select pcGroup.FirstOrDefault();
+			if (group)
+			{
+				//only distinct categories (group by ID)
+				query = from pc in query
+						group pc by pc.Id into pcGroup
+						orderby pcGroup.Key
+						select pcGroup.FirstOrDefault();
+			}
 
 			return query;
         }

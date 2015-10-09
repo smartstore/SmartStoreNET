@@ -432,98 +432,77 @@ namespace SmartStore.Services.Localization
             ImportModeFlags mode = ImportModeFlags.Insert | ImportModeFlags.Update,
             bool updateTouchedResources = false)
 		{            
-            var autoCommit = _lsrRepository.AutoCommitEnabled;
-            var validateOnSave = _lsrRepository.Context.ValidateOnSaveEnabled;
-            var autoDetectChanges = _lsrRepository.Context.AutoDetectChangesEnabled;
-            var proxyCreation = _lsrRepository.Context.ProxyCreationEnabled;
+			using (var scope = new DbContextScope(autoDetectChanges: false, proxyCreation: false, validateOnSave: false, autoCommit: false))
+			{
+				var toAdd = new List<LocaleStringResource>();
+				var toUpdate = new List<LocaleStringResource>();
+				var nodes = xmlDocument.SelectNodes(@"//Language/LocaleResource");
 
-            try
-            {
-                _lsrRepository.Context.ValidateOnSaveEnabled = false;
-                _lsrRepository.Context.AutoDetectChangesEnabled = false;
-                _lsrRepository.Context.ProxyCreationEnabled = false;
+				foreach (var xel in nodes.Cast<XmlElement>())
+				{
 
-                var toAdd = new List<LocaleStringResource>();
-                var toUpdate = new List<LocaleStringResource>();
-                var nodes = xmlDocument.SelectNodes(@"//Language/LocaleResource");
+					string name = xel.GetAttribute("Name").TrimSafe();
+					string value = "";
+					var valueNode = xel.SelectSingleNode("Value");
+					if (valueNode != null)
+						value = valueNode.InnerText;
 
-                foreach (var xel in nodes.Cast<XmlElement>())
-                {
+					if (String.IsNullOrEmpty(name))
+						continue;
 
-                    string name = xel.GetAttribute("Name").TrimSafe();
-                    string value = "";
-                    var valueNode = xel.SelectSingleNode("Value");
-                    if (valueNode != null)
-                        value = valueNode.InnerText;
+					if (rootKey.HasValue())
+					{
+						if (!xel.GetAttributeText("AppendRootKey").IsCaseInsensitiveEqual("false"))
+							name = "{0}.{1}".FormatWith(rootKey, name);
+					}
 
-                    if (String.IsNullOrEmpty(name))
-                        continue;
+					// do not use "Insert"/"Update" methods because they clear cache
+					// let's bulk insert
+					var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
+					if (resource != null)
+					{
+						if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
+						{
+							if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
+							{
+								resource.ResourceValue = value;
+								resource.IsTouched = null;
+								toUpdate.Add(resource);
+							}
+						}
+					}
+					else
+					{
+						if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
+						{
+							toAdd.Add(
+								new LocaleStringResource()
+								{
+									LanguageId = language.Id,
+									ResourceName = name,
+									ResourceValue = value,
+									IsFromPlugin = sourceIsPlugin
+								});
+						}
+					}
+				}
 
-                    if (rootKey.HasValue())
-                    {
-                        if (!xel.GetAttributeText("AppendRootKey").IsCaseInsensitiveEqual("false"))
-                            name = "{0}.{1}".FormatWith(rootKey, name);
-                    }
+				_lsrRepository.AutoCommitEnabled = true;
+				_lsrRepository.InsertRange(toAdd, 500);
+				toAdd.Clear();
 
-                    // do not use "Insert"/"Update" methods because they clear cache
-                    // let's bulk insert
-                    var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
-                    if (resource != null)
-                    {
-                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
-                        {
-                            if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
-                            {
-                                resource.ResourceValue = value;
-                                resource.IsTouched = null;
-                                toUpdate.Add(resource);
-                            }
-                        }
-                    }
-                    else
-                    {
-                        if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
-                        {
-                            toAdd.Add(
-                                new LocaleStringResource()
-                                {
-                                    LanguageId = language.Id,
-                                    ResourceName = name,
-                                    ResourceValue = value,
-                                    IsFromPlugin = sourceIsPlugin
-                                });
-                        }
-                    }
-                }
+				_lsrRepository.AutoCommitEnabled = null;
+				toUpdate.Each(x =>
+				{
+					_lsrRepository.Update(x);
+				});
 
-                _lsrRepository.AutoCommitEnabled = true;
-                _lsrRepository.InsertRange(toAdd, 500);
-                toAdd.Clear();
+				_lsrRepository.Context.SaveChanges();
+				toUpdate.Clear();
 
-                _lsrRepository.AutoCommitEnabled = false;
-                toUpdate.Each(x =>
-                {
-                    _lsrRepository.Update(x);
-                });
-                
-                _lsrRepository.Context.SaveChanges();
-                toUpdate.Clear();
-
-                //clear cache
-                _cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
-            }
-            catch (Exception ex)
-            {
-                throw ex;
-            }
-            finally
-            {
-                _lsrRepository.AutoCommitEnabled = autoCommit;
-                _lsrRepository.Context.ValidateOnSaveEnabled = validateOnSave;
-                _lsrRepository.Context.AutoDetectChangesEnabled = autoDetectChanges;
-                _lsrRepository.Context.ProxyCreationEnabled = proxyCreation;
-            }
-
+				//clear cache
+				_cacheManager.RemoveByPattern(LOCALESTRINGRESOURCES_PATTERN_KEY);
+			}
 		}
 
 		/// <summary>

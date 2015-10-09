@@ -40,7 +40,7 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// A value indicating whether to load products without any catgory mapping
 		/// </summary>
-		public bool WithoutCategories { get; set; }
+		public bool? WithoutCategories { get; set; }
 
         /// <summary>
         /// Manufacturer identifier; 0 to load all records
@@ -50,7 +50,7 @@ namespace SmartStore.Services.Catalog
 		/// <summary>
 		/// A value indicating whether to load products without any manufacturer mapping
 		/// </summary>
-		public bool WithoutManufacturers { get; set; }
+		public bool? WithoutManufacturers { get; set; }
 
         /// <summary>
         /// A value indicating whether loaded products are marked as featured (relates only to categories and manufacturers). 0 to load featured products only, 1 to load not featured products only, null to load all products
@@ -158,5 +158,15 @@ namespace SmartStore.Services.Catalog
         /// Can be useful in customization scenarios.
         /// </summary>
         public string Origin { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load only published or non published products
+		/// </summary>
+		public bool? IsPublished { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load only products displayed on the homepage
+		/// </summary>
+		public bool? HomePageProducts { get; set; }
     }
 }

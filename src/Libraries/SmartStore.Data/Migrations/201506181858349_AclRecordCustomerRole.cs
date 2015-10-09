@@ -119,6 +119,30 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.Fields.RecurringPaymentType",
 				"Recurring payments",
 				"Wiederkehrende Zahlungen");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturersOnHomepage",
+                "Show manufacturers on homepage",
+                "Zeige Hersteller auf der Homepage",
+                "Specifies whether manufacturers will be displayed on the homepage.",
+                "Bestimmt ob Hersteller auf der Homepage angezeigt werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.Catalog.ShowManufacturerPictures",
+                "Show manufacturer pictures on homepage",
+                "Zeige Herstellerbilder auf der Homepage",
+                "Specifies whether manufacturers will be displayed as images or textual links on the homepage.",
+                "Bestimmt ob Hersteller auf der Homepage als Bilder oder textuelle Links angezeigt werden.");
+
+            builder.AddOrUpdate("Admin.Configuration.Settings.CustomerUser.CustomerNumberEnabled",
+                "Customers can enter a customer number",
+                "Kunden können Kundennummer hinterlegen",
+                "Specifies whether customers can enter a customer number.",
+                "Bestimmt ob Kunden eine Kundennummer hinterlegen können.");
+
+            builder.AddOrUpdate("Account.Fields.CustomerNumber",
+                "Customer number",
+                "Kundennummer");
+            
+
         }
     }
 }

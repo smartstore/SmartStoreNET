@@ -4,6 +4,7 @@ using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.DevTools.Models;
 using SmartStore.Services;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
@@ -86,5 +87,15 @@ namespace SmartStore.DevTools.Controllers
             return new EmptyResult();
         }
 
+		[AdminAuthorize]
+		public ActionResult BackendExtension()
+		{
+			var model = new BackendExtensionModel
+			{
+				Welcome = "Hello world!"
+			};
+
+			return View(model);
+		}
 	}
 }

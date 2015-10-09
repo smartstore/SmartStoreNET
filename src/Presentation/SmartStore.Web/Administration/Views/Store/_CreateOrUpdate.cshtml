@@ -27,7 +27,7 @@
             @Html.SmartLabelFor(model => model.LogoPictureId)
         </td>
         <td class="adminData" id="store-logo-picture">
-            @Html.EditorFor(model => model.LogoPictureId, "#store-logo-picture")
+            @Html.EditorFor(model => model.LogoPictureId, "#store-logo-picture", new { transientUpload = true })
             @Html.ValidationMessageFor(model => model.LogoPictureId)
         </td>
     </tr>
@@ -51,11 +51,38 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.Hosts)
+		</td>
+		<td class="adminData">
+			@Html.TextBoxFor(model => model.Hosts, new { @class = "input-large" })
+			@Html.ValidationMessageFor(model => model.Hosts)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.ContentDeliveryNetwork)
 		</td>
 		<td class="adminData">
 			@Html.EditorFor(model => model.ContentDeliveryNetwork)
 			@Html.ValidationMessageFor(model => model.ContentDeliveryNetwork)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryStoreCurrencyId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.PrimaryStoreCurrencyId, Model.AvailableCurrencies)
+			@Html.ValidationMessageFor(model => model.PrimaryStoreCurrencyId)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.PrimaryExchangeRateCurrencyId)
+		</td>
+		<td class="adminData">
+			@Html.DropDownListFor(model => model.PrimaryExchangeRateCurrencyId, Model.AvailableCurrencies)
+			@Html.ValidationMessageFor(model => model.PrimaryExchangeRateCurrencyId)
 		</td>
 	</tr>
 	<tr>
@@ -74,15 +101,6 @@
 		<td class="adminData">
 			@Html.EditorFor(model => model.SecureUrl)
 			@Html.ValidationMessageFor(model => model.SecureUrl)
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.Hosts)
-		</td>
-		<td class="adminData">
-			@Html.TextBoxFor(model => model.Hosts, new { @class = "input-large" })
-			@Html.ValidationMessageFor(model => model.Hosts)
 		</td>
 	</tr>
 	<tr>

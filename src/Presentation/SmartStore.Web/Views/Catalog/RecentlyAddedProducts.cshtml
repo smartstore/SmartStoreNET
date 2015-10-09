@@ -1,5 +1,4 @@
-﻿@*codehint: sm-edit*@
-@model RecentlyAddedProductsModel
+﻿@model RecentlyAddedProductsModel
 @{
     Layout = "~/Views/Shared/_ColumnsThree.cshtml";
 
@@ -13,27 +12,18 @@
 @using SmartStore.Core.Domain.Catalog;
 @using SmartStore.Web.Framework.UI;
 
-@*@functions{
-    private bool ShowListOptions() {
-        return Model.Products.Count > 0 &&
-               (Model.PagingFilteringContext.AllowProductViewModeChanging ||
-               Model.PagingFilteringContext.AllowProductSorting ||
-               Model.PagingFilteringContext.AllowCustomersToSelectPageSize);
-    }
-}*@
-
 <div class="page recently-added-products-page">
     <div class="page-title">
-        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">@T("Products.NewProducts.RSS")</a>
+        <a href="@Url.RouteUrl("RecentlyAddedProductsRSS")" class="link-rss" title="@T("Products.NewProducts.RSS.Hint")">
+			<i class="fa fa-rss muted"></i>
+			@T("Products.NewProducts.RSS")
+		</a>
         <h1>@T("Products.NewProducts")</h1>
     </div>
-    <div class="clear">
-    </div>
+
+    <div class="clear"></div>
+
     <div class="page-body">
-        
-        @*@if (ShowListOptions()) {
-            @Html.Partial("_ProductListOptions", Model.PagingFilteringContext)
-        }*@
 
         @if (Model.Products.Count > 0)
         {
@@ -64,8 +54,6 @@
 
         <div class="clear">
         </div>
-
-        @*@Html.SmartStore().Pager(Model.PagingFilteringContext).Name("pagination-bottom").QueryParam("pagenumber")*@
 
     </div>
 </div>

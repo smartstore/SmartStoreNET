@@ -11,7 +11,9 @@ namespace SmartStore.Admin.Controllers
     [AdminAuthorize]
     public class DownloadController : AdminControllerBase
     {
-        private readonly IDownloadService _downloadService;
+		const string TEMPLATE = "EditorTemplates/Download";
+		
+		private readonly IDownloadService _downloadService;
 
         public DownloadController(IDownloadService downloadService)
         {
@@ -43,77 +45,70 @@ namespace SmartStore.Admin.Controllers
 
         [HttpPost]
         [ValidateInput(false)]
-        public ActionResult SaveDownloadUrl(string downloadUrl)
+		public ActionResult SaveDownloadUrl(string downloadUrl, bool minimalMode = false, string fieldName = null)
         {
-            //insert
-            var download = new Download()
-            {
-                DownloadGuid = Guid.NewGuid(),
-                UseDownloadUrl = true,
-                DownloadUrl = downloadUrl,
-                IsNew = true
-              };
+			var download = new Download
+			{
+				DownloadGuid = Guid.NewGuid(),
+				UseDownloadUrl = true,
+				DownloadUrl = downloadUrl,
+				IsNew = true,
+				IsTransient = true
+			};
+
             _downloadService.InsertDownload(download);
 
-            return Json(new { downloadId = download.Id }, JsonRequestBehavior.AllowGet);
+			return Json(new
+			{
+				success = true,
+				downloadId = download.Id,
+				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+			}, JsonRequestBehavior.AllowGet);
         }
 
         [HttpPost]
-        public ActionResult AsyncUpload()
+		public ActionResult AsyncUpload(bool minimalMode = false, string fieldName = null)
         {
-            //we process it distinct ways based on a browser
-            //find more info here http://stackoverflow.com/questions/4884920/mvc3-valums-ajax-file-upload
-            Stream stream = null;
-            var fileName = "";
-            var contentType = "";
-            if (String.IsNullOrEmpty(Request["qqfile"]))
-            {
-                // IE
-                HttpPostedFileBase httpPostedFile = Request.Files[0];
-                if (httpPostedFile == null)
-                    throw new ArgumentException("No file uploaded");
-                stream = httpPostedFile.InputStream;
-                fileName = Path.GetFileName(httpPostedFile.FileName);
-                contentType = httpPostedFile.ContentType;
-            }
-            else
-            {
-                //Webkit, Mozilla
-                stream = Request.InputStream;
-                fileName = Request["qqfile"];
-            }
+			var postedFile = Request.ToPostedFileResult();
+			if (postedFile == null)
+			{
+				throw new ArgumentException("No file uploaded");
+			}
 
-            var fileBinary = new byte[stream.Length];
-            stream.Read(fileBinary, 0, fileBinary.Length);
-
-            var fileExtension = Path.GetExtension(fileName);
-            if (!String.IsNullOrEmpty(fileExtension))
-                fileExtension = fileExtension.ToLowerInvariant();
-
-            var download = new Download()
+            var download = new Download
             {
                 DownloadGuid = Guid.NewGuid(),
                 UseDownloadUrl = false,
                 DownloadUrl = "",
-                DownloadBinary = fileBinary,
-                ContentType = contentType,
-                //we store filename without extension for downloads
-                Filename = Path.GetFileNameWithoutExtension(fileName),
-                Extension = fileExtension,
-                IsNew = true
+                DownloadBinary = postedFile.Buffer,
+                ContentType = postedFile.ContentType,
+                // we store filename without extension for downloads
+                Filename = postedFile.FileTitle,
+                Extension = postedFile.FileExtension,
+                IsNew = true,
+				IsTransient = true
             };
+
             _downloadService.InsertDownload(download);
 
-            //when returning JSON the mime-type must be set to text/plain
-            //otherwise some browsers will pop-up a "Save As" dialog.
             return Json(new 
             { 
                 success = true, 
-                downloadId = download.Id,
-                fileName = download.Filename + download.Extension,
-                downloadUrl = Url.Action("DownloadFile", new { downloadId = download.Id }) 
-            },
-            "text/plain");
+				downloadId = download.Id,
+				html = this.RenderPartialViewToString(TEMPLATE, download.Id, new { minimalMode = minimalMode, fieldName = fieldName })
+            });
         }
+
+		[HttpPost]
+		public ActionResult DeleteDownload(bool minimalMode = false, string fieldName = null)
+		{
+			// We don't actually delete here. We just return the editor in it's init state
+			// so the download entity can be set to transient state and deleted later by a scheduled task.
+			return Json(new
+			{
+				success = true,
+				html = this.RenderPartialViewToString(TEMPLATE, null, new { minimalMode = minimalMode, fieldName = fieldName }),
+			});
+		}
     }
 }

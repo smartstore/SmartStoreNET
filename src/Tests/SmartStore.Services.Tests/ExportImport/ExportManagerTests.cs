@@ -29,13 +29,14 @@ namespace SmartStore.Services.Tests.ExportImport
         ICategoryService _categoryService;
         IManufacturerService _manufacturerService;
         IProductService _productService;
+		IProductAttributeService _productAttributeService;
 		IProductTemplateService _productTemplateService;
         IPictureService _pictureService;
         INewsLetterSubscriptionService _newsLetterSubscriptionService;
         IExportManager _exportManager;
         ILanguageService _languageService;
 		MediaSettings _mediaSettings;
-		ICommonServices _commonServices;
+		ICommonServices _services;
         IStoreMappingService _storeMapping;
 
         [SetUp]
@@ -44,16 +45,27 @@ namespace SmartStore.Services.Tests.ExportImport
             _categoryService = MockRepository.GenerateMock<ICategoryService>();
             _manufacturerService = MockRepository.GenerateMock<IManufacturerService>();
             _productService = MockRepository.GenerateMock<IProductService>();
+			_productAttributeService = MockRepository.GenerateMock<IProductAttributeService>();
 			_productTemplateService = MockRepository.GenerateMock<IProductTemplateService>();
             _pictureService = MockRepository.GenerateMock<IPictureService>();
             _newsLetterSubscriptionService = MockRepository.GenerateMock<INewsLetterSubscriptionService>();
             _languageService = MockRepository.GenerateMock<ILanguageService>();
 			_mediaSettings = MockRepository.GenerateMock<MediaSettings>();
-			_commonServices = MockRepository.GenerateMock<ICommonServices>();
+			_services = MockRepository.GenerateMock<ICommonServices>();
             _storeMapping = MockRepository.GenerateMock<IStoreMappingService>();
 
-            _exportManager = new ExportManager(_categoryService, _manufacturerService, _productService, _productTemplateService, _pictureService,
-                _newsLetterSubscriptionService, _languageService, _mediaSettings, _commonServices, _storeMapping);
+            _exportManager = new ExportManager(
+				_categoryService, 
+				_manufacturerService, 
+				_productService,
+				_productAttributeService, 
+				_productTemplateService, 
+				_pictureService,
+                _newsLetterSubscriptionService, 
+				_languageService, 
+				_mediaSettings, 
+				_services, 
+				_storeMapping);
         }
 
 		//[Test]

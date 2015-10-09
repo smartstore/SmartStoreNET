@@ -126,19 +126,6 @@ namespace SmartStore.GoogleAnalytics.Controllers
 			return order;
         }
         
-        //<script type="text/javascript"> 
-
-        //var _gaq = _gaq || []; 
-        //_gaq.push(['_setAccount', 'UA-XXXXX-X']); 
-        //_gaq.push(['_trackPageview']); 
-
-        //(function() { 
-        //var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; 
-        //ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; 
-        //var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); 
-        //})(); 
-
-        //</script>
         private string GetTrackingScript()
         {
 			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
@@ -149,42 +136,6 @@ namespace SmartStore.GoogleAnalytics.Controllers
             return analyticsTrackingScript;
         }
         
-        //<script type="text/javascript"> 
-
-        //var _gaq = _gaq || []; 
-        //_gaq.push(['_setAccount', 'UA-XXXXX-X']); 
-        //_gaq.push(['_trackPageview']); 
-        //_gaq.push(['_addTrans', 
-        //'1234',           // order ID - required 
-        //'Acme Clothing',  // affiliation or store name 
-        //'11.99',          // total - required 
-        //'1.29',           // tax 
-        //'5',              // shipping 
-        //'San Jose',       // city 
-        //'California',     // state or province 
-        //'USA'             // country 
-        //]); 
-
-        //// add item might be called for every item in the shopping cart 
-        //// where your ecommerce engine loops through each item in the cart and 
-        //// prints out _addItem for each 
-        //_gaq.push(['_addItem', 
-        //'1234',           // order ID - required 
-        //'DD44',           // SKU/code - required 
-        //'T-Shirt',        // product name 
-        //'Green Medium',   // category or variation 
-        //'11.99',          // unit price - required 
-        //'1'               // quantity - required 
-        //]); 
-        //_gaq.push(['_trackTrans']); //submits transaction to the Analytics servers 
-
-        //(function() { 
-        //var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true; 
-        //ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js'; 
-        //var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s); 
-        //})(); 
-
-        //</script>
         private string GetEcommerceScript(Order order)
         {
 			var googleAnalyticsSettings = _settingService.LoadSetting<GoogleAnalyticsSettings>(_storeContext.CurrentStore.Id);
@@ -206,6 +157,7 @@ namespace SmartStore.GoogleAnalytics.Controllers
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{CITY}", order.BillingAddress == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.City));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{STATEPROVINCE}", order.BillingAddress == null || order.BillingAddress.StateProvince == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.StateProvince.Name));
                 analyticsEcommerceScript = analyticsEcommerceScript.Replace("{COUNTRY}", order.BillingAddress == null || order.BillingAddress.Country == null ? "" : FixIllegalJavaScriptChars(order.BillingAddress.Country.Name));
+                analyticsEcommerceScript = analyticsEcommerceScript.Replace("{CURRENCY}", order.CustomerCurrencyCode);
 
                 var sb = new StringBuilder();
                 foreach (var item in order.OrderItems)

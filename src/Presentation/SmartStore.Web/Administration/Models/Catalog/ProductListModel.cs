@@ -26,19 +26,25 @@ namespace SmartStore.Admin.Models.Catalog
         public int SearchCategoryId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutCategories")]
-		public bool SearchWithoutCategories { get; set; }
+		public bool? SearchWithoutCategories { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.List.SearchManufacturer")]
         public int SearchManufacturerId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchWithoutManufacturers")]
-		public bool SearchWithoutManufacturers { get; set; }
+		public bool? SearchWithoutManufacturers { get; set; }
 
 		[SmartResourceDisplayName("Admin.Common.Store.SearchFor")]
 		public int SearchStoreId { get; set; }
 
 		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchProductType")]
 		public int SearchProductTypeId { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchIsPublished")]
+		public bool? SearchIsPublished { get; set; }
+
+		[SmartResourceDisplayName("Admin.Catalog.Products.List.SearchHomePageProducts")]
+		public bool? SearchHomePageProducts { get; set; }
 
         [SmartResourceDisplayName("Admin.Catalog.Products.List.GoDirectlyToSku")]
         [AllowHtml]

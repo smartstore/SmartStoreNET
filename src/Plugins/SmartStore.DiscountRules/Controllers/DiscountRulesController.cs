@@ -31,12 +31,7 @@ namespace SmartStore.DiscountRules.Controllers
             this._customerService = customerService;
 			this._countryService = countryService;
 			this._storeService = storeService;
-
-			T = NullLocalizer.Instance;
         }
-
-		public Localizer T { get; set; }
-
 
 		#region Global
 

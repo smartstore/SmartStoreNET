@@ -68,43 +68,27 @@
 						@T("Common.UpdatedOn"): @(firstFile.LastWriteTime)
 					</p>
 				}
+				<a href="@Model.DeleteFilesUrl" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+					<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+				</a>
+			</td>
+		</tr>
+		<tr class="adminSeparator">
+			<td colspan="2">
+				<hr />
 			</td>
 		</tr>
 	}
-	else if (Model.IsRunning)
-	{
-		<tr>
-			<td class="adminTitle">&nbsp;</td>
-			<td class="adminData">
-				<i class="fa fa-refresh fa-spin"></i>
-				<span id="ProgressInfo">@Model.ProcessInfo</span>
-			</td>
-		</tr>
-	}
+
 	<tr>
-		<td class="adminTitle">&nbsp;</td>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(m => m.ScheduleTaskId, "Common.Execution")
+		</td>
 		<td class="adminData">
-			@if (Model.IsRunning)
-			{
-				<a id="ProgressInfoButton" href="javascript:void(0)" data-url="@Model.GenerateFeedProgressUrl" class="btn btn-info">
-					<i class="fa fa-info"></i>&nbsp;@T("Admin.Common.Update")
-				</a>
-			}
-			else
-			{
-				<a href="@Model.GenerateFeedUrl" class="btn btn-warning">
-					<i class="fa fa-@(Model.GeneratedFiles.Count > 0 ? "refresh" : "file")"></i>&nbsp;@T("Plugins.Feed.Froogle.Generate")
-				</a>
-				
-				if (Model.GeneratedFiles.Count > 0)
-				{
-					<a href="@Model.DeleteFilesUrl" class="btn btn-danger" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
-						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-					</a>
-				}
-			}
+			@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
 		</td>
 	</tr>
+
 	<tr class="adminSeparator">
 		<td colspan="2">
 			<hr />
@@ -417,24 +401,6 @@
         <td class="adminData">
             @Html.EditorFor(m => m.ConvertNetToGrossPrices)
             @Html.ValidationMessageFor(m => m.ConvertNetToGrossPrices)
-        </td>
-    </tr>
-    <tr>
-        <td class="adminTitle">
-            @Html.SmartLabelFor(m => m.TaskEnabled)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(m => m.TaskEnabled)
-            @Html.ValidationMessageFor(m => m.TaskEnabled)
-        </td>
-    </tr>
-    <tr id="pnlGenerateStaticFileEachMinutes">
-        <td class="adminTitle">
-            @Html.SmartLabelFor(m => m.GenerateStaticFileEachMinutes)
-        </td>
-        <td class="adminData">
-            @Html.EditorFor(m => m.GenerateStaticFileEachMinutes)
-            @Html.ValidationMessageFor(m => m.GenerateStaticFileEachMinutes)
         </td>
     </tr>
     <tr>

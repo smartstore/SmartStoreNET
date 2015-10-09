@@ -8,6 +8,7 @@ using SmartStore.Web.Framework.Mvc;
 using SmartStore.Admin.Validators.Settings;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Localization;
+using System.Collections;
 
 namespace SmartStore.Admin.Models.Settings
 {
@@ -85,6 +86,9 @@ namespace SmartStore.Admin.Models.Settings
 
 			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.CanonicalHostNameRule")]
 			public CanonicalHostNameRule CanonicalHostNameRule { get; set; }
+
+            [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.ExtraRobotsDisallows")]
+            public string ExtraRobotsDisallows { get; set; }
         }
 
 		public partial class SecuritySettingsModel
@@ -153,6 +157,12 @@ namespace SmartStore.Admin.Models.Settings
             [SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.PdfLogo")]
             [UIHint("Picture")]
             public int LogoPictureId { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderPlacedEmail")]
+			public bool AttachOrderPdfToOrderPlacedEmail { get; set; }
+
+			[SmartResourceDisplayName("Admin.Configuration.Settings.GeneralCommon.AttachOrderPdfToOrderCompletedEmail")]
+			public bool AttachOrderPdfToOrderCompletedEmail { get; set; }
         }
 
 		public partial class LocalizationSettingsModel

@@ -35,7 +35,7 @@
         <Value>PLZ-(Bereich)</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.Zip.Hint">
-        <Value>PLZ-(Bereich) des Kunden, entweder als spezifischer Wert oder als Muster (z.B. 4000-49999 für das PLZ-Gebiet 4). In einem Muster lassen sich auch Wildcards verwenden, wie Stern (*) oder Fragezeichen (?). Lassen Sie das Feld leer, wenn die Gebühr unabhängig von PLZ für alle Kunden im definierten (Bundes)land gelten soll.</Value>
+        <Value>PLZ-(Bereich) des Kunden, entweder als spezifische Werte (getrennt durch Komma) oder als Muster (z.B. 4000-49999 für das PLZ-Gebiet 4). In einem Muster lassen sich auch Wildcards verwenden, wie Stern (*) oder Fragezeichen (?). Sie können auch mehrere Wildcards angeben (durch Komma getrennt). Lassen Sie das Feld leer, wenn die Gebühr unabhängig von PLZ für alle Kunden im definierten (Bundes)land gelten soll.</Value>
       </LocaleResource>
       <LocaleResource Name="Fields.ShippingMethod">
         <Value>Versandart</Value>

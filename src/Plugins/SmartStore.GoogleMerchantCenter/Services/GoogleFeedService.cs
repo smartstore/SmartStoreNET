@@ -14,6 +14,7 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Logging;
 using SmartStore.GoogleMerchantCenter.Domain;
 using SmartStore.GoogleMerchantCenter.Models;
+using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -35,6 +36,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		private readonly MeasureSettings _measureSettings;
 		private readonly IDbContext _dbContext;
 		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly ICurrencyService _currencyService;
+		private readonly ICommonServices _services;
 
 		public GoogleFeedService(
 			IRepository<GoogleProductRecord> gpRepository,
@@ -45,6 +48,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			MeasureSettings measureSettings,
 			IDbContext dbContext,
 			AdminAreaSettings adminAreaSettings,
+			ICurrencyService currencyService,
+			ICommonServices services,
 			IComponentContext ctx)
         {
             _gpRepository = gpRepository;
@@ -55,6 +60,8 @@ namespace SmartStore.GoogleMerchantCenter.Services
 			_measureSettings = measureSettings;
 			_dbContext = dbContext;
 			_adminAreaSettings = adminAreaSettings;
+			_currencyService = currencyService;
+			_services = services;
 
 			_helper = new FeedPluginHelper(ctx, "SmartStore.GoogleMerchantCenter", "SmartStore.GoogleMerchantCenter", () =>
 			{
@@ -164,7 +171,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 							return "out of stock";
 						case BackorderMode.AllowQtyBelow0:
 						case BackorderMode.AllowQtyBelow0AndNotifyCustomer:
-							return "available for order";
+							if (product.AvailableForPreOrder)
+								return "preorder";
+							return "out of stock";
 					}
 				}
 				return "in stock";
@@ -387,7 +396,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 				writer.WriteElementString("g", "condition", _googleNamespace, Condition());
 				writer.WriteElementString("g", "availability", _googleNamespace, Availability(product));
 
-				decimal price = Helper.GetProductPrice(product, currency);
+				decimal price = Helper.GetProductPrice(product, currency, fileCreation.Store);
 				string specialPriceDate;
 
 				if (SpecialPrice(product, out specialPriceDate))
@@ -398,7 +407,7 @@ namespace SmartStore.GoogleMerchantCenter.Services
 					// get regular price ignoring any special price
 					decimal specialPrice = product.SpecialPrice.Value;
 					product.SpecialPrice = null;
-					price = Helper.GetProductPrice(product, currency);
+					price = Helper.GetProductPrice(product, currency, fileCreation.Store);
 					product.SpecialPrice = specialPrice;
 
 					_dbContext.SetToUnchanged<Product>(product);
@@ -732,8 +741,11 @@ namespace SmartStore.GoogleMerchantCenter.Services
 						VisibleIndividuallyOnly = true
 					};
 
-					var currency = Helper.GetUsedCurrency(Settings.CurrencyId);
+					var currency = _currencyService.GetCurrencyById(Settings.CurrencyId);
 					var measureWeightSystemKey = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).SystemKeyword;
+
+					if (currency == null || !currency.Published)
+						currency = _services.WorkContext.WorkingCurrency;
 
 					writer.WriteStartDocument();
 					writer.WriteStartElement("rss");
@@ -819,8 +831,9 @@ namespace SmartStore.GoogleMerchantCenter.Services
 		{
 			Helper.SetupConfigModel(model, "FeedFroogle");
 
-			model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
+			//model.GenerateStaticFileEachMinutes = Helper.ScheduleTask.Seconds / 60;
 			model.TaskEnabled = Helper.ScheduleTask.Enabled;
+			model.ScheduleTaskId = Helper.ScheduleTask.Id;
 
 			model.AvailableCurrencies = Helper.AvailableCurrencies();
 			model.AvailableGoogleCategories = GetTaxonomyList();

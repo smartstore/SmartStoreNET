@@ -30,11 +30,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			_googleService = googleService;
 			_settingService = settingService;
 			_permissionService = permissionService;
-
-			T = NullLocalizer.Instance;
 		}
-
-		public Localizer T { get; set; }
 
 		private ActionResult RedirectToConfig()
 		{
@@ -125,8 +121,8 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 
 			model.Copy(_googleService.Settings, false);
 			_settingService.SaveSetting(_googleService.Settings);
-
-			_googleService.Helper.UpdateScheduleTask(model.TaskEnabled, model.GenerateStaticFileEachMinutes * 60);
+			
+			_googleService.Helper.UpdateScheduleTask(model.TaskEnabled);
 
 			NotifySuccess(_googleService.Helper.GetResource("ConfigSaveNote"), true);
 

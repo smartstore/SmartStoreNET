@@ -22,7 +22,7 @@ namespace SmartStore.Web.Models.Catalog
 
         public string Name { get; set; }
         public string ShortDescription { get; set; }
-        public string FullDescription { get; set; }
+		public string FullDescription { get; set; }
         public string SeName { get; set; }
 
         public int ThumbDimension { get; set; }
@@ -51,7 +51,10 @@ namespace SmartStore.Web.Models.Catalog
         public string StockAvailablity { get; set; }
         public bool DisplayBasePrice { get; set; }
         public string BasePriceInfo { get; set; }
-		public int ProductMinPriceId { get; set; }
+		/// <summary>
+		/// For internal use
+		/// </summary>
+		public int MinPriceProductId { get; set; }
         public bool CompareEnabled { get; set; }
         public bool IsNew { get; set; }
 		public bool HideBuyButtonInLists { get; set; }

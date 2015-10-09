@@ -44,7 +44,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageActivityLog))
                 return AccessDeniedView();
 
-            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel());
+            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel()).OrderBy(x => x.Name);
             var gridModel = new GridModel<ActivityLogTypeModel>
             {
                 Data = activityLogTypeModel,
@@ -127,8 +127,9 @@ namespace SmartStore.Admin.Controllers
             DateTime? startDateValue = (model.CreatedOnFrom == null) ? null
                 : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnFrom.Value, _dateTimeHelper.CurrentTimeZone);
 
-            DateTime? endDateValue = (model.CreatedOnTo == null) ? null
-                            : (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
+            DateTime? endDateValue = (model.CreatedOnTo == null) 
+				? null
+				: (DateTime?)_dateTimeHelper.ConvertToUtcTime(model.CreatedOnTo.Value, _dateTimeHelper.CurrentTimeZone).AddDays(1);
 
             var activityLog = _customerActivityService.GetAllActivities(startDateValue, endDateValue,null, model.ActivityLogTypeId, command.Page - 1, command.PageSize);
             var gridModel = new GridModel<ActivityLogModel>

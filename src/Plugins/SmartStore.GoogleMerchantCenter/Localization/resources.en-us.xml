@@ -74,7 +74,7 @@
 		<Value>Automatically generate feed</Value>
 	</LocaleResource>
 	<LocaleResource Name="TaskEnabled.Hint">
-		<Value>Check if you want the feed to be automatically generated.</Value>
+		<Value>Check the box if you want the feed to be automatically generated.</Value>
 	</LocaleResource>
 	<LocaleResource Name="GenerateStaticFileEachMinutes">
 		<Value>A task period (minutes)</Value>
@@ -122,7 +122,7 @@
 		<Value>Additional images</Value>
 	</LocaleResource>
 	<LocaleResource Name="AdditionalImages.Hint">
-		<Value>Check if you want to export more than one image. Up to 10 are possible.</Value>
+		<Value>Check the box if you want to export more than one image. Up to 10 are possible.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Condition">
 		<Value>Condition</Value>
@@ -173,7 +173,7 @@
 		<Value>Own SKU</Value>
 	</LocaleResource>
 	<LocaleResource Name="UseOwnProductNo.Hint">
-		<Value>Check to export SKU as manufacturer part number (MPN) if it is missing.</Value>
+		<Value>Check the box to export SKU as manufacturer part number (MPN) if it is missing.</Value>
 	</LocaleResource>
 	<LocaleResource Name="Gender">
 		<Value>Gender</Value>
@@ -230,13 +230,13 @@
 		<Value>Only online available</Value>
 	</LocaleResource>
 	<LocaleResource Name="OnlineOnly.Hint">
-		<Value>Check if products can only be purchased online.</Value>
+		<Value>Check the box if products can only be purchased online.</Value>
 	</LocaleResource>
 	<LocaleResource Name="DescriptionToPlainText">
 		<Value>Remove HTML</Value>
 	</LocaleResource>
 	<LocaleResource Name="DescriptionToPlainText.Hint">
-		<Value>Check if you want to remove all HTML from the product description for the export.</Value>
+		<Value>Check the box if you want to remove all HTML from the product description for the export.</Value>
 	</LocaleResource>
 	<LocaleResource Name="EmptyGridCell">
 		<Value>Empty</Value>

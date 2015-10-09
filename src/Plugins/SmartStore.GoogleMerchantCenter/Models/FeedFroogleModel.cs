@@ -120,6 +120,8 @@ namespace SmartStore.GoogleMerchantCenter.Models
 		[SmartResourceDisplayName("Plugins.Feed.Froogle.LanguageId")]
 		public int LanguageId { get; set; }
 
+		public int ScheduleTaskId { get; set; }
+
 		public void Copy(FroogleSettings settings, bool fromSettings)
 		{
 			if (fromSettings)

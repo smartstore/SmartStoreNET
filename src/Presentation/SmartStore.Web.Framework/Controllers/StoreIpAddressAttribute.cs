@@ -38,6 +38,7 @@ namespace SmartStore.Web.Framework.Controllers
             {
                 var workContext = WorkContext.Value;
                 var customer = workContext.CurrentCustomer;
+				
                 if (!currentIpAddress.Equals(customer.LastIpAddress, StringComparison.InvariantCultureIgnoreCase))
                 {
                     var customerService = CustomerService.Value;

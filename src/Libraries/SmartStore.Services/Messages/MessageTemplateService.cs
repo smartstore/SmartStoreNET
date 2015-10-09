@@ -45,7 +45,8 @@ namespace SmartStore.Services.Messages
 		/// <param name="storeMappingService">Store mapping service</param>
         /// <param name="messageTemplateRepository">Message template repository</param>
         /// <param name="eventPublisher">Event published</param>
-        public MessageTemplateService(ICacheManager cacheManager,
+        public MessageTemplateService(
+			ICacheManager cacheManager,
 			IRepository<StoreMapping> storeMappingRepository,
 			ILanguageService languageService,
 			ILocalizedEntityService localizedEntityService,
@@ -209,7 +210,7 @@ namespace SmartStore.Services.Messages
 			if (messageTemplate == null)
 				throw new ArgumentNullException("messageTemplate");
 
-			var mtCopy = new MessageTemplate()
+			var mtCopy = new MessageTemplate
 			{
 				Name = messageTemplate.Name,
 				BccEmailAddresses = messageTemplate.BccEmailAddresses,
@@ -218,25 +219,26 @@ namespace SmartStore.Services.Messages
 				IsActive = messageTemplate.IsActive,
 				EmailAccountId = messageTemplate.EmailAccountId,
 				LimitedToStores = messageTemplate.LimitedToStores
+				// INFO: we do not copy attachments
 			};
 
 			InsertMessageTemplate(mtCopy);
 
 			var languages = _languageService.GetAllLanguages(true);
 
-			//localization
+			// localization
 			foreach (var lang in languages)
 			{
 				var bccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(bccEmailAddresses))
+				if (bccEmailAddresses.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.BccEmailAddresses, bccEmailAddresses, lang.Id);
 
 				var subject = messageTemplate.GetLocalized(x => x.Subject, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(subject))
+				if (subject.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Subject, subject, lang.Id);
 
 				var body = messageTemplate.GetLocalized(x => x.Body, lang.Id, false, false);
-				if (!String.IsNullOrEmpty(body))
+				if (body.HasValue())
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.Body, subject, lang.Id);
 
 				var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, lang.Id, false, false);
@@ -244,7 +246,7 @@ namespace SmartStore.Services.Messages
 					_localizedEntityService.SaveLocalizedValue(mtCopy, x => x.EmailAccountId, emailAccountId, lang.Id);
 			}
 
-			//store mapping
+			// store mapping
 			var selectedStoreIds = _storeMappingService.GetStoresIdsWithAccess(messageTemplate);
 			foreach (var id in selectedStoreIds)
 			{

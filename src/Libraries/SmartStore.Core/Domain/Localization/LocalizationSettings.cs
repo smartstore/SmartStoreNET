@@ -9,6 +9,7 @@ namespace SmartStore.Core.Domain.Localization
 			UseImagesForLanguageSelection = true;
 			DefaultLanguageRedirectBehaviour = DefaultLanguageRedirectBehaviour.StripSeoCode;
 			InvalidLanguageRedirectBehaviour = InvalidLanguageRedirectBehaviour.ReturnHttp404;
+			LoadAllLocalizedPropertiesOnStartup = true;
 		}
 		
 		/// <summary>
@@ -25,6 +26,11 @@ namespace SmartStore.Core.Domain.Localization
         /// A value indicating whether to load all records on application startup
         /// </summary>
         public bool LoadAllLocaleRecordsOnStartup { get; set; }
+
+		/// <summary>
+		/// A value indicating whether to load all localized entity properties on application startup
+		/// </summary>
+		public bool LoadAllLocalizedPropertiesOnStartup { get; set; }
 
         /// <summary>
         /// A value indicating whether the browser user lannguage should be detected

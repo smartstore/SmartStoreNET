@@ -7,6 +7,7 @@ namespace SmartStore.FacebookAuth.Models
     {
         [SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.ClientKeyIdentifier")]
         public string ClientKeyIdentifier { get; set; }
+
         [SmartResourceDisplayName("Plugins.ExternalAuth.Facebook.ClientSecret")]
         public string ClientSecret { get; set; }
     }

@@ -196,14 +196,14 @@
                 {
                     <div>
                         @Html.LabelFor(model => model.CountryId)
-                        @Html.DropDownList("CountryId", Model.AvailableCountries)
+                        @Html.DropDownList("CountryId", Model.AvailableCountries, new { data_native_menu = "false" })
                     </div>
                 }
                 @if (Model.CountryEnabled && Model.StateProvinceEnabled)
                 {
                     <div>
                         @Html.LabelFor(model => model.StateProvinceId)
-                        @Html.DropDownList("StateProvinceId", Model.AvailableStates)
+                        @Html.DropDownList("StateProvinceId", Model.AvailableStates, new { data_native_menu = "false" })
                     </div>
                 }
             </div>
@@ -255,7 +255,7 @@
                 {
                     <div>
                         @Html.LabelFor(model => model.TimeZoneId)
-                        @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones)
+                        @Html.DropDownList("TimeZoneId", Model.AvailableTimeZones, new { data_native_menu = "false" })
                         @Html.ValidationMessageFor(model => model.TimeZoneId)
                     </div>
                 }

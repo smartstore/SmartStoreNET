@@ -41,16 +41,6 @@ namespace SmartStore.Utilities
 						c2 = _seoCharacterTable[c2];
 				}
 
-				// codehint: sm-edit
-				//if (allowUnicodeCharsInUrls)
-				//{
-				//	if (char.IsLetterOrDigit(c) || okChars.Contains(c2))
-				//		sb.Append(c2);
-				//}
-				//else if (okChars.Contains(c2))
-				//{
-				//	sb.Append(c2);
-				//}
 				switch (c2)
 				{
 					case "ä":

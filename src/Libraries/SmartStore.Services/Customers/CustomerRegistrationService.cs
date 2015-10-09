@@ -2,6 +2,7 @@ using System;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
@@ -22,6 +23,7 @@ namespace SmartStore.Services.Customers
         private readonly RewardPointsSettings _rewardPointsSettings;
         private readonly CustomerSettings _customerSettings;
 		private readonly IStoreContext _storeContext;
+        private readonly IEventPublisher _eventPublisher;
 
         #endregion
 
@@ -35,7 +37,7 @@ namespace SmartStore.Services.Customers
             INewsLetterSubscriptionService newsLetterSubscriptionService,
             ILocalizationService localizationService,
             RewardPointsSettings rewardPointsSettings, CustomerSettings customerSettings,
-			IStoreContext storeContext)
+            IStoreContext storeContext, IEventPublisher eventPublisher)
         {
             this._customerService = customerService;
             this._encryptionService = encryptionService;
@@ -44,6 +46,7 @@ namespace SmartStore.Services.Customers
             this._rewardPointsSettings = rewardPointsSettings;
             this._customerSettings = customerSettings;
 			this._storeContext = storeContext;
+            this._eventPublisher = eventPublisher;
         }
 
         #endregion
@@ -215,6 +218,7 @@ namespace SmartStore.Services.Customers
 				request.Customer.AddRewardPointsHistoryEntry(_rewardPointsSettings.PointsForRegistration, _localizationService.GetResource("RewardPoints.Message.RegisteredAsCustomer"));
 
             _customerService.UpdateCustomer(request.Customer);
+            _eventPublisher.Publish(new CustomerRegisteredEvent{ Customer = request.Customer });
             return result;
         }
         

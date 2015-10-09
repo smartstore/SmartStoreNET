@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Threading.Tasks;
+using SmartStore.Core.Localization;
 
 namespace SmartStore.Web.Framework.Localization
 {
@@ -60,41 +61,13 @@ namespace SmartStore.Web.Framework.Localization
                 firstPart = firstPart.Substring(0, firstSlash);
             }
 
-            //int length = firstPart.Length;
-            //if ((length == 2 || length == 5) && RegularExpressions.IsCultureCode.IsMatch(firstPart))
-            //{
-            //    seoCode = firstPart;
-            //    return true;
-            //}
-            if (IsValidCulture(firstPart)) 
+            if (LocalizationHelper.IsValidCultureCode(firstPart)) 
             {
                 seoCode = firstPart;
                 return true;
             }
 
             return false;
-        }
-
-        private bool IsValidCulture(string cultureName)
-        {
-            var segments = cultureName.Split('-');
-
-            if (segments.Length == 0)
-            {
-                return false;
-            }
-
-            if (segments.Length > 2)
-            {
-                return false;
-            }
-
-            if (segments.Any(s => s.Length != 2))
-            {
-                return false;
-            }
-
-            return true;
         }
 
         public string StripSeoCode()

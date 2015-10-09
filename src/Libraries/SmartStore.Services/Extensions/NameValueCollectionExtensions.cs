@@ -57,9 +57,16 @@ namespace SmartStore
 
 		/// <summary>Takes selected elements from collection and creates a attribute XML string from it.</summary>
 		/// <param name="formatWithProductId">how the name of the controls are formatted. frontend includes productId, backend does not.</param>
-		public static string CreateSelectedAttributesXml(this NameValueCollection collection, int productId, IList<ProductVariantAttribute> variantAttributes,
-			IProductAttributeParser productAttributeParser, ILocalizationService localizationService, IDownloadService downloadService, CatalogSettings catalogSettings,
-			HttpRequestBase request, List<string> warnings, bool formatWithProductId = true, int bundleItemId = 0)
+		public static string CreateSelectedAttributesXml(this NameValueCollection collection, 
+			int productId, 
+			IEnumerable<ProductVariantAttribute> variantAttributes,
+			IProductAttributeParser productAttributeParser, 
+			ILocalizationService localizationService, 
+			IDownloadService downloadService, 
+			CatalogSettings catalogSettings,
+			HttpRequestBase request, List<string> warnings, 
+			bool formatWithProductId = true, 
+			int bundleItemId = 0)
 		{
 			if (collection == null)
 				return "";
@@ -142,16 +149,18 @@ namespace SmartStore
 							var download = downloadService.GetDownloadByGuid(downloadGuid);
 							if (download != null)
 							{
+								download.IsTransient = false;
+								downloadService.UpdateDownload(download);
 								selectedAttributes = productAttributeParser.AddProductAttribute(selectedAttributes, attribute, download.DownloadGuid.ToString());
 							}
 						}
 						else
 						{
-							var httpPostedFile = request.Files[controlId];
-							if (httpPostedFile != null && httpPostedFile.FileName.HasValue())
+							var postedFile = request.Files[controlId];
+							if (postedFile != null && postedFile.FileName.HasValue())
 							{
 								int fileMaxSize = catalogSettings.FileUploadMaximumSizeBytes;
-								if (httpPostedFile.ContentLength > fileMaxSize)
+								if (postedFile.ContentLength > fileMaxSize)
 								{
 									warnings.Add(string.Format(localizationService.GetResource("ShoppingCart.MaximumUploadedFileSize"), (int)(fileMaxSize / 1024)));
 								}
@@ -163,10 +172,10 @@ namespace SmartStore
 										DownloadGuid = Guid.NewGuid(),
 										UseDownloadUrl = false,
 										DownloadUrl = "",
-										DownloadBinary = httpPostedFile.GetDownloadBits(),
-										ContentType = httpPostedFile.ContentType,
-										Filename = System.IO.Path.GetFileNameWithoutExtension(httpPostedFile.FileName),
-										Extension = System.IO.Path.GetExtension(httpPostedFile.FileName),
+										DownloadBinary = postedFile.InputStream.ToByteArray(),
+										ContentType = postedFile.ContentType,
+										Filename = System.IO.Path.GetFileNameWithoutExtension(postedFile.FileName),
+										Extension = System.IO.Path.GetExtension(postedFile.FileName),
 										IsNew = true
 									};
 									downloadService.InsertDownload(download);

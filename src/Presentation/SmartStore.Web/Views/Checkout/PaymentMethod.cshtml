@@ -57,6 +57,12 @@
 									</label>
 								</div>
 							</div>
+							@if (paymentMethod.FullDescription.HasValue())
+							{
+								<div class="opt-info-item payment-method-description">
+									@Html.Raw(paymentMethod.FullDescription)
+								</div>
+							}
 							@if (!paymentMethod.RequiresInteraction || (paymentMethod.Selected && infoRoute != null))
 							{
 								<div class="opt-info payment-method-info"
@@ -68,7 +74,10 @@
 											@Html.ValidationSummary(false)
 										</div>
 									}
-									@Html.Action(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues)
+									@if(!(paymentMethod.FullDescription.HasValue() && !paymentMethod.RequiresInteraction))
+									{
+										@Html.Action(infoRoute.Action, infoRoute.Controller, infoRoute.RouteValues)
+									}
 								</div>
 							}
                         </div>

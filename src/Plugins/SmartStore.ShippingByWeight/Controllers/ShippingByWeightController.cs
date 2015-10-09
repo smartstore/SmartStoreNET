@@ -1,16 +1,12 @@
-﻿using System.Globalization;
-using System.Linq;
-using System.Threading;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Directory;
+using SmartStore.Services;
+using SmartStore.Services.Directory;
+using SmartStore.Services.Shipping;
 using SmartStore.ShippingByWeight.Domain;
 using SmartStore.ShippingByWeight.Models;
 using SmartStore.ShippingByWeight.Services;
-using SmartStore.Services.Configuration;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Shipping;
-using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 
@@ -21,37 +17,32 @@ namespace SmartStore.ShippingByWeight.Controllers
     public class ShippingByWeightController : PluginControllerBase
     {
         private readonly IShippingService _shippingService;
-		private readonly IStoreService _storeService;
         private readonly ICountryService _countryService;
         private readonly ShippingByWeightSettings _shippingByWeightSettings;
         private readonly IShippingByWeightService _shippingByWeightService;
-        private readonly ISettingService _settingService;
-
-        private readonly ICurrencyService _currencyService;
-        private readonly CurrencySettings _currencySettings;
         private readonly IMeasureService _measureService;
         private readonly MeasureSettings _measureSettings;
 		private readonly AdminAreaSettings _adminAreaSettings;
+		private readonly ICommonServices _services;
 
-        public ShippingByWeightController(IShippingService shippingService,
-			IStoreService storeService, ICountryService countryService, ShippingByWeightSettings shippingByWeightSettings,
-            IShippingByWeightService shippingByWeightService, ISettingService settingService,
-            ICurrencyService currencyService, CurrencySettings currencySettings,
-            IMeasureService measureService, MeasureSettings measureSettings,
-			AdminAreaSettings adminAreaSettings)
+        public ShippingByWeightController(
+			IShippingService shippingService,
+			ICountryService countryService,
+			ShippingByWeightSettings shippingByWeightSettings,
+            IShippingByWeightService shippingByWeightService,
+            IMeasureService measureService,
+			MeasureSettings measureSettings,
+			AdminAreaSettings adminAreaSettings,
+			ICommonServices services)
         {
             this._shippingService = shippingService;
-			this._storeService = storeService;
             this._countryService = countryService;
             this._shippingByWeightSettings = shippingByWeightSettings;
             this._shippingByWeightService = shippingByWeightService;
-            this._settingService = settingService;
-
-            this._currencyService = currencyService;
-            this._currencySettings = currencySettings;
             this._measureService = measureService;
             this._measureSettings = measureSettings;
 			this._adminAreaSettings = adminAreaSettings;
+			this._services = services;
         }
 
         public ActionResult Configure()
@@ -61,21 +52,30 @@ namespace SmartStore.ShippingByWeight.Controllers
                 return Content("No shipping methods can be loaded");
 
             var model = new ShippingByWeightListModel();
-            foreach (var sm in shippingMethods)
-                model.AvailableShippingMethods.Add(new SelectListItem() { Text = sm.Name, Value = sm.Id.ToString() });
+			var countries = _countryService.GetAllCountries(true);
+			var allStores = _services.StoreService.GetAllStores();
+
+			foreach (var sm in shippingMethods)
+			{
+				model.AvailableShippingMethods.Add(new SelectListItem { Text = sm.Name, Value = sm.Id.ToString() });
+			}
 
 			//stores
-			model.AvailableStores.Add(new SelectListItem() { Text = "*", Value = "0" });
-			foreach (var store in _storeService.GetAllStores())
-				model.AvailableStores.Add(new SelectListItem() { Text = store.Name, Value = store.Id.ToString() });
+			model.AvailableStores.Add(new SelectListItem { Text = "*", Value = "0" });
+			foreach (var store in allStores)
+			{
+				model.AvailableStores.Add(new SelectListItem { Text = store.Name, Value = store.Id.ToString() });
+			}
 
-            model.AvailableCountries.Add(new SelectListItem() { Text = "*", Value = "0" });
-            var countries = _countryService.GetAllCountries(true);
-            foreach (var c in countries)
-                model.AvailableCountries.Add(new SelectListItem() { Text = c.Name, Value = c.Id.ToString() });
+            model.AvailableCountries.Add(new SelectListItem { Text = "*", Value = "0" });
+			foreach (var c in countries)
+			{
+				model.AvailableCountries.Add(new SelectListItem { Text = c.Name, Value = c.Id.ToString() });
+			}
+
             model.LimitMethodsToCreated = _shippingByWeightSettings.LimitMethodsToCreated;
             model.CalculatePerWeightUnit = _shippingByWeightSettings.CalculatePerWeightUnit;
-            model.PrimaryStoreCurrencyCode = _currencyService.GetCurrencyById(_currencySettings.PrimaryStoreCurrencyId).CurrencyCode;
+            model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
             model.BaseWeightIn = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 
@@ -162,7 +162,7 @@ namespace SmartStore.ShippingByWeight.Controllers
             //save settings
             _shippingByWeightSettings.LimitMethodsToCreated = model.LimitMethodsToCreated;
             _shippingByWeightSettings.CalculatePerWeightUnit = model.CalculatePerWeightUnit;
-            _settingService.SaveSetting(_shippingByWeightSettings);
+            _services.Settings.SaveSetting(_shippingByWeightSettings);
             
             return Configure();
         }

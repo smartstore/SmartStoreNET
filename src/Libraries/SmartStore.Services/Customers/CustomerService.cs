@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Polls;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Common;
 using SmartStore.Services.Localization;
@@ -33,6 +34,7 @@ namespace SmartStore.Services.Customers
         private const string CUSTOMERROLES_ALL_KEY = "SmartStore.customerrole.all-{0}";
         private const string CUSTOMERROLES_BY_SYSTEMNAME_KEY = "SmartStore.customerrole.systemname-{0}";
         private const string CUSTOMERROLES_PATTERN_KEY = "SmartStore.customerrole.";
+
         #endregion
 
         #region Fields
@@ -49,15 +51,6 @@ namespace SmartStore.Services.Customers
 
         #region Ctor
 
-        /// <summary>
-        /// Ctor
-        /// </summary>
-        /// <param name="cacheManager">Cache manager</param>
-        /// <param name="customerRepository">Customer repository</param>
-        /// <param name="customerRoleRepository">Customer role repository</param>
-        /// <param name="gaRepository">Generic attribute repository</param>
-        /// <param name="genericAttributeService">Generic attribute service</param>
-        /// <param name="eventPublisher">Event published</param>
         public CustomerService(ICacheManager cacheManager,
             IRepository<Customer> customerRepository,
             IRepository<CustomerRole> customerRoleRepository,
@@ -89,26 +82,6 @@ namespace SmartStore.Services.Customers
 
         #region Customers
         
-        /// <summary>
-        /// Gets all customers
-        /// </summary>
-        /// <param name="registrationFrom">Customer registration from; null to load all customers</param>
-        /// <param name="registrationTo">Customer registration to; null to load all customers</param>
-        /// <param name="customerRoleIds">A list of customer role identifiers to filter by (at least one match); pass null or empty list in order to load all customers; </param>
-        /// <param name="email">Email; null to load all customers</param>
-        /// <param name="username">Username; null to load all customers</param>
-        /// <param name="firstName">First name; null to load all customers</param>
-        /// <param name="lastName">Last name; null to load all customers</param>
-        /// <param name="dayOfBirth">Day of birth; 0 to load all customers</param>
-        /// <param name="monthOfBirth">Month of birth; 0 to load all customers</param>
-        /// <param name="company">Company; null to load all customers</param>
-        /// <param name="phone">Phone; null to load all customers</param>
-        /// <param name="zipPostalCode">Phone; null to load all customers</param>
-        /// <param name="loadOnlyWithShoppingCart">Value indicating whther to load customers only with shopping cart</param>
-        /// <param name="sct">Value indicating what shopping cart type to filter; userd when 'loadOnlyWithShoppingCart' param is 'true'</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Customer collection</returns>
         public virtual IPagedList<Customer> GetAllCustomers(DateTime? registrationFrom,
             DateTime? registrationTo, int[] customerRoleIds, string email, string username,
             string firstName, string lastName, int dayOfBirth, int monthOfBirth,
@@ -241,13 +214,6 @@ namespace SmartStore.Services.Customers
             return customers;
         }
 
-        /// <summary>
-        /// Gets all customers by affiliate identifier
-        /// </summary>
-        /// <param name="affiliateId">Affiliate identifier</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Customers</returns>
         public virtual IPagedList<Customer> GetAllCustomers(int affiliateId, int pageIndex, int pageSize)
         {
             var query = _customerRepository.Table;
@@ -259,11 +225,6 @@ namespace SmartStore.Services.Customers
             return customers;
         }
 
-        /// <summary>
-        /// Gets all customers by customer format (including deleted ones)
-        /// </summary>
-        /// <param name="passwordFormat">Password format</param>
-        /// <returns>Customers</returns>
         public virtual IList<Customer> GetAllCustomersByPasswordFormat(PasswordFormat passwordFormat)
         {
             int passwordFormatId = (int)passwordFormat;
@@ -275,14 +236,6 @@ namespace SmartStore.Services.Customers
             return customers;
         }
 
-        /// <summary>
-        /// Gets online customers
-        /// </summary>
-        /// <param name="lastActivityFromUtc">Customer last activity date (from)</param>
-        /// <param name="customerRoleIds">A list of customer role identifiers to filter by (at least one match); pass null or empty list in order to load all customers; </param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <returns>Customer collection</returns>
         public virtual IPagedList<Customer> GetOnlineCustomers(DateTime lastActivityFromUtc,
             int[] customerRoleIds, int pageIndex, int pageSize)
         {
@@ -297,10 +250,6 @@ namespace SmartStore.Services.Customers
             return customers;
         }
 
-        /// <summary>
-        /// Delete a customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
         public virtual void DeleteCustomer(Customer customer)
         {
             if (customer == null)
@@ -313,11 +262,6 @@ namespace SmartStore.Services.Customers
             UpdateCustomer(customer);
         }
 
-        /// <summary>
-        /// Gets a customer
-        /// </summary>
-        /// <param name="customerId">Customer identifier</param>
-        /// <returns>A customer</returns>
         public virtual Customer GetCustomerById(int customerId)
         {
             if (customerId == 0)
@@ -327,11 +271,6 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        /// <summary>
-        /// Get customers by identifiers
-        /// </summary>
-        /// <param name="customerIds">Customer identifiers</param>
-        /// <returns>Customers</returns>
         public virtual IList<Customer> GetCustomersByIds(int[] customerIds)
         {
             if (customerIds == null || customerIds.Length == 0)
@@ -352,11 +291,6 @@ namespace SmartStore.Services.Customers
             return sortedCustomers;
         }
 
-        /// <summary>
-        /// Gets a customer by GUID
-        /// </summary>
-        /// <param name="customerGuid">Customer GUID</param>
-        /// <returns>A customer</returns>
         public virtual Customer GetCustomerByGuid(Guid customerGuid)
         {
             if (customerGuid == Guid.Empty)
@@ -370,11 +304,6 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        /// <summary>
-        /// Get customer by email
-        /// </summary>
-        /// <param name="email">Email</param>
-        /// <returns>Customer</returns>
         public virtual Customer GetCustomerByEmail(string email)
         {
             if (string.IsNullOrWhiteSpace(email))
@@ -388,29 +317,19 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        /// <summary>
-        /// Get customer by system name
-        /// </summary>
-        /// <param name="systemName">System name</param>
-        /// <returns>Customer</returns>
         public virtual Customer GetCustomerBySystemName(string systemName)
         {
             if (string.IsNullOrWhiteSpace(systemName))
                 return null;
 
-            var query = from c in _customerRepository.Table
-                        orderby c.Id
-                        where c.SystemName == systemName
-                        select c;
-            var customer = query.FirstOrDefault();
-            return customer;
+			var query = from c in _customerRepository.Table
+						orderby c.Id
+						where c.SystemName == systemName
+						select c;
+			var customer = query.FirstOrDefault();
+			return customer;
         }
 
-        /// <summary>
-        /// Get customer by username
-        /// </summary>
-        /// <param name="username">Username</param>
-        /// <returns>Customer</returns>
         public virtual Customer GetCustomerByUsername(string username)
         {
             if (string.IsNullOrWhiteSpace(username))
@@ -425,10 +344,6 @@ namespace SmartStore.Services.Customers
             return customer;
         }
 
-        /// <summary>
-        /// Insert a guest customer
-        /// </summary>
-        /// <returns>Customer</returns>
         public virtual Customer InsertGuestCustomer()
         {
             var customer = new Customer
@@ -450,10 +365,6 @@ namespace SmartStore.Services.Customers
             return customer;
         }
         
-        /// <summary>
-        /// Insert a customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
         public virtual void InsertCustomer(Customer customer)
         {
             if (customer == null)
@@ -465,10 +376,6 @@ namespace SmartStore.Services.Customers
             _eventPublisher.EntityInserted(customer);
         }
         
-        /// <summary>
-        /// Updates the customer
-        /// </summary>
-        /// <param name="customer">Customer</param>
         public virtual void UpdateCustomer(Customer customer)
         {
             if (customer == null)
@@ -480,16 +387,6 @@ namespace SmartStore.Services.Customers
             _eventPublisher.EntityUpdated(customer);
         }
 
-        /// <summary>
-        /// Reset data required for checkout
-        /// </summary>
-        /// <param name="customer">Customer</param>
-		/// <param name="storeId">Store identifier</param>
-        /// <param name="clearCouponCodes">A value indicating whether to clear coupon code</param>
-        /// <param name="clearCheckoutAttributes">A value indicating whether to clear selected checkout attributes</param>
-        /// <param name="clearRewardPoints">A value indicating whether to clear "Use reward points" flag</param>
-        /// <param name="clearShippingMethod">A value indicating whether to clear selected shipping method</param>
-        /// <param name="clearPaymentMethod">A value indicating whether to clear selected payment method</param>
 		public virtual void ResetCheckoutData(Customer customer, int storeId,
             bool clearCouponCodes = false, bool clearCheckoutAttributes = false,
             bool clearRewardPoints = true, bool clearShippingMethod = true,
@@ -533,18 +430,11 @@ namespace SmartStore.Services.Customers
             UpdateCustomer(customer);
         }
         
-        /// <summary>
-        /// Delete guest customer records
-        /// </summary>
-        /// <param name="registrationFrom">Customer registration from; null to load all customers</param>
-        /// <param name="registrationTo">Customer registration to; null to load all customers</param>
-        /// <param name="onlyWithoutShoppingCart">A value indicating whether to delete customers only without shopping cart</param>
-        /// <returns>Number of deleted customers</returns>
         public virtual int DeleteGuestCustomers(DateTime? registrationFrom, DateTime? registrationTo, bool onlyWithoutShoppingCart, int maxItemsToDelete = 5000)
         {
 			var ctx = _customerRepository.Context;
 
-			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+			using (var scope = new DbContextScope(ctx: ctx, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true, autoCommit: false))
 			{
 				var guestRole = GetCustomerRoleBySystemName(SystemCustomerRoleNames.Guests);
 				if (guestRole == null)
@@ -586,12 +476,7 @@ namespace SmartStore.Services.Customers
 				query = query.OrderBy(c => c.Id);
 
 				var customers = query.Take(maxItemsToDelete).ToList();
-				
-				var crAutoCommit = _customerRepository.AutoCommitEnabled;
-				var gaAutoCommit = _gaRepository.AutoCommitEnabled;
-				_customerRepository.AutoCommitEnabled = false;
-				_gaRepository.AutoCommitEnabled = false;
-				
+
 				int numberOfDeletedCustomers = 0;
 				foreach (var c in customers)
 				{
@@ -604,10 +489,7 @@ namespace SmartStore.Services.Customers
 									  select ga;
 						var attributes = gaQuery.ToList();
 
-						foreach (var attribute in attributes)
-						{
-							_gaRepository.Delete(attribute);
-						}
+						_gaRepository.DeleteRange(attributes);
 						
 						// delete customer
 						_customerRepository.Delete(c);
@@ -634,9 +516,6 @@ namespace SmartStore.Services.Customers
 
 				// save the rest
 				scope.Commit();
-
-				_customerRepository.AutoCommitEnabled = crAutoCommit;
-				_gaRepository.AutoCommitEnabled = gaAutoCommit;
 
 				return numberOfDeletedCustomers;
 			}
@@ -674,10 +553,6 @@ namespace SmartStore.Services.Customers
         
         #region Customer roles
 
-        /// <summary>
-        /// Delete a customer role
-        /// </summary>
-        /// <param name="customerRole">Customer role</param>
         public virtual void DeleteCustomerRole(CustomerRole customerRole)
         {
             if (customerRole == null)
@@ -694,11 +569,6 @@ namespace SmartStore.Services.Customers
             _eventPublisher.EntityDeleted(customerRole);
         }
 
-        /// <summary>
-        /// Gets a customer role
-        /// </summary>
-        /// <param name="customerRoleId">Customer role identifier</param>
-        /// <returns>Customer role</returns>
         public virtual CustomerRole GetCustomerRoleById(int customerRoleId)
         {
             if (customerRoleId == 0)
@@ -707,11 +577,6 @@ namespace SmartStore.Services.Customers
             return _customerRoleRepository.GetById(customerRoleId);
         }
 
-        /// <summary>
-        /// Gets a customer role
-        /// </summary>
-        /// <param name="systemName">Customer role system name</param>
-        /// <returns>Customer role</returns>
         public virtual CustomerRole GetCustomerRoleBySystemName(string systemName)
         {
             if (String.IsNullOrWhiteSpace(systemName))
@@ -729,11 +594,6 @@ namespace SmartStore.Services.Customers
             });
         }
 
-        /// <summary>
-        /// Gets all customer roles
-        /// </summary>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-        /// <returns>Customer role collection</returns>
         public virtual IList<CustomerRole> GetAllCustomerRoles(bool showHidden = false)
         {
             string key = string.Format(CUSTOMERROLES_ALL_KEY, showHidden);
@@ -748,10 +608,6 @@ namespace SmartStore.Services.Customers
             });
         }
         
-        /// <summary>
-        /// Inserts a customer role
-        /// </summary>
-        /// <param name="customerRole">Customer role</param>
         public virtual void InsertCustomerRole(CustomerRole customerRole)
         {
             if (customerRole == null)
@@ -765,10 +621,6 @@ namespace SmartStore.Services.Customers
             _eventPublisher.EntityInserted(customerRole);
         }
 
-        /// <summary>
-        /// Updates the customer role
-        /// </summary>
-        /// <param name="customerRole">Customer role</param>
         public virtual void UpdateCustomerRole(CustomerRole customerRole)
         {
             if (customerRole == null)
@@ -786,12 +638,6 @@ namespace SmartStore.Services.Customers
 
 		#region Reward points
 
-		/// <summary>
-		/// Add or remove reward points for a product review
-		/// </summary>
-		/// <param name="customer">The customer</param>
-		/// <param name="product">The product</param>
-		/// <param name="add">Whether to add or remove points</param>
 		public virtual void RewardPointsForProductReview(Customer customer, Product product, bool add)
 		{
 			if (_rewardPointsSettings.Enabled && _rewardPointsSettings.PointsForProductReview > 0)

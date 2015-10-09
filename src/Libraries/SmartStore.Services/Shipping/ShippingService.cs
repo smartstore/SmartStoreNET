@@ -103,22 +103,29 @@ namespace SmartStore.Services.Shipping
 		public virtual IEnumerable<Provider<IShippingRateComputationMethod>> LoadActiveShippingRateComputationMethods(int storeId = 0)
         {
 			var allMethods = LoadAllShippingRateComputationMethods(storeId);
+
 			var activeMethods = allMethods
 				.Where(p => p.Value.IsActive && _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase));
 
 			if (!activeMethods.Any())
 			{
-				var fallbackMethod = allMethods.FirstOrDefault();
+				var fallbackMethod = allMethods.FirstOrDefault(x => x.IsShippingRateComputationMethodActive(_shippingSettings));
+
+				if (fallbackMethod == null)
+					fallbackMethod = allMethods.FirstOrDefault();
+				
 				if (fallbackMethod != null)
 				{
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Clear();
 					_shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add(fallbackMethod.Metadata.SystemName);
 					_settingService.SaveSetting(_shippingSettings);
+
 					return new Provider<IShippingRateComputationMethod>[] { fallbackMethod };
 				}
 				else
 				{
-					throw Error.Application("At least one shipping method provider is required to be active.");
+					if (DataSettings.DatabaseIsInstalled())
+						throw Error.Application("At least one shipping method provider is required to be active.");
 				}
 			}
 
@@ -181,33 +188,49 @@ namespace SmartStore.Services.Shipping
         /// <summary>
         /// Gets all shipping methods
         /// </summary>
-        /// <param name="filterByCountryId">The country indentifier to filter by</param>
+		/// <param name="customer">Filter shipping methods by customer and apply payment method restrictions; null to load all records</param>
         /// <returns>Shipping method collection</returns>
-        public virtual IList<ShippingMethod> GetAllShippingMethods(int? filterByCountryId = null)
+		public virtual IList<ShippingMethod> GetAllShippingMethods(Customer customer = null)
         {
-            if (filterByCountryId.HasValue && filterByCountryId.Value > 0)
-            {
-                var query1 = from sm in _shippingMethodRepository.Table
-                             where
-                             sm.RestrictedCountries.Select(c => c.Id).Contains(filterByCountryId.Value)
-                             select sm.Id;
+			List<int> customerRoleIds = null;
 
-                var query2 = from sm in _shippingMethodRepository.Table
-                             where !query1.Contains(sm.Id)
-                             orderby sm.DisplayOrder
-                             select sm;
+			var query =
+				from sm in _shippingMethodRepository.Table
+				orderby sm.DisplayOrder
+				select sm;
 
-                var shippingMethods = query2.ToList();
-                return shippingMethods;
-            }
-            else
-            {
-                var query = from sm in _shippingMethodRepository.Table
-                            orderby sm.DisplayOrder
-                            select sm;
-                var shippingMethods = query.ToList();
-                return shippingMethods;
-            }
+			var allMethods = query.ToList();
+
+			if (customer == null)
+				return allMethods;
+
+			var activeShippingMethods = allMethods.Where(x =>
+			{
+				// method restricted by customer role id?
+				var excludedRoleIds = x.ExcludedCustomerRoleIds.ToIntArray();
+				if (excludedRoleIds.Any())
+				{
+					if (customerRoleIds == null)
+						customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
+
+					if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+						return false;
+				}
+
+				// method restricted by country of selected billing or shipping address?
+				int countryId = 0;
+				if (x.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
+					countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
+				else
+					countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
+
+				if (countryId != 0 && x.CountryRestrictionExists(countryId))
+					return false;
+
+				return true;
+			});
+
+			return activeShippingMethods.ToList();
         }
 
         /// <summary>
@@ -357,7 +380,8 @@ namespace SmartStore.Services.Shipping
         /// <param name="allowedShippingRateComputationMethodSystemName">Filter by shipping rate computation method identifier; null to load shipping options of all shipping rate computation methods</param>
 		/// <param name="storeId">Load records allows only in specified store; pass 0 to load all records</param>
         /// <returns>Shipping options</returns>
-		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
+		public virtual GetShippingOptionResponse GetShippingOptions(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, 
+			string allowedShippingRateComputationMethodSystemName = "", int storeId = 0)
         {
             if (cart == null)
                 throw new ArgumentNullException("cart");

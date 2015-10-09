@@ -1,6 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Data.Entity;
+using System.Data.Entity.Infrastructure;
 
 namespace SmartStore.Core
 {
@@ -19,7 +21,25 @@ namespace SmartStore.Core
         public PagedList(IQueryable<T> source, int pageIndex, int pageSize)
         {
             Guard.ArgumentNotNull(source, "source");
-            Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count());
+
+			if (pageIndex == 0 && pageSize == int.MaxValue)     
+			{
+				// avoid unnecessary SQL
+				Init(source, pageIndex, pageSize, source.Count());
+			}
+			else
+			{
+				if (source.Provider is IDbAsyncQueryProvider)
+				{
+					// the Lambda overloads for Skip() and Take() let EF use cached query plans, thus slightly increasing performance.
+					var skip = pageIndex * pageSize;
+					Init(source.Skip(() => skip).Take(() => pageSize), pageIndex, pageSize, source.Count());
+				}
+				else
+				{
+					Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count());
+				}
+            }
         }
 
         /// <summary>
@@ -31,6 +51,7 @@ namespace SmartStore.Core
         public PagedList(IList<T> source, int pageIndex, int pageSize)
         {
             Guard.ArgumentNotNull(source, "source");
+
             Init(source.Skip(pageIndex * pageSize).Take(pageSize), pageIndex, pageSize, source.Count);
         }
 		
@@ -43,12 +64,10 @@ namespace SmartStore.Core
         /// <param name="totalCount">Total count</param>
         public PagedList(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
-            // codehint: sm-edit
             Guard.ArgumentNotNull(source, "source");
             Init(source, pageIndex, pageSize, totalCount);
         }
 
-        // codehint: sm-add
         private void Init(IEnumerable<T> source, int pageIndex, int pageSize, int totalCount)
         {
             Guard.PagingArgsValid(pageIndex, pageSize,"pageIndex", "pageSize");

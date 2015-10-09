@@ -1,0 +1,53 @@
+﻿@model ScheduleTaskModel
+@{
+	Layout = null;
+	var widgetId = "minimal-task-widget-" + Model.Id;
+	var returnUrl = (string)ViewBag.ReturnUrl;
+	var hasPermission = ViewBag.HasPermission == true;
+	var cancellable = ViewBag.Cancellable == true;
+}
+<div id="@widgetId" class="minimal-task-widget clearfix">
+	<div class="task-info@(Model.IsRunning ? " hide" : "")">
+		@Html.Partial("_MinimalTaskWidget", Model)
+	</div>
+	<div class='task-progress pull-left text-success@(Model.IsRunning ? "" : " hide")' data-task-id='@Model.Id' data-running='@(Model.IsRunning ? "true" : "false")'></div>
+	@if (cancellable && hasPermission)
+	{
+		<a href='@Model.CancelUrl' data-task-id='@Model.Id' class='btn btn-small btn-danger btn-cancel-task@(!Model.IsRunning ? " hide" : "")' onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+			@T("Common.Cancel")
+		</a>
+	}
+</div>
+
+<script>
+	$(function () {
+		Admin.TaskWatcher.startWatching({
+			context: $('#@widgetId'),
+			elementsSelector: '.task-progress',
+			defaultProgressMessage: '@T("Admin.System.ScheduleTasks.RunNow.IsRunning")',
+			pollUrl: '@Url.Action("GetRunningTasks")',
+			onTaskStarted: function (task, el) {
+				el.prev().addClass('hide'); // .task-info
+				el.next().removeClass('hide'); // .btn-cancel-task
+			},
+			onTaskCompleted: function (taskId, el) {
+				el.prev().removeClass('hide'); // .task-info
+				el.next().addClass('hide'); // .btn-cancel-task
+				$.ajax({
+					cache: false,
+					global: false,
+					type: 'POST',
+					url: '@Url.Action("GetMinimalTaskWidget")',
+					data: { taskId: taskId, returnUrl: '@returnUrl' },
+					success: function (data) {
+						el.prev().html(data);
+					}
+				});
+			}
+		});
+	});
+</script>
+
+
+
+

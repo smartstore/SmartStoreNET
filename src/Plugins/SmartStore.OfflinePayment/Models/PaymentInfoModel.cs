@@ -97,4 +97,10 @@ namespace SmartStore.OfflinePayment.Models
 	{
 	}
 
+    public class PurchaseOrderNumberPaymentInfoModel : PaymentInfoModelBase
+	{
+        [SmartResourceDisplayName("Plugins.Payment.PurchaseOrder.PurchaseOrderNumber")]
+        [AllowHtml]
+        public string PurchaseOrderNumber { get; set; }
+	}
 }

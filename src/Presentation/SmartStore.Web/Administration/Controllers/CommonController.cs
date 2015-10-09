@@ -496,35 +496,73 @@ namespace SmartStore.Admin.Controllers
         public ActionResult Warnings()
         {
             var model = new List<SystemWarningModel>();
+			var store = _services.StoreContext.CurrentStore;
             
             //store URL
-			var currentStoreUrl = _services.StoreContext.CurrentStore.Url.EnsureEndsWith("/");
-			if (currentStoreUrl.HasValue() && (currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || currentStoreUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
-                model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Pass,
-                        Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
-                    });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), currentStoreUrl, _services.WebHelper.GetStoreLocation(false))
-                });
+			var storeUrl = store.Url.EnsureEndsWith("/");
+			if (storeUrl.HasValue() && (storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(false)) || storeUrl.IsCaseInsensitiveEqual(_services.WebHelper.GetStoreLocation(true))))
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.URL.Match")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.URL.NoMatch"), storeUrl, _services.WebHelper.GetStoreLocation(false))
+				});
+			}
 
+			// sitemap reachability
+			var sitemapReachable = false;
+			try
+			{
+				var sitemapUrl = Url.RouteUrl("SitemapSEO", (object)null, _securitySettings.Value.ForceSslForAllPages ? "https" : "http");
+				var request = (HttpWebRequest)WebRequest.Create(sitemapUrl);
+				request.Method = "HEAD";
+				request.Timeout = 15000;
+
+				using (var response = (HttpWebResponse)request.GetResponse())
+				{
+					sitemapReachable = (response.StatusCode == HttpStatusCode.OK);
+				}
+			}
+			catch (WebException) { }
+
+			if (sitemapReachable)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.SitemapReachable.Wrong")
+				});
+			}
 
             //primary exchange rate currency
-			var perCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryExchangeRateCurrencyId);
+			var perCurrency = store.PrimaryExchangeRateCurrency;
             if (perCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Set"),
                 });
+
                 if (perCurrency.Rate != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.Rate1")
@@ -533,7 +571,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.ExchangeCurrency.NotSet")
@@ -541,10 +579,10 @@ namespace SmartStore.Admin.Controllers
             }
 
             //primary store currency
-			var pscCurrency = _currencyService.Value.GetCurrencyById(_currencySettings.Value.PrimaryStoreCurrencyId);
+			var pscCurrency = store.PrimaryStoreCurrency;
             if (pscCurrency != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.Set"),
@@ -552,7 +590,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.PrimaryCurrency.NotSet")
@@ -564,7 +602,7 @@ namespace SmartStore.Admin.Controllers
 			var bWeight = _measureService.Value.GetMeasureWeightById(_measureSettings.Value.BaseWeightId);
             if (bWeight != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Set"),
@@ -572,7 +610,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bWeight.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.Ratio1")
@@ -581,7 +619,7 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultWeight.NotSet")
@@ -593,7 +631,7 @@ namespace SmartStore.Admin.Controllers
 			var bDimension = _measureService.Value.GetMeasureDimensionById(_measureSettings.Value.BaseDimensionId);
             if (bDimension != null)
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Pass,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Set"),
@@ -601,7 +639,7 @@ namespace SmartStore.Admin.Controllers
 
                 if (bDimension.Ratio != 1)
                 {
-                    model.Add(new SystemWarningModel()
+                    model.Add(new SystemWarningModel
                     {
                         Level = SystemWarningLevel.Fail,
                         Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.Ratio1")
@@ -610,86 +648,118 @@ namespace SmartStore.Admin.Controllers
             }
             else
             {
-                model.Add(new SystemWarningModel()
+                model.Add(new SystemWarningModel
                 {
                     Level = SystemWarningLevel.Fail,
                     Text = _localizationService.GetResource("Admin.System.Warnings.DefaultDimension.NotSet")
                 });
             }
 
-            // shipping rate coputation methods
-			if (_shippingService.Value.LoadActiveShippingRateComputationMethods()
-                .Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
-                .Count() > 1)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Warning,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
-                });
+			// shipping rate coputation methods
+			int activeShippingMethodCount = 0;
+
+			try
+			{
+				activeShippingMethodCount = _shippingService.Value.LoadActiveShippingRateComputationMethods()
+					.Where(x => x.Value.ShippingRateComputationMethodType == ShippingRateComputationMethodType.Offline)
+					.Count();
+			}
+			catch { }
+
+			if (activeShippingMethodCount > 1)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Warning,
+					Text = _localizationService.GetResource("Admin.System.Warnings.Shipping.OnlyOneOffline")
+				});
+			}
 
             //payment methods
-			if (_paymentService.Value.LoadActivePaymentMethods()
-                .Count() > 0)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
-                });
-            else
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Fail,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
-                });
+			int activePaymentMethodCount = 0;
+
+			try
+			{
+				activePaymentMethodCount = _paymentService.Value.LoadActivePaymentMethods().Count();
+			}
+			catch { }
+
+			if (activePaymentMethodCount > 0)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.OK")
+				});
+			}
+			else
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Fail,
+					Text = _localizationService.GetResource("Admin.System.Warnings.PaymentMethods.NoActive")
+				});
+			}
 
             //incompatible plugins
-            if (PluginManager.IncompatiblePlugins != null)
-                foreach (var pluginName in PluginManager.IncompatiblePlugins)
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName )
-                    });
+			if (PluginManager.IncompatiblePlugins != null)
+			{
+				foreach (var pluginName in PluginManager.IncompatiblePlugins)
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.IncompatiblePlugin"), pluginName)
+					});
+				}
+			}
 
             //validate write permissions (the same procedure like during installation)
             var dirPermissionsOk = true;
 			var dirsToCheck = FilePermissionHelper.GetDirectoriesWrite(_services.WebHelper);
-            foreach (string dir in dirsToCheck)
-                if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
-                {
-                    model.Add(new SystemWarningModel()
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
-                    });
-                    dirPermissionsOk = false;
-                }
-            if (dirPermissionsOk)
-                model.Add(new SystemWarningModel()
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
-                });
+			foreach (string dir in dirsToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(dir, false, true, true, false))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.Wrong"), WindowsIdentity.GetCurrent().Name, dir)
+					});
+					dirPermissionsOk = false;
+				}
+			}
+			if (dirPermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.DirectoryPermission.OK")
+				});
+			}
 
             var filePermissionsOk = true;
 			var filesToCheck = FilePermissionHelper.GetFilesWrite(_services.WebHelper);
-            foreach (string file in filesToCheck)
-                if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
-                {
-                    model.Add(new SystemWarningModel
-                    {
-                        Level = SystemWarningLevel.Warning,
-                        Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
-                    });
-                    filePermissionsOk = false;
-                }
-            if (filePermissionsOk)
-                model.Add(new SystemWarningModel
-                {
-                    Level = SystemWarningLevel.Pass,
-                    Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
-                });
-            
+			foreach (string file in filesToCheck)
+			{
+				if (!FilePermissionHelper.CheckPermissions(file, false, true, true, true))
+				{
+					model.Add(new SystemWarningModel
+					{
+						Level = SystemWarningLevel.Warning,
+						Text = string.Format(_localizationService.GetResource("Admin.System.Warnings.FilePermission.Wrong"), WindowsIdentity.GetCurrent().Name, file)
+					});
+					filePermissionsOk = false;
+				}
+			}
+			if (filePermissionsOk)
+			{
+				model.Add(new SystemWarningModel
+				{
+					Level = SystemWarningLevel.Pass,
+					Text = _localizationService.GetResource("Admin.System.Warnings.FilePermission.OK")
+				});
+			}
             
             return View(model);
         }

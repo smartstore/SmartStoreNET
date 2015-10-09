@@ -122,16 +122,11 @@ namespace SmartStore.Web.Controllers
 			this._localizationSettings = localizationSettings;
 			this._captchaSettings = captchaSettings;
 			this._helper = helper;
-            this._downloadService = downloadService;
-            this._localizationService = localizationService;
-
-			T = NullLocalizer.Instance;
+			this._downloadService = downloadService;
+			this._localizationService = localizationService;
         }
         
         #endregion
-
-		public Localizer T { get; set; }
-
 
 		#region Products
 
@@ -306,9 +301,10 @@ namespace SmartStore.Web.Controllers
 			else
 			{
 				//Errors
-				foreach (string error in addToCartContext.Warnings)
-					ModelState.AddModelError("", error);
-
+                foreach (string error in addToCartContext.Warnings)
+                {
+                    this.NotifyError(error);
+                }
 				//If we got this far, something failed, redisplay form
 				var model = _helper.PrepareProductDetailsPageModel(parentProduct);
 
@@ -445,7 +441,7 @@ namespace SmartStore.Web.Controllers
 			if (products.Count == 0)
 				return Content("");
 
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -472,7 +468,7 @@ namespace SmartStore.Web.Controllers
 				return Content("");
 
 			// prepare model
-			var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize).ToList();
+            var model = _helper.PrepareProductOverviewModels(products, true, true, productThumbPictureSize, false, false, false, false, true).ToList();
 
 			return PartialView(model);
 		}
@@ -662,14 +658,16 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var allCombinationImageIds = new List<int>();
+					var allCombinationImageIds = product.ProductVariantAttributeCombinations.GetAllCombinationPictureIds();
 
-					_productAttributeService
-						.GetAllProductVariantAttributeCombinations(product.Id)
-						.GetAllCombinationImageIds(allCombinationImageIds);
-
-					_helper.PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
-						false, bundleItem, m.CombinationSelected);
+					_helper.PrepareProductDetailsPictureModel(
+						pictureModel, 
+						pictures, 
+						product.GetLocalized(x => x.Name), 
+						allCombinationImageIds,
+						false, 
+						bundleItem, 
+						m.SelectedCombination);
 
 					galleryStartIndex = pictureModel.GalleryStartIndex;
 					galleryHtml = this.RenderPartialViewToString("_PictureGallery", pictureModel);

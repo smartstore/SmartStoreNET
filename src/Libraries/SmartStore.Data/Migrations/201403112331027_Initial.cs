@@ -1774,13 +1774,13 @@ namespace SmartStore.Data.Migrations
 			#endregion
 
 			#region Custom
-			
-			this.SqlFile("Indexes.sql");
+
+			this.SqlFileOrResource("Indexes.sql");
 			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
 				// do not execute in unit tests
-				this.SqlFile("Indexes.SqlServer.sql");
-				this.SqlFile("StoredProcedures.sql");
+				this.SqlFileOrResource("Indexes.SqlServer.sql");
+				this.SqlFileOrResource("StoredProcedures.sql");
 			}
 
 			#endregion
@@ -1790,12 +1790,12 @@ namespace SmartStore.Data.Migrations
 		{
 			#region Custom
 
-			this.SqlFile("Indexes.Inverse.sql");
+			this.SqlFileOrResource("Indexes.Inverse.sql");
 			if (HostingEnvironment.IsHosted && DataSettings.Current.IsSqlServer)
 			{
 				// do not execute in unit tests
-				this.SqlFile("Indexes.SqlServer.Inverse.sql");
-				this.SqlFile("StoredProcedures.Inverse.sql");
+				this.SqlFileOrResource("Indexes.SqlServer.Inverse.sql");
+				this.SqlFileOrResource("StoredProcedures.Inverse.sql");
 			}
 
 			#endregion

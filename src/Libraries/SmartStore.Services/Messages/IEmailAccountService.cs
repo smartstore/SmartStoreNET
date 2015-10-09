@@ -30,6 +30,12 @@ namespace SmartStore.Services.Messages
         /// <returns>Email account</returns>
         EmailAccount GetEmailAccountById(int emailAccountId);
 
+		/// <summary>
+		/// Gets the default email account
+		/// </summary>
+		/// <returns>Emil account</returns>
+		EmailAccount GetDefaultEmailAccount();
+
         /// <summary>
         /// Gets all email accounts
         /// </summary>

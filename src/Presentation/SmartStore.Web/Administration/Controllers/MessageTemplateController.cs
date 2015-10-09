@@ -5,6 +5,7 @@ using SmartStore.Admin.Models.Messages;
 using SmartStore.Collections;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
@@ -91,28 +92,21 @@ namespace SmartStore.Admin.Controllers
         {
             foreach (var localized in model.Locales)
             {
-                _localizedEntityService.SaveLocalizedValue(mt,
-                                                           x => x.BccEmailAddresses,
-                                                           localized.BccEmailAddresses,
-                                                           localized.LanguageId);
+				int lid = localized.LanguageId;
 
-                _localizedEntityService.SaveLocalizedValue(mt,
-                                                           x => x.Subject,
-                                                           localized.Subject,
-                                                           localized.LanguageId);
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment1FileId, lid, false, false), localized.Attachment1FileId, true);
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment2FileId, lid, false, false), localized.Attachment2FileId, true);
+				MediaHelper.UpdateDownloadTransientState(mt.GetLocalized(x => x.Attachment3FileId, lid, false, false), localized.Attachment3FileId, true);
 
-                _localizedEntityService.SaveLocalizedValue(mt,
-                                                           x => x.Body,
-                                                           localized.Body,
-                                                           localized.LanguageId);
-
-                _localizedEntityService.SaveLocalizedValue(mt,
-                                                           x => x.EmailAccountId,
-                                                           localized.EmailAccountId,
-                                                           localized.LanguageId);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.BccEmailAddresses, localized.BccEmailAddresses, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Subject, localized.Subject, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Body, localized.Body, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.EmailAccountId, localized.EmailAccountId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment1FileId, localized.Attachment1FileId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment2FileId, localized.Attachment2FileId, lid);
+				_localizedEntityService.SaveLocalizedValue(mt, x => x.Attachment3FileId, localized.Attachment3FileId, lid);
             }
         }
-
 
 		[NonAction]
 		private void PrepareStoresMappingModel(MessageTemplateModel model, MessageTemplate messageTemplate, bool excludeProperties)
@@ -156,7 +150,9 @@ namespace SmartStore.Admin.Controllers
 			//stores
 			model.AvailableStores.Add(new SelectListItem() { Text = _localizationService.GetResource("Admin.Common.All"), Value = "0" });
 			foreach (var s in _storeService.GetAllStores())
+			{
 				model.AvailableStores.Add(new SelectListItem() { Text = s.Name, Value = s.Id.ToString() });
+			}
 
 			return View(model);
         }
@@ -192,19 +188,24 @@ namespace SmartStore.Admin.Controllers
 
             FillTokensTree(model.TokensTree, _messageTokenProvider.GetListOfAllowedTokens());
 
-            //available email accounts
-            foreach (var ea in _emailAccountService.GetAllEmailAccounts())
-                model.AvailableEmailAccounts.Add(ea.ToModel());
+            // available email accounts
+			foreach (var ea in _emailAccountService.GetAllEmailAccounts())
+			{
+				model.AvailableEmailAccounts.Add(ea.ToModel());
+			}
 			
-			//Store
+			// Store
 			PrepareStoresMappingModel(model, messageTemplate, false);
             
-			//locales
+			// locales
             AddLocales(_languageService, model.Locales, (locale, languageId) =>
             {
                 locale.BccEmailAddresses = messageTemplate.GetLocalized(x => x.BccEmailAddresses, languageId, false, false);
                 locale.Subject = messageTemplate.GetLocalized(x => x.Subject, languageId, false, false);
                 locale.Body = messageTemplate.GetLocalized(x => x.Body, languageId, false, false);
+				locale.Attachment1FileId = messageTemplate.GetLocalized(x => x.Attachment1FileId, languageId, false, false);
+				locale.Attachment2FileId = messageTemplate.GetLocalized(x => x.Attachment2FileId, languageId, false, false);
+				locale.Attachment3FileId = messageTemplate.GetLocalized(x => x.Attachment3FileId, languageId, false, false);
 
                 var emailAccountId = messageTemplate.GetLocalized(x => x.EmailAccountId, languageId, false, false);
                 locale.EmailAccountId = emailAccountId > 0 ? emailAccountId : _emailAccountSettings.DefaultEmailAccountId;
@@ -227,12 +228,17 @@ namespace SmartStore.Admin.Controllers
             if (ModelState.IsValid)
             {
                 messageTemplate = model.ToEntity(messageTemplate);
+
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment1FileId);
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment2FileId);
+				MediaHelper.UpdateDownloadTransientStateFor(messageTemplate, x => x.Attachment3FileId);
+
                 _messageTemplateService.UpdateMessageTemplate(messageTemplate);
 				
-				//Stores
+				// Stores
 				_storeMappingService.SaveStoreMappings<MessageTemplate>(messageTemplate, model.SelectedStoreIds);
                 
-				//locales
+				// locales
                 UpdateLocales(messageTemplate, model);
 
                 NotifySuccess(_localizationService.GetResource("Admin.ContentManagement.MessageTemplates.Updated"));

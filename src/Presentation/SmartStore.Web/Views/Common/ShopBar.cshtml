@@ -27,7 +27,7 @@
         }
 
         @{
-			string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login");
+            string accountUrl = Model.IsAuthenticated ? Url.Action("Info", "Customer") : Url.RouteUrl("Login", new { ReturnUrl = Request.RawUrl });
         }
 
         <!-- ACCOUNT -->

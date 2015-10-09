@@ -142,107 +142,82 @@ namespace SmartStore.WebApi.Controllers.OData
 			return Request.CreateResponseForEntity(productManufacturer, relatedKey);
 		}
 
-		public DeliveryTime GetDeliveryTime(int key)
+		[WebApiQueryable]
+		public SingleResult<DeliveryTime> GetDeliveryTime(int key)
 		{
-			return GetExpandedProperty<DeliveryTime>(key, x => x.DeliveryTime);
+			return GetRelatedEntity(key, x => x.DeliveryTime);
 		}
 
-		public QuantityUnit GetQuantityUnit(int key)
+		[WebApiQueryable]
+		public SingleResult<QuantityUnit> GetQuantityUnit(int key)
 		{
-			return GetExpandedProperty<QuantityUnit>(key, x => x.QuantityUnit);
+			return GetRelatedEntity(key, x => x.QuantityUnit);
 		}
 
-		public Download GetSampleDownload(int key)
+		[WebApiQueryable]
+		public SingleResult<Download> GetSampleDownload(int key)
 		{
-			return GetExpandedProperty<Download>(key, x => x.SampleDownload);
+			return GetRelatedEntity(key, x => x.SampleDownload);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductCategory> GetProductCategories(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductCategory>>(key, x => x.ProductCategories);
-
-			return entity.ProductCategories.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductCategories);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductManufacturer> GetProductManufacturers(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductManufacturer>>(key, x => x.ProductManufacturers);
-
-			return entity.ProductManufacturers.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductManufacturers);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductPicture> GetProductPictures(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductPicture>>(key, x => x.ProductPictures);
-
-			return entity.ProductPictures.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductPictures);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductSpecificationAttribute> GetProductSpecificationAttributes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductSpecificationAttribute>>(key, x => x.ProductSpecificationAttributes);
-
-			return entity.ProductSpecificationAttributes.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductSpecificationAttributes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductTag> GetProductTags(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductTag>>(key, x => x.ProductTags);
-
-			return entity.ProductTags.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductTags);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<TierPrice> GetTierPrices(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<TierPrice>>(key, x => x.TierPrices);
-
-			return entity.TierPrices.AsQueryable();
+			return GetRelatedCollection(key, x => x.TierPrices);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<Discount> GetAppliedDiscounts(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Discount>>(key, x => x.AppliedDiscounts);
-
-			return entity.AppliedDiscounts.AsQueryable();
+			return GetRelatedCollection(key, x => x.AppliedDiscounts);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductVariantAttribute> GetProductVariantAttributes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttribute>>(key, x => x.ProductVariantAttributes);
-
-			return entity.ProductVariantAttributes.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductVariantAttributes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductVariantAttributeCombination> GetProductVariantAttributeCombinations(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductVariantAttributeCombination>>(key, x => x.ProductVariantAttributeCombinations);
-			return entity.ProductVariantAttributeCombinations.AsQueryable();
-
-			//var ctx = (DbContext)Repository.Context;
-			//var product = GetEntityByKey(key);
-			//var entry = ctx.Entry(product);
-			//var query = entry.Collection(p => p.ProductVariantAttributeCombinations).Query();
-			//return query;
-
-			//var query = GetEntitySet().Where(x => x.Id.Equals(key));
-			//return query.SelectMany(x => x.ProductVariantAttributeCombinations);
+			return GetRelatedCollection(key, x => x.ProductVariantAttributeCombinations);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<ProductBundleItem> GetProductBundleItems(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<ProductBundleItem>>(key, x => x.ProductBundleItems);
-
-			return entity.ProductBundleItems.AsQueryable();
+			return GetRelatedCollection(key, x => x.ProductBundleItems);
 		}
 
 		// actions
@@ -259,7 +234,7 @@ namespace SmartStore.WebApi.Controllers.OData
 				{
 					if (entity.ProductType == ProductType.GroupedProduct)
 					{
-						var searchContext = new ProductSearchContext()
+						var searchContext = new ProductSearchContext
 						{
 							Query = this.GetExpandedEntitySet(requiredProperties),
 							ParentGroupedProductId = entity.Id,

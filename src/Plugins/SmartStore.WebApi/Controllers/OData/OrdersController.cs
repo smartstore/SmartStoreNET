@@ -55,44 +55,41 @@ namespace SmartStore.WebApi.Controllers.OData
 
 		// navigation properties
 
-		public Customer GetCustomer(int key)
+		[WebApiQueryable]
+		public SingleResult<Customer> GetCustomer(int key)
 		{
-			return GetExpandedProperty<Customer>(key, x => x.Customer);
+			return GetRelatedEntity(key, x => x.Customer);
 		}
 
-		public Address GetBillingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetBillingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.BillingAddress);
+			return GetRelatedEntity(key, x => x.BillingAddress);
 		}
 
-		public Address GetShippingAddress(int key)
+		[WebApiQueryable]
+		public SingleResult<Address> GetShippingAddress(int key)
 		{
-			return GetExpandedProperty<Address>(key, x => x.ShippingAddress);
+			return GetRelatedEntity(key, x => x.ShippingAddress);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<OrderNote> GetOrderNotes(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<OrderNote>>(key, x => x.OrderNotes);
 			//var entity = GetEntityByKeyNotNull(key);	// if ProxyCreationEnabled = true
-
-			return entity.OrderNotes.AsQueryable();
+			return GetRelatedCollection(key, x => x.OrderNotes);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<Shipment> GetShipments(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<Shipment>>(key, x => x.Shipments);
-
-			return entity.Shipments.AsQueryable();
+			return GetRelatedCollection(key, x => x.Shipments);
 		}
 
 		[WebApiQueryable]
 		public IQueryable<OrderItem> GetOrderItems(int key)
 		{
-			var entity = GetExpandedEntity<ICollection<OrderItem>>(key, x => x.OrderItems);
-
-			return entity.OrderItems.AsQueryable();
+			return GetRelatedCollection(key, x => x.OrderItems);
 		}
 
 		// actions

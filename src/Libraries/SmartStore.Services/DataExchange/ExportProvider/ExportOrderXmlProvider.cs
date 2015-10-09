@@ -73,7 +73,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 						writer.WriteStartElement("Order");
 
-						context.ProcessRecord((int)order.Id, () =>
+						try
 						{
 							dynamic store = order.Store;
 							int? shippingAddressId = order.ShippingAddressId;
@@ -244,7 +244,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteEndElement();	// Shipment
 							}
 							writer.WriteEndElement();	// Shipments
-						});
+						
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)order.Id);
+						}
 
 						writer.WriteEndElement();	// Order
 					}

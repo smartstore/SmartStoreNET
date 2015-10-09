@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -71,7 +72,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 						writer.WriteStartElement("Manufacturer");
 
-						context.ProcessRecord((int)manufacturer.Id, () =>
+						try
 						{
 							xmlHelper.WriteManufacturer(manufacturer, null);
 
@@ -87,7 +88,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteEndElement();	// ProductManufacturer
 							}
 							writer.WriteEndElement();	// ProductManufacturers
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)manufacturer.Id);
+						}
 
 						writer.WriteEndElement();	// Manufacturer
 					}

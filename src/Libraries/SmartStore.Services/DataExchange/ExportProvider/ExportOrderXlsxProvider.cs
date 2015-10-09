@@ -148,7 +148,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						context.ProcessRecord((int)order.Id, () =>
+						try
 						{
 							int column = 1;
 							dynamic customer = order.Customer;
@@ -219,7 +219,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.ZipPostalCode : "");
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.PhoneNumber : "");
 							WriteCell(worksheet, row, ref column, shippingAddress != null ? (string)shippingAddress.FaxNumber : "");
-						});
+						
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)order.Id);
+						}
 
 						++row;
 					}

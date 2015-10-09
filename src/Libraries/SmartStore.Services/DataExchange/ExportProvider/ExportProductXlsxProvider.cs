@@ -232,7 +232,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						context.ProcessRecord((int)product.Id, () =>
+						try
 						{
 							int column = 1;
 							DateTime? specialPriceStartDateTimeUtc = product.SpecialPriceStartDateTimeUtc;
@@ -379,7 +379,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								WriteCell(worksheet, row, ref column, GetLocalized(localized, lang, "ShortDescription"));
 								WriteCell(worksheet, row, ref column, GetLocalized(localized, lang, "FullDescription"));
 							}
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)product.Id);
+						}
 
 						++row;
 					}

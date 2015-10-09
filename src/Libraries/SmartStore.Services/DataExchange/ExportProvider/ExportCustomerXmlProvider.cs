@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -69,7 +70,16 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						context.ProcessRecord((int)customer.Id, () => xmlHelper.WriteCustomer(customer, "Customer"));
+						try
+						{
+							xmlHelper.WriteCustomer(customer, "Customer");
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)customer.Id);
+						}
 					}
 				}
 

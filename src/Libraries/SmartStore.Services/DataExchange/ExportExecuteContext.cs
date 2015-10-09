@@ -99,19 +99,18 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Number of successful processed records
 		/// </summary>
-		int RecordsSucceeded { get; }
+		int RecordsSucceeded { get; set; }
 
 		/// <summary>
 		/// Number of failed records
 		/// </summary>
-		int RecordsFailed { get; }
+		int RecordsFailed { get; set; }
 
 		/// <summary>
-		/// Try-catch closure for exporting a single record
+		/// Processes an exception that occurred while exporting a record
 		/// </summary>
-		/// <param name="entityId">Entity identifier</param>
-		/// <param name="export">Callback</param>
-		void ProcessRecord(int entityId, Action export);
+		/// <param name="exc">Exception</param>
+		void RecordException(Exception exc, int entityId);
 	}
 
 
@@ -158,11 +157,8 @@ namespace SmartStore.Services.DataExchange
 		{
 			get
 			{
-				if (_cancellation.IsCancellationRequested)
+				if (_cancellation.IsCancellationRequested || IsMaxFailures)
 					return ExportAbortion.Hard;
-				
-				if (IsMaxFailures)
-					return ExportAbortion.Soft;
 
 				return _providerAbort;
 			}
@@ -195,23 +191,14 @@ namespace SmartStore.Services.DataExchange
 		public int RecordsSucceeded { get; set; }
 		public int RecordsFailed { get; set; }
 
-		public void ProcessRecord(int entityId, Action process)
+		public void RecordException(Exception exc, int entityId)
 		{
-			try
-			{
-				process();
+			++RecordsFailed;
 
-				++RecordsSucceeded;
-			}
-			catch (Exception exc)
-			{
-				++RecordsFailed;
+			Log.Error("Error while processing record with id {0}: {1}".FormatInvariant(entityId, exc.ToAllMessages()), exc);
 
-				Log.Error("Error while processing record with id {0}: {1}".FormatInvariant(entityId, exc.ToAllMessages()), exc);
-
-				if (IsMaxFailures)
-					_result.LastError = exc.ToString();
-			}
+			if (IsMaxFailures)
+				_result.LastError = exc.ToString();
 		}
 	}
 }

@@ -1,4 +1,5 @@
-﻿using System.Globalization;
+﻿using System;
+using System.Globalization;
 using System.IO;
 using System.Text;
 using System.Xml;
@@ -71,7 +72,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 						writer.WriteStartElement("Category");
 
-						context.ProcessRecord((int)category.Id, () =>
+						try
 						{
 							xmlHelper.WriteCategory(category, null);
 
@@ -87,7 +88,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 								writer.WriteEndElement();	// ProductCategory
 							}
 							writer.WriteEndElement();	// ProductCategories
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)category.Id);
+						}
 
 						writer.WriteEndElement();	// Category
 					}

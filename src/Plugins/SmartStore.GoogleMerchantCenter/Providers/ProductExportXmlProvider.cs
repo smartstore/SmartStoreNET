@@ -169,13 +169,15 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			};
 
 			var path = context.FilePath;
-			var config = context.ConfigurationData as ProfileConfigurationModel;
 			dynamic currency = context.Currency;
 			string measureWeightSystemKey = "";
+
 			var measureWeight = _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId);
 
 			if (measureWeight != null)
 				measureWeightSystemKey = measureWeight.SystemKeyword;
+
+			var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
 
 			context.Log.Information("Creating file " + path);
 
@@ -211,7 +213,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 						writer.WriteStartElement("item");
 
-						context.ProcessRecord((int)product.Id, () =>
+						try
 						{
 							string category = (gmc == null ? null : gmc.Taxonomy);
 							string productType = product._CategoryPath;
@@ -381,7 +383,13 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 									writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
 								}
 							}
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, productId);
+						}
 
 						writer.WriteEndElement(); // item
 					}

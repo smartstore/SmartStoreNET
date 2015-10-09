@@ -50,12 +50,15 @@ using SmartStore.Services.Shipping;
 using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
+using SmartStore.Utilities.Threading;
 
 // note: namespace persisted in ScheduleTask.Type
 namespace SmartStore.Services.DataExchange.ExportTask
 {
 	public class ExportProfileTask : ITask
 	{
+		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
+
 		#region Dependencies
 
 		private DataExchangeSettings _dataExchangeSettings;
@@ -1179,12 +1182,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando.AppliedDiscounts = null;
 			expando.TierPrices = null;
-			expando.ProductTags = null;
 			expando.ProductAttributes = null;
 			expando.ProductAttributeCombinations = null;
 			expando.ProductPictures = null;
 			expando.ProductCategories = null;
 			expando.ProductManufacturers = null;
+			expando.ProductTags = null;
 			expando.ProductSpecificationAttributes = null;
 			expando.ProductBundleItems = null;
 
@@ -2450,7 +2453,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 						try
 						{
-							ctx.Provider.Value.Execute(ctx.Export);
+							if (ctx.IsFileBasedExport)
+							{
+								using (_rwLock.GetWriteLock())
+								{
+									ctx.Provider.Value.Execute(ctx.Export);
+								}
+							}
+							else
+							{
+								ctx.Provider.Value.Execute(ctx.Export);
+							}
 
 							ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.Export.RecordsSucceeded));
 

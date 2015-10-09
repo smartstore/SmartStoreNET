@@ -150,7 +150,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						context.ProcessRecord((int)customer.Id, () =>
+						try
 						{
 							int column = 1;
 							DateTime? lastLoginDateUtc = customer.LastLoginDateUtc;
@@ -198,7 +198,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 							WriteCell(worksheet, row, ref column, GetGenericAttributeValue(customer, SystemCustomerAttributeNames.AvatarPictureId));
 							WriteCell(worksheet, row, ref column, GetGenericAttributeValue(customer, SystemCustomerAttributeNames.ForumPostCount));
 							WriteCell(worksheet, row, ref column, GetGenericAttributeValue(customer, SystemCustomerAttributeNames.Signature));
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)customer.Id);
+						}
 
 						++row;
 					}

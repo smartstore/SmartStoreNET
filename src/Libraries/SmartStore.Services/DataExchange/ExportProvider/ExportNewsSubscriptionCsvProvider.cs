@@ -1,4 +1,5 @@
-﻿using System.IO;
+﻿using System;
+using System.IO;
 using System.Text;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
@@ -52,7 +53,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						context.ProcessRecord((int)subscriber.Id, () =>
+						try
 						{
 							var row = "{0},{1},{2}".FormatInvariant(
 								((string)subscriber.Email).ReplaceCsvChars(),
@@ -61,7 +62,13 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 							);
 
 							writer.WriteLine(row);
-						});
+
+							++context.RecordsSucceeded;
+						}
+						catch (Exception exc)
+						{
+							context.RecordException(exc, (int)subscriber.Id);
+						}
 					}
 				}
 			}

@@ -1211,7 +1211,7 @@ namespace SmartStore.Services.Catalog
                     break;
                 case ManageInventoryMethod.ManageStockByAttributes:
                     {
-                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product, attributesXml);
+                        var combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributesXml);
                         if (combination != null)
                         {
 							result.StockQuantityOld = combination.StockQuantity;

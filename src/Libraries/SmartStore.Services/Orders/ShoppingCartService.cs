@@ -544,7 +544,7 @@ namespace SmartStore.Services.Orders
 			{
 				if (combination == null)
 				{
-					combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes, pva1Collection);
+					combination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 				}
 
 				if (combination != null && !combination.IsActive)
@@ -555,7 +555,7 @@ namespace SmartStore.Services.Orders
 
 			if (warnings.Count == 0)
 			{
-				var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(selectedAttributes);
+				var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(selectedAttributes).ToList();
 				foreach (var pvaValue in pvaValues)
 				{
 					if (pvaValue.ValueType ==  ProductVariantAttributeValueType.ProductLinkage)
@@ -598,7 +598,8 @@ namespace SmartStore.Services.Orders
         {
 			Guard.ArgumentNotNull(() => product);
 
-			if (!product.ProductVariantAttributeCombinations.Any())
+			var hasAttributeCombinations = _sciRepository.Context.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Any();
+			if (!hasAttributeCombinations)
 				return true;
 
             //selected attributes

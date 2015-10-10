@@ -1,17 +1,22 @@
 ﻿using System;
 using SmartStore.Core.Infrastructure;
+using System.Linq.Expressions;
+using System.Collections.Generic;
+using System.Linq;
 
 namespace SmartStore.Core.Data
 {
     public class DbContextScope : IDisposable
     {
-        private readonly bool _autoDetectChangesEnabled;
+		private readonly IDbContext _ctx;
+		private readonly bool _autoDetectChangesEnabled;
         private readonly bool _proxyCreationEnabled;
         private readonly bool _validateOnSaveEnabled;
 		private readonly bool _forceNoTracking;
 		private readonly bool _hooksEnabled;
 		private readonly bool _autoCommit;
-		private readonly IDbContext _ctx;
+		private readonly bool _lazyLoading;
+		
 
 		public DbContextScope(IDbContext ctx = null, 
 			bool? autoDetectChanges = null, 
@@ -19,7 +24,8 @@ namespace SmartStore.Core.Data
 			bool? validateOnSave = null, 
 			bool? forceNoTracking = null,
 			bool? hooksEnabled = null,
-			bool? autoCommit = null)
+			bool? autoCommit = null,
+			bool? lazyLoading = null)
         {
 			_ctx = ctx ?? EngineContext.Current.Resolve<IDbContext>();
 			_autoDetectChangesEnabled = _ctx.AutoDetectChangesEnabled;
@@ -28,6 +34,7 @@ namespace SmartStore.Core.Data
 			_forceNoTracking = _ctx.ForceNoTracking;
 			_hooksEnabled = _ctx.HooksEnabled;
 			_autoCommit = _ctx.AutoCommitEnabled;
+			_lazyLoading = _ctx.LazyLoadingEnabled;
             
             if (autoDetectChanges.HasValue)
 				_ctx.AutoDetectChangesEnabled = autoDetectChanges.Value;
@@ -46,7 +53,36 @@ namespace SmartStore.Core.Data
 
 			if (autoCommit.HasValue)
 				_ctx.AutoCommitEnabled = autoCommit.Value;
-        }
+
+			if (lazyLoading.HasValue)
+				_ctx.LazyLoadingEnabled = lazyLoading.Value;
+		}
+
+		public IDbContext DbContext
+		{
+			get { return _ctx; }
+		}
+
+		public void LoadCollection<TEntity, TCollection>(
+			TEntity entity,
+			Expression<Func<TEntity, ICollection<TCollection>>> navigationProperty,
+			bool force = false,
+			Func<IQueryable<TCollection>, IQueryable<TCollection>> queryAction = null)
+			where TEntity : BaseEntity
+			where TCollection : BaseEntity
+		{
+			_ctx.LoadCollection(entity, navigationProperty, force, queryAction);
+		}
+
+		public void LoadReference<TEntity, TProperty>(
+			TEntity entity,
+			Expression<Func<TEntity, TProperty>> navigationProperty,
+			bool force = false)
+			where TEntity : BaseEntity
+			where TProperty : BaseEntity
+		{
+			_ctx.LoadReference(entity, navigationProperty, force);
+		}
 
 		public int Commit()
 		{
@@ -61,6 +97,7 @@ namespace SmartStore.Core.Data
 			_ctx.ForceNoTracking = _forceNoTracking;
 			_ctx.HooksEnabled = _hooksEnabled;
 			_ctx.AutoCommitEnabled = _autoCommit;
+			_ctx.LazyLoadingEnabled = _lazyLoading;
         }
 
     }

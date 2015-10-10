@@ -1,7 +1,10 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
 using System.Data.Entity;
+using System.Linq;
+using System.Linq.Expressions;
 using System.Threading.Tasks;
 
 namespace SmartStore.Core.Data
@@ -42,7 +45,8 @@ namespace SmartStore.Core.Data
 
         // increasing performance on bulk operations
         bool ProxyCreationEnabled { get; set; }
-        bool AutoDetectChangesEnabled { get; set; }
+		bool LazyLoadingEnabled { get; set; }
+		bool AutoDetectChangesEnabled { get; set; }
         bool ValidateOnSaveEnabled { get; set; }
 		bool HooksEnabled { get; set; }
         bool HasChanges { get; }

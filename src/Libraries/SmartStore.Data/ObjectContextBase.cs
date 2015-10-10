@@ -422,6 +422,18 @@ namespace SmartStore.Data
             }
         }
 
+		public bool LazyLoadingEnabled
+		{
+			get
+			{
+				return this.Configuration.LazyLoadingEnabled;
+			}
+			set
+			{
+				this.Configuration.LazyLoadingEnabled = value;
+			}
+		}
+
 		public bool ForceNoTracking { get; set; }
 
 		public bool AutoCommitEnabled { get; set; }
@@ -551,7 +563,7 @@ namespace SmartStore.Data
 			this.Entry(entity).Reload();
 		}
 
-        private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
+		private string FormatValidationExceptionMessage(IEnumerable<DbEntityValidationResult> results)
         {
             var sb = new StringBuilder();
             sb.Append("Entity validation failed" + Environment.NewLine);

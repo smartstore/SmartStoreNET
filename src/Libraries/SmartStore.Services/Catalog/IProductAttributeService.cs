@@ -159,6 +159,14 @@ namespace SmartStore.Services.Catalog
 		IPagedList<ProductVariantAttributeCombination> GetAllProductVariantAttributeCombinations(int productId, int pageIndex, int pageSize, bool untracked = true);
 
 		/// <summary>
+		/// Gets a distinct list of picture identifiers. 
+		/// Only pictures that are explicitly assigned to combinations are taken into account.
+		/// </summary>
+		/// <param name="productId">Product id</param>
+		/// <returns>Picture ids</returns>
+		IList<int> GetAllProductVariantAttributeCombinationPictureIds(int productId);
+
+		/// <summary>
 		/// Gets product variant attribute combinations by multiple product identifiers
 		/// </summary>
 		/// <param name="productIds">The product identifiers</param>

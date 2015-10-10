@@ -13,12 +13,6 @@ namespace SmartStore.Core.Caching
     {
         private const string REGION_NAME = "$$SmartStoreNET$$";
 
-		// AspNetCache object does not have a ContainsKey() method:
-		// Therefore we put a special string into cache if value is null,
-		// otherwise our 'Contains()' would always return false,
-		// which is bad if we intentionally wanted to save NULL values.
-		private const string FAKE_NULL = "__[NULL]__";
-
         public IEnumerable<KeyValuePair<string, object>> Entries
         {
             get
@@ -40,12 +34,7 @@ namespace SmartStore.Core.Caching
 			if (HttpRuntime.Cache == null)
                 return null;
 
-			var value = HttpRuntime.Cache.Get(BuildKey(key));
-
-			if (value.Equals(FAKE_NULL))
-				return null;
-
-			return value;
+			return HttpRuntime.Cache.Get(BuildKey(key));
         }
 
 		public void Set(string key, object value, int? cacheTime)
@@ -62,7 +51,7 @@ namespace SmartStore.Core.Caching
 				absoluteExpiration = DateTime.UtcNow + TimeSpan.FromMinutes(cacheTime.Value);
 			}
 
-			HttpRuntime.Cache.Insert(key, value ?? FAKE_NULL, null, absoluteExpiration, Cache.NoSlidingExpiration);
+			HttpRuntime.Cache.Insert(key, value, null, absoluteExpiration, Cache.NoSlidingExpiration);
 		}
 
         public bool Contains(string key)

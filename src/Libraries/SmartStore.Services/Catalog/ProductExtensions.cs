@@ -29,7 +29,7 @@ namespace SmartStore.Services.Catalog
 			if (selectedAttributes.IsEmpty())
 				return null;
 
-            // let's find appropriate record
+			// let's find appropriate record
 			var combination = productAttributeParser.FindProductVariantAttributeCombination(product.Id, selectedAttributes);
 
 			if (combination != null && combination.IsActive)

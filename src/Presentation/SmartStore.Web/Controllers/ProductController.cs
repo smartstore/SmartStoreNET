@@ -658,13 +658,13 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var allCombinationImageIds = product.ProductVariantAttributeCombinations.GetAllCombinationPictureIds();
+					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);	
 
 					_helper.PrepareProductDetailsPictureModel(
 						pictureModel, 
 						pictures, 
 						product.GetLocalized(x => x.Name), 
-						allCombinationImageIds,
+						allCombinationPictureIds,
 						false, 
 						bundleItem, 
 						m.SelectedCombination);

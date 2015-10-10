@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Collections;
@@ -254,7 +255,7 @@ namespace SmartStore.Web.Controllers
 
 			if (productBundleItem == null)
 			{
-				combinationPictureIds = product.ProductVariantAttributeCombinations.GetAllCombinationPictureIds();
+				combinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);
                 if (combination == null && model.SelectedCombination != null)
 					combination = model.SelectedCombination;
 			}
@@ -607,7 +608,7 @@ namespace SmartStore.Web.Controllers
 							renderPrices: false, renderGiftCardAttributes: false, allowHyperlinks: false);
 					}
 
-					model.SelectedCombination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributeXml, variantAttributes);
+					model.SelectedCombination = _productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributeXml);
 
 					if (model.SelectedCombination != null && model.SelectedCombination.IsActive == false)
 					{
@@ -641,7 +642,8 @@ namespace SmartStore.Web.Controllers
 			{
 				// cases where stock inventory is not functional. determined by what ShoppingCartService.GetStandardWarnings and ProductService.AdjustInventory is not handling.
 				model.IsAvailable = true;
-                model.StockAvailability = !product.ProductVariantAttributeCombinations.Any() ? product.FormatStockMessage(_localizationService) : "";
+				var hasAttributeCombinations = _services.DbContext.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Any();
+                model.StockAvailability = !hasAttributeCombinations ? product.FormatStockMessage(_localizationService) : "";
             }
 			else if (model.IsAvailable)
 			{

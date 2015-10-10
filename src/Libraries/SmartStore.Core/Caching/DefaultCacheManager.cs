@@ -21,7 +21,12 @@ namespace SmartStore.Core.Caching
 		private readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 		private readonly ICache _cache;
 
-        public CacheManager(Func<Type, ICache> fn)
+		// Wwe put a special string into cache if value is null,
+		// otherwise our 'Contains()' would always return false,
+		// which is bad if we intentionally wanted to save NULL values.
+		private const string FAKE_NULL = "__[NULL]__";
+
+		public CacheManager(Func<Type, ICache> fn)
         {
             this._cache = fn(typeof(TCache));
         }
@@ -32,7 +37,7 @@ namespace SmartStore.Core.Caching
 			
 			if (_cache.Contains(key))
 			{
-				return (T)_cache.Get(key);
+				return GetExisting<T>(key);
 			}
 
 			using (EnterReadLock())
@@ -46,19 +51,26 @@ namespace SmartStore.Core.Caching
 				}
 			}
 
+			return GetExisting<T>(key);
+		}
+
+		private T GetExisting<T>(string key)
+		{
+			var value = _cache.Get(key);
+
+			if (value.Equals(FAKE_NULL))
+				return default(T);
+
 			return (T)_cache.Get(key);
-        }
+		}
 
 		public void Set(string key, object value, int? cacheTime = null)
 		{
 			Guard.ArgumentNotEmpty(() => key);
-			
-			if (value == null)
-				return;
 
 			using (EnterWriteLock())
 			{
-				_cache.Set(key, value, cacheTime);
+				_cache.Set(key, value ?? FAKE_NULL, cacheTime);
 			}
 		}
 

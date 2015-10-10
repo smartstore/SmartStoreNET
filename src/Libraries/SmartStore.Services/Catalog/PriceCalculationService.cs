@@ -235,7 +235,7 @@ namespace SmartStore.Services.Catalog
 
 				var combinations = context.AttributeCombinations.Load(product.Id);
 
-				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml, attributes));
+				var selectedCombination = combinations.FirstOrDefault(x => _productAttributeParser.AreProductAttributesEqual(x.AttributesXml, attributeXml));
 
 				if (selectedCombination != null && selectedCombination.IsActive && selectedCombination.Price.HasValue)
 				{
@@ -575,6 +575,7 @@ namespace SmartStore.Services.Catalog
 			_productAttributeParser
 				.ParseProductVariantAttributeValues(attributesXml)
 				.Where(x => x.ValueType == ProductVariantAttributeValueType.ProductLinkage)
+				.ToList()
 				.Each(x =>
 				{
 					var linkedProduct = _productService.GetProductById(x.LinkedProductId);
@@ -743,7 +744,7 @@ namespace SmartStore.Services.Catalog
 					product.MergeWithCombination(shoppingCartItem.Item.AttributesXml, _productAttributeParser);
 
 					decimal attributesTotalPrice = decimal.Zero;
-					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+					var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
 
 					if (pvaValues != null)
 					{
@@ -790,7 +791,7 @@ namespace SmartStore.Services.Catalog
             {
                 decimal attributesTotalPrice = decimal.Zero;
 
-                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+                var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
                 foreach (var pvaValue in pvaValues)
                 {
                     attributesTotalPrice += GetProductVariantAttributeValuePriceAdjustment(pvaValue);

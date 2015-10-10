@@ -6,6 +6,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Core.Data;
 
 namespace SmartStore.Services.Catalog
 {
@@ -411,6 +412,11 @@ namespace SmartStore.Services.Catalog
 			}
 
 			// attribute combinations
+			using (var scope = new DbContextScope(lazyLoading: false, forceNoTracking: true))
+			{
+				scope.LoadCollection(product, (Product p) => p.ProductVariantAttributeCombinations);
+			}
+
 			foreach (var combination in product.ProductVariantAttributeCombinations)
 			{
 				//generate new AttributesXml according to new value IDs
@@ -471,7 +477,7 @@ namespace SmartStore.Services.Catalog
 					BasePriceAmount = combination.BasePriceAmount,
 					BasePriceBaseAmount = combination.BasePriceBaseAmount,
 					DeliveryTimeId = combination.DeliveryTimeId,
-                    QuantityUnitId = combination.QuantityUnitId,
+					QuantityUnitId = combination.QuantityUnitId,
 					IsActive = combination.IsActive
 					//IsDefaultCombination = combination.IsDefaultCombination
 				};

@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Net.Mime;
 using System.Text;
 using System.Threading;
@@ -81,6 +82,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IDiscountService _discountService;
 		private readonly IProductAttributeService _productAttributeService;
+		private readonly IRepository<ProductVariantAttributeCombination> _pvacRepository;
 		private readonly IBackInStockSubscriptionService _backInStockSubscriptionService;
 		private readonly IShoppingCartService _shoppingCartService;
 		private readonly IProductAttributeFormatter _productAttributeFormatter;
@@ -133,7 +135,8 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			IDiscountService discountService,
 			IProductAttributeService productAttributeService,
-			IBackInStockSubscriptionService backInStockSubscriptionService,
+			IRepository<ProductVariantAttributeCombination> pvacRepository,
+            IBackInStockSubscriptionService backInStockSubscriptionService,
 			IShoppingCartService shoppingCartService,
 			IProductAttributeFormatter productAttributeFormatter,
 			IProductAttributeParser productAttributeParser,
@@ -179,6 +182,7 @@ namespace SmartStore.Admin.Controllers
 			this._dateTimeHelper = dateTimeHelper;
 			this._discountService = discountService;
 			this._productAttributeService = productAttributeService;
+			this._pvacRepository = pvacRepository;
 			this._backInStockSubscriptionService = backInStockSubscriptionService;
 			this._shoppingCartService = shoppingCartService;
 			this._productAttributeFormatter = productAttributeFormatter;
@@ -4172,10 +4176,6 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
-			////var allCombinations = new PagedList<ProductVariantAttributeCombination>(product.ProductVariantAttributeCombinations.AsQueryable(), command.Page - 1, command.PageSize);
-			//var take = command.PageSize;
-			//var skip = (command.Page - 1) * take;
-			//var allCombinations = product.ProductVariantAttributeCombinations.Take(take).Skip(skip);
 			var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id, command.Page - 1, command.PageSize);
 
 			var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
@@ -4225,7 +4225,6 @@ namespace SmartStore.Admin.Controllers
 			{
 				Data = productVariantAttributesModel,
 				Total = allCombinations.TotalCount,
-				//Total = allCombinations.Count()
 			};
 
 			return new JsonResult
@@ -4301,7 +4300,7 @@ namespace SmartStore.Admin.Controllers
 
 			warnings.AddRange(_shoppingCartService.GetShoppingCartItemAttributeWarnings(_workContext.CurrentCustomer, ShoppingCartType.ShoppingCart, product, attributeXml));
 
-			if (_productAttributeParser.FindProductVariantAttributeCombination(product, attributeXml) != null)
+			if (_productAttributeParser.FindProductVariantAttributeCombination(product.Id, attributeXml) != null)
 			{
 				warnings.Add(_localizationService.GetResource("Admin.Catalog.Products.ProductVariantAttributes.AttributeCombinations.CombiExists"));
 			}
@@ -4411,10 +4410,7 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
-			foreach (var combination in product.ProductVariantAttributeCombinations)
-			{
-				_productAttributeService.DeleteProductVariantAttributeCombination(combination);
-			}
+			_pvacRepository.DeleteAll();			
 
 			_productService.UpdateLowestAttributeCombinationPriceProperty(product);
 

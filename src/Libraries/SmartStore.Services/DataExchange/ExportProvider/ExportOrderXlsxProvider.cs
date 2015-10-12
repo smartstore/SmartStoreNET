@@ -139,9 +139,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 				int row = 2;
 
-				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
+				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
-					var segment = context.Data.CurrentSegment;
+					var segment = context.Segmenter.CurrentSegment;
 
 					foreach (dynamic order in segment)
 					{

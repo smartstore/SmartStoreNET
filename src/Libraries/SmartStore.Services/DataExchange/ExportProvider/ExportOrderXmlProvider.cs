@@ -62,9 +62,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 				writer.WriteStartElement("Orders");
 				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
-				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
+				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
-					var segment = context.Data.CurrentSegment;
+					var segment = context.Segmenter.CurrentSegment;
 
 					foreach (dynamic order in segment)
 					{

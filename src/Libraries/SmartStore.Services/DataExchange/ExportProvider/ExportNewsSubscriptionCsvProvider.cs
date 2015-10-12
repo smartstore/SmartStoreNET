@@ -44,9 +44,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
 			using (var writer = new StreamWriter(stream, Encoding.UTF8))
 			{
-				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
+				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
-					var segment = context.Data.CurrentSegment;
+					var segment = context.Segmenter.CurrentSegment;
 
 					foreach (dynamic subscriber in segment)
 					{

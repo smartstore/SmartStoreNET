@@ -11,7 +11,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Provides the data to be exported
 		/// </summary>
-		IExportSegmenter Data { get; }
+		IExportSegmenterConsumer Segmenter { get; }
 
 		/// <summary>
 		/// The store context to be used for the export
@@ -118,7 +118,6 @@ namespace SmartStore.Services.DataExchange
 	{
 		private ExportExecuteResult _result;
 		private CancellationToken _cancellation;
-		private IExportSegmenter _segmenter;
 		private ExportAbortion _providerAbort;
 
 		internal ExportExecuteContext(ExportExecuteResult result, CancellationToken cancellation, string folder)
@@ -130,20 +129,7 @@ namespace SmartStore.Services.DataExchange
 			CustomProperties = new Dictionary<string, object>();
 		}
 
-		public IExportSegmenter Data
-		{
-			get
-			{
-				return _segmenter;
-			}
-			internal set
-			{
-				if (_segmenter != null)
-					(_segmenter as IExportExecuter).Dispose();
-
-				_segmenter = value;
-			}
-		}
+		public IExportSegmenterConsumer Segmenter { get; set; }
 
 		public dynamic Store { get; internal set; }
 		public dynamic Customer { get; internal set; }

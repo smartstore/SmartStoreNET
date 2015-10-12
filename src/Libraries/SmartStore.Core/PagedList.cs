@@ -148,15 +148,6 @@ namespace SmartStore.Core
 			: base(pageIndex, pageSize, totalItemsCount)
         {
         }
-
-		public PagedList(int offset, int limit, int pageIndex, int pageSize, int totalItemsCount)
-			: base(
-				offset > 0 && pageSize > 0 ? (offset / pageSize) + pageIndex : pageIndex,
-				pageSize,
-				limit > 0 ? limit : totalItemsCount
-			)
-		{
-		}
     }
 
 }

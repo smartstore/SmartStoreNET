@@ -223,9 +223,9 @@ namespace SmartStore.Services.DataExchange.ExportProvider
                     cells[1, i + 1].Style.Font.Bold = true;
                 }
 
-				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
+				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
-					var segment = context.Data.CurrentSegment;
+					var segment = context.Segmenter.CurrentSegment;
 
 					foreach (dynamic product in segment)
 					{

@@ -6,238 +6,215 @@ using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange
 {
-	public interface IExportSegmenter
+	public interface IExportSegmenterConsumer
 	{
+		/// <summary>
+		/// Total number of records
+		/// </summary>
+		int RecordTotal { get; }
+
+		/// <summary>
+		/// Gets current data segment
+		/// </summary>
+		List<dynamic> CurrentSegment { get; }
+
+		/// <summary>
+		/// Reads the next segment
+		/// </summary>
+		/// <returns></returns>
+		bool ReadNextSegment();
+	}
+
+	internal interface IExportSegmenterProvider : IExportSegmenterConsumer, IDisposable
+	{
+		/// <summary>
+		/// Whether there is segmented data available
+		/// </summary>
+		bool HasData { get; }
+
+		/// <summary>
+		/// Record per segment counter
+		/// </summary>
+		int RecordPerSegmentCount { get; set; }
+	}
+
+	public class ExportSegmenter<T> : IExportSegmenterProvider where T : BaseEntity
+	{
+		private Func<int, List<T>> _load;
+		private Action<ICollection<T>> _loaded;
+		private Func<T, List<dynamic>> _convert;
+
+		private int _offset;
+		private int _limit;
+		private int _recordsPerSegment;
+
+		private bool _isDataLoaded;
+		private int _countRecords;
+
+		private IPageable _pages;
+		private Queue<T> _data;
+
+		public ExportSegmenter(
+			Func<int, List<T>> load,
+			Action<ICollection<T>> loaded,
+			Func<T, List<dynamic>> convert,
+			PagedList pages,
+			int offset,
+			int limit,
+			int recordsPerSegment)
+		{
+			_load = load;
+			_loaded = loaded;
+			_convert = convert;
+			_pages = pages;
+			_offset = offset;
+			_limit = limit;
+			_recordsPerSegment = recordsPerSegment;
+		}
+
+		/// <summary>
+		/// Whether there is segmented data available
+		/// </summary>
+		public bool HasData
+		{
+			get
+			{
+				if (RecordCount >= _limit && _limit > 0)
+					return false;
+
+				if (_data != null && _data.Count > 0)
+					return true;
+
+				if (_data == null && _pages.IsFirstPage)
+					return true;
+
+				if (_pages.HasNextPage)
+					return true;
+
+				return false;
+			}
+		}
+
+		/// <summary>
+		/// Record per segment counter
+		/// </summary>
+		public int RecordPerSegmentCount { get; set; }
+
 		/// <summary>
 		/// Number of processed records
 		/// </summary>
-		int RecordsCount { get; }
+		public int RecordCount
+		{
+			get { return _countRecords - _offset; }
+		}
 
 		/// <summary>
 		/// Total number of records
 		/// </summary>
-		int RecordsTotal { get; }
-
-		/// <summary>
-		/// Total number of segments
-		/// </summary>
-		int SegmentsTotal { get; }
-
-		/// <summary>
-		/// Index of current segment
-		/// </summary>
-		int SegmentIndex { get; }
-
-		/// <summary>
-		/// Index of current file
-		/// </summary>
-		int FileIndex { get; }
-
-		/// <summary>
-		/// Read next data segment
-		/// </summary>
-		/// <returns></returns>
-		bool ReadNextSegment();
-
-		/// <summary>
-		/// Gets the data of the current segment
-		/// </summary>
-		ICollection<dynamic> CurrentSegment { get; }
-	}
-
-	internal interface IExportExecuter
-	{
-		void Start(Func<bool> callback);
-		void Dispose();
-	}
-
-
-	public class ExportSegmenter<T> : IExportSegmenter, IExportExecuter, IDisposable where T : BaseEntity
-	{
-		private Func<int, List<T>> _loadData;
-		private Func<T, List<dynamic>> _convertData;
-		private List<T> _currentData;
-		private List<dynamic> _currentSegment;
-		private IPageable _pageable;
-		private int _pageIndexReset;
-		private bool _isBeginOfSegmentation;
-
-		private int _recordsPerFile;
-		private int _fileIndex;
-		private int _fileRecordsSkip;
-		private bool _fileCaptured;
-
-		private int _recordsPerFileCount;
-		private int _recordsCount;
-
-		public ExportSegmenter(
-			Func<int, List<T>> loadData,
-			Func<T, List<dynamic>> convertData,
-			PagedList pageable,
-			int itemsPerFile)
-		{
-			_loadData = loadData;
-			_convertData = convertData;
-			_pageable = pageable;
-			_recordsPerFile = itemsPerFile;
-
-			_pageIndexReset = pageable.PageIndex;
-			_isBeginOfSegmentation = true;
-		}
-
-		protected void ClearSegment()
-		{
-			if (_currentSegment != null)
-			{
-				_currentSegment.Clear();
-				_currentSegment = null;
-			}
-
-			if (_currentData != null)
-			{
-				_currentData.Clear();
-				_currentData = null;
-			}
-		}
-
-		public void Dispose()
-		{
-			ClearSegment();
-		}
-
-		public int RecordsCount
-		{
-			get { return _recordsCount; }
-		}
-
-		public int RecordsTotal
-		{
-			get	{ return _pageable.TotalCount; }
-		}
-
-		public int SegmentsTotal
-		{
-			get { return _pageable.TotalPages; }
-		}
-
-		public int SegmentIndex
-		{
-			get { return _isBeginOfSegmentation ? 0 : _pageable.PageIndex; }
-		}
-
-		public int FileIndex
-		{
-			get { return _fileIndex; }
-		}
-
-		public void Start(Func<bool> callback)
-		{
-			for (int oldFileIndex = 0; oldFileIndex < 9999999; ++oldFileIndex)
-			{
-				_fileCaptured = false;
-
-				if (!callback())
-					break;
-
-				if (_fileIndex <= oldFileIndex)
-					break;
-			}
-
-			Dispose();
-		}
-
-		public void Reset()
-		{
-			//if (_pageable.PageIndex != 0 && _currentSegment != null)
-			//{
-			//	_currentSegment.Clear();
-			//	_currentSegment = null;
-			//}
-
-			ClearSegment();
-
-			_isBeginOfSegmentation = true;
-			_pageable.PageIndex = _pageIndexReset;
-			_fileIndex = 0;
-			_fileRecordsSkip = 0;
-			_fileCaptured = false;
-			_recordsPerFileCount = 0;
-		}
-
-		public bool ReadNextSegment()
-		{
-			if (_fileCaptured)		// do not write to current file anymore
-			{
-				return false;
-			}
-
-			if (_fileRecordsSkip > 0)	// read rest of last segment for new file
-			{
-				return true;
-			}
-
-			ClearSegment();
-
-			if (_isBeginOfSegmentation)
-			{
-				_isBeginOfSegmentation = false;
-				_recordsCount = 0;
-				return _pageable.TotalCount > 0;
-			}
-
-			if (_pageable.HasNextPage)
-			{
-				_pageable.PageIndex++;
-				return true;
-			}
-
-			Reset();
-			return false;
-		}
-
-		public ICollection<dynamic> CurrentSegment
+		public int RecordTotal
 		{
 			get
 			{
-				var tmpCount = 0;
+				if (_limit != 0 && _limit < _pages.TotalCount)
+					return _limit;
 
-				if (_currentSegment == null)
-				{
-					_currentSegment = new List<dynamic>();
-				}
-
-				if (_currentData == null)
-				{
-					_currentData = _loadData(_pageable.PageIndex);
-				}
-
-				foreach (var record in _currentData.Skip(_fileRecordsSkip))
-				{
-					if (_recordsPerFile > 0 && _recordsPerFileCount >= _recordsPerFile)
-					{
-						_fileCaptured = true;
-						_fileIndex++;
-						_recordsPerFileCount = 0;
-						_fileRecordsSkip = tmpCount;
-
-						return _currentSegment.AsReadOnly();
-					}
-
-					foreach (var obj in _convertData(record))
-					{
-						_currentSegment.Add(obj);
-
-						++_recordsPerFileCount;
-						++_recordsCount;
-					}
-
-					++tmpCount;
-				}
-
-				_fileRecordsSkip = 0;
-
-				return _currentSegment.AsReadOnly();
+				return _pages.TotalCount - _offset;
 			}
+		}
+
+		/// <summary>
+		/// Gets current data segment
+		/// </summary>
+		public List<dynamic> CurrentSegment
+		{
+			get
+			{
+				var records = new List<dynamic>();
+
+				while (_data.Count > 0)
+				{
+					var entity = _data.Dequeue();
+					var skip = (++_countRecords < _offset && _offset > 0);
+
+					if (!skip)
+					{
+						foreach (var record in _convert(entity))
+						{
+							records.Add(record);
+						}
+
+						if (++RecordPerSegmentCount >= _recordsPerSegment && _recordsPerSegment > 0)
+							return records;
+					}
+
+					if (RecordCount >= _limit && _limit > 0)
+						return records;
+				}
+
+				return records;
+			}
+		}
+
+		/// <summary>
+		/// Reads the next segment
+		/// </summary>
+		/// <returns></returns>
+		public bool ReadNextSegment()
+		{
+			if (RecordCount >= _limit && _limit > 0)
+				return false;
+
+			if (RecordPerSegmentCount >= _recordsPerSegment && _recordsPerSegment > 0)
+				return false;
+
+			// do not make the queue longer than necessary
+			if (_recordsPerSegment > 0 && _data != null && _data.Count >= _recordsPerSegment)
+				return true;
+
+			if (_isDataLoaded)
+			{
+				if (!_pages.HasNextPage)
+					return (_data != null && _data.Count > 0);
+
+				++_pages.PageIndex;
+			}
+			else
+			{
+				_isDataLoaded = true;
+			}
+
+			if (_data != null && _data.Count > 0)
+			{
+				var data = new List<T>(_data);
+				data.AddRange(_load(_pages.PageIndex));
+
+				_data = new Queue<T>(data);
+			}
+			else
+			{
+				_data = new Queue<T>(_load(_pages.PageIndex));
+			}
+
+			// give provider the opportunity to make something with entity ids
+			if (_loaded != null)
+			{
+				_loaded(_data.AsReadOnly());
+			}
+
+			return (_data.Count > 0);
+		}
+
+		/// <summary>
+		/// Dispose and reset segmenter instance
+		/// </summary>
+		public void Dispose()
+		{
+			if (_data != null)
+				_data.Clear();
+
+			_isDataLoaded = false;
+			_countRecords = 0;
+			RecordPerSegmentCount = 0;
 		}
 	}
 }

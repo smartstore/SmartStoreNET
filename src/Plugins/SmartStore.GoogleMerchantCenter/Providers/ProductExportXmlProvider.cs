@@ -193,9 +193,9 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 				writer.WriteElementString("link", "http://base.google.com/base/");
 				writer.WriteElementString("description", "Information about products");
 
-				while (context.Abort == ExportAbortion.None && context.Data.ReadNextSegment())
+				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
-					var segment = context.Data.CurrentSegment;
+					var segment = context.Segmenter.CurrentSegment;
 
 					int[] productIds = segment.Select(x => (int)((dynamic)x).Id).ToArray();
 					var googleProducts = _googleFeedService.GetGoogleProductRecords(productIds);

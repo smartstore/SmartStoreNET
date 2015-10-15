@@ -73,7 +73,7 @@
 					</td>
 					<td>
 						<button type="button" class="btn btn-small btn-success btn-run-task@(profile.IsTaskRunning || !profile.Enabled ? " hide" : "")"
-								data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" onclick="return confirm('@T("Admin.Common.AreYouSure")');">
+							data-id="@profile.Id" data-task-id="@profile.ScheduleTaskId">
 							<i class="fa fa-play"></i>&nbsp;@T("Admin.System.ScheduleTasks.RunNow")
 						</button>
 
@@ -191,9 +191,11 @@ else
 		// start task
 		$(document).on('click', '.btn-run-task', function (e) {
 			e.preventDefault();
-			var form = $('#ProfileExportForm');
-			form.find('input[name=Id]').val($(this).attr('data-id'));
-			form.submit();
+			if (confirm('@T("Admin.Common.AreYouSure")')) {
+				var form = $('#ProfileExportForm');
+				form.find('input[name=Id]').val($(this).attr('data-id'));
+				form.submit();
+			}
 			return false;
 		});
 

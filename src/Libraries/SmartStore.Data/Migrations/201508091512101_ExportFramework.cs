@@ -154,20 +154,16 @@ namespace SmartStore.Data.Migrations
 
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Offset",
-				"Offset",
-				"Abstand",
+				"Skip",
+				"Überspringen",
 				"Specifies the number of records to be skipped.",
 				"Legt die Anzahl der zu überspringenden Datensätze fest.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Limit",
 				"Limit",
-				"Begrenzung",
+				"Begrenzen",
 				"Specifies how many records to be loaded at maximum.",
-				"Legt die Anzahl der Datensätze fest, die maximal geladen werden sollen.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Export.LimitOffsetValidation",
-				"The offset must be less or equal to limit.",
-				"Der Abstand muss kleiner oder gleich der Begrenzung sein.");
+				"Legt die maximale Anzahl der zu exportierenden Datensätze fest.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.BatchSize",
 				"Batch size",

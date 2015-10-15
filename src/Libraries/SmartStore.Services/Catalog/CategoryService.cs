@@ -314,35 +314,24 @@ namespace SmartStore.Services.Catalog
 			var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
 			DeleteAllCategories(childCategories, deleteChilds);
         }
-        
-        /// <summary>
-        /// Gets all categories
-        /// </summary>
-        /// <param name="categoryName">Category name</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
-        /// <param name="showHidden">A value indicating whether to show hidden records</param>
-		/// <param name="alias">Alias to be filtered</param>
-        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
-		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
-		/// <param name="storeId">Store identifier; 0 to load all records</param>
-        /// <returns>Categories</returns>
-        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
-			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true, int storeId = 0)
-        {
-            var query = _categoryRepository.Table;
 
-            if (!showHidden)
-                query = query.Where(c => c.Published);
+		public virtual IQueryable<Category> GetCategories(
+			string categoryName = "",
+			bool showHidden = false,
+			string alias = null,
+			bool applyNavigationFilters = true,
+			int storeId = 0)
+		{
+			var query = _categoryRepository.Table;
 
-            if (!String.IsNullOrWhiteSpace(categoryName))
-                query = query.Where(c => c.Name.Contains(categoryName) || c.FullName.Contains(categoryName));
+			if (!showHidden)
+				query = query.Where(c => c.Published);
 
-			if (!String.IsNullOrWhiteSpace(alias))
+			if (categoryName.HasValue())
+				query = query.Where(c => c.Name.Contains(categoryName) || c.FullName.Contains(categoryName));
+
+			if (alias.HasValue())
 				query = query.Where(c => c.Alias.Contains(alias));
-
-            query = query.Where(c => !c.Deleted);
-            query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
 
 			if (showHidden)
 			{
@@ -362,10 +351,35 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 			else
-            {
+			{
 				query = ApplyHiddenCategoriesFilter(query, applyNavigationFilters, _storeContext.CurrentStore.Id);
-				query = query.OrderBy(c => c.ParentCategoryId).ThenBy(c => c.DisplayOrder);
-            }
+			}
+
+			query = query.Where(c => !c.Deleted);
+
+			return query;
+		}
+        
+        /// <summary>
+        /// Gets all categories
+        /// </summary>
+        /// <param name="categoryName">Category name</param>
+        /// <param name="pageIndex">Page index</param>
+        /// <param name="pageSize">Page size</param>
+        /// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="alias">Alias to be filtered</param>
+        /// <param name="applyNavigationFilters">Whether to apply <see cref="ICategoryNavigationFilter"/> instances to the actual categories query. Never applied when <paramref name="showHidden"/> is <c>true</c></param>
+		/// <param name="ignoreCategoriesWithoutExistingParent">A value indicating whether categories without parent category in provided category list (source) should be ignored</param>
+		/// <param name="storeId">Store identifier; 0 to load all records</param>
+        /// <returns>Categories</returns>
+        public virtual IPagedList<Category> GetAllCategories(string categoryName = "", int pageIndex = 0, int pageSize = int.MaxValue, bool showHidden = false, string alias = null,
+			bool applyNavigationFilters = true, bool ignoreCategoriesWithoutExistingParent = true, int storeId = 0)
+        {
+			var query = GetCategories(categoryName, showHidden, alias, applyNavigationFilters, storeId);
+
+			query = query
+				.OrderBy(x => x.ParentCategoryId)
+				.ThenBy(x => x.DisplayOrder);
 
             var unsortedCategories = query.ToList();
 

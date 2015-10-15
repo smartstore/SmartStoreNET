@@ -78,7 +78,10 @@ namespace SmartStore.Core
         {
             get 
             {
-                var total = (this.PageSize == 0 ? 0 : this.TotalCount / this.PageSize);
+				if (this.PageSize == 0)
+					return 0;
+
+				var total = this.TotalCount / this.PageSize;
 
                 if (this.TotalCount % this.PageSize > 0)
                     total++;

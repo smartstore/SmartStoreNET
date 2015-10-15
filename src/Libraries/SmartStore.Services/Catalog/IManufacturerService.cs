@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Linq;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -15,6 +16,14 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="manufacturer">Manufacturer</param>
         void DeleteManufacturer(Manufacturer manufacturer);
+
+		/// <summary>
+		/// Get manufacturer query
+		/// </summary>
+		/// <param name="showHidden">A value indicating whether to show hidden records</param>
+		/// <param name="storeId">Store identifier</param>
+		/// <returns>Manufacturer query</returns>
+		IQueryable<Manufacturer> GetManufacturers(bool showHidden = false, int storeId = 0);
 
         /// <summary>
         /// Gets all manufacturers

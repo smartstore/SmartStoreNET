@@ -30,9 +30,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			ExportProfile profile,
 			Provider<IExportProvider> provider,
 			string selectedIds = null,
-			int pageIndex = 0,
-			int pageSize = 100,
-			int? totalRecords = null,
 			Action<dynamic> previewData = null)
 		{
 			TaskContext = taskContext;
@@ -41,9 +38,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 			EntityIdsSelected = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
-			PageIndex = pageIndex;
-			PageSize = pageSize;
-			TotalRecords = totalRecords;
 			PreviewData = previewData;
 
 			Supporting = Enum.GetValues(typeof(ExportSupport))
@@ -74,9 +68,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public List<int> EntityIdsSelected { get; private set; }
 		public List<int> EntityIdsLoaded { get; set; }
 
-		public int PageIndex { get; private set; }
-		public int PageSize { get; private set; }
-		public int? TotalRecords { get; set; }
 		public int RecordCount { get; set; }
 		public Dictionary<int, int> RecordsPerStore { get; set; }
 		public string ProgressInfo { get; set; }
@@ -91,7 +82,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public TaskExecutionContext TaskContext { get; private set; }
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
+
 		public Dictionary<ExportSupport, bool> Supporting { get; private set; }
+		public bool Supports(ExportSupport type)
+		{
+			return (!IsPreview && Supporting[type]);
+		}
 
 		public ExportFilter Filter { get; private set; }
 		public ExportProjection Projection { get; private set; }

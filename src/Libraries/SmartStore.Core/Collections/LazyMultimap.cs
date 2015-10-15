@@ -70,6 +70,11 @@ namespace SmartStore.Collections
 		/// <returns>Collection of data</returns>
 		public virtual ICollection<T> Load(int key)
 		{
+			if (key == 0)
+			{
+				return new List<T>();
+			}
+
 			if (!_loaded.Contains(key))
 			{
 				Load(new int[] { key });

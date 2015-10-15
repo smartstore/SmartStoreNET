@@ -62,6 +62,13 @@
 					@Html.ValidationMessageFor(x => x.Projection.AttributeCombinationValueMergingId)
 				</td>
 			</tr>
+			<tr id="AttributeCombinationAsProductNote">
+				<td colspan="2">
+					<div class="alert alert-warning">
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
+					</div>
+				</td>
+			</tr>
 		}
 
 		if (Model.Provider.Supporting.Contains(ExportSupport.ProjectionNoGroupedProducts))
@@ -78,7 +85,7 @@
 			<tr id="NoGroupedProductsNote">
 				<td colspan="2">
 					<div class="alert alert-warning">
-						@T("Admin.DataExchange.Export.Projection.NoGroupedProducts.Note")
+						@T("Admin.DataExchange.Export.NotPreviewCompatible")
 					</div>
 				</td>
 			</tr>

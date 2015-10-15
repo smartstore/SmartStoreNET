@@ -281,6 +281,11 @@
 			$('#ProjectionStoreContainer').toggle(!$(this).is(':checked'));
 		}).trigger('change');
 
+		// show/hide attribute combination note
+		$('#@(Html.FieldIdFor(x => x.Projection.AttributeCombinationAsProduct))').change(function () {
+			$('#AttributeCombinationAsProductNote').toggle($(this).is(':checked'));
+		}).trigger('change');
+
 		// show/hide no grouped products note
 		$('#@(Html.FieldIdFor(x => x.Projection.NoGroupedProducts))').change(function () {
 			$('#NoGroupedProductsNote').toggle($(this).is(':checked'));

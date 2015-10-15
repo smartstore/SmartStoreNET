@@ -48,6 +48,10 @@ namespace SmartStore.Data.Migrations
 				"{0} folders were deleted",
 				"{0} Verzeichnisse wurden gelöscht");
 
+			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
+				"This option is not taken into account in the preview.",
+				"Diese Option wird in der Vorschau nicht berücksichtigt.");
+
 			builder.AddOrUpdate("Admin.DataExchange.Export.CloneProfile",
 				"Apply settings from",
 				"Einstellungen übernehmen von",
@@ -63,10 +67,6 @@ namespace SmartStore.Data.Migrations
 				"Keine Gruppenprodukte exportieren",
 				"Specifies whether to export grouped products. If this option is deactivated, then the associated products will be deactivated.",
 				"Legt fest, ob Gruppenprodukte exportiert werden sollen. Ist diese Option deaktiviert, so werden die zur Gruppe gehörenden Produkte exportiert.");
-
-			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NoGroupedProducts.Note",
-				"In the preview group products are always displayed regardless of this option. Therefore, the displayed product number may vary from the number of exported products.",
-				"In der Vorschau werden Gruppenprodukte ungeachtet dieser Option immer angezeigt. Daher kann die dort angezeigte Produktanzahl von der Anzahl der exportierten Produkte abweichen.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NoFiltering",
 				"There is no filtering available.",

@@ -21,10 +21,6 @@ namespace SmartStore.Admin.Validators.DataExchange
 			RuleFor(x => x.FileNamePattern)
 				.NotEmpty()
 				.WithMessage(localization.GetResource("Admin.DataExchange.Export.FolderAndFileName.Validate"));
-
-			RuleFor(x => x.Offset)
-				.LessThanOrEqualTo(x => x.Limit)
-				.WithMessage(localization.GetResource("Admin.DataExchange.Export.LimitOffsetValidation"));
 		}
 	}
 }

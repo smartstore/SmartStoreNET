@@ -11,7 +11,6 @@ using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
@@ -51,7 +50,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
 		private readonly IComponentContext _componentContext;
-		private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly DataExchangeSettings _dataExchangeSettings;
 
@@ -68,7 +66,6 @@ namespace SmartStore.Admin.Controllers
 			ICurrencyService currencyService,
 			IEmailAccountService emailAccountService,
 			IComponentContext componentContext,
-			AdminAreaSettings adminAreaSettings,
 			IDateTimeHelper dateTimeHelper,
 			DataExchangeSettings dataExchangeSettings)
 		{
@@ -84,7 +81,6 @@ namespace SmartStore.Admin.Controllers
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
 			_componentContext = componentContext;
-			_adminAreaSettings = adminAreaSettings;
 			_dateTimeHelper = dateTimeHelper;
 			_dataExchangeSettings = dataExchangeSettings;
 		}
@@ -741,7 +737,7 @@ namespace SmartStore.Admin.Controllers
 				Id = profile.Id,
 				Name = profile.Name,
 				ThumbnailUrl = GetThumbnailUrl(provider),
-				GridPageSize = _adminAreaSettings.GridPageSize,
+				GridPageSize = ExportProfileTask.PageSize,
 				EntityType = provider.Value.EntityType,
 				TotalRecords = totalRecords,
 				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath())
@@ -805,13 +801,18 @@ namespace SmartStore.Admin.Controllers
 					}
 				};
 
-				task.Preview(profile, _componentContext, command.Page - 1, command.PageSize, totalRecords, previewData);
+				task.Preview(profile, provider, _componentContext, command.Page - 1, totalRecords, previewData);
+
+				var normalizedTotal = totalRecords;
+
+				if (profile.Limit > 0 && normalizedTotal > profile.Limit)
+					normalizedTotal = profile.Limit;
 
 				if (provider.Value.EntityType == ExportEntityType.Product)
 				{
 					return new JsonResult
 					{
-						Data = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = totalRecords }
+						Data = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal }
 					};
 				}
 
@@ -819,7 +820,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					return new JsonResult
 					{
-						Data = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = totalRecords	}
+						Data = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal }
 					};
 				}
 			}

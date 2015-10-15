@@ -90,6 +90,35 @@ namespace SmartStore.Services.Catalog
             UpdateManufacturer(manufacturer);
         }
 
+		public virtual IQueryable<Manufacturer> GetManufacturers(bool showHidden = false, int storeId = 0)
+		{
+			var query = _manufacturerRepository.Table
+				.Where(m => !m.Deleted);
+
+			if (!showHidden)
+				query = query.Where(m => m.Published);
+
+			if (!showHidden)
+			{
+				if (!QuerySettings.IgnoreMultiStore && storeId > 0)
+				{
+					query = from m in query
+							join sm in _storeMappingRepository.Table
+							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
+							from sm in m_sm.DefaultIfEmpty()
+							where !m.LimitedToStores || storeId == sm.StoreId
+							select m;
+
+					query = from m in query
+							group m by m.Id into mGroup
+							orderby mGroup.Key
+							select mGroup.FirstOrDefault();
+				}
+			}
+
+			return query;
+		}
+
         /// <summary>
         /// Gets all manufacturers
         /// </summary>
@@ -108,37 +137,12 @@ namespace SmartStore.Services.Catalog
         /// <returns>Manufacturer collection</returns>
         public virtual IList<Manufacturer> GetAllManufacturers(string manufacturerName, bool showHidden = false)
         {
-            var query = _manufacturerRepository.Table;
-            if (!showHidden)
-                query = query.Where(m => m.Published);
-            if (!String.IsNullOrWhiteSpace(manufacturerName))
-                query = query.Where(m => m.Name.Contains(manufacturerName));
-            query = query.Where(m => !m.Deleted);
-            query = query.OrderBy(m => m.DisplayOrder);
+			var query = GetManufacturers(showHidden, _storeContext.CurrentStore.Id);
 
-			//Store mapping
-			if (!showHidden)
-			{
-				//Store mapping
-				if (!QuerySettings.IgnoreMultiStore)
-				{
-					var currentStoreId = _storeContext.CurrentStore.Id;
-					query = from m in query
-							join sm in _storeMappingRepository.Table
-							on new { c1 = m.Id, c2 = "Manufacturer" } equals new { c1 = sm.EntityId, c2 = sm.EntityName } into m_sm
-							from sm in m_sm.DefaultIfEmpty()
-							where !m.LimitedToStores || currentStoreId == sm.StoreId
-							select m;
-				}
+			if (manufacturerName.HasValue())
+				query = query.Where(m => m.Name.Contains(manufacturerName));
 
-				//only distinct manufacturers (group by ID)
-				query = from m in query
-						group m by m.Id	into mGroup
-						orderby mGroup.Key
-						select mGroup.FirstOrDefault();
-
-				query = query.OrderBy(m => m.DisplayOrder);
-			}
+			query = query.OrderBy(m => m.DisplayOrder);
 
             var manufacturers = query.ToList();
             return manufacturers;

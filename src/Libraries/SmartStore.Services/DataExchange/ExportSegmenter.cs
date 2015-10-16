@@ -120,10 +120,7 @@ namespace SmartStore.Services.DataExchange
 				if (_skip >= _totalRecords)
 					return false;
 
-				if (_data == null && _skip == _offset)
-					return true;
-
-				return false;
+				return true;
 			}
 		}
 

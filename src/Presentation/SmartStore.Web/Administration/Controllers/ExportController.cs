@@ -89,6 +89,9 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetThumbnailUrl(Provider<IExportProvider> provider)
 		{
+			if (provider == null)
+				return "";
+
 			var url = _pluginMediator.GetIconUrl(provider.Metadata);
 
 			if (url.IsEmpty())
@@ -480,40 +483,40 @@ namespace SmartStore.Admin.Controllers
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return Content(T("Admin.AccessDenied.Description"));
-			
+
+			var count = 0;
+			var allProviders = _exportService.LoadAllExportProviders(0, false);
+
 			var model = new ExportProfileModel();
 			model.UnspecifiedString = T("Common.Unspecified");
 
 			model.Provider = new ExportProfileModel.ProviderModel();
-			model.Provider.ProviderDescriptions = new Dictionary<string, string>();
 
-			model.Provider.AvailableExportProviders = _exportService.LoadAllExportProviders(0, false)
+			model.Provider.AvailableProviders = allProviders
 				.Select(x =>
 				{
-					var item = new SelectListItem
+					var item = new ExportProfileModel.ProviderSelectItem
 					{
-						Text = "{0} ({1})".FormatInvariant(_pluginMediator.GetLocalizedFriendlyName(x.Metadata), x.Metadata.SystemName),
-						Value = x.Metadata.SystemName
+						Id = ++count,
+						SystemName = x.Metadata.SystemName,
+						FriendlyName = _pluginMediator.GetLocalizedFriendlyName(x.Metadata),
+						ImageUrl = GetThumbnailUrl(x),
+						Description = _pluginMediator.GetLocalizedDescription(x.Metadata)
 					};
-
-					if (!model.Provider.ProviderDescriptions.ContainsKey(x.Metadata.SystemName))
-					{
-						var description = _pluginMediator.GetLocalizedDescription(x.Metadata);
-
-						model.Provider.ProviderDescriptions.Add(x.Metadata.SystemName, description.NaIfEmpty());
-					}
-
 					return item;
-				}).ToList();
+				})
+				.ToList();
 
 			model.AvailableProfiles = _exportService.GetExportProfiles()
 				.ToList()
 				.Select(x =>
 				{
-					var item = new SelectListItem
+					var item = new ExportProfileModel.ProviderSelectItem
 					{
-						Text = "{0} ({1})".FormatInvariant(x.Name, x.ProviderSystemName),
-						Value = x.Id.ToString()
+						Id = x.Id,
+						SystemName = x.ProviderSystemName,
+						FriendlyName = x.Name,
+						ImageUrl = GetThumbnailUrl(allProviders.FirstOrDefault(y => y.Metadata.SystemName.IsCaseInsensitiveEqual(x.ProviderSystemName)))
 					};
 					return item;
 				})

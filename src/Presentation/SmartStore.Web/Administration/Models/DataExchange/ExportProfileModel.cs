@@ -70,7 +70,8 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CloneProfile")]
 		public int? CloneProfileId { get; set; }
-		public List<SelectListItem> AvailableProfiles { get; set; }
+		//public List<SelectListItem> AvailableProfiles { get; set; }
+		public List<ProviderSelectItem> AvailableProfiles { get; set; }
 
 		public ProviderModel Provider { get; set; }
 
@@ -101,8 +102,7 @@ namespace SmartStore.Admin.Models.DataExchange
 
 			[SmartResourceDisplayName("Admin.DataExchange.Export.ProviderSystemName")]
 			public string SystemName { get; set; }
-			public List<SelectListItem> AvailableExportProviders { get; set; }
-			public Dictionary<string, string> ProviderDescriptions { get; set; }
+			public List<ProviderSelectItem> AvailableProviders { get; set; }
 
 			[SmartResourceDisplayName("Common.Provider")]
 			public string FriendlyName { get; set; }
@@ -133,6 +133,15 @@ namespace SmartStore.Admin.Models.DataExchange
 
 			[SmartResourceDisplayName("Admin.DataExchange.Export.SupportedFileTypes")]
 			public string SupportedFileTypes { get; set; }
+		}
+
+		public class ProviderSelectItem
+		{
+			public int Id { get; set; }
+			public string SystemName { get; set; }
+			public string FriendlyName { get; set; }
+			public string ImageUrl { get; set; }
+			public string Description { get; set; }
 		}
 	}
 }

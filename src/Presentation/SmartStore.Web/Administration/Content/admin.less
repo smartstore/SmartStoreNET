@@ -426,6 +426,42 @@ td.adminData > input[type="checkbox"] {
 }
 
 
+/* select2 with large, templated items
+-------------------------------------------------------------- */
+.large-select2 {
+	.select2-choice {
+		height: 52px;
+		min-height: 52px;
+		padding-top: 4px;
+
+		> div > b {
+			padding-top: 14px;
+		}
+	}
+}
+
+.large-select2-item {
+	overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+
+	img {
+		margin-right: 12px;
+		vertical-align: middle;
+	}
+	> div {
+		margin-right: 0px !important;
+		display: inline-block;
+		vertical-align: top;
+		line-height: normal;
+	}
+	> div > span {
+		display: block;
+		padding-bottom: 1px;
+	}
+}
+
+
 /* SM Telerik tweaks & overrides
 -------------------------------------------------------------- */
 

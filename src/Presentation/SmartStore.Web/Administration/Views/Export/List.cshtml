@@ -143,9 +143,21 @@ else
 				smallIcon: dialog.find('.modal-body'),
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
-					$('select[name="Provider.SystemName"]').selectWrapper();
-					$('select[name="CloneProfileId"]').selectWrapper();
+
+					$('select[name="Provider.SystemName"]').select2({
+						minimumResultsForSearch: 16,
+						formatResult: providerSelectItemFormatting,
+						formatSelection: providerSelectItemFormatting
+					});
+
 					toggleProviderDescription();
+
+					$('select[name="CloneProfileId"]').select2({
+						allowClear: true,
+						minimumResultsForSearch: 16,
+						formatResult: profileSelectItemFormatting,
+						formatSelection: profileSelectItemFormatting
+					});
 				},
 				callbackComplete: function () {
 					showPrimaryButton(true);
@@ -182,9 +194,66 @@ else
 		}
 
 		function toggleProviderDescription() {
-			var val = dialog.find('select[name="Provider.SystemName"]').val().replace(/\./g, '');
 			dialog.find('.export-provider-description').hide();
-			$('#ExportProviderDescription' + val).fadeIn('fast');
+
+			var option = dialog.find('select[name="Provider.SystemName"]').find(':selected');
+			$('#ExportProviderDescription' + option.attr('data-id')).fadeIn('fast');
+		}
+
+		function providerSelectItemFormatting(item) {
+			try {
+				var option = $(item.element);
+
+				// item.element is undefined for selection formatting
+				if (option.length === 0) {
+					option = $('select[name="Provider.SystemName"]').find('option[value="' + item.id + '"]');
+				}
+
+				var html = '<div class="large-select2-item">',
+					imageUrl = option.data('imageurl');
+
+				if (imageUrl)
+					html += '<img src="' + imageUrl + '" />';
+
+				html += '<div>';
+				html += '<span>' + item.text + '</span>';
+				html += '<span class="muted">' + option.attr('value') + '</span>';
+				html += '</div>';
+				html += '</div>';
+
+				return html;
+			}
+			catch (e) { }
+
+			return item.text;
+		}
+
+		function profileSelectItemFormatting(item) {
+			try {
+				var option = $(item.element);
+
+				// item.element is undefined for selection formatting
+				if (option.length === 0) {
+					option = $('select[name="CloneProfileId"]').find('option[value="' + item.id + '"]');
+				}
+
+				var html = '<div class="large-select2-item">',
+					imageUrl = option.data('imageurl');
+
+				if (imageUrl)
+					html += '<img src="' + imageUrl + '" />';
+
+				html += '<div>';
+				html += '<span>' + item.text + '</span>';
+				html += '<span class="muted">' + option.attr('data-systemname') + '</span>';
+				html += '</div>';
+				html += '</div>';
+
+				return html;
+			}
+			catch (e) { }
+
+			return item.text;
 		}
 
 

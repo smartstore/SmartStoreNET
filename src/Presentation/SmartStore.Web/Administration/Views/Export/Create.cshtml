@@ -5,7 +5,7 @@
 }
 
 <div>
-	@if(Model.Provider.AvailableExportProviders.Count > 0)
+	@if(Model.Provider.AvailableProviders.Count > 0)
 	{
 		<form method="POST" class="export-profile-form" action="@Url.Action("Create", "Export")">
 			<table class="adminContent">
@@ -14,7 +14,12 @@
 						@Html.SmartLabelFor(model => model.Provider.SystemName)
 					</td>
 					<td class="adminData">
-						@Html.DropDownListFor(model => model.Provider.SystemName, Model.Provider.AvailableExportProviders, new { style = "width: 500px;" })
+						<select name="@Html.FieldNameFor(x => x.Provider.SystemName)" id="@Html.FieldIdFor(x => x.Provider.SystemName)" class="large-select2 control-large">
+							@foreach (var item in Model.Provider.AvailableProviders)
+							{
+								<option value="@item.SystemName" data-id="@item.Id" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
+							}
+						</select>
 					</td>
 				</tr>
 				@if(Model.AvailableProfiles.Count > 0)
@@ -24,7 +29,14 @@
 							@Html.SmartLabelFor(model => model.CloneProfileId)
 						</td>
 						<td class="adminData">
-							@Html.DropDownListFor(model => model.CloneProfileId, Model.AvailableProfiles, Model.UnspecifiedString, new { style = "width: 500px;" })
+							<select name="@Html.FieldNameFor(x => x.CloneProfileId)" id="@Html.FieldIdFor(x => x.CloneProfileId)" class="large-select2 control-large" 
+									data-placeholder="@Model.UnspecifiedString">
+								<option></option>
+								@foreach (var item in Model.AvailableProfiles)
+								{
+									<option value="@item.Id" data-systemname="@item.SystemName" data-imageurl="@item.ImageUrl">@item.FriendlyName</option>
+								}
+							</select>
 						</td>
 					</tr>
 				}
@@ -33,9 +45,9 @@
 						&nbsp;
 					</td>
 					<td class="adminData" style="width: 510px; max-width: 510px;">
-						@foreach (var item in Model.Provider.ProviderDescriptions)
+						@foreach (var item in Model.Provider.AvailableProviders)
 						{
-							<span id="ExportProviderDescription@(item.Key.Replace(".", ""))" class="export-provider-description">@item.Value</span>
+							<span id="ExportProviderDescription@(item.Id)" class="export-provider-description">@item.Description</span>
 						}
 					</td>
 				</tr>

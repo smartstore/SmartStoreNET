@@ -2493,7 +2493,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				logHead.AppendLine(new string('-', 40));
 				logHead.AppendLine("SmartStore.NET:\t\tv." + SmartStoreVersion.CurrentFullVersion);
 				logHead.Append("Export profile:\t\t" + ctx.Profile.Name);
-				logHead.AppendLine(ctx.Profile.Id == 0 ? " volatile" : " (Id {0})".FormatInvariant(ctx.Profile.Id));
+				logHead.AppendLine(ctx.Profile.Id == 0 ? " (volatile)" : " (Id {0})".FormatInvariant(ctx.Profile.Id));
 
 				logHead.AppendLine("Export provider:\t{0} ({1})".FormatInvariant(ctx.Provider.Metadata.FriendlyName, ctx.Profile.ProviderSystemName));
 
@@ -2525,6 +2525,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				if (segmenter == null)
 				{
 					throw new SmartException("Unsupported entity type '{0}'".FormatInvariant(ctx.Provider.Value.EntityType.ToString()));
+				}
+
+				if (segmenter.RecordTotal <= 0)
+				{
+					ctx.Log.Information("There are no records to export");
 				}
 
 				while (ctx.Export.Abort == ExportAbortion.None && segmenter.HasData)

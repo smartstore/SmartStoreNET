@@ -120,7 +120,7 @@ namespace SmartStore.Services.Catalog
 
 				var childCategories = GetAllCategoriesByParentCategoryId(category.Id, true);
 				DeleteAllCategories(childCategories, delete);
-			}
+            }
 		}
 
 		#endregion

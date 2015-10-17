@@ -159,7 +159,7 @@ namespace SmartStore.Services.Tests.Orders
 			_httpRequestBase = MockRepository.GenerateMock<HttpRequestBase>();
 			_geoCountryLookup = MockRepository.GenerateMock<IGeoCountryLookup>();
 
-			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _settingService, _geoCountryLookup, this.ProviderManager);
+			_taxService = new TaxService(_addressService, _workContext, _taxSettings, _shoppingCartSettings, pluginFinder, _geoCountryLookup, this.ProviderManager);
 
             _rewardPointsSettings = new RewardPointsSettings();
 

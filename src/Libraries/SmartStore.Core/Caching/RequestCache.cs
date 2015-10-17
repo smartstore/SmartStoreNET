@@ -64,13 +64,10 @@ namespace SmartStore.Core.Caching
 
 			key = BuildKey(key);
 
-			if (value != null)
-			{
-				if (items.Contains(key))
-					items[key] = value;
-				else
-					items.Add(key, value);
-			}
+			if (items.Contains(key))
+				items[key] = value;
+			else
+				items.Add(key, value);
 		}
 
         public bool Contains(string key)

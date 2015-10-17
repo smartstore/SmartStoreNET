@@ -118,7 +118,7 @@ namespace SmartStore.Web.Controllers
             model.Title = blogPost.Title;
             model.Body = blogPost.Body;
             model.AllowComments = blogPost.AllowComments;
-            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; // codehint: sm-add
+            model.AvatarPictureSize = _mediaSettings.AvatarPictureSize; 
             model.CreatedOn = _dateTimeHelper.ConvertToUserTime(blogPost.CreatedOnUtc, DateTimeKind.Utc);
             model.Tags = blogPost.ParseTags().ToList();
             model.NumberOfComments = blogPost.ApprovedCommentCount;

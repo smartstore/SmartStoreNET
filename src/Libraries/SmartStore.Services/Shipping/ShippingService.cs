@@ -285,7 +285,7 @@ namespace SmartStore.Services.Shipping
 
                 if (!String.IsNullOrEmpty(shoppingCartItem.Item.AttributesXml))
                 {
-                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml);
+                    var pvaValues = _productAttributeParser.ParseProductVariantAttributeValues(shoppingCartItem.Item.AttributesXml).ToList();
 
 					foreach (var pvaValue in pvaValues)
 					{

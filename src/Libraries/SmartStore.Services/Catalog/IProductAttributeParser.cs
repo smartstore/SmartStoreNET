@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using SmartStore.Core.Domain.Catalog;
 using SmartStore.Collections;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.Services.Catalog
 {
@@ -63,17 +63,8 @@ namespace SmartStore.Services.Catalog
         /// </summary>
         /// <param name="attributeXml1">The attributes of the first product</param>
         /// <param name="attributeXml2">The attributes of the second product</param>
-		/// <param name="attributes">Collection of already loaded product attribute mappings to reduce database round trips</param>
         /// <returns>Result</returns>
-		bool AreProductAttributesEqual(string attributeXml1, string attributeXml2, IEnumerable<ProductVariantAttribute> attributes = null);
-
-        /// <summary>
-        /// Finds a product variant attribute combination by attributes stored in XML 
-        /// </summary>
-		/// <param name="product">Product</param>
-		/// <param name="attributesXml">XML formatted attributes</param>
-        /// <returns>Found product variant attribute combination</returns>
-		ProductVariantAttributeCombination FindProductVariantAttributeCombination(Product product, string attributesXml);
+		bool AreProductAttributesEqual(string attributeXml1, string attributeXml2);
 
 		/// <summary>
 		/// Finds a product variant attribute combination by attributes stored in XML 

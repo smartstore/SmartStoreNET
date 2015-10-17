@@ -230,8 +230,8 @@ namespace SmartStore.PayPal
 				builder.AppendFormat("&no_shipping=1", new object[0]);
 			}
 
-            string returnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/PDTHandler";
-            string cancelReturnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/CancelOrder";
+            string returnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/SmartStore.PayPal/PayPalStandard/PDTHandler";
+            string cancelReturnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/SmartStore.PayPal/PayPalStandard/CancelOrder";
 			builder.AppendFormat("&return={0}&cancel_return={1}", HttpUtility.UrlEncode(returnUrl), HttpUtility.UrlEncode(cancelReturnUrl));
 
 			//Instant Payment Notification (server to server message)
@@ -239,7 +239,7 @@ namespace SmartStore.PayPal
 			{
 				string ipnUrl;
                 if (String.IsNullOrWhiteSpace(settings.IpnUrl))
-                    ipnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/PaymentPayPalStandard/IPNHandler";
+                    ipnUrl = _services.WebHelper.GetStoreLocation(false) + "Plugins/SmartStore.PayPal/PayPalStandard/IPNHandler";
 				else
                     ipnUrl = settings.IpnUrl;
 				builder.AppendFormat("&notify_url={0}", ipnUrl);

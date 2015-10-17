@@ -9,11 +9,13 @@ using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
+using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
+using System.Collections.Generic;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -267,6 +269,54 @@ namespace SmartStore.Web.Framework.WebApi
 				throw ExceptionNotExpanded<TProperty>(path);
 
 			return property;
+		}
+
+		protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
+			int key, 
+			Expression<Func<TEntity, IEnumerable<TCollection>>> navigationProperty)
+		{
+			Guard.ArgumentNotNull(() => navigationProperty);
+
+			var query = GetEntitySet().Where(x => x.Id.Equals(key));
+			return query.SelectMany(navigationProperty);
+		}
+
+		protected internal virtual IQueryable<TCollection> GetRelatedCollection<TCollection>(
+			int key,
+			string navigationProperty)
+		{
+			Guard.ArgumentNotEmpty(() => navigationProperty);
+
+			var ctx = (DbContext)Repository.Context;
+			var product = GetEntityByKey(key);
+			var entry = ctx.Entry(product);
+			var query = entry.Collection(navigationProperty).Query();
+
+			return query.Cast<TCollection>();
+		}
+
+		protected internal virtual SingleResult<TElement> GetRelatedEntity<TElement>(
+			int key,
+			Expression<Func<TEntity, TElement>> navigationProperty)
+		{
+			Guard.ArgumentNotNull(() => navigationProperty);
+
+			var query = GetEntitySet().Where(x => x.Id.Equals(key)).Select(navigationProperty);
+			return SingleResult.Create(query);
+		}
+
+		protected internal virtual SingleResult<TElement> GetRelatedEntity<TElement>(
+			int key,
+			string navigationProperty)
+		{
+			Guard.ArgumentNotEmpty(() => navigationProperty);
+
+			var ctx = (DbContext)Repository.Context;
+			var product = GetEntityByKey(key);
+			var entry = ctx.Entry(product);
+			var query = entry.Reference(navigationProperty).Query().Cast<TElement>();
+
+			return SingleResult.Create(query);
 		}
 
 		public override HttpResponseMessage Post(TEntity entity)

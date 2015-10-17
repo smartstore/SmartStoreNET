@@ -1805,7 +1805,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					exp.Name = ((string)exp.Name).Grow(string.Join(", ", values), " ");
 				}
 
-				exp._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, decimal.Zero, true);
+				exp._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
+					_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
 				// navigation properties
 				GetDeliveryTimeAndQuantityUnit(ctx, exp, product.DeliveryTimeId, product.QuantityUnitId);
@@ -1948,7 +1949,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					exp.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
-					exp.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, decimal.Zero, true);
+					exp.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
+						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
 					GetDeliveryTimeAndQuantityUnit(ctx, exp.Product, e.Product.DeliveryTimeId, e.Product.QuantityUnitId);
 

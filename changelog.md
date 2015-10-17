@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.5
 
@@ -56,6 +56,7 @@
 * #770 Resizing browser with product details page causes product image to disappear
 * GMC feed: Availability value "available for order" deprecated
 * Mobile: Shopping cart warnings weren't displayed to customers
+* Tax provider and payment method were automatically activated when there were no active provider\method
 
 
 ## SmartStore.NET 2.2.2

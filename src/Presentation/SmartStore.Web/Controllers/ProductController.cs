@@ -658,14 +658,16 @@ namespace SmartStore.Web.Controllers
 				}
 				else
 				{
-					var allCombinationImageIds = new List<int>();
+					var allCombinationPictureIds = _productAttributeService.GetAllProductVariantAttributeCombinationPictureIds(product.Id);	
 
-					_productAttributeService
-						.GetAllProductVariantAttributeCombinations(product.Id)
-						.GetAllCombinationImageIds(allCombinationImageIds);
-
-					_helper.PrepareProductDetailsPictureModel(pictureModel, pictures, product.GetLocalized(x => x.Name), allCombinationImageIds,
-						false, bundleItem, m.CombinationSelected);
+					_helper.PrepareProductDetailsPictureModel(
+						pictureModel, 
+						pictures, 
+						product.GetLocalized(x => x.Name), 
+						allCombinationPictureIds,
+						false, 
+						bundleItem, 
+						m.SelectedCombination);
 
 					galleryStartIndex = pictureModel.GalleryStartIndex;
 					galleryHtml = this.RenderPartialViewToString("_PictureGallery", pictureModel);

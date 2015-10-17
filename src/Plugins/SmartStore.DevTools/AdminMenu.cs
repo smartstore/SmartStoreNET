@@ -12,7 +12,7 @@ namespace SmartStore.DevTools
 				.Icon("code")
 				.Action("ConfigurePlugin", "Plugin", new { systemName = "SmartStore.DevTools", area = "Admin" })
 				.ToItem();
-
+			
 			pluginsNode.Prepend(menuItem);
 
 			// uncomment to add to admin menu (see plugin sub-menu)

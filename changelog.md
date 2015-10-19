@@ -3,6 +3,7 @@
 ## SmartStore.NET 2.5
 
 ### New Features
+* #701 Implement new export framework
 * #141 Payment and shipping methods by customer roles
 * #67 Restrict payment methods to countries
 * #94 Restrict payment methods to shipping methods
@@ -21,7 +22,8 @@
 * #607 HTML capable full description for payment methods displayed in checkout
 * #732 Product list: Option to display the pre-selected price instead of the lowest price
 * New payment provider for Offline Payment Plugin: Purchase Order Number
-* #202 Implement option for product list 'default sort order' 
+* #202 Implement option for product list 'default sort order'
+* #360 Import & export product variant combinations
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

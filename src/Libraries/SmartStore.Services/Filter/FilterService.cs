@@ -165,6 +165,7 @@ namespace SmartStore.Services.Filter
 			{
 				var searchContext = new ProductSearchContext()
 				{
+					Query = _productRepository.TableUntracked,
 					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
 					StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
 					VisibleIndividuallyOnly = true
@@ -191,17 +192,6 @@ namespace SmartStore.Services.Filter
 
 					_products = _productService.PrepareProductSearchQuery(searchContext);
 				}
-
-				//string.Join(", ", distinctIds.ToList()).Dump();
-
-				//_products
-				//	.Select(x => new { x.Id, x.Name })
-				//	.ToList()
-				//	.ForEach(x => {
-				//		"{0} {1}".FormatWith(x.Id, x.Name).Dump();
-				//	});
-
-				//_products.ToString().Dump(true);
 			}
 			return _products;
 		}

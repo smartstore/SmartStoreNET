@@ -61,6 +61,7 @@
 * Tax provider and payment method were automatically activated when there were no active provider\method
 * #784 Biz-Importer: Name of delivery time must not be imported empty
 * #776 Preview: Manufacturer and Product in Multi Store
+* #755 Some methods still loading all products in one go
 
 
 ## SmartStore.NET 2.2.2

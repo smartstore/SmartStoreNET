@@ -2,13 +2,11 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Net.Mime;using System.Text;
+using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
 using System.Web.Routing;
-using System.Data.Entity;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
@@ -2836,35 +2834,45 @@ namespace SmartStore.Admin.Controllers
 				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
 			}
-            
-            IList<Product> products;
+
+			const int maxProducts = 500;
+			int totalCount = 0;
+            IPagedList<Product> products;
 
 			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
-				if (all)
+				var searchContext = new ProductSearchContext
 				{
-					products = _productService.SearchProducts(new ProductSearchContext
-					{
-						LanguageId = _workContext.WorkingLanguage.Id,
-						OrderBy = ProductSortingEnum.Position,
-						PageSize = int.MaxValue,
-						ShowHidden = true
-					});
+					LanguageId = _workContext.WorkingLanguage.Id,
+					OrderBy = ProductSortingEnum.Position,
+					PageSize = 1,
+					ShowHidden = true
+				};
+
+				if (!all)
+				{
+					searchContext.ProductIds = selectedIds.ToIntArray().ToList();
 				}
-				else
+
+				products = _productService.SearchProducts(searchContext);
+
+				totalCount = products.TotalCount;
+
+				if (totalCount > 0 && totalCount <= maxProducts)
 				{
-					var ids = selectedIds.ToIntArray();
-					products = _productService.GetProductsByIds(ids);
+					searchContext.PageSize = int.MaxValue;
+
+					products = _productService.SearchProducts(searchContext);
 				}
 			}
 
-			if (products.Count == 0)
+			if (totalCount == 0)
 			{
 				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToAction("List");
 			}
 
-			if (products.Count > 500)
+			if (totalCount > maxProducts)
 			{
 				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToAction("List");

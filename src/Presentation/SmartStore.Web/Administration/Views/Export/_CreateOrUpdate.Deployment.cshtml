@@ -92,7 +92,7 @@
 		</td>
 	</tr>
 
-	<tr class="deployment-@((int)ExportDeploymentType.Http)  deployment-@((int)ExportDeploymentType.Ftp)">
+	<tr class="deployment-@((int)ExportDeploymentType.Http) deployment-@((int)ExportDeploymentType.Ftp)">
 		<td class="adminTitle">
 			@Html.SmartLabelFor(x => x.Url)
 		</td>
@@ -116,7 +116,7 @@
 			@Html.SmartLabelFor(x => x.Username)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Username)
+			@Html.TextBoxFor(x => x.Username, new { autocomplete = "off", @class = "text-box single-line" })
 			@Html.ValidationMessageFor(x => x.Username)
 		</td>
 	</tr>
@@ -125,7 +125,7 @@
 			@Html.SmartLabelFor(x => x.Password)
 		</td>
 		<td class="adminData">
-			@Html.EditorFor(x => x.Password)
+			@Html.TextBoxFor(x => x.Password, new { autocomplete = "off", type = "password", @class = "text-box single-line password" })
 			@Html.ValidationMessageFor(x => x.Password)
 		</td>
 	</tr>
@@ -165,7 +165,8 @@
 
 		// show\hide file system path
 		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
-			$('#FileSystemPathContainer').toggle(!$(this).is(':checked'));
+			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() === @((int)ExportDeploymentType.FileSystem);
+			$('#FileSystemPathContainer').toggle(val);
 		}).trigger('change');
 	});
 </script>

@@ -485,8 +485,8 @@ namespace SmartStore.Data.Migrations
 				"Legt die URL bzw. den Host-Namen fest, an die die Daten übermittelt werden sollen.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.EmailAddresses",
-				"Email addresses",
-				"E-Mail-Addressen",
+				"Email addresses to",
+				"E-Mail-Addressen an",
 				"Specifies the email addresses where to send the data.",
 				"Legt die E-Mail Addressen fest, an die die Daten verschickt werden soll.");
 

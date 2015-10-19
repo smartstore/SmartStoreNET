@@ -80,8 +80,8 @@ namespace SmartStore.Data.Migrations
 				"Legt das E-Mail Konto fest, über welches eine Benachrichtigung über die Fertigstellung des Exports verschickt werden soll.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmailAddresses",
-				"Email addresses",
-				"E-Mail-Addressen",
+				"Email addresses to",
+				"E-Mail-Addressen an",
 				"Specifies the email addresses where to send the notification message.",
 				"Legt die E-Mail Addressen fest, an die die Benachrichtigung geschickt werden soll.");
 

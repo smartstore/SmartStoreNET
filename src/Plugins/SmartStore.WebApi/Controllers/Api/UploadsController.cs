@@ -101,9 +101,11 @@ namespace SmartStore.WebApi.Controllers.Api
 				{
 					FileName = file.Headers.ContentDisposition.FileName.ToUnquoted(),
 					Name = file.Headers.ContentDisposition.Name.ToUnquoted(),
-					MediaType = file.Headers.ContentType.MediaType.ToUnquoted(),
 					ContentDisposition = file.Headers.ContentDisposition.Parameters
 				};
+
+				if (file.Headers.ContentType != null)
+					image.MediaType = file.Headers.ContentType.MediaType.ToUnquoted();
 
 				if (image.FileName.IsEmpty())
 					image.FileName = entity.Name;

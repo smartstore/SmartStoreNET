@@ -466,7 +466,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private void SetProgress(ExportProfileTaskContext ctx, int loadedRecords)
 		{
-			if (!ctx.IsPreview && loadedRecords > 0 && ctx.TaskContext.ScheduleTask != null)
+			if (!ctx.IsPreview && ctx.TaskContext.ScheduleTask != null && loadedRecords > 0)
 			{
 				int totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
 
@@ -478,6 +478,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
 
 				ctx.TaskContext.SetProgress(ctx.RecordCount, totalRecords, msg, true);
+			}
+		}
+
+		private void SetProgress(ExportProfileTaskContext ctx, string message)
+		{
+			if (!ctx.IsPreview && ctx.TaskContext.ScheduleTask != null && message.HasValue())
+			{
+				ctx.TaskContext.SetProgress(null, message, true);
 			}
 		}
 
@@ -577,10 +585,10 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				++count;
 			}
 
-			ctx.Log.Information("{0} email(s) created and queued.".FormatInvariant(count));
+			ctx.Log.Information("{0} email(s) created and queued for deployment.".FormatInvariant(count));
 		}
 
-		private async void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
 		{
 			var succeeded = 0;
 			var url = deployment.Url;
@@ -606,7 +614,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						formData.Add(new ByteArrayContent(fileData), "file {0}".FormatInvariant(++count), Path.GetFileName(path));
 					}
 
-					var response = await client.PostAsync(url, formData);
+					var response = client.PostAsync(url, formData).Result;
 
 					if (response.IsSuccessStatusCode)
 					{
@@ -614,7 +622,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					}
 					else if (response.Content != null)
 					{
-						var content = await response.Content.ReadAsStringAsync();
+						var content = response.Content.ReadAsStringAsync().Result;
 
 						var msg = "Multipart form data upload failed. {0} ({1}). Response: {2}".FormatInvariant(
 							response.StatusCode.ToString(), (int)response.StatusCode, content.NaIfEmpty().Truncate(2000, "..."));
@@ -632,15 +640,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					foreach (var path in ctx.GetDeploymentFiles(deployment))
 					{
-						await webClient.UploadFileTaskAsync(url, path);
+						webClient.UploadFile(url, path);
+
+						++succeeded;
 					}
 				}
 			}
 
-			ctx.Log.Information("{0} file(s) successfully uploaded via HTTP.".FormatInvariant(succeeded));
+			ctx.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeeded, deployment.HttpTransmissionType.ToString()));
 		}
 
-		private async void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
 		{
 			var bytesRead = 0;
 			var succeededFiles = 0;
@@ -670,31 +680,33 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 				request.ContentLength = (new FileInfo(path)).Length;
 
-				var requestStream = await request.GetRequestStreamAsync();
+				var requestStream = request.GetRequestStream();
 
 				using (var stream = new FileStream(path, FileMode.Open))
 				{
 					while ((bytesRead = stream.Read(buff, 0, buffLength)) != 0)
 					{
-						await requestStream.WriteAsync(buff, 0, bytesRead);
+						requestStream.Write(buff, 0, bytesRead);
 					}
 				}
 
 				requestStream.Close();
 
-				var response = (FtpWebResponse)await request.GetResponseAsync();
-				var statusCode = (int)response.StatusCode;
-
-				if (statusCode >= 200 && statusCode <= 299)
+				using (var response = (FtpWebResponse)request.GetResponse())
 				{
-					++succeededFiles;
-				}
-				else
-				{
-					var msg = "The FTP transfer might fail. {0} ({1}), {2}. File {3}".FormatInvariant(
-						response.StatusCode.ToString(), statusCode, response.StatusDescription.NaIfEmpty(), path);
+					var statusCode = (int)response.StatusCode;
 
-					ctx.Log.Error(msg);
+					if (statusCode >= 200 && statusCode <= 299)
+					{
+						++succeededFiles;
+					}
+					else
+					{
+						var msg = "The FTP transfer might fail. {0} ({1}), {2}. File {3}".FormatInvariant(
+							response.StatusCode.ToString(), statusCode, response.StatusDescription.NaIfEmpty(), path);
+
+						ctx.Log.Error(msg);
+					}
 				}
 			}
 
@@ -2671,6 +2683,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 								ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
 							}
 
+							SetProgress(ctx, _services.Localization.GetResource("Common.Deployment"));
+
 							foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 							{
 								try
@@ -2693,7 +2707,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 								}
 								catch (Exception exc)
 								{
-									logger.Error("Deployment \"{0}\" of type {1} failed.".FormatInvariant(deployment.Name, deployment.DeploymentType.ToString()), exc);
+									logger.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
+										deployment.Name, deployment.DeploymentType.ToString(), exc.Message), exc);
 								}
 							}
 						}

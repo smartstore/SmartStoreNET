@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Net.Http.Formatting;
 using System.Web.Http;
+using System.Web.Http.Cors;
 using System.Web.Http.OData.Builder;
 using System.Web.Http.OData.Routing;
+using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Web.Framework.WebApi.Configuration;
-using System.Web.Http.OData.Routing.Conventions;
 using SmartStore.Web.Framework.WebApi.OData;
-using System.Web.Http.Cors;
 
 namespace SmartStore.Web.Framework.WebApi
 {   
@@ -18,7 +18,7 @@ namespace SmartStore.Web.Framework.WebApi
         {
 			var config = GlobalConfiguration.Configuration;
 
-			var configBroadcaster = new WebApiConfigurationBroadcaster()
+			var configBroadcaster = new WebApiConfigurationBroadcaster
 			{
 				ModelBuilder = new ODataConventionModelBuilder(),
 				RoutingConventions = ODataRoutingConventions.CreateDefault(),
@@ -31,9 +31,10 @@ namespace SmartStore.Web.Framework.WebApi
 			config.Formatters.JsonFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "json", "application/json"));
 			config.Formatters.XmlFormatter.MediaTypeMappings.Add(new QueryStringMapping("format", "xml", "application/xml"));
 
-			var queryAttribute = new WebApiQueryableAttribute()
+			var queryAttribute = new WebApiQueryableAttribute
 			{
-				MaxTop = WebApiGlobal.MaxTop
+				MaxTop = WebApiGlobal.MaxTop,
+				MaxExpansionDepth = WebApiGlobal.MaxExpansionDepth
 			};
 			config.EnableQuerySupport(queryAttribute);
 

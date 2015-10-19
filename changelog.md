@@ -49,6 +49,7 @@
 * Automatically redirect to referrer after login
 * #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
 * Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
+* #778 Web-API: Increase MaxExpansionDepth for using expand pathes
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

@@ -1574,7 +1574,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			expando._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
-			expando._DetailUrl = ctx.Store.Url + (string)expando.SeName;
+			expando._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)expando.SeName;
 
 			expando._CategoryName = null;
 

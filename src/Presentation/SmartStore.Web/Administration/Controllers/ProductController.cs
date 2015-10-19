@@ -656,7 +656,25 @@ namespace SmartStore.Admin.Controllers
 				model.CreatedOn = _dateTimeHelper.ConvertToUserTime(product.CreatedOnUtc, DateTimeKind.Utc);
 				model.UpdatedOn = _dateTimeHelper.ConvertToUserTime(product.UpdatedOnUtc, DateTimeKind.Utc);
 
-				model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
+				if (product.LimitedToStores)
+				{
+					var storeMappings = _storeMappingService.GetStoreMappings(product);
+					if (storeMappings.FirstOrDefault(x => x.StoreId == _services.StoreContext.CurrentStore.Id) == null)
+					{
+						var storeMapping = storeMappings.FirstOrDefault();
+						if (storeMapping != null)
+						{
+							var store = _services.StoreService.GetStoreById(storeMapping.StoreId);
+							if (store != null)
+								model.ProductUrl = store.Url.EnsureEndsWith("/") + product.GetSeName(); 
+						}
+					}
+				}
+
+				if (model.ProductUrl.IsEmpty())
+				{
+					model.ProductUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, Request.Url.Scheme);
+				}
 			}
 
 			model.PrimaryStoreCurrencyCode = _services.StoreContext.CurrentStore.PrimaryStoreCurrency.CurrencyCode;
@@ -680,7 +698,7 @@ namespace SmartStore.Admin.Controllers
 			var templates = _productTemplateService.GetAllProductTemplates();
 			foreach (var template in templates)
 			{
-				model.AvailableProductTemplates.Add(new SelectListItem()
+				model.AvailableProductTemplates.Add(new SelectListItem
 				{
 					Text = template.Name,
 					Value = template.Id.ToString()
@@ -691,7 +709,7 @@ namespace SmartStore.Admin.Controllers
 			var allTags = _productTagService.GetAllProductTagNames();
 			foreach (var tag in allTags)
 			{
-				model.AvailableProductTags.Add(new SelectListItem() { Text = tag, Value = tag });
+				model.AvailableProductTags.Add(new SelectListItem { Text = tag, Value = tag });
 			}
 
 			if (product != null)
@@ -704,7 +722,7 @@ namespace SmartStore.Admin.Controllers
 			var taxCategories = _taxCategoryService.GetAllTaxCategories();
 			foreach (var tc in taxCategories)
 			{
-				model.AvailableTaxCategories.Add(new SelectListItem()
+				model.AvailableTaxCategories.Add(new SelectListItem
 				{
 					Text = tc.Name,
 					Value = tc.Id.ToString(),
@@ -716,7 +734,7 @@ namespace SmartStore.Admin.Controllers
 			var deliveryTimes = _deliveryTimesService.GetAllDeliveryTimes();
 			foreach (var dt in deliveryTimes)
 			{
-				model.AvailableDeliveryTimes.Add(new SelectListItem()
+				model.AvailableDeliveryTimes.Add(new SelectListItem
 				{
 					Text = dt.Name,
 					Value = dt.Id.ToString(),
@@ -728,7 +746,7 @@ namespace SmartStore.Admin.Controllers
             var quantityUnits = _quantityUnitService.GetAllQuantityUnits();
             foreach (var mu in quantityUnits)
             {
-                model.AvailableQuantityUnits.Add(new SelectListItem()
+                model.AvailableQuantityUnits.Add(new SelectListItem
                 {
                     Text = mu.Name,
                     Value = mu.Id.ToString(),
@@ -748,7 +766,7 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var mu in measureUnits)
 			{
-				model.AvailableMeasureUnits.Add(new SelectListItem()
+				model.AvailableMeasureUnits.Add(new SelectListItem
 				{
 					Text = mu,
 					Value = mu,
@@ -788,7 +806,7 @@ namespace SmartStore.Admin.Controllers
 
 			foreach (var inventoryMethod in inventoryMethods)
 			{
-				model.AvailableManageInventoryMethods.Add(new SelectListItem()
+				model.AvailableManageInventoryMethods.Add(new SelectListItem
 				{
 					Value = ((int)inventoryMethod).ToString(),
 					Text = inventoryMethod.GetLocalizedEnum(_localizationService, _workContext),

@@ -2555,18 +2555,15 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					{
 						if (ctx.IsFileBasedExport)
 						{
-							using (_rwLock.GetWriteLock())
-							{
-								var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ++fileIndex, ctx.Export.MaxFileNameLength);
+							var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ++fileIndex, ctx.Export.MaxFileNameLength);
 
-								ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension;
-								ctx.Export.FilePath = Path.Combine(ctx.Export.Folder, ctx.Export.FileName);
+							ctx.Export.FileName = resolvedPattern + ctx.Export.FileExtension;
+							ctx.Export.FilePath = Path.Combine(ctx.Export.Folder, ctx.Export.FileName);
 
-								if (ctx.Export.HasPublicDeployment)
-									ctx.Export.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.Export.FileName;
+							if (ctx.Export.HasPublicDeployment)
+								ctx.Export.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.Export.FileName;
 
-								ctx.Provider.Value.Execute(ctx.Export);
-							}
+							ctx.Provider.Value.Execute(ctx.Export);
 
 							// create info for deployment list in profile edit
 							if (File.Exists(ctx.Export.FilePath))
@@ -2610,6 +2607,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 			FileSystemHelper.Delete(ctx.ZipPath);
 
+			using (_rwLock.GetWriteLock())
 			using (var logger = new TraceLogger(ctx.LogPath))
 			{
 				try

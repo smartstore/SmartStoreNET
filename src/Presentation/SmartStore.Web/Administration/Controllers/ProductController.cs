@@ -4335,7 +4335,7 @@ namespace SmartStore.Admin.Controllers
 			if (product == null)
 				throw new ArgumentException("No product found with the specified id");
 
-			_pvacRepository.DeleteAll();			
+			_pvacRepository.DeleteAll(x => x.ProductId == product.Id);
 
 			_productService.UpdateLowestAttributeCombinationPriceProperty(product);
 

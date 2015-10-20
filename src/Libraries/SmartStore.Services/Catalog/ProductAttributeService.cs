@@ -570,7 +570,7 @@ namespace SmartStore.Services.Catalog
 		public virtual void CreateAllProductVariantAttributeCombinations(Product product)
 		{
 			// delete all existing combinations
-			_pvacRepository.DeleteAll();
+			_pvacRepository.DeleteAll(x => x.ProductId == product.Id);
 
 			var attributes = GetProductVariantAttributesByProductId(product.Id);
 			if (attributes == null || attributes.Count <= 0)

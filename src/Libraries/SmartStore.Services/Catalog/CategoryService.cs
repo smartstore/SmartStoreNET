@@ -379,7 +379,8 @@ namespace SmartStore.Services.Catalog
 
 			query = query
 				.OrderBy(x => x.ParentCategoryId)
-				.ThenBy(x => x.DisplayOrder);
+				.ThenBy(x => x.DisplayOrder)
+				.ThenBy(x => x.Name);
 
             var unsortedCategories = query.ToList();
 

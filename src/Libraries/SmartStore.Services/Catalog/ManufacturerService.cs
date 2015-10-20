@@ -142,7 +142,8 @@ namespace SmartStore.Services.Catalog
 			if (manufacturerName.HasValue())
 				query = query.Where(m => m.Name.Contains(manufacturerName));
 
-			query = query.OrderBy(m => m.DisplayOrder);
+			query = query.OrderBy(m => m.DisplayOrder)
+				.ThenBy(m => m.Name);
 
             var manufacturers = query.ToList();
             return manufacturers;

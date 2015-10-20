@@ -2595,6 +2595,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					if (ctx.TaskContext.CancellationToken.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
 				}
+
+				if (ctx.Export.Abort != ExportAbortion.Hard)
+				{
+					ctx.Provider.Value.ExecuteEnded(ctx.Export);
+				}
 			}
 		}
 

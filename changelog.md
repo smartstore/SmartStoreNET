@@ -50,6 +50,7 @@
 * #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
 * Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
 * #778 Web-API: Increase MaxExpansionDepth for using expand pathes
+* #767 Remove assignments to a grouped product if the grouped product is deleted
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

@@ -251,6 +251,17 @@ namespace SmartStore.Services.Catalog
 			product.QuantityUnitId = null;
 
             UpdateProduct(product);
+
+			if (product.ProductType == ProductType.GroupedProduct)
+			{
+				var associatedProducts = _productRepository.Table
+					.Where(x => x.ParentGroupedProductId == product.Id)
+					.ToList();
+
+				associatedProducts.ForEach(x => x.ParentGroupedProductId = 0);
+
+				_dbContext.SaveChanges();
+			}
         }
 
         /// <summary>

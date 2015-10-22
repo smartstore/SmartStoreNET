@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Globalization;
-using System.IO;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
@@ -239,7 +238,7 @@ namespace SmartStore.Web.Controllers
 				Weight = product.Weight
 			};
 
-			model.ProductUrl = GetProductUrl(item, model.ProductSeName);
+			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.ProductId, model.ProductSeName, item.AttributesXml);
 
 			if (item.BundleItem != null)
 			{
@@ -434,7 +433,7 @@ namespace SmartStore.Web.Controllers
 				VisibleIndividually = product.VisibleIndividually
 			};
 
-			model.ProductUrl = GetProductUrl(item, model.ProductSeName);
+			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.ProductId, model.ProductSeName, item.AttributesXml);
 
 			if (item.BundleItem != null)
 			{
@@ -589,20 +588,6 @@ namespace SmartStore.Web.Controllers
 					RouteValues = routeValues
 				});
 			}
-		}
-
-		private string GetProductUrl(ShoppingCartItem cartItem, string productSeName)
-		{
-			var url = Url.RouteUrl("Product", new { SeName = productSeName });
-
-			var queryString = _productAttributeParser.SerializeQueryData(cartItem.ProductId, cartItem.AttributesXml);
-
-			if (queryString.HasValue())
-			{
-				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
-			}
-
-			return url;
 		}
 
 		/// <summary>
@@ -995,7 +980,7 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-					cartItemModel.ProductUrl = GetProductUrl(sci.Item, cartItemModel.ProductSeName);
+					cartItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(sci.Item.ProductId, cartItemModel.ProductSeName, sci.Item.AttributesXml);
 
 					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
 					{
@@ -1007,7 +992,8 @@ namespace SmartStore.Web.Controllers
 								ProductSeName = childItem.Item.Product.GetSeName(),
 							};
 
-							bundleItemModel.ProductUrl = GetProductUrl(childItem.Item, bundleItemModel.ProductSeName);
+							bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(
+								childItem.Item.ProductId, bundleItemModel.ProductSeName, childItem.Item.AttributesXml);
 
 							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
 							if (itemPicture != null)

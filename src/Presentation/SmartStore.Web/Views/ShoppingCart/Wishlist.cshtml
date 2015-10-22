@@ -6,7 +6,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsOne.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Wishlist").Text);
 }
 
@@ -38,7 +37,7 @@
 			</td>
 		}
 		<td class="product">
-			<a href="@item.ProductUrl" title="View details">@item.ProductName</a>
+			<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
 
 			@if (Model.DisplayShortDesc && !String.IsNullOrEmpty(item.ShortDesc))
 			{

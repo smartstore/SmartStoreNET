@@ -3,7 +3,6 @@
 @{
     Layout = "~/Views/Shared/_ColumnsTwo.cshtml";
 
-    //title
     Html.AddTitleParts(T("PageTitle.Account").Text);
 }
 @section left
@@ -48,7 +47,7 @@
                                 @item.CreatedOn.ToString("d")
                             </td>
                             <td>
-                                <a href="@Url.RouteUrl("Product", new { SeName = item.ProductSeName })" title="View details">@item.ProductName</a>
+								<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                 @if (!String.IsNullOrEmpty(item.ProductAttributes))
                                 {
                                     <div class="attributes">

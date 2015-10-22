@@ -30,6 +30,7 @@ namespace SmartStore.Web.Models.Order
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductSeName { get; set; }
+			public string ProductUrl { get; set; }
             public string AttributeInfo { get; set; }
 
             public int QuantityOrdered { get; set; }

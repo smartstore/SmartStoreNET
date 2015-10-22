@@ -90,6 +90,15 @@ namespace SmartStore.Services.Catalog
 		/// <returns>Json string with attribute data</returns>
 		string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true);
 
+		/// <summary>
+		/// Gets the URL of the product page including attributes query string
+		/// </summary>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="productSeName">Product SEO name</param>
+		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <returns>URL of the product page including attributes query string</returns>
+		string GetProductUrlWithAttributes(int productId, string productSeName, string attributesXml);
+
         #endregion
 
         #region Gift card attributes

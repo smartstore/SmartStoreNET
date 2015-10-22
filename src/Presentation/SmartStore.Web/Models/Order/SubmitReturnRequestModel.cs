@@ -44,6 +44,8 @@ namespace SmartStore.Web.Models.Order
 
             public string ProductSeName { get; set; }
 
+			public string ProductUrl { get; set; }
+
             public string AttributeInfo { get; set; }
 
             public string UnitPrice { get; set; }

@@ -4,6 +4,8 @@ using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Web;
+using System.Web.Mvc;
+using System.Web.Routing;
 using System.Xml;
 using System.Xml.Linq;
 using Newtonsoft.Json;
@@ -419,6 +421,27 @@ namespace SmartStore.Services.Catalog
 				}
 			}
 			return "";
+		}
+
+		public virtual string GetProductUrlWithAttributes(int productId, string productSeName, string attributesXml)
+		{
+			var url = UrlHelper.GenerateUrl(
+				"Product",
+				null,
+				null,
+				new RouteValueDictionary(new { SeName = productSeName }),
+				RouteTable.Routes,
+				HttpContext.Current.Request.RequestContext,
+				false);
+
+			var queryString = SerializeQueryData(productId, attributesXml);
+
+			if (queryString.HasValue())
+			{
+				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
+			}
+
+			return url;
 		}
 
         #endregion

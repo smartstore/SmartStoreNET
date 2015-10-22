@@ -15,6 +15,7 @@ namespace SmartStore.Web.Models.Customer
         public CustomerNavigationModel NavigationModel { get; set; }
 
         #region Nested classes
+
         public partial class DownloadableProductsModel : ModelBase
         {
             public Guid OrderItemGuid { get; set; }
@@ -24,6 +25,7 @@ namespace SmartStore.Web.Models.Customer
             public int ProductId { get; set; }
             public string ProductName { get; set; }
             public string ProductSeName { get; set; }
+			public string ProductUrl { get; set; }
             public string ProductAttributes { get; set; }
 
             public int DownloadId { get; set; }
@@ -31,6 +33,7 @@ namespace SmartStore.Web.Models.Customer
 
             public DateTime CreatedOn { get; set; }
         }
+
         #endregion
     }
 

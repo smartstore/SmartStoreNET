@@ -81,7 +81,7 @@
                     <li>
                         <div class="cart-item-row">
                             <div class="product">
-                                <a href="@item.ProductUrl" title="View details">@item.ProductName</a>
+								<a href="@item.ProductUrl" title="@T("Products.Details")">@item.ProductName</a>
                                 @if (!String.IsNullOrEmpty(item.AttributeInfo))
                                 {
                                     <div class="attributes">

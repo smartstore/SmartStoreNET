@@ -30,6 +30,7 @@ namespace SmartStore.Web.Controllers
         private readonly ILocalizationService _localizationService;
         private readonly ICustomerService _customerService;
         private readonly IWorkflowMessageService _workflowMessageService;
+		private readonly IProductAttributeParser _productAttributeParser;
 
         private readonly LocalizationSettings _localizationSettings;
         private readonly OrderSettings _orderSettings;
@@ -46,6 +47,7 @@ namespace SmartStore.Web.Controllers
             ILocalizationService localizationService,
             ICustomerService customerService,
             IWorkflowMessageService workflowMessageService,
+			IProductAttributeParser productAttributeParser,
             LocalizationSettings localizationSettings,
             OrderSettings orderSettings)
         {
@@ -58,6 +60,7 @@ namespace SmartStore.Web.Controllers
             this._localizationService = localizationService;
             this._customerService = customerService;
             this._workflowMessageService = workflowMessageService;
+			this._productAttributeParser = productAttributeParser;
 
             this._localizationSettings = localizationSettings;
             this._orderSettings = orderSettings;
@@ -95,9 +98,10 @@ namespace SmartStore.Web.Controllers
 
             //products
             var orderItems = _orderService.GetAllOrderItems(order.Id, null, null, null, null, null, null);
+
             foreach (var orderItem in orderItems)
             {
-                var orderItemModel = new SubmitReturnRequestModel.OrderItemModel()
+                var orderItemModel = new SubmitReturnRequestModel.OrderItemModel
                 {
                     Id = orderItem.Id,
                     ProductId = orderItem.Product.Id,
@@ -106,6 +110,9 @@ namespace SmartStore.Web.Controllers
                     AttributeInfo = orderItem.AttributeDescription,
                     Quantity = orderItem.Quantity
                 };
+
+				orderItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.ProductId, orderItemModel.ProductSeName, orderItem.AttributesXml);
+
                 model.Items.Add(orderItemModel);
 
                 //unit price

@@ -223,7 +223,7 @@ namespace SmartStore.Web.Controllers
 			
 			product.MergeWithCombination(item.AttributesXml);
 
-			var model = new ShoppingCartModel.ShoppingCartItemModel()
+			var model = new ShoppingCartModel.ShoppingCartItemModel
 			{
 				Id = item.Id,
 				Sku = product.Sku,
@@ -235,9 +235,11 @@ namespace SmartStore.Web.Controllers
 				IsShipEnabled = product.IsShipEnabled,
 				ShortDesc = product.GetLocalized(x => x.ShortDescription),
 				ProductType = product.ProductType,
-                BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
-                Weight = product.Weight
+				BasePrice = product.GetBasePriceInfo(_localizationService, _priceFormatter, _currencyService, _taxService, _priceCalculationService, _workContext.WorkingCurrency),
+				Weight = product.Weight
 			};
+
+			model.ProductUrl = GetProductUrl(item, model.ProductSeName);
 
 			if (item.BundleItem != null)
 			{
@@ -419,7 +421,7 @@ namespace SmartStore.Web.Controllers
 
 			product.MergeWithCombination(item.AttributesXml);
 
-			var model = new WishlistModel.ShoppingCartItemModel()
+			var model = new WishlistModel.ShoppingCartItemModel
 			{
 				Id = item.Id,
 				Sku = product.Sku,
@@ -431,6 +433,8 @@ namespace SmartStore.Web.Controllers
 				ProductType = product.ProductType,
 				VisibleIndividually = product.VisibleIndividually
 			};
+
+			model.ProductUrl = GetProductUrl(item, model.ProductSeName);
 
 			if (item.BundleItem != null)
 			{
@@ -585,6 +589,20 @@ namespace SmartStore.Web.Controllers
 					RouteValues = routeValues
 				});
 			}
+		}
+
+		private string GetProductUrl(ShoppingCartItem cartItem, string productSeName)
+		{
+			var url = Url.RouteUrl("Product", new { SeName = productSeName });
+
+			var queryString = _productAttributeParser.SerializeQueryData(cartItem.ProductId, cartItem.AttributesXml);
+
+			if (queryString.HasValue())
+			{
+				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
+			}
+
+			return url;
 		}
 
 		/// <summary>
@@ -960,7 +978,7 @@ namespace SmartStore.Web.Controllers
                     .Take(_shoppingCartSettings.MiniShoppingCartProductNumber)
                     .ToList())
                 {
-                    var cartItemModel = new MiniShoppingCartModel.ShoppingCartItemModel()
+                    var cartItemModel = new MiniShoppingCartModel.ShoppingCartItemModel
                     {
                         Id = sci.Item.Id,
                         ProductId = sci.Item.Product.Id,
@@ -977,23 +995,27 @@ namespace SmartStore.Web.Controllers
                             allowHyperlinks: false)
                     };
 
-                    if (sci.Item.Product.ProductType == ProductType.BundledProduct)
-                    {                        
-                        var bundleItems = _productService.GetBundleItems(sci.Item.Product.Id);
-                        foreach (var bundleItem in bundleItems)
-                        {
-                            var bundleItemModel = new MiniShoppingCartModel.ShoppingCartItemBundleItem();
-                            bundleItemModel.ProductName = bundleItem.Item.Product.GetLocalized(x => x.Name);
-                            var bundlePic = _pictureService.GetPicturesByProductId(bundleItem.Item.ProductId).FirstOrDefault();
-                            if(bundlePic != null)
-                                bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(bundlePic.Id, 32);
+					cartItemModel.ProductUrl = GetProductUrl(sci.Item, cartItemModel.ProductSeName);
 
-                            bundleItemModel.ProductSeName = bundleItem.Item.Product.GetSeName();
+					if (sci.ChildItems != null && _shoppingCartSettings.ShowProductBundleImagesOnShoppingCart)
+					{
+						foreach (var childItem in sci.ChildItems.Where(x => x.Item.Id != sci.Item.Id && x.Item.BundleItem != null && !x.Item.BundleItem.HideThumbnail))
+						{
+							var bundleItemModel = new MiniShoppingCartModel.ShoppingCartItemBundleItem
+							{
+								ProductName = childItem.Item.Product.GetLocalized(x => x.Name),
+								ProductSeName = childItem.Item.Product.GetSeName(),
+							};
 
-                            if (!bundleItem.Item.HideThumbnail) 
-                                cartItemModel.BundleItems.Add(bundleItemModel);
-                        }
-                    }
+							bundleItemModel.ProductUrl = GetProductUrl(childItem.Item, bundleItemModel.ProductSeName);
+
+							var itemPicture = _pictureService.GetPicturesByProductId(childItem.Item.ProductId, 1).FirstOrDefault();
+							if (itemPicture != null)
+								bundleItemModel.PictureUrl = _pictureService.GetPictureUrl(itemPicture.Id, 32);
+
+							cartItemModel.BundleItems.Add(bundleItemModel);
+						}
+					}
 
                     //unit prices
                     if (sci.Item.Product.CallForPrice)

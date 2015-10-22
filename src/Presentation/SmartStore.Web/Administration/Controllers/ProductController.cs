@@ -4105,7 +4105,7 @@ namespace SmartStore.Admin.Controllers
 
 			var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
 			var productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() });
-			productUrl = "{0}{1}attributes=".FormatWith(productUrl, productUrl.Contains("?") ? "&" : "?");
+			productUrl = "{0}{1}attributes=".FormatInvariant(productUrl, productUrl.Contains("?") ? "&" : "?");
 
 			var productVariantAttributesModel = allCombinations.Select(x =>
 			{

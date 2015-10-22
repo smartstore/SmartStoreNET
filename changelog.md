@@ -52,6 +52,7 @@
 * #778 Web-API: Increase MaxExpansionDepth for using expand pathes
 * #767 Remove assignments to a grouped product if the grouped product is deleted
 * #773 Reduce number of guest records created by search engine requests
+* #791 Preselected attributes or attribute combinations should always be appended as querystring to product page links
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

@@ -73,6 +73,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
             public string ProductSeName { get; set; }
 
+			public string ProductUrl { get; set; }
+
 			public bool VisibleIndividually { get; set; }
 
 			public ProductType ProductType { get; set; }

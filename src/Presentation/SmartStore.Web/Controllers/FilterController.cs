@@ -18,6 +18,14 @@ namespace SmartStore.Web.Controllers
             _catalogSettings = catalogSettings;
 		}
 
+		private bool IsShowAllText(ICollection<FilterCriteria> criteriaGroup)
+		{
+			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
+				return false;
+
+			return (criteriaGroup.Count >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));
+		}
+
 		public ActionResult Products(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
 		{
 			var context = _filterService.CreateFilterProductContext(filter, categoryID, path, pagesize, orderby, viewmode);
@@ -39,7 +47,7 @@ namespace SmartStore.Web.Controllers
 			// TODO: needed later for ajax based filtering... see example below
 			//System.Threading.Thread.Sleep(3000);
 
-			var context = new FilterProductContext()
+			var context = new FilterProductContext
 			{
 				ParentCategoryID = categoryID,
 				CategoryIds = new List<int> { categoryID },
@@ -74,20 +82,13 @@ namespace SmartStore.Web.Controllers
 
 			_filterService.ProductFilterableMultiSelect(context, filterMultiSelect);
 
-            return PartialView(new ProductFilterModel { 
+            return PartialView(new ProductFilterModel
+			{ 
                 Context = context, 
                 IsShowAllText = IsShowAllText(context.Criteria),
                 MaxFilterItemsToDisplay = _catalogSettings.MaxFilterItemsToDisplay,
                 ExpandAllFilterGroups = _catalogSettings.ExpandAllFilterCriteria
             });
-		}
-
-		private bool IsShowAllText(ICollection<FilterCriteria> criteriaGroup)
-		{
-			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
-				return false;
-
-			return (criteriaGroup.Count >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));
 		}
     }
 }

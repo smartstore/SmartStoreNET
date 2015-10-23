@@ -53,6 +53,7 @@ namespace SmartStore.Services.Filter
 		{
 			if (value.HasValue() && !value.IsCaseInsensitiveEqual("null"))
 				return value;
+
 			return alternativeValue;
 		}
 
@@ -163,7 +164,7 @@ namespace SmartStore.Services.Filter
 		{
 			if (_products == null)
 			{
-				var searchContext = new ProductSearchContext()
+				var searchContext = new ProductSearchContext
 				{
 					Query = _productRepository.TableUntracked,
 					FeaturedProducts = (_catalogSettings.IncludeFeaturedProductsInNormalLists ? null : (bool?)false),
@@ -300,7 +301,7 @@ namespace SmartStore.Services.Filter
 					Name = g.FirstOrDefault().SpecificationAttribute.Name,
 					Value = g.FirstOrDefault().Name,
 					ID = g.Key.Id,
-					ParentId = g.FirstOrDefault().SpecificationAttribute.Id,
+					PId = g.FirstOrDefault().SpecificationAttribute.Id,
 					MatchCount = g.Count()
 				};
 
@@ -313,8 +314,8 @@ namespace SmartStore.Services.Filter
 				c.Entity = ShortcutSpecAttribute;
 				c.IsInactive = true;
 
-				if (c.ParentId != 0)
-					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ParentId, "SpecificationAttribute", "Name");
+				if (c.PId.HasValue)
+					c.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.PId.Value, "SpecificationAttribute", "Name");
 
 				if (c.ID.HasValue)
 					c.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, c.ID.Value, "SpecificationAttributeOption", "Name");
@@ -342,12 +343,13 @@ namespace SmartStore.Services.Filter
 			//criteria.FindAll(c => c.Type.IsNullOrEmpty()).ForEach(c => c.Type = _defaultType);
 			if (criteria != null && criteria.Count > 0)
 				return JsonConvert.SerializeObject(criteria);
+
 			return "";
 		}
 
 		public virtual FilterProductContext CreateFilterProductContext(string filter, int categoryID, string path, int? pagesize, int? orderby, string viewmode)
 		{
-			var context = new FilterProductContext()
+			var context = new FilterProductContext
 			{
 				Filter = filter,
 				ParentCategoryID = categoryID,
@@ -364,6 +366,17 @@ namespace SmartStore.Services.Filter
 				context.CategoryIds.AddRange(
 					_categoryService.GetAllCategoriesByParentCategoryId(categoryID).Select(x => x.Id)
 				);
+			}
+
+			int languageId = _services.WorkContext.WorkingLanguage.Id;
+
+			foreach (var criteria in context.Criteria.Where(x => x.Entity == ShortcutSpecAttribute))
+			{
+				if (criteria.PId.HasValue)
+					criteria.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, criteria.PId.Value, "SpecificationAttribute", "Name");
+
+				if (criteria.ID.HasValue)
+					criteria.ValueLocalized = _localizedEntityService.GetLocalizedValue(languageId, criteria.ID.Value, "SpecificationAttributeOption", "Name");
 			}
 
 			return context;
@@ -448,6 +461,7 @@ namespace SmartStore.Services.Filter
 				context.Criteria.Clear();	// !
 
 			context.Criteria = findIn.FindAll(match);
+
 			return ToWhereClause(context);
 		}
 
@@ -569,7 +583,7 @@ namespace SmartStore.Services.Filter
 			}
 
 			// filters WITHOUT the multiple selectable filters
-			string excludedFilter = Serialize(context.Criteria);
+			var excludedFilter = Serialize(context.Criteria);
 
 			// filters WITH the multiple selectable filters (required for highlighting selected values)
 			context.Criteria = Deserialize(context.Filter);

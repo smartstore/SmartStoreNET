@@ -66,6 +66,7 @@
 * #784 Biz-Importer: Name of delivery time must not be imported empty
 * #776 Preview: Manufacturer and Product in Multi Store
 * #755 Some methods still loading all products in one go
+* #796 Selected specification in product filter mask is displayed with default language (not localized)
 
 
 ## SmartStore.NET 2.2.2

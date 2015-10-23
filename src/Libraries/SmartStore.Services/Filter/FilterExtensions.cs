@@ -17,6 +17,7 @@ namespace SmartStore.Services.Filter
 			if (value.HasValue())
 			{
 				decimal d = 0;
+
 				if (StringToPrice(value, out d))
 					return EngineContext.Current.Resolve<IPriceFormatter>().FormatPrice(d, true, false);
 			}
@@ -36,32 +37,32 @@ namespace SmartStore.Services.Filter
 				criteria.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
 				if (criteria.Entity == FilterService.ShortcutPrice)
-					return "{0} - {1}".FormatWith(FormatPrice(valueLeft), FormatPrice(valueRight));
+					return "{0} - {1}".FormatInvariant(FormatPrice(valueLeft), FormatPrice(valueRight));
 
-				return "{0} - {1}".FormatWith(valueLeft, valueRight);
+				return "{0} - {1}".FormatInvariant(valueLeft, valueRight);
 			}
 
-			string value = (criteria.ValueLocalized.HasValue() ? criteria.ValueLocalized : criteria.Value);
+			var value = (criteria.ValueLocalized.HasValue() ? criteria.ValueLocalized : criteria.Value);
 
 			if (criteria.Entity == FilterService.ShortcutPrice)
 				value = FormatPrice(criteria.Value);
 
 			if (criteria.Operator == FilterOperator.Unequal)
-				return "≠ {0}".FormatWith(value);
+				return "≠ {0}".FormatInvariant(value);
 			if (criteria.Operator == FilterOperator.Greater)
-				return "> {0}".FormatWith(value);
+				return "> {0}".FormatInvariant(value);
 			if (criteria.Operator == FilterOperator.GreaterEqual)
-				return "≥ {0}".FormatWith(value);
+				return "≥ {0}".FormatInvariant(value);
 			if (criteria.Operator == FilterOperator.Less)
-				return "< {0}".FormatWith(value);
+				return "< {0}".FormatInvariant(value);
 			if (criteria.Operator == FilterOperator.LessEqual)
-				return "≤ {0}".FormatWith(value);
+				return "≤ {0}".FormatInvariant(value);
 			if (criteria.Operator == FilterOperator.Contains)
-				return "{0} {1}".FormatWith(localize.GetResource("Products.Filter.Contains"), value);
+				return "{0} {1}".FormatInvariant(localize.GetResource("Products.Filter.Contains"), value);
 			if (criteria.Operator == FilterOperator.StartsWith)
-				return "{0} {1}".FormatWith(localize.GetResource("Products.Filter.StartsWith"), value);
+				return "{0} {1}".FormatInvariant(localize.GetResource("Products.Filter.StartsWith"), value);
 			if (criteria.Operator == FilterOperator.EndsWith)
-				return "{0} {1}".FormatWith(localize.GetResource("Products.Filter.EndsWith"), value);
+				return "{0} {1}".FormatInvariant(localize.GetResource("Products.Filter.EndsWith"), value);
 
 			return value;
 		}
@@ -132,7 +133,8 @@ namespace SmartStore.Services.Filter
 			result = 0;
 			if (range != null && index < range.Length)
 			{
-				string value = range[index].Trim();
+				var value = range[index].Trim();
+
 				return StringToPrice(value, out result);
 			}
 			return false;
@@ -140,11 +142,11 @@ namespace SmartStore.Services.Filter
 
 		public static string GetUrl(this FilterProductContext context, FilterCriteria criteriaAdd = null, FilterCriteria criteriaRemove = null)
 		{
-			string url = "{0}?pagesize={1}&viewmode={2}".FormatWith(context.Path, context.PageSize, context.ViewMode);
+			var url = "{0}?pagesize={1}&viewmode={2}".FormatInvariant(context.Path, context.PageSize, context.ViewMode);
 
 			if (context.OrderBy.HasValue)
 			{
-				url = "{0}&orderby={1}".FormatWith(url, context.OrderBy.Value);
+				url = "{0}&orderby={1}".FormatInvariant(url, context.OrderBy.Value);
 			}
 
 			try
@@ -162,7 +164,7 @@ namespace SmartStore.Services.Filter
 						criterias.RemoveAll(c => c.Entity == criteriaRemove.Entity && c.Name == criteriaRemove.Name && c.Value == criteriaRemove.Value);
 
 					if (criterias.Count > 0)
-						url = "{0}&filter={1}".FormatWith(url, HttpUtility.UrlEncode(JsonConvert.SerializeObject(criterias)));
+						url = "{0}&filter={1}".FormatInvariant(url, HttpUtility.UrlEncode(JsonConvert.SerializeObject(criterias)));
 				}
 			}
 			catch (Exception exc)

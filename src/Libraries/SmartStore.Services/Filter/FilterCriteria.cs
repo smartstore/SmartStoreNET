@@ -33,10 +33,12 @@ namespace SmartStore.Services.Filter
 		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
 		public int? ID { get; set; }
 
+		[JsonProperty(NullValueHandling = NullValueHandling.Ignore)]
+		public int? PId { get; set; }
+
 		// Metadata
 		public int MatchCount { get; set; }
 		public bool IsInactive { get; set; }
-		public int ParentId { get; set; }
 		public string NameLocalized { get; set; }
 		public string ValueLocalized { get; set; }
 
@@ -45,10 +47,12 @@ namespace SmartStore.Services.Filter
 			get
 			{
 				if (Entity == "Manufacturer" && !Name.Contains('.'))
-					return "{0}.{1}".FormatWith(Entity, Name);
+					return "{0}.{1}".FormatInvariant(Entity, Name);
+
 				return Name;
 			}
 		}
+		
 		public bool IsRange
 		{
 			get
@@ -59,9 +63,9 @@ namespace SmartStore.Services.Filter
 
 		int IComparable.CompareTo(object obj)
 		{
-			FilterCriteria filter = (FilterCriteria)obj;
+			var filter = (FilterCriteria)obj;
 
-			int compare = string.Compare(this.Entity, filter.Entity, true);
+			var compare = string.Compare(this.Entity, filter.Entity, true);
 
 			if (compare == 0)
 			{
@@ -86,6 +90,7 @@ namespace SmartStore.Services.Filter
 
 			//return string.Compare(this.Value, filter.Value, true);
 		}
+
 		public override string ToString()
 		{
 			try

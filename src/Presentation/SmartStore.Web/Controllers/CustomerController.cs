@@ -1,8 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Forums;
@@ -1348,6 +1350,7 @@ namespace SmartStore.Web.Controllers
                 if (orderItem != null)
                 {
                     var product = orderItem.Product;
+					var attributeQueryData = new List<List<int>>();
 
                     var itemModel = new CustomerReturnRequestsModel.ReturnRequestModel
                     {
@@ -1363,7 +1366,18 @@ namespace SmartStore.Web.Controllers
                         CreatedOn = _dateTimeHelper.ConvertToUserTime(returnRequest.CreatedOnUtc, DateTimeKind.Utc)
                     };
 
-					itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.ProductId, itemModel.ProductSeName, orderItem.AttributesXml);
+					if (orderItem.Product.ProductType != ProductType.BundledProduct)
+					{
+						_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+					}
+					else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+					{
+						var bundleData = orderItem.GetBundleData();
+
+						bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+					}
+
+					itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, itemModel.ProductSeName);
 
                     model.Items.Add(itemModel);
                 }
@@ -1403,7 +1417,7 @@ namespace SmartStore.Web.Controllers
 					ProductId = item.ProductId
                 };
 
-				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.ProductId, itemModel.ProductSeName, item.AttributesXml);
+				itemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(item.AttributesXml, item.ProductId, itemModel.ProductSeName);
 
                 model.Items.Add(itemModel);
 

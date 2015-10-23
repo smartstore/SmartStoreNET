@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Collections.Specialized;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
@@ -167,8 +168,11 @@ namespace SmartStore.Web.Controllers
 			}
 
 			//prepare the model
-			var selectedAttributes = new FormCollection();
-			selectedAttributes.ConvertAttributeQueryData(_productAttributeParser.DeserializeQueryData(attributes), product.Id);
+			var selectedAttributes = new NameValueCollection();
+
+			selectedAttributes.ConvertAttributeQueryData(
+				_productAttributeParser.DeserializeQueryData(attributes),
+				product.ProductType == ProductType.BundledProduct ? 0 :	product.Id);
 
 			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 
@@ -624,9 +628,10 @@ namespace SmartStore.Web.Controllers
 				bundleItems = _productService.GetBundleItems(product.Id);
 				if (form.Count > 0)
 				{
+					// may add elements to form if they are preselected by bundle item filter
 					foreach (var itemData in bundleItems)
 					{
-						var tempModel = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
+						var unused = _helper.PrepareProductDetailsPageModel(itemData.Item.Product, false, itemData, null, form);
 					}
 				}
 			}

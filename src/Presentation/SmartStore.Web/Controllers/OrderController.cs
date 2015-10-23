@@ -389,6 +389,7 @@ namespace SmartStore.Web.Controllers
             
             //products in this shipment
 			model.ShowSku = catalogSettings.ShowProductSku;
+
             foreach (var shipmentItem in shipment.ShipmentItems)
             {
                 var orderItem = _orderService.GetOrderItemById(shipmentItem.OrderItemId);
@@ -396,6 +397,8 @@ namespace SmartStore.Web.Controllers
                     continue;
 
                 orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
+
+				var attributeQueryData = new List<List<int>>();
 
                 var shipmentItemModel = new ShipmentDetailsModel.ShipmentItemModel
                 {
@@ -409,12 +412,22 @@ namespace SmartStore.Web.Controllers
                     QuantityShipped = shipmentItem.Quantity
                 };
 
-				shipmentItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.ProductId, shipmentItemModel.ProductSeName, orderItem.AttributesXml);
+				if (orderItem.Product.ProductType != ProductType.BundledProduct)
+				{
+					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+				}
+				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
+
+					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+				}
+
+				shipmentItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, shipmentItemModel.ProductSeName);
 
                 model.Items.Add(shipmentItemModel);
             }
 
-            //order details model
             model.Order = PrepareOrderDetailsModel(order);
             
             return model;
@@ -422,6 +435,8 @@ namespace SmartStore.Web.Controllers
 
 		private OrderDetailsModel.OrderItemModel PrepareOrderItemModel(Order order, OrderItem orderItem)
 		{
+			var attributeQueryData = new List<List<int>>();
+
 			orderItem.Product.MergeWithCombination(orderItem.AttributesXml);
 
 			var model = new OrderDetailsModel.OrderItemModel
@@ -436,10 +451,13 @@ namespace SmartStore.Web.Controllers
 				AttributeInfo = orderItem.AttributeDescription
 			};
 
-			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.ProductId, model.ProductSeName, orderItem.AttributesXml);
+			if (orderItem.Product.ProductType != ProductType.BundledProduct)
+			{
+				_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+			}
 
             var quantityUnit = _quantityUnitService.GetQuantityUnitById(orderItem.Product.QuantityUnitId);
-            model.QuantityUnit = quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name);
+            model.QuantityUnit = (quantityUnit == null ? "" : quantityUnit.GetLocalized(x => x.Name));
             
 			if (orderItem.Product.ProductType == ProductType.BundledProduct && orderItem.BundleData.HasValue())
 			{
@@ -461,7 +479,12 @@ namespace SmartStore.Web.Controllers
 						AttributeInfo = bundleItem.AttributesInfo
 					};
 
-					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(bundleItem.ProductId, bundleItemModel.ProductSeName, bundleItem.AttributesXml);
+					bundleItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(bundleItem.AttributesXml, bundleItem.ProductId, bundleItemModel.ProductSeName);
+
+					if (orderItem.Product.BundlePerItemPricing)
+					{
+						_productAttributeParser.DeserializeQueryData(attributeQueryData, bundleItem.AttributesXml, bundleItem.ProductId, bundleItem.BundleItemId);
+					}
 
 					if (model.BundlePerItemShoppingCart)
 					{
@@ -485,6 +508,7 @@ namespace SmartStore.Web.Controllers
 						model.SubTotal = _priceFormatter.FormatPrice(priceExclTaxInCustomerCurrency, true, order.CustomerCurrencyCode, _services.WorkContext.WorkingLanguage, false, false);
 					}
 					break;
+
 				case TaxDisplayType.IncludingTax:
 					{
 						var unitPriceInclTaxInCustomerCurrency = _currencyService.ConvertCurrency(orderItem.UnitPriceInclTax, order.CurrencyRate);
@@ -495,6 +519,9 @@ namespace SmartStore.Web.Controllers
 					}
 					break;
 			}
+
+			model.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, model.ProductSeName);
+
 			return model;
 		}
 

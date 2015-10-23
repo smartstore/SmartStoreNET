@@ -82,22 +82,47 @@ namespace SmartStore.Services.Catalog
 		List<List<int>> DeserializeQueryData(string jsonData);
 
 		/// <summary>
+		/// Deserializes attribute data
+		/// </summary>
+		/// <param name="queryData">List with deserialized data</param>
+		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <param name="productId">Product identifier</param>
+		/// <param name="bundleItemId">Bundle item identifier</param>
+		void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0);
+
+		/// <summary>
 		/// Serializes attribute data
 		/// </summary>
-		/// <param name="productId">Product identifier</param>
 		/// <param name="attributesXml">XML formatted attributes</param>
+		/// <param name="productId">Product identifier</param>
 		/// <param name="urlEncode">Whether to URL encode</param>
 		/// <returns>Json string with attribute data</returns>
-		string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true);
+		string SerializeQueryData(string attributesXml, int productId, bool urlEncode = true);
+
+		/// <summary>
+		/// Serializes attribute data
+		/// </summary>
+		/// <param name="queryData">List with deserialized data</param>
+		/// <param name="urlEncode">Whether to URL encode</param>
+		/// <returns>Json string with attribute data</returns>
+		string SerializeQueryData(List<List<int>> queryData, bool urlEncode = true);
 
 		/// <summary>
 		/// Gets the URL of the product page including attributes query string
 		/// </summary>
+		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <param name="productId">Product identifier</param>
 		/// <param name="productSeName">Product SEO name</param>
-		/// <param name="attributesXml">XML formatted attributes</param>
 		/// <returns>URL of the product page including attributes query string</returns>
-		string GetProductUrlWithAttributes(int productId, string productSeName, string attributesXml);
+		string GetProductUrlWithAttributes(string attributesXml, int productId, string productSeName);
+
+		/// <summary>
+		/// Gets the URL of the product page including attributes query string
+		/// </summary>
+		/// <param name="queryData">Attribute query data</param>
+		/// <param name="productSeName">Product SEO name</param>
+		/// <returns>URL of the product page including attributes query string</returns>
+		string GetProductUrlWithAttributes(List<List<int>> queryData, string productSeName);
 
         #endregion
 

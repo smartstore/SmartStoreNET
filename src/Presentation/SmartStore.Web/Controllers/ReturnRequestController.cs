@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Tax;
@@ -11,9 +13,9 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Seo;
+using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Models.Order;
-using SmartStore.Web.Framework.Controllers;
 
 namespace SmartStore.Web.Controllers
 {
@@ -101,19 +103,30 @@ namespace SmartStore.Web.Controllers
 
             foreach (var orderItem in orderItems)
             {
+				var attributeQueryData = new List<List<int>>();
+
                 var orderItemModel = new SubmitReturnRequestModel.OrderItemModel
                 {
                     Id = orderItem.Id,
                     ProductId = orderItem.Product.Id,
 					ProductName = orderItem.Product.GetLocalized(x => x.Name),
-                    ProductSeName = orderItem.Product.GetSeName(),
+					ProductSeName = orderItem.Product.GetSeName(),
                     AttributeInfo = orderItem.AttributeDescription,
                     Quantity = orderItem.Quantity
                 };
 
-				orderItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(orderItem.ProductId, orderItemModel.ProductSeName, orderItem.AttributesXml);
+				if (orderItem.Product.ProductType != ProductType.BundledProduct)
+				{
+					_productAttributeParser.DeserializeQueryData(attributeQueryData, orderItem.AttributesXml, orderItem.ProductId);
+				}
+				else if (orderItem.Product.BundlePerItemPricing && orderItem.BundleData.HasValue())
+				{
+					var bundleData = orderItem.GetBundleData();
 
-                model.Items.Add(orderItemModel);
+					bundleData.ForEach(x => _productAttributeParser.DeserializeQueryData(attributeQueryData, x.AttributesXml, x.ProductId, x.BundleItemId));
+				}
+
+				orderItemModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(attributeQueryData, orderItemModel.ProductSeName);
 
                 //unit price
                 switch (order.CustomerTaxDisplayType)
@@ -131,6 +144,8 @@ namespace SmartStore.Web.Controllers
                         }
                         break;
                 }
+
+				model.Items.Add(orderItemModel);
             }
 
             return model;

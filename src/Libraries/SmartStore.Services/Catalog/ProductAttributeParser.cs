@@ -372,58 +372,68 @@ namespace SmartStore.Services.Catalog
 			return result;
 		}
 
-		/// <summary>
-		/// Deserializes attribute data from an URL query string
-		/// </summary>
-		/// <param name="jsonData">Json data query string</param>
-		/// <returns>List items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</returns>
 		public virtual List<List<int>> DeserializeQueryData(string jsonData)
 		{
 			if (jsonData.HasValue())
 			{
 				if (jsonData.StartsWith("["))
+				{
 					return JsonConvert.DeserializeObject<List<List<int>>>(jsonData);
+				}
 
-				return new List<List<int>>() { JsonConvert.DeserializeObject<List<int>>(jsonData) };
+				return new List<List<int>> { JsonConvert.DeserializeObject<List<int>>(jsonData) };
 			}
 			return new List<List<int>>();
 		}
-		
-		/// <summary>
-		/// Serializes attribute data
-		/// </summary>
-		/// <param name="productId">Product identifier</param>
-		/// <param name="attributesXml">Attribute XML string</param>
-		/// <param name="urlEncode">Whether to URL encode</param>
-		/// <returns>Json string with attribute data</returns>
-		public virtual string SerializeQueryData(int productId, string attributesXml, bool urlEncode = true)
+
+		public virtual void DeserializeQueryData(List<List<int>> queryData, string attributesXml, int productId, int bundleItemId = 0)
 		{
+			Guard.ArgumentNotNull(() => queryData);
+
 			if (attributesXml.HasValue() && productId != 0)
 			{
-				var data = new List<List<int>>();
 				var attributeValues = ParseProductVariantAttributeValues(attributesXml).ToList();
 
 				foreach (var value in attributeValues)
 				{
-					data.Add(new List<int>
+					var lst = new List<int>
 					{
 						productId,
 						value.ProductVariantAttribute.ProductAttributeId,
 						value.ProductVariantAttributeId,
 						value.Id
-					});
-				}
+					};
 
-				if (data.Count > 0)
-				{
-					string result = JsonConvert.SerializeObject(data);
-					return (urlEncode ? HttpUtility.UrlEncode(result) : result);
+					if (bundleItemId != 0)
+						lst.Add(bundleItemId);
+
+					queryData.Add(lst);
 				}
 			}
+		}
+
+		public virtual string SerializeQueryData(string attributesXml, int productId, bool urlEncode = true)
+		{
+			var data = new List<List<int>>();
+
+			DeserializeQueryData(data, attributesXml, productId);
+
+			return SerializeQueryData(data, urlEncode);
+		}
+
+		public virtual string SerializeQueryData(List<List<int>> queryData, bool urlEncode = true)
+		{
+			if (queryData.Count > 0)
+			{
+				var result = JsonConvert.SerializeObject(queryData);
+
+				return (urlEncode ? HttpUtility.UrlEncode(result) : result);
+			}
+
 			return "";
 		}
 
-		public virtual string GetProductUrlWithAttributes(int productId, string productSeName, string attributesXml)
+		private string CreateProductUrl(string queryString, string productSeName)
 		{
 			var url = UrlHelper.GenerateUrl(
 				"Product",
@@ -434,14 +444,22 @@ namespace SmartStore.Services.Catalog
 				HttpContext.Current.Request.RequestContext,
 				false);
 
-			var queryString = SerializeQueryData(productId, attributesXml);
-
 			if (queryString.HasValue())
 			{
 				url = string.Concat(url, url.Contains("?") ? "&" : "?", "attributes=", queryString);
 			}
 
 			return url;
+		}
+
+		public virtual string GetProductUrlWithAttributes(string attributesXml, int productId, string productSeName)
+		{
+			return CreateProductUrl(SerializeQueryData(attributesXml, productId), productSeName);
+		}
+
+		public virtual string GetProductUrlWithAttributes(List<List<int>> queryData, string productSeName)
+		{
+			return CreateProductUrl(SerializeQueryData(queryData), productSeName);
 		}
 
         #endregion

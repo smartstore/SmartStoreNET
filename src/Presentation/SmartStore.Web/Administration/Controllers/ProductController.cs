@@ -4104,15 +4104,14 @@ namespace SmartStore.Admin.Controllers
 			var allCombinations = _productAttributeService.GetAllProductVariantAttributeCombinations(product.Id, command.Page - 1, command.PageSize);
 
 			var productUrlTitle = _localizationService.GetResource("Common.OpenInShop");
-			var productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() });
-			productUrl = "{0}{1}attributes=".FormatInvariant(productUrl, productUrl.Contains("?") ? "&" : "?");
+			var productSeName = product.GetSeName();
 
 			var productVariantAttributesModel = allCombinations.Select(x =>
 			{
 				var pvacModel = x.ToModel();
 				PrepareProductAttributeCombinationModel(pvacModel, x, product, true);
 
-				pvacModel.ProductUrl = productUrl + _productAttributeParser.SerializeQueryData(product.Id, x.AttributesXml);
+				pvacModel.ProductUrl = _productAttributeParser.GetProductUrlWithAttributes(x.AttributesXml, product.Id, productSeName);
 				pvacModel.ProductUrlTitle = productUrlTitle;
 
 				try

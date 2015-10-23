@@ -31,6 +31,7 @@ using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Catalog;
 using SmartStore.Web.Models.Media;
 using SmartStore.Core.Data;
+using System.Collections.Specialized;
 
 namespace SmartStore.Web.Controllers
 {
@@ -147,7 +148,7 @@ namespace SmartStore.Web.Controllers
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null, 
 			IList<ProductBundleItemData> productBundleItems = null, 
-			FormCollection selectedAttributes = null)
+			NameValueCollection selectedAttributes = null)
 		{
 			if (product == null)
 				throw new ArgumentNullException("product");
@@ -229,7 +230,7 @@ namespace SmartStore.Web.Controllers
 				foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					var item = itemData.Item;
-					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData);
+					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, selectedAttributes);
 
 					bundledProductModel.BundleItem.Id = item.Id;
 					bundledProductModel.BundleItem.Quantity = item.Quantity;
@@ -418,7 +419,7 @@ namespace SmartStore.Web.Controllers
 			bool isAssociatedProduct = false,
 			ProductBundleItemData productBundleItem = null,
 			IList<ProductBundleItemData> productBundleItems = null,
-			FormCollection selectedAttributes = null,
+			NameValueCollection selectedAttributes = null,
 			int selectedQuantity = 1)
 		{
 			if (product == null)
@@ -428,7 +429,7 @@ namespace SmartStore.Web.Controllers
 				throw new ArgumentNullException("model");
 
 			if (selectedAttributes == null)
-				selectedAttributes = new FormCollection();
+				selectedAttributes = new NameValueCollection();
 
 			decimal preSelectedPriceAdjustmentBase = decimal.Zero;
 			decimal preSelectedWeightAdjustment = decimal.Zero;

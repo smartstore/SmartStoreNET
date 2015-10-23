@@ -35,23 +35,24 @@ namespace SmartStore
 		/// Converts attribute query data
 		/// </summary>
 		/// <param name="collection">Name value collection</param>
-		/// <param name="queryData">Attribute query data items with following structure: Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id</param>
+		/// <param name="queryData">Attribute query data items with following structure: 
+		/// <c>Product.Id, ProductAttribute.Id, Product_ProductAttribute_Mapping.Id, ProductVariantAttributeValue.Id, [BundleItem.Id]</c></param>
 		/// <param name="productId">Product identifier to filter</param>
 		public static void ConvertAttributeQueryData(this NameValueCollection collection, List<List<int>> queryData, int productId = 0)
 		{
 			if (collection == null || queryData == null || queryData.Count <= 0)
 				return;
 
-			var enm = queryData.Where(i => i.Count > 3);
+			var items = queryData.Where(i => i.Count > 3);
 
 			if (productId != 0)
-				enm = enm.Where(i => i[0] == productId);
+				items = items.Where(i => i[0] == productId);
 
-			foreach (var itm in enm)
+			foreach (var item in items)
 			{
-				string name = AttributeFormatedName(itm[1], itm[2], itm[0]);
+				var name = AttributeFormatedName(item[1], item[2], item[0], item.Count > 4 ? item[4] : 0);
 
-				collection.Add(name, itm[3].ToString());
+				collection.Add(name, item[3].ToString());
 			}
 		}
 

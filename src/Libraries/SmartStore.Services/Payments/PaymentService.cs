@@ -381,10 +381,14 @@ namespace SmartStore.Services.Payments
         /// <param name="postProcessPaymentRequest">Payment info required for an order processing</param>
         public virtual void PostProcessPayment(PostProcessPaymentRequest postProcessPaymentRequest)
         {
-            var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
-            if (paymentMethod == null)
-                throw new SmartException("Payment method couldn't be loaded");
-            paymentMethod.Value.PostProcessPayment(postProcessPaymentRequest);
+			if (postProcessPaymentRequest.Order.PaymentMethodSystemName.HasValue())
+			{
+				var paymentMethod = LoadPaymentMethodBySystemName(postProcessPaymentRequest.Order.PaymentMethodSystemName);
+				if (paymentMethod == null)
+					throw new SmartException("Payment method couldn't be loaded");
+
+				paymentMethod.Value.PostProcessPayment(postProcessPaymentRequest);
+			}
         }
 
         /// <summary>

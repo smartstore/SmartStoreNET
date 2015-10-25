@@ -165,7 +165,7 @@
 
 		// show\hide file system path
 		$('#@(Html.FieldIdFor(x => x.IsPublic))').change(function () {
-			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() === @((int)ExportDeploymentType.FileSystem);
+			var val = !$(this).is(':checked') && $('#@(Html.FieldIdFor(x => x.DeploymentType))').val() == @((int)ExportDeploymentType.FileSystem);
 			$('#FileSystemPathContainer').toggle(val);
 		}).trigger('change');
 	});

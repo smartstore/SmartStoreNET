@@ -98,12 +98,12 @@
 				{
 					<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
 						@Model.Provider.FriendlyName.NaIfEmpty()</a>
-					<span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
 				}
 				else
 				{
-					<span>@Model.Provider.FriendlyName.NaIfEmpty()</span> <span class="muted">(@(Model.Provider.SystemName.NaIfEmpty()))</span>
+					<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
 				}
+				<div class="muted">@(Model.Provider.SystemName.NaIfEmpty())</div>
 			</td>
 		</tr>
 		@if (Model.Provider.Description.HasValue())

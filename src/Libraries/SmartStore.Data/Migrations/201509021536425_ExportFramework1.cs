@@ -96,7 +96,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.FolderName",
 				"Folder name",
 				"Ordnername",
-				"Specifies the name of the folder where the data will be exported.",
+				"Specifies the name of the folder where to export the data.",
 				"Legt den Namen des Ordners fest, in den die Daten exportiert werden.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.FolderAndFileName.Validate",

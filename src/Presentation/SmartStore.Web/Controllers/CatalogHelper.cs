@@ -230,7 +230,15 @@ namespace SmartStore.Web.Controllers
 				foreach (var itemData in bundleItems.Where(x => x.Item.Product.CanBeBundleItem()))
 				{
 					var item = itemData.Item;
-					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, selectedAttributes);
+					var bundleItemAttributes = new NameValueCollection();
+					var keyPrefix = "product_attribute_{0}_".FormatInvariant(itemData.Item.ProductId);
+
+					foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
+					{
+						bundleItemAttributes.Add(key, selectedAttributes[key]);
+					}
+
+					var bundledProductModel = PrepareProductDetailsPageModel(item.Product, false, itemData, null, bundleItemAttributes);
 
 					bundledProductModel.BundleItem.Id = item.Id;
 					bundledProductModel.BundleItem.Quantity = item.Quantity;
@@ -238,11 +246,11 @@ namespace SmartStore.Web.Controllers
 					bundledProductModel.BundleItem.Visible = item.Visible;
 					bundledProductModel.BundleItem.IsBundleItemPricing = item.BundleProduct.BundlePerItemPricing;
 
-					string bundleItemName = item.GetLocalized(x => x.Name);
+					var bundleItemName = item.GetLocalized(x => x.Name);
 					if (bundleItemName.HasValue())
 						bundledProductModel.Name = bundleItemName;
 
-					string bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
+					var bundleItemShortDescription = item.GetLocalized(x => x.ShortDescription);
 					if (bundleItemShortDescription.HasValue())
 						bundledProductModel.ShortDescription = bundleItemShortDescription;
 

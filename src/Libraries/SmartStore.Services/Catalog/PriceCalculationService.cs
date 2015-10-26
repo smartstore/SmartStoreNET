@@ -241,7 +241,7 @@ namespace SmartStore.Services.Catalog
 			// 2. find attribute combination for selected attributes and merge it
 			if (!isBundle && selectedAttributes.Count > 0)
 			{
-				string attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
+				var attributeXml = selectedAttributes.CreateSelectedAttributesXml(product.Id, attributes, _productAttributeParser, _services.Localization,
 					_downloadService, _catalogSettings, _httpRequestBase, new List<string>(), true, bundleItemId);
 
 				var combinations = context.AttributeCombinations.Load(product.Id);

@@ -16,9 +16,9 @@ namespace SmartStore
 		private static string AttributeFormatedName(int productAttributeId, int attributeId, int productId = 0, int bundleItemId = 0)
 		{
 			if (productId == 0)
-				return "product_attribute_{0}_{1}".FormatWith(productAttributeId, attributeId);
+				return "product_attribute_{0}_{1}".FormatInvariant(productAttributeId, attributeId);
 			else
-				return "product_attribute_{0}_{1}_{2}_{3}".FormatWith(productId, bundleItemId, productAttributeId, attributeId);
+				return "product_attribute_{0}_{1}_{2}_{3}".FormatInvariant(productId, bundleItemId, productAttributeId, attributeId);
 		}
 
 		public static void AddProductAttribute(this NameValueCollection collection, int productAttributeId, int attributeId, int valueId, int productId = 0, int bundleItemId = 0)

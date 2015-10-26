@@ -53,7 +53,7 @@ namespace SmartStore.Data
             //        && type.BaseType != null 
             //        && type.BaseType.IsGenericType 
             //        && type.BaseType.GetGenericTypeDefinition() == typeof(EntityTypeConfiguration<>));
-
+			
             var typesToRegister = from t in Assembly.GetExecutingAssembly().GetTypes()
                         where t.Namespace.HasValue() && 
                               t.BaseType != null &&

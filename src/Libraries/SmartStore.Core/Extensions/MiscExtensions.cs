@@ -117,17 +117,13 @@ namespace SmartStore
 
 		public static T GetMergedDataValue<T>(this IMergedData mergedData, string key, T defaultValue)
 		{
-			try
+			if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
 			{
-				if (mergedData.MergedDataValues != null && !mergedData.MergedDataIgnore)
-				{
-					object value;
+				object value;
 
-					if (mergedData.MergedDataValues.TryGetValue(key, out value))
-						return (T)value;
-				}
+				if (mergedData.MergedDataValues.TryGetValue(key, out value))
+					return (T)value;
 			}
-			catch (Exception) { }
 
 			return defaultValue;
 		}

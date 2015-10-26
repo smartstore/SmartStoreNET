@@ -81,7 +81,7 @@ namespace SmartStore.Services.Configuration
 							orderby s.Name, s.StoreId
 							select s;
 				var settings = query.ToList();
-				var dictionary = new Dictionary<string, IList<SettingForCaching>>();
+				var dictionary = new Dictionary<string, IList<SettingForCaching>>(StringComparer.OrdinalIgnoreCase);
 				foreach (var s in settings)
 				{
 					var settingName = s.Name.ToLowerInvariant();

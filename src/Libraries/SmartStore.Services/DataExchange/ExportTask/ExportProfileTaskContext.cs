@@ -115,7 +115,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		public bool IsFileBasedExport
 		{
-			get { return Provider.Value.FileExtension.HasValue(); }
+			get { return Provider == null || Provider.Value == null || Provider.Value.FileExtension.HasValue(); }
 		}
 		public string[] GetDeploymentFiles(ExportDeployment deployment)
 		{

@@ -48,6 +48,10 @@ namespace SmartStore.Data.Migrations
 				"{0} folders were deleted",
 				"{0} Verzeichnisse wurden gelöscht");
 
+			builder.AddOrUpdate("Admin.Common.ProviderNotLoaded",
+				"Cannot load the provider {0}.",
+				"Der Provider {0} konnte nicht geladen werden.");
+
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
 				"This option is not taken into account in the preview.",
 				"Diese Option wird in der Vorschau nicht berücksichtigt.");

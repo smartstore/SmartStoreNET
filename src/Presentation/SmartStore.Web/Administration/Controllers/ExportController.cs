@@ -24,7 +24,6 @@ using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
@@ -41,7 +40,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICommonServices _services;
 		private readonly IExportService _exportService;
 		private readonly PluginMediator _pluginMediator;
-		private readonly IPictureService _pictureService;
 		private readonly ICategoryService _categoryService;
 		private readonly IManufacturerService _manufacturerService;
 		private readonly IProductTagService _productTagService;
@@ -57,7 +55,6 @@ namespace SmartStore.Admin.Controllers
 			ICommonServices services,
 			IExportService exportService,
 			PluginMediator pluginMediator,
-			IPictureService pictureService,
 			ICategoryService categoryService,
 			IManufacturerService manufacturerService,
 			IProductTagService productTagService,
@@ -72,7 +69,6 @@ namespace SmartStore.Admin.Controllers
 			_services = services;
 			_exportService = exportService;
 			_pluginMediator = pluginMediator;
-			_pictureService = pictureService;
 			_categoryService = categoryService;
 			_manufacturerService = manufacturerService;
 			_productTagService = productTagService;
@@ -89,15 +85,15 @@ namespace SmartStore.Admin.Controllers
 
 		private string GetThumbnailUrl(Provider<IExportProvider> provider)
 		{
-			if (provider == null)
-				return "";
+			string url = null;
 
-			var url = _pluginMediator.GetIconUrl(provider.Metadata);
+			if (provider != null)
+				url = _pluginMediator.GetIconUrl(provider.Metadata);
 
 			if (url.IsEmpty())
-				url = _pictureService.GetDefaultPictureUrl(48);
-			else
-				url = Url.Content(url);
+				url = _pluginMediator.GetDefaultIconUrl(null);
+
+			url = Url.Content(url);
 
 			return url;
 		}
@@ -106,6 +102,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
+			model.ProviderSystemName = profile.ProviderSystemName;
 			model.FolderName = profile.FolderName;
 			model.FileNamePattern = profile.FileNamePattern;
 			model.Enabled = profile.Enabled;
@@ -114,17 +111,14 @@ namespace SmartStore.Admin.Controllers
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
 			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
+			model.HasActiveProvider = (provider != null);
 
-			model.Provider = new ExportProfileModel.ProviderModel
-			{
-				SystemName = profile.ProviderSystemName
-			};
+			model.Provider = new ExportProfileModel.ProviderModel();
+			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
 			if (provider != null)
 			{
 				var descriptor = provider.Metadata.PluginDescriptor;
-
-				model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
 				if (descriptor != null)
 				{
@@ -172,39 +166,6 @@ namespace SmartStore.Admin.Controllers
 
 			model.SerializedCompletedEmailAddresses = string.Join(",", profile.CompletedEmailAddresses.SplitSafe(",").Select(x => x.EncodeJsString()));
 
-			// get and initialize provider specific configuration data
-			if (provider != null)
-			{
-				model.Provider.Supporting = provider.Metadata.ExportSupport;
-
-				try
-				{
-					var configInfo = provider.Value.ConfigurationInfo;
-					if (configInfo != null)
-					{
-						model.Provider.ConfigPartialViewName = configInfo.PartialViewName;
-						model.Provider.ConfigDataType = configInfo.ModelType;
-						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, configInfo.ModelType);
-
-						if (configInfo.Initialize != null)
-						{
-							try
-							{
-								configInfo.Initialize(model.Provider.ConfigData);
-							}
-							catch (Exception exc)
-							{
-								NotifyWarning(exc.ToAllMessages());
-							}
-						}
-					}
-				}
-				catch (Exception exc)
-				{
-					NotifyError(exc);
-				}
-			}
-
 			// projection
 			model.Projection = new ExportProjectionModel
 			{
@@ -242,21 +203,6 @@ namespace SmartStore.Admin.Controllers
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
 
-
-			if (model.Provider.EntityType == ExportEntityType.Product)
-			{
-				model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
-				model.Projection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
-				model.Projection.AvailableAttributeCombinationValueMerging = ExportAttributeValueMerging.AppendAllValuesToName.ToSelectList(false);
-
-				model.Projection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
-				model.Projection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
-			}
-			else if (model.Provider.EntityType == ExportEntityType.Order)
-			{
-				model.Projection.AvailableOrderStatusChange = ExportOrderStatusChange.Processing.ToSelectList(false);
-			}
-
 			// filtering
 			model.Filter = new ExportFilterModel
 			{
@@ -286,42 +232,6 @@ namespace SmartStore.Admin.Controllers
 			model.Filter.AvailableStores = allStores
 				.Select(y => new SelectListItem { Text = y.Name, Value = y.Id.ToString() })
 				.ToList();
-
-
-			if (model.Provider.EntityType == ExportEntityType.Product)
-			{
-				var allCategories = _categoryService.GetAllCategories(showHidden: true);
-				var mappedCategories = allCategories.ToDictionary(x => x.Id);
-				var allManufacturers = _manufacturerService.GetAllManufacturers(true);
-				var allProductTags = _productTagService.GetAllProductTags();
-
-				model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
-
-				model.Filter.AvailableCategories = allCategories
-					.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
-					.ToList();
-
-				model.Filter.AvailableManufacturers = allManufacturers
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
-
-				model.Filter.AvailableProductTags = allProductTags
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
-			}
-			else if (model.Provider.EntityType == ExportEntityType.Order)
-			{
-				var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
-
-				model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
-				model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
-				model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
-
-				model.Filter.AvailableCustomerRoles = allCustomerRoles
-					.OrderBy(x => x.Name)
-					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-					.ToList();
-			}
 
 			// deployment
 			model.Deployments = profile.Deployments
@@ -364,6 +274,84 @@ namespace SmartStore.Admin.Controllers
 					return deploymentModel;
 				})
 				.ToList();
+
+
+			if (provider != null)
+			{
+				model.Provider.Supporting = provider.Metadata.ExportSupport;
+
+				if (model.Provider.EntityType == ExportEntityType.Product)
+				{
+					var allCategories = _categoryService.GetAllCategories(showHidden: true);
+					var mappedCategories = allCategories.ToDictionary(x => x.Id);
+					var allManufacturers = _manufacturerService.GetAllManufacturers(true);
+					var allProductTags = _productTagService.GetAllProductTags();
+
+					model.Projection.AvailableDescriptionMergings = ExportDescriptionMerging.Description.ToSelectList(false);
+					model.Projection.AvailablePriceTypes = PriceDisplayType.LowestPrice.ToSelectList(false);
+					model.Projection.AvailableAttributeCombinationValueMerging = ExportAttributeValueMerging.AppendAllValuesToName.ToSelectList(false);
+
+					model.Projection.SerializedAppendDescriptionText = string.Join(",", projection.AppendDescriptionText.SplitSafe(",").Select(x => x.EncodeJsString()));
+					model.Projection.SerializedCriticalCharacters = string.Join(",", projection.CriticalCharacters.SplitSafe(",").Select(x => x.EncodeJsString()));
+
+					model.Filter.AvailableProductTypes = ProductType.SimpleProduct.ToSelectList(false).ToList();
+
+					model.Filter.AvailableCategories = allCategories
+						.Select(x => new SelectListItem { Text = x.GetCategoryNameWithPrefix(_categoryService, mappedCategories), Value = x.Id.ToString() })
+						.ToList();
+
+					model.Filter.AvailableManufacturers = allManufacturers
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
+
+					model.Filter.AvailableProductTags = allProductTags
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
+
+				}
+				else if (model.Provider.EntityType == ExportEntityType.Order)
+				{
+					var allCustomerRoles = _customerService.GetAllCustomerRoles(true);
+
+					model.Projection.AvailableOrderStatusChange = ExportOrderStatusChange.Processing.ToSelectList(false);
+
+					model.Filter.AvailableOrderStates = OrderStatus.Pending.ToSelectList(false).ToList();
+					model.Filter.AvailablePaymentStates = PaymentStatus.Pending.ToSelectList(false).ToList();
+					model.Filter.AvailableShippingStates = ShippingStatus.NotYetShipped.ToSelectList(false).ToList();
+
+					model.Filter.AvailableCustomerRoles = allCustomerRoles
+						.OrderBy(x => x.Name)
+						.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+						.ToList();
+				}
+
+				try
+				{
+					var configInfo = provider.Value.ConfigurationInfo;
+					if (configInfo != null)
+					{
+						model.Provider.ConfigPartialViewName = configInfo.PartialViewName;
+						model.Provider.ConfigDataType = configInfo.ModelType;
+						model.Provider.ConfigData = XmlHelper.Deserialize(profile.ProviderConfigData, configInfo.ModelType);
+
+						if (configInfo.Initialize != null)
+						{
+							try
+							{
+								configInfo.Initialize(model.Provider.ConfigData);
+							}
+							catch (Exception exc)
+							{
+								NotifyWarning(exc.ToAllMessages());
+							}
+						}
+					}
+				}
+				catch (Exception exc)
+				{
+					NotifyError(exc);
+				}
+			}
 		}
 
 		private ExportDeploymentModel PrepareDeploymentModel(ExportDeployment deployment, Provider<IExportProvider> provider, bool forEdit)
@@ -492,7 +480,7 @@ namespace SmartStore.Admin.Controllers
 
 			model.Provider = new ExportProfileModel.ProviderModel();
 
-			model.Provider.AvailableProviders = allProviders
+			model.AvailableProviders = allProviders
 				.Select(x =>
 				{
 					var item = new ExportProfileModel.ProviderSelectItem
@@ -531,9 +519,9 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
-			if (model.Provider.SystemName.HasValue())
+			if (model.ProviderSystemName.HasValue())
 			{
-				var provider = _exportService.LoadProvider(model.Provider.SystemName);
+				var provider = _exportService.LoadProvider(model.ProviderSystemName);
 				if (provider != null)
 				{
 					var profile = _exportService.InsertExportProfile(provider, model.CloneProfileId ?? 0);
@@ -542,7 +530,7 @@ namespace SmartStore.Admin.Controllers
 				}
 			}
 
-			NotifyError(T("Admin.DataExchange.Export.ProviderSystemName.Validate", model.Provider.SystemName.NaIfEmpty()));
+			NotifyError(T("Admin.Common.ProviderNotLoaded", model.ProviderSystemName.NaIfEmpty()));
 
 			return RedirectToAction("List");
 		}

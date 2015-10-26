@@ -2617,11 +2617,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			{
 				try
 				{
-					if (ctx.Provider == null)
-					{
-						throw new SmartException("Export aborted because the export provider cannot be loaded");
-					}
-
 					if (!ctx.Provider.IsValid())
 					{
 						throw new SmartException("Export aborted because the export provider is not valid");
@@ -2887,7 +2882,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
 			var selectedEntityIds = HttpRuntime.Cache[selectedIdsCacheKey] as string;
 
-			var ctx = new ExportProfileTaskContext(taskContext, profile, _exportService.Value.LoadProvider(profile.ProviderSystemName), selectedEntityIds);
+			var provider = _exportService.Value.LoadProvider(profile.ProviderSystemName);
+
+			if (provider == null)
+				throw new SmartException(_services.Localization.GetResource("Admin.Common.ProviderNotLoaded").FormatInvariant(profile.ProviderSystemName.NaIfEmpty()));
+
+			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, selectedEntityIds);
 
 			HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 
@@ -2924,6 +2924,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			InitDependencies(taskContext);
 
 			var provider = _exportService.Value.LoadProvider(providerSystemName);
+
+			if (provider == null)
+				throw new SmartException(_services.Localization.GetResource("Admin.Common.ProviderNotLoaded").FormatInvariant(providerSystemName.NaIfEmpty()));
 
 			if (profile == null)
 				profile = _exportService.Value.CreateVolatileProfile(provider);
@@ -2982,6 +2985,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public void Preview(ExportProfile profile, Provider<IExportProvider> provider, IComponentContext context, int pageIndex, int totalRecords, Action<dynamic> previewData)
 		{
 			Guard.ArgumentNotNull(() => profile);
+			Guard.ArgumentNotNull(() => provider);
 			Guard.ArgumentNotNull(() => context);
 
 			var taskContext = new TaskExecutionContext(context, null);

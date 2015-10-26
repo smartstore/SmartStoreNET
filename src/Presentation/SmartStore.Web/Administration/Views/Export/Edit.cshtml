@@ -13,13 +13,16 @@
 
 		<div class="section-header">
 			<div class="title">
-				<img src="@Url.Content(Model.Provider.ThumbnailUrl)" />
+				<img src="@Model.Provider.ThumbnailUrl" />
 				@title - @Model.Name @Html.ActionLink("(" + T("Admin.Common.BackToList") + ")", "List")
 			</div>
 			<div class="options">
-				<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
-					<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
-				</a>
+				@if (Model.HasActiveProvider)
+				{
+					<a href="@Url.Action("Preview", new { id = Model.Id })" class="btn">
+						<i class="fa fa-eye"></i>&nbsp;@T("Admin.Common.Preview")
+					</a>
+				}
 				@if (Model.LogFileExists)
 				{
 					<a href="@Url.Action("DownloadLogFile", new { id = Model.Id })" class="btn">
@@ -43,11 +46,15 @@
 		@Html.SmartStore().TabStrip().Name("export-profile-edit").Items(x =>
 		{
 			x.Add().Text(T("Common.General").Text).Content(TabGeneral()).Selected(true);
-			x.Add().Text(T("Common.Partition").Text).Content(TabPartition());
-			x.Add().Text(T("Common.Filter").Text).Content(TabFilter());
-			x.Add().Text(T("Common.Projection").Text).Content(TabProjection());
-			x.Add().Text(T("Admin.Configuration").Text).Content(TabConfiguration());
-			x.Add().Text(T("Common.Deployment").Text).Content(TabDeployment());
+
+			if (Model.HasActiveProvider)
+			{
+				x.Add().Text(T("Common.Partition").Text).Content(TabPartition());
+				x.Add().Text(T("Common.Filter").Text).Content(TabFilter());
+				x.Add().Text(T("Common.Projection").Text).Content(TabProjection());
+				x.Add().Text(T("Admin.Configuration").Text).Content(TabConfiguration());
+				x.Add().Text(T("Common.Deployment").Text).Content(TabDeployment());
+			}
 
 			EngineContext.Current.Resolve<IEventPublisher>().Publish(new TabStripCreated(x, "export-profile-edit", this.Html, this.Model));
 		})
@@ -85,88 +92,99 @@
 				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
 			</td>
 		</tr>
-
-		<tr>
-			<td colspan="2">&nbsp;</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.FriendlyName)
-			</td>
-			<td class="adminData">
-				@if (Model.Provider.ConfigurationUrl.HasValue())
-				{
-					<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
-						@Model.Provider.FriendlyName.NaIfEmpty()</a>
-				}
-				else
-				{
-					<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
-				}
-				<div class="muted">@(Model.Provider.SystemName.NaIfEmpty())</div>
-			</td>
-		</tr>
-		@if (Model.Provider.Description.HasValue())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Provider.Description)
-				</td>
-				<td class="adminData">
-					@Html.Raw(Model.Provider.Description)
-				</td>
-			</tr>
-		}
-		@if (Model.Provider.Url.HasValue())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Provider.Url)
-				</td>
-				<td class="adminData">
-					<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
-				</td>
-			</tr>
-		}
-		@if (Model.Provider.Author.HasValue())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Provider.Author)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(x => x.Provider.Author)
-				</td>
-			</tr>
-		}
-		@if (Model.Provider.Version.HasValue())
-		{
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(x => x.Provider.Version)
-				</td>
-				<td class="adminData">
-					@Html.DisplayFor(x => x.Provider.Version)
-				</td>
-			</tr>
-		}
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.EntityTypeName)
-			</td>
-			<td class="adminData">
-				@Html.DisplayFor(x => x.Provider.EntityTypeName)
-			</td>
-		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.Provider.FileExtension)
-			</td>
-			<td class="adminData">
-				@Html.IconForFileExtension(Model.Provider.FileExtension, true)
-			</td>
-		</tr>
 	</table>
+	
+	<p>&nbsp;</p>
+
+	if (Model.HasActiveProvider)
+	{
+		<table class="adminContent">
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.FriendlyName)
+				</td>
+				<td class="adminData">
+					@if (Model.Provider.ConfigurationUrl.HasValue())
+					{
+						<a href="@Model.Provider.ConfigurationUrl" title="@T("Admin.Configuration.Plugins.Fields.Configure")">
+							@Model.Provider.FriendlyName.NaIfEmpty()
+						</a>
+					}
+					else
+					{
+						<div>@Model.Provider.FriendlyName.NaIfEmpty()</div>
+					}
+					<div class="muted">@(Model.ProviderSystemName.NaIfEmpty())</div>
+				</td>
+			</tr>
+			@if (Model.Provider.Description.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Description)
+					</td>
+					<td class="adminData">
+						@Html.Raw(Model.Provider.Description)
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Url.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Url)
+					</td>
+					<td class="adminData">
+						<a href="@Model.Provider.Url" target="PluginWebsiteWnd">@Model.Provider.Url</a>
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Author.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Author)
+					</td>
+					<td class="adminData">
+						@Html.DisplayFor(x => x.Provider.Author)
+					</td>
+				</tr>
+			}
+			@if (Model.Provider.Version.HasValue())
+			{
+				<tr>
+					<td class="adminTitle">
+						@Html.SmartLabelFor(x => x.Provider.Version)
+					</td>
+					<td class="adminData">
+						@Html.DisplayFor(x => x.Provider.Version)
+					</td>
+				</tr>
+			}
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.EntityTypeName)
+				</td>
+				<td class="adminData">
+					@Html.DisplayFor(x => x.Provider.EntityTypeName)
+				</td>
+			</tr>
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.Provider.FileExtension)
+				</td>
+				<td class="adminData">
+					@Html.IconForFileExtension(Model.Provider.FileExtension, true)
+				</td>
+			</tr>
+		</table>
+	}
+	else
+	{
+		<div class="alert alert-warning">
+			@T("Admin.Common.ProviderNotLoaded", Model.ProviderSystemName)
+		</div>
+	}
 }
 
 @helper TabPartition()
@@ -233,7 +251,7 @@
 	}
 	else
 	{
-		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoProjection")</div>	
+		<div class="alert alert-info">@T("Admin.DataExchange.Export.NoProjection")</div>
 	}
 }
 
@@ -257,7 +275,7 @@
 			else
 			{
 				<div class="alert alert-info">
-					@Html.Raw(T("Admin.DataExchange.Export.Configuration.NotRequired", Model.Provider.FriendlyName.NaIfEmpty()))
+					@Html.Raw(T("Admin.DataExchange.Export.Configuration.NotRequired", Model.Provider.FriendlyName ?? Model.ProviderSystemName))
 				</div>
 			}
 		</fieldset>

@@ -112,10 +112,6 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Validation.EmailAddress", "Please enter a valid email address", "Bitte geben Sie eine gültige E-Mail Adresse ein");
 
 
-			builder.AddOrUpdate("Admin.DataExchange.Export.ProviderSystemName.Validate",
-				"There were no export provider found for system name \"{0}\". A provider is mandatory for an export profile.",
-				"Es wurde kein Export-Provider mit dem Systemnamen \"{0}\" gefunden. Ein Provider ist für ein Exportprofil zwingend erforderlich.");
-
 			builder.AddOrUpdate("Admin.DataExchange.Export.NoProfiles",
 				"There were no export profiles found.",
 				"Es wurden keine Exportprofile gefunden.");

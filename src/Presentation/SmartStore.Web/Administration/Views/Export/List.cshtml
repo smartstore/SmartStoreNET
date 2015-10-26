@@ -48,14 +48,17 @@
 						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
 					</td>
 					<td>
-						<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
-						<div class="muted">@profile.Provider.SystemName</div>
+						@if (profile.Provider.ConfigurationUrl.HasValue())
+						{
+							<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
+						}
+						<div class="muted">@profile.ProviderSystemName</div>
 					</td>
 					<td class="centered">
 						@Html.SymbolForBool(profile.Enabled)
 					</td>
 					<td>
-						@profile.Provider.EntityTypeName
+						@profile.Provider.EntityTypeName.NaIfEmpty()
 					</td>
 					<td class="centered">
 						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
@@ -144,7 +147,7 @@ else
 				callbackSuccess: function (resp) {
 					dialog.find('.modal-body').html(resp);
 
-					$('select[name="Provider.SystemName"]').select2({
+					$('select[name="ProviderSystemName"]').select2({
 						minimumResultsForSearch: 16,
 						formatResult: providerSelectItemFormatting,
 						formatSelection: providerSelectItemFormatting
@@ -181,7 +184,7 @@ else
 		});
 
 		// selected provider changed
-		$(document).on('change', 'select[name="Provider.SystemName"]', toggleProviderDescription);
+		$(document).on('change', 'select[name="ProviderSystemName"]', toggleProviderDescription);
 
 		function refreshGrid() {
 			setTimeout(function () {
@@ -196,7 +199,7 @@ else
 		function toggleProviderDescription() {
 			dialog.find('.export-provider-description').hide();
 
-			var option = dialog.find('select[name="Provider.SystemName"]').find(':selected');
+			var option = dialog.find('select[name="ProviderSystemName"]').find(':selected');
 			$('#ExportProviderDescription' + option.attr('data-id')).fadeIn('fast');
 		}
 
@@ -206,7 +209,7 @@ else
 
 				// item.element is undefined for selection formatting
 				if (option.length === 0) {
-					option = $('select[name="Provider.SystemName"]').find('option[value="' + item.id + '"]');
+					option = $('select[name="ProviderSystemName"]').find('option[value="' + item.id + '"]');
 				}
 
 				var html = '<div class="large-select2-item">',

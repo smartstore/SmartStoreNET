@@ -15,7 +15,7 @@ namespace SmartStore.Services.Messages
     {
 		void AddStoreTokens(IList<Token> tokens, Store store);
 
-        void AddOrderTokens(IList<Token> tokens, Order order, int languageId);
+		void AddOrderTokens(IList<Token> tokens, Order order, int languageId, bool skipBillingAddress = false);
 
         void AddShipmentTokens(IList<Token> tokens, Shipment shipment, int languageId);
 

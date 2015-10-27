@@ -231,7 +231,7 @@ namespace SmartStore.Web.Controllers
 				{
 					var item = itemData.Item;
 					var bundleItemAttributes = new NameValueCollection();
-					var keyPrefix = "product_attribute_{0}_".FormatInvariant(itemData.Item.ProductId);
+					var keyPrefix = "product_attribute_{0}_{1}".FormatInvariant(item.ProductId, item.Id);
 
 					foreach (var key in selectedAttributes.AllKeys.Where(x => x.HasValue() && x.StartsWith(keyPrefix)))
 					{

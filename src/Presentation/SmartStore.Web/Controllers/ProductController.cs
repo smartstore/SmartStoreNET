@@ -172,7 +172,7 @@ namespace SmartStore.Web.Controllers
 
 			selectedAttributes.ConvertAttributeQueryData(
 				_productAttributeParser.DeserializeQueryData(attributes),
-				product.ProductType == ProductType.BundledProduct ? 0 :	product.Id);
+				product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing ? 0 : product.Id);
 
 			var model = _helper.PrepareProductDetailsPageModel(product, selectedAttributes: selectedAttributes);
 

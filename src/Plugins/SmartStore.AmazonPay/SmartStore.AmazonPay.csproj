@@ -139,7 +139,7 @@
     <Compile Include="Controllers\AmazonPayController.cs" />
     <Compile Include="Controllers\AmazonPayControllerBase.cs" />
     <Compile Include="Controllers\AmazonPayShoppingCartController.cs" />
-    <Compile Include="Events\OrderEventConsumer.cs" />
+    <Compile Include="Events\MessageTokenEventConsumer.cs" />
     <Compile Include="Extensions\AmazonPayApiExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="Filters\AmazonPayCheckoutFilter.cs" />

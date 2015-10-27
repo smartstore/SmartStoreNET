@@ -10,13 +10,13 @@ using SmartStore.Web.Framework;
 
 namespace SmartStore.AmazonPay.Events
 {
-	public class OrderEventConsumer : IConsumer<MessageTokensAddedEvent<Token>>
+	public class MessageTokenEventConsumer : IConsumer<MessageTokensAddedEvent<Token>>
 	{
 		private readonly IPluginFinder _pluginFinder;
 		private readonly ICommonServices _services;
 		private readonly IOrderService _orderService;
 
-		public OrderEventConsumer(
+		public MessageTokenEventConsumer(
 			IPluginFinder pluginFinder,
 			ICommonServices services,
 			IOrderService orderService)

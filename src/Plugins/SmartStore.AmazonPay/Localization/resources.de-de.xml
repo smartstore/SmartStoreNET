@@ -23,6 +23,9 @@ Textvorschläge:<ul>
 </ul></p>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="BillingAddressMessageNote">
+    <Value>Bitte beachten Sie, dass es sich bei dieser Rechnungsadresse unter Umständen nicht um die für diese Bestellung gültige handelt!</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>Es wurde keine Auftrags-Referenz-ID durch Amazon übermittelt!</Value>
 	</LocaleResource>

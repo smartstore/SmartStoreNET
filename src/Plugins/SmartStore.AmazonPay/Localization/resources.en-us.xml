@@ -23,6 +23,9 @@ Text suggestions:<ul>
 </ul></p>]]>
 		</Value>
 	</LocaleResource>
+  <LocaleResource Name="BillingAddressMessageNote">
+    <Value>Please note that this billing address is possibly not the valid billing address for this order!</Value>
+  </LocaleResource>
 	<LocaleResource Name="MissingOrderReferenceId">
 		<Value>There was no order reference ID transmitted by Amazon!</Value>
 	</LocaleResource>

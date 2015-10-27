@@ -467,13 +467,10 @@ namespace SmartStore.Services.Messages
 			if (messageTemplate == null)
                 return 0;
 
-			// unavailable at this time. shipping address is used as billing address here, so do not resolve tokens.
-			var skipBillingAddress = order.PaymentMethodSystemName.IsCaseInsensitiveEqual("SmartStore.AmazonPay");
-
 			//tokens
 			var tokens = new List<Token>();
 			_messageTokenProvider.AddStoreTokens(tokens, store);
-			_messageTokenProvider.AddOrderTokens(tokens, order, languageId, skipBillingAddress);
+			_messageTokenProvider.AddOrderTokens(tokens, order, languageId);
 			_messageTokenProvider.AddCustomerTokens(tokens, order.Customer);
 
             _messageTokenProvider.AddCompanyTokens(tokens);

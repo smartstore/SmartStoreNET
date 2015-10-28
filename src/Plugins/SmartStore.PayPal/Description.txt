@@ -2,7 +2,7 @@
 Description: Provides the PayPal payment methods PayPal Express, PayPal Standard and PayPal Direct.
 SystemName: SmartStore.PayPal
 Group: Payment
-Version: 2.2.0.2
+Version: 2.2.0.3
 MinAppVersion: 2.2.0
 DisplayOrder: 1
 FileName: SmartStore.PayPal.dll

@@ -119,8 +119,12 @@ namespace SmartStore.PayPal.Controllers
 		[ValidateInput(false)]
 		public ActionResult PDTHandler(FormCollection form)
 		{
-			string tx = _webHelper.QueryString<string>("tx");
 			Dictionary<string, string> values;
+			var tx = _webHelper.QueryString<string>("tx");
+			var utcNow = DateTime.UtcNow;
+			var orderNumberGuid = Guid.Empty;
+			var orderNumber = string.Empty;
+			var total = decimal.Zero;
 			string response;
 
 			var provider = _paymentService.LoadPaymentMethodBySystemName("Payments.PayPalStandard", true);
@@ -132,18 +136,18 @@ namespace SmartStore.PayPal.Controllers
 
 			if (processor.GetPDTDetails(tx, settings, out values, out response))
 			{
-				string orderNumber = string.Empty;
 				values.TryGetValue("custom", out orderNumber);
-				Guid orderNumberGuid = Guid.Empty;
+
 				try
 				{
 					orderNumberGuid = new Guid(orderNumber);
 				}
 				catch { }
-				Order order = _orderService.GetOrderByGuid(orderNumberGuid);
+
+				var order = _orderService.GetOrderByGuid(orderNumberGuid);
+
 				if (order != null)
 				{
-					decimal total = decimal.Zero;
 					try
 					{
 						total = decimal.Parse(values["mc_gross"], new CultureInfo("en-US"));
@@ -174,25 +178,47 @@ namespace SmartStore.PayPal.Controllers
 					string payment_fee = string.Empty;
 					values.TryGetValue("payment_fee", out payment_fee);
 
-					string paymentNote = _localizationService.GetResource("Plugins.Payments.PayPalStandard.PaymentNote").FormatWith(
+					var paymentNote = _localizationService.GetResource("Plugins.Payments.PayPalStandard.PaymentNote").FormatInvariant(
 						total, mc_currency, payer_status, payment_status, pending_reason, txn_id, payment_type,	payer_id, receiver_id, invoice, payment_fee);
 
-					//order note
-					order.OrderNotes.Add(new OrderNote()
+					order.OrderNotes.Add(new OrderNote
 					{
 						Note = paymentNote,
 						DisplayToCustomer = false,
-						CreatedOnUtc = DateTime.UtcNow
+						CreatedOnUtc = utcNow
 					});
-					_orderService.UpdateOrder(order);
 
-					//validate order total
-                    if (settings.PdtValidateOrderTotal && !Math.Round(total, 2).Equals(Math.Round(order.OrderTotal, 2)))
+					//validate order total... you may get differences if settings.PassProductNamesAndTotals is true
+                    if (settings.PdtValidateOrderTotal)
 					{
-						Logger.Error(_localizationService.GetResource("Plugins.Payments.PayPalStandard.UnequalTotalOrder").FormatWith(total, order.OrderTotal));
+						var roundedTotal = Math.Round(total, 2);
+						var roundedOrderTotal = Math.Round(order.OrderTotal, 2);
+						var roundedDifference = Math.Abs(roundedTotal - roundedOrderTotal);
 
-						return RedirectToAction("Index", "Home", new { area = "" });
+						if (!roundedTotal.Equals(roundedOrderTotal))
+						{
+							var message = _localizationService.GetResource("Plugins.Payments.PayPalStandard.UnequalTotalOrder").FormatInvariant(
+								total, roundedOrderTotal.FormatInvariant(), order.OrderTotal, roundedDifference.FormatInvariant());
+
+							if (settings.PdtValidateOnlyWarn)
+							{
+								order.OrderNotes.Add(new OrderNote
+								{
+									Note = message,
+									DisplayToCustomer = false,
+									CreatedOnUtc = utcNow
+								});
+							}
+							else
+							{
+								Logger.Error(message);
+
+								return RedirectToAction("Index", "Home", new { area = "" });
+							}
+						}
 					}
+
+					_orderService.UpdateOrder(order);
 
 					//mark order as paid
 					if (_orderProcessingService.CanMarkOrderAsPaid(order))
@@ -208,26 +234,27 @@ namespace SmartStore.PayPal.Controllers
 			}
 			else
 			{
-				string orderNumber = string.Empty;
 				values.TryGetValue("custom", out orderNumber);
-				Guid orderNumberGuid = Guid.Empty;
+
 				try
 				{
 					orderNumberGuid = new Guid(orderNumber);
 				}
 				catch { }
-				Order order = _orderService.GetOrderByGuid(orderNumberGuid);
+
+				var order = _orderService.GetOrderByGuid(orderNumberGuid);
+
 				if (order != null)
 				{
-					//order note
-					order.OrderNotes.Add(new OrderNote()
+					order.OrderNotes.Add(new OrderNote
 					{
 						Note = "{0} {1}".FormatWith(_localizationService.GetResource("Plugins.Payments.PayPalStandard.PdtFailed"), response),
 						DisplayToCustomer = false,
-						CreatedOnUtc = DateTime.UtcNow
+						CreatedOnUtc = utcNow
 					});
 					_orderService.UpdateOrder(order);
 				}
+
 				return RedirectToAction("Index", "Home", new { area = "" });
 			}
 		}
@@ -235,7 +262,7 @@ namespace SmartStore.PayPal.Controllers
 		[ValidateInput(false)]
 		public ActionResult IPNHandler()
 		{
-			Debug.WriteLine("PayPal Standard IPN: {0}".FormatWith(Request.ContentLength));
+			Debug.WriteLine("PayPal Standard IPN: {0}".FormatInvariant(Request.ContentLength));
 
 			byte[] param = Request.BinaryRead(Request.ContentLength);
 			string strRequest = Encoding.ASCII.GetString(param);
@@ -249,6 +276,7 @@ namespace SmartStore.PayPal.Controllers
 			if (processor.VerifyIPN(strRequest, out values))
 			{
 				#region values
+
 				decimal total = decimal.Zero;
 				try
 				{

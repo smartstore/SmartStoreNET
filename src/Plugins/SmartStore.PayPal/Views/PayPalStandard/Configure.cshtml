@@ -61,6 +61,15 @@
                 @Html.ValidationMessageFor(model => model.PdtValidateOrderTotal)
             </td>
         </tr>
+		<tr id="PdtValidateOnlyWarnContainer">
+			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.PdtValidateOnlyWarn)
+			</td>
+			<td class="adminData">
+				@Html.SettingEditorFor(model => model.PdtValidateOnlyWarn)
+				@Html.ValidationMessageFor(model => model.PdtValidateOnlyWarn)
+			</td>
+		</tr>
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.AdditionalFee)
@@ -97,7 +106,7 @@
                 @Html.ValidationMessageFor(model => model.EnableIpn)
             </td>
         </tr>
-        <tr class="ipn-url">
+        <tr class="ipn-handling">
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.IpnUrl)
             </td>
@@ -106,7 +115,7 @@
                 @Html.ValidationMessageFor(model => model.IpnUrl)
             </td>
         </tr>
-		<tr class="ipn-url">
+		<tr class="ipn-handling">
 			<td colspan="2">
 				<div class="alert alert-info">
 					@T("Plugins.Payments.PayPalStandard.Fields.EnableIpn.Hint2")
@@ -130,7 +139,11 @@
 	$(document).ready(function () {
 
 		$("#@Html.FieldIdFor(model => model.EnableIpn)").change(function () {
-			$('.ipn-url').toggle($(this).is(':checked'));
+			$('.ipn-handling').toggle($(this).is(':checked'));
+		}).trigger('change');
+
+		$("#@Html.FieldIdFor(model => model.PdtValidateOrderTotal)").change(function () {
+			$('#PdtValidateOnlyWarnContainer').toggle($(this).is(':checked'));
 		}).trigger('change');
 
 	});

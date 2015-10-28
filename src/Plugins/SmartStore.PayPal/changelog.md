@@ -1,5 +1,9 @@
 ﻿#Release Notes#
 
+##Paypal 2.2.0.3
+### New Features
+* Option to add order note when order total validation fails
+
 ##PayPal 2.2.0.2
 ###Improvements
 * Redirecting to payment provider performed by core instead of plugin

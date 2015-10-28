@@ -310,6 +310,12 @@
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
         <Value>Check the box if the PDT handler should validate PayPal's order totals.</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn">
+        <Value>Only warn</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
+        <Value>Specifies whether to add an order note if the order total is unequal. Otherwise an error will be logged and the payment status is not updated.</Value>
+      </LocaleResource>
       <LocaleResource Name="Fields.AdditionalFee">
         <Value>Additional fee</Value>
       </LocaleResource>
@@ -350,7 +356,7 @@
         <Value>PayPal Standard PDT. Error getting mc_gross.</Value>
       </LocaleResource>
       <LocaleResource Name="UnequalTotalOrder">
-        <Value>PayPal Standard PDT. Returned order total {0} doesn't equal order total {1}.</Value>
+        <Value>PayPal Standard PDT. Returned order total {0} doesn't equal order total {1} (not rounded {2}). The difference is {3}.</Value>
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT failed.</Value>
@@ -382,17 +388,17 @@
       <LocaleResource Name="PaymentNote">
         <Value>
           <![CDATA[PayPal PDT:
-          Total: {0}
-          Currency: {1}
-          Payer status: {2}
-          Payment status: {3}
-          Pending reason: {4}
-          Transaction ID: {5}
-          Payment type: {6}
-          Payer ID: {7}
-          Receiver ID: {8}
-          Invoice: {9}
-          Payment fee: {10}]]>
+Total: {0}
+Currency: {1}
+Payer status: {2}
+Payment status: {3}
+Pending reason: {4}
+Transaction ID: {5}
+Payment type: {6}
+Payer ID: {7}
+Receiver ID: {8}
+Invoice: {9}
+Payment fee: {10}]]>
         </Value>
       </LocaleResource>
     </Children>

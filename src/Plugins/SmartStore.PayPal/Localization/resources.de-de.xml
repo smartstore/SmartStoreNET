@@ -271,6 +271,12 @@
       <LocaleResource Name="Fields.PDTValidateOrderTotal.Hint">
         <Value>Aktivieren Sie diese Option, falls der durch PayPal übermittelte Gesamtbetrag überprüft werden soll.</Value>
       </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn">
+        <Value>Nur warnen</Value>
+      </LocaleResource>
+      <LocaleResource Name="Fields.PdtValidateOnlyWarn.Hint">
+        <Value>Legt fest, ob im Falle einer Nichtübereinstimmung des Gesamtbetrags lediglich eine Auftragsnotiz angelegt werden soll. Ansonsten wird ein Fehler erzeugt und der Zahlungsstatus wird nicht aktualisiert.</Value>
+      </LocaleResource>
       <LocaleResource Name="Fields.AdditionalFee">
         <Value>Zusätzliche Gebühren</Value>
       </LocaleResource>
@@ -311,7 +317,7 @@
         <Value>PayPal Standard PDT. Fehler beim Abruf von mc_gross.</Value>
       </LocaleResource>
       <LocaleResource Name="UnequalTotalOrder">
-        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1}.</Value>
+        <Value>PayPal Standard PDT. Der übermittelte Gesamtbetrag {0} entspricht nicht dem des Shops {1} (ungerundet {2}). Die Differenz beträgt {3}.</Value>
       </LocaleResource>
       <LocaleResource Name="PdtFailed">
         <Value>PayPal Standard PDT ist fehlgeschlagen.</Value>
@@ -343,17 +349,17 @@
       <LocaleResource Name="PaymentNote">
         <Value>
           <![CDATA[PayPal PDT:
-          Total: {0}
-          Währung: {1}
-          Zahlenderstatus: {2}
-          Zahlungsstatus: {3}
-          Ausstehend (Grund): {4}
-          Transaktions-ID: {5}
-          Zahlungstyp: {6}
-          Zahlender-ID: {7}
-          Empfänger-ID: {8}
-          Rechnung: {9}
-          Zahlungsgebühr: {10}]]>
+Total: {0}
+Währung: {1}
+Zahlenderstatus: {2}
+Zahlungsstatus: {3}
+Ausstehend (Grund): {4}
+Transaktions-ID: {5}
+Zahlungstyp: {6}
+Zahlender-ID: {7}
+Empfänger-ID: {8}
+Rechnung: {9}
+Zahlungsgebühr: {10}]]>
         </Value>
       </LocaleResource>
     </Children>

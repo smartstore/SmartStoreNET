@@ -18,6 +18,9 @@ namespace SmartStore.PayPal.Models
 		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.PDTValidateOrderTotal")]
 		public bool PdtValidateOrderTotal { get; set; }
 
+		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.PdtValidateOnlyWarn")]
+		public bool PdtValidateOnlyWarn { get; set; }
+
 		[SmartResourceDisplayName("Plugins.Payments.PayPalStandard.Fields.AdditionalFee")]
 		public decimal AdditionalFee { get; set; }
 
@@ -41,6 +44,7 @@ namespace SmartStore.PayPal.Models
                 BusinessEmail = settings.BusinessEmail;
                 PdtToken = settings.PdtToken;
                 PdtValidateOrderTotal = settings.PdtValidateOrderTotal;
+				PdtValidateOnlyWarn = settings.PdtValidateOnlyWarn;
                 AdditionalFee = settings.AdditionalFee;
                 AdditionalFeePercentage = settings.AdditionalFeePercentage;
                 PassProductNamesAndTotals = settings.PassProductNamesAndTotals;
@@ -53,13 +57,13 @@ namespace SmartStore.PayPal.Models
                 settings.BusinessEmail = BusinessEmail;
                 settings.PdtToken = PdtToken;
                 settings.PdtValidateOrderTotal = PdtValidateOrderTotal;
+				settings.PdtValidateOnlyWarn = PdtValidateOnlyWarn;
                 settings.AdditionalFee = AdditionalFee;
                 settings.AdditionalFeePercentage = AdditionalFeePercentage;
                 settings.PassProductNamesAndTotals = PassProductNamesAndTotals;
                 settings.EnableIpn = EnableIpn;
                 settings.IpnUrl = IpnUrl;
             }
-
         }
 	}
 }

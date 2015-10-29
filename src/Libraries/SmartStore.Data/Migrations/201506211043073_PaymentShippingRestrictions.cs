@@ -80,12 +80,12 @@ namespace SmartStore.Data.Migrations
 
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
-				"Select customer roles, shipping methods, countries and order amounts for which you do <b>not</b> want to offer this payment method.",
-				"Wählen Sie Kundengruppen, Versandarten, Länder und Bestellwerte, bei denen Sie diese Zahlungsmethode <b>nicht</b> anbieten möchten.");
+				"Select features for which you do <b>not</b> want to offer this payment method.",
+				"Wählen Sie Merkmale, bei denen Sie diese Zahlungsmethode <b>nicht</b> anbieten möchten.");
 
 			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.RestrictionNote",
-				"Select customer roles and countries for which you do <b>not</b> want to offer this shipping method.",
-				"Wählen Sie Kundengruppen und Länder, bei denen Sie diese Versandart <b>nicht</b> anbieten möchten.");
+				"Select features for which you do <b>not</b> want to offer this shipping method.",
+				"Wählen Sie Merkmale, bei denen Sie diese Versandart <b>nicht</b> anbieten möchten.");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.ExcludedCustomerRole",

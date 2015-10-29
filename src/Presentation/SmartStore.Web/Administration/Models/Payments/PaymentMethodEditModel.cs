@@ -7,15 +7,17 @@ using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Payments
 {
-	public class PaymentMethodEditModel : EntityModelBase, ILocalizedModel<PaymentMethodLocalizedModel>
+	public class PaymentMethodEditModel : TabbableModel, ILocalizedModel<PaymentMethodLocalizedModel>
 	{
 		public PaymentMethodEditModel()
 		{
 			Locales = new List<PaymentMethodLocalizedModel>();
+			FilterConfigurationUrls = new List<string>();
 		}
 
 		public IList<PaymentMethodLocalizedModel> Locales { get; set; }
 		public string IconUrl { get; set; }
+		public IList<string> FilterConfigurationUrls { get; set; }
 
 		[SmartResourceDisplayName("Common.SystemName")]
 		public string SystemName { get; set; }

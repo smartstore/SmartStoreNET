@@ -7,6 +7,7 @@
 * #141 Payment and shipping methods by customer roles
 * #67 Restrict payment methods to countries
 * #94 Restrict payment methods to shipping methods
+* #747 Restrict payment methods by old versus new customer (plugin)
 * #584 Email attachment support for message templates
 * Attach order invoice PDF automatically to order notification emails
 * #526 Min/Max amount option for which the payment method should be offered during checkout

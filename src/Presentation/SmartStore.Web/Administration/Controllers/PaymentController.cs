@@ -76,7 +76,7 @@ namespace SmartStore.Admin.Controllers
 			var customerRoles = _customerService.GetAllCustomerRoles(true);
 			var shippingMethods = _shippingService.GetAllShippingMethods();
 			var countries = _countryService.GetAllCountries(true);
-			var allFilters = _paymentService.GetAllPaymentFilters();
+			var allFilters = _paymentService.GetAllPaymentMethodFilters();
 
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableShippingMethods = new List<SelectListItem>();

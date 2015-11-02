@@ -213,6 +213,6 @@ namespace SmartStore.Services.Payments
 		/// Gets all payment filters
 		/// </summary>
 		/// <returns>List of payment filters</returns>
-		IList<IPaymentFilter> GetAllPaymentFilters();
+		IList<IPaymentMethodFilter> GetAllPaymentMethodFilters();
     }
 }

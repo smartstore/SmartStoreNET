@@ -98,7 +98,7 @@ namespace SmartStore.Services.Payments
 			decimal? orderSubTotal = null;
 			decimal? orderTotal = null;
 			IList<PaymentMethod> allMethods = null;
-			IList<IPaymentFilter> allFilters = null;
+			IList<IPaymentMethodFilter> allFilters = null;
 			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
 
 			var filterRequest = new PaymentFilterRequest
@@ -121,7 +121,7 @@ namespace SmartStore.Services.Payments
 
 					// payment method filtering
 					if (allFilters == null)
-						allFilters = GetAllPaymentFilters();
+						allFilters = GetAllPaymentMethodFilters();
 
 					filterRequest.PaymentMethod = p;
 
@@ -720,10 +720,10 @@ namespace SmartStore.Services.Payments
             return maskedChars + last4;
         }
 
-		public virtual IList<IPaymentFilter> GetAllPaymentFilters()
+		public virtual IList<IPaymentMethodFilter> GetAllPaymentMethodFilters()
 		{
-			return _typeFinder.FindClassesOfType<IPaymentFilter>(ignoreInactivePlugins: true)
-				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentFilter)
+			return _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
+				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter)
 				.ToList();
 		}
 

@@ -18,6 +18,7 @@ using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
+using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Services.Tests.Shipping
 {
@@ -36,6 +37,7 @@ namespace SmartStore.Services.Tests.Shipping
         IShippingService _shippingService;
         ShoppingCartSettings _shoppingCartSettings;
 		ISettingService _settingService;
+		ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
@@ -60,6 +62,7 @@ namespace SmartStore.Services.Tests.Shipping
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_genericAttributeService = MockRepository.GenerateMock<IGenericAttributeService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
+			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
             _shoppingCartSettings = new ShoppingCartSettings();
             _shippingService = new ShippingService(cacheManager, 
@@ -73,7 +76,8 @@ namespace SmartStore.Services.Tests.Shipping
                 _shippingSettings, pluginFinder, _eventPublisher,
                 _shoppingCartSettings,
 				_settingService, 
-				this.ProviderManager);
+				this.ProviderManager,
+				_typeFinder);
         }
 
         [Test]

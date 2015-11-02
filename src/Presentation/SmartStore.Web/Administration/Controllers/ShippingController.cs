@@ -79,6 +79,7 @@ namespace SmartStore.Admin.Controllers
 		{
 			var customerRoles = _customerService.GetAllCustomerRoles(true);
 			var countries = _countryService.GetAllCountries(true);
+			var allFilters = _shippingService.GetAllShippingMethodFilters();
 
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableCountries = new List<SelectListItem>();
@@ -94,6 +95,11 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
 			}
+
+			model.FilterConfigurationUrls = allFilters
+				.Select(x => "'" + x.GetConfigurationUrl(shippingMethod.Id) + "'")
+				.OrderBy(x => x)
+				.ToList();
 
 			if (shippingMethod != null)
 			{

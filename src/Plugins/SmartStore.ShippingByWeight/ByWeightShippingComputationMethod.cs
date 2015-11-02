@@ -143,7 +143,7 @@ namespace SmartStore.ShippingByWeight
             }
             decimal weight = _shippingService.GetShoppingCartTotalWeight(getShippingOptionRequest.Items);
 
-            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest.Customer);
+            var shippingMethods = _shippingService.GetAllShippingMethods(getShippingOptionRequest);
             foreach (var shippingMethod in shippingMethods)
             {
                 var record = _shippingByWeightService.FindRecord(shippingMethod.Id, storeId, countryId, weight, zip);

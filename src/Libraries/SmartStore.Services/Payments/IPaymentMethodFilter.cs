@@ -5,7 +5,7 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.Payments
 {
-	public partial interface IPaymentFilter
+	public partial interface IPaymentMethodFilter
 	{
 		/// <summary>
 		/// Gets a value indicating whether a payment method should be filtered out

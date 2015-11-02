@@ -52,6 +52,10 @@ namespace SmartStore.Data.Migrations
 				"Cannot load the provider {0}.",
 				"Der Provider {0} konnte nicht geladen werden.");
 
+			builder.AddOrUpdate("ActivityLog.EditPaymentMethod",
+				"Edited payment method '{0}' ({1})",
+				"Zahlungsart '{0}' ({1}) bearbeitet");
+
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
 				"This option is not taken into account in the preview.",
 				"Diese Option wird in der Vorschau nicht berücksichtigt.");

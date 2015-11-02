@@ -125,5 +125,26 @@
 				</td>
 			</tr>
 		</table>
+
+		<div id="FilterOutShippingMethodContainer"></div>
 	</div>
 }
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
+			i = 0;
+
+		if (configUrls.length > 0) {
+			getFilterConfiguration(configUrls[i], $('#FilterOutShippingMethodContainer'));
+		}
+
+		function getFilterConfiguration(url, container) {
+			$.get(url, function (html) {
+				container.append(html);
+				if (++i < configUrls.length)
+					getFilterConfiguration(configUrls[i], container);
+			});
+		}
+    });
+</script>

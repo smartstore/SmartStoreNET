@@ -17,6 +17,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Affiliates;
@@ -91,8 +92,8 @@ namespace SmartStore.Services.Tests.Orders
 		ICommonServices _services;
 		HttpRequestBase _httpRequestBase;
 		IGeoCountryLookup _geoCountryLookup;
-
 		Store _store;
+		ITypeFinder _typeFinder;
 
         [SetUp]
         public new void SetUp()
@@ -120,6 +121,7 @@ namespace SmartStore.Services.Tests.Orders
 
             _localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			_settingService = MockRepository.GenerateMock<ISettingService>();
+			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
             //shipping
             _shippingSettings = new ShippingSettings();
@@ -127,6 +129,7 @@ namespace SmartStore.Services.Tests.Orders
             _shippingSettings.ActiveShippingRateComputationMethodSystemNames.Add("FixedRateTestShippingRateComputationMethod");
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
+
             _shippingService = new ShippingService(cacheManager,
                 _shippingMethodRepository,
                 _logger,
@@ -138,7 +141,9 @@ namespace SmartStore.Services.Tests.Orders
                 _shippingSettings, pluginFinder, 
                 _eventPublisher, _shoppingCartSettings,
 				_settingService,
-				this.ProviderManager);
+				this.ProviderManager,
+				_typeFinder);
+
             _shipmentService = MockRepository.GenerateMock<IShipmentService>();
             
             _paymentService = MockRepository.GenerateMock<IPaymentService>();

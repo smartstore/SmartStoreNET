@@ -396,7 +396,8 @@ namespace SmartStore.Admin.Infrastructure
 				.ForMember(dest => dest.ExcludedCountryIds, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCustomerRoles, mo => mo.Ignore())
 				.ForMember(dest => dest.AvailableCountries, mo => mo.Ignore())
-				.ForMember(dest => dest.AvailableCountryExclusionContextTypes, mo => mo.Ignore());
+				.ForMember(dest => dest.AvailableCountryExclusionContextTypes, mo => mo.Ignore())
+				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore());
 			Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
 				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore())
 				.ForMember(dest => dest.ExcludedCustomerRoleIds, mo => mo.Ignore())

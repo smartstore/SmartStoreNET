@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Catalog;
@@ -37,6 +38,7 @@ namespace SmartStore.Services.Shipping
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly ISettingService _settingService;
 		private readonly IProviderManager _providerManager;
+		private readonly ITypeFinder _typeFinder;
 
         #endregion
 
@@ -71,7 +73,8 @@ namespace SmartStore.Services.Shipping
             IEventPublisher eventPublisher,
             ShoppingCartSettings shoppingCartSettings,
 			ISettingService settingService,
-			IProviderManager providerManager)
+			IProviderManager providerManager,
+			ITypeFinder typeFinder)
         {
             this._cacheManager = cacheManager;
             this._shippingMethodRepository = shippingMethodRepository;
@@ -87,6 +90,7 @@ namespace SmartStore.Services.Shipping
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
 			this._providerManager = providerManager;
+			this._typeFinder = typeFinder;
 		}
 
         #endregion
@@ -184,13 +188,8 @@ namespace SmartStore.Services.Shipping
 
             return _shippingMethodRepository.GetById(shippingMethodId);
         }
-        
-        /// <summary>
-        /// Gets all shipping methods
-        /// </summary>
-		/// <param name="customer">Filter shipping methods by customer and apply payment method restrictions; null to load all records</param>
-        /// <returns>Shipping method collection</returns>
-		public virtual IList<ShippingMethod> GetAllShippingMethods(Customer customer = null)
+
+		public virtual IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null)
         {
 			List<int> customerRoleIds = null;
 
@@ -201,31 +200,44 @@ namespace SmartStore.Services.Shipping
 
 			var allMethods = query.ToList();
 
-			if (customer == null)
+			if (request == null)
 				return allMethods;
 
-			var activeShippingMethods = allMethods.Where(x =>
-			{
-				// method restricted by customer role id?
-				var excludedRoleIds = x.ExcludedCustomerRoleIds.ToIntArray();
-				if (excludedRoleIds.Any())
-				{
-					if (customerRoleIds == null)
-						customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
+			var allFilters = GetAllShippingMethodFilters();
+			var filterRequest = new ShippingFilterRequest {	Request = request };
 
-					if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+			var activeShippingMethods = allMethods.Where(s =>
+			{
+				// shipping method filtering
+				filterRequest.ShippingMethod = s;
+
+				if (allFilters.Any(x => x.FilterOutShippingMethod(filterRequest)))
+					return false;
+
+				// shipping method core restrictions
+				if (request.Customer != null)
+				{
+					// method restricted by customer role id?
+					var excludedRoleIds = s.ExcludedCustomerRoleIds.ToIntArray();
+					if (excludedRoleIds.Any())
+					{
+						if (customerRoleIds == null)
+							customerRoleIds = request.Customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
+
+						if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
+							return false;
+					}
+
+					// method restricted by country of selected billing or shipping address?
+					int countryId = 0;
+					if (s.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
+						countryId = (request.Customer.ShippingAddress != null ? (request.Customer.ShippingAddress.CountryId ?? 0) : 0);
+					else
+						countryId = (request.Customer.BillingAddress != null ? (request.Customer.BillingAddress.CountryId ?? 0) : 0);
+
+					if (countryId != 0 && s.CountryRestrictionExists(countryId))
 						return false;
 				}
-
-				// method restricted by country of selected billing or shipping address?
-				int countryId = 0;
-				if (x.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
-					countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
-				else
-					countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
-
-				if (countryId != 0 && x.CountryRestrictionExists(countryId))
-					return false;
 
 				return true;
 			});
@@ -354,20 +366,26 @@ namespace SmartStore.Services.Shipping
         /// </summary>
         /// <param name="cart">Shopping cart</param>
         /// <param name="shippingAddress">Shipping address</param>
+		/// <param name="storeId">Store identifier</param>
         /// <returns>Shipment package</returns>
-		public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart,
-            Address shippingAddress)
+		public virtual GetShippingOptionRequest CreateShippingOptionRequest(IList<OrganizedShoppingCartItem> cart, Address shippingAddress, int storeId)
         {
             var request = new GetShippingOptionRequest();
+			request.StoreId = storeId;
             request.Customer = cart.GetCustomer();
-            request.Items = new List<OrganizedShoppingCartItem>();
-            foreach (var sc in cart)
-                if (sc.Item.IsShipEnabled)
-                    request.Items.Add(sc);
             request.ShippingAddress = shippingAddress;
             request.CountryFrom = null;
             request.StateProvinceFrom = null;
             request.ZipPostalCodeFrom = string.Empty;
+
+			request.Items = new List<OrganizedShoppingCartItem>();
+
+			foreach (var sc in cart)
+			{
+				if (sc.Item.IsShipEnabled)
+					request.Items.Add(sc);
+			}
+
             return request;
 
         }
@@ -389,7 +407,7 @@ namespace SmartStore.Services.Shipping
             var result = new GetShippingOptionResponse();
             
             //create a package
-            var getShippingOptionRequest = CreateShippingOptionRequest(cart, shippingAddress);
+            var getShippingOptionRequest = CreateShippingOptionRequest(cart, shippingAddress, storeId);
 
             var shippingRateComputationMethods = LoadActiveShippingRateComputationMethods(storeId)
                 .Where(srcm => 
@@ -440,6 +458,13 @@ namespace SmartStore.Services.Shipping
             
             return result;
         }
+
+		public virtual IList<IShippingMethodFilter> GetAllShippingMethodFilters()
+		{
+			return _typeFinder.FindClassesOfType<IShippingMethodFilter>(ignoreInactivePlugins: true)
+				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IShippingMethodFilter)
+				.ToList();
+		}
 
         #endregion
 

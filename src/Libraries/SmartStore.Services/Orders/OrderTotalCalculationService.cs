@@ -617,7 +617,7 @@ namespace SmartStore.Services.Orders
 
                 if (shippingRateComputationMethods.Count() == 1)
                 {
-                    var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress);
+					var getShippingOptionRequest = _shippingService.CreateShippingOptionRequest(cart, shippingAddress, _storeContext.CurrentStore.Id);
 
                     var shippingRateComputationMethod = shippingRateComputationMethods.First();
                     decimal? fixedRate = shippingRateComputationMethod.Value.GetFixedRate(getShippingOptionRequest);

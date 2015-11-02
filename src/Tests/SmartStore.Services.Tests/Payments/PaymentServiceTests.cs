@@ -5,6 +5,7 @@ using Rhino.Mocks;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
@@ -24,6 +25,7 @@ namespace SmartStore.Services.Tests.Payments
 		ICurrencyService _currencyService;
 		ICommonServices _services;
 		IOrderTotalCalculationService _orderTotalCalculationService;
+		ITypeFinder _typeFinder;
         
         [SetUp]
         public new void SetUp()
@@ -39,12 +41,13 @@ namespace SmartStore.Services.Tests.Payments
 			_currencyService = MockRepository.GenerateMock<ICurrencyService>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_orderTotalCalculationService = MockRepository.GenerateMock<IOrderTotalCalculationService>();
+			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
 			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, pluginFinder, _shoppingCartSettings, 
-				this.ProviderManager, _currencyService, _services, _orderTotalCalculationService);
+				this.ProviderManager, _currencyService, _services, _orderTotalCalculationService, _typeFinder);
         }
 
         [Test]

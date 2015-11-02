@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Payments;
+using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
@@ -34,6 +35,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly IShippingService _shippingService;
 		private readonly ICountryService _countryService;
 		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly ICustomerActivityService _customerActivityService;
 
 		#endregion
 
@@ -49,7 +51,8 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			IShippingService shippingService,
 			ICountryService countryService,
-			ILocalizedEntityService localizedEntityService)
+			ILocalizedEntityService localizedEntityService,
+			ICustomerActivityService customerActivityService)
 		{
 			this._services = services;
             this._paymentService = paymentService;
@@ -61,6 +64,7 @@ namespace SmartStore.Admin.Controllers
 			this._shippingService = shippingService;
 			this._countryService = countryService;
 			this._localizedEntityService = localizedEntityService;
+			this._customerActivityService = customerActivityService;
 		}
 
 		#endregion
@@ -72,6 +76,7 @@ namespace SmartStore.Admin.Controllers
 			var customerRoles = _customerService.GetAllCustomerRoles(true);
 			var shippingMethods = _shippingService.GetAllShippingMethods();
 			var countries = _countryService.GetAllCountries(true);
+			var allFilters = _paymentService.GetAllPaymentMethodFilters();
 
 			model.AvailableCustomerRoles = new List<SelectListItem>();
 			model.AvailableShippingMethods = new List<SelectListItem>();
@@ -95,8 +100,15 @@ namespace SmartStore.Admin.Controllers
 				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
 			}
 
+
+			model.FilterConfigurationUrls = allFilters
+				.Select(x => "'" + x.GetConfigurationUrl(model.SystemName) + "'")
+				.OrderBy(x => x)
+				.ToList();
+
 			if (paymentMethod != null)
 			{
+				model.Id = paymentMethod.Id;
 				model.ExcludedCustomerRoleIds = paymentMethod.ExcludedCustomerRoleIds.SplitSafe(",");
 				model.ExcludedShippingMethodIds = paymentMethod.ExcludedShippingMethodIds.SplitSafe(",");
 				model.ExcludedCountryIds = paymentMethod.ExcludedCountryIds.SplitSafe(",");
@@ -196,7 +208,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
-		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model)
+		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))
 				return AccessDeniedView();
@@ -237,6 +249,11 @@ namespace SmartStore.Admin.Controllers
 
 				_localizedEntityService.SaveLocalizedValue(paymentMethod, x => x.FullDescription, localized.FullDescription, localized.LanguageId);
 			}
+
+			_services.EventPublisher.Publish(new ModelBoundEvent(model, paymentMethod, form));
+
+			_customerActivityService.InsertActivity("EditPaymentMethod", _services.Localization.GetResource("ActivityLog.EditPaymentMethod"), 
+				model.FriendlyName.NaIfEmpty(), model.SystemName);
 
 			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataEditSuccess"));
 

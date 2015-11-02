@@ -23,7 +23,6 @@
 	@Html.ValidationSummary(false)
 	@Html.HiddenFor(model => model.SystemName)
 
-	
 	@Html.SmartStore().TabStrip().Name("payment-method-edit").Items(x =>
 	{
 		x.Add().Text(T("Admin.Common.General").Text).Content(TabGeneral()).Selected(true);
@@ -181,5 +180,26 @@
 				</td>
 			</tr>
 		</table>
+
+		<div id="FilterOutPaymentMethodContainer"></div>
 	</div>
 }
+
+<script type="text/javascript">
+	$(document).ready(function () {
+		var configUrls = [@Html.Raw(string.Join(", ", Model.FilterConfigurationUrls))],
+			i = 0;
+
+		if (configUrls.length > 0) {
+			getFilterConfiguration(configUrls[i], $('#FilterOutPaymentMethodContainer'));
+		}
+
+		function getFilterConfiguration(url, container) {
+			$.get(url, function (html) {
+				container.append(html);
+				if (++i < configUrls.length)
+					getFilterConfiguration(configUrls[i], container);
+			});
+		}
+    });
+</script>

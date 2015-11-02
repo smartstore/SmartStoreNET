@@ -9,6 +9,7 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Common;
 using SmartStore.Services.Directory;
@@ -37,6 +38,7 @@ namespace SmartStore.Services.Payments
 		private readonly ICurrencyService _currencyService;
 		private readonly ICommonServices _services;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly ITypeFinder _typeFinder;
 
         #endregion
 
@@ -57,7 +59,8 @@ namespace SmartStore.Services.Payments
 			IProviderManager providerManager,
 			ICurrencyService currencyService,
 			ICommonServices services,
-			IOrderTotalCalculationService orderTotalCalculationService)
+			IOrderTotalCalculationService orderTotalCalculationService,
+			ITypeFinder typeFinder)
         {
 			this._paymentMethodRepository = paymentMethodRepository;
             this._paymentSettings = paymentSettings;
@@ -67,6 +70,7 @@ namespace SmartStore.Services.Payments
 			this._currencyService = currencyService;
 			this._services = services;
 			this._orderTotalCalculationService = orderTotalCalculationService;
+			this._typeFinder = typeFinder;
         }
 
         #endregion
@@ -94,7 +98,15 @@ namespace SmartStore.Services.Payments
 			decimal? orderSubTotal = null;
 			decimal? orderTotal = null;
 			IList<PaymentMethod> allMethods = null;
+			IList<IPaymentMethodFilter> allFilters = null;
 			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
+
+			var filterRequest = new PaymentFilterRequest
+			{
+				Cart = cart,
+				StoreId = storeId,
+				Customer = customer
+			};
 
 			if (types != null && types.Any())
 				allProviders = LoadAllPaymentMethods(storeId).Where(x => types.Contains(x.Value.PaymentMethodType));
@@ -107,6 +119,16 @@ namespace SmartStore.Services.Payments
 					if (!p.Value.IsActive || !_paymentSettings.ActivePaymentMethodSystemNames.Contains(p.Metadata.SystemName, StringComparer.InvariantCultureIgnoreCase))
 						return false;
 
+					// payment method filtering
+					if (allFilters == null)
+						allFilters = GetAllPaymentMethodFilters();
+
+					filterRequest.PaymentMethod = p;
+
+					if (allFilters.Any(x => x.FilterOutPaymentMethod(filterRequest)))
+						return false;
+
+					// payment method core restrictions
 					if (customer != null)
 					{
 						if (allMethods == null)
@@ -196,6 +218,7 @@ namespace SmartStore.Services.Payments
 							}
 						}
 					}
+
 					return true;
 				});
 
@@ -696,6 +719,13 @@ namespace SmartStore.Services.Payments
             }
             return maskedChars + last4;
         }
+
+		public virtual IList<IPaymentMethodFilter> GetAllPaymentMethodFilters()
+		{
+			return _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
+				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter)
+				.ToList();
+		}
 
         #endregion
     }

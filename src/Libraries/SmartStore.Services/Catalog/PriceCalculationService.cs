@@ -744,7 +744,7 @@ namespace SmartStore.Services.Catalog
 					{
 						foreach (var bundleItem in shoppingCartItem.ChildItems)
 						{
-							bundleItem.Item.Product.MergeWithCombination(bundleItem.Item.AttributesXml);
+							bundleItem.Item.Product.MergeWithCombination(bundleItem.Item.AttributesXml, _productAttributeParser);
 						}
 
 						var bundleItems = shoppingCartItem.ChildItems.Where(x => x.BundleItemData.IsValid()).Select(x => x.BundleItemData).ToList();

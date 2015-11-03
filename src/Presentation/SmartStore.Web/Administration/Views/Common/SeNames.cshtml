@@ -3,7 +3,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
 
-    //page title
     ViewBag.Title = T("Admin.System.SeNames").Text;
 }
 @using (Html.BeginForm())
@@ -17,6 +16,7 @@
             <button type="submit" id="delete-selected" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.System.SeNames.DeleteSelected")</button>
         </div>
     </div>
+	
     <table style="margin:20px 0">
         <tr>
             <td class="adminTitle">
@@ -37,6 +37,7 @@
             </td>
         </tr>
     </table>
+	
     <table class="adminContent">
         <tr>
             <td>
@@ -51,16 +52,22 @@
                                 .Width(50)
                                 .HtmlAttributes(new { style = "text-align:center" })
                                 .HeaderHtmlAttributes(new { style = "text-align:center" });
-                            columns.Bound(x => x.Id).Width(50);
+                            columns.Bound(x => x.Id)
+								.Width(100)
+								.Centered();
                             columns.Bound(x => x.Name);
-                            columns.Bound(x => x.EntityId).Width(50);
-                            columns.Bound(x => x.EntityName).Width(200);
+                            columns.Bound(x => x.EntityId)
+								.Width(140)
+								.Centered();
+							columns.Bound(x => x.EntityName)
+								.Width(200);
                             columns.Bound(x => x.IsActive)
-                                    .Template(item => @Html.SymbolForBool(item.IsActive))
-                                    .ClientTemplate(@Html.SymbolForBool("IsActive"))
-                                    .Centered()
-                                    .Width(100);
-                            columns.Bound(x => x.Language).Width(200);
+                                .Template(item => @Html.SymbolForBool(item.IsActive))
+                                .ClientTemplate(@Html.SymbolForBool("IsActive"))
+								.Width(100)
+                                .Centered();
+                            columns.Bound(x => x.Language)
+								.Width(200);
                         })
                         .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
                         .DataBinding(dataBinding => dataBinding.Ajax().Select("SeNames", "Common"))

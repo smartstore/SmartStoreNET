@@ -1221,17 +1221,13 @@
                 })
                 .Columns(columns =>
                 {
-                    columns.Bound(x => x.Id).Width(50);
+                    columns.Bound(x => x.Id)
+						.Template(x => Html.ActionLink(x.Id.ToString(), "ShipmentDetails", "Order", new { id = x.Id }, new { }))
+						.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\"><#= Id #></a>");
                     columns.Bound(x => x.TrackingNumber);
                     columns.Bound(x => x.TotalWeight);
                     columns.Bound(x => x.ShippedDate);
                     columns.Bound(x => x.DeliveryDate);
-                    columns.Bound(x => x.Id)
-                        .Template(x => Html.ActionLink(T("Admin.Common.View").Text, "ShipmentDetails", "Order", new { id = x.Id }, new { }))
-                        .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Order/ShipmentDetails/") + "<#= Id #>\">" + T("Admin.Common.View").Text + "</a>")
-                        .Width(50)
-                        .Centered()
-                        .HeaderTemplate("<span class=\"t-link\">{0}</span>".FormatWith(T("Admin.Common.View").Text));
                 })
                 .EnableCustomBinding(true))
 
@@ -1375,7 +1371,7 @@
 
     <table class="adminContent">
         <tr>
-            <td class="adminData" style="padding:0;">
+            <td class="adminData" style="padding: 0;">
 
                 <table id="OrderItemTable" class="table table-bordered table-striped">
                     <thead>
@@ -1410,7 +1406,7 @@
                         @foreach (var item in Model.Items)
                         {
                             <tr>
-                                <td style="width: 25%;vertical-align: top">
+                                <td style="width: 25%; vertical-align: top;">
                                     <div>
                                         @Html.LabeledProductName(item.ProductId, item.ProductName, item.ProductTypeName, item.ProductTypeLabelHint)
 

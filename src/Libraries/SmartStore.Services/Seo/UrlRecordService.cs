@@ -63,6 +63,18 @@ namespace SmartStore.Services.Seo
             return urlRecord;
         }
 
+		public virtual IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds)
+		{
+			if (urlRecordIds == null || urlRecordIds.Length == 0)
+				return new List<UrlRecord>();
+
+			var urlRecords = _urlRecordRepository
+				.Where(x => urlRecordIds.Contains(x.Id))
+				.ToList();
+
+			return urlRecords;
+		}
+
         public virtual void InsertUrlRecord(UrlRecord urlRecord)
         {
             if (urlRecord == null)
@@ -85,15 +97,23 @@ namespace SmartStore.Services.Seo
             _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
         }
 
-        public virtual IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize)
+        public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, bool? isActive)
         {
             var query = _urlRecordRepository.Table;
-            if (!String.IsNullOrWhiteSpace(slug))
-                query = query.Where(ur => ur.Slug.Contains(slug));
-                query = query.OrderBy(ur => ur.Slug);
 
-                var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
-                return urlRecords;
+			if (slug.HasValue())
+				query = query.Where(x => x.Slug.Contains(slug));
+
+			if (entityName.HasValue())
+				query = query.Where(x => x.EntityName == entityName);
+
+			if (isActive.HasValue)
+				query = query.Where(x => x.IsActive == isActive.Value);
+
+			query = query.OrderBy(x => x.Slug);
+
+			var urlRecords = new PagedList<UrlRecord>(query, pageIndex, pageSize);
+			return urlRecords;
         }
 
 		public virtual IList<UrlRecord> GetUrlRecordsFor(string entityName, int entityId, bool activeOnly = false)

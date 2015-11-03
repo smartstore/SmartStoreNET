@@ -218,6 +218,7 @@
     <Compile Include="Controllers\ReturnRequestController.cs" />
     <Compile Include="Controllers\ScheduleTaskController.cs" />
     <Compile Include="Controllers\SecurityController.cs" />
+    <Compile Include="Controllers\UrlRecordController.cs" />
     <Compile Include="Controllers\SettingController.cs" />
     <Compile Include="Controllers\ShippingController.cs" />
     <Compile Include="Controllers\ShoppingCartController.cs" />
@@ -254,8 +255,6 @@
     <Compile Include="Models\Common\MaintenanceModel.cs" />
     <Compile Include="Models\Common\SystemWarningModel.cs" />
     <Compile Include="Models\Common\SystemInfoModel.cs" />
-    <Compile Include="Models\Common\UrlRecordListModel.cs" />
-    <Compile Include="Models\Common\UrlRecordModel.cs" />
     <Compile Include="Models\DataExchange\ExportDeploymentModel.cs" />
     <Compile Include="Models\DataExchange\ExportFilterModel.cs" />
     <Compile Include="Models\DataExchange\ProfileInfoForProviderModel.cs" />
@@ -271,6 +270,8 @@
     <Compile Include="Models\Plugins\LicensePluginModel.cs" />
     <Compile Include="Models\Plugins\LocalPluginsModel.cs" />
     <Compile Include="Models\Plugins\ProviderModelList.cs" />
+    <Compile Include="Models\UrlRecord\UrlRecordListModel.cs" />
+    <Compile Include="Models\UrlRecord\UrlRecordModel.cs" />
     <Compile Include="Models\Settings\ContentSliderSettingsModel.cs" />
     <Compile Include="Models\Customers\OnlineCustomerModel.cs" />
     <Compile Include="Models\Directory\DeliveryTimeModel.cs" />
@@ -534,6 +535,9 @@
     <Content Include="Views\Export\InfoProfile.cshtml" />
     <Content Include="Views\Export\_Tab.Deployment.cshtml" />
     <Content Include="Views\Export\InfoDeployment.cshtml" />
+    <Content Include="Views\UrlRecord\List.cshtml" />
+    <Content Include="Views\UrlRecord\Edit.cshtml" />
+    <Content Include="Views\UrlRecord\_CreateOrUpdate.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />
@@ -1160,9 +1164,6 @@
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Theme\Configure.cshtml" />
-  </ItemGroup>
-  <ItemGroup>
-    <Content Include="Views\Common\SeNames.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Views\Store\Create.cshtml" />

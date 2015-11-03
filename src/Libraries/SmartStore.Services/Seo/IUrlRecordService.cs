@@ -24,6 +24,13 @@ namespace SmartStore.Services.Seo
         /// <returns>URL record</returns>
         UrlRecord GetUrlRecordById(int urlRecordId);
 
+		/// <summary>
+		/// Gets URL records by identifiers
+		/// </summary>
+		/// <param name="urlRecordIds"></param>
+		/// <returns>List of URL records</returns>
+		IList<UrlRecord> GetUrlRecordsByIds(int[] urlRecordIds);
+
         /// <summary>
         /// Inserts an URL record
         /// </summary>
@@ -46,11 +53,13 @@ namespace SmartStore.Services.Seo
         /// <summary>
         /// Gets all URL records
         /// </summary>
-        /// <param name="slug">Slug</param>
         /// <param name="pageIndex">Page index</param>
         /// <param name="pageSize">Page size</param>
+		/// <param name="slug">Slug</param>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="isActive">Whether to load only active records</param>
         /// <returns>Customer collection</returns>
-        IPagedList<UrlRecord> GetAllUrlRecords(string slug, int pageIndex, int pageSize);
+		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, bool? isActive);
 
 		/// <summary>
 		/// Gets all URL records for the specified entity

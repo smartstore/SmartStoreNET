@@ -39,6 +39,8 @@ namespace SmartStore.Data.Migrations
 		{
 			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
 			builder.AddOrUpdate("Admin.Common.Selected", "Selected", "Ausgewählte");
+			builder.AddOrUpdate("Admin.Common.Entity", "Entity", "Entität");
+
 
 			builder.AddOrUpdate("Admin.Common.FilesDeleted",
 				"{0} files were deleted",
@@ -55,6 +57,41 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("ActivityLog.EditPaymentMethod",
 				"Edited payment method '{0}' ({1})",
 				"Zahlungsart '{0}' ({1}) bearbeitet");
+
+
+			builder.AddOrUpdate("Admin.System.SeNames",	"SEO Names", "SEO Namen");
+			builder.Delete("Admin.System.SeNames.DeleteSelected");
+
+			builder.AddOrUpdate("Admin.System.SeNames.Name",
+				"SEO Name",
+				"SEO Name",
+				"Specifies the SEO name.",
+				"Legt den SEO Namen fest.");
+
+			builder.AddOrUpdate("Admin.System.SeNames.EntityId",
+				"Entity ID",
+				"ID der Entität",
+				"Specifies the ID of the associated entity.",
+				"Legt die ID der zugehörigen Entität fest.");
+
+			builder.AddOrUpdate("Admin.System.SeNames.EntityName",
+				"Entity name",
+				"Name der Entität",
+				"Specifies the name of the associated entity.",
+				"Legt den Namen der zugehörigen Entität fest.");
+
+			builder.AddOrUpdate("Admin.System.SeNames.IsActive",
+				"Is active",
+				"Ist aktiv",
+				"Specifies whether the SEO name is active or inactive.",
+				"Legt fest, ob der SEO Name aktiv oder inaktiv ist.");
+
+			builder.AddOrUpdate("Admin.System.SeNames.Language",
+				"Language",
+				"Sprache",
+				"Specifies the language of the SEO name.",
+				"Legt die Sprache des SEO Namens fest.");
+
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
 				"This option is not taken into account in the preview.",

@@ -75,8 +75,8 @@ namespace SmartStore.Data.Migrations
 				"Legt die ID der zugehörigen Entität fest.");
 
 			builder.AddOrUpdate("Admin.System.SeNames.EntityName",
-				"Entity name",
-				"Name der Entität",
+				"Entity",
+				"Entität",
 				"Specifies the name of the associated entity.",
 				"Legt den Namen der zugehörigen Entität fest.");
 
@@ -91,6 +91,12 @@ namespace SmartStore.Data.Migrations
 				"Sprache",
 				"Specifies the language of the SEO name.",
 				"Legt die Sprache des SEO Namens fest.");
+
+			builder.AddOrUpdate("Admin.System.SeNames.SlugsPerEntity",
+				"Names per entity",
+				"Namen pro Entität",
+				"The number of SEO names per entity.",
+				"Die Anzahl der SEO Namen pro Entität.");
 
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",

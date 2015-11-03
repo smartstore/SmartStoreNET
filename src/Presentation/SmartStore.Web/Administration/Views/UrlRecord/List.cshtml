@@ -38,6 +38,14 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(model => model.EntityId)
+			</td>
+			<td class="adminData">
+				@Html.EditorFor(model => Model.EntityId)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				@Html.SmartLabelFor(model => model.IsActive)
 			</td>
 			<td class="adminData">
@@ -76,11 +84,15 @@
 							.Centered();
 						columns.Bound(x => x.Slug)
 							.ClientTemplate("<a href='Edit/<#= Id #>'><#= Slug #></a>");
-						columns.Bound(x => x.EntityId)
-							.Width(140)
-							.Centered();
+						columns.Bound(x => x.SlugsPerEntity)
+							.Centered()
+							.Width(180)
+							.ClientTemplate("<a href='javascript:void(0)' onclick='filterPerEntity(\"<#= EntityName #>\", <#= EntityId #>)'><#= SlugsPerEntity #></a>");
 						columns.Bound(x => x.EntityName)
 							.Width(200);
+						columns.Bound(x => x.EntityId)
+							.Width(140)
+							.Centered();						
 						columns.Bound(x => x.IsActive)
 							.Template(item => @Html.SymbolForBool(item.IsActive))
 							.ClientTemplate(@Html.SymbolForBool("IsActive"))
@@ -191,13 +203,13 @@
 		var searchModel = {
 			SeName: $('#@Html.FieldIdFor(model => model.SeName)').val(),
 			EntityName: $('#@Html.FieldIdFor(model => model.EntityName)').val(),
+			EntityId: $('#@Html.FieldIdFor(model => model.EntityId)').val(),
 			IsActive: $('#@Html.FieldIdFor(model => model.IsActive)').val()
 		};
 		e.data = searchModel;
 	}
 
 	function onDataBound(e) {
-
 		$('#urlrecord-grid input[type=checkbox][id!=mastercheckbox]').each(function () {
 			var currentId = $(this).val();
 			var checked = jQuery.inArray(currentId, selectedIds);
@@ -212,5 +224,14 @@
 		var numChkBoxes = $('#urlrecord-grid input[type=checkbox][id!=mastercheckbox]').length;
 		var numChkBoxesChecked = $('#urlrecord-grid input[type=checkbox][checked][id!=mastercheckbox]').length;
 		$('#mastercheckbox').attr('checked', numChkBoxes == numChkBoxesChecked && numChkBoxes > 0);
+	}
+
+	function filterPerEntity(entityName, entityId) {
+		$('#@Html.FieldIdFor(model => model.EntityName)').val(entityName);
+		$('#@Html.FieldIdFor(model => model.EntityId)').val(entityId).blur();
+
+		var grid = $('#urlrecord-grid').data('tGrid');
+		grid.currentPage = 1;
+		grid.ajaxRequest();
 	}
 </script>

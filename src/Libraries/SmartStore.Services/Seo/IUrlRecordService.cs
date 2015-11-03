@@ -57,9 +57,10 @@ namespace SmartStore.Services.Seo
         /// <param name="pageSize">Page size</param>
 		/// <param name="slug">Slug</param>
 		/// <param name="entityName">Entity name</param>
+		/// <param name="entityId">Entity identifier</param>
 		/// <param name="isActive">Whether to load only active records</param>
         /// <returns>Customer collection</returns>
-		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, bool? isActive);
+		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, bool? isActive);
 
 		/// <summary>
 		/// Gets all URL records for the specified entity
@@ -99,5 +100,12 @@ namespace SmartStore.Services.Seo
 		/// <param name="nameProperty">Name of a property</param>
 		/// <returns>Url record</returns>
 		UrlRecord SaveSlug<T>(T entity, Expression<Func<T, string>> nameProperty) where T : BaseEntity, ISlugSupported;
+
+		/// <summary>
+		/// Get number of slugs per entity
+		/// </summary>
+		/// <param name="urlRecordIds">URL record identifier</param>
+		/// <returns>Dictionary of slugs per entity count</returns>
+		Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds);
     }
 }

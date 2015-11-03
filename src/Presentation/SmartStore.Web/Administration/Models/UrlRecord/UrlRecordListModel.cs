@@ -12,10 +12,13 @@ namespace SmartStore.Admin.Models.UrlRecord
         [AllowHtml]
         public string SeName { get; set; }
 
-		[SmartResourceDisplayName("Admin.Common.Entity")]
+		[SmartResourceDisplayName("Admin.System.SeNames.EntityName")]
 		public string EntityName { get; set; }
 
-		[SmartResourceDisplayName("Common.IsActive")]
+		[SmartResourceDisplayName("Admin.System.SeNames.EntityId")]
+		public int? EntityId { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.SeNames.IsActive")]
 		public bool? IsActive { get; set; }
     }
 }

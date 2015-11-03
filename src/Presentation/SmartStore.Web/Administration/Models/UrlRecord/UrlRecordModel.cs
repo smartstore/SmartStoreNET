@@ -11,11 +11,11 @@ namespace SmartStore.Admin.Models.UrlRecord
         [AllowHtml]
         public string Slug { get; set; }
 
-        [SmartResourceDisplayName("Admin.System.SeNames.EntityId")]
-        public int EntityId { get; set; }
-
         [SmartResourceDisplayName("Admin.System.SeNames.EntityName")]
         public string EntityName { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.SeNames.EntityId")]
+		public int EntityId { get; set; }
 
         [SmartResourceDisplayName("Admin.System.SeNames.IsActive")]
         public bool IsActive { get; set; }
@@ -26,5 +26,8 @@ namespace SmartStore.Admin.Models.UrlRecord
 
         [SmartResourceDisplayName("Admin.System.SeNames.Language")]
         public string Language { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.SeNames.SlugsPerEntity")]
+		public int SlugsPerEntity { get; set; }
     }
 }

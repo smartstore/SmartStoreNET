@@ -49,21 +49,34 @@ namespace SmartStore.Admin.Controllers
 			{
 				model.Id = urlRecord.Id;
 				model.Slug = urlRecord.Slug;
-				model.EntityId = urlRecord.EntityId;
 				model.EntityName = urlRecord.EntityName;
+				model.EntityId = urlRecord.EntityId;
 				model.IsActive = urlRecord.IsActive;
 				model.LanguageId = urlRecord.LanguageId;
+
+				try
+				{
+					var slugCount = _urlRecordService.CountSlugsPerEntity(new int[] { urlRecord.Id });
+
+					model.SlugsPerEntity = (slugCount.ContainsKey(urlRecord.Id) ? slugCount[urlRecord.Id] : 0);
+				}
+				catch (Exception exc)
+				{
+					NotifyError(exc);
+				}
 			}
 		}
 
-		public ActionResult List()
+		public ActionResult List(string entityName, int? entityId)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
 				return AccessDeniedView();
 
 			var model = new UrlRecordListModel
 			{
-				GridPageSize = _adminAreaSettings.GridPageSize
+				GridPageSize = _adminAreaSettings.GridPageSize,
+				EntityName = entityName,
+				EntityId = entityId
 			};
 
 			return View(model);
@@ -78,7 +91,9 @@ namespace SmartStore.Admin.Controllers
 			var allLanguages = _languageService.GetAllLanguages(true);
 			var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
 
-			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize, model.SeName, model.EntityName, model.IsActive);
+			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize, model.SeName, model.EntityName, model.EntityId, model.IsActive);
+
+			var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
 
 			var gridModel = new GridModel<UrlRecordModel>
 			{
@@ -96,15 +111,18 @@ namespace SmartStore.Admin.Controllers
 						languageName = (language != null ? language.Name : "".NaIfEmpty());
 					}
 
-					return new UrlRecordModel
+					var urlRecordModel = new UrlRecordModel
 					{
 						Id = x.Id,
 						Slug = x.Slug,
-						EntityId = x.EntityId,
 						EntityName = x.EntityName,
+						EntityId = x.EntityId,
 						IsActive = x.IsActive,
 						Language = languageName,
+						SlugsPerEntity = (slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0)
 					};
+
+					return urlRecordModel;
 				}),
 				Total = urlRecords.TotalCount
 			};

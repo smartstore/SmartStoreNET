@@ -35,15 +35,18 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 		}
 
-		private void PrepareUrlRecordModel(UrlRecordModel model, UrlRecord urlRecord)
+		private void PrepareUrlRecordModel(UrlRecordModel model, UrlRecord urlRecord, bool forList = false)
 		{
-			var allLanguages = _languageService.GetAllLanguages(true);
+			if (!forList)
+			{
+				var allLanguages = _languageService.GetAllLanguages(true);
 
-			model.AvailableLanguages = allLanguages
-				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
-				.ToList();
+				model.AvailableLanguages = allLanguages
+					.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+					.ToList();
 
-			model.AvailableLanguages.Insert(0, new SelectListItem { Text = T("Admin.System.SeNames.Language.Standard"), Value = "0" });
+				model.AvailableLanguages.Insert(0, new SelectListItem { Text = T("Admin.System.SeNames.Language.Standard"), Value = "0" });
+			}
 
 			if (urlRecord != null)
 			{
@@ -54,15 +57,25 @@ namespace SmartStore.Admin.Controllers
 				model.IsActive = urlRecord.IsActive;
 				model.LanguageId = urlRecord.LanguageId;
 
-				try
+				if (urlRecord.EntityName.IsCaseInsensitiveEqual("BlogPost"))
 				{
-					var slugCount = _urlRecordService.CountSlugsPerEntity(new int[] { urlRecord.Id });
-
-					model.SlugsPerEntity = (slugCount.ContainsKey(urlRecord.Id) ? slugCount[urlRecord.Id] : 0);
+					model.EntityUrl = Url.Action("Edit", "Blog", new { id = urlRecord.EntityId });
 				}
-				catch (Exception exc)
+				else if (urlRecord.EntityName.IsCaseInsensitiveEqual("Forum"))
 				{
-					NotifyError(exc);
+					model.EntityUrl = Url.Action("EditForum", "Forum", new { id = urlRecord.EntityId });
+				}
+				else if (urlRecord.EntityName.IsCaseInsensitiveEqual("ForumGroup"))
+				{
+					model.EntityUrl = Url.Action("EditForumGroup", "Forum", new { id = urlRecord.EntityId });
+				}
+				else if (urlRecord.EntityName.IsCaseInsensitiveEqual("NewsItem"))
+				{
+					model.EntityUrl = Url.Action("Edit", "News", new { id = urlRecord.EntityId });
+				}
+				else
+				{
+					model.EntityUrl = Url.Action("Edit", urlRecord.EntityName, new { id = urlRecord.EntityId });
 				}
 			}
 		}
@@ -120,16 +133,11 @@ namespace SmartStore.Admin.Controllers
 						languageName = (language != null ? language.Name : "".NaIfEmpty());
 					}
 
-					var urlRecordModel = new UrlRecordModel
-					{
-						Id = x.Id,
-						Slug = x.Slug,
-						EntityName = x.EntityName,
-						EntityId = x.EntityId,
-						IsActive = x.IsActive,
-						Language = languageName,
-						SlugsPerEntity = (slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0)
-					};
+					var urlRecordModel = new UrlRecordModel();
+					PrepareUrlRecordModel(urlRecordModel, x, true);
+
+					urlRecordModel.Language = languageName;
+					urlRecordModel.SlugsPerEntity = (slugsPerEntity.ContainsKey(x.Id) ? slugsPerEntity[x.Id] : 0);
 
 					return urlRecordModel;
 				}),
@@ -179,7 +187,6 @@ namespace SmartStore.Admin.Controllers
 			if (ModelState.IsValid)
 			{
 				urlRecord.Slug = model.Slug;
-				urlRecord.EntityId = model.EntityId;
 				urlRecord.EntityName = model.EntityName;
 				urlRecord.IsActive = model.IsActive;
 				urlRecord.LanguageId = model.LanguageId;

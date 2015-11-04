@@ -17,6 +17,9 @@ namespace SmartStore.Admin.Models.UrlRecord
 		[SmartResourceDisplayName("Admin.System.SeNames.EntityId")]
 		public int EntityId { get; set; }
 
+		[SmartResourceDisplayName("Admin.Common.Entity")]
+		public string EntityUrl { get; set; }
+
         [SmartResourceDisplayName("Admin.System.SeNames.IsActive")]
         public bool IsActive { get; set; }
 

@@ -16,14 +16,6 @@
 	</tr>
 	<tr>
 		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.SlugsPerEntity)
-		</td>
-		<td class="adminData">
-			<a href="@Url.Action("List", new { entityName = Model.EntityName, entityId = Model.EntityId })">@Model.SlugsPerEntity</a>
-		</td>
-	</tr>
-	<tr>
-		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.IsActive)
 		</td>
 		<td class="adminData">
@@ -37,18 +29,10 @@
         </td>
         <td class="adminData">
             @Html.EditorFor(model => model.Slug)
+			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = Model.EntityName, entityId = @Model.EntityId })
             @Html.ValidationMessageFor(model => model.Slug)
         </td>
     </tr>
-	<tr>
-		<td class="adminTitle">
-			@Html.SmartLabelFor(model => model.EntityId)
-		</td>
-		<td class="adminData">
-			@Html.EditorFor(model => model.EntityId)
-			@Html.ValidationMessageFor(model => model.EntityId)
-		</td>
-	</tr>
 	<tr>
 		<td class="adminTitle">
 			@Html.SmartLabelFor(model => model.EntityName)
@@ -56,6 +40,15 @@
 		<td class="adminData">
 			@Html.EditorFor(model => model.EntityName)
 			@Html.ValidationMessageFor(model => model.EntityName)
+		</td>
+	</tr>
+	<tr>
+		<td class="adminTitle">
+			@Html.SmartLabelFor(model => model.EntityId)
+		</td>
+		<td class="adminData">
+			@Html.EditorFor(model => model.EntityId)
+			@Html.ValidationMessageFor(model => model.EntityId)
 		</td>
 	</tr>
 	<tr>

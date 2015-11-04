@@ -100,7 +100,8 @@
 							.Width(200);
 						columns.Bound(x => x.EntityId)
 							.Width(140)
-							.Centered();						
+							.Centered()
+							.ClientTemplate("<a href='<#= EntityUrl #>'><#= EntityId #></a>");
 						columns.Bound(x => x.IsActive)
 							.Template(item => @Html.SymbolForBool(item.IsActive))
 							.ClientTemplate(@Html.SymbolForBool("IsActive"))

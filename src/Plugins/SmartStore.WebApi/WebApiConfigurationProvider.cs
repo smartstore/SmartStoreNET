@@ -92,6 +92,7 @@ namespace SmartStore.WebApi
 			m.EntitySet<ReturnRequest>(WebApiOdataEntitySet.ReturnRequests);
 			m.EntitySet<Setting>(WebApiOdataEntitySet.Settings);
 			m.EntitySet<Shipment>(WebApiOdataEntitySet.Shipments);
+			m.EntitySet<ShipmentItem>(WebApiOdataEntitySet.ShipmentItems);
 			m.EntitySet<ShippingMethod>(WebApiOdataEntitySet.ShippingMethods);
 			m.EntitySet<SpecificationAttributeOption>(WebApiOdataEntitySet.SpecificationAttributeOptions);
 			m.EntitySet<SpecificationAttribute>(WebApiOdataEntitySet.SpecificationAttributes);
@@ -145,6 +146,7 @@ namespace SmartStore.WebApi
 		public static string ReturnRequests { get { return "ReturnRequests"; } }
 		public static string Settings { get { return "Settings"; } }
 		public static string Shipments { get { return "Shipments"; } }
+		public static string ShipmentItems { get { return "ShipmentItems"; } }
 		public static string ShippingMethods { get { return "ShippingMethods"; } }
 		public static string SpecificationAttributeOptions { get { return "SpecificationAttributeOptions"; } }
 		public static string SpecificationAttributes { get { return "SpecificationAttributes"; } }

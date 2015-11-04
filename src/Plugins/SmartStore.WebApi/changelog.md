@@ -1,5 +1,9 @@
 ﻿#Release Notes
 
+##Web Api 2.2.0.4
+###New Features
+* Added OData endpoint for shipment items
+
 ##Web Api 2.2.0.3
 ###New Features
 * Added OData endpoint for payment method

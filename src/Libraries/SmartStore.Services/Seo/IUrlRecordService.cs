@@ -108,5 +108,13 @@ namespace SmartStore.Services.Seo
 		/// <param name="urlRecordIds">URL record identifier</param>
 		/// <returns>Dictionary of slugs per entity count</returns>
 		Dictionary<int, int> CountSlugsPerEntity(int[] urlRecordIds);
+
+		/// <summary>
+		/// Get number of slugs per entity
+		/// </summary>
+		/// <param name="entityName">Entity name</param>
+		/// <param name="entityId">Entity identifier</param>
+		/// <returns>Number of slugs per entity</returns>
+		int CountSlugsPerEntity(string entityName, int entityId);
     }
 }

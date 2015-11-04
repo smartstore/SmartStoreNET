@@ -38,6 +38,7 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Common.Example", "Example", "Beispiel");
+			builder.AddOrUpdate("Common.ShowAll", "Show all", "Alle anzeigen");
 			builder.AddOrUpdate("Admin.Common.Selected", "Selected", "Ausgewählte");
 			builder.AddOrUpdate("Admin.Common.Entity", "Entity", "Entität");
 

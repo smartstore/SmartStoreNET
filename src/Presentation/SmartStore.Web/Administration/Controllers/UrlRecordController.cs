@@ -239,5 +239,19 @@ namespace SmartStore.Admin.Controllers
 
 			return Json(new { Result = true });
 		}
+
+		[ChildActionOnly]
+		public ActionResult NamesPerEntity(string entityName, int entityId)
+		{
+			if (entityName.IsEmpty() || entityId == 0)
+				return new EmptyResult();
+
+			var count = _urlRecordService.CountSlugsPerEntity(entityName, entityId);
+
+			ViewBag.CountSlugsPerEntity = count;
+			ViewBag.UrlRecordListUrl = Url.Action("List", "UrlRecord", new { entityName = entityName, entityId = entityId });
+
+			return View();
+		}
 	}
 }

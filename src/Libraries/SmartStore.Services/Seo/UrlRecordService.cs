@@ -351,6 +351,15 @@ namespace SmartStore.Services.Seo
 			return result;
 		}
 
+		public virtual int CountSlugsPerEntity(string entityName, int entityId)
+		{
+			var count = _urlRecordRepository.Table
+				.Where(x => x.EntityName == entityName && x.EntityId == entityId)
+				.Count();
+
+			return count;
+		}
+
         #endregion
     }
 }

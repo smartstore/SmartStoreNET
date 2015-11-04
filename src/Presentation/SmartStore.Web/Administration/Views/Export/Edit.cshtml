@@ -82,16 +82,17 @@
 				@Html.ValidationMessageFor(x => x.Enabled)
 			</td>
 		</tr>
-		<tr>
-			<td class="adminTitle">
-				@Html.SmartLabelFor(x => x.ScheduleTaskId)
-			</td>
-			<td class="adminData">
-				<span class="label label-inline@(Model.IsTaskEnabled ? " label-warning" : "")">@(Model.IsTaskEnabled ? T("Common.Scheduled") : T("Common.Unscheduled"))</span>
-
-				<a href="@Url.Action("Edit", "ScheduleTask", new { id = Model.ScheduleTaskId })">@Model.ScheduleTaskName</a>
-			</td>
-		</tr>
+		@if (Model.ScheduleTaskId > 0)
+		{
+			<tr>
+				<td class="adminTitle">
+					@Html.SmartLabelFor(x => x.ScheduleTaskId)
+				</td>
+				<td class="adminData">
+					@Html.Action("MinimalTask", "ScheduleTask", new { taskId = Model.ScheduleTaskId, returnUrl = Request.RawUrl, cancellable = true, area = "admin" })
+				</td>
+			</tr>
+		}
 	</table>
 	
 	<p>&nbsp;</p>

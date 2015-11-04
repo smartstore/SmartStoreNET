@@ -261,7 +261,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 			}
 		}
 
-		public void ExecuteEnded(IExportExecuteContext context)
+		public void OnExecuted(IExportExecuteContext context)
 		{
 			// nothing to do
 		}

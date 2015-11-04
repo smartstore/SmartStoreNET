@@ -15,7 +15,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private LazyMultimap<GenericAttribute> _genericAttributes;
 
-		public ExportDataContextCustomer(IEnumerable<Customer> customers,
+		public ExportDataContextCustomer(
+			IEnumerable<Customer> customers,
 			Func<int[], Multimap<int, GenericAttribute>> genericAttributes)
 		{
 			if (customers == null)

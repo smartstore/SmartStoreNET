@@ -30,6 +30,6 @@ namespace SmartStore.Services.DataExchange
 		/// Called once per store when export execution ended
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void ExecuteEnded(IExportExecuteContext context);
+		void OnExecuted(IExportExecuteContext context);
 	}
 }

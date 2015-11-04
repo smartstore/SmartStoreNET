@@ -401,7 +401,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			}
 		}
 
-		public void ExecuteEnded(IExportExecuteContext context)
+		public void OnExecuted(IExportExecuteContext context)
 		{
 			// nothing to do
 		}

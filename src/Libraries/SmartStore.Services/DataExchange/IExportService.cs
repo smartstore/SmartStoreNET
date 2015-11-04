@@ -8,7 +8,7 @@ namespace SmartStore.Services.DataExchange
 	public interface IExportService
 	{
 		/// <summary>
-		/// Creates a volatile export project
+		/// Creates a volatile export profile
 		/// </summary>
 		/// <param name="provider">Export provider</param>
 		/// <returns>New export profile</returns>

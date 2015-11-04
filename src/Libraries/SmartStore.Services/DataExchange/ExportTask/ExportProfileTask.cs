@@ -51,6 +51,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
+using SmartStore.Core.Localization;
 
 // note: namespace persisted in ScheduleTask.Type
 namespace SmartStore.Services.DataExchange.ExportTask
@@ -131,6 +132,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_genericAttributeService = context.Resolve<Lazy<IGenericAttributeService>>();
 			_subscriptionRepository = context.Resolve<Lazy<IRepository<NewsLetterSubscription>>>();
 		}
+
+		public Localizer T { get; set; }
 
 		#endregion
 
@@ -2598,7 +2601,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 				if (ctx.Export.Abort != ExportAbortion.Hard)
 				{
-					ctx.Provider.Value.ExecuteEnded(ctx.Export);
+					ctx.Provider.Value.OnExecuted(ctx.Export);
 				}
 			}
 		}
@@ -2624,7 +2627,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					ctx.Log = logger;
 					ctx.Export.Log = logger;
-					ctx.ProgressInfo = _services.Localization.GetResource("Admin.DataExchange.Export.ProgressInfo");
+					ctx.ProgressInfo = T("Admin.DataExchange.Export.ProgressInfo");
 
 					if (ctx.Profile.ProviderConfigData.HasValue())
 					{
@@ -2637,9 +2640,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
-						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id, x => x);
-						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id, x => x);
-						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id, x => x);
+						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
+						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
+						ctx.ProductTemplates = _productTemplateService.Value.GetAllProductTemplates().ToDictionary(x => x.Id);
 
 						if (ctx.Provider.Value.EntityType == ExportEntityType.Product)
 						{
@@ -2681,7 +2684,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 								ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
 							}
 
-							SetProgress(ctx, _services.Localization.GetResource("Common.Deployment"));
+							SetProgress(ctx, T("Common.Deployment"));
 
 							foreach (var deployment in ctx.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 							{
@@ -2885,7 +2888,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var provider = _exportService.Value.LoadProvider(profile.ProviderSystemName);
 
 			if (provider == null)
-				throw new SmartException(_services.Localization.GetResource("Admin.Common.ProviderNotLoaded").FormatInvariant(profile.ProviderSystemName.NaIfEmpty()));
+				throw new SmartException(T("Admin.Common.ProviderNotLoaded", profile.ProviderSystemName.NaIfEmpty()));
 
 			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, selectedEntityIds);
 
@@ -2927,7 +2930,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var provider = _exportService.Value.LoadProvider(providerSystemName);
 
 			if (provider == null)
-				throw new SmartException(_services.Localization.GetResource("Admin.Common.ProviderNotLoaded").FormatInvariant(providerSystemName.NaIfEmpty()));
+				throw new SmartException(T("Admin.Common.ProviderNotLoaded", providerSystemName.NaIfEmpty()));
 
 			if (profile == null)
 				profile = _exportService.Value.CreateVolatileProfile(provider);
@@ -2950,24 +2953,24 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				var extension = Path.GetExtension(ctx.Result.Files.First().FileName);
 
 				if (provider.Value.EntityType == ExportEntityType.Product)
-					prefix = _services.Localization.GetResource("Admin.Catalog.Products");
+					prefix = T("Admin.Catalog.Products");
 				else if (provider.Value.EntityType == ExportEntityType.Order)
-					prefix = _services.Localization.GetResource("Admin.Orders");
+					prefix = T("Admin.Orders");
 				else if (provider.Value.EntityType == ExportEntityType.Category)
-					prefix = _services.Localization.GetResource("Admin.Catalog.Categories");
+					prefix = T("Admin.Catalog.Categories");
 				else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
-					prefix = _services.Localization.GetResource("Admin.Catalog.Manufacturers");
+					prefix = T("Admin.Catalog.Manufacturers");
 				else if (provider.Value.EntityType == ExportEntityType.Customer)
-					prefix = _services.Localization.GetResource("Admin.Customers");
+					prefix = T("Admin.Customers");
 				else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
-					prefix = _services.Localization.GetResource("Admin.Promotions.NewsLetterSubscriptions");
+					prefix = T("Admin.Promotions.NewsLetterSubscriptions");
 				else
 					prefix = provider.Value.EntityType.ToString();
 
 				if (selectedEntityIds.HasValue())
-					suffix = (selectedEntityIds.Contains(",") ? _services.Localization.GetResource("Admin.Common.Selected") : selectedEntityIds);
+					suffix = (selectedEntityIds.Contains(",") ? T("Admin.Common.Selected").Text : selectedEntityIds);
 				else
-					suffix = _services.Localization.GetResource("Common.All");
+					suffix = T("Common.All");
 
 				ctx.Result.DownloadFileName = string.Concat(prefix, "-", suffix).ToLower().ToValidFileName() + extension;
 			}

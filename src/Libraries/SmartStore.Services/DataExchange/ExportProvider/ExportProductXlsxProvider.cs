@@ -415,7 +415,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 			GC.Collect();
 		}
 
-		public void ExecuteEnded(IExportExecuteContext context)
+		public void OnExecuted(IExportExecuteContext context)
 		{
 			// nothing to do
 		}

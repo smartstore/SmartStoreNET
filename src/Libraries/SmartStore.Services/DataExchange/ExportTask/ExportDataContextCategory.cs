@@ -18,7 +18,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<ProductCategory> _productCategories;
 		private LazyMultimap<Picture> _pictures;
 
-		public ExportDataContextCategory(IEnumerable<Category> categories,
+		public ExportDataContextCategory(
+			IEnumerable<Category> categories,
 			Func<int[], Multimap<int, ProductCategory>> productCategories,
 			Func<int[], IList<Picture>> pictures)
 		{

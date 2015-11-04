@@ -18,7 +18,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<Picture> _pictures;
 
-		public ExportDataContextManufacturer(IEnumerable<Manufacturer> manufacturers,
+		public ExportDataContextManufacturer(
+			IEnumerable<Manufacturer> manufacturers,
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], IList<Picture>> pictures)
 		{

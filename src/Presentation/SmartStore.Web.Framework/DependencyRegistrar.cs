@@ -768,7 +768,7 @@ namespace SmartStore.Web.Framework
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
 				var isHidden = GetIsHidden(type);
-				var exportSupport = GetExportSupport(type);				
+				var exportSupport = GetExportFeatures(type);				
 
 				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
 				registration.WithMetadata<ProviderMetadata>(m =>
@@ -863,16 +863,16 @@ namespace SmartStore.Web.Framework
 			return false;
 		}
 
-		private ExportSupport[] GetExportSupport(Type type)
+		private ExportFeatures[] GetExportFeatures(Type type)
 		{
-			var attr = type.GetAttribute<ExportSupportingAttribute>(false);
+			var attr = type.GetAttribute<ExportFeaturesAttribute>(false);
 
-			if (attr != null && attr.Types != null)
+			if (attr != null && attr.Features != null)
 			{
-				return attr.Types;
+				return attr.Features;
 			}
 
-			return new ExportSupport[0];
+			return new ExportFeatures[0];
 		}
 
 		private Tuple<string/*Name*/, string/*Description*/> GetFriendlyName(Type type, PluginDescriptor descriptor)

@@ -7,7 +7,9 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// <summary>
 	/// Settings projected onto an export
 	/// </summary>
-	/// <remarks>Note possible projection controlling: a) developer controls, b) merchant controls, c) developer controls what the merchant can control</remarks>
+	/// <remarks>
+	/// Note possible projection controlling: a) developer controls, b) merchant controls, c) developer controls what the merchant can control
+	/// </remarks>
 	[Serializable]
 	public class ExportProjection
 	{

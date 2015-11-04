@@ -1556,7 +1556,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 
-			if (ctx.Supporting[ExportSupport.ProjectionMainPictureUrl] && ctx.Projection.PictureSize > 0)
+			if (ctx.SupportedFeatures[ExportFeatures.CanIncludeMainPicture] && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);	// perf preview (it's a compromise)
@@ -1762,12 +1762,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			#region more attribute controlled data
 
-			if (ctx.Supports(ExportSupport.ProjectionDescription))
+			if (ctx.Supports(ExportFeatures.CanProjectDescription))
 			{
 				PrepareProductDescription(ctx, expando, product);
 			}
 
-			if (ctx.Supports(ExportSupport.ProjectionBrand))
+			if (ctx.Supports(ExportFeatures.OffersBrandFallback))
 			{
 				string brand = null;
 				var productManus = ctx.DataContextProduct.ProductManufacturers.Load(perfLoadId);
@@ -1781,7 +1781,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				expando._Brand = brand;
 			}
 
-			if (ctx.Supports(ExportSupport.ProjectionMainPictureUrl))
+			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
 					expando._MainPictureUrl = _pictureService.Value.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
@@ -1823,18 +1823,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				// navigation properties
 				GetDeliveryTimeAndQuantityUnit(ctx, exp, product.DeliveryTimeId, product.QuantityUnitId);
 
-				if (ctx.Supports(ExportSupport.ProjectionUseOwnProductNo) && product.ManufacturerPartNumber.IsEmpty())
+				if (ctx.Supports(ExportFeatures.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
 				{
 					exp.ManufacturerPartNumber = product.Sku;
 				}
 
-				if (ctx.Supports(ExportSupport.ProjectionShippingTime))
+				if (ctx.Supports(ExportFeatures.OffersShippingTimeFallback))
 				{
 					dynamic deliveryTime = exp.DeliveryTime;
 					exp._ShippingTime = (deliveryTime == null ? ctx.Projection.ShippingTime : deliveryTime.Name);
 				}
 
-				if (ctx.Supports(ExportSupport.ProjectionShippingCosts))
+				if (ctx.Supports(ExportFeatures.OffersShippingCostsFallback))
 				{
 					exp._FreeShippingThreshold = ctx.Projection.FreeShippingThreshold;
 
@@ -1844,7 +1844,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp._ShippingCosts = ctx.Projection.ShippingCosts;
 				}
 
-				if (ctx.Supports(ExportSupport.ProjectionOldPrice))
+				if (ctx.Supports(ExportFeatures.UsesOldPrice))
 				{
 					if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)exp.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 					{
@@ -1864,7 +1864,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					}
 				}
 
-				if (ctx.Supports(ExportSupport.ProjectionSpecialPrice))
+				if (ctx.Supports(ExportFeatures.UsesSpecialPrice))
 				{
 					exp._SpecialPrice = null;
 					exp._RegularPrice = null;	// price if a special price would not exist
@@ -2907,7 +2907,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		/// <param name="customProperties">Any data passed on IExportExecuteContext.CustomProperties</param>
 		/// <param name="queryProducts">Product query that supersede profile filtering</param>
 		/// <returns>Export execute result</returns>
-		public ExportExecuteResult Execute(string providerSystemName,
+		public ExportExecuteResult Execute(
+			string providerSystemName,
 			IComponentContext context,
 			CancellationToken cancellationToken,
 			ExportProfile profile = null,

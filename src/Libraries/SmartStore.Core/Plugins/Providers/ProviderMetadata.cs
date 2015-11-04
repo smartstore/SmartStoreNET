@@ -76,7 +76,7 @@ namespace SmartStore.Core.Plugins
 		/// <summary>
 		/// Gets or sets an array of values that reflects what export data processing is supported by a provider
 		/// </summary>
-		public ExportSupport[] ExportSupport { get; set; }
+		public ExportFeatures[] ExportSupport { get; set; }
 
 		/// <summary>
 		/// Gets or sets an array of widget system names, which depend on the current provider

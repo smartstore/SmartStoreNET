@@ -21,19 +21,20 @@ namespace SmartStore.Services.DataExchange
 		/// <returns><c>true</c> provider is valid, <c>false</c> provider is invalid.</returns>
 		public static bool IsValid(this Provider<IExportProvider> provider)
 		{
-			return (provider != null);
+			return provider != null;
 		}
 
 		/// <summary>
 		/// Returns a value indicating whether the export provider supports a projection type
 		/// </summary>
 		/// <param name="provider">Export provider</param>
-		/// <param name="type">The type to check</param>
+		/// <param name="feature">The feature to check</param>
 		/// <returns><c>true</c> provider supports type, <c>false</c> provider does not support type.</returns>
-		public static bool Supports(this Provider<IExportProvider> provider, ExportSupport type)
+		public static bool Supports(this Provider<IExportProvider> provider, ExportFeatures feature)
 		{
 			if (provider != null)
-				return provider.Metadata.ExportSupport.Contains(type);
+				return provider.Metadata.ExportSupport.Contains(feature);
+
 			return false;
 		}
 

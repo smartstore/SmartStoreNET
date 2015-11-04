@@ -88,7 +88,7 @@ namespace SmartStore.Core.Domain
 		public bool PerStore { get; set; }
 
 		/// <summary>
-		/// Identifier of an email account used to send a notification message of the completion of the export
+		/// Email Account identifier used to send a notification message an export completes
 		/// </summary>
 		public int EmailAccountId { get; set; }
 

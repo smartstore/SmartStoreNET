@@ -123,17 +123,7 @@ namespace SmartStore.Core
 		/// <returns>XML string</returns>
 		public static string Serialize<T>(T instance)
 		{
-			if (instance != null)
-			{
-				using (var writer = new StringWriter())
-				{
-					var xmlSerializer = new XmlSerializer(typeof(T));
-
-					xmlSerializer.Serialize(writer, instance);
-					return writer.ToString();
-				}
-			}
-			return null;
+			return Serialize(instance, typeof(T));
 		}
 
 		/// <summary>
@@ -144,17 +134,18 @@ namespace SmartStore.Core
 		/// <returns>XML string</returns>
 		public static string Serialize(object instance, Type type)
 		{
-			if (instance != null)
-			{
-				using (var writer = new StringWriter())
-				{
-					var xmlSerializer = new XmlSerializer(type);
+			if (instance == null)
+				return null;
 
-					xmlSerializer.Serialize(writer, instance);
-					return writer.ToString();
-				}
+			Guard.NotNull(() => type);
+
+			using (var writer = new StringWriter())
+			{
+				var xmlSerializer = new XmlSerializer(type);
+
+				xmlSerializer.Serialize(writer, instance);
+				return writer.ToString();
 			}
-			return null;
 		}
 
 		/// <summary>
@@ -165,16 +156,7 @@ namespace SmartStore.Core
 		/// <returns>Object instance</returns>
 		public static T Deserialize<T>(string xml)
 		{
-			if (xml.HasValue())
-			{
-				using (var reader = new StringReader(xml))
-				{
-					var serializer = new XmlSerializer(typeof(T));
-
-					return (T)serializer.Deserialize(reader);
-				}
-			}
-			return (T)Activator.CreateInstance(typeof(T));
+			return (T)Deserialize(xml, typeof(T));
 		}
 
 		/// <summary>
@@ -185,16 +167,16 @@ namespace SmartStore.Core
 		/// <returns>Object instance</returns>
 		public static object Deserialize(string xml, Type type)
 		{
-			if (xml.HasValue())
-			{
-				using (var reader = new StringReader(xml))
-				{
-					var serializer = new XmlSerializer(type);
+			Guard.NotNull(() => type);
 
-					return serializer.Deserialize(reader);
-				}
+			if (xml.IsEmpty())
+				return Activator.CreateInstance(type);
+
+			using (var reader = new StringReader(xml))
+			{
+				var serializer = new XmlSerializer(type);
+				return serializer.Deserialize(reader);
 			}
-			return Activator.CreateInstance(type);
 		}
 
 		#endregion

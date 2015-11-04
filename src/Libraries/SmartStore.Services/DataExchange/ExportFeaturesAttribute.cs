@@ -8,13 +8,13 @@ namespace SmartStore.Services.DataExchange
 	/// Projection type controls whether to display corresponding projection fields while editing an export profile.
 	/// </summary>
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
-	public sealed class ExportSupportingAttribute : Attribute
+	public sealed class ExportFeaturesAttribute : Attribute
 	{
-		public ExportSupportingAttribute(params ExportSupport[] types)
+		public ExportFeaturesAttribute(params ExportFeatures[] features)
 		{
-			Types = types;
+			Features = features;
 		}
 
-		public ExportSupport[] Types { get; set; }
+		public ExportFeatures[] Features { get; set; }
 	}
 }

@@ -61,62 +61,62 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// <summary>
 	/// Controls data processing and projection items supported by export provider
 	/// </summary>
-	public enum ExportSupport
+	public enum ExportFeatures
 	{
 		/// <summary>
 		/// Whether to automatically create a file based public deployment when an export profile is created
 		/// </summary>
-		CreateInitialPublicDeployment = 0,
+		CreatesInitialPublicDeployment = 0,
 
 		/// <summary>
 		/// Whether to offer option to include\exclude grouped products
 		/// </summary>
-		ProjectionNoGroupedProducts,
+		CanOmitGroupedProducts,
 
 		/// <summary>
 		/// Whether to offer option to export attribute combinations as products
 		/// </summary>
-		ProjectionAttributeCombinationAsProduct,
+		CanProjectAttributeCombinations,
 
 		/// <summary>
 		/// Whether to offer further options to manipulate the product description
 		/// </summary>
-		ProjectionDescription,
+		CanProjectDescription,
 
 		/// <summary>
 		/// Whether to offer option to enter a brand fallback
 		/// </summary>
-		ProjectionBrand,
+		OffersBrandFallback,
 
 		/// <summary>
 		/// Whether to offer option to set a picture size and to get the URL of the main image
 		/// </summary>
-		ProjectionMainPictureUrl,
+		CanIncludeMainPicture,
 
 		/// <summary>
 		/// Whether to use SKU as manufacturer part number if MPN is empty
 		/// </summary>
-		ProjectionUseOwnProductNo,
+		UsesSkuAsMpnFallback,
 		
 		/// <summary>
 		/// Whether to offer option to enter a shipping time fallback
 		/// </summary>
-		ProjectionShippingTime,
+		OffersShippingTimeFallback,
 
 		/// <summary>
 		/// Whether to offer option to enter a shipping costs fallback and a free shipping threshold
 		/// </summary>
-		ProjectionShippingCosts,
+		OffersShippingCostsFallback,
 
 		/// <summary>
 		/// Whether to get the calculated old product price
 		/// </summary>
-		ProjectionOldPrice,
+		UsesOldPrice,
 
 		/// <summary>
-		/// Whether to get the calculated special and regular (ignoring special offers) price
+		/// Whether to get the calculated special and regular price (ignoring special offers)
 		/// </summary>
-		ProjectionSpecialPrice
+		UsesSpecialPrice
 	}
 
 	/// <summary>

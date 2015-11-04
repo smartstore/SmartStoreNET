@@ -2,7 +2,7 @@
 @using SmartStore.Admin.Models.UrlRecord;
 @using Telerik.Web.Mvc.UI;
 
-@Html.ValidationSummary(true)
+@Html.ValidationSummary()
 @Html.HiddenFor(model => model.Id)
 
 <table class="adminContent">
@@ -29,8 +29,8 @@
         </td>
         <td class="adminData">
             @Html.EditorFor(model => model.Slug)
-			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = Model.EntityName, entityId = @Model.EntityId })
             @Html.ValidationMessageFor(model => model.Slug)
+			@Html.Action("NamesPerEntity", "UrlRecord", new { entityName = Model.EntityName, entityId = @Model.EntityId })
         </td>
     </tr>
 	<tr>

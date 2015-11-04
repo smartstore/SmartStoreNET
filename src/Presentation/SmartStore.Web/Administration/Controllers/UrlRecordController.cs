@@ -180,7 +180,7 @@ namespace SmartStore.Admin.Controllers
 				var urlRecords = _urlRecordService.GetAllUrlRecords(0, int.MaxValue, null, model.EntityName, model.EntityId, model.LanguageId, true);
 				if (urlRecords.Count > 0)
 				{
-					ModelState.AddModelError("", T("Admin.System.SeNames.ActiveSlugAlreadyExist"));
+					ModelState.AddModelError("IsActive", T("Admin.System.SeNames.ActiveSlugAlreadyExist"));
 				}
 			}
 

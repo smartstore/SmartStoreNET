@@ -59,8 +59,9 @@ namespace SmartStore.Services.Seo
 		/// <param name="entityName">Entity name</param>
 		/// <param name="entityId">Entity identifier</param>
 		/// <param name="isActive">Whether to load only active records</param>
+		/// <param name="languageId">Language identifier</param>
         /// <returns>Customer collection</returns>
-		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, bool? isActive);
+		IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive);
 
 		/// <summary>
 		/// Gets all URL records for the specified entity

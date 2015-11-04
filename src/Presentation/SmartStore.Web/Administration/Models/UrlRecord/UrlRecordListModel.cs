@@ -1,4 +1,5 @@
-﻿using System.Web.Mvc;
+﻿using System.Collections.Generic;
+using System.Web.Mvc;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
@@ -20,5 +21,9 @@ namespace SmartStore.Admin.Models.UrlRecord
 
 		[SmartResourceDisplayName("Admin.System.SeNames.IsActive")]
 		public bool? IsActive { get; set; }
+
+		[SmartResourceDisplayName("Admin.System.SeNames.Language")]
+		public int? LanguageId { get; set; }
+		public List<SelectListItem> AvailableLanguages { get; set; }
     }
 }

@@ -54,6 +54,14 @@
 		</tr>
 		<tr>
 			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.LanguageId)
+			</td>
+			<td class="adminData">
+				@Html.DropDownListFor(x => x.LanguageId, Model.AvailableLanguages, T("Common.Unspecified"))
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
 				&nbsp;
 			</td>
 			<td class="adminData">
@@ -204,7 +212,8 @@
 			SeName: $('#@Html.FieldIdFor(model => model.SeName)').val(),
 			EntityName: $('#@Html.FieldIdFor(model => model.EntityName)').val(),
 			EntityId: $('#@Html.FieldIdFor(model => model.EntityId)').val(),
-			IsActive: $('#@Html.FieldIdFor(model => model.IsActive)').val()
+			IsActive: $('#@Html.FieldIdFor(model => model.IsActive)').val(),
+			LanguageId: $('#@Html.FieldIdFor(model => model.LanguageId)').val()
 		};
 		e.data = searchModel;
 	}

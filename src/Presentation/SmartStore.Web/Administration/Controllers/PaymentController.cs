@@ -207,7 +207,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ValidateInput(false), ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
 		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))

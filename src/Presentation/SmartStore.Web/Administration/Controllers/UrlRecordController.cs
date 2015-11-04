@@ -79,6 +79,14 @@ namespace SmartStore.Admin.Controllers
 				EntityId = entityId
 			};
 
+			var allLanguages = _languageService.GetAllLanguages(true);
+
+			model.AvailableLanguages = allLanguages
+				.Select(x => new SelectListItem { Text = x.Name, Value = x.Id.ToString() })
+				.ToList();
+
+			model.AvailableLanguages.Insert(0, new SelectListItem { Text = T("Admin.System.SeNames.Language.Standard"), Value = "0" });
+
 			return View(model);
 		}
 
@@ -91,7 +99,8 @@ namespace SmartStore.Admin.Controllers
 			var allLanguages = _languageService.GetAllLanguages(true);
 			var defaultLanguageName = T("Admin.System.SeNames.Language.Standard");
 
-			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize, model.SeName, model.EntityName, model.EntityId, model.IsActive);
+			var urlRecords = _urlRecordService.GetAllUrlRecords(command.Page - 1, command.PageSize,
+				model.SeName, model.EntityName, model.EntityId, model.LanguageId, model.IsActive);
 
 			var slugsPerEntity = _urlRecordService.CountSlugsPerEntity(urlRecords.Select(x => x.Id).Distinct().ToArray());
 
@@ -157,6 +166,15 @@ namespace SmartStore.Admin.Controllers
 			var urlRecord = _urlRecordService.GetUrlRecordById(model.Id);
 			if (urlRecord == null)
 				return RedirectToAction("List");
+
+			if (!urlRecord.IsActive && model.IsActive)
+			{
+				var urlRecords = _urlRecordService.GetAllUrlRecords(0, int.MaxValue, null, model.EntityName, model.EntityId, model.LanguageId, true);
+				if (urlRecords.Count > 0)
+				{
+					ModelState.AddModelError("", T("Admin.System.SeNames.ActiveSlugAlreadyExist"));
+				}
+			}
 
 			if (ModelState.IsValid)
 			{

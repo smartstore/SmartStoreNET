@@ -97,7 +97,7 @@ namespace SmartStore.Services.Seo
             _cacheManager.RemoveByPattern(URLRECORD_PATTERN_KEY);
         }
 
-        public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, bool? isActive)
+        public virtual IPagedList<UrlRecord> GetAllUrlRecords(int pageIndex, int pageSize, string slug, string entityName, int? entityId, int? languageId, bool? isActive)
         {
             var query = _urlRecordRepository.Table;
 
@@ -112,6 +112,9 @@ namespace SmartStore.Services.Seo
 
 			if (isActive.HasValue)
 				query = query.Where(x => x.IsActive == isActive.Value);
+
+			if (languageId.HasValue)
+				query = query.Where(x => x.LanguageId == languageId);
 
 			query = query.OrderBy(x => x.Slug);
 

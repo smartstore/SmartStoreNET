@@ -98,6 +98,10 @@ namespace SmartStore.Data.Migrations
 				"The number of SEO names per entity.",
 				"Die Anzahl der SEO Namen pro Entität.");
 
+			builder.AddOrUpdate("Admin.System.SeNames.ActiveSlugAlreadyExist",
+				"Only one active SEO name should be set per language.",
+				"Pro Sprache darf nur ein aktiver SEO Name festgelegt werden.");
+
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
 				"This option is not taken into account in the preview.",

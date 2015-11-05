@@ -38,7 +38,7 @@ namespace SmartStore.Admin.Controllers
 	public class ExportController : AdminControllerBase
 	{
 		private readonly ICommonServices _services;
-		private readonly IExportService _exportService;
+		private readonly IExportProfileService _exportService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly ICategoryService _categoryService;
 		private readonly IManufacturerService _manufacturerService;
@@ -53,7 +53,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ExportController(
 			ICommonServices services,
-			IExportService exportService,
+			IExportProfileService exportService,
 			PluginMediator pluginMediator,
 			ICategoryService categoryService,
 			IManufacturerService manufacturerService,

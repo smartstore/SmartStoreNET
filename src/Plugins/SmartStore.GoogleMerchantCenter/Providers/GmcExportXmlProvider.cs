@@ -28,7 +28,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		ExportFeatures.OffersBrandFallback,
 		ExportFeatures.CanIncludeMainPicture,
 		ExportFeatures.UsesSpecialPrice)]
-	public class ProductExportXmlProvider : IExportProvider
+	public class GmcExportXmlProvider : IExportProvider
 	{
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
 
@@ -36,7 +36,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 
-		public ProductExportXmlProvider(
+		public GmcExportXmlProvider(
 			IGoogleFeedService googleFeedService,
 			IMeasureService measureService,
 			MeasureSettings measureSettings)

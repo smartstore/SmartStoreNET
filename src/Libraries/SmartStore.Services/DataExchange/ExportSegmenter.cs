@@ -9,7 +9,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Total number of records
 		/// </summary>
-		int RecordTotal { get; }
+		int TotalRecords { get; }
 
 		/// <summary>
 		/// Gets current data segment
@@ -78,7 +78,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Total number of records
 		/// </summary>
-		public int RecordTotal
+		public int TotalRecords
 		{
 			get
 			{

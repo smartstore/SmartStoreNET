@@ -61,6 +61,7 @@ namespace SmartStore.Utilities
                     return GetElementType(type3);
                 }
             }
+
             return type;
         }
 

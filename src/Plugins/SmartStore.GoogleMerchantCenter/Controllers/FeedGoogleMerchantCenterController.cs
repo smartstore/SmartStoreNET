@@ -18,12 +18,12 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 	{
 		private readonly IGoogleFeedService _googleFeedService;
 		private readonly AdminAreaSettings _adminAreaSettings;
-		private readonly IExportService _exportService;
+		private readonly IExportProfileService _exportService;
 
 		public FeedGoogleMerchantCenterController(
 			IGoogleFeedService googleFeedService,
 			AdminAreaSettings adminAreaSettings,
-			IExportService exportService)
+			IExportProfileService exportService)
 		{
 			_googleFeedService = googleFeedService;
 			_adminAreaSettings = adminAreaSettings;
@@ -61,7 +61,7 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 			ViewBag.DefaultAgeGroup = T("Common.Auto");		
 
 			// we do not have export profile context here, so we simply use the first profile
-			var profile = _exportService.GetExportProfilesBySystemName(ProductExportXmlProvider.SystemName).FirstOrDefault();
+			var profile = _exportService.GetExportProfilesBySystemName(GmcExportXmlProvider.SystemName).FirstOrDefault();
 			if (profile != null)
 			{
 				var config = XmlHelper.Deserialize(profile.ProviderConfigData, typeof(ProfileConfigurationModel)) as ProfileConfigurationModel;
@@ -73,12 +73,12 @@ namespace SmartStore.GoogleMerchantCenter.Controllers
 					ViewBag.DefaultMaterial = config.Material;
 					ViewBag.DefaultPattern = config.Pattern;
 
-					if (config.Gender.HasValue() && config.Gender != ProductExportXmlProvider.Unspecified)
+					if (config.Gender.HasValue() && config.Gender != GmcExportXmlProvider.Unspecified)
 					{
 						ViewBag.DefaultGender = T("Plugins.Feed.Froogle.Gender" + culture.TextInfo.ToTitleCase(config.Gender));
 					}
 
-					if (config.AgeGroup.HasValue() && config.AgeGroup != ProductExportXmlProvider.Unspecified)
+					if (config.AgeGroup.HasValue() && config.AgeGroup != GmcExportXmlProvider.Unspecified)
 					{
 						ViewBag.DefaultAgeGroup = T("Plugins.Feed.Froogle.AgeGroup" + culture.TextInfo.ToTitleCase(config.AgeGroup));
 					}

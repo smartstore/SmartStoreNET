@@ -221,7 +221,7 @@ namespace SmartStore.Web.Framework
             builder.RegisterType<ImportManager>().As<IImportManager>().InstancePerRequest();
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
 
-			builder.RegisterType<ExportService>().As<IExportService>().InstancePerRequest();
+			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
 
             builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();

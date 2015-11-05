@@ -65,7 +65,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private ExpandoHelpers _expandoHelpers;
 		private ICommonServices _services;
-		private Lazy<IExportService> _exportService;
+		private Lazy<IExportProfileService> _exportProfileService;
 		private Lazy<DataExchangeSettings> _dataExchangeSettings;
 		private Lazy<IProductService> _productService;
 		private Lazy<IPictureService> _pictureService;
@@ -101,7 +101,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private void InitDependencies(TaskExecutionContext context)
 		{
 			_services = context.Resolve<ICommonServices>();
-			_exportService = context.Resolve<Lazy<IExportService>>();
+			_exportProfileService = context.Resolve<Lazy<IExportProfileService>>();
 			_dataExchangeSettings = context.Resolve<Lazy<DataExchangeSettings>>();
 			_productService = context.Resolve<Lazy<IProductService>>();
 			_pictureService = context.Resolve<Lazy<IPictureService>>();
@@ -2546,7 +2546,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					throw new SmartException("Unsupported entity type '{0}'".FormatInvariant(ctx.Provider.Value.EntityType.ToString()));
 				}
 
-				if (segmenter.RecordTotal <= 0)
+				if (segmenter.TotalRecords <= 0)
 				{
 					ctx.Log.Information("There are no records to export");
 				}
@@ -2735,7 +2735,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						{
 							ctx.Profile.ResultInfo = XmlHelper.Serialize<ExportExecuteResult>(ctx.Result);
 
-							_exportService.Value.UpdateExportProfile(ctx.Profile);
+							_exportProfileService.Value.UpdateExportProfile(ctx.Profile);
 						}
 					}
 					catch { }
@@ -2882,12 +2882,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			InitDependencies(taskContext);
 
 			var profileId = taskContext.ScheduleTask.Alias.ToInt();
-			var profile = _exportService.Value.GetExportProfileById(profileId);
+			var profile = _exportProfileService.Value.GetExportProfileById(profileId);
 
 			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
 			var selectedEntityIds = HttpRuntime.Cache[selectedIdsCacheKey] as string;
 
-			var provider = _exportService.Value.LoadProvider(profile.ProviderSystemName);
+			var provider = _exportProfileService.Value.LoadProvider(profile.ProviderSystemName);
 
 			if (provider == null)
 				throw new SmartException(T("Admin.Common.ProviderNotLoaded", profile.ProviderSystemName.NaIfEmpty()));
@@ -2929,13 +2929,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			InitDependencies(taskContext);
 
-			var provider = _exportService.Value.LoadProvider(providerSystemName);
+			var provider = _exportProfileService.Value.LoadProvider(providerSystemName);
 
 			if (provider == null)
 				throw new SmartException(T("Admin.Common.ProviderNotLoaded", providerSystemName.NaIfEmpty()));
 
 			if (profile == null)
-				profile = _exportService.Value.CreateVolatileProfile(provider);
+				profile = _exportProfileService.Value.CreateVolatileProfile(provider);
 
 			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, selectedEntityIds);
 			ctx.QueryProducts = queryProducts;

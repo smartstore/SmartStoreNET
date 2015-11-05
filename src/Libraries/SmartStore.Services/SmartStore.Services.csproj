@@ -185,7 +185,8 @@
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />
     <Compile Include="DataExchange\ExportExecuteResult.cs" />
     <Compile Include="DataExchange\ExportXmlHelper.cs" />
-    <Compile Include="DataExchange\Internal\ExpandoEntity.cs" />
+    <Compile Include="DataExchange\IDataExporter.cs" />
+    <Compile Include="DataExchange\Internal\DynamicEntity.cs" />
     <Compile Include="DataExchange\Internal\ExpandoHelpers.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
@@ -198,9 +199,9 @@
     <Compile Include="DataExchange\ExportSegmenter.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
-    <Compile Include="DataExchange\ExportService.cs" />
+    <Compile Include="DataExchange\ExportProfileService.cs" />
     <Compile Include="DataExchange\IExportProvider.cs" />
-    <Compile Include="DataExchange\IExportService.cs" />
+    <Compile Include="DataExchange\IExportProfileService.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />

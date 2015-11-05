@@ -36,7 +36,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Dynamic;
 using System.Reflection;
-using Fasterflect;
 
 namespace SmartStore.ComponentModel
 {
@@ -59,7 +58,7 @@ namespace SmartStore.ComponentModel
     /// Dictionary: Any of the extended properties are accessible via IDictionary interface
     /// </summary>
     [Serializable]
-    public class Expando : DynamicObject, IDynamicMetaObjectProvider
+    public class Expando : DynamicObject
     {
         /// <summary>
         /// Instance of object passed in
@@ -71,7 +70,7 @@ namespace SmartStore.ComponentModel
         /// </summary>
         private Type _instanceType;
 
-        private IList<PropertyInfo> _instancePropertyInfo;
+        private IList<PropertyInfo> _instancePropertyInfos;
 
         /// <summary>
         /// String Dictionary that contains the extra dynamic values
@@ -104,7 +103,6 @@ namespace SmartStore.ComponentModel
             Initialize(instance);
         }
         
-
         protected virtual void Initialize(object instance)
         {
             _instance = instance;
@@ -117,13 +115,13 @@ namespace SmartStore.ComponentModel
 			get { return _instance; }
 		}
 
-        IList<PropertyInfo> InstancePropertyInfo
+        IList<PropertyInfo> InstancePropertyInfos
         {
             get
             {
-                if (_instancePropertyInfo == null && _instance != null)
-                    _instancePropertyInfo = _instance.GetType().Properties(Flags.InstancePublicDeclaredOnly);
-                return _instancePropertyInfo;
+                if (_instancePropertyInfos == null && _instance != null)
+                    _instancePropertyInfos = Fasterflect.PropertyExtensions.Properties(_instance.GetType(), Fasterflect.Flags.InstancePublicDeclaredOnly);
+                return _instancePropertyInfos;		
             }
         }
 
@@ -143,68 +141,76 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         public override bool TryGetMember(GetMemberBinder binder, out object result)
         {
-            result = null;
-
-            // first check the Properties collection for member
-            if (Properties.Keys.Contains(binder.Name))
-            {
-                result = Properties[binder.Name];
-                return true;
-            }
-
-
-            // Next check for Public properties via Reflection
-            if (_instance != null)
-            {
-                try
-                {
-                    return GetProperty(_instance, binder.Name, out result);
-                }
-                catch { }
-            }
-
-            // failed to retrieve a property
-            result = null;
-            return false;
+			return TryGetMemberCore(binder.Name, out result);
         }
 
+		protected virtual bool TryGetMemberCore(string name, out object result)
+		{
+			result = null;
 
-        /// <summary>
-        /// Property setter implementation tries to retrieve value from instance 
-        /// first then into this object
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public override bool TrySetMember(SetMemberBinder binder, object value)
+			// first check the Properties collection for member
+			if (Properties.Keys.Contains(name))
+			{
+				result = Properties[name];
+				return true;
+			}
+
+			// Next check for public properties via Reflection
+			if (_instance != null)
+			{
+				try
+				{
+					return GetProperty(_instance, name, out result);
+				}
+				catch { }
+			}
+
+			// failed to retrieve a property
+			result = null;
+			return false;
+		}
+
+
+		/// <summary>
+		/// Property setter implementation tries to retrieve value from instance 
+		/// first then into this object
+		/// </summary>
+		/// <param name="binder"></param>
+		/// <param name="value"></param>
+		/// <returns></returns>
+		public override bool TrySetMember(SetMemberBinder binder, object value)
         {
-
-            // first check to see if there's a native property to set
-            if (_instance != null)
-            {
-                try
-                {
-                    bool result = SetProperty(_instance, binder.Name, value);
-                    if (result)
-                        return true;
-                }
-                catch { }
-            }
-
-            // no match - set or add to dictionary
-            Properties[binder.Name] = value;
-            return true;
+			return TrySetMemberCore(binder.Name, value);
         }
 
-        /// <summary>
-        /// Dynamic invocation method. Currently allows only for Reflection based
-        /// operation (no ability to add methods dynamically).
-        /// </summary>
-        /// <param name="binder"></param>
-        /// <param name="args"></param>
-        /// <param name="result"></param>
-        /// <returns></returns>
-        public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
+		protected virtual bool TrySetMemberCore(string name, object value)
+		{
+			// first check to see if there's a native property to set
+			if (_instance != null)
+			{
+				try
+				{
+					bool result = SetProperty(_instance, name, value);
+					if (result)
+						return true;
+				}
+				catch { }
+			}
+
+			// no match - set or add to dictionary
+			Properties[name] = value;
+			return true;
+		}
+
+		/// <summary>
+		/// Dynamic invocation method. Currently allows only for Reflection based
+		/// operation (no ability to add methods dynamically).
+		/// </summary>
+		/// <param name="binder"></param>
+		/// <param name="args"></param>
+		/// <param name="result"></param>
+		/// <returns></returns>
+		public override bool TryInvokeMember(InvokeMemberBinder binder, object[] args, out object result)
         {
             if (_instance != null)
             {
@@ -231,19 +237,26 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-            if (instance == null)
-                instance = this;
-
-            var pi = _instanceType.Property(name, Flags.InstancePublic);
+			var pi = GetPropertyInfo(name);
             if (pi != null)
             {
-                result = instance.GetPropertyValue(pi.Name);
+                result = Fasterflect.PropertyExtensions.GetPropertyValue(instance ?? this, pi.Name);
                 return true;
             }
 
             result = null;
             return false;
         }
+
+		/// <summary>
+		/// Gets a <c>PropertyInfo</c> instance from the wrapped object
+		/// </summary>
+		/// <param name="name">Property name</param>
+		protected PropertyInfo GetPropertyInfo(string name)
+		{
+			var pi = Fasterflect.PropertyExtensions.Property(_instanceType, name, Fasterflect.Flags.InstancePublic);
+			return pi;
+		}
 
         /// <summary>
         /// Reflection helper method to set a property value
@@ -254,13 +267,10 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool SetProperty(object instance, string name, object value)
         {
-            if (instance == null)
-                instance = this;
-
-            var pi = _instanceType.Property(name, Flags.InstancePublic);
+            var pi = GetPropertyInfo(name);
             if (pi != null)
             {
-                instance.SetPropertyValue(pi.Name, value);
+				Fasterflect.PropertyInfoExtensions.Set(pi, instance ?? this, value);
                 return true;
             }
             return false;
@@ -276,16 +286,12 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool InvokeMethod(object instance, string name, object[] args, out object result)
         {
-            if (instance == null)
-                instance = this;
-
             // Look at the instanceType
-            var mi = _instanceType.Method(name, Flags.InstancePublic);
-
+            var mi = Fasterflect.MethodExtensions.Method(_instanceType, name, Fasterflect.Flags.InstancePublic);
             if (mi != null)
             {
-                result = _instance.CallMethod(mi.Name, args);
-                return true;
+                result = Fasterflect.MethodInfoExtensions.Call(mi, instance ?? this, args);
+				return true;
             }
 
             result = null;
@@ -293,73 +299,54 @@ namespace SmartStore.ComponentModel
         }
 
 
-        /// <summary>
-        /// Convenience method that provides a string Indexer 
-        /// to the Properties collection AND the strongly typed
-        /// properties of the object by name.
-        /// 
-        /// // dynamic
-        /// exp["Address"] = "112 nowhere lane"; 
-        /// // strong
-        /// var name = exp["StronglyTypedProperty"] as string; 
-        /// </summary>
-        /// <remarks>
-        /// The getter checks the Properties dictionary first
-        /// then looks in PropertyInfo for properties.
-        /// The setter checks the instance properties before
-        /// checking the Properties dictionary.
-        /// </remarks>
-        /// <param name="key"></param>
-        /// 
-        /// <returns></returns>
-        public object this[string key]
-        {
-            get
-            {
-                try
-                {
-                    // try to get from properties collection first
-                    return Properties[key];
-                }
-                catch (KeyNotFoundException)
-                {
-                    // try reflection on instanceType
-                    object result = null;
-                    if (GetProperty(_instance, key, out result))
-                        return result;
+		/// <summary>
+		/// Convenience method that provides a string Indexer 
+		/// to the Properties collection AND the strongly typed
+		/// properties of the object by name.
+		/// 
+		/// // dynamic
+		/// exp["Address"] = "112 nowhere lane"; 
+		/// // strong
+		/// var name = exp["StronglyTypedProperty"] as string; 
+		/// </summary>
+		/// <remarks>
+		/// The getter checks the Properties dictionary first
+		/// then looks in PropertyInfo for properties.
+		/// The setter checks the instance properties before
+		/// checking the Properties dictionary.
+		/// </remarks>
+		/// <param name="key"></param>
+		/// 
+		/// <returns></returns>
+		public object this[string key]
+		{
+			get
+			{
+				object result = null;
+				if (TryGetMemberCore(key, out result))
+				{
+					return result;
+				}
 
-                    // no doesn't exist
-                    throw;
-                }
-            }
-            set
-            {
-                if (Properties.ContainsKey(key))
-                {
-                    Properties[key] = value;
-                    return;
-                }
-
-                // check instance for existance of type first
-                var pi = _instanceType.Property(key, Flags.Public);
-                if (pi != null)
-                    SetProperty(_instance, key, value);
-                else
-                    Properties[key] = value;
-            }
-        }
+				throw new KeyNotFoundException();
+			}
+			set
+			{
+				TrySetMemberCore(key, value);
+			}
+		}
 
 
-        /// <summary>
-        /// Returns and the properties of 
-        /// </summary>
-        /// <param name="includeProperties"></param>
-        /// <returns></returns>
-        public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
+		/// <summary>
+		/// Returns all properties 
+		/// </summary>
+		/// <param name="includeProperties"></param>
+		/// <returns></returns>
+		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
             if (includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in this.InstancePropertyInfo)
+                foreach (var prop in this.InstancePropertyInfos)
                     yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance, null));
             }
 
@@ -388,13 +375,13 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         public bool Contains(string propertyName, bool includeInstanceProperties = false)
         {
-            bool res = Properties.ContainsKey(propertyName);
-            if (res)
+            bool contains = Properties.ContainsKey(propertyName);
+            if (contains)
                 return true;
 
             if (includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in this.InstancePropertyInfo)
+                foreach (var prop in this.InstancePropertyInfos)
                 {
                     if (prop.Name == propertyName)
                         return true;

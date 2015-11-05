@@ -42,7 +42,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (currency == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(currency);
+			dynamic expando = new DynamicEntity(currency);
 			expando.Name = currency.GetLocalized(x => x.Name, _ctx.Projection.LanguageId ?? 0, true, false);
 			expando._Localized = GetLocalized(currency, x => x.Name);
 
@@ -54,7 +54,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (language == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(language);
+			dynamic expando = new DynamicEntity(language);
 			return expando;
 		}
 
@@ -63,7 +63,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (country == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(country);
+			dynamic expando = new DynamicEntity(country);
 			expando.Name = country.GetLocalized(x => x.Name, _ctx.Projection.LanguageId ?? 0, true, false);
 			expando._Localized = GetLocalized(country, x => x.Name);
 
@@ -75,12 +75,12 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (address == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(address);
+			dynamic expando = new DynamicEntity(address);
 			expando.Country = ToExpando(address.Country);
 
 			if (address.StateProvinceId.GetValueOrDefault() > 0)
 			{
-				dynamic sp = new ExpandoEntity(address.StateProvince);
+				dynamic sp = new DynamicEntity(address.StateProvince);
 				sp.Name = address.StateProvince.GetLocalized(x => x.Name, _ctx.Projection.LanguageId ?? 0, true, false);
 				sp._Localized = GetLocalized(address.StateProvince, x => x.Name);
 				expando.StateProvince = sp;
@@ -98,7 +98,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (points == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(points);
+			dynamic expando = new DynamicEntity(points);
 			return expando;
 		}
 
@@ -107,7 +107,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (customer == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(customer);
+			dynamic expando = new DynamicEntity(customer);
 
 			expando.BillingAddress = null;
 			expando.ShippingAddress = null;
@@ -128,7 +128,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (store == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(store);
+			dynamic expando = new DynamicEntity(store);
 			expando.PrimaryStoreCurrency = ToExpando(store.PrimaryStoreCurrency);
 			expando.PrimaryExchangeRateCurrency = ToExpando(store.PrimaryExchangeRateCurrency);
 
@@ -140,7 +140,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (deliveryTime == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(deliveryTime);
+			dynamic expando = new DynamicEntity(deliveryTime);
 			expando.Name = deliveryTime.GetLocalized(x => x.Name, _ctx.Projection.LanguageId ?? 0, true, false);
 			expando._Localized = GetLocalized(deliveryTime, x => x.Name);
 
@@ -152,7 +152,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (quantityUnit == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(quantityUnit);
+			dynamic expando = new DynamicEntity(quantityUnit);
 			expando.Name = quantityUnit.GetLocalized(x => x.Name, _ctx.Projection.LanguageId ?? 0, true, false);
 			expando.Description = quantityUnit.GetLocalized(x => x.Description, _ctx.Projection.LanguageId ?? 0, true, false);
 			expando._Localized = GetLocalized(quantityUnit,
@@ -167,7 +167,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (picture == null)
 				return null;
 
-			dynamic expando = new ExpandoEntity(picture);
+			dynamic expando = new DynamicEntity(picture);
 
 			//// TODO!!!!!
 			//expando._ThumbImageUrl = _pictureService.Value.GetPictureUrl(picture, thumbPictureSize, false, _ctx.Store.Url);

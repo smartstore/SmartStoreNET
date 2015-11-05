@@ -45,15 +45,8 @@ namespace SmartStore
             {
                 return true;
             }
+
             return s_predefinedTypes.Any(t => t == type);
-            //foreach (Type type2 in s_predefinedTypes)
-            //{
-            //    if (type2 == type)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
         }
 
         public static bool IsStruct(this Type type)
@@ -75,15 +68,8 @@ namespace SmartStore
             {
                 return false;
             }
+
             return s_predefinedGenericTypes.Any(t => t == type);
-            //foreach (Type type2 in s_predefinedGenericTypes)
-            //{
-            //    if (type2 == type)
-            //    {
-            //        return true;
-            //    }
-            //}
-            //return false;
         }
 
         public static bool IsPredefinedType(this Type type)

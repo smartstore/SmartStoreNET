@@ -5,7 +5,7 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
 {
-	public interface IExportService
+	public interface IExportProfileService
 	{
 		/// <summary>
 		/// Creates a volatile export profile

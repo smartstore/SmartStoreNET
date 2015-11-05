@@ -42,6 +42,7 @@ using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
+using SmartStore.Core.Domain;
 
 namespace SmartStore.Web.Controllers
 {
@@ -57,10 +58,12 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IForumService> _forumservice;
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
         private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
+		private readonly Lazy<ICompareProductsService> _compareProductsService;
 
 		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
-        private readonly CustomerSettings _customerSettings;
+		private readonly StoreInformationSettings _storeInfoSettings;
+		private readonly CustomerSettings _customerSettings;
         private readonly TaxSettings _taxSettings;
         private readonly CatalogSettings _catalogSettings;
         private readonly ThemeSettings _themeSettings;
@@ -70,8 +73,8 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SecuritySettings> _securitySettings;
-
-        private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
+		
         private readonly IPriceFormatter _priceFormatter;
 		private readonly IPageAssetsBuilder _pageAssetsBuilder;
 		private readonly Lazy<IPictureService> _pictureService;
@@ -90,7 +93,9 @@ namespace SmartStore.Web.Controllers
 			Lazy<IForumService> forumService,
             Lazy<IGenericAttributeService> genericAttributeService, 
 			Lazy<IMobileDeviceHelper> mobileDeviceHelper,
-			CustomerSettings customerSettings, 
+			Lazy<ICompareProductsService> compareProductsService,
+			StoreInformationSettings storeInfoSettings,
+            CustomerSettings customerSettings, 
             TaxSettings taxSettings, 
 			CatalogSettings catalogSettings,
             EmailAccountSettings emailAccountSettings,
@@ -115,8 +120,10 @@ namespace SmartStore.Web.Controllers
             this._forumservice = forumService;
             this._genericAttributeService = genericAttributeService;
             this._mobileDeviceHelper = mobileDeviceHelper;
-			
-            this._customerSettings = customerSettings;
+			this._compareProductsService = compareProductsService;
+
+			this._storeInfoSettings = storeInfoSettings;
+			this._customerSettings = customerSettings;
             this._taxSettings = taxSettings;
             this._catalogSettings = catalogSettings;
             this._commonSettings = commonSettings;
@@ -506,7 +513,18 @@ namespace SmartStore.Web.Controllers
         {
 			var customer = _services.WorkContext.CurrentCustomer;
 
-            var unreadMessageCount = GetUnreadPrivateMessages();
+			var isAdmin = customer.IsAdmin();
+			var isRegistered = isAdmin || customer.IsRegistered();
+
+			if (_storeInfoSettings.StoreClosed)
+			{
+				if (!isAdmin || !_storeInfoSettings.StoreClosedAllowForAdmins)
+				{
+					return Content("");
+				}
+			}
+
+			var unreadMessageCount = GetUnreadPrivateMessages();
             var unreadMessage = string.Empty;
             var alertMessage = string.Empty;
             if (unreadMessageCount > 0)
@@ -542,8 +560,8 @@ namespace SmartStore.Web.Controllers
             }
             var model = new ShopBarModel
             {
-                IsAuthenticated = customer.IsRegistered(),
-                CustomerEmailUsername = customer.IsRegistered() ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
+                IsAuthenticated = isRegistered,
+                CustomerEmailUsername = isRegistered ? (_customerSettings.UsernamesEnabled ? customer.Username : customer.Email) : "",
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
 				ShoppingCartEnabled = _services.Permissions.Authorize(StandardPermissionProvider.EnableShoppingCart),
@@ -555,7 +573,7 @@ namespace SmartStore.Web.Controllers
                 CompareProductsEnabled = _catalogSettings.CompareProductsEnabled            
             };
 
-            if (model.ShoppingCartEnabled || model.WishlistEnabled)
+			if (model.ShoppingCartEnabled || model.WishlistEnabled)
             {
 				if (model.ShoppingCartEnabled)
 					model.ShoppingCartItems = cart.GetTotalProducts();
@@ -566,7 +584,7 @@ namespace SmartStore.Web.Controllers
 
             if (_catalogSettings.CompareProductsEnabled)
             {
-                model.CompareItems = EngineContext.Current.Resolve<ICompareProductsService>().GetComparedProductsCount();
+                model.CompareItems = _compareProductsService.Value.GetComparedProductsCount();
             }
 
             return PartialView(model);

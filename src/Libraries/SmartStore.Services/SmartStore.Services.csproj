@@ -185,6 +185,8 @@
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />
     <Compile Include="DataExchange\ExportExecuteResult.cs" />
     <Compile Include="DataExchange\ExportXmlHelper.cs" />
+    <Compile Include="DataExchange\Internal\ExpandoEntity.cs" />
+    <Compile Include="DataExchange\Internal\ExpandoHelpers.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
     <Compile Include="DataExchange\ExportTask\ExportDataContextOrder.cs" />
@@ -572,6 +574,7 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

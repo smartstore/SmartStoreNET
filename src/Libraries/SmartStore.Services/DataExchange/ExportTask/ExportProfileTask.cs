@@ -52,6 +52,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Localization;
+using SmartStore.Services.DataExchange.Internal;
 
 // note: namespace persisted in ScheduleTask.Type
 namespace SmartStore.Services.DataExchange.ExportTask
@@ -62,6 +63,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Dependencies
 
+		private ExpandoHelpers _expandoHelpers;
 		private ICommonServices _services;
 		private Lazy<IExportService> _exportService;
 		private Lazy<DataExchangeSettings> _dataExchangeSettings;

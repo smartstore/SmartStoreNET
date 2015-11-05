@@ -112,6 +112,11 @@ namespace SmartStore.ComponentModel
                 _instanceType = instance.GetType();
         }
 
+		protected object WrappedObject
+		{
+			get { return _instance; }
+		}
+
         IList<PropertyInfo> InstancePropertyInfo
         {
             get

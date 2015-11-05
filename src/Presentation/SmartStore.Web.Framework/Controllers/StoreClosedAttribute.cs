@@ -7,6 +7,8 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Customers;
+using SmartStore.Services.Localization;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Controllers
 {
@@ -20,7 +22,8 @@ namespace SmartStore.Web.Framework.Controllers
 			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
 		};
 
-
+		public ILocalizationService Localizer { get; set; }
+		public Lazy<INotifier> Notifier { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
 		
@@ -60,8 +63,21 @@ namespace SmartStore.Web.Framework.Controllers
                 }
                 else
                 {
-                    var storeClosedUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("StoreClosed");
-                    filterContext.Result = new RedirectResult(storeClosedUrl);
+					if (request.IsAjaxRequest())
+					{
+						var storeClosedMessage = "{0} {1}".FormatCurrentUI(
+							Localizer.GetResource("StoreClosed", 0, false),
+							Localizer.GetResource("StoreClosed.Hint", 0, false));
+						Notifier.Value.Error(storeClosedMessage);
+
+						//filterContext.Result = new ContentResult { Content = "", ContentType = "text/html" };
+					}
+					else
+					{
+						var storeClosedUrl = new UrlHelper(filterContext.RequestContext).RouteUrl("StoreClosed");
+						filterContext.Result = new RedirectResult(storeClosedUrl);
+					}
+
                 }
             }
         }

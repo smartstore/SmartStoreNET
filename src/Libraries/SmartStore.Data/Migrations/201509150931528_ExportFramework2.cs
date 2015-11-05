@@ -227,6 +227,15 @@ namespace SmartStore.Data.Migrations
 
 			builder.Delete("Plugins.Widgets.OpenTrans.IsLexwareCompatibe");
 			builder.Delete("Admin.System.Maintenance.DeleteExportedFolders.TotalDeleted");
+
+			// Common
+			builder.AddOrUpdate("StoreClosed",
+				"We'll be back.",
+				"Wir sind bald wieder da.");
+
+			builder.AddOrUpdate("StoreClosed.Hint",
+				"We're busy updating our online store for you and will be back soon.",
+				"Wir aktualisieren gerade das Angebot in unserem Online-Shop. Die Seite ist demnächst wieder verfügbar.");
 		}
     }
 }

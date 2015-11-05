@@ -2119,84 +2119,39 @@ namespace SmartStore.Admin.Controllers
 
             var order = _orderService.GetOrderById(orderId);
             if (order == null)
-                //No order found with the specified id
                 return RedirectToAction("List");
 
-            Shipment shipment = null;
+			var quantities = new Dictionary<int, int>();
+			var trackingNumber = form["TrackingNumber"];
 
-            decimal? totalWeight = null;
-            foreach (var orderItem in order.OrderItems)
-            {
-                //is shippable
-                if (!orderItem.Product.IsShipEnabled)
-                    continue;
+			foreach (var orderItem in order.OrderItems)
+			{
+				foreach (string formKey in form.AllKeys)
+				{
+					if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
+					{
+						quantities.Add(orderItem.Id, form[formKey].ToInt());
+						break;
+					}
+				}
+			}
 
-                //ensure that this product can be shipped (have at least one item to ship)
-                var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
-                if (maxQtyToAdd <= 0)
-                    continue;
+			var shipment = _orderProcessingService.AddShipment(order, trackingNumber, quantities);
 
-                int qtyToAdd = 0; //parse quantity
-                foreach (string formKey in form.AllKeys)
-                    if (formKey.Equals(string.Format("qtyToAdd{0}", orderItem.Id), StringComparison.InvariantCultureIgnoreCase))
-                    {
-                        int.TryParse(form[formKey], out qtyToAdd);
-                        break;
-                    }
+			if (shipment != null)
+			{
+				NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
 
-                //validate quantity
-                if (qtyToAdd <= 0)
-                    continue;
-                if (qtyToAdd > maxQtyToAdd)
-                    qtyToAdd = maxQtyToAdd;
-
-                //ok. we have at least one item. let's create a shipment (if it does not exist)
-
-                var orderItemTotalWeight = orderItem.ItemWeight.HasValue ? orderItem.ItemWeight * qtyToAdd : null;
-                if (orderItemTotalWeight.HasValue)
-                {
-                    if (!totalWeight.HasValue)
-                        totalWeight = 0;
-                    totalWeight += orderItemTotalWeight.Value;
-                }
-
-                if (shipment == null)
-                {
-                    shipment = new Shipment()
-                    {
-                        OrderId = order.Id,
-                        TrackingNumber = form["TrackingNumber"],
-                        TotalWeight = null,
-                        ShippedDateUtc = null,
-                        DeliveryDateUtc = null,
-                        CreatedOnUtc = DateTime.UtcNow,
-                    };
-                }
-                //create a shipment item
-                var shipmentItem = new ShipmentItem()
-                {
-                    OrderItemId = orderItem.Id,
-                    Quantity = qtyToAdd,
-                };
-                shipment.ShipmentItems.Add(shipmentItem);
-            }
-
-            //if we have at least one item in the shipment, then save it
-            if (shipment != null && shipment.ShipmentItems.Count > 0)
-            {
-                shipment.TotalWeight = totalWeight;
-                _shipmentService.InsertShipment(shipment);
-
-                NotifySuccess(_localizationService.GetResource("Admin.Orders.Shipments.Added"));
-                return continueEditing
-                           ? RedirectToAction("ShipmentDetails", new {id = shipment.Id})
-                           : RedirectToAction("Edit", new { id = orderId });
-            }
-            else
-            {
+				return continueEditing
+				   ? RedirectToAction("ShipmentDetails", new { id = shipment.Id })
+				   : RedirectToAction("Edit", new { id = orderId });
+			}
+			else
+			{
 				NotifyError(_localizationService.GetResource("Admin.Orders.Shipments.NoProductsSelected"));
+
 				return RedirectToAction("AddShipment", new { orderId = orderId });
-            }
+			}
         }
 
         public ActionResult ShipmentDetails(int id)

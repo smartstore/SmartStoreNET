@@ -3,6 +3,7 @@
 ##Web Api 2.2.0.4
 ###New Features
 * Added OData endpoint for shipment items
+* Added OData action to add a shipment to an order and to set it as shipped
 
 ##Web Api 2.2.0.3
 ###New Features

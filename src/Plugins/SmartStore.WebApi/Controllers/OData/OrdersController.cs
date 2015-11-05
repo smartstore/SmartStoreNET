@@ -168,5 +168,30 @@ namespace SmartStore.WebApi.Controllers.OData
 			});
 			return entity;
 		}
+
+		[HttpPost]
+		public SingleResult<Order> AddShipment(int key, ODataActionParameters parameters)
+		{
+			var result = GetSingleResult(key);
+			var order = GetExpandedEntity(key, result, "OrderItems, OrderItems.Product, Shipments, Shipments.ShipmentItems");
+
+			this.ProcessEntity(() =>
+			{
+				if (order.HasItemsToAddToShipment())
+				{
+					var trackingNumber = parameters.GetValue<string, string>("TrackingNumber");
+
+					var shipment = _orderProcessingService.Value.AddShipment(order, trackingNumber, null);
+
+					if (shipment != null)
+					{
+						if (parameters.ContainsKey("SetAsShipped") && parameters.GetValue<string, bool>("SetAsShipped"))
+							_orderProcessingService.Value.Ship(shipment, true);
+					}
+				}
+				return null;
+			});
+			return result;
+		}
 	}
 }

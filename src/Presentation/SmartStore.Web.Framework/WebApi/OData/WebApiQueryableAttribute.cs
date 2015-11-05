@@ -17,11 +17,16 @@ namespace SmartStore.Web.Framework.WebApi.OData
 
 			try
 			{
-				var responseContent = actionExecutedContext.Response.Content as ObjectContent;
-				bool singleResult = (responseContent != null && responseContent.Value is SingleResult);
+				var content = actionExecutedContext.Response.Content as ObjectContent;
 
-				if (singleResult)
-					return false;	// 'true' would result in a 500 'internal server error'
+				if (content != null)
+				{
+					if (content.Value is HttpError)
+						return false;
+
+					if (content.Value is SingleResult)
+						return false;	// 'true' would result in a 500 'internal server error'
+				}
 
 				var query = actionExecutedContext.Request.RequestUri.Query;
 

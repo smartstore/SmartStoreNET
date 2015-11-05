@@ -2736,6 +2736,78 @@ namespace SmartStore.Services.Orders
             return true;
         }
 
+		public virtual Shipment AddShipment(Order order, string trackingNumber, Dictionary<int, int> quantities)
+		{
+			Guard.ArgumentNotNull(() => order);
+
+			Shipment shipment = null;
+			decimal? totalWeight = null;
+
+			foreach (var orderItem in order.OrderItems)
+			{
+				if (!orderItem.Product.IsShipEnabled)
+					continue;
+
+				//ensure that this product can be shipped (have at least one item to ship)
+				var maxQtyToAdd = orderItem.GetTotalNumberOfItemsCanBeAddedToShipment();
+				if (maxQtyToAdd <= 0)
+					continue;
+
+				var qtyToAdd = 0;
+
+				if (quantities != null && quantities.ContainsKey(orderItem.Id))
+					qtyToAdd = quantities[orderItem.Id];
+				else if (quantities == null)
+					qtyToAdd = maxQtyToAdd;
+
+				if (qtyToAdd <= 0)
+					continue;
+
+				if (qtyToAdd > maxQtyToAdd)
+					qtyToAdd = maxQtyToAdd;
+
+				var orderItemTotalWeight = orderItem.ItemWeight.HasValue ? orderItem.ItemWeight * qtyToAdd : null;
+				if (orderItemTotalWeight.HasValue)
+				{
+					if (!totalWeight.HasValue)
+						totalWeight = 0;
+					totalWeight += orderItemTotalWeight.Value;
+				}
+
+				if (shipment == null)
+				{
+					shipment = new Shipment
+					{
+						OrderId = order.Id,
+						Order = order,		// otherwise order updated event would not be fired during InsertShipment
+						TrackingNumber = trackingNumber,
+						TotalWeight = null,
+						ShippedDateUtc = null,
+						DeliveryDateUtc = null,
+						CreatedOnUtc = DateTime.UtcNow,
+					};
+				}
+
+				var shipmentItem = new ShipmentItem
+				{
+					OrderItemId = orderItem.Id,
+					Quantity = qtyToAdd
+				};
+
+				shipment.ShipmentItems.Add(shipmentItem);
+			}
+
+			if (shipment != null && shipment.ShipmentItems.Count > 0)
+			{
+				shipment.TotalWeight = totalWeight;
+				_shipmentService.InsertShipment(shipment);
+
+				return shipment;
+			}
+
+			return null;
+		}
+
         #endregion
     }
 }

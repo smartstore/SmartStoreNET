@@ -35,6 +35,12 @@ namespace SmartStore.WebApi
 
 			config.Action("Cancel")
 				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+
+			var addShipment = config.Action("AddShipment")
+				.ReturnsFromEntitySet<Order>(WebApiOdataEntitySet.Orders);
+
+			addShipment.Parameter<string>("TrackingNumber");
+			addShipment.Parameter<bool?>("SetAsShipped");
 		}
 
 		private void AddActionsToProduct(EntityTypeConfiguration<Product> config)

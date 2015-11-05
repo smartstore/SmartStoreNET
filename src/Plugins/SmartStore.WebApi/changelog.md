@@ -4,6 +4,8 @@
 ###New Features
 * Added OData endpoint for shipment items
 * Added OData action to add a shipment to an order and to set it as shipped
+###Improvements
+* OData actions should return SingleResult<TEntity> (instead of entity instance) to let expand option be recognized
 
 ##Web Api 2.2.0.3
 ###New Features

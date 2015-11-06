@@ -24,9 +24,17 @@ namespace SmartStore.Services.DataExchange.Internal
 			base.Properties["_Entity"] = entity;
 		}
 
-		public void Merge()
+		public void Merge(string name, object value)
 		{
+			Properties[name] = value;
+		}
 
+		public void MergeRange(IDictionary<string, object> other)
+		{
+			foreach (var kvp in other)
+			{
+				Properties[kvp.Key] = kvp.Value;
+			}
 		}
 
 		protected override bool TrySetMemberCore(string name, object value)

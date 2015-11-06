@@ -12,7 +12,7 @@ namespace SmartStore
     public static class DictionaryExtensions
     {
 
-        public static void AddRange<T, U>(this IDictionary<T, U> values, IEnumerable<KeyValuePair<T, U>> other)
+        public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> values, IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
             foreach (var kvp in other)
             {
@@ -37,13 +37,13 @@ namespace SmartStore
             instance.Merge(new RouteValueDictionary(values), replaceExisting);
         }
 
-        public static void Merge<T, U>(this IDictionary<T, U> instance, IDictionary<T, U> from, bool replaceExisting = true)
+        public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> instance, IDictionary<TKey, TValue> from, bool replaceExisting = true)
         {
-            foreach (KeyValuePair<T, U> keyValuePair in from)
+            foreach (var kvp in from)
             {
-                if (replaceExisting || !instance.ContainsKey(keyValuePair.Key))
+                if (replaceExisting || !instance.ContainsKey(kvp.Key))
                 {
-                    instance[keyValuePair.Key] = keyValuePair.Value;
+                    instance[kvp.Key] = kvp.Value;
                 }
             }
         }
@@ -60,28 +60,31 @@ namespace SmartStore
 
         public static string ToAttributeString(this IDictionary<string, object> instance)
         {
-            StringBuilder builder = new StringBuilder();
+            var sb = new StringBuilder();
             foreach (KeyValuePair<string, object> pair in instance)
             {
                 object[] args = new object[] { HttpUtility.HtmlAttributeEncode(pair.Key), HttpUtility.HtmlAttributeEncode(pair.Value.ToString()) };
-                builder.Append(" {0}=\"{1}\"".FormatWith(args));
+                sb.Append(" {0}=\"{1}\"".FormatWith(args));
             }
-            return builder.ToString();
+            return sb.ToString();
         }
 
-		public static T GetValue<K, T>(this IDictionary<K, object> instance, K key)
+		public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, object> instance, TKey key)
 		{
 			try
 			{
 				object val;
 				if (instance != null && instance.TryGetValue(key, out val) && val != null)
-					return (T)Convert.ChangeType(val, typeof(T), CultureInfo.InvariantCulture);
+				{
+					return (TValue)Convert.ChangeType(val, typeof(TValue), CultureInfo.InvariantCulture);
+				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				exc.Dump();
+				ex.Dump();
 			}
-			return default(T);
+
+			return default(TValue);
 		}
 
         public static ExpandoObject ToExpandoObject(this IDictionary<string, object> source, bool castIfPossible = false)

@@ -1824,9 +1824,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				{
 					// TODO: Das ist nocht nicht zu Ende gedacht, wegen MergeWithCombination etc.
 					var clone = new ExpandoObject();
-					clone.Merge((IDictionary<string, object>)expando, true);
+					clone.Merge((IDictionary<string, object>)expando);
 					matterOfDataMerging(clone, combination);
 					result.Add(clone);
+
+					// TODO: das hier ist besser. Aber ein Product-Klon muss immer noch erstellt werden.
+					//var clone = new DynamicEntity((DynamicEntity)expando);
+					//matterOfDataMerging(clone, combination);
+					//result.Add(clone);
 
 					//var expandoCombination = ((IDictionary<string, object>)expando).ToExpandoObject();  // clone
 					//matterOfDataMerging(expandoCombination, combination);

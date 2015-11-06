@@ -333,12 +333,18 @@ namespace SmartStore.Data
 			var props = new Dictionary<string, object>();
 
 			var entry = this.Entry(entity);
-			var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-										where entry.Property(p).IsModified
-										select p;
-			foreach (var name in modifiedPropertyNames)
+
+			// be aware of the entity state. you cannot get modified properties for detached entities.
+			if (entry.State != System.Data.Entity.EntityState.Detached)
 			{
-				props.Add(name, entry.Property(name).OriginalValue);
+				var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
+											where entry.Property(p).IsModified
+											select p;
+
+				foreach (var name in modifiedPropertyNames)
+				{
+					props.Add(name, entry.Property(name).OriginalValue);
+				}
 			}
 
 			return props;
@@ -381,7 +387,7 @@ namespace SmartStore.Data
 			return result;
 		}
 
-        // codehint: sm-add (required for UoW implementation)
+        // required for UoW implementation
         public string Alias { get; internal set; }
 
         // performance on bulk inserts

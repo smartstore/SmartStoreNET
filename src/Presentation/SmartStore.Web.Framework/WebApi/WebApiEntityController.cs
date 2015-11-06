@@ -258,6 +258,23 @@ namespace SmartStore.Web.Framework.WebApi
 			return entity;
 		}
 
+		protected internal virtual TEntity GetExpandedEntity(int key, SingleResult<TEntity> result, string path)
+		{
+			var query = result.Queryable;
+
+			foreach (var property in path.SplitSafe(","))
+			{
+				query = query.Expand(property.Trim());
+			}
+
+			var entity = query.FirstOrDefault(x => x.Id == key);
+
+			if (entity == null)
+				throw ExceptionEntityNotFound(key);
+
+			return entity;
+		}
+
 		protected internal virtual TProperty GetExpandedProperty<TProperty>(int key, Expression<Func<TEntity, TProperty>> path)
 		{
 			var entity = GetExpandedEntity<TProperty>(key, path);

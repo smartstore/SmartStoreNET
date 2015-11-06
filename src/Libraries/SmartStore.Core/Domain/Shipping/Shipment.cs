@@ -59,6 +59,7 @@ namespace SmartStore.Core.Domain.Shipping
         /// <summary>
 		/// Gets or sets the shipment items
         /// </summary>
+		[DataMember]
         public virtual ICollection<ShipmentItem> ShipmentItems
         {
 			get { return _shipmentItems ?? (_shipmentItems = new HashSet<ShipmentItem>()); }

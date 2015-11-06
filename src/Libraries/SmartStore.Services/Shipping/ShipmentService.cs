@@ -7,7 +7,6 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
-using SmartStore.Core.Plugins;
 using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
@@ -240,7 +239,20 @@ namespace SmartStore.Services.Shipping
 
             //event notifications
             _eventPublisher.EntityInserted(shipmentItem);
-			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+
+			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+			{
+				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+			}
+			else
+			{
+				var shipment = _shipmentRepository.Table
+					.Expand(x => x.Order)
+					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+
+				if (shipment != null)
+					_eventPublisher.PublishOrderUpdated(shipment.Order);	
+			}
         }
 
         /// <summary>
@@ -256,7 +268,20 @@ namespace SmartStore.Services.Shipping
 
             //event notifications
             _eventPublisher.EntityUpdated(shipmentItem);
-			_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+
+			if (shipmentItem.Shipment != null && shipmentItem.Shipment.Order != null)
+			{
+				_eventPublisher.PublishOrderUpdated(shipmentItem.Shipment.Order);
+			}
+			else
+			{
+				var shipment = _shipmentRepository.Table
+					.Expand(x => x.Order)
+					.FirstOrDefault(x => x.Id == shipmentItem.ShipmentId);
+
+				if (shipment != null)
+					_eventPublisher.PublishOrderUpdated(shipment.Order);
+			}
         }
         
 		#endregion

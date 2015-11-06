@@ -176,7 +176,7 @@
     <Compile Include="Extensions\MiscExtensions.cs" />
     <Compile Include="GoogleMerchantCenterFeedPlugin.cs" />
     <Compile Include="Models\ProfileConfigurationModel.cs" />
-    <Compile Include="Providers\GmcExportXmlProvider.cs" />
+    <Compile Include="Providers\GmcXmlExportProvider.cs" />
     <Compile Include="Models\FeedGoogleMerchantCenterModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RouteProvider.cs" />

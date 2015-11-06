@@ -5,11 +5,11 @@ using System.Xml.Serialization;
 namespace SmartStore.Services.DataExchange
 {
 	[Serializable]
-	public class ExportExecuteResult
+	public class DataExportResult
 	{
-		public ExportExecuteResult()
+		public DataExportResult()
 		{
-			Files = new List<ExportExecuteResult.ExportFileInfo>();
+			Files = new List<DataExportResult.ExportFileInfo>();
 		}
 
 		/// <summary>
@@ -29,7 +29,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Files created by last export
 		/// </summary>
-		public List<ExportFileInfo> Files { get; set; }
+		public IList<ExportFileInfo> Files { get; set; }
 
 		/// <summary>
 		/// The path of the folder with the export files

@@ -13,7 +13,14 @@ namespace SmartStore.Services.DataExchange
 
 	public interface IDataExporter
 	{
-		void Export(DataExportRequest request, CancellationToken cancellationToken);
+		DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken);
+
+		// Handle model conversion for grid in backend's controller
+		IList<dynamic> Preview(DataExportRequest request);
+
+		// useful for decision making whether export should
+		// be processed sync or async
+		long GetDataCount(DataExportRequest request);
 	}
 
 	public class DataExportRequest

@@ -8,19 +8,19 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
-	/// Exports XML formatted product data to a file
+	/// Exports XML formatted customer data to a file
 	/// </summary>
-	[SystemName("Exports.SmartStoreProductXml")]
-	[FriendlyName("SmartStore XML product export")]
+	[SystemName("Exports.SmartStoreCustomerXml")]
+	[FriendlyName("SmartStore XML customer export")]
 	[IsHidden(true)]
-	public class ExportProductXmlProvider : IExportProvider
+	public class CustomerXmlExportProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreProductXml"; }
+			get { return "Exports.SmartStoreCustomerXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo
@@ -30,7 +30,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 		public ExportEntityType EntityType
 		{
-			get { return ExportEntityType.Product; }
+			get { return ExportEntityType.Customer; }
 		}
 
 		public string FileExtension
@@ -58,32 +58,32 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 				var xmlHelper = new ExportXmlHelper(writer, CultureInfo.InvariantCulture);
 
 				writer.WriteStartDocument();
-				writer.WriteStartElement("Products");
+				writer.WriteStartElement("Customers");
 				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
 				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
 					var segment = context.Segmenter.CurrentSegment;
 
-					foreach (dynamic product in segment)
+					foreach (dynamic customer in segment)
 					{
 						if (context.Abort != ExportAbortion.None)
 							break;
 
 						try
 						{
-							xmlHelper.WriteProduct(product, "Product");
+							xmlHelper.WriteCustomer(customer, "Customer");
 
 							++context.RecordsSucceeded;
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)product.Id);
+							context.RecordException(exc, (int)customer.Id);
 						}
 					}
 				}
 
-				writer.WriteEndElement();	// Products
+				writer.WriteEndElement();	// Customers
 				writer.WriteEndDocument();
 			}
 		}

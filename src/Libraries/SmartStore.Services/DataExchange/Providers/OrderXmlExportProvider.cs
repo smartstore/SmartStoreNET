@@ -8,7 +8,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
 	/// Exports XML formatted order data to a file
@@ -16,7 +16,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreOrderXml")]
 	[FriendlyName("SmartStore XML order export")]
 	[IsHidden(true)]
-	public class ExportOrderXmlProvider : IExportProvider
+	public class OrderXmlExportProvider : IExportProvider
 	{
 		public static string SystemName
 		{

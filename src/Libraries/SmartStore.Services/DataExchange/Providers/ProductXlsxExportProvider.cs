@@ -14,7 +14,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
 	/// Exports Excel formatted product data to a file
@@ -22,7 +22,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreProductXlsx")]
 	[FriendlyName("SmartStore Excel product export")]
 	[IsHidden(true)]
-	public class ExportProductXlsxProvider : IExportProvider
+	public class ProductXlsxExportProvider : IExportProvider
 	{
 		private readonly ILanguageService _languageService;
 		private readonly IProductService _productService;
@@ -130,7 +130,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 			}
 		}
 
-		public ExportProductXlsxProvider(
+		public ProductXlsxExportProvider(
 			ILanguageService languageService,
 			IProductService productService,
 			IStoreMappingService storeMappingService)

@@ -3,7 +3,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Services.DataExchange.ExportProvider;
+using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
@@ -156,7 +156,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
                 return AccessDeniedView();
 
-			return Export(ExportNewsSubscriptionCsvProvider.SystemName, null);
+			return Export(SubscriberCsvExportProvider.SystemName, null);
 		}
 
         [HttpPost]

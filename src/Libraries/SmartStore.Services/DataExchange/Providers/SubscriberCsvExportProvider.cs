@@ -5,7 +5,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
 	/// Exports CSV formatted newsletter subscription data to a file
@@ -13,7 +13,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreNewsSubscriptionCsv")]
 	[FriendlyName("SmartStore CSV newsletter subscription export")]
 	[IsHidden(true)]
-	public class ExportNewsSubscriptionCsvProvider : IExportProvider
+	public class SubscriberCsvExportProvider : IExportProvider
 	{
 		public static string SystemName
 		{

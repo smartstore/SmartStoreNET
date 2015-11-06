@@ -244,7 +244,7 @@ namespace SmartStore.Admin.Controllers
 						try
 						{
 							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, ExportProfileTask.PublicFolder);
-							var resultInfo = XmlHelper.Deserialize<ExportExecuteResult>(profile.ResultInfo);
+							var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
 							if (resultInfo != null && resultInfo.Files != null)
 							{

@@ -5,9 +5,9 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 
-namespace SmartStore.Services.DataExchange.ExportTask
+namespace SmartStore.Services.DataExchange.Internal
 {
-	public class ExportDataContextCustomer
+	public class CustomerExportContext
 	{
 		protected List<int> _customerIds;
 
@@ -15,7 +15,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		private LazyMultimap<GenericAttribute> _genericAttributes;
 
-		public ExportDataContextCustomer(
+		public CustomerExportContext(
 			IEnumerable<Customer> customers,
 			Func<int[], Multimap<int, GenericAttribute>> genericAttributes)
 		{

@@ -5,9 +5,9 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 
-namespace SmartStore.Services.DataExchange.ExportTask
+namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class ExportDataContextManufacturer
+	internal class ManufacturerExportContext
 	{
 		protected List<int> _manufacturerIds;
 		protected List<int> _pictureIds;
@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<ProductManufacturer> _productManufacturers;
 		private LazyMultimap<Picture> _pictures;
 
-		public ExportDataContextManufacturer(
+		public ManufacturerExportContext(
 			IEnumerable<Manufacturer> manufacturers,
 			Func<int[], Multimap<int, ProductManufacturer>> productManufacturers,
 			Func<int[], IList<Picture>> pictures)

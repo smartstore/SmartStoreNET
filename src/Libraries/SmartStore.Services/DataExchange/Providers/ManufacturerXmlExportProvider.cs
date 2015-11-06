@@ -8,19 +8,19 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
-	/// Exports XML formatted category data to a file
+	/// Exports XML formatted manufacturer data to a file
 	/// </summary>
-	[SystemName("Exports.SmartStoreCategoryXml")]
-	[FriendlyName("SmartStore XML category export")]
+	[SystemName("Exports.SmartStoreManufacturerXml")]
+	[FriendlyName("SmartStore XML manufacturer export")]
 	[IsHidden(true)]
-	public class ExportCategoryXmlProvider : IExportProvider
+	public class ManufacturerXmlExportProvider : IExportProvider
 	{
 		public static string SystemName
 		{
-			get { return "Exports.SmartStoreCategoryXml"; }
+			get { return "Exports.SmartStoreManufacturerXml"; }
 		}
 
 		public ExportConfigurationInfo ConfigurationInfo
@@ -30,7 +30,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 
 		public ExportEntityType EntityType
 		{
-			get { return ExportEntityType.Category; }
+			get { return ExportEntityType.Manufacturer; }
 		}
 
 		public string FileExtension
@@ -58,49 +58,49 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 				var xmlHelper = new ExportXmlHelper(writer, CultureInfo.InvariantCulture);
 
 				writer.WriteStartDocument();
-				writer.WriteStartElement("Categories");
+				writer.WriteStartElement("Manufacturers");
 				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
 				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
 					var segment = context.Segmenter.CurrentSegment;
 
-					foreach (dynamic category in segment)
+					foreach (dynamic manufacturer in segment)
 					{
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						writer.WriteStartElement("Category");
+						writer.WriteStartElement("Manufacturer");
 
 						try
 						{
-							xmlHelper.WriteCategory(category, null);
+							xmlHelper.WriteManufacturer(manufacturer, null);
 
-							writer.WriteStartElement("ProductCategories");
-							foreach (dynamic productCategory in category.ProductCategories)
+							writer.WriteStartElement("ProductManufacturers");
+							foreach (dynamic productManu in manufacturer.ProductManufacturers)
 							{
-								writer.WriteStartElement("ProductCategory");
-								writer.Write("Id", ((int)productCategory.Id).ToString());
-								writer.Write("ProductId", ((int)productCategory.ProductId).ToString());
-								writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
-								writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
-								writer.Write("CategoryId", ((int)productCategory.CategoryId).ToString());
-								writer.WriteEndElement();	// ProductCategory
+								writer.WriteStartElement("ProductManufacturer");
+								writer.Write("Id", ((int)productManu.Id).ToString());
+								writer.Write("ProductId", ((int)productManu.ProductId).ToString());
+								writer.Write("DisplayOrder", ((int)productManu.DisplayOrder).ToString());
+								writer.Write("IsFeaturedProduct", ((bool)productManu.IsFeaturedProduct).ToString());
+								writer.Write("ManufacturerId", ((int)productManu.ManufacturerId).ToString());
+								writer.WriteEndElement();	// ProductManufacturer
 							}
-							writer.WriteEndElement();	// ProductCategories
+							writer.WriteEndElement();	// ProductManufacturers
 
 							++context.RecordsSucceeded;
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)category.Id);
+							context.RecordException(exc, (int)manufacturer.Id);
 						}
 
-						writer.WriteEndElement();	// Category
+						writer.WriteEndElement();	// Manufacturer
 					}
 				}
 
-				writer.WriteEndElement();	// Categories
+				writer.WriteEndElement();	// Manufacturers
 				writer.WriteEndDocument();
 			}
 		}

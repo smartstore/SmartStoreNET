@@ -6,9 +6,9 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog;
 
-namespace SmartStore.Services.DataExchange.ExportTask
+namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class ExportDataContextProduct : PriceCalculationContext
+	internal class ProductExportContext : PriceCalculationContext
 	{
 		private List<int> _productIdsBundleItems;
 
@@ -24,7 +24,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<ProductSpecificationAttribute> _productSpecificationAttributes;
 		private LazyMultimap<ProductBundleItem> _productBundleItems;
 
-		public ExportDataContextProduct(
+		public ProductExportContext(
 			IEnumerable<Product> products,
 			Func<int[], Multimap<int, ProductVariantAttribute>> attributes,
 			Func<int[], Multimap<int, ProductVariantAttributeCombination>> attributeCombinations,

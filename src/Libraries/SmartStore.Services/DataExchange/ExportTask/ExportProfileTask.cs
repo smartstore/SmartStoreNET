@@ -193,7 +193,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return (localized.Count == 0 ? null : localized);
 		}
 
-		private IExportSegmenterProvider CreateSegmenter(ExportProfileTaskContext ctx, int pageIndex = 0)
+		private IExportDataSegmenterProvider CreateSegmenter(ExportProfileTaskContext ctx, int pageIndex = 0)
 		{
 			var offset = ctx.Profile.Offset + (pageIndex * PageSize);
 
@@ -206,13 +206,13 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			switch (ctx.Provider.Value.EntityType)
 			{
 				case ExportEntityType.Product:
-					ctx.Export.Segmenter = new ExportSegmenter<Product>
+					ctx.Export.Segmenter = new ExportDataSegmenter<Product>
 					(
 						skip => GetProducts(ctx, skip),
 						entities =>
 						{
 							// load data behind navigation properties for current queue in one go
-							ctx.DataContextProduct = new ExportDataContextProduct(entities,
+							ctx.DataContextProduct = new ProductExportContext(entities,
 								x => _productAttributeService.Value.GetProductVariantAttributesByProductIds(x, null),
 								x => _productAttributeService.Value.GetProductVariantAttributeCombinations(x),
 								x => _productService.Value.GetTierPricesByProductIds(x, (ctx.Projection.CurrencyId ?? 0) != 0 ? ctx.ContextCustomer : null, ctx.Store.Id),
@@ -231,12 +231,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 
 				case ExportEntityType.Order:
-					ctx.Export.Segmenter = new ExportSegmenter<Order>
+					ctx.Export.Segmenter = new ExportDataSegmenter<Order>
 					(
 						skip => GetOrders(ctx, skip),
 						entities =>
 						{
-							ctx.DataContextOrder = new ExportDataContextOrder(entities,
+							ctx.DataContextOrder = new OrderExportContext(entities,
 								x => _customerService.Value.GetCustomersByIds(x),
 								x => _customerService.Value.GetRewardPointsHistoriesByCustomerIds(x),
 								x => _addressesService.Value.GetAddressByIds(x),
@@ -250,12 +250,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 
 				case ExportEntityType.Manufacturer:
-					ctx.Export.Segmenter = new ExportSegmenter<Manufacturer>
+					ctx.Export.Segmenter = new ExportDataSegmenter<Manufacturer>
 					(
 						skip => GetManufacturers(ctx, skip),
 						entities =>
 						{
-							ctx.DataContextManufacturer = new ExportDataContextManufacturer(entities,
+							ctx.DataContextManufacturer = new ManufacturerExportContext(entities,
 								x => _manufacturerService.Value.GetProductManufacturersByManufacturerIds(x),
 								x => _pictureService.Value.GetPicturesByIds(x)
 							);
@@ -266,12 +266,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 
 				case ExportEntityType.Category:
-					ctx.Export.Segmenter = new ExportSegmenter<Category>
+					ctx.Export.Segmenter = new ExportDataSegmenter<Category>
 					(
 						skip => GetCategories(ctx, skip),
 						entities =>
 						{
-							ctx.DataContextCategory = new ExportDataContextCategory(entities,
+							ctx.DataContextCategory = new CategoryExportContext(entities,
 								x => _categoryService.Value.GetProductCategoriesByCategoryIds(x),
 								x => _pictureService.Value.GetPicturesByIds(x)
 							);
@@ -282,12 +282,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 
 				case ExportEntityType.Customer:
-					ctx.Export.Segmenter = new ExportSegmenter<Customer>
+					ctx.Export.Segmenter = new ExportDataSegmenter<Customer>
 					(
 						skip => GetCustomers(ctx, skip),
 						entities =>
 						{
-							ctx.DataContextCustomer = new ExportDataContextCustomer(entities,
+							ctx.DataContextCustomer = new CustomerExportContext(entities,
 								x => _genericAttributeService.Value.GetAttributesForEntity(x, "Customer")
 							);
 						},
@@ -297,7 +297,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 
 				case ExportEntityType.NewsLetterSubscription:
-					ctx.Export.Segmenter = new ExportSegmenter<NewsLetterSubscription>
+					ctx.Export.Segmenter = new ExportDataSegmenter<NewsLetterSubscription>
 					(
 						skip => GetNewsLetterSubscriptions(ctx, skip),
 						null,
@@ -311,7 +311,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					break;
 			}
 
-			return ctx.Export.Segmenter as IExportSegmenterProvider;
+			return ctx.Export.Segmenter as IExportDataSegmenterProvider;
 		}
 
 		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando, Product product)
@@ -2504,7 +2504,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 							// create info for deployment list in profile edit
 							if (File.Exists(ctx.Export.FilePath))
 							{
-								ctx.Result.Files.Add(new ExportExecuteResult.ExportFileInfo
+								ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 								{
 									StoreId = ctx.Store.Id,
 									FileName = ctx.Export.FileName
@@ -2664,7 +2664,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					{
 						if (!ctx.IsPreview && ctx.Profile.Id != 0)
 						{
-							ctx.Profile.ResultInfo = XmlHelper.Serialize<ExportExecuteResult>(ctx.Result);
+							ctx.Profile.ResultInfo = XmlHelper.Serialize<DataExportResult>(ctx.Result);
 
 							_exportProfileService.Value.UpdateExportProfile(ctx.Profile);
 						}
@@ -2773,7 +2773,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			error = null;
 			var cancellation = new CancellationTokenSource(TimeSpan.FromHours(3.0));
 
-			var task = AsyncRunner.Run<ExportExecuteResult>((container, ct) =>
+			var task = AsyncRunner.Run<DataExportResult>((container, ct) =>
 			{
 				var exportTask = new ExportProfileTask();
 				return exportTask.Execute(providerSystemName, container, ct, null, selectedEntityIds);
@@ -2843,7 +2843,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		/// <param name="customProperties">Any data passed on IExportExecuteContext.CustomProperties</param>
 		/// <param name="queryProducts">Product query that supersede profile filtering</param>
 		/// <returns>Export execute result</returns>
-		public ExportExecuteResult Execute(
+		public DataExportResult Execute(
 			string providerSystemName,
 			IComponentContext context,
 			CancellationToken cancellationToken,
@@ -2949,7 +2949,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 					while (segmenter.ReadNextSegment())
 					{
-						segmenter.CurrentSegment.ForEach(x => ctx.PreviewData(x));
+						segmenter.CurrentSegment.Each(x => ctx.PreviewData(x));
 					}
 				}
 			}

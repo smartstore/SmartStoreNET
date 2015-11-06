@@ -169,33 +169,36 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportNewsSubscriptionCsvProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportCustomerXmlProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportCategoryXmlProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportCustomerXlsxProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportOrderXlsxProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportManufacturerXmlProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportProductXlsxProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportProductXmlProvider.cs" />
-    <Compile Include="DataExchange\ExportProvider\ExportOrderXmlProvider.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportDataContextCategory.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportDataContextCustomer.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportDataContextManufacturer.cs" />
+    <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\CustomerXlsxExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\OrderXlsxExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\ManufacturerXmlExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\ProductXlsxExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\ProductXmlExportProvider.cs" />
+    <Compile Include="DataExchange\Providers\OrderXmlExportProvider.cs" />
+    <Compile Include="DataExchange\Internal\CategoryExportContext.cs" />
+    <Compile Include="DataExchange\Internal\CustomerExportContext.cs" />
+    <Compile Include="DataExchange\Internal\ManufacturerExportContext.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProfileTaskContext.cs" />
-    <Compile Include="DataExchange\ExportExecuteResult.cs" />
+    <Compile Include="DataExchange\DataExportResult.cs" />
     <Compile Include="DataExchange\ExportXmlHelper.cs" />
     <Compile Include="DataExchange\IDataExporter.cs" />
     <Compile Include="DataExchange\Internal\DynamicEntity.cs" />
     <Compile Include="DataExchange\ISyncMappingService.cs" />
     <Compile Include="DataExchange\SyncMappingService.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportDataContextOrder.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportDataContextProduct.cs" />
+    <Compile Include="DataExchange\Internal\OrderExportContext.cs" />
+    <Compile Include="DataExchange\Internal\ProductExportContext.cs" />
     <Compile Include="DataExchange\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\ExportExtensions.cs" />
     <Compile Include="DataExchange\ExportTask\ExportProfileTask.cs" />
     <Compile Include="DataExchange\ExportFeaturesAttribute.cs" />
-    <Compile Include="DataExchange\ExportSegmenter.cs" />
+    <Compile Include="DataExchange\ExportDataSegmenter.cs" />
+    <Compile Include="DataExchange\_Pseudo\AdminController.cs" />
+    <Compile Include="DataExchange\_Pseudo\DataExportTask.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="DataExchange\ExportProfileService.cs" />
@@ -574,9 +577,7 @@
       <CachedSettingsPropName>Nop_Services_EuropaCheckVatService_checkVatService</CachedSettingsPropName>
     </WebReferenceUrl>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="DataExchange\Deployment\" />
-  </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <Import Project="$(SolutionDir)\.nuget\nuget.targets" />
   <PropertyGroup>

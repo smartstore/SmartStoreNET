@@ -7,9 +7,9 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Shipping;
 
-namespace SmartStore.Services.DataExchange.ExportTask
+namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class ExportDataContextOrder
+	internal class OrderExportContext
 	{
 		protected List<int> _orderIds;
 		protected List<int> _customerIds;
@@ -27,7 +27,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private LazyMultimap<OrderItem> _orderItems;
 		private LazyMultimap<Shipment> _shipments;
 
-		public ExportDataContextOrder(IEnumerable<Order> orders,
+		public OrderExportContext(IEnumerable<Order> orders,
 			Func<int[], IList<Customer>> customers,
 			Func<int[], Multimap<int, RewardPointsHistory>> rewardPointsHistory,
 			Func<int[], IList<Address>> addresses,

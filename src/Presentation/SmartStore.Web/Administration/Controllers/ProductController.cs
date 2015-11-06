@@ -27,7 +27,7 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.ExportProvider;
+using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
@@ -2796,7 +2796,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			return Export(ExportProductXmlProvider.SystemName, null);
+			return Export(ProductXmlExportProvider.SystemName, null);
         }
 
 		[HttpPost, Compress]
@@ -2805,7 +2805,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			return Export(ExportProductXmlProvider.SystemName, selectedIds);
+			return Export(ProductXmlExportProvider.SystemName, selectedIds);
         }
 
 		[Compress]
@@ -2814,7 +2814,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			return Export(ExportProductXlsxProvider.SystemName, null);
+			return Export(ProductXlsxExportProvider.SystemName, null);
         }
 
 		[HttpPost, Compress]
@@ -2823,7 +2823,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			return Export(ExportProductXlsxProvider.SystemName, selectedIds);
+			return Export(ProductXlsxExportProvider.SystemName, selectedIds);
         }
 
 		public ActionResult ExportPdf(bool all, string selectedIds = null)

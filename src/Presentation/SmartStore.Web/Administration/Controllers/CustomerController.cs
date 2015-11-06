@@ -24,7 +24,7 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.ExportProvider;
+using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
@@ -1765,7 +1765,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-			return Export(ExportCustomerXlsxProvider.SystemName, null);
+			return Export(CustomerXlsxExportProvider.SystemName, null);
         }
 
 		[Compress]
@@ -1774,7 +1774,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-			return Export(ExportCustomerXlsxProvider.SystemName, selectedIds);
+			return Export(CustomerXlsxExportProvider.SystemName, selectedIds);
         }
 
 		[Compress]
@@ -1783,7 +1783,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-			return Export(ExportCustomerXmlProvider.SystemName, null);
+			return Export(CustomerXmlExportProvider.SystemName, null);
         }
 
 		[Compress]
@@ -1792,7 +1792,7 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
                 return AccessDeniedView();
 
-			return Export(ExportCustomerXmlProvider.SystemName, selectedIds);
+			return Export(CustomerXmlExportProvider.SystemName, selectedIds);
         }
 
         #endregion

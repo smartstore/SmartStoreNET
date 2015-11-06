@@ -10,7 +10,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 
-namespace SmartStore.Services.DataExchange.ExportProvider
+namespace SmartStore.Services.DataExchange.Providers
 {
 	/// <summary>
 	/// Exports Excel formatted customer data to a file
@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.ExportProvider
 	[SystemName("Exports.SmartStoreCustomerXlsx")]
 	[FriendlyName("SmartStore Excel customer export")]
 	[IsHidden(true)]
-	public class ExportCustomerXlsxProvider : IExportProvider
+	public class CustomerXlsxExportProvider : IExportProvider
 	{
 		private string[] Properties
 		{

@@ -4,7 +4,7 @@ using SmartStore.Core;
 
 namespace SmartStore.Services.DataExchange
 {
-	public interface IExportSegmenterConsumer
+	public interface IExportDataSegmenterConsumer
 	{
 		/// <summary>
 		/// Total number of records
@@ -14,7 +14,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Gets current data segment
 		/// </summary>
-		List<dynamic> CurrentSegment { get; }
+		IReadOnlyCollection<dynamic> CurrentSegment { get; }
 
 		/// <summary>
 		/// Reads the next segment
@@ -23,7 +23,7 @@ namespace SmartStore.Services.DataExchange
 		bool ReadNextSegment();
 	}
 
-	internal interface IExportSegmenterProvider : IExportSegmenterConsumer, IDisposable
+	internal interface IExportDataSegmenterProvider : IExportDataSegmenterConsumer, IDisposable
 	{
 		/// <summary>
 		/// Whether there is data available
@@ -36,7 +36,7 @@ namespace SmartStore.Services.DataExchange
 		int RecordPerSegmentCount { get; set; }
 	}
 
-	public class ExportSegmenter<T> : IExportSegmenterProvider where T : BaseEntity
+	public class ExportDataSegmenter<T> : IExportDataSegmenterProvider where T : BaseEntity
 	{
 		private Func<int, List<T>> _load;
 		private Action<ICollection<T>> _loaded;
@@ -53,7 +53,7 @@ namespace SmartStore.Services.DataExchange
 
 		private Queue<T> _data;
 
-		public ExportSegmenter(
+		public ExportDataSegmenter(
 			Func<int, List<T>> load,
 			Action<ICollection<T>> loaded,
 			Func<T, List<dynamic>> convert,
@@ -127,7 +127,7 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Gets current data segment
 		/// </summary>
-		public List<dynamic> CurrentSegment
+		public IReadOnlyCollection<dynamic> CurrentSegment
 		{
 			get
 			{
@@ -136,7 +136,7 @@ namespace SmartStore.Services.DataExchange
 
 				while (_data.Count > 0 && (entity = _data.Dequeue()) != null)
 				{
-					_convert(entity).ForEach(x => records.Add(x));
+					_convert(entity).Each(x => records.Add(x));
 
 					if (++_countRecords >= _limit && _limit > 0)
 						return records;

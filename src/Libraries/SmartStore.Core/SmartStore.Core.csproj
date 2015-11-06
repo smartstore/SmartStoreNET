@@ -303,7 +303,7 @@
     <Compile Include="PagedList.cs" />
     <Compile Include="Collections\MultiMap.cs" />
     <Compile Include="Collections\TreeNode.cs" />
-    <Compile Include="ComponentModel\Expando.cs" />
+    <Compile Include="ComponentModel\HybridExpando.cs" />
     <Compile Include="ComponentModel\PropertyBag.cs" />
     <Compile Include="ComponentModel\SerializationUtils.cs" />
     <Compile Include="Domain\Catalog\BackInStockSubscription.cs" />

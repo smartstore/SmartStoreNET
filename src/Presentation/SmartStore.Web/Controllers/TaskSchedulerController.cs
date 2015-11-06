@@ -9,7 +9,7 @@ using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Services.Security;
 using SmartStore.Services;
-
+using SmartStore.Collections;
 
 namespace SmartStore.Web.Controllers
 {
@@ -77,8 +77,8 @@ namespace SmartStore.Web.Controllers
             var task = _scheduledTaskService.GetTaskById(id);
             if (task == null)
                 return HttpNotFound();
-
-            _taskExecutor.Execute(task);
+	
+            _taskExecutor.Execute(task, QueryString.Current.ToDictionary());
 
             return Content("Task '{0}' executed".FormatCurrent(task.Name));
         }

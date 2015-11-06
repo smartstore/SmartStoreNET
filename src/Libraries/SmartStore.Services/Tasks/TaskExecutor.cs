@@ -10,6 +10,7 @@ using SmartStore.Services.Customers;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Customers;
 using System.Diagnostics;
+using System.Collections.Generic;
 
 namespace SmartStore.Services.Tasks
 {
@@ -43,7 +44,10 @@ namespace SmartStore.Services.Tasks
 
         public ILogger Logger { get; set; }
 
-        public void Execute(ScheduleTask task, bool throwOnError = false)
+        public void Execute(
+			ScheduleTask task,
+			IDictionary<string, string> taskParameters = null,
+            bool throwOnError = false)
         {
 			if (task.IsRunning)
                 return;
@@ -102,7 +106,8 @@ namespace SmartStore.Services.Tasks
 				var ctx = new TaskExecutionContext(_componentContext, task)
 				{
 					ScheduleTask = task.Clone(),
-					CancellationToken = cts.Token
+					CancellationToken = cts.Token,
+					Parameters = taskParameters ?? new Dictionary<string, string>()
 				};
 
                 instance.Execute(ctx);

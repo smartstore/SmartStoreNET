@@ -36,6 +36,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Dynamic;
 using System.Reflection;
+using System.Collections;
 
 namespace SmartStore.ComponentModel
 {
@@ -58,7 +59,7 @@ namespace SmartStore.ComponentModel
     /// Dictionary: Any of the extended properties are accessible via IDictionary interface
     /// </summary>
     [Serializable]
-    public class Expando : DynamicObject
+    public class HybridExpando : DynamicObject, IDictionary<string, object>
     {
         /// <summary>
         /// Instance of object passed in
@@ -85,7 +86,7 @@ namespace SmartStore.ComponentModel
         /// 
         /// Note you can subclass Expando.
         /// </summary>
-        public Expando()
+        public HybridExpando()
         {
             Initialize(this);
         }
@@ -98,7 +99,7 @@ namespace SmartStore.ComponentModel
         /// check native properties and only check the Dictionary!
         /// </remarks>
         /// <param name="instance"></param>
-        public Expando(object instance)
+        public HybridExpando(object instance)
         {
             Initialize(instance);
         }
@@ -120,12 +121,12 @@ namespace SmartStore.ComponentModel
             get
             {
                 if (_instancePropertyInfos == null && _instance != null)
-                    _instancePropertyInfos = Fasterflect.PropertyExtensions.Properties(_instance.GetType(), Fasterflect.Flags.InstancePublicDeclaredOnly);
+                    _instancePropertyInfos = Fasterflect.PropertyExtensions.Properties(_instanceType, Fasterflect.Flags.InstancePublic);
                 return _instancePropertyInfos;		
             }
         }
 
-        public override IEnumerable<string> GetDynamicMemberNames()
+		public override IEnumerable<string> GetDynamicMemberNames()
         {
             foreach (var prop in this.GetProperties(false))
                 yield return prop.Key;
@@ -344,14 +345,21 @@ namespace SmartStore.ComponentModel
 		/// <returns></returns>
 		public IEnumerable<KeyValuePair<string, object>> GetProperties(bool includeInstanceProperties = false)
         {
-            if (includeInstanceProperties && _instance != null)
+			foreach (var key in this.Properties.Keys)
+			{
+				yield return new KeyValuePair<string, object>(key, this.Properties[key]);
+			}
+				
+			if (includeInstanceProperties && _instance != null)
             {
                 foreach (var prop in this.InstancePropertyInfos)
-                    yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance, null));
+				{
+					if (!this.Properties.ContainsKey(prop.Name))
+					{
+						yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance, null));
+					}
+				}
             }
-
-            foreach (var key in this.Properties.Keys)
-                yield return new KeyValuePair<string, object>(key, this.Properties[key]);
 
         }
 
@@ -391,18 +399,116 @@ namespace SmartStore.ComponentModel
             return false;
         }
 
-        public bool TryGetValue(string propertyName, out object value)
-        {
-            value = null;
+		#region IDictionary<string, object>
 
-            if (this.Contains(propertyName, true))
-            {
-                value = this[propertyName];
-                return true;
-            }
+		ICollection<string> IDictionary<string, object>.Keys
+		{
+			get
+			{
+				return GetProperties(true).Select(x => x.Key).AsReadOnly();
+			}
+		}
 
-            return false;
+		ICollection<object> IDictionary<string, object>.Values
+		{
+			get
+			{
+				return GetProperties(true).Select(x => x.Value).AsReadOnly();
+			}
+		}
+
+		int ICollection<KeyValuePair<string, object>>.Count
+		{
+			get
+			{
+				return Properties.Count + InstancePropertyInfos.Count;
+			}
+		}
+
+		bool ICollection<KeyValuePair<string, object>>.IsReadOnly
+		{
+			get
+			{
+				return false;
+			}
+		}
+
+		object IDictionary<string, object>.this[string key]
+		{
+			get
+			{
+				return this[key];
+			}
+
+			set
+			{
+				this[key] = value;
+			}
+		}
+
+		bool IDictionary<string, object>.ContainsKey(string key)
+		{
+			return Contains(key, true);
+		}
+
+		void IDictionary<string, object>.Add(string key, object value)
+		{
+			throw new NotImplementedException();
+		}
+
+		bool IDictionary<string, object>.Remove(string key)
+		{
+			throw new NotImplementedException();
+		}
+
+		public bool TryGetValue(string key, out object value)
+		{
+			value = null;
+
+			if (this.Contains(key, true))
+			{
+				value = this[key];
+				return true;
+			}
+
+			return false;
+		}
+
+		void ICollection<KeyValuePair<string, object>>.Add(KeyValuePair<string, object> item)
+		{
+			throw new NotImplementedException();
+		}
+
+		void ICollection<KeyValuePair<string, object>>.Clear()
+		{
+			throw new NotImplementedException();
+		}
+
+		bool ICollection<KeyValuePair<string, object>>.Contains(KeyValuePair<string, object> item)
+		{
+			return Contains(item.Key, true);
+		}
+
+		void ICollection<KeyValuePair<string, object>>.CopyTo(KeyValuePair<string, object>[] array, int arrayIndex)
+		{
+			throw new NotImplementedException();
+		}
+
+		bool ICollection<KeyValuePair<string, object>>.Remove(KeyValuePair<string, object> item)
+		{
+			throw new NotImplementedException();
+		}
+
+		IEnumerator<KeyValuePair<string, object>> IEnumerable<KeyValuePair<string, object>>.GetEnumerator()
+		{
+			return GetProperties(true).GetEnumerator();
         }
 
-    }
+		IEnumerator IEnumerable.GetEnumerator()
+		{
+			return GetProperties(true).GetEnumerator();
+		}
+
+		#endregion
+	}
 }

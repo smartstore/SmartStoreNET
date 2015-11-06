@@ -9,19 +9,24 @@ using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class DynamicEntity : Expando
+	internal class DynamicEntity : HybridExpando
 	{
-		private readonly object _entity;
+		public DynamicEntity(DynamicEntity dynamicEntity)
+			: this(dynamicEntity.WrappedObject)
+		{
+			base.Properties.Merge(dynamicEntity, true);
+		}
 
 		public DynamicEntity(object entity)
 			: base(entity)
 		{
+			// TODO: Umbenennen!!!
+			base.Properties["_Entity"] = entity;
 		}
 
-		// TODO: Umbenennen!!!
-		public object _Entity
+		public void Merge()
 		{
-			get { return base.WrappedObject; }
+
 		}
 
 		protected override bool TrySetMemberCore(string name, object value)

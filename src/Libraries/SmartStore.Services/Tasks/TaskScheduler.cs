@@ -10,6 +10,7 @@ using System.Web.Hosting;
 using SmartStore.Core.Async;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Logging;
+using SmartStore.Collections;
 
 namespace SmartStore.Services.Tasks
 {
@@ -101,9 +102,18 @@ namespace SmartStore.Services.Tasks
             return _authTokens.TryRemove(authToken, out val);
         }
 
-        public void RunSingleTask(int scheduleTaskId)
+        public void RunSingleTask(int scheduleTaskId, IDictionary<string, string> taskParameters = null)
         {
-            CallEndpoint(_baseUrl + "/Execute/{0}".FormatInvariant(scheduleTaskId));
+			string query = "";
+
+			if (taskParameters != null && taskParameters.Any())
+			{
+				var qs = new QueryString();
+				taskParameters.Each(x => qs.Add(x.Key, x.Value));
+				query = qs.ToString();
+			}
+
+			CallEndpoint(_baseUrl + "/Execute/{0}{1}".FormatInvariant(scheduleTaskId, query));
         }
 
 		private void Elapsed(object sender, System.Timers.ElapsedEventArgs e)

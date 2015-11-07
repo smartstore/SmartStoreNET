@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Linq;
+using System.ServiceModel.Syndication;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -17,6 +19,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.News;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
@@ -43,6 +46,7 @@ namespace SmartStore.Web.Controllers
         private readonly ICacheManager _cacheManager;
         private readonly ICustomerActivityService _customerActivityService;
 		private readonly IStoreMappingService _storeMappingService;
+		private readonly ILanguageService _languageService;
 
         private readonly MediaSettings _mediaSettings;
         private readonly NewsSettings _newsSettings;
@@ -61,6 +65,7 @@ namespace SmartStore.Web.Controllers
             IWorkflowMessageService workflowMessageService, IWebHelper webHelper,
             ICacheManager cacheManager, ICustomerActivityService customerActivityService,
 			IStoreMappingService storeMappingService,
+			ILanguageService languageService,
             MediaSettings mediaSettings, NewsSettings newsSettings,
             LocalizationSettings localizationSettings, CustomerSettings customerSettings,
             CaptchaSettings captchaSettings)
@@ -77,6 +82,7 @@ namespace SmartStore.Web.Controllers
             this._cacheManager = cacheManager;
             this._customerActivityService = customerActivityService;
 			this._storeMappingService = storeMappingService;
+			this._languageService = languageService;
 
             this._mediaSettings = mediaSettings;
             this._newsSettings = newsSettings;
@@ -208,7 +214,38 @@ namespace SmartStore.Web.Controllers
 		[ActionName("rss"), Compress]
         public ActionResult ListRss(int languageId)
         {
-			var feed = _newsService.CreateRssFeed(Url, languageId);
+			DateTime? maxAge = null;
+			var protocol = _webHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.Action("rss", "News", new { languageId = languageId }, protocol);
+			var newsLink = Url.RouteUrl("NewsArchive", null, protocol);
+
+			var title = "{0} - News".FormatInvariant(_storeContext.CurrentStore.Name);
+
+			if (_newsSettings.MaxAgeInDays > 0)
+				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
+
+			var language = _languageService.GetLanguageById(languageId);
+			var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
+
+			feed.AddNamespaces(true);
+			feed.Init(selfLink, language);
+
+			if (!_newsSettings.Enabled)
+				return new RssActionResult { Feed = feed };
+
+			var items = new List<SyndicationItem>();
+			var newsItems = _newsService.GetAllNews(languageId, _storeContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
+
+			foreach (var news in newsItems)
+			{
+				var newsUrl = Url.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
+
+				var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
+
+				items.Add(item);
+			}
+
+			feed.Items = items;
 
             return new RssActionResult { Feed = feed };
         }

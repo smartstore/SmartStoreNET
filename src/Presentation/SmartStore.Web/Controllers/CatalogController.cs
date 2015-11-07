@@ -21,6 +21,7 @@ using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
@@ -847,7 +848,62 @@ namespace SmartStore.Web.Controllers
 		[Compress]
 		public ActionResult RecentlyAddedProductsRss()
 		{
-			var feed = _productService.CreateRecentlyAddedProductsRssFeed(Url);
+			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
+			var selfLink = Url.RouteUrl("RecentlyAddedProductsRSS", null, protocol);
+			var recentProductsLink = Url.RouteUrl("RecentlyAddedProducts", null, protocol);
+
+			var title = "{0} - {1}".FormatInvariant(_services.StoreContext.CurrentStore.Name, T("RSS.RecentlyAddedProducts"));
+
+			var feed = new SmartSyndicationFeed(new Uri(recentProductsLink), title, T("RSS.InformationAboutProducts"));
+
+			feed.AddNamespaces(true);
+			feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
+
+			if (!_catalogSettings.RecentlyAddedProductsEnabled)
+				return new RssActionResult { Feed = feed };
+
+			var items = new List<SyndicationItem>();
+			var searchContext = new ProductSearchContext
+			{
+				LanguageId = _services.WorkContext.WorkingLanguage.Id,
+				OrderBy = ProductSortingEnum.CreatedOn,
+				PageSize = _catalogSettings.RecentlyAddedProductsNumber,
+				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
+				VisibleIndividuallyOnly = true
+			};
+
+			var products = _productService.SearchProducts(searchContext);
+			var storeUrl = _services.StoreContext.CurrentStore.Url;
+
+			foreach (var product in products)
+			{
+				string productUrl = Url.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
+				if (productUrl.HasValue())
+				{
+					var item = feed.CreateItem(
+						product.GetLocalized(x => x.Name),
+						product.GetLocalized(x => x.ShortDescription),
+						productUrl,
+						product.CreatedOnUtc,
+						product.FullDescription);
+
+					try
+					{
+						// we add only the first picture
+						var picture = product.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.Picture).FirstOrDefault();
+
+						if (picture != null)
+						{
+							feed.AddEnclosue(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
+						}
+					}
+					catch { }
+
+					items.Add(item);
+				}
+			}
+
+			feed.Items = items;
 
 			return new RssActionResult { Feed = feed };
 		}

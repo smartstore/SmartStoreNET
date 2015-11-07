@@ -4,8 +4,6 @@ using System.Data;
 using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
-using System.ServiceModel.Syndication;
-using System.Web.Mvc;
 using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -15,17 +13,13 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Security;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Media;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Catalog
 {
@@ -64,9 +58,6 @@ namespace SmartStore.Services.Catalog
         private readonly LocalizationSettings _localizationSettings;
         private readonly CommonSettings _commonSettings;
 		private readonly ICommonServices _services;
-		private readonly CatalogSettings _catalogSettings;
-		private readonly MediaSettings _mediaSettings;
-		private readonly IPictureService _pictureService;
 
         #endregion
 
@@ -117,10 +108,7 @@ namespace SmartStore.Services.Catalog
 			ICacheManager cacheManager,
             LocalizationSettings localizationSettings,
 			CommonSettings commonSettings,
-			ICommonServices services,
-			CatalogSettings catalogSettings,
-			MediaSettings mediaSettings,
-			IPictureService pictureService)
+			ICommonServices services)
         {
             this._productRepository = productRepository;
             this._relatedProductRepository = relatedProductRepository;
@@ -143,9 +131,6 @@ namespace SmartStore.Services.Catalog
             this._localizationSettings = localizationSettings;
             this._commonSettings = commonSettings;
 			this._services = services;
-			this._catalogSettings = catalogSettings;
-			this._mediaSettings = mediaSettings;
-			this._pictureService = pictureService;
 
 			this.QuerySettings = DbQuerySettings.Default;
         }
@@ -1368,76 +1353,6 @@ namespace SmartStore.Services.Catalog
 			if (prevValue != product.HasDiscountsApplied)
 				UpdateProduct(product);
         }
-
-		/// <summary>
-		/// Creates a RSS feed with recently added products
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		public virtual SmartSyndicationFeed CreateRecentlyAddedProductsRssFeed(UrlHelper urlHelper)
-		{
-			if (urlHelper == null)
-				throw new ArgumentNullException("urlHelper");
-
-			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = urlHelper.RouteUrl("RecentlyAddedProductsRSS", null, protocol);
-			var recentProductsLink = urlHelper.RouteUrl("RecentlyAddedProducts", null, protocol);
-
-			var title = "{0} - {1}".FormatInvariant(_services.StoreContext.CurrentStore.Name, _services.Localization.GetResource("RSS.RecentlyAddedProducts"));
-
-			var feed = new SmartSyndicationFeed(new Uri(recentProductsLink), title, _services.Localization.GetResource("RSS.InformationAboutProducts"));
-
-			feed.AddNamespaces(true);
-			feed.Init(selfLink, _services.WorkContext.WorkingLanguage);
-
-			if (!_catalogSettings.RecentlyAddedProductsEnabled)
-				return feed;
-
-			var items = new List<SyndicationItem>();
-			var searchContext = new ProductSearchContext
-			{
-				LanguageId = _services.WorkContext.WorkingLanguage.Id,
-				OrderBy = ProductSortingEnum.CreatedOn,
-				PageSize = _catalogSettings.RecentlyAddedProductsNumber,
-				StoreId = _services.StoreContext.CurrentStoreIdIfMultiStoreMode,
-				VisibleIndividuallyOnly = true
-			};
-
-			var products = SearchProducts(searchContext);
-			var storeUrl = _services.StoreContext.CurrentStore.Url;
-
-			foreach (var product in products)
-			{
-				string productUrl = urlHelper.RouteUrl("Product", new { SeName = product.GetSeName() }, "http");
-				if (productUrl.HasValue())
-				{
-					var item = feed.CreateItem(
-						product.GetLocalized(x => x.Name),
-						product.GetLocalized(x => x.ShortDescription),
-						productUrl,
-						product.CreatedOnUtc,
-						product.FullDescription);
-
-					try
-					{
-						// we add only the first picture
-						var picture = product.ProductPictures.OrderBy(x => x.DisplayOrder).Select(x => x.Picture).FirstOrDefault();
-
-						if (picture != null)
-						{
-							feed.AddEnclosue(item, picture, _pictureService.GetPictureUrl(picture, _mediaSettings.ProductDetailsPictureSize, false, storeUrl));
-						}
-					}
-					catch { }
-
-					items.Add(item);
-				}
-			}
-
-			feed.Items = items;
-
-			return feed;
-		}
 
 		public virtual Multimap<int, ProductTag> GetProductTagsByProductIds(int[] productIds)
 		{

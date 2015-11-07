@@ -59,6 +59,10 @@ namespace SmartStore.Data.Migrations
 				"Edited payment method '{0}' ({1})",
 				"Zahlungsart '{0}' ({1}) bearbeitet");
 
+			builder.AddOrUpdate("Admin.Configuration.Settings.Blog.ShowHeaderRSSUrl.Hint",
+				"Check to enable the blog RSS feed link in customers browser address bar.",
+				"Legt fest, ob der RSS-Feed-Link in der Adressleiste des Browsers angezeigt werden soll.");
+
 
 			builder.AddOrUpdate("Admin.System.SeNames",	"SEO Names", "SEO Namen");
 			builder.Delete("Admin.System.SeNames.DeleteSelected");

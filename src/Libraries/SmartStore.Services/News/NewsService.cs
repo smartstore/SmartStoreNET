@@ -1,16 +1,10 @@
 using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.ServiceModel.Syndication;
-using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.News;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Events;
-using SmartStore.Services.Localization;
-using SmartStore.Services.Seo;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.News
 {
@@ -24,7 +18,6 @@ namespace SmartStore.Services.News
         private readonly IRepository<NewsItem> _newsItemRepository;
 		private readonly IRepository<StoreMapping> _storeMappingRepository;
 		private readonly ICommonServices _services;
-		private readonly ILanguageService _languageService;
 
 		private readonly NewsSettings _newsSettings;
 
@@ -35,13 +28,11 @@ namespace SmartStore.Services.News
         public NewsService(IRepository<NewsItem> newsItemRepository,
 			IRepository<StoreMapping> storeMappingRepository, 
 			ICommonServices services,
-			ILanguageService languageService,
 			NewsSettings newsSettings)
         {
             _newsItemRepository = newsItemRepository;
 			_storeMappingRepository = storeMappingRepository;
 			_services = services;
-			_languageService = languageService;
 			_newsSettings = newsSettings;
 
 			this.QuerySettings = DbQuerySettings.Default;
@@ -210,53 +201,6 @@ namespace SmartStore.Services.News
             newsItem.NotApprovedCommentCount = notApprovedCommentCount;
             UpdateNews(newsItem);
         }
-
-		/// <summary>
-		/// Creates a RSS feed with news items
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		public virtual SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId)
-		{
-			if (urlHelper == null)
-				throw new ArgumentNullException("urlHelper");
-
-			DateTime? maxAge = null;
-			var protocol = _services.WebHelper.IsCurrentConnectionSecured() ? "https" : "http";
-			var selfLink = urlHelper.Action("rss", "News", new { languageId = languageId }, protocol);
-			var newsLink = urlHelper.RouteUrl("NewsArchive", null, protocol);
-
-			var title = "{0} - News".FormatInvariant(_services.StoreContext.CurrentStore.Name);
-			
-			if (_newsSettings.MaxAgeInDays > 0)
-				maxAge = DateTime.UtcNow.Subtract(new TimeSpan(_newsSettings.MaxAgeInDays, 0, 0, 0));
-
-			var language = _languageService.GetLanguageById(languageId);
-			var feed = new SmartSyndicationFeed(new Uri(newsLink), title);
-
-			feed.AddNamespaces(true);
-			feed.Init(selfLink, language);
-
-			if (!_newsSettings.Enabled)
-				return feed;
-
-			var items = new List<SyndicationItem>();
-			var newsItems = GetAllNews(languageId, _services.StoreContext.CurrentStore.Id, 0, int.MaxValue, false, maxAge);
-
-			foreach (var news in newsItems)
-			{
-				var newsUrl = urlHelper.RouteUrl("NewsItem", new { SeName = news.GetSeName(news.LanguageId, ensureTwoPublishedLanguages: false) }, "http");
-
-				var item = feed.CreateItem(news.Title, news.Short, newsUrl, news.CreatedOnUtc, news.Full);
-
-				items.Add(item);
-			}
-
-			feed.Items = items;
-
-			return feed;
-		}
 
         #endregion
     }

@@ -1,9 +1,7 @@
 using System;
 using System.Collections.Generic;
-using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Blogs;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Blogs
 {
@@ -79,13 +77,5 @@ namespace SmartStore.Services.Blogs
         /// </summary>
         /// <param name="blogPost">Blog post</param>
         void UpdateCommentTotals(BlogPost blogPost);
-
-		/// <summary>
-		/// Creates a RSS feed with blog posts
-		/// </summary>
-		/// <param name="urlHelper">UrlHelper to generate URLs</param>
-		/// <param name="languageId">Language identifier</param>
-		/// <returns>SmartSyndicationFeed object</returns>
-		SmartSyndicationFeed CreateRssFeed(UrlHelper urlHelper, int languageId);
     }
 }

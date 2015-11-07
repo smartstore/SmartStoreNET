@@ -22,7 +22,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreProductXlsx")]
 	[FriendlyName("SmartStore Excel product export")]
 	[IsHidden(true)]
-	public class ProductXlsxExportProvider : IExportProvider
+	public class ProductXlsxExportProvider : ExportProviderBase
 	{
 		private readonly ILanguageService _languageService;
 		private readonly IProductService _productService;
@@ -165,22 +165,17 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "Exports.SmartStoreProductXlsx"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.Product; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XLSX"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var path = context.FilePath;
 
@@ -413,11 +408,6 @@ namespace SmartStore.Services.DataExchange.Providers
 
 			// EPPLus had serious memory leak problems in V3. We enforce the garbage collector to release unused memory, it's not perfect, but better than nothing.
 			GC.Collect();
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

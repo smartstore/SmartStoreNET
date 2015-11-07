@@ -16,29 +16,24 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreManufacturerXml")]
 	[FriendlyName("SmartStore XML manufacturer export")]
 	[IsHidden(true)]
-	public class ManufacturerXmlExportProvider : IExportProvider
+	public class ManufacturerXmlExportProvider : ExportProviderBase
 	{
 		public static string SystemName
 		{
 			get { return "Exports.SmartStoreManufacturerXml"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.Manufacturer; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XML"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var settings = new XmlWriterSettings
 			{
@@ -103,11 +98,6 @@ namespace SmartStore.Services.DataExchange.Providers
 				writer.WriteEndElement();	// Manufacturers
 				writer.WriteEndDocument();
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

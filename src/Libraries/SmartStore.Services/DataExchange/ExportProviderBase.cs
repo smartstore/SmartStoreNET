@@ -1,35 +1,47 @@
 ﻿using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
 {
-	public partial interface IExportProvider : IProvider, IUserEditable
+	public abstract class ExportProviderBase : IExportProvider
 	{
 		/// <summary>
 		/// The exported entity type
 		/// </summary>
-		ExportEntityType EntityType { get; }
+		public virtual ExportEntityType EntityType
+		{
+			get { return ExportEntityType.Product; }
+		}
 
 		/// <summary>
 		/// File extension of the export files (without dot). Return <c>null</c> for a non file based, on-the-fly export.
 		/// </summary>
-		string FileExtension { get; }
+		public virtual string FileExtension
+		{
+			get { return null; }
+		}
 
 		/// <summary>
 		/// Get provider specific configuration information. Return <c>null</c> when no provider specific configuration is required.
 		/// </summary>
-		ExportConfigurationInfo ConfigurationInfo { get; }
+		public virtual ExportConfigurationInfo ConfigurationInfo
+		{
+			get { return null; }
+		}
 
 		/// <summary>
 		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void Execute(IExportExecuteContext context);
+		public virtual void Execute(IExportExecuteContext context)
+		{
+		}
 
 		/// <summary>
 		/// Called once per store when export execution ended
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		void OnExecuted(IExportExecuteContext context);
+		public virtual void OnExecuted(IExportExecuteContext context)
+		{
+		}
 	}
 }

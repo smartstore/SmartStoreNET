@@ -13,29 +13,24 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreNewsSubscriptionCsv")]
 	[FriendlyName("SmartStore CSV newsletter subscription export")]
 	[IsHidden(true)]
-	public class SubscriberCsvExportProvider : IExportProvider
+	public class SubscriberCsvExportProvider : ExportProviderBase
 	{
 		public static string SystemName
 		{
 			get { return "Exports.SmartStoreNewsSubscriptionCsv"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.NewsLetterSubscription; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "CSV"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var path = context.FilePath;
 
@@ -72,11 +67,6 @@ namespace SmartStore.Services.DataExchange.Providers
 					}
 				}
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

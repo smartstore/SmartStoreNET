@@ -171,6 +171,7 @@
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\ExportProviderBase.cs" />
     <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />

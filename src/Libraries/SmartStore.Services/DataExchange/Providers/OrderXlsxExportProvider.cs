@@ -15,7 +15,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreOrderXlsx")]
 	[FriendlyName("SmartStore Excel order export")]
 	[IsHidden(true)]
-	public class OrderXlsxExportProvider : IExportProvider
+	public class OrderXlsxExportProvider : ExportProviderBase
 	{
 		private string[] Properties
 		{
@@ -96,22 +96,17 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "Exports.SmartStoreOrderXlsx"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.Order; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XLSX"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var path = context.FilePath;
 
@@ -249,11 +244,6 @@ namespace SmartStore.Services.DataExchange.Providers
 				// save the new spreadsheet
 				xlPackage.Save();
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

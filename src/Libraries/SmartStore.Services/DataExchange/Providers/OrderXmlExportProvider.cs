@@ -16,29 +16,24 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreOrderXml")]
 	[FriendlyName("SmartStore XML order export")]
 	[IsHidden(true)]
-	public class OrderXmlExportProvider : IExportProvider
+	public class OrderXmlExportProvider : ExportProviderBase
 	{
 		public static string SystemName
 		{
 			get { return "Exports.SmartStoreOrderXml"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.Order; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XML"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var settings = new XmlWriterSettings
 			{
@@ -259,11 +254,6 @@ namespace SmartStore.Services.DataExchange.Providers
 				writer.WriteEndElement();	// Orders
 				writer.WriteEndDocument();
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

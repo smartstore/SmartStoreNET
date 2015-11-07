@@ -28,7 +28,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 		ExportFeatures.OffersBrandFallback,
 		ExportFeatures.CanIncludeMainPicture,
 		ExportFeatures.UsesSpecialPrice)]
-	public class GmcXmlExportProvider : IExportProvider
+	public class GmcXmlExportProvider : ExportProviderBase
 	{
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";
 
@@ -132,7 +132,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			get { return "__nospec__"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
+		public override ExportConfigurationInfo ConfigurationInfo
 		{
 			get
 			{
@@ -150,17 +150,12 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 			}
 		}
 
-		public ExportEntityType EntityType
-		{
-			get { return ExportEntityType.Product; }
-		}
-
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XML"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var settings = new XmlWriterSettings
 			{
@@ -399,11 +394,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 				writer.WriteEndElement(); // rss
 				writer.WriteEndDocument();
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

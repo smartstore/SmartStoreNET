@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	[SystemName("Exports.SmartStoreCustomerXlsx")]
 	[FriendlyName("SmartStore Excel customer export")]
 	[IsHidden(true)]
-	public class CustomerXlsxExportProvider : IExportProvider
+	public class CustomerXlsxExportProvider : ExportProviderBase
 	{
 		private string[] Properties
 		{
@@ -97,22 +97,17 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "Exports.SmartStoreCustomerXlsx"; }
 		}
 
-		public ExportConfigurationInfo ConfigurationInfo
-		{
-			get { return null; }
-		}
-
-		public ExportEntityType EntityType
+		public override ExportEntityType EntityType
 		{
 			get { return ExportEntityType.Customer; }
 		}
 
-		public string FileExtension
+		public override string FileExtension
 		{
 			get { return "XLSX"; }
 		}
 
-		public void Execute(IExportExecuteContext context)
+		public override void Execute(IExportExecuteContext context)
 		{
 			var invariantCulture = CultureInfo.InvariantCulture;
 			var path = context.FilePath;
@@ -213,11 +208,6 @@ namespace SmartStore.Services.DataExchange.Providers
 				// save the new spreadsheet
 				xlPackage.Save();
 			}
-		}
-
-		public void OnExecuted(IExportExecuteContext context)
-		{
-			// nothing to do
 		}
 	}
 }

@@ -324,12 +324,12 @@ namespace SmartStore.ComponentModel
 			get
 			{
 				object result = null;
-				if (TryGetMemberCore(key, out result))
+				if (!TryGetMemberCore(key, out result))
 				{
-					return result;
+					throw new KeyNotFoundException();
 				}
 
-				throw new KeyNotFoundException();
+				return result;
 			}
 			set
 			{
@@ -383,9 +383,10 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         public bool Contains(string propertyName, bool includeInstanceProperties = false)
         {
-            bool contains = Properties.ContainsKey(propertyName);
-            if (contains)
-                return true;
+            if (Properties.ContainsKey(propertyName))
+			{
+				return true;
+			}
 
             if (includeInstanceProperties && _instance != null)
             {

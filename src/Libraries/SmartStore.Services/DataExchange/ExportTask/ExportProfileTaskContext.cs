@@ -62,8 +62,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				FileFolder = (IsFileBasedExport ? FolderContent : null)
 			};
 
-			Export = new ExportExecuteContext(Result, TaskContext.CancellationToken, FolderContent);
-			Export.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
+			ExecuteContext = new ExportExecuteContext(Result, TaskContext.CancellationToken, FolderContent);
+			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
 		}
 
 		public List<int> EntityIdsSelected { get; private set; }
@@ -141,7 +141,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
 		// data loaded once per page
-		public ProductExportContext DataContextProduct
+		public ProductExportContext ProductExportContext
 		{
 			get
 			{
@@ -155,7 +155,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_productExportContext = value;
 			}
 		}
-		public OrderExportContext DataContextOrder
+
+		public OrderExportContext OrderExportContext
 		{
 			get
 			{
@@ -169,7 +170,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_orderExportContext = value;
 			}
 		}
-		public ManufacturerExportContext DataContextManufacturer
+
+		public ManufacturerExportContext ManufacturerExportContext
 		{
 			get
 			{
@@ -183,7 +185,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_manufacturerExportContext = value;
 			}
 		}
-		public CategoryExportContext DataContextCategory
+
+		public CategoryExportContext CategoryExportContext
 		{
 			get
 			{
@@ -197,7 +200,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				_categoryExportContext = value;
 			}
 		}
-		public CustomerExportContext DataContextCustomer
+		public CustomerExportContext CustomerExportContext
 		{
 			get
 			{
@@ -212,7 +215,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		public ExportExecuteContext Export { get; set; }
+		public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }
 	}
 }

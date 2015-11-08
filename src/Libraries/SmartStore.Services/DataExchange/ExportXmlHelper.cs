@@ -1,20 +1,53 @@
 ﻿using System;
 using System.Globalization;
+using System.IO;
+using System.Text;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 
 namespace SmartStore.Services.DataExchange
 {
-	public class ExportXmlHelper
+	public class ExportXmlHelper : IDisposable
 	{
 		private XmlWriter _writer;
 		private CultureInfo _culture;
+		private bool _doNotDispose;
 
-		public ExportXmlHelper(XmlWriter writer, CultureInfo culture)
+		public ExportXmlHelper(XmlWriter writer, bool doNotDispose = false, CultureInfo culture = null)
 		{
 			_writer = writer;
-			_culture = culture;
+			_doNotDispose = doNotDispose;
+			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
+		}
+		public ExportXmlHelper(Stream stream, XmlWriterSettings settings = null, CultureInfo culture = null)
+		{
+			if (settings == null)
+			{
+				settings = new XmlWriterSettings
+				{
+					Encoding = Encoding.UTF8,
+					CheckCharacters = false,
+					Indent = true,
+					IndentChars = "\t"
+				};
+			}
+
+			_writer = XmlWriter.Create(stream, settings);			
+			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
+		}
+
+		public XmlWriter Writer
+		{
+			get { return _writer; }
+		}
+
+		public void Dispose()
+		{
+			if (_writer != null && !_doNotDispose)
+			{
+				_writer.Dispose();
+			}
 		}
 
 		public void WriteLocalized(dynamic parentNode)

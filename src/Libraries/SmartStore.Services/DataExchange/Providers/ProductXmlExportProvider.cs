@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Globalization;
 using System.IO;
-using System.Text;
-using System.Xml;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
@@ -35,26 +32,16 @@ namespace SmartStore.Services.DataExchange.Providers
 
 		public override void Execute(IExportExecuteContext context)
 		{
-			var settings = new XmlWriterSettings
-			{
-				Encoding = Encoding.UTF8,
-				CheckCharacters = false,
-				Indent = true,
-				IndentChars = "\t"
-			};
-
 			var path = context.FilePath;
 
 			context.Log.Information("Creating file " + path);
 
 			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-			using (var writer = XmlWriter.Create(stream, settings))
+			using (var helper = new ExportXmlHelper(stream))
 			{
-				var xmlHelper = new ExportXmlHelper(writer, CultureInfo.InvariantCulture);
-
-				writer.WriteStartDocument();
-				writer.WriteStartElement("Products");
-				writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
+				helper.Writer.WriteStartDocument();
+				helper.Writer.WriteStartElement("Products");
+				helper.Writer.WriteAttributeString("Version", SmartStoreVersion.CurrentVersion);
 
 				while (context.Abort == ExportAbortion.None && context.Segmenter.ReadNextSegment())
 				{
@@ -67,7 +54,7 @@ namespace SmartStore.Services.DataExchange.Providers
 
 						try
 						{
-							xmlHelper.WriteProduct(product, "Product");
+							helper.WriteProduct(product, "Product");
 
 							++context.RecordsSucceeded;
 						}
@@ -78,8 +65,8 @@ namespace SmartStore.Services.DataExchange.Providers
 					}
 				}
 
-				writer.WriteEndElement();	// Products
-				writer.WriteEndDocument();
+				helper.Writer.WriteEndElement();	// Products
+				helper.Writer.WriteEndDocument();
 			}
 		}
 	}

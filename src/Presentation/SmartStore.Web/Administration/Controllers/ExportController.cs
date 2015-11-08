@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Net.Mime;
+using System.Text;
 using System.Web;
 using System.Web.Mvc;
 using Autofac;
@@ -878,7 +879,7 @@ namespace SmartStore.Admin.Controllers
 			var path = profile.GetExportLogFilePath();
 			var stream = new FileStream(path, FileMode.Open);
 
-			var result = new FileStreamResult(stream, MediaTypeNames.Text.Plain);
+			var result = new FileStreamResult(stream, "text/plain; charset=utf-8");
 			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
 
 			return result;

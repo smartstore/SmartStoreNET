@@ -132,6 +132,8 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_urlRecordService = context.Resolve<Lazy<IUrlRecordService>>();
 			_genericAttributeService = context.Resolve<Lazy<IGenericAttributeService>>();
 			_subscriptionRepository = context.Resolve<Lazy<IRepository<NewsLetterSubscription>>>();
+
+			T = NullLocalizer.Instance;
 		}
 
 		public Localizer T { get; set; }

@@ -15,6 +15,7 @@ using System.Reflection;
 using SmartStore.Core.Plugins;
 using System.ComponentModel;
 using SmartStore.Utilities;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.Configuration
 {
@@ -303,10 +304,12 @@ namespace SmartStore.Services.Configuration
 
 			var settings = Activator.CreateInstance<T>();
 
-			foreach (var prop in typeof(T).GetProperties())
+			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
+				var prop = fastProp.Property;
+				
 				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
+				if (!prop.CanWrite)
 					continue;
 
 				var key = typeof(T).Name + "." + prop.Name;
@@ -330,7 +333,7 @@ namespace SmartStore.Services.Configuration
 
                         if (list != null)
                         {
-                            prop.SetValue(settings, list, null);
+                            fastProp.SetValue(settings, list);
                         }
                     }
 
@@ -348,7 +351,7 @@ namespace SmartStore.Services.Configuration
                 object value = converter.ConvertFromInvariantString(setting);
 
 				//set property
-				prop.SetValue(settings, value, null);
+				fastProp.SetValue(settings, value);
 			}
 
 			return settings;

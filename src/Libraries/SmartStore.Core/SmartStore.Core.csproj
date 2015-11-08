@@ -578,6 +578,7 @@
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
+    <Compile Include="Utilities\Reflection\FastProperty.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />

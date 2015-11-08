@@ -37,6 +37,7 @@ using System.Linq;
 using System.Dynamic;
 using System.Reflection;
 using System.Collections;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.ComponentModel
 {
@@ -70,8 +71,6 @@ namespace SmartStore.ComponentModel
         /// Cached type of the instance
         /// </summary>
         private Type _instanceType;
-
-        private IList<PropertyInfo> _instancePropertyInfos;
 
         /// <summary>
         /// String Dictionary that contains the extra dynamic values
@@ -115,16 +114,6 @@ namespace SmartStore.ComponentModel
 		{
 			get { return _instance; }
 		}
-
-        IList<PropertyInfo> InstancePropertyInfos
-        {
-            get
-            {
-                if (_instancePropertyInfos == null && _instance != null)
-                    _instancePropertyInfos = Fasterflect.PropertyExtensions.Properties(_instanceType, Fasterflect.Flags.InstancePublic);
-                return _instancePropertyInfos;		
-            }
-        }
 
 		public override IEnumerable<string> GetDynamicMemberNames()
         {
@@ -238,25 +227,15 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-			var pi = GetPropertyInfo(name);
-            if (pi != null)
-            {
-                result = Fasterflect.PropertyExtensions.GetPropertyValue(instance ?? this, pi.Name);
-                return true;
-            }
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, true) : null;
+			if (fastProp != null)
+			{
+				result = fastProp.GetValue(instance ?? this);
+				return true;
+			}
 
-            result = null;
+			result = null;
             return false;
-        }
-
-		/// <summary>
-		/// Gets a <c>PropertyInfo</c> instance from the wrapped object
-		/// </summary>
-		/// <param name="name">Property name</param>
-		protected PropertyInfo GetPropertyInfo(string name)
-		{
-			var pi = Fasterflect.PropertyExtensions.Property(_instanceType, name, Fasterflect.Flags.InstancePublic);
-			return pi;
 		}
 
         /// <summary>
@@ -268,13 +247,14 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool SetProperty(object instance, string name, object value)
         {
-            var pi = GetPropertyInfo(name);
-            if (pi != null)
-            {
-				Fasterflect.PropertyInfoExtensions.Set(pi, instance ?? this, value);
-                return true;
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, true) : null;
+			if (fastProp != null)
+			{
+				fastProp.SetValue(instance ?? this, value);
+				return true;
             }
-            return false;
+
+			return false;
         }
 
         /// <summary>
@@ -288,10 +268,10 @@ namespace SmartStore.ComponentModel
         protected bool InvokeMethod(object instance, string name, object[] args, out object result)
         {
             // Look at the instanceType
-            var mi = Fasterflect.MethodExtensions.Method(_instanceType, name, Fasterflect.Flags.InstancePublic);
+            var mi = _instanceType != null ? _instanceType.GetMethod(name, BindingFlags.Instance | BindingFlags.Public) : null;
             if (mi != null)
             {
-                result = Fasterflect.MethodInfoExtensions.Call(mi, instance ?? this, args);
+                result = mi.Invoke(instance ?? this, args);
 				return true;
             }
 
@@ -352,11 +332,11 @@ namespace SmartStore.ComponentModel
 				
 			if (includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in this.InstancePropertyInfos)
+                foreach (var prop in FastProperty.GetProperties(_instance).Values)
 				{
 					if (!this.Properties.ContainsKey(prop.Name))
 					{
-						yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance, null));
+						yield return new KeyValuePair<string, object>(prop.Name, prop.GetValue(_instance));
 					}
 				}
             }
@@ -390,11 +370,7 @@ namespace SmartStore.ComponentModel
 
             if (includeInstanceProperties && _instance != null)
             {
-                foreach (var prop in this.InstancePropertyInfos)
-                {
-                    if (prop.Name == propertyName)
-                        return true;
-                }
+				return FastProperty.GetProperties(_instance).ContainsKey(propertyName);
             }
 
             return false;
@@ -422,7 +398,13 @@ namespace SmartStore.ComponentModel
 		{
 			get
 			{
-				return Properties.Count + InstancePropertyInfos.Count;
+				var count = Properties.Count;
+				if (_instanceType != null)
+				{
+					count += FastProperty.GetProperties(_instanceType).Count;
+				}
+
+				return count;
 			}
 		}
 

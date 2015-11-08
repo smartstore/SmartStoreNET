@@ -1,10 +1,8 @@
 ﻿using System;
 using System.Drawing;
-using System.IO;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.Providers
@@ -108,12 +106,7 @@ namespace SmartStore.Services.DataExchange.Providers
 
 		public override void Execute(IExportExecuteContext context)
 		{
-			var path = context.FilePath;
-
-			context.Log.Information("Creating file " + path);
-
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-			using (var xlPackage = new ExcelPackage(stream))
+			using (var xlPackage = new ExcelPackage(context.DataStream))
 			{
 				// uncomment this line if you want the XML written out to the outputDir
 				//xlPackage.DebugMode = true; 

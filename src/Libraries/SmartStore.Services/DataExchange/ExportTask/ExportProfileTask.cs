@@ -133,7 +133,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_genericAttributeService = context.Resolve<Lazy<IGenericAttributeService>>();
 			_subscriptionRepository = context.Resolve<Lazy<IRepository<NewsLetterSubscription>>>();
 
-			T = NullLocalizer.Instance;
+			T = NullLocalizer.Instance;		// TODO: resolve
 		}
 
 		public Localizer T { get; set; }
@@ -314,6 +314,61 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 
 			return ctx.ExecuteContext.Segmenter as IExportDataSegmenterProvider;
+		}
+
+		private bool CallProvider(ExportProfileTaskContext ctx, string streamId, string method, string path)
+		{
+			if (method != "Execute" && method != "OnExecuted")
+				throw new SmartException("Unknown export method {0}".FormatInvariant(method.NaIfEmpty()));
+
+			try
+			{
+				ctx.ExecuteContext.DataStreamId = streamId;
+
+				using (ctx.ExecuteContext.DataStream = new MemoryStream())
+				{
+					if (method == "Execute")
+					{
+						ctx.Provider.Value.Execute(ctx.ExecuteContext);
+					}
+					else if (method == "OnExecuted")
+					{
+						ctx.Provider.Value.OnExecuted(ctx.ExecuteContext);
+					}
+
+					if (ctx.IsFileBasedExport && path.HasValue())
+					{
+						if (!ctx.ExecuteContext.DataStream.CanSeek)
+							ctx.Log.Warning("Data stream seems to be closed!");
+
+						ctx.ExecuteContext.DataStream.Seek(0, SeekOrigin.Begin);
+
+						using (_rwLock.GetWriteLock())
+						using (var fileStream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
+						{
+							ctx.Log.Information("Creating file " + path);
+
+							ctx.ExecuteContext.DataStream.CopyTo(fileStream);
+						}
+					}
+				}
+			}
+			catch (Exception exc)
+			{
+				ctx.ExecuteContext.Abort = ExportAbortion.Hard;
+				ctx.Log.Error("The provider failed at the {0} method: {1}".FormatInvariant(method, exc.ToAllMessages()), exc);
+				ctx.Result.LastError = exc.ToString();
+			}
+			finally
+			{
+				if (ctx.ExecuteContext.DataStream != null)
+				{
+					ctx.ExecuteContext.DataStream.Dispose();
+					ctx.ExecuteContext.DataStream = null;
+				}
+			}
+
+			return (ctx.ExecuteContext.Abort != ExportAbortion.Hard);
 		}
 
 		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando, Product product)
@@ -2465,11 +2520,11 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			ctx.ExecuteContext.MaxFileNameLength = _dataExchangeSettings.Value.MaxFileNameLength;
 
-			ctx.ExecuteContext.FileExtension = (ctx.Provider.Value.FileExtension.HasValue() ? ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
-
 			ctx.ExecuteContext.HasPublicDeployment = ctx.Profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem);
 
 			ctx.ExecuteContext.PublicFolderPath = (ctx.ExecuteContext.HasPublicDeployment ? Path.Combine(HttpRuntime.AppDomainAppPath, PublicFolder) : null);
+
+			var fileExtension = (ctx.Provider.Value.FileExtension.HasValue() ? ctx.Provider.Value.FileExtension.ToLower().EnsureStartsWith(".") : "");
 
 
 			using (var segmenter = CreateSegmenter(ctx))
@@ -2489,42 +2544,32 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					segmenter.RecordPerSegmentCount = 0;
 					ctx.ExecuteContext.RecordsSucceeded = 0;
 
-					try
+					string path = null;
+
+					if (ctx.IsFileBasedExport)
 					{
+						var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ++fileIndex, ctx.ExecuteContext.MaxFileNameLength);
+
+						ctx.ExecuteContext.FileName = resolvedPattern + fileExtension;
+						path = Path.Combine(ctx.ExecuteContext.Folder, ctx.ExecuteContext.FileName);
+
+						if (ctx.ExecuteContext.HasPublicDeployment)
+							ctx.ExecuteContext.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.ExecuteContext.FileName;
+					}
+
+					if (CallProvider(ctx, null, "Execute", path))
+					{
+						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
+
+						// create info for deployment list in profile edit
 						if (ctx.IsFileBasedExport)
 						{
-							var resolvedPattern = ctx.Profile.ResolveFileNamePattern(ctx.Store, ++fileIndex, ctx.ExecuteContext.MaxFileNameLength);
-
-							ctx.ExecuteContext.FileName = resolvedPattern + ctx.ExecuteContext.FileExtension;
-							ctx.ExecuteContext.FilePath = Path.Combine(ctx.ExecuteContext.Folder, ctx.ExecuteContext.FileName);
-
-							if (ctx.ExecuteContext.HasPublicDeployment)
-								ctx.ExecuteContext.PublicFileUrl = ctx.Store.Url.EnsureEndsWith("/") + PublicFolder.EnsureEndsWith("/") + ctx.ExecuteContext.FileName;
-
-							ctx.Provider.Value.Execute(ctx.ExecuteContext);
-
-							// create info for deployment list in profile edit
-							if (File.Exists(ctx.ExecuteContext.FilePath))
+							ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
 							{
-								ctx.Result.Files.Add(new DataExportResult.ExportFileInfo
-								{
-									StoreId = ctx.Store.Id,
-									FileName = ctx.ExecuteContext.FileName
-								});
-							}
+								StoreId = ctx.Store.Id,
+								FileName = ctx.ExecuteContext.FileName
+							});
 						}
-						else
-						{
-							ctx.Provider.Value.Execute(ctx.ExecuteContext);
-						}
-
-						ctx.Log.Information("Provider reports {0} successful exported record(s)".FormatInvariant(ctx.ExecuteContext.RecordsSucceeded));
-					}
-					catch (Exception exc)
-					{
-						ctx.ExecuteContext.Abort = ExportAbortion.Hard;
-						ctx.Log.Error("The provider failed to execute the export: " + exc.ToAllMessages(), exc);
-						ctx.Result.LastError = exc.ToString();
 					}
 
 					if (ctx.ExecuteContext.IsMaxFailures)
@@ -2536,7 +2581,17 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 				if (ctx.ExecuteContext.Abort != ExportAbortion.Hard)
 				{
-					ctx.Provider.Value.OnExecuted(ctx.ExecuteContext);
+					if (ctx.ExecuteContext.ExtraDataStreams.Count == 0)
+						ctx.ExecuteContext.ExtraDataStreams.Add(new ExportExtraStreams());
+
+					ctx.ExecuteContext.ExtraDataStreams.ForEach(x =>
+					{
+						var path = (x.FileName.HasValue() ? Path.Combine(ctx.ExecuteContext.Folder, x.FileName) : null);
+						
+						CallProvider(ctx, x.Id, "OnExecuted", path);
+					});
+
+					ctx.ExecuteContext.ExtraDataStreams.Clear();
 				}
 			}
 		}
@@ -2550,7 +2605,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 			FileSystemHelper.Delete(ctx.ZipPath);
 
-			using (_rwLock.GetWriteLock())
 			using (var logger = new TraceLogger(ctx.LogPath))
 			{
 				try

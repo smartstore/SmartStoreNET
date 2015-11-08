@@ -1,7 +1,5 @@
 ﻿using System;
-using System.IO;
 using System.Linq;
-using System.Text;
 using System.Xml;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
@@ -157,13 +155,6 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 		public override void Execute(IExportExecuteContext context)
 		{
-			var settings = new XmlWriterSettings
-			{
-				Encoding = Encoding.UTF8,
-				CheckCharacters = false
-			};
-
-			var path = context.FilePath;
 			dynamic currency = context.Currency;
 			string measureWeightSystemKey = "";
 
@@ -174,10 +165,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 
 			var config = (context.ConfigurationData as ProfileConfigurationModel) ?? new ProfileConfigurationModel();
 
-			context.Log.Information("Creating file " + path);
-
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-			using (var writer = XmlWriter.Create(stream, settings))
+			using (var writer = XmlWriter.Create(context.DataStream, ExportXmlHelper.DefaultSettings))
 			{
 				writer.WriteStartDocument();
 				writer.WriteStartElement("rss");

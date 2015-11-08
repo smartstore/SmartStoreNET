@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
@@ -50,14 +51,25 @@ namespace SmartStore.Services.DataExchange
 
 
 		/// <summary>
+		/// Identifier of current data stream. Can be <c>null</c>.
+		/// </summary>
+		string DataStreamId { get; set; }
+
+		/// <summary>
+		/// Stream used to write data to
+		/// </summary>
+		Stream DataStream { get; }
+
+		/// <summary>
+		/// List with extra data streams required by provider
+		/// </summary>
+		List<ExportExtraStreams> ExtraDataStreams { get; set; }
+
+
+		/// <summary>
 		/// The maximum allowed file name length
 		/// </summary>
 		int MaxFileNameLength { get; }
-
-		/// <summary>
-		/// The path of the export content folder
-		/// </summary>
-		string Folder { get; }
 
 		/// <summary>
 		/// The name of the current export file
@@ -65,9 +77,9 @@ namespace SmartStore.Services.DataExchange
 		string FileName { get; }
 
 		/// <summary>
-		/// The path of the current export file
+		/// The path of the export content folder
 		/// </summary>
-		string FilePath { get; }
+		string Folder { get; }
 
 
 		/// <summary>
@@ -114,6 +126,25 @@ namespace SmartStore.Services.DataExchange
 	}
 
 
+	public class ExportExtraStreams
+	{
+		/// <summary>
+		/// Your Id to identify this stream within a list of streams
+		/// </summary>
+		public string Id { get; set; }
+
+		/// <summary>
+		/// Stream used to write data to
+		/// </summary>
+		public Stream DataStream { get; internal set; }
+
+		/// <summary>
+		/// The name of the file to be created
+		/// </summary>
+		public string FileName { get; set; }
+	}
+
+
 	public class ExportExecuteContext : IExportExecuteContext
 	{
 		private DataExportResult _result;
@@ -125,7 +156,7 @@ namespace SmartStore.Services.DataExchange
 			_result = result;
 			_cancellation = cancellation;
 			Folder = folder;
-
+			ExtraDataStreams = new List<ExportExtraStreams>();
 			CustomProperties = new Dictionary<string, object>();
 		}
 
@@ -159,12 +190,13 @@ namespace SmartStore.Services.DataExchange
 			get { return RecordsFailed > 11; }
 		}
 
-		public int MaxFileNameLength { get; internal set; }
+		public string DataStreamId { get; set; }
+		public Stream DataStream { get; internal set; }
+		public List<ExportExtraStreams> ExtraDataStreams { get; set; }
 
-		public string Folder { get; private set; }
+		public int MaxFileNameLength { get; internal set; }
 		public string FileName { get; internal set; }
-		public string FileExtension { get; internal set; }
-		public string FilePath { get; internal set; }
+		public string Folder { get; private set; }
 
 		public bool HasPublicDeployment { get; internal set; }
 		public string PublicFolderPath { get; internal set; }

@@ -24,7 +24,18 @@ namespace SmartStore.Services.DataExchange
 		{
 			if (settings == null)
 			{
-				settings = new XmlWriterSettings
+				settings = DefaultSettings;
+			}
+
+			_writer = XmlWriter.Create(stream, settings);			
+			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
+		}
+
+		public static XmlWriterSettings DefaultSettings
+		{
+			get
+			{
+				return new XmlWriterSettings
 				{
 					Encoding = Encoding.UTF8,
 					CheckCharacters = false,
@@ -32,9 +43,6 @@ namespace SmartStore.Services.DataExchange
 					IndentChars = "\t"
 				};
 			}
-
-			_writer = XmlWriter.Create(stream, settings);			
-			_culture = (culture == null ? CultureInfo.InvariantCulture : culture);
 		}
 
 		public XmlWriter Writer

@@ -1,9 +1,7 @@
 ﻿using System;
 using System.Globalization;
-using System.IO;
 using SmartStore.Core;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.Providers
@@ -33,13 +31,9 @@ namespace SmartStore.Services.DataExchange.Providers
 
 		public override void Execute(IExportExecuteContext context)
 		{
-			var path = context.FilePath;
 			var invariantCulture = CultureInfo.InvariantCulture;
 
-			context.Log.Information("Creating file " + path);
-
-			using (var stream = new FileStream(path, FileMode.Create, FileAccess.Write, FileShare.ReadWrite))
-			using (var helper = new ExportXmlHelper(stream))
+			using (var helper = new ExportXmlHelper(context.DataStream))
 			{
 				helper.Writer.WriteStartDocument();
 				helper.Writer.WriteStartElement("Orders");

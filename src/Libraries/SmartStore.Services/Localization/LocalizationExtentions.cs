@@ -5,12 +5,13 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using Fasterflect;
+//using Fasterflect;
 using System.Xml;
 using SmartStore.Core.Data;
 using SmartStore.Utilities;
 using System.Collections.Concurrent;
 using SmartStore.Core.ComponentModel;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.Localization
 {
@@ -324,7 +325,13 @@ namespace SmartStore.Services.Localization
 			string result = localizationService.GetResource(resourceName, languageId, false, "", true);
 
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
-				result = descriptor.TryGetPropertyValue(propertyName) as string;
+			{
+				var fastProp = FastProperty.GetProperty(descriptor.GetType(), propertyName);
+				if (fastProp != null)
+				{
+					result = fastProp.GetValue(descriptor) as string;
+				}
+			}
 
 			return result;
 		}

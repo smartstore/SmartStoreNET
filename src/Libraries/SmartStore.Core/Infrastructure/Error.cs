@@ -2,8 +2,6 @@
 using System.Globalization;
 using System.Diagnostics;
 
-using Fasterflect;
-
 namespace SmartStore
 {
     public static class Error

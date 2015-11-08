@@ -1,12 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.ComponentModel;
 using System.Text;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
-using Fasterflect;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Utilities
 {
@@ -93,7 +92,7 @@ namespace SmartStore.Utilities
         {
             Guard.ArgumentNotNull(() => targetType);
 
-            var target = targetType.CreateInstance(); //Activator.CreateInstance(targetType);
+            var target = Activator.CreateInstance(targetType);
 
             Populate(source, target, out problems);
 
@@ -141,15 +140,14 @@ namespace SmartStore.Utilities
 
             if (source != null)
             {
-                // TODO: Metadaten aus einem TypeCache ziehen zwecks Performance!
-                foreach (var pi in t.GetProperties(BindingFlags.Instance | BindingFlags.Public))
+                foreach (var fastProp in FastProperty.GetProperties(t).Values)
                 {
-
                     object value;
+					var pi = fastProp.Property;
 
                     if (!pi.PropertyType.IsPredefinedSimpleType() && source.TryGetValue(pi.Name, out value) && value is IDictionary<string, object>)
                     {
-                        var nestedValue = target.GetPropertyValue(pi.Name);
+                        var nestedValue = fastProp.GetValue(target);
                         ICollection<ConvertProblem> nestedProblems;
 
                         populated = populated.Concat(new object[] { target }).ToArray();
@@ -159,17 +157,17 @@ namespace SmartStore.Utilities
                         {
                             problems.AddRange(nestedProblems);
                         }
-                        WriteToProperty(target, pi, nestedValue, problems);
+                        WriteToProperty(target, fastProp, nestedValue, problems);
                     }
                     else if (pi.PropertyType.IsArray && !source.ContainsKey(pi.Name))
                     {
-                        WriteToProperty(target, pi, RetrieveArrayValues(pi, source, problems), problems);
+                        WriteToProperty(target, fastProp, RetrieveArrayValues(pi, source, problems), problems);
                     }
                     else
                     {
                         if (source.TryGetValue(pi.Name, out value))
                         {
-                            WriteToProperty(target, pi, value, problems);
+                            WriteToProperty(target, fastProp, value, problems);
                         }
                     }
                 }
@@ -182,21 +180,19 @@ namespace SmartStore.Utilities
             Type elemType = arrayProp.PropertyType.GetElementType();
             bool anyValuesFound = true;
             int idx = 0;
-            //var elements = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elemType));
-            var elements = (IList)typeof(List<>).MakeGenericType(elemType).CreateInstance();
+            var elements = (IList)Activator.CreateInstance(typeof(List<>).MakeGenericType(elemType));
 
-            // TODO: Metadaten aus einem TypeCache ziehen zwecks Performance!
-            var properties = elemType.GetProperties(BindingFlags.Public | BindingFlags.Instance);
+            var properties = FastProperty.GetProperties(elemType);
 
             while (anyValuesFound)
             {
                 object curElement = null;
                 anyValuesFound = false; // false until proven otherwise
 
-                foreach (var pi in properties)
+                foreach (var prop in properties.Values)
                 {
                     //var key = string.Format("_{0}{1}_{2}", idx, arrayProp.Name, pd.Name);
-                    var key = string.Format("{0}[{1}].{2}", arrayProp.Name, idx, pi.Name);
+                    var key = string.Format("{0}[{1}].{2}", arrayProp.Name, idx, prop.Name);
                     object value;
 
                     if (source.TryGetValue(key, out value))
@@ -205,11 +201,11 @@ namespace SmartStore.Utilities
 
                         if (curElement == null)
                         {
-                            curElement = elemType.CreateInstance();
+							curElement = Activator.CreateInstance(elemType);
                             elements.Add(curElement);
                         }
 
-                        SetPropFromValue(value, curElement, pi, problems);
+                        SetPropFromValue(value, curElement, prop, problems);
                     }
                 }
 
@@ -223,14 +219,16 @@ namespace SmartStore.Utilities
         }
 
 
-        private static void SetPropFromValue(object value, object item, PropertyInfo pi, ICollection<ConvertProblem> problems)
+        private static void SetPropFromValue(object value, object item, FastProperty prop, ICollection<ConvertProblem> problems)
         {
-            WriteToProperty(item, pi, value, problems);
+            WriteToProperty(item, prop, value, problems);
         }
 
-        private static void WriteToProperty(object item, PropertyInfo pi, object value, ICollection<ConvertProblem> problems)
+        private static void WriteToProperty(object item, FastProperty prop, object value, ICollection<ConvertProblem> problems)
         {
-            if (!pi.CanWrite)
+			var pi = prop.Property;
+
+			if (!pi.CanWrite)
                 return;
 
             try
@@ -246,8 +244,7 @@ namespace SmartStore.Utilities
 
                     if (pi.PropertyType.IsAssignableFrom(value.GetType()))
                     {
-                        //pi.SetValue(item, value);
-                        item.SetPropertyValue(pi.Name, value);
+                        prop.SetValue(item, value);
                         return;
                     }
 
@@ -256,8 +253,7 @@ namespace SmartStore.Utilities
                         destType = pi.PropertyType.GetGenericArguments()[0];
                     }
 
-                    //pi.SetValue(item, value.Convert(destType));
-                    item.SetPropertyValue(pi.Name, value.Convert(destType));
+                    prop.SetValue(item, value.Convert(destType));
                 }
             }
             catch (Exception ex)

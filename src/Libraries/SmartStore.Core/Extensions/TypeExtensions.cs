@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Diagnostics;
-using Fasterflect;
 
 namespace SmartStore
 {
@@ -392,63 +391,6 @@ namespace SmartStore
         //    else
         //        return false;
         //}
-
-        /// <summary>
-        /// Gets the member's value on the object.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <param name="target">The target object.</param>
-        /// <returns>The member's value on the object.</returns>
-        public static object GetValue(this MemberInfo member, object target)
-        {
-            Guard.ArgumentNotNull(member, "member");
-            Guard.ArgumentNotNull(target, "target");
-
-            var type = target.GetType();
-
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    return target.GetFieldValue(member.Name);
-                //return ((FieldInfo)member).GetValue(target);
-                case MemberTypes.Property:
-                    return target.GetPropertyValue(member.Name);
-                default:
-                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatInvariant(member.Name), "member");
-            }
-        }
-
-        /// <summary>
-        /// Sets the member's value on the target object.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <param name="target">The target.</param>
-        /// <param name="value">The value.</param>
-        public static void SetValue(this MemberInfo member, object target, object value)
-        {
-            Guard.ArgumentNotNull(member, "member");
-            Guard.ArgumentNotNull(target, "target");
-
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    target.SetFieldValue(member.Name, value);
-                    break;
-                //return ((FieldInfo)member).GetValue(target);
-                case MemberTypes.Property:
-                    try
-                    {
-                        target.SetPropertyValue(member.Name, value);
-                    }
-                    catch (TargetParameterCountException e)
-                    {
-                        throw new ArgumentException("PropertyInfo '{0}' has index parameters".FormatInvariant(member.Name), "member", e);
-                    }
-                    break;
-                default:
-                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatInvariant(member.Name), "member");
-            }
-        }
 
         /// <summary>
         /// Gets the underlying type of a <see cref="Nullable{T}" /> type.

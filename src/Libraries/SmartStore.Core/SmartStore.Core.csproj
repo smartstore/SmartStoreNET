@@ -77,10 +77,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -441,7 +437,6 @@
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="Infrastructure\ComparableObject.cs" />
-    <Compile Include="Infrastructure\DateRange.cs" />
     <Compile Include="Infrastructure\DisposableObject.cs" />
     <Compile Include="Infrastructure\EnumFriendlyNameAttribute.cs" />
     <Compile Include="Infrastructure\Error.cs" />
@@ -451,7 +446,6 @@
     <Compile Include="Infrastructure\IStartupTask.cs" />
     <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
-    <Compile Include="Infrastructure\ValueObject.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -599,6 +593,7 @@
     <Compile Include="Packaging\Updater\AppUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

@@ -355,9 +355,9 @@ namespace SmartStore.Utilities.Reflection
 
 			if (value != null)
 			{
-				foreach (var helper in GetProperties(value).Values)
+				foreach (var prop in GetProperties(value).Values)
 				{
-					dictionary[helper.Name] = helper.GetValue(value);
+					dictionary[prop.Name] = prop.GetValue(value);
 				}
 			}
 

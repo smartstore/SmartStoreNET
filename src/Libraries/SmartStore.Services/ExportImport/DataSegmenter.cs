@@ -5,10 +5,10 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.Text;
-using Fasterflect;
 using OfficeOpenXml;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.ExportImport
 {
@@ -277,6 +277,12 @@ namespace SmartStore.Services.ExportImport
 			get { return _position; }
 		}
 
+		public object Fastproperty
+		{
+			get;
+			private set;
+		}
+
 		public TProp GetValue<TProp>(string columnName)
 		{
 			object value;
@@ -298,6 +304,8 @@ namespace SmartStore.Services.ExportImport
 
 			try
 			{
+				var fastProp = FastProperty.GetProperty(typeof(T), propName, true);
+
 				object value;
 				if (this.TryGetValue(propName, out value))
 				{
@@ -319,7 +327,9 @@ namespace SmartStore.Services.ExportImport
 							converted = value.Convert<TProp>();
 						}
 					}
-					return target.TrySetPropertyValue(propName, converted);
+
+					fastProp.SetValue(target, converted);
+					return true;
 				}
 				else
 				{
@@ -328,7 +338,8 @@ namespace SmartStore.Services.ExportImport
 					{
 						// ...but the entity is new. In this case
 						// set the default value if given.
-						return target.TrySetPropertyValue(propName, defaultValue);
+						fastProp.SetValue(target, defaultValue);
+						return true;
 					}
 				}
 			}

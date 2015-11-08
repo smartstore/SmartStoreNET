@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
-using Fasterflect;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Web.Framework.Settings
 {
@@ -139,7 +139,7 @@ namespace SmartStore.Web.Framework.Settings
 		public void UpdateSettings(object settings, FormCollection form, int storeId, ISettingService settingService)
 		{
 			var settingName = settings.GetType().Name;
-			var properties = settings.GetType().GetProperties();
+			var properties = FastProperty.GetProperties(settings.GetType()).Values;
             
 			foreach (var prop in properties)
 			{
@@ -148,7 +148,7 @@ namespace SmartStore.Web.Framework.Settings
 
 				if (storeId == 0 || IsOverrideChecked(key, form))
 				{
-					dynamic value = settings.TryGetPropertyValue(name);
+					dynamic value = prop.GetValue(settings);
 					settingService.SetSetting(key, value == null ? "" : value, storeId, false);
 				}
 				else if (storeId > 0)
@@ -161,7 +161,7 @@ namespace SmartStore.Web.Framework.Settings
         public void UpdateLocalizedSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized)
         {
             var settingName = settings.GetType().Name;
-            var properties = localized.GetType().GetProperties();
+            var properties = FastProperty.GetProperties(localized.GetType()).Values;
 
             foreach (var prop in properties)
             {
@@ -170,7 +170,7 @@ namespace SmartStore.Web.Framework.Settings
 
                 if (storeId == 0 || IsOverrideChecked(key, form))
                 {
-                    dynamic value = settings.TryGetPropertyValue(name);
+                    dynamic value = prop.GetValue(settings);
                     settingService.SetSetting(key, value == null ? "" : value, storeId, false);
                 }
                 else if (storeId > 0)

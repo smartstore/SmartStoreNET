@@ -6,7 +6,6 @@ using System.ComponentModel;
 using System.Linq;
 using System.Globalization;
 using System.IO;
-using Fasterflect;
 
 namespace SmartStore.Utilities
 {
@@ -330,16 +329,6 @@ namespace SmartStore.Utilities
         public static void RegisterTypeConverter<T, TC>() where TC : TypeConverter
         {
             TypeDescriptor.AddAttributes(typeof(T), new TypeConverterAttribute(typeof(TC)));
-        }
-
-        public static T CreateInstance<T>(params object[] parameters) where T : class
-        {
-            return (T)typeof(T).CreateInstance(parameters);
-        }
-
-        public static object CreateInstance(Type type, params object[] parameters)
-        {
-            return type.CreateInstance(parameters);
         }
 
 

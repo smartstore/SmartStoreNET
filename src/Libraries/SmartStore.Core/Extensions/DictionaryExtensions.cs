@@ -5,6 +5,7 @@ using System.Web;
 using System.Web.Routing;
 using System.Globalization;
 using System.Dynamic;
+using SmartStore.Utilities;
 
 namespace SmartStore
 {
@@ -34,7 +35,7 @@ namespace SmartStore
 
         public static void Merge(this IDictionary<string, object> instance, object values, bool replaceExisting = true)
         {
-            instance.Merge(new RouteValueDictionary(values), replaceExisting);
+			instance.Merge(CollectionHelper.ObjectToDictionary(values), replaceExisting);
         }
 
         public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> instance, IDictionary<TKey, TValue> from, bool replaceExisting = true)

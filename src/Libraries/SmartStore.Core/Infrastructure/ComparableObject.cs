@@ -4,7 +4,6 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
-using Fasterflect;
 
 namespace SmartStore
 {
@@ -67,7 +66,7 @@ namespace SmartStore
 
                 foreach (var pi in signatureProperties)
                 {
-                    object value = this.GetPropertyValue(pi.Name); // pi.GetValue(this);
+                    object value = pi.GetValue(this);
 
                     if (value != null)
                         hashCode = (hashCode * HashMultiplier) ^ value.GetHashCode();
@@ -102,8 +101,8 @@ namespace SmartStore
 
             foreach (var pi in signatureProperties)
             {
-                object thisValue = this.GetPropertyValue(pi.Name);
-                object thatValue = compareTo.GetPropertyValue(pi.Name);
+                object thisValue = pi.GetValue(this);
+                object thatValue = pi.GetValue(compareTo);
 
                 if (thisValue == null && thatValue == null)
                     continue;

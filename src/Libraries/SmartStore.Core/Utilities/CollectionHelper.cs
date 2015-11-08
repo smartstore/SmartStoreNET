@@ -6,10 +6,7 @@ using System.Linq;
 using System.Text;
 using System.Collections;
 using System.Globalization;
-using System.Collections.Specialized;
-using System.ComponentModel;
-
-using Fasterflect;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Utilities
 {
@@ -221,22 +218,10 @@ namespace SmartStore.Utilities
 
             Type t = obj.GetType();
 
-            return t.GetProperties(BindingFlags.Instance | BindingFlags.Public)
+            return FastProperty.GetProperties(t).Values
                    .ToDictionary(k => k.Name.Replace("_", "-"),
-                                 v => obj.GetPropertyValue(v.Name),
+                                 v => v.GetValue(obj),
                                  StringComparer.OrdinalIgnoreCase);
-        }
-
-        public static NameValueCollection ObjectToNameValueCollection(object obj)
-        {
-            var result = new NameValueCollection(StringComparer.OrdinalIgnoreCase);
-            foreach (PropertyDescriptor descriptor in TypeDescriptor.GetProperties(obj))
-            {
-                object value = descriptor.GetValue(obj);
-                result.Add(descriptor.Name, value.ToString());
-            }
-
-            return result;
         }
 
         /// <summary>

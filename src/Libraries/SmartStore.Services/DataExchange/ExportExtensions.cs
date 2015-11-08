@@ -1,10 +1,8 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
 using System.Web;
 using System.Web.Caching;
 using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Localization;
@@ -22,20 +20,6 @@ namespace SmartStore.Services.DataExchange
 		public static bool IsValid(this Provider<IExportProvider> provider)
 		{
 			return provider != null;
-		}
-
-		/// <summary>
-		/// Returns a value indicating whether the export provider supports a projection type
-		/// </summary>
-		/// <param name="provider">Export provider</param>
-		/// <param name="feature">The feature to check</param>
-		/// <returns><c>true</c> provider supports type, <c>false</c> provider does not support type.</returns>
-		public static bool Supports(this Provider<IExportProvider> provider, ExportFeatures feature)
-		{
-			if (provider != null)
-				return provider.Metadata.ExportSupport.Contains(feature);
-
-			return false;
 		}
 
 		/// <summary>

@@ -41,10 +41,6 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			EntityIdsSelected = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
 			PreviewData = previewData;
 
-			SupportedFeatures = Enum.GetValues(typeof(ExportFeatures))
-				.Cast<ExportFeatures>()
-				.ToDictionary(x => x, x => Provider.Supports(x));
-
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
@@ -84,10 +80,9 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
 
-		public Dictionary<ExportFeatures, bool> SupportedFeatures { get; private set; }
-		public bool Supports(ExportFeatures feature)
+		public bool Supports(ExportFeature feature)
 		{
-			return (!IsPreview && SupportedFeatures[feature]);
+			return (!IsPreview && Provider.Metadata.ExportFeature.HasFlag(feature));
 		}
 
 		public ExportFilter Filter { get; private set; }

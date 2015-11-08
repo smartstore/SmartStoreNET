@@ -10,11 +10,6 @@ namespace SmartStore.Services.DataExchange
 	[AttributeUsage(AttributeTargets.Class, AllowMultiple = false, Inherited = false)]
 	public sealed class ExportFeaturesAttribute : Attribute
 	{
-		public ExportFeaturesAttribute(params ExportFeatures[] features)
-		{
-			Features = features;
-		}
-
-		public ExportFeatures[] Features { get; set; }
+		public ExportFeature Features { get; set; }
 	}
 }

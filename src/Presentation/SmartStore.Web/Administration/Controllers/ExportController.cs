@@ -279,7 +279,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (provider != null)
 			{
-				model.Provider.Supporting = provider.Metadata.ExportSupport;
+				model.Provider.Feature = provider.Metadata.ExportFeature;
 
 				if (model.Provider.EntityType == ExportEntityType.Product)
 				{

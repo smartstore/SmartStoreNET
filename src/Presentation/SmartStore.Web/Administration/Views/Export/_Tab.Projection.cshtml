@@ -42,7 +42,7 @@
 
 	@if (Model.Provider.EntityType == ExportEntityType.Product)
 	{	
-		if (Model.Provider.Supporting.Contains(ExportFeatures.CanProjectAttributeCombinations))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.CanProjectAttributeCombinations))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -71,7 +71,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.CanOmitGroupedProducts))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.CanOmitGroupedProducts))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -110,7 +110,7 @@
 			</td>
 		</tr>
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.OffersShippingTimeFallback))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.OffersShippingTimeFallback))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -123,7 +123,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.OffersShippingCostsFallback))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.OffersShippingCostsFallback))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -145,7 +145,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.CanIncludeMainPicture))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.CanIncludeMainPicture))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -158,7 +158,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.OffersBrandFallback))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.OffersBrandFallback))
 		{
 			<tr>
 				<td class="adminTitle">
@@ -171,7 +171,7 @@
 			</tr>
 		}
 
-		if (Model.Provider.Supporting.Contains(ExportFeatures.CanProjectDescription))
+		if (Model.Provider.Feature.HasFlag(ExportFeature.CanProjectDescription))
 		{
 			<tr>
 				<td colspan="2">

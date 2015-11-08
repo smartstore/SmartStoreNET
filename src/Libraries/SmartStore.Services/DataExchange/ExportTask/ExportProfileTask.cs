@@ -1539,7 +1539,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 
-			if (ctx.SupportedFeatures[ExportFeatures.CanIncludeMainPicture] && ctx.Projection.PictureSize > 0)
+			if (ctx.Supports(ExportFeature.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);	// perf preview (it's a compromise)
@@ -1745,12 +1745,12 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			#region more attribute controlled data
 
-			if (ctx.Supports(ExportFeatures.CanProjectDescription))
+			if (ctx.Supports(ExportFeature.CanProjectDescription))
 			{
 				PrepareProductDescription(ctx, expando, product);
 			}
 
-			if (ctx.Supports(ExportFeatures.OffersBrandFallback))
+			if (ctx.Supports(ExportFeature.OffersBrandFallback))
 			{
 				string brand = null;
 				var productManus = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
@@ -1764,7 +1764,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				expando._Brand = brand;
 			}
 
-			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
+			if (ctx.Supports(ExportFeature.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
 					expando._MainPictureUrl = _pictureService.Value.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
@@ -1806,18 +1806,18 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				// navigation properties
 				GetDeliveryTimeAndQuantityUnit(ctx, exp, product.DeliveryTimeId, product.QuantityUnitId);
 
-				if (ctx.Supports(ExportFeatures.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
+				if (ctx.Supports(ExportFeature.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
 				{
 					exp.ManufacturerPartNumber = product.Sku;
 				}
 
-				if (ctx.Supports(ExportFeatures.OffersShippingTimeFallback))
+				if (ctx.Supports(ExportFeature.OffersShippingTimeFallback))
 				{
 					dynamic deliveryTime = exp.DeliveryTime;
 					exp._ShippingTime = (deliveryTime == null ? ctx.Projection.ShippingTime : deliveryTime.Name);
 				}
 
-				if (ctx.Supports(ExportFeatures.OffersShippingCostsFallback))
+				if (ctx.Supports(ExportFeature.OffersShippingCostsFallback))
 				{
 					exp._FreeShippingThreshold = ctx.Projection.FreeShippingThreshold;
 
@@ -1827,7 +1827,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 						exp._ShippingCosts = ctx.Projection.ShippingCosts;
 				}
 
-				if (ctx.Supports(ExportFeatures.UsesOldPrice))
+				if (ctx.Supports(ExportFeature.UsesOldPrice))
 				{
 					if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)exp.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 					{
@@ -1847,7 +1847,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					}
 				}
 
-				if (ctx.Supports(ExportFeatures.UsesSpecialPrice))
+				if (ctx.Supports(ExportFeature.UsesSpecialPrice))
 				{
 					exp._SpecialPrice = null;
 					exp._RegularPrice = null;	// price if a special price would not exist

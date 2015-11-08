@@ -1,4 +1,5 @@
 ﻿
+using System;
 namespace SmartStore.Core.Domain.DataExchange
 {
 	/// <summary>
@@ -59,64 +60,67 @@ namespace SmartStore.Core.Domain.DataExchange
 	}
 
 	/// <summary>
-	/// Controls data processing and projection items supported by export provider
+	/// Controls data processing and projection items supported by an export provider
 	/// </summary>
-	public enum ExportFeatures
+	[Flags]
+	public enum ExportFeature
 	{
+		None = 0,
+
 		/// <summary>
 		/// Whether to automatically create a file based public deployment when an export profile is created
 		/// </summary>
-		CreatesInitialPublicDeployment = 0,
+		CreatesInitialPublicDeployment = 1,
 
 		/// <summary>
 		/// Whether to offer option to include\exclude grouped products
 		/// </summary>
-		CanOmitGroupedProducts,
+		CanOmitGroupedProducts = 1 << 2,
 
 		/// <summary>
 		/// Whether to offer option to export attribute combinations as products
 		/// </summary>
-		CanProjectAttributeCombinations,
+		CanProjectAttributeCombinations = 1 << 3,
 
 		/// <summary>
 		/// Whether to offer further options to manipulate the product description
 		/// </summary>
-		CanProjectDescription,
+		CanProjectDescription = 1 << 4,
 
 		/// <summary>
 		/// Whether to offer option to enter a brand fallback
 		/// </summary>
-		OffersBrandFallback,
+		OffersBrandFallback = 1 << 5,
 
 		/// <summary>
 		/// Whether to offer option to set a picture size and to get the URL of the main image
 		/// </summary>
-		CanIncludeMainPicture,
+		CanIncludeMainPicture = 1 << 6,
 
 		/// <summary>
 		/// Whether to use SKU as manufacturer part number if MPN is empty
 		/// </summary>
-		UsesSkuAsMpnFallback,
-		
+		UsesSkuAsMpnFallback = 1 << 7,
+
 		/// <summary>
 		/// Whether to offer option to enter a shipping time fallback
 		/// </summary>
-		OffersShippingTimeFallback,
+		OffersShippingTimeFallback = 1 << 8,
 
 		/// <summary>
 		/// Whether to offer option to enter a shipping costs fallback and a free shipping threshold
 		/// </summary>
-		OffersShippingCostsFallback,
+		OffersShippingCostsFallback = 1 << 9,
 
 		/// <summary>
 		/// Whether to get the calculated old product price
 		/// </summary>
-		UsesOldPrice,
+		UsesOldPrice = 1 << 10,
 
 		/// <summary>
 		/// Whether to get the calculated special and regular price (ignoring special offers)
 		/// </summary>
-		UsesSpecialPrice
+		UsesSpecialPrice = 1 << 11
 	}
 
 	/// <summary>

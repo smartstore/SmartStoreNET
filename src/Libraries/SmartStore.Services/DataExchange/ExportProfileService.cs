@@ -116,7 +116,7 @@ namespace SmartStore.Services.DataExchange
 					RemoveCriticalCharacters = true,
 					CriticalCharacters = "¼,½,¾",
 					PriceType = PriceDisplayType.PreSelectedPrice,
-					NoGroupedProducts = (provider.Supports(ExportFeatures.CanOmitGroupedProducts) ? true : false)
+					NoGroupedProducts = (provider.Metadata.ExportFeature.HasFlag(ExportFeature.CanOmitGroupedProducts) ? true : false)
 				};
 
 				var filter = new ExportFilter
@@ -150,7 +150,7 @@ namespace SmartStore.Services.DataExchange
 			{
 				if (cloneProfile == null)
 				{
-					if (provider.Supports(ExportFeatures.CreatesInitialPublicDeployment))
+					if (provider.Metadata.ExportFeature.HasFlag(ExportFeature.CreatesInitialPublicDeployment))
 					{
 						profile.Deployments.Add(new ExportDeployment
 						{

@@ -94,7 +94,7 @@ namespace SmartStore.Admin.Models.DataExchange
 			public Type ConfigDataType { get; set; }
 			public object ConfigData { get; set; }
 
-			public ExportFeatures[] Supporting { get; set; }
+			public ExportFeature Feature { get; set; }
 
 			[SmartResourceDisplayName("Common.Image")]
 			public string ThumbnailUrl { get; set; }

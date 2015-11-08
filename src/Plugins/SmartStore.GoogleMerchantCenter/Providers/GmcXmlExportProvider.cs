@@ -17,15 +17,15 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 	[SystemName("Feeds.GoogleMerchantCenterProductXml")]
 	[FriendlyName("Google Merchant Center XML product feed")]
 	[DisplayOrder(1)]
-	[ExportFeatures(
-		ExportFeatures.CreatesInitialPublicDeployment,
-		ExportFeatures.CanOmitGroupedProducts,
-		ExportFeatures.CanProjectAttributeCombinations,
-		ExportFeatures.CanProjectDescription,
-		ExportFeatures.UsesSkuAsMpnFallback,
-		ExportFeatures.OffersBrandFallback,
-		ExportFeatures.CanIncludeMainPicture,
-		ExportFeatures.UsesSpecialPrice)]
+	[ExportFeatures(Features =
+		ExportFeature.CreatesInitialPublicDeployment |
+		ExportFeature.CanOmitGroupedProducts |
+		ExportFeature.CanProjectAttributeCombinations |
+		ExportFeature.CanProjectDescription |
+		ExportFeature.UsesSkuAsMpnFallback |
+		ExportFeature.OffersBrandFallback |
+		ExportFeature.CanIncludeMainPicture |
+		ExportFeature.UsesSpecialPrice)]
 	public class GmcXmlExportProvider : ExportProviderBase
 	{
 		private const string _googleNamespace = "http://base.google.com/ns/1.0";

@@ -768,7 +768,7 @@ namespace SmartStore.Web.Framework
 				var isConfigurable = typeof(IConfigurable).IsAssignableFrom(type);
 				var isEditable = typeof(IUserEditable).IsAssignableFrom(type);
 				var isHidden = GetIsHidden(type);
-				var exportSupport = GetExportFeatures(type);				
+				var exportFeature = GetExportFeature(type);				
 
 				var registration = builder.RegisterType(type).Named<IProvider>(systemName).InstancePerRequest().PropertiesAutowired(PropertyWiringOptions.None);
 				registration.WithMetadata<ProviderMetadata>(m =>
@@ -785,7 +785,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
 					m.For(em => em.IsHidden, isHidden);
-					m.For(em => em.ExportSupport, exportSupport);
+					m.For(em => em.ExportFeature, exportFeature);
 				});
 
 				// register specific provider type
@@ -863,7 +863,7 @@ namespace SmartStore.Web.Framework
 			return false;
 		}
 
-		private ExportFeatures[] GetExportFeatures(Type type)
+		private ExportFeature GetExportFeature(Type type)
 		{
 			var attr = type.GetAttribute<ExportFeaturesAttribute>(false);
 
@@ -872,7 +872,7 @@ namespace SmartStore.Web.Framework
 				return attr.Features;
 			}
 
-			return new ExportFeatures[0];
+			return ExportFeature.None;
 		}
 
 		private Tuple<string/*Name*/, string/*Description*/> GetFriendlyName(Type type, PluginDescriptor descriptor)

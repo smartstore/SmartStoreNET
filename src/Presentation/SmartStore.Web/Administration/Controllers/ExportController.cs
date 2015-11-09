@@ -757,7 +757,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					if (provider.Value.EntityType == ExportEntityType.Product)
 					{
-						var product = x._Entity as Product;
+						var product = x.Entity as Product;
 						var pm = new ExportPreviewProductModel
 						{
 							Id = x.Id,

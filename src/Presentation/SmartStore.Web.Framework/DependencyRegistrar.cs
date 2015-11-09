@@ -867,7 +867,7 @@ namespace SmartStore.Web.Framework
 		{
 			var attr = type.GetAttribute<ExportFeaturesAttribute>(false);
 
-			if (attr != null && attr.Features != null)
+			if (attr != null)
 			{
 				return attr.Features;
 			}

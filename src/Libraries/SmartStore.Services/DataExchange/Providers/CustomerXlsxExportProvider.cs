@@ -143,7 +143,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						{
 							int column = 1;
 							DateTime? lastLoginDateUtc = customer.LastLoginDateUtc;
-							Customer entity = customer._Entity;
+							Customer entity = customer.Entity;
 
 							WriteCell(worksheet, row, ref column, (int)customer.Id);
 							WriteCell(worksheet, row, ref column, GetGenericAttributeValue(customer, SystemCustomerAttributeNames.CustomerNumber));

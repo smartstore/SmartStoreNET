@@ -840,7 +840,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = points;
+			expando.Entity = points;
 
 			expando.Id = points.Id;
 			expando.CustomerId = points.CustomerId;
@@ -859,7 +859,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = customer;
+			expando.Entity = customer;
 
 			expando.Id = customer.Id;
 			expando.CustomerGuid = customer.CustomerGuid;
@@ -900,7 +900,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = store;
+			expando.Entity = store;
 
 			expando.Id = store.Id;
 			expando.Name = store.Name;
@@ -927,7 +927,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;		
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = deliveryTime;
+			expando.Entity = deliveryTime;
 
 			expando.Id = deliveryTime.Id;
 			expando.Name = deliveryTime.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -946,7 +946,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = quantityUnit;
+			expando.Entity = quantityUnit;
 
 			expando.Id = quantityUnit.Id;
 			expando.Name = quantityUnit.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -968,7 +968,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = picture;
+			expando.Entity = picture;
 
 			expando.Id = picture.Id;
 			expando.SeoFilename = picture.SeoFilename;
@@ -992,7 +992,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = pva;
+			expando.Entity = pva;
 
 			expando.Id = pva.Id;
 			expando.TextPrompt = pva.TextPrompt;
@@ -1001,7 +1001,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.DisplayOrder = pva.DisplayOrder;
 
 			dynamic attribute = new ExpandoObject();
-			attribute._Entity = pva.ProductAttribute;
+			attribute.Entity = pva.ProductAttribute;
 			attribute.Id = pva.ProductAttribute.Id;
 			attribute.Alias = pva.ProductAttribute.Alias;
 			attribute.Name = pva.ProductAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -1012,7 +1012,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic value = new ExpandoObject();
-					value._Entity = x;
+					value.Entity = x;
 					value.Id = x.Id;
 					value.Alias = x.Alias;
 					value.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -1151,7 +1151,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		//		return null;
 
 		//	dynamic expando = new ExpandoObject();
-		//	expando._Entity = product;
+		//	expando.Entity = product;
 
 		//	expando.Id = product.Id;
 		//	expando.ProductTypeId = product.ProductTypeId;
@@ -1283,7 +1283,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = order;
+			expando.Entity = order;
 
 			expando.Id = order.Id;
 			expando.OrderNumber = order.GetOrderNumber();
@@ -1373,7 +1373,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = orderItem;
+			expando.Entity = orderItem;
 
 			expando.Id = orderItem.Id;
 			expando.OrderItemGuid = orderItem.OrderItemGuid;
@@ -1407,7 +1407,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = shipment;
+			expando.Entity = shipment;
 
 			expando.Id = shipment.Id;
 			expando.OrderId = shipment.OrderId;
@@ -1421,7 +1421,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ShipmentId = x.ShipmentId;
 					exp.OrderItemId = x.OrderItemId;
@@ -1439,7 +1439,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = discount;
+			expando.Entity = discount;
 
 			expando.Id = discount.Id;
 			expando.Name = discount.Name;
@@ -1465,7 +1465,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var option = psa.SpecificationAttributeOption;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = psa;
+			expando.Entity = psa;
 
 			expando.Id = psa.Id;
 			expando.ProductId = psa.ProductId;
@@ -1475,14 +1475,14 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			expando.DisplayOrder = psa.DisplayOrder;
 
 			dynamic expAttribute = new ExpandoObject();
-			expAttribute._Entity = option.SpecificationAttribute;
+			expAttribute.Entity = option.SpecificationAttribute;
 			expAttribute.Id = option.SpecificationAttribute.Id;
 			expAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			expAttribute.DisplayOrder = option.SpecificationAttribute.DisplayOrder;
 			expAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Name);
 
 			dynamic expOption = new ExpandoObject();
-			expOption._Entity = option;
+			expOption.Entity = option;
 			expOption.Id = option.Id;
 			expOption.SpecificationAttributeId = option.SpecificationAttributeId;
 			expOption.Name = option.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
@@ -1501,7 +1501,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = genericAttribute;
+			expando.Entity = genericAttribute;
 
 			expando.Id = genericAttribute.Id;
 			expando.EntityId = genericAttribute.EntityId;
@@ -1519,7 +1519,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				return null;
 
 			dynamic expando = new ExpandoObject();
-			expando._Entity = subscription;
+			expando.Entity = subscription;
 
 			expando.Id = subscription.Id;
 			expando.NewsLetterSubscriptionGuid = subscription.NewsLetterSubscriptionGuid;
@@ -1582,7 +1582,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
@@ -1598,7 +1598,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
@@ -1620,7 +1620,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
@@ -1673,7 +1673,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					.Select(x =>
 					{
 						dynamic exp = new ExpandoObject();
-						exp._Entity = x;
+						exp.Entity = x;
 						exp.Id = x.Id;
 						exp.ProductId = x.ProductId;
 						exp.StoreId = x.StoreId;
@@ -1698,7 +1698,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.Name = x.GetLocalized(y => y.Name, languageId, true, false);
 					exp.SeName = x.GetSeName(languageId);
@@ -1719,7 +1719,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					.Select(x =>
 					{
 						dynamic exp = new ExpandoObject();
-						exp._Entity = x;
+						exp.Entity = x;
 						exp.Id = x.Id;
 						exp.ProductId = x.ProductId;
 						exp.BundleProductId = x.BundleProductId;
@@ -1992,7 +1992,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
@@ -2028,7 +2028,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.ProductId = x.ProductId;
 					exp.DisplayOrder = x.DisplayOrder;
@@ -2063,7 +2063,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 				.Select(x =>
 				{
 					dynamic exp = new ExpandoObject();
-					exp._Entity = x;
+					exp.Entity = x;
 					exp.Id = x.Id;
 					exp.Name = x.Name;
 					exp.FreeShipping = x.FreeShipping;

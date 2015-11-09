@@ -19,6 +19,7 @@ namespace SmartStore.Admin.Models.DataExchange
 		public string UnspecifiedString { get; set; }
 		public bool LogFileExists { get; set; }
 		public bool HasActiveProvider { get; set; }
+		public string[] FileNamePatternDescriptions { get; set; }
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }

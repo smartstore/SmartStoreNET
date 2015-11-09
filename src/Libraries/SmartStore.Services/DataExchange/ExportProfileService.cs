@@ -18,7 +18,7 @@ namespace SmartStore.Services.DataExchange
 {
 	public partial class ExportProfileService : IExportProfileService
 	{
-		private const string _defaultFileNamePattern = "%Store.Id%-%ExportProfile.Id%-%Misc.FileNumber%-%ExportProfile.SeoName%";
+		private const string _defaultFileNamePattern = "%Store.Id%-%Profile.Id%-%File.Index%-%Profile.SeoName%";
 
 		private readonly IRepository<ExportProfile> _exportProfileRepository;
 		private readonly IRepository<ExportDeployment> _exportDeploymentRepository;

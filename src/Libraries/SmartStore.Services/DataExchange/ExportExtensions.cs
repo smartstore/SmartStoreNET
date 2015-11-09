@@ -1,5 +1,7 @@
 ﻿using System;
+using System.Globalization;
 using System.IO;
+using System.Text;
 using System.Web;
 using System.Web.Caching;
 using SmartStore.Core.Domain;
@@ -64,18 +66,31 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="profile">Export profile</param>
 		/// <param name="store">Store</param>
-		/// <param name="fileNumber">File number</param>
+		/// <param name="fileIndex">One based file index</param>
 		/// <param name="maxFileNameLength">The maximum length of the file name</param>
 		/// <returns>Resolved file name pattern</returns>
-		public static string ResolveFileNamePattern(this ExportProfile profile, Store store, int fileNumber, int maxFileNameLength)
+		public static string ResolveFileNamePattern(this ExportProfile profile, Store store, int fileIndex, int maxFileNameLength)
 		{
-			var result = profile.FileNamePattern
-				.Replace("%ExportProfile.Id%", profile.Id.ToString())
-				.Replace("%ExportProfile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""))
-				.Replace("%ExportProfile.FolderName%", profile.FolderName)
-				.Replace("%Store.Id%", store.Id.ToString())
-				.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores")
-				.Replace("%Misc.FileNumber%", fileNumber.ToString("D4"))
+			var sb = new StringBuilder(profile.FileNamePattern);
+
+			sb.Replace("%Profile.Id%", profile.Id.ToString());
+			sb.Replace("%Profile.FolderName%", profile.FolderName);
+			sb.Replace("%Store.Id%", store.Id.ToString());
+			sb.Replace("%File.Index%", fileIndex.ToString("D4"));
+
+			if (profile.FileNamePattern.Contains("%Profile.SeoName%"))
+				sb.Replace("%Profile.SeoName%", SeoHelper.GetSeName(profile.Name, true, false).Replace("/", "").Replace("-", ""));		
+
+			if (profile.FileNamePattern.Contains("%Store.SeoName%"))
+				sb.Replace("%Store.SeoName%", profile.PerStore ? SeoHelper.GetSeName(store.Name, true, false) : "allstores");
+
+			if (profile.FileNamePattern.Contains("%Random.Number%"))
+				sb.Replace("%Random.Number%", CommonHelper.GenerateRandomInteger().ToString());
+
+			if (profile.FileNamePattern.Contains("%Timestamp%"))
+				sb.Replace("%Timestamp%", DateTime.UtcNow.ToString("s", CultureInfo.InvariantCulture));
+
+			var result = sb.ToString()
 				.ToValidFileName("")
 				.Truncate(maxFileNameLength);
 

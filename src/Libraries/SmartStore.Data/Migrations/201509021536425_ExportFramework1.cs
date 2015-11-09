@@ -100,8 +100,8 @@ namespace SmartStore.Data.Migrations
 				"Legt den Namen des Ordners fest, in den die Daten exportiert werden.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.FolderAndFileName.Validate",
-				"Please enter a valid folder and file name. Example for file names: %Misc.FileNumber%-%ExportProfile.Id%-gmc-%Store.Name%",
-				"Bitte einen gültigen Ordner- und Dateinamen eingeben. Beispiel für Dateinamen: %Misc.FileNumber%-%ExportProfile.Id%-gmc-%Store.Name%");
+				"Please enter a valid folder and file name. Example for file names: %File.Index%-%Profile.Id%-gmc-%Store.Name%",
+				"Bitte einen gültigen Ordner- und Dateinamen eingeben. Beispiel für Dateinamen: %File.Index%-%Profile.Id%-gmc-%Store.Name%");
 
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.Deployment.CreateZip",

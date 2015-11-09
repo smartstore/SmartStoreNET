@@ -41,6 +41,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Common.ShowAll", "Show all", "Alle anzeigen");
 			builder.AddOrUpdate("Admin.Common.Selected", "Selected", "Ausgewählte");
 			builder.AddOrUpdate("Admin.Common.Entity", "Entity", "Entität");
+			builder.AddOrUpdate("Admin.Common.Placeholder", "Placeholder", "Platzhalter");
 
 
 			builder.AddOrUpdate("Admin.Common.FilesDeleted",
@@ -107,6 +108,10 @@ namespace SmartStore.Data.Migrations
 				"Only one active SEO name should be set per language.",
 				"Pro Sprache darf nur ein aktiver SEO Name festgelegt werden.");
 
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.FileNamePatternDescriptions",
+				"ID of export profil;Folder name of export profil;SEO name of export profil;Store ID;SEO name of store;One based file index;Random number;UTC timestamp",
+				"ID des Exportprofils;Ordername des Exportprofils;SEO Name des Exportprofils;Shop ID;SEO Name des Shops;Mit 1 beginnender Dateiindex;Zufallszahl;UTC Zeitstempel");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NotPreviewCompatible",
 				"This option is not taken into account in the preview.",

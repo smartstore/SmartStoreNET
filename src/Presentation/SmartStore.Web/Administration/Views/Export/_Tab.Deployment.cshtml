@@ -23,6 +23,16 @@
 					@Html.TextBoxFor(x => x.FileNamePattern, new { @class = "input-large" })
 					@Html.ValidationMessageFor(x => x.FileNamePattern)
 				</div>
+
+				<div class="clear"></div>
+				<div class="btn-below">
+					<a id="FileNamePatternDescriptionLink" href="javascript:void(0)">@T("Admin.Common.Show")...</a>
+					<div id="FileNamePatternDescription" class="btn-below hide">
+						@FileNamePatternDescription()
+					</div>
+				</div>
+
+				<div class="clear"></div>
 				<div id="FileNamePatternExample" class="btn-below">
 					<button type="button" class="btn btn-small pull-left">
 						<i class="fa fa-refresh"></i>&nbsp;@T("Common.Example")
@@ -126,3 +136,61 @@ else
 		@Html.Raw(T("Admin.DataExchange.Export.NonFileBasedExport.Note"))
 	</div>
 }
+
+@helper FileNamePatternDescription()
+{
+	<table class="table admin-table" style="width: 560px;">
+		<thead>
+			<tr>
+				<th>@T("Admin.Common.Placeholder")</th>
+				<th>@T("Common.Description")</th>
+			</tr>
+		</thead>
+		<tbody>
+			<tr>
+				<td>%Profile.Id%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(0)</td>
+			</tr>
+			<tr>
+				<td>%Profile.FolderName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(1)</td>
+			</tr>
+			<tr>
+				<td>%Profile.SeoName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(2)</td>
+			</tr>
+			<tr>
+				<td>%Store.Id%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(3)</td>
+			</tr>
+			<tr>
+				<td>%Store.SeoName%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(4)</td>
+			</tr>
+			<tr>
+				<td>%File.Index%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(5)</td>
+			</tr>
+			<tr>
+				<td>%Random.Number%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(6)</td>
+			</tr>
+			<tr>
+				<td>%Timestamp%</td>
+				<td>@Model.FileNamePatternDescriptions.SafeGet(7)</td>
+			</tr>
+		</tbody>
+</table>
+}
+
+<script type="text/javascript">
+	$(document).ready(function () {
+
+		// show/hide file name pattern descriptions
+		$('#FileNamePatternDescriptionLink').click(function () {
+			var descriptions = $('#FileNamePatternDescription');
+			$('#FileNamePatternDescriptionLink').html((descriptions.is(':visible') ? '@T("Admin.Common.Show")' : '@T("Admin.Common.Hide")') + '...');
+			descriptions.toggle();
+		});
+	});
+</script>

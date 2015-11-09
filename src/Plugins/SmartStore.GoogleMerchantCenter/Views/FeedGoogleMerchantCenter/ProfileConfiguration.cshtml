@@ -39,9 +39,10 @@
 			@Html.SmartLabelFor(m => m.Condition)
 		</td>
 		<td class="adminData">
-			@Html.DropDownList("Condition", new List<SelectListItem> {
+			@Html.DropDownList("Condition", new List<SelectListItem>
+			{
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
-				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionNew"), Value = "new" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionUsed"), Value = "used" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.ConditionRefurbished"), Value = "refurbished" }
@@ -54,9 +55,10 @@
 			@Html.SmartLabelFor(m => m.Availability)
 		</td>
 		<td class="adminData">
-			@Html.DropDownList("Availability", new List<SelectListItem> {
+			@Html.DropDownList("Availability", new List<SelectListItem>
+			{
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
-				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityInStock"), Value = "in stock" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityOutOfStock"), Value = "out of stock" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AvailabilityPreorder"), Value = "preorder" }
@@ -71,7 +73,7 @@
 		<td class="adminData">
 			@Html.DropDownList("Gender", new List<SelectListItem> {
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
-				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderMale"), Value = "male" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderFemale"), Value = "female" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.GenderUnisex"), Value = "unisex" }
@@ -86,7 +88,7 @@
 		<td class="adminData">
 			@Html.DropDownList("AgeGroup", new List<SelectListItem> {
 				new SelectListItem { Text = T("Common.Auto"), Value = "" },
-				new SelectListItem { Text = T("Common.Unspecified"), Value = ProductExportXmlProvider.Unspecified },
+				new SelectListItem { Text = T("Common.Unspecified"), Value = GmcXmlExportProvider.Unspecified },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AgeGroupAdult"), Value = "adult" },
 				new SelectListItem { Text = T("Plugins.Feed.Froogle.AgeGroupKids"), Value = "kids" }
 			})

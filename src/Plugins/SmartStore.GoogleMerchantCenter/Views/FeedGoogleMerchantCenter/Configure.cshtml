@@ -22,7 +22,7 @@
 			@Html.Raw(@T("Plugins.Feed.Froogle.AdminInstruction"))
 		</div>
 		<div>
-			@Html.Action("InfoProfile", "Export", new { systemName = ProductExportXmlProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
+			@Html.Action("InfoProfile", "Export", new { systemName = GmcXmlExportProvider.SystemName, returnUrl = Request.RawUrl, area = "admin" })
 		</div>
 	</div>
 	<div>

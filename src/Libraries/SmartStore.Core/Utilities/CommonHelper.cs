@@ -1,3 +1,4 @@
+using SmartStore.Utilities.Reflection;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -136,7 +137,7 @@ namespace SmartStore.Utilities
 
 		public static bool TryConvert<T>(object value, CultureInfo culture, out T convertedValue)
 		{
-			return Misc.TryAction<T>(delegate
+			return TryAction<T>(delegate
 			{
 				return value.Convert<T>(culture);
 			}, out convertedValue);
@@ -149,7 +150,7 @@ namespace SmartStore.Utilities
 
 		public static bool TryConvert(object value, Type to, CultureInfo culture, out object convertedValue)
 		{
-			return Misc.TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
+			return TryAction<object>(delegate { return value.Convert(to, culture); }, out convertedValue);
 		}
 
 		public static ExpandoObject ToExpando(object value)
@@ -163,6 +164,17 @@ namespace SmartStore.Utilities
 				expando.Add(item);
 			}
 			return (ExpandoObject)expando;
+		}
+
+		public static IDictionary<string, object> ObjectToDictionary(object obj)
+		{
+			Guard.ArgumentNotNull(() => obj);
+
+			Type t = obj.GetType();
+
+			return FastProperty.ObjectToDictionary(
+				obj,
+				key => key.Replace("_", "-"));
 		}
 
 		public static TypeConverter GetTypeConverter(Type type)
@@ -191,5 +203,21 @@ namespace SmartStore.Utilities
 			return setting.Convert<T>();
 		}
 
-    }
+		private static bool TryAction<T>(Func<T> func, out T output)
+		{
+			Guard.ArgumentNotNull(() => func);
+
+			try
+			{
+				output = func();
+				return true;
+			}
+			catch
+			{
+				output = default(T);
+				return false;
+			}
+		}
+
+	}
 }

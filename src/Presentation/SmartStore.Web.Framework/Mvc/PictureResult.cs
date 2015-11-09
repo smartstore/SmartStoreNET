@@ -9,8 +9,7 @@ namespace SmartStore.Web.Framework.Mvc
     public class PictureResult : FileStreamResult
     {
         public PictureResult(Picture picture, int targetSize)
-            : base(
-         GetMemoryStream(picture, targetSize), picture.MimeType)
+            : base(GetMemoryStream(picture, targetSize), picture.MimeType)
         {
 
         }

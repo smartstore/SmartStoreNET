@@ -10,7 +10,6 @@ namespace SmartStore
 {
 	public static class StreamExtensions
 	{
-		
         public static bool ToFile(this Stream srcStream, string path) 
         {
 			if (srcStream == null)

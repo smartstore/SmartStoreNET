@@ -67,7 +67,7 @@ namespace SmartStore.Web.Framework.Controllers
 
 			if (additionalViewData != null)
 			{
-				controller.ViewData.AddRange(CollectionHelper.ObjectToDictionary(additionalViewData));
+				controller.ViewData.AddRange(CommonHelper.ObjectToDictionary(additionalViewData));
 			}
 
             using (var sw = new StringWriter())

@@ -340,26 +340,6 @@ namespace SmartStore
             }
         }
 
-        /// <summary>
-        /// Determines whether the string contains white space.
-        /// </summary>
-        /// <param name="s">The string to test for white space.</param>
-        /// <returns>
-        /// 	<c>true</c> if the string contains white space; otherwise, <c>false</c>.
-        /// </returns>
-        [DebuggerStepThrough]
-        public static bool ContainsWhiteSpace(this string value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            for (int i = 0; i < value.Length; i++)
-            {
-                if (char.IsWhiteSpace(value[i]))
-                    return true;
-            }
-            return false;
-        }
-
 		/// <summary>
 		/// Ensure that a string starts with a string.
 		/// </summary>
@@ -399,15 +379,6 @@ namespace SmartStore
             }
 
             return value + endWith;
-        }
-
-        [DebuggerStepThrough]
-        public static int? GetLength(this string value)
-        {
-            if (value == null)
-                return null;
-            else
-                return value.Length;
         }
 
         [DebuggerStepThrough]
@@ -532,98 +503,6 @@ namespace SmartStore
 		}
 
         [DebuggerStepThrough]
-        public static string ToCamelCase(this string instance)
-        {
-            char ch = instance[0];
-            return (ch.ToString().ToLowerInvariant() + instance.Substring(1));
-        }
-
-        [DebuggerStepThrough]
-        public static string ReplaceNewLines(this string value, string replacement)
-        {
-            StringReader sr = new StringReader(value);
-            StringBuilder sb = new StringBuilder();
-
-            bool first = true;
-
-            string line;
-            while ((line = sr.ReadLine()) != null)
-            {
-                if (first)
-                    first = false;
-                else
-                    sb.Append(replacement);
-
-                sb.Append(line);
-            }
-
-            return sb.ToString();
-        }
-
-        /// <summary>
-        /// Indents the specified string.
-        /// </summary>
-        /// <param name="s">The string to indent.</param>
-        /// <param name="indentation">The number of characters to indent by.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
-        public static string Indent(this string value, int indentation)
-        {
-            return Indent(value, indentation, ' ');
-        }
-
-        /// <summary>
-        /// Indents the specified string.
-        /// </summary>
-        /// <param name="s">The string to indent.</param>
-        /// <param name="indentation">The number of characters to indent by.</param>
-        /// <param name="indentChar">The indent character.</param>
-        /// <returns></returns>
-        [DebuggerStepThrough]
-        public static string Indent(this string value, int indentation, char indentChar)
-        {
-            Guard.ArgumentNotNull(value, "value");
-            Guard.ArgumentIsPositive(indentation, "indentation");
-
-            StringReader sr = new StringReader(value);
-            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-
-            ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
-            {
-                tw.Write(new string(indentChar, indentation));
-                tw.Write(line);
-            });
-
-            return sw.ToString();
-        }
-
-        /// <summary>
-        /// Numbers the lines.
-        /// </summary>
-        /// <param name="s">The string to number.</param>
-        /// <returns></returns>
-        public static string NumberLines(this string value)
-        {
-            Guard.ArgumentNotNull(value, "value");
-
-            StringReader sr = new StringReader(value);
-            StringWriter sw = new StringWriter(CultureInfo.InvariantCulture);
-
-            int lineNumber = 1;
-
-            ActionTextReaderLine(sr, sw, delegate(TextWriter tw, string line)
-            {
-                tw.Write(lineNumber.ToString(CultureInfo.InvariantCulture).PadLeft(4));
-                tw.Write(". ");
-                tw.Write(line);
-
-                lineNumber++;
-            });
-
-            return sw.ToString();
-        }
-
-        [DebuggerStepThrough]
         public static string EncodeJsString(this string value)
         {
             return EncodeJsString(value, '"', true);
@@ -632,7 +511,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value, char delimiter, bool appendDelimiters)
         {
-            StringBuilder sb = new StringBuilder(value.GetLength() ?? 16);
+            StringBuilder sb = new StringBuilder(value?.Length ?? 16);
             using (StringWriter w = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
                 EncodeJsString(w, value, delimiter, appendDelimiters);

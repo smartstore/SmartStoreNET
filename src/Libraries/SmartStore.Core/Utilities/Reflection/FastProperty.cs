@@ -343,7 +343,7 @@ namespace SmartStore.Utilities.Reflection
 		/// The implementation of PropertyHelper will cache the property accessors per-type. This is
 		/// faster when the the same type is used multiple times with ObjectToDictionary.
 		/// </remarks>
-		public static IDictionary<string, object> ObjectToDictionary(object value)
+		public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null)
 		{
 			var dictionary = value as IDictionary<string, object>;
 			if (dictionary != null)
@@ -351,13 +351,15 @@ namespace SmartStore.Utilities.Reflection
 				return new Dictionary<string, object>(dictionary, StringComparer.OrdinalIgnoreCase);
 			}
 
+			keySelector = keySelector ?? new Func<string, string>(key => key);
+
 			dictionary = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 
 			if (value != null)
 			{
 				foreach (var prop in GetProperties(value).Values)
 				{
-					dictionary[prop.Name] = prop.GetValue(value);
+					dictionary[keySelector(prop.Name)] = prop.GetValue(value);
 				}
 			}
 

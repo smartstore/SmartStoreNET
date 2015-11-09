@@ -104,7 +104,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual TBuilder HtmlAttributes(object attributes)
         {
-            return this.HtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public virtual TBuilder HtmlAttributes(IDictionary<string, object> attributes)

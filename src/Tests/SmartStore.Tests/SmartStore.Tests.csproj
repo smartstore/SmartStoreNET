@@ -86,6 +86,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="AttributeExtensions.cs" />
+    <Compile Include="Chronometer.cs" />
     <Compile Include="ExceptionAssert.cs" />
     <Compile Include="MemoryRepository.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

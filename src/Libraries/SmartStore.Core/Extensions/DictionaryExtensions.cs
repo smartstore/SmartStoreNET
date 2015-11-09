@@ -9,10 +9,8 @@ using SmartStore.Utilities;
 
 namespace SmartStore
 {
-    
     public static class DictionaryExtensions
     {
-
         public static void AddRange<TKey, TValue>(this IDictionary<TKey, TValue> values, IEnumerable<KeyValuePair<TKey, TValue>> other)
         {
             foreach (var kvp in other)
@@ -35,7 +33,7 @@ namespace SmartStore
 
         public static void Merge(this IDictionary<string, object> instance, object values, bool replaceExisting = true)
         {
-			instance.Merge(CollectionHelper.ObjectToDictionary(values), replaceExisting);
+			instance.Merge(CommonHelper.ObjectToDictionary(values), replaceExisting);
         }
 
         public static void Merge<TKey, TValue>(this IDictionary<TKey, TValue> instance, IDictionary<TKey, TValue> from, bool replaceExisting = true)
@@ -57,17 +55,6 @@ namespace SmartStore
         public static void PrependInValue(this IDictionary<string, object> instance, string key, string separator, object value)
         {
             instance[key] = !instance.ContainsKey(key) ? value.ToString() : (value + separator + instance[key]);
-        }
-
-        public static string ToAttributeString(this IDictionary<string, object> instance)
-        {
-            var sb = new StringBuilder();
-            foreach (KeyValuePair<string, object> pair in instance)
-            {
-                object[] args = new object[] { HttpUtility.HtmlAttributeEncode(pair.Key), HttpUtility.HtmlAttributeEncode(pair.Value.ToString()) };
-                sb.Append(" {0}=\"{1}\"".FormatWith(args));
-            }
-            return sb.ToString();
         }
 
 		public static TValue GetValue<TKey, TValue>(this IDictionary<TKey, object> instance, TKey key)

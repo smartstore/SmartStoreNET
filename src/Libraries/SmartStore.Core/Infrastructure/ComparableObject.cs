@@ -7,7 +7,6 @@ using System.ComponentModel;
 
 namespace SmartStore
 {
-
     /// <summary>
     /// Provides a standard base class for facilitating sophisticated comparison of objects.
     /// </summary>

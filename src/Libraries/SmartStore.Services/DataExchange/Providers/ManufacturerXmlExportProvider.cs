@@ -1,5 +1,6 @@
 ﻿using System;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
@@ -54,12 +55,13 @@ namespace SmartStore.Services.DataExchange.Providers
 							helper.Writer.WriteStartElement("ProductManufacturers");
 							foreach (dynamic productManu in manufacturer.ProductManufacturers)
 							{
+								ProductManufacturer entityProductManu = productManu.Entity;
 								helper.Writer.WriteStartElement("ProductManufacturer");
-								helper.Writer.Write("Id", ((int)productManu.Id).ToString());
-								helper.Writer.Write("ProductId", ((int)productManu.ProductId).ToString());
-								helper.Writer.Write("DisplayOrder", ((int)productManu.DisplayOrder).ToString());
-								helper.Writer.Write("IsFeaturedProduct", ((bool)productManu.IsFeaturedProduct).ToString());
-								helper.Writer.Write("ManufacturerId", ((int)productManu.ManufacturerId).ToString());
+								helper.Writer.Write("Id", entityProductManu.Id.ToString());
+								helper.Writer.Write("ProductId", entityProductManu.ProductId.ToString());
+								helper.Writer.Write("DisplayOrder", entityProductManu.DisplayOrder.ToString());
+								helper.Writer.Write("IsFeaturedProduct", entityProductManu.IsFeaturedProduct.ToString());
+								helper.Writer.Write("ManufacturerId", entityProductManu.ManufacturerId.ToString());
 								helper.Writer.WriteEndElement();	// ProductManufacturer
 							}
 							helper.Writer.WriteEndElement();	// ProductManufacturers

@@ -3,6 +3,7 @@ using System.Drawing;
 using OfficeOpenXml;
 using OfficeOpenXml.Style;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.Providers
@@ -136,6 +137,8 @@ namespace SmartStore.Services.DataExchange.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
+						Order entity = order.Entity;
+
 						try
 						{
 							int column = 1;
@@ -150,37 +153,37 @@ namespace SmartStore.Services.DataExchange.Providers
 								rewardPointsUsed = (-1 * (int)order.RedeemedRewardPointsEntry.Points);
 
 							WriteCell(worksheet, row, ref column, (string)order.OrderNumber);
-							WriteCell(worksheet, row, ref column, (Guid)order.OrderGuid);
-							WriteCell(worksheet, row, ref column, (int)order.CustomerId);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderSubtotalInclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderSubtotalExclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderSubTotalDiscountInclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderSubTotalDiscountExclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderShippingInclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderShippingExclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.PaymentMethodAdditionalFeeInclTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.PaymentMethodAdditionalFeeExclTax);
-							WriteCell(worksheet, row, ref column, (string)order.TaxRates);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderTax);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderTotal);
-							WriteCell(worksheet, row, ref column, (decimal)order.RefundedAmount);
-							WriteCell(worksheet, row, ref column, (decimal)order.OrderDiscount);
-							WriteCell(worksheet, row, ref column, (decimal)order.CurrencyRate);
-							WriteCell(worksheet, row, ref column, (string)order.CustomerCurrencyCode);
-							WriteCell(worksheet, row, ref column, (int)order.AffiliateId);
-							WriteCell(worksheet, row, ref column, (int)order.OrderStatusId);
-							WriteCell(worksheet, row, ref column, (string)order.PaymentMethodSystemName);
-							WriteCell(worksheet, row, ref column, (string)order.PurchaseOrderNumber);
-							WriteCell(worksheet, row, ref column, (int)order.PaymentStatusId);
-							WriteCell(worksheet, row, ref column, (int)order.ShippingStatusId);
-							WriteCell(worksheet, row, ref column, (string)order.ShippingMethod);
-							WriteCell(worksheet, row, ref column, (string)order.ShippingRateComputationMethodSystemName);
-							WriteCell(worksheet, row, ref column, (string)order.VatNumber);
-							WriteCell(worksheet, row, ref column, ((DateTime)order.CreatedOnUtc).ToOADate());
-							WriteCell(worksheet, row, ref column, ((DateTime)order.UpdatedOnUtc).ToOADate());
+							WriteCell(worksheet, row, ref column, entity.OrderGuid);
+							WriteCell(worksheet, row, ref column, entity.CustomerId);
+							WriteCell(worksheet, row, ref column, entity.OrderSubtotalInclTax);
+							WriteCell(worksheet, row, ref column, entity.OrderSubtotalExclTax);
+							WriteCell(worksheet, row, ref column, entity.OrderSubTotalDiscountInclTax);
+							WriteCell(worksheet, row, ref column, entity.OrderSubTotalDiscountExclTax);
+							WriteCell(worksheet, row, ref column, entity.OrderShippingInclTax);
+							WriteCell(worksheet, row, ref column, entity.OrderShippingExclTax);
+							WriteCell(worksheet, row, ref column, entity.PaymentMethodAdditionalFeeInclTax);
+							WriteCell(worksheet, row, ref column, entity.PaymentMethodAdditionalFeeExclTax);
+							WriteCell(worksheet, row, ref column, entity.TaxRates);
+							WriteCell(worksheet, row, ref column, entity.OrderTax);
+							WriteCell(worksheet, row, ref column, entity.OrderTotal);
+							WriteCell(worksheet, row, ref column, entity.RefundedAmount);
+							WriteCell(worksheet, row, ref column, entity.OrderDiscount);
+							WriteCell(worksheet, row, ref column, entity.CurrencyRate);
+							WriteCell(worksheet, row, ref column, entity.CustomerCurrencyCode);
+							WriteCell(worksheet, row, ref column, entity.AffiliateId);
+							WriteCell(worksheet, row, ref column, entity.OrderStatusId);
+							WriteCell(worksheet, row, ref column, entity.PaymentMethodSystemName);
+							WriteCell(worksheet, row, ref column, entity.PurchaseOrderNumber);
+							WriteCell(worksheet, row, ref column, entity.PaymentStatusId);
+							WriteCell(worksheet, row, ref column, entity.ShippingStatusId);
+							WriteCell(worksheet, row, ref column, entity.ShippingMethod);
+							WriteCell(worksheet, row, ref column, entity.ShippingRateComputationMethodSystemName);
+							WriteCell(worksheet, row, ref column, entity.VatNumber);
+							WriteCell(worksheet, row, ref column, entity.CreatedOnUtc.ToOADate());
+							WriteCell(worksheet, row, ref column, entity.UpdatedOnUtc.ToOADate());
 							WriteCell(worksheet, row, ref column, rewardPointsUsed > 0 ? rewardPointsUsed.ToString() : "");
 							WriteCell(worksheet, row, ref column, rewardPointsRemaining > 0 ? rewardPointsRemaining.ToString() : "");
-							WriteCell(worksheet, row, ref column, (bool)order.HasNewPaymentNotification);
+							WriteCell(worksheet, row, ref column, entity.HasNewPaymentNotification);
 
 							WriteCell(worksheet, row, ref column, billingAddress != null ? (string)billingAddress.FirstName : "");
 							WriteCell(worksheet, row, ref column, billingAddress != null ? (string)billingAddress.LastName : "");
@@ -212,7 +215,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)order.Id);
+							context.RecordException(exc, entity.Id);
 						}
 
 						++row;

@@ -1,5 +1,6 @@
 ﻿using System;
 using SmartStore.Core;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
@@ -45,6 +46,8 @@ namespace SmartStore.Services.DataExchange.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
+						Category entity = category.Entity;
+
 						helper.Writer.WriteStartElement("Category");
 
 						try
@@ -54,12 +57,13 @@ namespace SmartStore.Services.DataExchange.Providers
 							helper.Writer.WriteStartElement("ProductCategories");
 							foreach (dynamic productCategory in category.ProductCategories)
 							{
+								ProductCategory entityProductCategory = productCategory.Entity;
 								helper.Writer.WriteStartElement("ProductCategory");
-								helper.Writer.Write("Id", ((int)productCategory.Id).ToString());
-								helper.Writer.Write("ProductId", ((int)productCategory.ProductId).ToString());
-								helper.Writer.Write("DisplayOrder", ((int)productCategory.DisplayOrder).ToString());
-								helper.Writer.Write("IsFeaturedProduct", ((bool)productCategory.IsFeaturedProduct).ToString());
-								helper.Writer.Write("CategoryId", ((int)productCategory.CategoryId).ToString());
+								helper.Writer.Write("Id", entity.Id.ToString());
+								helper.Writer.Write("ProductId", entityProductCategory.ProductId.ToString());
+								helper.Writer.Write("DisplayOrder", entityProductCategory.DisplayOrder.ToString());
+								helper.Writer.Write("IsFeaturedProduct", entityProductCategory.IsFeaturedProduct.ToString());
+								helper.Writer.Write("CategoryId", entityProductCategory.CategoryId.ToString());
 								helper.Writer.WriteEndElement();	// ProductCategory
 							}
 							helper.Writer.WriteEndElement();	// ProductCategories
@@ -68,7 +72,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)category.Id);
+							context.RecordException(exc, entity.Id);
 						}
 
 						helper.Writer.WriteEndElement();	// Category

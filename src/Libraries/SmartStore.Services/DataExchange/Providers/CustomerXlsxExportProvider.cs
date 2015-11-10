@@ -139,30 +139,30 @@ namespace SmartStore.Services.DataExchange.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
+						Customer entity = customer.Entity;
+
 						try
 						{
 							int column = 1;
-							DateTime? lastLoginDateUtc = customer.LastLoginDateUtc;
-							Customer entity = customer.Entity;
 
-							WriteCell(worksheet, row, ref column, (int)customer.Id);
+							WriteCell(worksheet, row, ref column, entity.Id);
 							WriteCell(worksheet, row, ref column, GetGenericAttributeValue(customer, SystemCustomerAttributeNames.CustomerNumber));
-							WriteCell(worksheet, row, ref column, (Guid)customer.CustomerGuid);
-							WriteCell(worksheet, row, ref column, (string)customer.Email);
-							WriteCell(worksheet, row, ref column, (string)customer.Username);
-							WriteCell(worksheet, row, ref column, (string)customer.Password);
-							WriteCell(worksheet, row, ref column, (int)customer.PasswordFormatId);
-							WriteCell(worksheet, row, ref column, (string)customer.PasswordSalt);
-							WriteCell(worksheet, row, ref column, (string)customer.AdminComment);
-							WriteCell(worksheet, row, ref column, (bool)customer.IsTaxExempt);
-							WriteCell(worksheet, row, ref column, (int)customer.AffiliateId);
-							WriteCell(worksheet, row, ref column, (bool)customer.Active);
-							WriteCell(worksheet, row, ref column, (bool)customer.IsSystemAccount);
-							WriteCell(worksheet, row, ref column, (string)customer.SystemName);
-							WriteCell(worksheet, row, ref column, (string)customer.LastIpAddress);
-							WriteCell(worksheet, row, ref column, ((DateTime)customer.CreatedOnUtc).ToString(invariantCulture));
-							WriteCell(worksheet, row, ref column, lastLoginDateUtc.HasValue ? lastLoginDateUtc.Value.ToString(invariantCulture) : null);
-							WriteCell(worksheet, row, ref column, ((DateTime)customer.LastActivityDateUtc).ToString(invariantCulture));
+							WriteCell(worksheet, row, ref column, entity.CustomerGuid);
+							WriteCell(worksheet, row, ref column, entity.Email);
+							WriteCell(worksheet, row, ref column, entity.Username);
+							WriteCell(worksheet, row, ref column, entity.Password);
+							WriteCell(worksheet, row, ref column, entity.PasswordFormatId);
+							WriteCell(worksheet, row, ref column, entity.PasswordSalt);
+							WriteCell(worksheet, row, ref column, entity.AdminComment);
+							WriteCell(worksheet, row, ref column, entity.IsTaxExempt);
+							WriteCell(worksheet, row, ref column, entity.AffiliateId);
+							WriteCell(worksheet, row, ref column, entity.Active);
+							WriteCell(worksheet, row, ref column, entity.IsSystemAccount);
+							WriteCell(worksheet, row, ref column, entity.SystemName);
+							WriteCell(worksheet, row, ref column, entity.LastIpAddress);
+							WriteCell(worksheet, row, ref column, entity.CreatedOnUtc.ToString(invariantCulture));
+							WriteCell(worksheet, row, ref column, entity.LastLoginDateUtc.HasValue ? entity.LastLoginDateUtc.Value.ToString(invariantCulture) : null);
+							WriteCell(worksheet, row, ref column, entity.LastActivityDateUtc.ToString(invariantCulture));
 							WriteCell(worksheet, row, ref column, entity.IsGuest());
 							WriteCell(worksheet, row, ref column, entity.IsRegistered());
 							WriteCell(worksheet, row, ref column, entity.IsAdmin());
@@ -192,7 +192,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)customer.Id);
+							context.RecordException(exc, entity.Id);
 						}
 
 						++row;

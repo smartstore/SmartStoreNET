@@ -220,89 +220,89 @@ namespace SmartStore.Services.DataExchange.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
+						Product entity = product.Entity;
+
 						try
 						{
 							int column = 1;
-							DateTime? specialPriceStartDateTimeUtc = product.SpecialPriceStartDateTimeUtc;
-							DateTime? specialPriceEndDateTimeUtc = product.SpecialPriceEndDateTimeUtc;
 
 							List<dynamic> productCategories = product.ProductCategories;
 							List<dynamic> productManus = product.ProductManufacturers;
 							List<dynamic> productPictures = product.ProductPictures;
 							List<dynamic> localized = product._Localized;
 
-							WriteCell(worksheet, row, ref column, (int)product.ProductTypeId);
-							WriteCell(worksheet, row, ref column, (int)product.ParentGroupedProductId);
-							WriteCell(worksheet, row, ref column, (bool)product.VisibleIndividually);
+							WriteCell(worksheet, row, ref column, entity.ProductTypeId);
+							WriteCell(worksheet, row, ref column, entity.ParentGroupedProductId);
+							WriteCell(worksheet, row, ref column, entity.VisibleIndividually);
 							WriteCell(worksheet, row, ref column, (string)product.Name);
 							WriteCell(worksheet, row, ref column, (string)product.ShortDescription);
 							WriteCell(worksheet, row, ref column, (string)product.FullDescription);
-							WriteCell(worksheet, row, ref column, (int)product.ProductTemplateId);
-							WriteCell(worksheet, row, ref column, (bool)product.ShowOnHomePage);
-							WriteCell(worksheet, row, ref column, (int)product.HomePageDisplayOrder);
+							WriteCell(worksheet, row, ref column, entity.ProductTemplateId);
+							WriteCell(worksheet, row, ref column, entity.ShowOnHomePage);
+							WriteCell(worksheet, row, ref column, entity.HomePageDisplayOrder);
 							WriteCell(worksheet, row, ref column, (string)product.MetaKeywords);
 							WriteCell(worksheet, row, ref column, (string)product.MetaDescription);
 							WriteCell(worksheet, row, ref column, (string)product.MetaTitle);
 							WriteCell(worksheet, row, ref column, (string)product.SeName);
-							WriteCell(worksheet, row, ref column, (bool)product.AllowCustomerReviews);
-							WriteCell(worksheet, row, ref column, (bool)product.Published);
+							WriteCell(worksheet, row, ref column, entity.AllowCustomerReviews);
+							WriteCell(worksheet, row, ref column, entity.Published);
 							WriteCell(worksheet, row, ref column, (string)product.Sku);
 							WriteCell(worksheet, row, ref column, (string)product.ManufacturerPartNumber);
 							WriteCell(worksheet, row, ref column, (string)product.Gtin);
-							WriteCell(worksheet, row, ref column, (bool)product.IsGiftCard);
-							WriteCell(worksheet, row, ref column, (int)product.GiftCardTypeId);
-							WriteCell(worksheet, row, ref column, (bool)product.RequireOtherProducts);
-							WriteCell(worksheet, row, ref column, (string)product.RequiredProductIds);
-							WriteCell(worksheet, row, ref column, (bool)product.AutomaticallyAddRequiredProducts);
-							WriteCell(worksheet, row, ref column, (bool)product.IsDownload);
-							WriteCell(worksheet, row, ref column, (int)product.DownloadId);
-							WriteCell(worksheet, row, ref column, (bool)product.UnlimitedDownloads);
-							WriteCell(worksheet, row, ref column, (int)product.MaxNumberOfDownloads);
-							WriteCell(worksheet, row, ref column, (int)product.DownloadActivationTypeId);
-							WriteCell(worksheet, row, ref column, (bool)product.HasSampleDownload);
-							WriteCell(worksheet, row, ref column, (int?)product.SampleDownloadId);
-							WriteCell(worksheet, row, ref column, (bool)product.HasUserAgreement);
-							WriteCell(worksheet, row, ref column, (string)product.UserAgreementText);
-							WriteCell(worksheet, row, ref column, (bool)product.IsRecurring);
-							WriteCell(worksheet, row, ref column, (int)product.RecurringCycleLength);
-							WriteCell(worksheet, row, ref column, (int)product.RecurringCyclePeriodId);
-							WriteCell(worksheet, row, ref column, (int)product.RecurringTotalCycles);
-							WriteCell(worksheet, row, ref column, (bool)product.IsShipEnabled);
-							WriteCell(worksheet, row, ref column, (bool)product.IsFreeShipping);
-							WriteCell(worksheet, row, ref column, (decimal)product.AdditionalShippingCharge);
-							WriteCell(worksheet, row, ref column, (bool)product.IsEsd);
-							WriteCell(worksheet, row, ref column, (bool)product.IsTaxExempt);
-							WriteCell(worksheet, row, ref column, (int)product.TaxCategoryId);
-							WriteCell(worksheet, row, ref column, (int)product.ManageInventoryMethodId);
-							WriteCell(worksheet, row, ref column, (int)product.StockQuantity);
-							WriteCell(worksheet, row, ref column, (bool)product.DisplayStockAvailability);
-							WriteCell(worksheet, row, ref column, (bool)product.DisplayStockQuantity);
-							WriteCell(worksheet, row, ref column, (int)product.MinStockQuantity);
-							WriteCell(worksheet, row, ref column, (int)product.LowStockActivityId);
-							WriteCell(worksheet, row, ref column, (int)product.NotifyAdminForQuantityBelow);
-							WriteCell(worksheet, row, ref column, (int)product.BackorderModeId);
-							WriteCell(worksheet, row, ref column, (bool)product.AllowBackInStockSubscriptions);
-							WriteCell(worksheet, row, ref column, (int)product.OrderMinimumQuantity);
-							WriteCell(worksheet, row, ref column, (int)product.OrderMaximumQuantity);
-							WriteCell(worksheet, row, ref column, (string)product.AllowedQuantities);
-							WriteCell(worksheet, row, ref column, (bool)product.DisableBuyButton);
-							WriteCell(worksheet, row, ref column, (bool)product.DisableWishlistButton);
-							WriteCell(worksheet, row, ref column, (bool)product.AvailableForPreOrder);
-							WriteCell(worksheet, row, ref column, (bool)product.CallForPrice);
+							WriteCell(worksheet, row, ref column, entity.IsGiftCard);
+							WriteCell(worksheet, row, ref column, entity.GiftCardTypeId);
+							WriteCell(worksheet, row, ref column, entity.RequireOtherProducts);
+							WriteCell(worksheet, row, ref column, entity.RequiredProductIds);
+							WriteCell(worksheet, row, ref column, entity.AutomaticallyAddRequiredProducts);
+							WriteCell(worksheet, row, ref column, entity.IsDownload);
+							WriteCell(worksheet, row, ref column, entity.DownloadId);
+							WriteCell(worksheet, row, ref column, entity.UnlimitedDownloads);
+							WriteCell(worksheet, row, ref column, entity.MaxNumberOfDownloads);
+							WriteCell(worksheet, row, ref column, entity.DownloadActivationTypeId);
+							WriteCell(worksheet, row, ref column, entity.HasSampleDownload);
+							WriteCell(worksheet, row, ref column, entity.SampleDownloadId);
+							WriteCell(worksheet, row, ref column, entity.HasUserAgreement);
+							WriteCell(worksheet, row, ref column, entity.UserAgreementText);
+							WriteCell(worksheet, row, ref column, entity.IsRecurring);
+							WriteCell(worksheet, row, ref column, entity.RecurringCycleLength);
+							WriteCell(worksheet, row, ref column, entity.RecurringCyclePeriodId);
+							WriteCell(worksheet, row, ref column, entity.RecurringTotalCycles);
+							WriteCell(worksheet, row, ref column, entity.IsShipEnabled);
+							WriteCell(worksheet, row, ref column, entity.IsFreeShipping);
+							WriteCell(worksheet, row, ref column, entity.AdditionalShippingCharge);
+							WriteCell(worksheet, row, ref column, entity.IsEsd);
+							WriteCell(worksheet, row, ref column, entity.IsTaxExempt);
+							WriteCell(worksheet, row, ref column, entity.TaxCategoryId);
+							WriteCell(worksheet, row, ref column, entity.ManageInventoryMethodId);
+							WriteCell(worksheet, row, ref column, entity.StockQuantity);
+							WriteCell(worksheet, row, ref column, entity.DisplayStockAvailability);
+							WriteCell(worksheet, row, ref column, entity.DisplayStockQuantity);
+							WriteCell(worksheet, row, ref column, entity.MinStockQuantity);
+							WriteCell(worksheet, row, ref column, entity.LowStockActivityId);
+							WriteCell(worksheet, row, ref column, entity.NotifyAdminForQuantityBelow);
+							WriteCell(worksheet, row, ref column, entity.BackorderModeId);
+							WriteCell(worksheet, row, ref column, entity.AllowBackInStockSubscriptions);
+							WriteCell(worksheet, row, ref column, entity.OrderMinimumQuantity);
+							WriteCell(worksheet, row, ref column, entity.OrderMaximumQuantity);
+							WriteCell(worksheet, row, ref column, entity.AllowedQuantities);
+							WriteCell(worksheet, row, ref column, entity.DisableBuyButton);
+							WriteCell(worksheet, row, ref column, entity.DisableWishlistButton);
+							WriteCell(worksheet, row, ref column, entity.AvailableForPreOrder);
+							WriteCell(worksheet, row, ref column, entity.CallForPrice);
 							WriteCell(worksheet, row, ref column, (decimal)product.Price);
 							WriteCell(worksheet, row, ref column, (decimal)product.OldPrice);
 							WriteCell(worksheet, row, ref column, (decimal)product.ProductCost);
 							WriteCell(worksheet, row, ref column, (decimal?)product.SpecialPrice);
-							WriteCell(worksheet, row, ref column, specialPriceStartDateTimeUtc.HasValue ? specialPriceStartDateTimeUtc.Value.ToOADate() : (double)0.0);
-							WriteCell(worksheet, row, ref column, specialPriceEndDateTimeUtc.HasValue ? specialPriceEndDateTimeUtc.Value.ToOADate() : (double)0.0);
-							WriteCell(worksheet, row, ref column, (bool)product.CustomerEntersPrice);
-							WriteCell(worksheet, row, ref column, (decimal)product.MinimumCustomerEnteredPrice);
-							WriteCell(worksheet, row, ref column, (decimal)product.MaximumCustomerEnteredPrice);
-							WriteCell(worksheet, row, ref column, (decimal)product.Weight);
-							WriteCell(worksheet, row, ref column, (decimal)product.Length);
-							WriteCell(worksheet, row, ref column, (decimal)product.Width);
-							WriteCell(worksheet, row, ref column, (decimal)product.Height);
-							WriteCell(worksheet, row, ref column, ((DateTime)product.CreatedOnUtc).ToOADate());
+							WriteCell(worksheet, row, ref column, entity.SpecialPriceStartDateTimeUtc.HasValue ? entity.SpecialPriceStartDateTimeUtc.Value.ToOADate() : (double)0.0);
+							WriteCell(worksheet, row, ref column, entity.SpecialPriceEndDateTimeUtc.HasValue ? entity.SpecialPriceEndDateTimeUtc.Value.ToOADate() : (double)0.0);
+							WriteCell(worksheet, row, ref column, entity.CustomerEntersPrice);
+							WriteCell(worksheet, row, ref column, entity.MinimumCustomerEnteredPrice);
+							WriteCell(worksheet, row, ref column, entity.MaximumCustomerEnteredPrice);
+							WriteCell(worksheet, row, ref column, entity.Weight);
+							WriteCell(worksheet, row, ref column, entity.Length);
+							WriteCell(worksheet, row, ref column, entity.Width);
+							WriteCell(worksheet, row, ref column, entity.Height);
+							WriteCell(worksheet, row, ref column, entity.CreatedOnUtc.ToOADate());
 
 							WriteCell(worksheet, row, ref column, string.Join(";", productCategories.Select(x => (int)x.CategoryId)));
 							WriteCell(worksheet, row, ref column, string.Join(";", productManus.Select(x => (int)x.ManufacturerId)));
@@ -311,16 +311,16 @@ namespace SmartStore.Services.DataExchange.Providers
 							WriteCell(worksheet, row, ref column, productPictures.Count > 1 ? (string)productPictures[1].Picture._ThumbLocalPath : null);
 							WriteCell(worksheet, row, ref column, productPictures.Count > 2 ? (string)productPictures[2].Picture._ThumbLocalPath : null);
 
-							WriteCell(worksheet, row, ref column, (int?)product.DeliveryTimeId);
-							WriteCell(worksheet, row, ref column, (int?)product.QuantityUnitId);
-							WriteCell(worksheet, row, ref column, (bool)product.BasePriceEnabled);
-							WriteCell(worksheet, row, ref column, (string)product.BasePriceMeasureUnit);
-							WriteCell(worksheet, row, ref column, (decimal?)product.BasePriceAmount);
-							WriteCell(worksheet, row, ref column, (int?)product.BasePriceBaseAmount);
-							WriteCell(worksheet, row, ref column, (string)product.BundleTitleText);
-							WriteCell(worksheet, row, ref column, (bool)product.BundlePerItemShipping);
-							WriteCell(worksheet, row, ref column, (bool)product.BundlePerItemShipping);
-							WriteCell(worksheet, row, ref column, (bool)product.BundlePerItemShoppingCart);
+							WriteCell(worksheet, row, ref column, entity.DeliveryTimeId);
+							WriteCell(worksheet, row, ref column, entity.QuantityUnitId);
+							WriteCell(worksheet, row, ref column, entity.BasePriceEnabled);
+							WriteCell(worksheet, row, ref column, entity.BasePriceMeasureUnit);
+							WriteCell(worksheet, row, ref column, entity.BasePriceAmount);
+							WriteCell(worksheet, row, ref column, entity.BasePriceBaseAmount);
+							WriteCell(worksheet, row, ref column, entity.BundleTitleText);
+							WriteCell(worksheet, row, ref column, entity.BundlePerItemShipping);
+							WriteCell(worksheet, row, ref column, entity.BundlePerItemShipping);
+							WriteCell(worksheet, row, ref column, entity.BundlePerItemShoppingCart);
 
 							if ((int)product.ProductTypeId == (int)ProductType.BundledProduct)
 							{
@@ -343,8 +343,8 @@ namespace SmartStore.Services.DataExchange.Providers
 								WriteCell(worksheet, row, ref column, "");
 							}
 
-							WriteCell(worksheet, row, ref column, (DateTime?)product.AvailableStartDateTimeUtc);
-							WriteCell(worksheet, row, ref column, (DateTime?)product.AvailableEndDateTimeUtc);
+							WriteCell(worksheet, row, ref column, entity.AvailableStartDateTimeUtc);
+							WriteCell(worksheet, row, ref column, entity.AvailableEndDateTimeUtc);
 
 							if ((bool)product.LimitedToStores)
 							{
@@ -359,7 +359,7 @@ namespace SmartStore.Services.DataExchange.Providers
 								WriteCell(worksheet, row, ref column, "");
 							}
 
-							WriteCell(worksheet, row, ref column, (bool)product.LimitedToStores);
+							WriteCell(worksheet, row, ref column, entity.LimitedToStores);
 
 							foreach (var lang in languages)
 							{
@@ -372,7 +372,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)product.Id);
+							context.RecordException(exc, entity.Id);
 						}
 
 						++row;

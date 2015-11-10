@@ -2,6 +2,7 @@
 using System.IO;
 using System.Text;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange.Providers
@@ -42,12 +43,14 @@ namespace SmartStore.Services.DataExchange.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
+						NewsLetterSubscription entity = subscriber.Entity;
+
 						try
 						{
 							var row = "{0},{1},{2}".FormatInvariant(
-								((string)subscriber.Email).ReplaceCsvChars(),
-								((bool)subscriber.Active).ToString(),
-								(int)subscriber.StoreId
+								entity.Email.ReplaceCsvChars(),
+								entity.Active.ToString(),
+								entity.StoreId
 							);
 
 							writer.WriteLine(row);
@@ -56,7 +59,7 @@ namespace SmartStore.Services.DataExchange.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, (int)subscriber.Id);
+							context.RecordException(exc, entity.Id);
 						}
 					}
 				}

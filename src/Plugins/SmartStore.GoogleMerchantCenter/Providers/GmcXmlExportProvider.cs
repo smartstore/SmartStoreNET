@@ -188,8 +188,8 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						if (context.Abort != ExportAbortion.None)
 							break;
 
-						int productId = product.Id;
-						var gmc = googleProducts.FirstOrDefault(x => x.ProductId == productId);
+						Product entity = product.Entity;
+						var gmc = googleProducts.FirstOrDefault(x => x.ProductId == entity.Id);
 
 						if (gmc != null && !gmc.Export)
 							continue;
@@ -234,17 +234,16 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							}
 							else
 							{
-								if ((int)product.ManageInventoryMethodId == (int)ManageInventoryMethod.ManageStock && (int)product.StockQuantity <= 0)
+								if (entity.ManageInventoryMethod == ManageInventoryMethod.ManageStock && entity.StockQuantity <= 0)
 								{
-									var backorderId = (int)product.BackorderModeId;
-									if (backorderId == (int)BackorderMode.NoBackorders)
+									if (entity.BackorderMode == BackorderMode.NoBackorders)
 										availability = "out of stock";
-									else if (backorderId == (int)BackorderMode.AllowQtyBelow0 || backorderId == (int)BackorderMode.AllowQtyBelow0AndNotifyCustomer)
-										availability = ((bool)product.AvailableForPreOrder ? "preorder" : "out of stock");
+									else if (entity.BackorderMode == BackorderMode.AllowQtyBelow0 || entity.BackorderMode == BackorderMode.AllowQtyBelow0AndNotifyCustomer)
+										availability = (entity.AvailableForPreOrder ? "preorder" : "out of stock");
 								}
 							}
 
-							writer.WriteElementString("g", "id", _googleNamespace, productId.ToString());
+							writer.WriteElementString("g", "id", _googleNamespace, entity.Id.ToString());
 
 							writer.WriteStartElement("title");
 							writer.WriteCData(((string)product.Name).Truncate(70).RemoveInvalidXmlChars());
@@ -288,20 +287,16 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 							writer.WriteElementString("g", "condition", _googleNamespace, condition);
 							writer.WriteElementString("g", "availability", _googleNamespace, availability);
 
-							if (config.SpecialPrice && specialPrice.HasValue)
+							if (config.SpecialPrice && specialPrice.HasValue && entity.SpecialPriceStartDateTimeUtc.HasValue && entity.SpecialPriceEndDateTimeUtc.HasValue)
 							{
-								DateTime? specialPriceStart = product.SpecialPriceStartDateTimeUtc;
-								DateTime? specialPriceEnd = product.SpecialPriceEndDateTimeUtc;
-								if (specialPriceStart.HasValue && specialPriceEnd.HasValue)
-								{
-									var dateFormat = "yyyy-MM-ddTHH:mmZ";
-									var specialPriceDate = "{0}/{1}".FormatInvariant(specialPriceStart.Value.ToString(dateFormat), specialPriceEnd.Value.ToString(dateFormat));
+								var dateFormat = "yyyy-MM-ddTHH:mmZ";
+								var specialPriceDate = "{0}/{1}".FormatInvariant(
+									entity.SpecialPriceStartDateTimeUtc.Value.ToString(dateFormat), entity.SpecialPriceEndDateTimeUtc.Value.ToString(dateFormat));
 
-									writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + (string)currency.CurrencyCode);
-									writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
+								writer.WriteElementString("g", "sale_price", _googleNamespace, price.FormatInvariant() + " " + (string)currency.CurrencyCode);
+								writer.WriteElementString("g", "sale_price_effective_date", _googleNamespace, specialPriceDate);
 
-									price = (product._RegularPrice as decimal?) ?? price;
-								}
+								price = (product._RegularPrice as decimal?) ?? price;
 							}
 
 							writer.WriteElementString("g", "price", _googleNamespace, price.FormatInvariant() + " " + (string)currency.CurrencyCode);
@@ -351,16 +346,14 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 								writer.WriteElementString("g", "shipping_weight", _googleNamespace, weightInfo);
 							}
 
-							if (config.ExportBasePrice && (bool)product.BasePriceHasValue)
+							if (config.ExportBasePrice && entity.BasePriceHasValue)
 							{
 								var measureUnit = BasePriceUnits((string)product.BasePriceMeasureUnit);
-								var basePriceBaseAmount = product.BasePriceBaseAmount as int?;
 
-								if (BasePriceSupported(basePriceBaseAmount ?? 0, measureUnit))
+								if (BasePriceSupported(entity.BasePriceBaseAmount ?? 0, measureUnit))
 								{
-									var basePriceAmount = product.BasePriceAmount as decimal?;
-									var basePriceMeasure = "{0} {1}".FormatInvariant((basePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
-									var basePriceBaseMeasure = "{0} {1}".FormatInvariant(basePriceBaseAmount ?? 1, measureUnit);
+									var basePriceMeasure = "{0} {1}".FormatInvariant((entity.BasePriceAmount ?? decimal.Zero).FormatInvariant(), measureUnit);
+									var basePriceBaseMeasure = "{0} {1}".FormatInvariant(entity.BasePriceBaseAmount ?? 1, measureUnit);
 
 									writer.WriteElementString("g", "unit_pricing_measure", _googleNamespace, basePriceMeasure);
 									writer.WriteElementString("g", "unit_pricing_base_measure", _googleNamespace, basePriceBaseMeasure);
@@ -371,7 +364,7 @@ namespace SmartStore.GoogleMerchantCenter.Providers
 						}
 						catch (Exception exc)
 						{
-							context.RecordException(exc, productId);
+							context.RecordException(exc, entity.Id);
 						}
 
 						writer.WriteEndElement(); // item

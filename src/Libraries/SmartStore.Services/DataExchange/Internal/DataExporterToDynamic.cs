@@ -26,7 +26,7 @@ using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
-	internal partial class DataExportTask
+	internal partial class DataExporter
 	{
 		private void PrepareProductDescription(DataExportTaskContext ctx, dynamic dynObject, Product product)
 		{

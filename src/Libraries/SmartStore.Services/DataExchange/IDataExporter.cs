@@ -1,11 +1,8 @@
-﻿using SmartStore.Core.Domain;
-using SmartStore.Core.Plugins;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using System.Threading;
-using System.Threading.Tasks;
+using SmartStore.Core.Domain;
+using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
 {
@@ -22,6 +19,7 @@ namespace SmartStore.Services.DataExchange
 		// be processed sync or async
 		long GetDataCount(DataExportRequest request);
 	}
+
 
 	public class DataExportRequest
 	{

@@ -168,7 +168,8 @@
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\ExportProviderBase.cs" />
-    <Compile Include="DataExchange\Internal\DataExportTaskToDynamic.cs" />
+    <Compile Include="DataExchange\Internal\DataExporter.cs" />
+    <Compile Include="DataExchange\Internal\DataExporterToDynamic.cs" />
     <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />

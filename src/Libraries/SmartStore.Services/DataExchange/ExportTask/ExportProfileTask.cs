@@ -53,6 +53,7 @@ using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 using SmartStore.Core.Localization;
 using SmartStore.Services.DataExchange.Internal;
+using SmartStore.ComponentModel;
 
 // note: namespace persisted in ScheduleTask.Type
 namespace SmartStore.Services.DataExchange.ExportTask
@@ -142,7 +143,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Utilities
 
-		private List<dynamic> GetLocalized<T>(ExportProfileTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
+		private List<dynamic> GetLocalized<T>(DataExportTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
 		{
 			if (ctx.Languages.Count <= 1)
@@ -163,7 +164,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					var value = _urlRecordService.Value.GetActiveSlug(entity.Id, localeKeyGroup, language.Value.Id);
 					if (value.HasValue())
 					{
-						dynamic exp = new ExpandoObject();
+						dynamic exp = new HybridExpando();
 						exp.Culture = languageCulture;
 						exp.LocaleKey = "SeName";
 						exp.LocaleValue = value;
@@ -182,7 +183,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 					// we better not export empty values. the risk is to high that they are imported and unnecessary fill databases.
 					if (value.HasValue())
 					{
-						dynamic exp = new ExpandoObject();
+						dynamic exp = new HybridExpando();
 						exp.Culture = languageCulture;
 						exp.LocaleKey = localeKey;
 						exp.LocaleValue = value;
@@ -195,7 +196,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return (localized.Count == 0 ? null : localized);
 		}
 
-		private IExportDataSegmenterProvider CreateSegmenter(ExportProfileTaskContext ctx, int pageIndex = 0)
+		private IExportDataSegmenterProvider CreateSegmenter(DataExportTaskContext ctx, int pageIndex = 0)
 		{
 			var offset = ctx.Profile.Offset + (pageIndex * PageSize);
 
@@ -316,7 +317,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return ctx.ExecuteContext.Segmenter as IExportDataSegmenterProvider;
 		}
 
-		private bool CallProvider(ExportProfileTaskContext ctx, string streamId, string method, string path)
+		private bool CallProvider(DataExportTaskContext ctx, string streamId, string method, string path)
 		{
 			if (method != "Execute" && method != "OnExecuted")
 				throw new SmartException("Unknown export method {0}".FormatInvariant(method.NaIfEmpty()));
@@ -371,7 +372,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return (ctx.ExecuteContext.Abort != ExportAbortion.Hard);
 		}
 
-		private void PrepareProductDescription(ExportProfileTaskContext ctx, dynamic expando, Product product)
+		private void PrepareProductDescription(DataExportTaskContext ctx, dynamic expando, Product product)
 		{
 			try
 			{
@@ -461,7 +462,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			catch { }
 		}
 
-		private decimal? ConvertPrice(ExportProfileTaskContext ctx, Product product, decimal? price)
+		private decimal? ConvertPrice(DataExportTaskContext ctx, Product product, decimal? price)
 		{
 			if (price.HasValue)
 			{
@@ -479,7 +480,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return price;
 		}
 
-		private decimal CalculatePrice(ExportProfileTaskContext ctx, Product product, bool forAttributeCombination)
+		private decimal CalculatePrice(DataExportTaskContext ctx, Product product, bool forAttributeCombination)
 		{
 			decimal price = product.Price;
 
@@ -506,7 +507,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return ConvertPrice(ctx, product, price) ?? price;
 		}
 
-		private void GetDeliveryTimeAndQuantityUnit(ExportProfileTaskContext ctx, dynamic expando, int? deliveryTimeId, int? quantityUnitId)
+		private void GetDeliveryTimeAndQuantityUnit(DataExportTaskContext ctx, dynamic expando, int? deliveryTimeId, int? quantityUnitId)
 		{
 			if (ctx.DeliveryTimes != null)
 			{
@@ -525,7 +526,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		private void SetProgress(ExportProfileTaskContext ctx, int loadedRecords)
+		private void SetProgress(DataExportTaskContext ctx, int loadedRecords)
 		{
 			if (!ctx.IsPreview && ctx.TaskContext.ScheduleTask != null && loadedRecords > 0)
 			{
@@ -542,7 +543,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		private void SetProgress(ExportProfileTaskContext ctx, string message)
+		private void SetProgress(DataExportTaskContext ctx, string message)
 		{
 			if (!ctx.IsPreview && ctx.TaskContext.ScheduleTask != null && message.HasValue())
 			{
@@ -550,7 +551,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		private void SendCompletionEmail(ExportProfileTaskContext ctx)
+		private void SendCompletionEmail(DataExportTaskContext ctx)
 		{
 			var emailAccount = _emailAccountService.Value.GetEmailAccountById(ctx.Profile.EmailAccountId);
 			var smtpContext = new SmtpContext(emailAccount);
@@ -570,7 +571,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			_emailSender.Value.SendEmail(smtpContext, message);
 		}
 
-		private void DeployFileSystem(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployFileSystem(DataExportTaskContext ctx, ExportDeployment deployment)
 		{
 			string folderDestination = null;
 
@@ -611,7 +612,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		private void DeployEmail(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployEmail(DataExportTaskContext ctx, ExportDeployment deployment)
 		{
 			var emailAccount = _emailAccountService.Value.GetEmailAccountById(deployment.EmailAccountId);
 			var smtpContext = new SmtpContext(emailAccount);
@@ -649,7 +650,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			ctx.Log.Information("{0} email(s) created and queued for deployment.".FormatInvariant(count));
 		}
 
-		private void DeployHttp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployHttp(DataExportTaskContext ctx, ExportDeployment deployment)
 		{
 			var succeeded = 0;
 			var url = deployment.Url;
@@ -711,7 +712,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			ctx.Log.Information("{0} file(s) successfully uploaded via HTTP ({1}).".FormatInvariant(succeeded, deployment.HttpTransmissionType.ToString()));
 		}
 
-		private void DeployFtp(ExportProfileTaskContext ctx, ExportDeployment deployment)
+		private void DeployFtp(DataExportTaskContext ctx, ExportDeployment deployment)
 		{
 			var bytesRead = 0;
 			var succeededFiles = 0;
@@ -778,7 +779,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Entity to expando
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Currency currency)
+		private dynamic ToExpando(DataExportTaskContext ctx, Currency currency)
 		{
 			if (currency == null)
 				return null;
@@ -790,7 +791,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Language language)
+		private dynamic ToExpando(DataExportTaskContext ctx, Language language)
 		{
 			if (language == null)
 				return null;
@@ -799,7 +800,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Country country)
+		private dynamic ToExpando(DataExportTaskContext ctx, Country country)
 		{
 			if (country == null)
 				return null;
@@ -811,7 +812,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Address address)
+		private dynamic ToExpando(DataExportTaskContext ctx, Address address)
 		{
 			if (address == null)
 				return null;
@@ -834,7 +835,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, RewardPointsHistory points)
+		private dynamic ToExpando(DataExportTaskContext ctx, RewardPointsHistory points)
 		{
 			if (points == null)
 				return null;
@@ -853,7 +854,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Customer customer)
+		private dynamic ToExpando(DataExportTaskContext ctx, Customer customer)
 		{
 			if (customer == null)
 				return null;
@@ -894,7 +895,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Store store)
+		private dynamic ToExpando(DataExportTaskContext ctx, Store store)
 		{
 			if (store == null)
 				return null;
@@ -921,7 +922,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, DeliveryTime deliveryTime)
+		private dynamic ToExpando(DataExportTaskContext ctx, DeliveryTime deliveryTime)
 		{
 			if (deliveryTime == null)
 				return null;		
@@ -940,7 +941,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, QuantityUnit quantityUnit)
+		private dynamic ToExpando(DataExportTaskContext ctx, QuantityUnit quantityUnit)
 		{
 			if (quantityUnit == null)
 				return null;
@@ -962,7 +963,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
+		private dynamic ToExpando(DataExportTaskContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
 		{
 			if (picture == null)
 				return null;
@@ -986,7 +987,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductVariantAttribute pva)
+		private dynamic ToExpando(DataExportTaskContext ctx, ProductVariantAttribute pva)
 		{
 			if (pva == null)
 				return null;
@@ -1040,7 +1041,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductVariantAttributeCombination pvac)
+		private dynamic ToExpando(DataExportTaskContext ctx, ProductVariantAttributeCombination pvac)
 		{
 			if (pvac == null)
 				return null;
@@ -1052,7 +1053,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Manufacturer manufacturer)
+		private dynamic ToExpando(DataExportTaskContext ctx, Manufacturer manufacturer)
 		{
 			if (manufacturer == null)
 				return null;
@@ -1077,7 +1078,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Category category)
+		private dynamic ToExpando(DataExportTaskContext ctx, Category category)
 		{
 			if (category == null)
 				return null;
@@ -1106,7 +1107,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Product product)
+		private dynamic ToExpando(DataExportTaskContext ctx, Product product)
 		{
 			if (product == null)
 				return null;
@@ -1277,7 +1278,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		//	return expando;
 		//}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Order order)
+		private dynamic ToExpando(DataExportTaskContext ctx, Order order)
 		{
 			if (order == null)
 				return null;
@@ -1367,7 +1368,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, OrderItem orderItem)
+		private dynamic ToExpando(DataExportTaskContext ctx, OrderItem orderItem)
 		{
 			if (orderItem == null)
 				return null;
@@ -1401,7 +1402,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Shipment shipment)
+		private dynamic ToExpando(DataExportTaskContext ctx, Shipment shipment)
 		{
 			if (shipment == null)
 				return null;
@@ -1433,7 +1434,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, Discount discount)
+		private dynamic ToExpando(DataExportTaskContext ctx, Discount discount)
 		{
 			if (discount == null)
 				return null;
@@ -1457,7 +1458,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, ProductSpecificationAttribute psa)
+		private dynamic ToExpando(DataExportTaskContext ctx, ProductSpecificationAttribute psa)
 		{
 			if (psa == null)
 				return null;
@@ -1495,7 +1496,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, GenericAttribute genericAttribute)
+		private dynamic ToExpando(DataExportTaskContext ctx, GenericAttribute genericAttribute)
 		{
 			if (genericAttribute == null)
 				return null;
@@ -1513,7 +1514,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private dynamic ToExpando(ExportProfileTaskContext ctx, NewsLetterSubscription subscription)
+		private dynamic ToExpando(DataExportTaskContext ctx, NewsLetterSubscription subscription)
 		{
 			if (subscription == null)
 				return null;
@@ -1531,7 +1532,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return expando;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Product product)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
 
@@ -1904,7 +1905,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Order order)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, Order order)
 		{
 			var result = new List<dynamic>();
 
@@ -1971,7 +1972,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Manufacturer manu)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, Manufacturer manu)
 		{
 			var result = new List<dynamic>();
 
@@ -2007,7 +2008,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Category category)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, Category category)
 		{
 			var result = new List<dynamic>();
 
@@ -2043,7 +2044,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, Customer customer)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, Customer customer)
 		{
 			var result = new List<dynamic>();
 
@@ -2087,7 +2088,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private List<dynamic> ConvertToExpando(ExportProfileTaskContext ctx, NewsLetterSubscription subscription)
+		private List<dynamic> ConvertToExpando(DataExportTaskContext ctx, NewsLetterSubscription subscription)
 		{
 			var result = new List<dynamic>();
 
@@ -2101,7 +2102,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#region Getting data
 
-		private IQueryable<Product> GetProductQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<Product> GetProductQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			IQueryable<Product> query = null;
 
@@ -2158,7 +2159,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<Product> GetProducts(ExportProfileTaskContext ctx, int skip)
+		private List<Product> GetProducts(DataExportTaskContext ctx, int skip)
 		{
 			var result = new List<Product>();
 
@@ -2206,7 +2207,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private IQueryable<Order> GetOrderQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<Order> GetOrderQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			var query = _orderService.Value.GetOrders(
 				ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId,
@@ -2234,7 +2235,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<Order> GetOrders(ExportProfileTaskContext ctx, int skip)
+		private List<Order> GetOrders(DataExportTaskContext ctx, int skip)
 		{
 			var orders = GetOrderQuery(ctx, skip, PageSize).ToList();
 
@@ -2257,7 +2258,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return orders;
 		}
 
-		private IQueryable<Manufacturer> GetManufacturerQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<Manufacturer> GetManufacturerQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			var showHidden = !ctx.Filter.IsPublished.HasValue;
 			var storeId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
@@ -2275,7 +2276,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<Manufacturer> GetManufacturers(ExportProfileTaskContext ctx, int skip)
+		private List<Manufacturer> GetManufacturers(DataExportTaskContext ctx, int skip)
 		{
 			var manus = GetManufacturerQuery(ctx, skip, PageSize).ToList();
 
@@ -2290,7 +2291,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return manus;
 		}
 
-		private IQueryable<Category> GetCategoryQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<Category> GetCategoryQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			var showHidden = !ctx.Filter.IsPublished.HasValue;
 			var storeId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
@@ -2310,7 +2311,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<Category> GetCategories(ExportProfileTaskContext ctx, int skip)
+		private List<Category> GetCategories(DataExportTaskContext ctx, int skip)
 		{
 			var categories = GetCategoryQuery(ctx, skip, PageSize).ToList();
 
@@ -2325,7 +2326,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return categories;
 		}
 
-		private IQueryable<Customer> GetCustomerQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<Customer> GetCustomerQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			var query = _customerRepository.Value.TableUntracked
 				.Expand(x => x.BillingAddress)
@@ -2351,7 +2352,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<Customer> GetCustomers(ExportProfileTaskContext ctx, int skip)
+		private List<Customer> GetCustomers(DataExportTaskContext ctx, int skip)
 		{
 			var customers = GetCustomerQuery(ctx, skip, PageSize).ToList();
 
@@ -2366,7 +2367,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return customers;
 		}
 
-		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(ExportProfileTaskContext ctx, int skip, int take)
+		private IQueryable<NewsLetterSubscription> GetNewsLetterSubscriptionQuery(DataExportTaskContext ctx, int skip, int take)
 		{
 			var storeId = (ctx.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
 
@@ -2390,7 +2391,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return query;
 		}
 
-		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(ExportProfileTaskContext ctx, int skip)
+		private List<NewsLetterSubscription> GetNewsLetterSubscriptions(DataExportTaskContext ctx, int skip)
 		{
 			var subscriptions = GetNewsLetterSubscriptionQuery(ctx, skip, PageSize).ToList();
 
@@ -2407,7 +2408,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 		#endregion
 
-		private List<Store> Init(ExportProfileTaskContext ctx, int? totalRecords = null)
+		private List<Store> Init(DataExportTaskContext ctx, int? totalRecords = null)
 		{
 			// Init base things that are even required for preview. Init all other things (regular export) in ExportCoreOuter.
 			List<Store> result = null;
@@ -2485,7 +2486,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			return result;
 		}
 
-		private void ExportCoreInner(ExportProfileTaskContext ctx, Store store)
+		private void ExportCoreInner(DataExportTaskContext ctx, Store store)
 		{
 			if (ctx.ExecuteContext.Abort != ExportAbortion.None)
 				return;
@@ -2596,7 +2597,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			}
 		}
 
-		private void ExportCoreOuter(ExportProfileTaskContext ctx)
+		private void ExportCoreOuter(DataExportTaskContext ctx)
 		{
 			if (ctx.Profile == null || !ctx.Profile.Enabled)
 				return;
@@ -2879,7 +2880,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			if (provider == null)
 				throw new SmartException(T("Admin.Common.ProviderNotLoaded", profile.ProviderSystemName.NaIfEmpty()));
 
-			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, selectedEntityIds);
+			var ctx = new DataExportTaskContext(taskContext, profile, provider, selectedEntityIds);
 
 			HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 
@@ -2924,7 +2925,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			if (profile == null)
 				profile = _exportProfileService.Value.CreateVolatileProfile(provider);
 
-			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, selectedEntityIds);
+			var ctx = new DataExportTaskContext(taskContext, profile, provider, selectedEntityIds);
 			ctx.QueryProducts = queryProducts;
 
 			if (customProperties != null)
@@ -2988,7 +2989,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			InitDependencies(taskContext);
 
-			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, null, previewData);
+			var ctx = new DataExportTaskContext(taskContext, profile, provider, null, previewData);
 
 			var unused = Init(ctx, totalRecords);
 
@@ -3036,7 +3037,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 
 			InitDependencies(taskContext);
 
-			var ctx = new ExportProfileTaskContext(taskContext, profile, provider, previewData: x => { });
+			var ctx = new DataExportTaskContext(taskContext, profile, provider, previewData: x => { });
 
 			var unused = Init(ctx);
 

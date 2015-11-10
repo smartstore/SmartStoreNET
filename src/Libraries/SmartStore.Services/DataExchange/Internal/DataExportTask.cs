@@ -1,26 +1,36 @@
-﻿using SmartStore.Core.Localization;
+﻿using System.Web;
+using SmartStore.Core.Localization;
+using SmartStore.Services.Localization;
+using SmartStore.Services.Media;
+using SmartStore.Services.Seo;
 using SmartStore.Services.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
-using System.Web;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class DataExportTask : ITask
+	// TODO: internal really possible here because of IOC?
+	internal partial class DataExportTask : ITask
 	{
 		private readonly IDataExporter _exporter;
 		private readonly IExportProfileService _exportProfileService;
+		private readonly IUrlRecordService _urlRecordService;
+		private readonly ILocalizedEntityService _localizedEntityService;
+		private readonly IPictureService _pictureService;
+		private readonly ICommonServices _services;
 
 		public DataExportTask(
 			IDataExporter exporter,
-			IExportProfileService exportProfileService)
+			IExportProfileService exportProfileService,
+			IUrlRecordService urlRecordService,
+			ILocalizedEntityService localizedEntityService,
+			IPictureService pictureService,
+			ICommonServices services)
 		{
 			_exporter = exporter;
 			_exportProfileService = exportProfileService;
+			_urlRecordService = urlRecordService;
+			_localizedEntityService = localizedEntityService;
+			_pictureService = pictureService;
+			_services = services;
         }
 
 		public Localizer T { get; set; }

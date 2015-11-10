@@ -14,11 +14,10 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
-using SmartStore.Services.DataExchange.Internal;
 
-namespace SmartStore.Services.DataExchange.ExportTask
+namespace SmartStore.Services.DataExchange.Internal
 {
-	internal class ExportProfileTaskContext
+	internal class DataExportTaskContext
 	{
 		private ProductExportContext _productExportContext;
 		private OrderExportContext _orderExportContext;
@@ -26,7 +25,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 		private CategoryExportContext _categoryExportContext;
 		private CustomerExportContext _customerExportContext;
 
-		public ExportProfileTaskContext(
+		public DataExportTaskContext(
 			TaskExecutionContext taskContext,
 			ExportProfile profile,
 			Provider<IExportProvider> provider,

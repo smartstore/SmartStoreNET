@@ -3,11 +3,13 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
+using System.Web;
 using SmartStore.ComponentModel;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Localization;
@@ -17,6 +19,8 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Seo;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.Html;
+using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
 
@@ -24,6 +28,226 @@ namespace SmartStore.Services.DataExchange.Internal
 {
 	internal partial class DataExportTask
 	{
+		private void PrepareProductDescription(DataExportTaskContext ctx, dynamic dynObject, Product product)
+		{
+			try
+			{
+				var languageId = (ctx.Projection.LanguageId ?? 0);
+				string description = "";
+
+				// description merging
+				if (ctx.Projection.DescriptionMerging != ExportDescriptionMerging.None)
+				{
+					if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescriptionOrNameIfEmpty)
+					{
+						description = dynObject.FullDescription;
+
+						if (description.IsEmpty())
+							description = dynObject.ShortDescription;
+						if (description.IsEmpty())
+							description = dynObject.Name;
+					}
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ShortDescription)
+					{
+						description = dynObject.ShortDescription;
+					}
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.Description)
+					{
+						description = dynObject.FullDescription;
+					}
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndShortDescription)
+					{
+						description = ((string)dynObject.Name).Grow((string)dynObject.ShortDescription, " ");
+					}
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.NameAndDescription)
+					{
+						description = ((string)dynObject.Name).Grow((string)dynObject.FullDescription, " ");
+					}
+					else if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription ||
+						ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndDescription)
+					{
+						var productManus = ctx.ProductExportContext.ProductManufacturers.Load(product.Id);
+
+						if (productManus != null && productManus.Any())
+							description = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
+
+						description = description.Grow((string)dynObject.Name, " ");
+
+						if (ctx.Projection.DescriptionMerging == ExportDescriptionMerging.ManufacturerAndNameAndShortDescription)
+							description = description.Grow((string)dynObject.ShortDescription, " ");
+						else
+							description = description.Grow((string)dynObject.FullDescription, " ");
+					}
+				}
+				else
+				{
+					description = dynObject.FullDescription;
+				}
+
+				// append text
+				if (ctx.Projection.AppendDescriptionText.HasValue() && ((string)dynObject.ShortDescription).IsEmpty() && ((string)dynObject.FullDescription).IsEmpty())
+				{
+					string[] appendText = ctx.Projection.AppendDescriptionText.SplitSafe(",");
+					if (appendText.Length > 0)
+					{
+						var rnd = (new Random()).Next(0, appendText.Length - 1);
+
+						description = description.Grow(appendText.SafeGet(rnd), " ");
+					}
+				}
+
+				// remove critical characters
+				if (description.HasValue() && ctx.Projection.RemoveCriticalCharacters)
+				{
+					foreach (var str in ctx.Projection.CriticalCharacters.SplitSafe(","))
+						description = description.Replace(str, "");
+				}
+
+				// convert to plain text
+				if (ctx.Projection.DescriptionToPlainText)
+				{
+					//Regex reg = new Regex("<[^>]+>", RegexOptions.IgnoreCase);
+					//description = HttpUtility.HtmlDecode(reg.Replace(description, ""));
+
+					description = HtmlUtils.ConvertHtmlToPlainText(description);
+					description = HtmlUtils.StripTags(HttpUtility.HtmlDecode(description));
+				}
+
+				dynObject.FullDescription = description;
+			}
+			catch { }
+		}
+
+		private decimal? ConvertPrice(DataExportTaskContext ctx, Product product, decimal? price)
+		{
+			if (price.HasValue)
+			{
+				if (ctx.Projection.ConvertNetToGrossPrices)
+				{
+					decimal taxRate;
+					price = _taxService.GetProductPrice(product, price.Value, true, ctx.ContextCustomer, out taxRate);
+				}
+
+				if (price != decimal.Zero)
+				{
+					price = _currencyService.ConvertFromPrimaryStoreCurrency(price.Value, ctx.ContextCurrency, ctx.Store);
+				}
+			}
+			return price;
+		}
+
+		private decimal CalculatePrice(DataExportTaskContext ctx, Product product, bool forAttributeCombination)
+		{
+			decimal price = product.Price;
+
+			// price type
+			if (ctx.Projection.PriceType.HasValue && !forAttributeCombination)
+			{
+				var priceCalculationContext = ctx.ProductExportContext as PriceCalculationContext;
+
+				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
+				{
+					bool displayFromMessage;
+					price = _priceCalculationService.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
+				}
+				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PreSelectedPrice)
+				{
+					price = _priceCalculationService.GetPreselectedPrice(product, priceCalculationContext);
+				}
+				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
+				{
+					price = _priceCalculationService.GetFinalPrice(product, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, priceCalculationContext);
+				}
+			}
+
+			return ConvertPrice(ctx, product, price) ?? price;
+		}
+
+		private void MergeWithCombination(DataExportTaskContext ctx, dynamic dynObject, Product product, 
+			ICollection<ProductVariantAttribute> productAttributes, ProductVariantAttributeCombination combination)
+		{
+			product.MergeWithCombination(combination);
+
+			dynObject.Price = CalculatePrice(ctx, product, combination != null);
+
+			if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
+			{
+				var values = _productAttributeParser.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
+
+				dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", values), " ");
+			}
+
+			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter, _currencyService, _taxService,
+				_priceCalculationService, ctx.ContextCurrency, decimal.Zero, true);
+
+			// navigation properties
+			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
+			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
+
+			if (ctx.Supports(ExportFeature.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
+			{
+				dynObject.ManufacturerPartNumber = product.Sku;
+			}
+
+			if (ctx.Supports(ExportFeature.OffersShippingTimeFallback))
+			{
+				dynamic deliveryTime = dynObject.DeliveryTime;
+				dynObject._ShippingTime = (deliveryTime == null ? ctx.Projection.ShippingTime : deliveryTime.Name);
+			}
+
+			if (ctx.Supports(ExportFeature.OffersShippingCostsFallback))
+			{
+				dynObject._FreeShippingThreshold = ctx.Projection.FreeShippingThreshold;
+
+				if (product.IsFreeShipping || (ctx.Projection.FreeShippingThreshold.HasValue && (decimal)dynObject.Price >= ctx.Projection.FreeShippingThreshold.Value))
+					dynObject._ShippingCosts = decimal.Zero;
+				else
+					dynObject._ShippingCosts = ctx.Projection.ShippingCosts;
+			}
+
+			if (ctx.Supports(ExportFeature.UsesOldPrice))
+			{
+				if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)dynObject.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+				{
+					if (ctx.Projection.ConvertNetToGrossPrices)
+					{
+						decimal taxRate;
+						dynObject._OldPrice = _taxService.GetProductPrice(product, product.OldPrice, true, ctx.ContextCustomer, out taxRate);
+					}
+					else
+					{
+						dynObject._OldPrice = product.OldPrice;
+					}
+				}
+				else
+				{
+					dynObject._OldPrice = null;
+				}
+			}
+
+			if (ctx.Supports(ExportFeature.UsesSpecialPrice))
+			{
+				dynObject._SpecialPrice = null;
+				dynObject._RegularPrice = null;   // price if a special price would not exist
+
+				if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
+				{
+					var specialPrice = _priceCalculationService.GetSpecialPrice(product);
+
+					dynObject._SpecialPrice = ConvertPrice(ctx, product, specialPrice);
+
+					if (specialPrice.HasValue)
+					{
+						decimal tmpSpecialPrice = product.SpecialPrice.Value;
+						product.SpecialPrice = null;
+						dynObject._RegularPrice = CalculatePrice(ctx, product, combination != null);
+						product.SpecialPrice = tmpSpecialPrice;
+					}
+				}
+			}
+		}
+
+
 		private List<dynamic> GetLocalized<T>(DataExportTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
 		{
@@ -145,14 +369,6 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(points);
 
-			result.Id = points.Id;
-			result.CustomerId = points.CustomerId;
-			result.Points = points.Points;
-			result.PointsBalance = points.PointsBalance;
-			result.UsedAmount = points.UsedAmount;
-			result.Message = points.Message;
-			result.CreatedOnUtc = points.CreatedOnUtc;
-
 			return result;
 		}
 
@@ -162,25 +378,6 @@ namespace SmartStore.Services.DataExchange.Internal
 				return null;
 
 			dynamic result = new DynamicEntity(customer);
-
-			result.Id = customer.Id;
-			result.CustomerGuid = customer.CustomerGuid;
-			result.Username = customer.Username;
-			result.Email = customer.Email;
-			result.Password = customer.Password;   // not so good but referenced in Excel export
-			result.PasswordFormatId = customer.PasswordFormatId;
-			result.PasswordSalt = customer.PasswordSalt;
-			result.AdminComment = customer.AdminComment;
-			result.IsTaxExempt = customer.IsTaxExempt;
-			result.AffiliateId = customer.AffiliateId;
-			result.Active = customer.Active;
-			result.Deleted = customer.Deleted;
-			result.IsSystemAccount = customer.IsSystemAccount;
-			result.SystemName = customer.SystemName;
-			result.LastIpAddress = customer.LastIpAddress;
-			result.CreatedOnUtc = customer.CreatedOnUtc;
-			result.LastLoginDateUtc = customer.LastLoginDateUtc;
-			result.LastActivityDateUtc = customer.LastActivityDateUtc;
 
 			result.BillingAddress = null;
 			result.ShippingAddress = null;
@@ -203,19 +400,6 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(store);
 
-			result.Id = store.Id;
-			result.Name = store.Name;
-			result.Url = store.Url;
-			result.SslEnabled = store.SslEnabled;
-			result.SecureUrl = store.SecureUrl;
-			result.Hosts = store.Hosts;
-			result.LogoPictureId = store.LogoPictureId;
-			result.DisplayOrder = store.DisplayOrder;
-			result.HtmlBodyId = store.HtmlBodyId;
-			result.ContentDeliveryNetwork = store.ContentDeliveryNetwork;
-			result.PrimaryStoreCurrencyId = store.PrimaryStoreCurrencyId;
-			result.PrimaryExchangeRateCurrencyId = store.PrimaryExchangeRateCurrencyId;
-
 			result.PrimaryStoreCurrency = ToDynamic(ctx, store.PrimaryStoreCurrency);
 			result.PrimaryExchangeRateCurrency = ToDynamic(ctx, store.PrimaryExchangeRateCurrency);
 
@@ -229,12 +413,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(deliveryTime);
 
-			result.Id = deliveryTime.Id;
 			result.Name = deliveryTime.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			result.DisplayLocale = deliveryTime.DisplayLocale;
-			result.ColorHexValue = deliveryTime.ColorHexValue;
-			result.DisplayOrder = deliveryTime.DisplayOrder;
-
 			result._Localized = GetLocalized(ctx, deliveryTime, x => x.Name);
 
 			return result;
@@ -258,12 +437,8 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(quantityUnit);
 
-			result.Id = quantityUnit.Id;
 			result.Name = quantityUnit.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			result.Description = quantityUnit.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
-			result.DisplayLocale = quantityUnit.DisplayLocale;
-			result.DisplayOrder = quantityUnit.DisplayOrder;
-			result.IsDefault = quantityUnit.IsDefault;
 
 			result._Localized = GetLocalized(ctx, quantityUnit,
 				x => x.Name,
@@ -290,10 +465,6 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(picture);
 
-			result.Id = picture.Id;
-			result.SeoFilename = picture.SeoFilename;
-			result.MimeType = picture.MimeType;
-
 			result._ThumbImageUrl = _pictureService.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
 			result._ImageUrl = _pictureService.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
 			result._FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, false, ctx.Store.Url);
@@ -313,16 +484,8 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(pva);
 
-			result.Id = pva.Id;
-			result.TextPrompt = pva.TextPrompt;
-			result.IsRequired = pva.IsRequired;
-			result.AttributeControlTypeId = pva.AttributeControlTypeId;
-			result.DisplayOrder = pva.DisplayOrder;
-
 			dynamic attribute = new DynamicEntity(pva.ProductAttribute);
 
-			attribute.Id = pva.ProductAttribute.Id;
-			attribute.Alias = pva.ProductAttribute.Alias;
 			attribute.Name = pva.ProductAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
 			attribute.Description = pva.ProductAttribute.GetLocalized(x => x.Description, ctx.Projection.LanguageId ?? 0, true, false);
 
@@ -330,23 +493,12 @@ namespace SmartStore.Services.DataExchange.Internal
 				.OrderBy(x => x.DisplayOrder)
 				.Select(x =>
 				{
-					dynamic value = new DynamicEntity(x);
+					dynamic dyn = new DynamicEntity(x);
 
-					value.Id = x.Id;
-					value.Alias = x.Alias;
-					value.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
-					value.ColorSquaresRgb = x.ColorSquaresRgb;
-					value.PriceAdjustment = x.PriceAdjustment;
-					value.WeightAdjustment = x.WeightAdjustment;
-					value.IsPreSelected = x.IsPreSelected;
-					value.DisplayOrder = x.DisplayOrder;
-					value.ValueTypeId = x.ValueTypeId;
-					value.LinkedProductId = x.LinkedProductId;
-					value.Quantity = x.Quantity;
+					dyn.Name = x.GetLocalized(y => y.Name, ctx.Projection.LanguageId ?? 0, true, false);
+					dyn._Localized = GetLocalized(ctx, x, y => y.Name);
 
-					value._Localized = GetLocalized(ctx, x, y => y.Name);
-
-					return value;
+					return dyn;
 				})
 				.ToList();
 
@@ -474,74 +626,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(order);
 
-			result.Id = order.Id;
 			result.OrderNumber = order.GetOrderNumber();
-			result.OrderGuid = order.OrderGuid;
-			result.StoreId = order.StoreId;
-			result.CustomerId = order.CustomerId;
-			result.BillingAddressId = order.BillingAddressId;
-			result.ShippingAddressId = order.ShippingAddressId;
-			result.OrderStatusId = order.OrderStatusId;
-			result.ShippingStatusId = order.ShippingStatusId;
-			result.PaymentStatusId = order.PaymentStatusId;
-			result.PaymentMethodSystemName = order.PaymentMethodSystemName;
-			result.CustomerCurrencyCode = order.CustomerCurrencyCode;
-			result.CurrencyRate = order.CurrencyRate;
-			result.CustomerTaxDisplayTypeId = order.CustomerTaxDisplayTypeId;
-			result.VatNumber = order.VatNumber;
-			result.OrderSubtotalInclTax = order.OrderSubtotalInclTax;
-			result.OrderSubtotalExclTax = order.OrderSubtotalExclTax;
-			result.OrderSubTotalDiscountInclTax = order.OrderSubTotalDiscountInclTax;
-			result.OrderSubTotalDiscountExclTax = order.OrderSubTotalDiscountExclTax;
-			result.OrderShippingInclTax = order.OrderShippingInclTax;
-			result.OrderShippingExclTax = order.OrderShippingExclTax;
-			result.OrderShippingTaxRate = order.OrderShippingTaxRate;
-			result.PaymentMethodAdditionalFeeInclTax = order.PaymentMethodAdditionalFeeInclTax;
-			result.PaymentMethodAdditionalFeeExclTax = order.PaymentMethodAdditionalFeeExclTax;
-			result.PaymentMethodAdditionalFeeTaxRate = order.PaymentMethodAdditionalFeeTaxRate;
-			result.TaxRates = order.TaxRates;
-			result.OrderTax = order.OrderTax;
-			result.OrderDiscount = order.OrderDiscount;
-			result.OrderTotal = order.OrderTotal;
-			result.RefundedAmount = order.RefundedAmount;
-			result.RewardPointsWereAdded = order.RewardPointsWereAdded;
-			result.CheckoutAttributeDescription = order.CheckoutAttributeDescription;
-			result.CheckoutAttributesXml = order.CheckoutAttributesXml;
-			result.CustomerLanguageId = order.CustomerLanguageId;
-			result.AffiliateId = order.AffiliateId;
-			result.CustomerIp = order.CustomerIp;
-			result.AllowStoringCreditCardNumber = order.AllowStoringCreditCardNumber;
-			result.CardType = order.CardType;
-			result.CardName = order.CardName;
-			result.CardNumber = order.CardNumber;
-			result.MaskedCreditCardNumber = order.MaskedCreditCardNumber;
-			result.CardCvv2 = order.CardCvv2;
-			result.CardExpirationMonth = order.CardExpirationMonth;
-			result.CardExpirationYear = order.CardExpirationYear;
-			result.AllowStoringDirectDebit = order.AllowStoringDirectDebit;
-			result.DirectDebitAccountHolder = order.DirectDebitAccountHolder;
-			result.DirectDebitAccountNumber = order.DirectDebitAccountNumber;
-			result.DirectDebitBankCode = order.DirectDebitBankCode;
-			result.DirectDebitBankName = order.DirectDebitBankName;
-			result.DirectDebitBIC = order.DirectDebitBIC;
-			result.DirectDebitCountry = order.DirectDebitCountry;
-			result.DirectDebitIban = order.DirectDebitIban;
-			result.CustomerOrderComment = order.CustomerOrderComment;
-			result.AuthorizationTransactionId = order.AuthorizationTransactionId;
-			result.AuthorizationTransactionCode = order.AuthorizationTransactionCode;
-			result.AuthorizationTransactionResult = order.AuthorizationTransactionResult;
-			result.CaptureTransactionId = order.CaptureTransactionId;
-			result.CaptureTransactionResult = order.CaptureTransactionResult;
-			result.SubscriptionTransactionId = order.SubscriptionTransactionId;
-			result.PurchaseOrderNumber = order.PurchaseOrderNumber;
-			result.PaidDateUtc = order.PaidDateUtc;
-			result.ShippingMethod = order.ShippingMethod;
-			result.ShippingRateComputationMethodSystemName = order.ShippingRateComputationMethodSystemName;
-			result.Deleted = order.Deleted;
-			result.CreatedOnUtc = order.CreatedOnUtc;
-			result.UpdatedOnUtc = order.UpdatedOnUtc;
-			result.RewardPointsRemaining = order.RewardPointsRemaining;
-			result.HasNewPaymentNotification = order.HasNewPaymentNotification;
 			result.OrderStatus = order.OrderStatus.GetLocalizedEnum(_services.Localization, ctx.Projection.LanguageId ?? 0);
 			result.PaymentStatus = order.PaymentStatus.GetLocalizedEnum(_services.Localization, ctx.Projection.LanguageId ?? 0);
 			result.ShippingStatus = order.ShippingStatus.GetLocalizedEnum(_services.Localization, ctx.Projection.LanguageId ?? 0);
@@ -551,6 +636,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			result.ShippingAddress = null;
 			result.Store = null;
 			result.Shipments = null;
+
 			result.RedeemedRewardPointsEntry = ToDynamic(ctx, order.RedeemedRewardPointsEntry);
 
 			return result;
@@ -562,27 +648,6 @@ namespace SmartStore.Services.DataExchange.Internal
 				return null;
 
 			dynamic result = new DynamicEntity(orderItem);
-
-			result.Id = orderItem.Id;
-			result.OrderItemGuid = orderItem.OrderItemGuid;
-			result.OrderId = orderItem.OrderId;
-			result.ProductId = orderItem.ProductId;
-			result.Quantity = orderItem.Quantity;
-			result.UnitPriceInclTax = orderItem.UnitPriceInclTax;
-			result.UnitPriceExclTax = orderItem.UnitPriceExclTax;
-			result.PriceInclTax = orderItem.PriceInclTax;
-			result.PriceExclTax = orderItem.PriceExclTax;
-			result.TaxRate = orderItem.TaxRate;
-			result.DiscountAmountInclTax = orderItem.DiscountAmountInclTax;
-			result.DiscountAmountExclTax = orderItem.DiscountAmountExclTax;
-			result.AttributeDescription = orderItem.AttributeDescription;
-			result.AttributesXml = orderItem.AttributesXml;
-			result.DownloadCount = orderItem.DownloadCount;
-			result.IsDownloadActivated = orderItem.IsDownloadActivated;
-			result.LicenseDownloadId = orderItem.LicenseDownloadId;
-			result.ItemWeight = orderItem.ItemWeight;
-			result.BundleData = orderItem.BundleData;
-			result.ProductCost = orderItem.ProductCost;
 
 			result.Product = ToDynamic(ctx, orderItem.Product);
 
@@ -596,23 +661,10 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(shipment);
 
-			result.Id = shipment.Id;
-			result.OrderId = shipment.OrderId;
-			result.TrackingNumber = shipment.TrackingNumber;
-			result.TotalWeight = shipment.TotalWeight;
-			result.ShippedDateUtc = shipment.ShippedDateUtc;
-			result.DeliveryDateUtc = shipment.DeliveryDateUtc;
-			result.CreatedOnUtc = shipment.CreatedOnUtc;
-
 			result.ShipmentItems = shipment.ShipmentItems
 				.Select(x =>
 				{
 					dynamic exp = new DynamicEntity(x);
-
-					exp.Id = x.Id;
-					exp.ShipmentId = x.ShipmentId;
-					exp.OrderItemId = x.OrderItemId;
-					exp.Quantity = x.Quantity;
 
 					return exp;
 				})
@@ -628,19 +680,6 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(discount);
 
-			result.Id = discount.Id;
-			result.Name = discount.Name;
-			result.DiscountTypeId = discount.DiscountTypeId;
-			result.UsePercentage = discount.UsePercentage;
-			result.DiscountPercentage = discount.DiscountPercentage;
-			result.DiscountAmount = discount.DiscountAmount;
-			result.StartDateUtc = discount.StartDateUtc;
-			result.EndDateUtc = discount.EndDateUtc;
-			result.RequiresCouponCode = discount.RequiresCouponCode;
-			result.CouponCode = discount.CouponCode;
-			result.DiscountLimitationId = discount.DiscountLimitationId;
-			result.LimitationTimes = discount.LimitationTimes;
-
 			return result;
 		}
 
@@ -653,27 +692,16 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(psa);
 
-			result.Id = psa.Id;
-			result.ProductId = psa.ProductId;
-			result.SpecificationAttributeOptionId = psa.SpecificationAttributeOptionId;
-			result.AllowFiltering = psa.AllowFiltering;
-			result.ShowOnProductPage = psa.ShowOnProductPage;
-			result.DisplayOrder = psa.DisplayOrder;
-
 			dynamic dynAttribute = new DynamicEntity(option.SpecificationAttribute);
 
-			dynAttribute.Id = option.SpecificationAttribute.Id;
 			dynAttribute.Name = option.SpecificationAttribute.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			dynAttribute.DisplayOrder = option.SpecificationAttribute.DisplayOrder;
 			dynAttribute._Localized = GetLocalized(ctx, option.SpecificationAttribute, x => x.Name);
 
 			dynamic dynOption = new DynamicEntity(option);
 
-			dynOption.Id = option.Id;
-			dynOption.SpecificationAttributeId = option.SpecificationAttributeId;
 			dynOption.Name = option.GetLocalized(x => x.Name, ctx.Projection.LanguageId ?? 0, true, false);
-			dynOption.DisplayOrder = option.DisplayOrder;
 			dynOption._Localized = GetLocalized(ctx, option, x => x.Name);
+
 			dynOption.SpecificationAttribute = dynAttribute;
 
 			result.SpecificationAttributeOption = dynOption;
@@ -688,13 +716,6 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(genericAttribute);
 
-			result.Id = genericAttribute.Id;
-			result.EntityId = genericAttribute.EntityId;
-			result.KeyGroup = genericAttribute.KeyGroup;
-			result.Key = genericAttribute.Key;
-			result.Value = genericAttribute.Value;
-			result.StoreId = genericAttribute.StoreId;
-
 			return result;
 		}
 
@@ -705,15 +726,430 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			dynamic result = new DynamicEntity(subscription);
 
-			result.Id = subscription.Id;
-			result.NewsLetterSubscriptionGuid = subscription.NewsLetterSubscriptionGuid;
-			result.Email = subscription.Email;
-			result.Active = subscription.Active;
-			result.CreatedOnUtc = subscription.CreatedOnUtc;
-			result.StoreId = subscription.StoreId;
+			return result;
+		}
+
+
+		private List<dynamic> Convert(DataExportTaskContext ctx, Product product)
+		{
+			var result = new List<dynamic>();
+
+			var languageId = (ctx.Projection.LanguageId ?? 0);
+			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
+			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
+
+			if (ctx.Supports(ExportFeature.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
+				pictureSize = ctx.Projection.PictureSize;
+
+			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);  // perf preview (it's a compromise)
+			var productPictures = ctx.ProductExportContext.ProductPictures.Load(perfLoadId);
+			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
+			var productCategories = ctx.ProductExportContext.ProductCategories.Load(product.Id);
+			var productAttributes = ctx.ProductExportContext.Attributes.Load(product.Id);
+			var productAttributeCombinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
+			var productTags = ctx.ProductExportContext.ProductTags.Load(perfLoadId);
+			var specificationAttributes = ctx.ProductExportContext.ProductSpecificationAttributes.Load(perfLoadId);
+
+			dynamic dynObject = ToDynamic(ctx, product);
+
+			#region gerneral data
+
+			dynObject._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+
+			dynObject._DetailUrl = ctx.Store.Url.EnsureEndsWith("/") + (string)dynObject.SeName;
+
+			dynObject._CategoryName = null;
+
+			if (ctx.Categories.Count > 0 && ctx.CategoryPathes.Count > 0)
+			{
+				dynObject._CategoryPath = _categoryService.GetCategoryPath(
+					product,
+					null,
+					x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
+					(id, value) => ctx.CategoryPathes[id] = value,
+					x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x),
+					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
+				);
+			}
+			else
+			{
+				dynObject._CategoryPath = null;
+			}
+
+			dynObject.ProductPictures = productPictures
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize);
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject.ProductManufacturers = productManufacturers
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					dyn.Manufacturer = ToDynamic(ctx, x.Manufacturer);
+
+					if (x.Manufacturer != null && x.Manufacturer.PictureId.HasValue)
+						dyn.Manufacturer.Picture = ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+					else
+						dyn.Manufacturer.Picture = null;
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject.ProductCategories = productCategories
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					dyn.Category = ToDynamic(ctx, x.Category);
+
+					if (x.Category != null && x.Category.PictureId.HasValue)
+						dyn.Category.Picture = ToDynamic(ctx, x.Category.Picture, _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+
+					if (dynObject._CategoryName == null)
+						dynObject._CategoryName = (string)dyn.Category.Name;
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject.ProductAttributes = productAttributes
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			dynObject.ProductAttributeCombinations = productAttributeCombinations
+				.Select(x =>
+				{
+					dynamic dyn = ToDynamic(ctx, x);
+					var assignedPictures = new List<dynamic>();
+
+					foreach (int pictureId in x.GetAssignedPictureIds())
+					{
+						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
+						if (assignedPicture != null && assignedPicture.Picture != null)
+						{
+							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize));
+						}
+					}
+
+					dyn.Pictures = assignedPictures;
+
+					return dyn;
+				})
+				.ToList();
+
+			if (product.HasTierPrices)
+			{
+				var tierPrices = ctx.ProductExportContext.TierPrices.Load(product.Id)
+					.RemoveDuplicatedQuantities();
+
+				dynObject.TierPrices = tierPrices
+					.Select(x =>
+					{
+						dynamic dyn = new DynamicEntity(x);
+
+						return dyn;
+					})
+					.ToList();
+			}
+
+			if (product.HasDiscountsApplied)
+			{
+				var appliedDiscounts = ctx.ProductExportContext.AppliedDiscounts.Load(product.Id);
+
+				dynObject.AppliedDiscounts = appliedDiscounts
+					.Select(x => ToDynamic(ctx, x))
+					.ToList();
+			}
+
+			dynObject.ProductTags = productTags
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					dyn.Name = x.GetLocalized(y => y.Name, languageId, true, false);
+					dyn.SeName = x.GetSeName(languageId);
+					dyn._Localized = GetLocalized(ctx, x, y => y.Name);
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject.ProductSpecificationAttributes = specificationAttributes
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			if (product.ProductType == ProductType.BundledProduct)
+			{
+				var bundleItems = ctx.ProductExportContext.ProductBundleItems.Load(perfLoadId);
+
+				dynObject.ProductBundleItems = bundleItems
+					.Select(x =>
+					{
+						dynamic dyn = new DynamicEntity(x);
+
+						dyn.Name = x.GetLocalized(y => y.Name, languageId, true, false);
+						dyn.ShortDescription = x.GetLocalized(y => y.ShortDescription, languageId, true, false);
+						dyn._Localized = GetLocalized(ctx, x, y => y.Name, y => y.ShortDescription);
+
+						return dyn;
+					})
+					.ToList();
+			}
+
+			#endregion
+
+			#region more attribute controlled data
+
+			if (ctx.Supports(ExportFeature.CanProjectDescription))
+			{
+				PrepareProductDescription(ctx, dynObject, product);
+			}
+
+			if (ctx.Supports(ExportFeature.OffersBrandFallback))
+			{
+				string brand = null;
+				var productManus = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
+
+				if (productManus != null && productManus.Any())
+					brand = productManus.First().Manufacturer.GetLocalized(x => x.Name, languageId, true, false);
+
+				if (brand.IsEmpty())
+					brand = ctx.Projection.Brand;
+
+				dynObject._Brand = brand;
+			}
+
+			if (ctx.Supports(ExportFeature.CanIncludeMainPicture))
+			{
+				if (productPictures != null && productPictures.Any())
+					dynObject._MainPictureUrl = _pictureService.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+				else
+					dynObject._MainPictureUrl = _pictureService.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+			}
+
+			#endregion
+
+			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && productAttributeCombinations.Where(x => x.IsActive).Count() > 0)
+			{
+				// EF does not support entities to be constructed in a LINQ to entities query.
+				// So it's not possible to join-query attribute combinations and products without losing ProductSearchContext ability.
+				// We are reduced to somewhat compound data here.
+
+				foreach (var combination in productAttributeCombinations.Where(x => x.IsActive))
+				{
+					// TODO: Das ist nocht nicht zu Ende gedacht, wegen MergeWithCombination etc.
+					//var clone = new ExpandoObject();
+					//clone.Merge((IDictionary<string, object>)dynObject);
+					//matterOfDataMerging(clone, combination);
+					//result.Add(clone);
+
+					// TODO: das hier ist besser. Aber ein Product-Klon muss immer noch erstellt werden.
+					//var clone = new DynamicEntity((DynamicEntity)dynObject);
+					//matterOfDataMerging(clone, combination);
+					//result.Add(clone);
+
+					var productClone = product.Clone();
+					var dyn = new DynamicEntity(productClone);
+					MergeWithCombination(ctx, dyn, productClone, productAttributes, combination);
+					result.Add(dyn);
+				}
+			}
+			else
+			{
+				MergeWithCombination(ctx, dynObject, product, productAttributes, null);
+				result.Add(dynObject);
+			}
 
 			return result;
 		}
 
+		private List<dynamic> Convert(DataExportTaskContext ctx, Order order)
+		{
+			var result = new List<dynamic>();
+
+			ctx.OrderExportContext.Addresses.Collect(order.ShippingAddressId ?? 0);
+
+			var perfLoadId = (ctx.IsPreview ? 0 : order.Id);
+			var addresses = ctx.OrderExportContext.Addresses.Load(ctx.IsPreview ? 0 : order.BillingAddressId);
+			var customers = ctx.OrderExportContext.Customers.Load(order.CustomerId);
+			var rewardPointsHistories = ctx.OrderExportContext.RewardPointsHistories.Load(ctx.IsPreview ? 0 : order.CustomerId);
+			var orderItems = ctx.OrderExportContext.OrderItems.Load(perfLoadId);
+			var shipments = ctx.OrderExportContext.Shipments.Load(perfLoadId);
+
+			dynamic dynObject = ToDynamic(ctx, order);
+
+			if (ctx.Stores.ContainsKey(order.StoreId))
+			{
+				dynObject.Store = ToDynamic(ctx, ctx.Stores[order.StoreId]);
+			}
+
+			dynObject.Customer = ToDynamic(ctx, customers.FirstOrDefault(x => x.Id == order.CustomerId));
+
+			dynObject.Customer.RewardPointsHistory = rewardPointsHistories
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			if (rewardPointsHistories.Count > 0)
+			{
+				dynObject.Customer._RewardPointsBalance = rewardPointsHistories
+					.OrderByDescending(x => x.CreatedOnUtc)
+					.ThenByDescending(x => x.Id)
+					.FirstOrDefault()
+					.PointsBalance;
+			}
+
+			dynObject.BillingAddress = ToDynamic(ctx, addresses.FirstOrDefault(x => x.Id == order.BillingAddressId));
+
+			if (order.ShippingAddressId.HasValue)
+			{
+				dynObject.ShippingAddress = ToDynamic(ctx, addresses.FirstOrDefault(x => x.Id == order.ShippingAddressId.Value));
+			}
+
+			dynObject.OrderItems = orderItems
+				.Select(e =>
+				{
+					dynamic dyn = ToDynamic(ctx, e);
+					var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == e.Product.ProductTemplateId);
+
+					dyn.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
+
+					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter, _currencyService, _taxService,
+						_priceCalculationService, ctx.ContextCurrency, decimal.Zero, true);
+
+					ToDeliveryTime(ctx, dyn.Product, e.Product.DeliveryTimeId);
+					ToQuantityUnit(ctx, dyn.Product, e.Product.QuantityUnitId);
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject.Shipments = shipments
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			result.Add(dynObject);
+
+			return result;
+		}
+
+		private List<dynamic> Convert(DataExportTaskContext ctx, Manufacturer manufacturer)
+		{
+			var result = new List<dynamic>();
+
+			var productManufacturers = ctx.ManufacturerExportContext.ProductManufacturers.Load(manufacturer.Id);
+
+			dynamic dynObject = ToDynamic(ctx, manufacturer);
+
+			if (!ctx.IsPreview && manufacturer.PictureId.HasValue)
+			{
+				var pictures = ctx.ManufacturerExportContext.Pictures.Load(manufacturer.PictureId.Value);
+
+				if (pictures.Count > 0)
+					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+			}
+
+			dynObject.ProductManufacturers = productManufacturers
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					return dyn;
+				})
+				.ToList();
+
+			result.Add(dynObject);
+
+			return result;
+		}
+
+		private List<dynamic> Convert(DataExportTaskContext ctx, Category category)
+		{
+			var result = new List<dynamic>();
+
+			var productCategories = ctx.CategoryExportContext.ProductCategories.Load(category.Id);
+
+			dynamic dynObject = ToDynamic(ctx, category);
+
+			if (!ctx.IsPreview && category.PictureId.HasValue)
+			{
+				var pictures = ctx.CategoryExportContext.Pictures.Load(category.PictureId.Value);
+
+				if (pictures.Count > 0)
+					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+			}
+
+			dynObject.ProductCategories = productCategories
+				.OrderBy(x => x.DisplayOrder)
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					return dyn;
+				})
+				.ToList();
+
+			result.Add(dynObject);
+
+			return result;
+		}
+
+		private List<dynamic> Convert(DataExportTaskContext ctx, Customer customer)
+		{
+			var result = new List<dynamic>();
+
+			var perfLoadId = (ctx.IsPreview ? 0 : customer.Id);
+			var genericAttributes = ctx.CustomerExportContext.GenericAttributes.Load(perfLoadId);
+
+			dynamic dynObject = ToDynamic(ctx, customer);
+
+			dynObject.BillingAddress = ToDynamic(ctx, customer.BillingAddress);
+			dynObject.ShippingAddress = ToDynamic(ctx, customer.ShippingAddress);
+
+			dynObject.Addresses = customer.Addresses
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			dynObject.CustomerRoles = customer.CustomerRoles
+				.Select(x =>
+				{
+					dynamic dyn = new DynamicEntity(x);
+
+					return dyn;
+				})
+				.ToList();
+
+			dynObject._GenericAttributes = genericAttributes
+				.Select(x => ToDynamic(ctx, x))
+				.ToList();
+
+			dynObject._HasNewsletterSubscription = ctx.NewsletterSubscriptions.Contains(customer.Email, StringComparer.CurrentCultureIgnoreCase);
+
+			result.Add(dynObject);
+
+			return result;
+		}
+
+		private List<dynamic> Convert(DataExportTaskContext ctx, NewsLetterSubscription subscription)
+		{
+			var result = new List<dynamic>();
+
+			dynamic dynObject = ToDynamic(ctx, subscription);
+
+			result.Add(dynObject);
+			return result;
+		}
 	}
 }

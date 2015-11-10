@@ -461,7 +461,7 @@ namespace SmartStore.Services.Localization
 					var resource = language.LocaleStringResources.Where(x => x.ResourceName.Equals(name, StringComparison.InvariantCultureIgnoreCase)).FirstOrDefault();
 					if (resource != null)
 					{
-						if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Update))
+						if (mode.HasFlag(ImportModeFlags.Update))
 						{
 							if (updateTouchedResources || !resource.IsTouched.GetValueOrDefault())
 							{
@@ -473,7 +473,7 @@ namespace SmartStore.Services.Localization
 					}
 					else
 					{
-						if (mode.IsSet<ImportModeFlags>(ImportModeFlags.Insert))
+						if (mode.HasFlag(ImportModeFlags.Insert))
 						{
 							toAdd.Add(
 								new LocaleStringResource()

@@ -136,10 +136,12 @@
                         @if (Model.DisplayVatNumber)
                         {
                             <div class="control-group">
-                                @Html.LabelFor(model => model.VatNumber, new { @class = "control-label", @for = "VatNumber" })
+                                @Html.LabelFor(model => model.VatNumber, new { @class = "control-label" + (Model.VatRequired ? " required" : ""), @for = "VatNumber" })
                                 <div class="controls">
-                                    @Html.TextBoxFor(model => model.VatNumber, new { placeholder = "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
+                                    @Html.EditorFor(model => model.VatNumber, new { placeholder = Model.VatRequired ? "" : "Optional" })&nbsp;&nbsp;&nbsp;@Model.VatNumberStatusNote
                                     <span class="help-block muted vat-note">@T("Account.Fields.VatNumber.Note")</span>
+
+                                    @Html.ValidationMessageFor(model => model.VatNumber)
                                 </div>
                             </div>
                         }

@@ -26,7 +26,7 @@
 * #202 Implement option for product list 'default sort order'
 * #360 Import & export product variant combinations
 * #722 System > SEO Names: Implement editing of an UrlRecord
-* Added option to make vatin mandatory during customer registration
+* Added option to make VATIN mandatory during customer registration
 
 ### Improvements
 * (Perf) Implemented static caches for URL aliases and localized properties. Increases app startup and request speed by up to 30%.

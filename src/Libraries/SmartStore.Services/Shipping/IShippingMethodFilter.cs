@@ -9,7 +9,7 @@ namespace SmartStore.Services.Shipping
 		/// </summary>
 		/// <param name="request">Shipping filter request</param>
 		/// <returns><c>true</c> filter out method, <c>false</c> do not filter out method</returns>
-		bool FilterOutShippingMethod(ShippingFilterRequest request);
+		bool IsExcluded(ShippingFilterRequest request);
 
 		/// <summary>
 		/// Get URL for filter configuration

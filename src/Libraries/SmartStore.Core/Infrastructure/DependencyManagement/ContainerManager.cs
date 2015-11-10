@@ -77,7 +77,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
                     }
                     return Activator.CreateInstance(type, parameterInstances.ToArray());
                 }
-                catch (SmartException)
+                catch
                 {
 
                 }

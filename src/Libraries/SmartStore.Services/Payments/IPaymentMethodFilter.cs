@@ -12,7 +12,7 @@ namespace SmartStore.Services.Payments
 		/// </summary>
 		/// <param name="request">Payment filter request</param>
 		/// <returns><c>true</c> filter out method, <c>false</c> do not filter out method</returns>
-		bool FilterOutPaymentMethod(PaymentFilterRequest request);
+		bool IsExcluded(PaymentFilterRequest request);
 
 		/// <summary>
 		/// Get URL for filter configuration

@@ -16,14 +16,14 @@ namespace SmartStore.Utilities.Reflection
 		{
 			Guard.ArgumentNotNull(() => constructorInfo);
 
-			ConstructorInfo = constructorInfo;
+			Constructor = constructorInfo;
 			Invoker = MakeFastInvoker(constructorInfo);
 		}
 
 		/// <summary>
-		/// Gets the backing <see cref="ConstructorInfo"/>.
+		/// Gets the backing <see cref="Constructor"/>.
 		/// </summary>
-		public ConstructorInfo ConstructorInfo { get; }
+		public ConstructorInfo Constructor { get; }
 
 		/// <summary>
 		/// Gets the constructor invoker.

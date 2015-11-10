@@ -125,7 +125,7 @@ namespace SmartStore.Services.Payments
 
 					filterRequest.PaymentMethod = p;
 
-					if (allFilters.Any(x => x.FilterOutPaymentMethod(filterRequest)))
+					if (allFilters.Any(x => x.IsExcluded(filterRequest)))
 						return false;
 
 					// payment method core restrictions

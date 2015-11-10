@@ -26,6 +26,7 @@
 * #202 Implement option for product list 'default sort order'
 * #360 Import & export product variant combinations
 * #722 System > SEO Names: Implement editing of an UrlRecord
+* Admin > System > System Info shows used application memory (RAM)
 * Added option to make VATIN mandatory during customer registration
 
 ### Improvements

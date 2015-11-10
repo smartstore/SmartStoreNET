@@ -81,7 +81,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 		public bool Supports(ExportFeatures feature)
 		{
-			return (!IsPreview && Provider.Metadata.ExportFeature.HasFlag(feature));
+			return (!IsPreview && Provider.Metadata.ExportFeatures.HasFlag(feature));
 		}
 
 		public ExportFilter Filter { get; private set; }

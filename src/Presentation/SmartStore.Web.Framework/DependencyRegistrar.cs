@@ -789,7 +789,7 @@ namespace SmartStore.Web.Framework
 					m.For(em => em.IsConfigurable, isConfigurable);
 					m.For(em => em.IsEditable, isEditable);
 					m.For(em => em.IsHidden, isHidden);
-					m.For(em => em.ExportFeature, exportFeature);
+					m.For(em => em.ExportFeatures, exportFeature);
 				});
 
 				// register specific provider type

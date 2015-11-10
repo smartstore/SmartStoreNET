@@ -4,7 +4,6 @@ using System.Linq;
 using System.Reflection;
 using System.Collections;
 using System.Diagnostics;
-using Fasterflect;
 
 namespace SmartStore
 {
@@ -83,7 +82,6 @@ namespace SmartStore
 
         public static bool IsInteger(this Type type)
         {
-
             switch (Type.GetTypeCode(type))
             {
                 case TypeCode.SByte:
@@ -103,11 +101,6 @@ namespace SmartStore
         public static bool IsNullable(this Type type)
         {
             return type != null && type.IsGenericType && type.GetGenericTypeDefinition() == typeof(Nullable<>);
-        }
-
-        public static bool IsNullAssignable(this Type type)
-        {
-            return !type.IsValueType || type.IsNullable();
         }
 
         public static bool IsConstructable(this Type type)
@@ -210,246 +203,6 @@ namespace SmartStore
             return IsSubClassInternal(initialType, currentType.BaseType, check, out implementingType);
         }
 
-        public static bool IsIndexed(this PropertyInfo property)
-        {
-            Guard.ArgumentNotNull(property, "property");
-            return !property.GetIndexParameters().IsNullOrEmpty();
-        }
-
-        /// <summary>
-        /// Determines whether the member is an indexed property.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <returns>
-        /// 	<c>true</c> if the member is an indexed property; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool IsIndexed(this MemberInfo member)
-        {
-            Guard.ArgumentNotNull(member, "member");
-
-            PropertyInfo propertyInfo = member as PropertyInfo;
-
-            if (propertyInfo != null)
-                return propertyInfo.IsIndexed();
-            else
-                return false;
-        }
-
-        /// <summary>
-        /// Checks to see if the specified type is assignable.
-        /// </summary>
-        /// <param name="type"></param>
-        /// <returns></returns>
-        public static bool IsType<TType>(this Type type)
-        {
-            return typeof(TType).IsAssignableFrom(type);
-        }
-
-
-
-        public static MemberInfo GetSingleMember(this Type type, string name, MemberTypes memberTypes)
-        {
-            return type.GetSingleMember(
-                name,
-                memberTypes,
-                BindingFlags.Public | BindingFlags.Instance | BindingFlags.Static);
-        }
-
-        public static MemberInfo GetSingleMember(this Type type, string name, MemberTypes memberTypes, BindingFlags bindingAttr)
-        {
-            return type.GetMember(
-                name,
-                memberTypes,
-                bindingAttr).SingleOrDefault();
-        }
-
-        public static string GetNameAndAssemblyName(this Type type)
-        {
-            Guard.ArgumentNotNull(type, "type");
-            return type.FullName + ", " + type.Assembly.GetName().Name;
-        }
-
-        public static IEnumerable<MemberInfo> GetFieldsAndProperties(this Type type, BindingFlags bindingAttr)
-        {
-            foreach (var fi in type.GetFields(bindingAttr))
-            {
-                yield return fi;
-            }
-
-            foreach (var pi in type.GetProperties(bindingAttr))
-            {
-                yield return pi;
-            }
-        }
-
-        public static MemberInfo GetFieldOrProperty(this Type type, string name, bool ignoreCase)
-        {
-            BindingFlags flags = BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance;
-            if (ignoreCase)
-                flags |= BindingFlags.IgnoreCase;
-
-            return type.GetSingleMember(
-                name,
-                MemberTypes.Field | MemberTypes.Property,
-                flags);
-        }
-
-        public static List<MemberInfo> FindMembers(this Type targetType, MemberTypes memberType, BindingFlags bindingAttr, MemberFilter filter, object filterCriteria)
-        {
-            Guard.ArgumentNotNull(targetType, "targetType");
-
-            List<MemberInfo> memberInfos = new List<MemberInfo>(targetType.FindMembers(memberType, bindingAttr, filter, filterCriteria));
-
-            // fix weirdness with FieldInfos only being returned for the current Type
-            // find base type fields and add them to result
-            if ((memberType & MemberTypes.Field) != 0
-              && (bindingAttr & BindingFlags.NonPublic) != 0)
-            {
-                // modify flags to not search for public fields
-                BindingFlags nonPublicBindingAttr = bindingAttr ^ BindingFlags.Public;
-
-                while ((targetType = targetType.BaseType) != null)
-                {
-                    memberInfos.AddRange(targetType.FindMembers(MemberTypes.Field, nonPublicBindingAttr, filter, filterCriteria));
-                }
-            }
-
-            return memberInfos;
-        }
-
-        //public static Type MakeGenericType(this Type genericTypeDefinition, params Type[] innerTypes)
-        //{
-        //    Guard.ArgumentNotNull(genericTypeDefinition, "genericTypeDefinition");
-        //    Guard.ArgumentNotEmpty<Type>(innerTypes, "innerTypes");
-        //    Guard.Argument.IsTrue(genericTypeDefinition.IsGenericTypeDefinition, "genericTypeDefinition", "Type '{0}' must be a generic type definition.".FormatInvariant(genericTypeDefinition));
-
-        //    return genericTypeDefinition.MakeGenericType(innerTypes);
-        //}
-
-        public static object CreateGeneric(this Type genericTypeDefinition, Type innerType, params object[] args)
-        {
-            return CreateGeneric(genericTypeDefinition, new Type[] { innerType }, args);
-        }
-
-        public static object CreateGeneric(this Type genericTypeDefinition, Type[] innerTypes, params object[] args)
-        {
-            return CreateGeneric(genericTypeDefinition, innerTypes, (t, a) => Activator.CreateInstance(t, args));
-        }
-
-        public static object CreateGeneric(this Type genericTypeDefinition, Type[] innerTypes, Func<Type, object[], object> instanceCreator, params object[] args)
-        {
-            Guard.ArgumentNotNull(() => genericTypeDefinition);
-            Guard.ArgumentNotNull(() => innerTypes);
-            Guard.ArgumentNotNull(() => instanceCreator);
-			if (innerTypes.Length == 0)
-				throw Error.Argument("innerTypes", "The sequence must contain at least one entry.");
-
-            Type specificType = genericTypeDefinition.MakeGenericType(innerTypes);
-
-            return instanceCreator(specificType, args);
-        }
-
-        public static IList CreateGenericList(this Type listType)
-        {
-            Guard.ArgumentNotNull(listType, "listType");
-            return (IList)typeof(List<>).CreateGeneric(listType);
-        }
-
-        //public static Type RemoveNullable(this Type type)
-        //{
-        //    if (type.IsGenericType && (type.GetGenericTypeDefinition() == typeof(Nullable<>)))
-        //    {
-        //        return type.GetGenericArguments()[0];
-        //    }
-        //    return type;
-        //}
-
-        public static bool IsEnumerable(this Type type)
-        {
-            Guard.ArgumentNotNull(type, "type");
-            return type.IsAssignableFrom(typeof(IEnumerable));
-        }
-
-        public static bool IsGenericDictionary(this Type type)
-        {
-            if (type.IsInterface && type.IsGenericType)
-            {
-                return typeof(IDictionary<,>).Equals(type.GetGenericTypeDefinition());
-            }
-            return (type.GetInterface(typeof(IDictionary<,>).Name) != null);
-        }
-
-        //public static bool IsListType(this Type type)
-        //{
-        //    Guard.ArgumentNotNull(type, "type");
-
-        //    if (type.IsArray)
-        //        return true;
-        //    else if (typeof(IList).IsAssignableFrom(type))
-        //        return true;
-        //    else if (type.IsSubClass(typeof(IList<>)))
-        //        return true;
-        //    else
-        //        return false;
-        //}
-
-        /// <summary>
-        /// Gets the member's value on the object.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <param name="target">The target object.</param>
-        /// <returns>The member's value on the object.</returns>
-        public static object GetValue(this MemberInfo member, object target)
-        {
-            Guard.ArgumentNotNull(member, "member");
-            Guard.ArgumentNotNull(target, "target");
-
-            var type = target.GetType();
-
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    return target.GetFieldValue(member.Name);
-                //return ((FieldInfo)member).GetValue(target);
-                case MemberTypes.Property:
-                    return target.GetPropertyValue(member.Name);
-                default:
-                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatInvariant(member.Name), "member");
-            }
-        }
-
-        /// <summary>
-        /// Sets the member's value on the target object.
-        /// </summary>
-        /// <param name="member">The member.</param>
-        /// <param name="target">The target.</param>
-        /// <param name="value">The value.</param>
-        public static void SetValue(this MemberInfo member, object target, object value)
-        {
-            Guard.ArgumentNotNull(member, "member");
-            Guard.ArgumentNotNull(target, "target");
-
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    target.SetFieldValue(member.Name, value);
-                    break;
-                //return ((FieldInfo)member).GetValue(target);
-                case MemberTypes.Property:
-                    try
-                    {
-                        target.SetPropertyValue(member.Name, value);
-                    }
-                    catch (TargetParameterCountException e)
-                    {
-                        throw new ArgumentException("PropertyInfo '{0}' has index parameters".FormatInvariant(member.Name), "member", e);
-                    }
-                    break;
-                default:
-                    throw new ArgumentException("MemberInfo '{0}' is not of type FieldInfo or PropertyInfo".FormatInvariant(member.Name), "member");
-            }
-        }
-
         /// <summary>
         /// Gets the underlying type of a <see cref="Nullable{T}" /> type.
         /// </summary>
@@ -460,53 +213,6 @@ namespace SmartStore
                 return type;
             }
             return type.GetGenericArguments()[0];
-        }
-
-        /// <summary>
-        /// Determines whether the specified MemberInfo can be read.
-        /// </summary>
-        /// <param name="member">The MemberInfo to determine whether can be read.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified MemberInfo can be read; otherwise, <c>false</c>.
-        /// </returns>
-        /// <remarks>
-        /// For methods this will return <c>true</c> if the return type
-        /// is not <c>void</c> and the method is parameterless.
-        /// </remarks>
-        public static bool CanReadValue(this MemberInfo member)
-        {
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    return true;
-                case MemberTypes.Property:
-                    return ((PropertyInfo)member).CanRead;
-                case MemberTypes.Method:
-                    MethodInfo mi = (MethodInfo)member;
-                    return mi.ReturnType != typeof(void) && mi.GetParameters().Length == 0;
-                default:
-                    return false;
-            }
-        }
-
-        /// <summary>
-        /// Determines whether the specified MemberInfo can be set.
-        /// </summary>
-        /// <param name="member">The MemberInfo to determine whether can be set.</param>
-        /// <returns>
-        /// 	<c>true</c> if the specified MemberInfo can be set; otherwise, <c>false</c>.
-        /// </returns>
-        public static bool CanSetValue(this MemberInfo member)
-        {
-            switch (member.MemberType)
-            {
-                case MemberTypes.Field:
-                    return true;
-                case MemberTypes.Property:
-                    return ((PropertyInfo)member).CanWrite;
-                default:
-                    return false;
-            }
         }
 
         /// <summary>
@@ -554,30 +260,9 @@ namespace SmartStore
                     .Cast<TAttribute>();
 
                 return SortAttributesIfPossible(attributes).ToArray();
-
-                #region Obsolete
-                //return target
-                //    .GetCustomAttributes(typeof(TAttribute), inherits)
-                //    .ToArray(a => (TAttribute)a);
-                #endregion
             }
+
             return new TAttribute[0];
-
-            #region Obsolete
-            //// OBSOLETE 1
-            //return target.GetCustomAttributes(typeof(TAttribute), inherits).Cast<TAttribute>().ToArray();
-
-            //// OBSOLETE 2
-            //object[] attributesAsObjects = member.GetCustomAttributes(typeof(TAttribute), inherits);
-            //TAttribute[] attributes = new TAttribute[attributesAsObjects.Length];
-            //int index = 0;
-            //Array.ForEach(attributesAsObjects,
-            //    delegate(object o)
-            //    {
-            //        attributes[index++] = (TAttribute)o;
-            //    });
-            //return attributes;
-            #endregion
         }
 
         /// <summary>

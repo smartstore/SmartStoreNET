@@ -9,12 +9,13 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Configuration;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Events;
-using Fasterflect;
+//using Fasterflect;
 using System.Linq.Expressions;
 using System.Reflection;
 using SmartStore.Core.Plugins;
 using System.ComponentModel;
 using SmartStore.Utilities;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.Configuration
 {
@@ -303,10 +304,12 @@ namespace SmartStore.Services.Configuration
 
 			var settings = Activator.CreateInstance<T>();
 
-			foreach (var prop in typeof(T).GetProperties())
+			foreach (var fastProp in FastProperty.GetProperties(typeof(T)).Values)
 			{
+				var prop = fastProp.Property;
+				
 				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
+				if (!prop.CanWrite)
 					continue;
 
 				var key = typeof(T).Name + "." + prop.Name;
@@ -330,7 +333,7 @@ namespace SmartStore.Services.Configuration
 
                         if (list != null)
                         {
-                            prop.SetValue(settings, list, null);
+                            fastProp.SetValue(settings, list);
                         }
                     }
 
@@ -348,7 +351,7 @@ namespace SmartStore.Services.Configuration
                 object value = converter.ConvertFromInvariantString(setting);
 
 				//set property
-				prop.SetValue(settings, value, null);
+				fastProp.SetValue(settings, value);
 			}
 
 			return settings;
@@ -410,18 +413,20 @@ namespace SmartStore.Services.Configuration
 			/* We do not clear cache after each setting update.
 			 * This behavior can increase performance because cached settings will not be cleared 
 			 * and loaded from database after each update */
-			foreach (var prop in typeof(T).GetProperties())
+			foreach (var prop in FastProperty.GetProperties(typeof(T)).Values)
 			{
+				var pi = prop.Property;
+				
 				// get properties we can read and write to
-				if (!prop.CanRead || !prop.CanWrite)
+				if (!pi.CanRead || !pi.CanWrite)
 					continue;
 
-				if (!CommonHelper.GetTypeConverter(prop.PropertyType).CanConvertFrom(typeof(string)))
+				if (!CommonHelper.GetTypeConverter(pi.PropertyType).CanConvertFrom(typeof(string)))
 					continue;
 
 				string key = typeof(T).Name + "." + prop.Name;
 				//Duck typing is not supported in C#. That's why we're using dynamic type
-				dynamic value = settings.TryGetPropertyValue(prop.Name);
+				dynamic value = prop.GetValue(settings);
 
 				SetSetting(key, value ?? "", storeId, false);
 			}
@@ -459,8 +464,9 @@ namespace SmartStore.Services.Configuration
 			}
 
 			string key = typeof(T).Name + "." + propInfo.Name;
-			//Duck typing is not supported in C#. That's why we're using dynamic type
-			dynamic value = settings.TryGetPropertyValue(propInfo.Name);
+			// Duck typing is not supported in C#. That's why we're using dynamic type
+			var fastProp = FastProperty.GetProperty(settings.GetType(), propInfo.Name, true);
+			dynamic value = fastProp.GetValue(settings);
 
 			SetSetting(key, value ?? "", storeId, false);
 		}

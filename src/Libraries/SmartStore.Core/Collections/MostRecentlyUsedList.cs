@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 
-namespace SmartStore.Core.Infrastructure
+namespace SmartStore.Collections
 {
 	public class MostRecentlyUsedList<T> : IEnumerable<T>
 	{

@@ -160,38 +160,6 @@ namespace SmartStore
 			}
 
             throw Error.InvalidCast(fromType, to);
-
-            #region OBSOLETE
-            //            TypeConverter converter = TypeDescriptor.GetConverter(to);
-            //            bool canConvertFrom = converter.CanConvertFrom(value.GetType());
-            //            if (!canConvertFrom)
-            //            {
-            //                converter = TypeDescriptor.GetConverter(value.GetType());
-            //            }
-            //            if (!(canConvertFrom || converter.CanConvertTo(to)))
-            //            {
-            //                throw Error.InvalidOperation(@"The parameter conversion from type '{0}' to type '{1}' failed 
-            //                                         because no TypeConverter can convert between these types.",
-            //                                         value.GetType().FullName,
-            //                                         to.FullName);
-            //            }
-
-            //            try
-            //            {
-            //                CultureInfo cultureToUse = culture ?? CultureInfo.CurrentCulture;
-            //                object convertedValue = (canConvertFrom) ?
-            //                     converter.ConvertFrom(null /* context */, cultureToUse, value) :
-            //                     converter.ConvertTo(null /* context */, cultureToUse, value, to);
-            //                return convertedValue;
-            //            }
-            //            catch (Exception ex)
-            //            {
-            //                throw Error.InvalidOperation(@"The parameter conversion from type '{0}' to type '{1}' failed. 
-            //                                         See the inner exception for more information.", ex,
-            //                                         value.GetType().FullName,
-            //                                         to.FullName);
-            //            }
-            #endregion
         }
 
 		internal static TypeConverter GetTypeConverter(Type type)
@@ -217,127 +185,6 @@ namespace SmartStore
             return (char)((value - 10) + 97);
         }
 
-        /// <summary>
-        /// Returns kilobytes
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static int ToKb(this int value)
-        {
-            return value * 1024;
-        }
-
-        /// <summary>
-        /// Returns megabytes
-        /// </summary>
-        /// <param name="value"></param>
-        /// <returns></returns>
-        public static int ToMb(this int value)
-        {
-            return value * 1024 * 1024;
-        }
-
-        /// <summary>Returns a <see cref="TimeSpan"/> that represents a specified number of minutes.</summary>
-        /// <param name="minutes">number of minutes</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        /// <example>3.Minutes()</example>
-        public static TimeSpan ToMinutes(this int minutes)
-        {
-            return TimeSpan.FromMinutes(minutes);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TimeSpan"/> that represents a specified number of seconds.
-        /// </summary>
-        /// <param name="seconds">number of seconds</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        /// <example>2.Seconds()</example>
-        public static TimeSpan ToSeconds(this int seconds)
-        {
-            return TimeSpan.FromSeconds(seconds);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TimeSpan"/> that represents a specified number of milliseconds.
-        /// </summary>
-        /// <param name="milliseconds">milliseconds for this timespan</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        public static TimeSpan ToMilliseconds(this int milliseconds)
-        {
-            return TimeSpan.FromMilliseconds(milliseconds);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TimeSpan"/> that represents a specified number of days.
-        /// </summary>
-        /// <param name="days">Number of days.</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        public static TimeSpan ToDays(this int days)
-        {
-            return TimeSpan.FromDays(days);
-        }
-
-
-        /// <summary>
-        /// Returns a <see cref="TimeSpan"/> that represents a specified number of hours.
-        /// </summary>
-        /// <param name="hours">Number of hours.</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        public static TimeSpan ToHours(this int hours)
-        {
-            return TimeSpan.FromHours(hours);
-        }
-
-        #endregion
-
-        #region double
-
-        /// <summary>Returns a <see cref="TimeSpan"/> that represents a specified number of minutes.</summary>
-        /// <param name="minutes">number of minutes</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        /// <example>3D.Minutes()</example>
-        public static TimeSpan ToMinutes(this double minutes)
-        {
-            return TimeSpan.FromMinutes(minutes);
-        }
-
-
-        /// <summary>Returns a <see cref="TimeSpan"/> that represents a specified number of hours.</summary>
-        /// <param name="hours">number of hours</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        /// <example>3D.Hours()</example>
-        public static TimeSpan ToHours(this double hours)
-        {
-            return TimeSpan.FromHours(hours);
-        }
-
-        /// <summary>Returns a <see cref="TimeSpan"/> that represents a specified number of seconds.</summary>
-        /// <param name="seconds">number of seconds</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        /// <example>2D.Seconds()</example>
-        public static TimeSpan ToSeconds(this double seconds)
-        {
-            return TimeSpan.FromSeconds(seconds);
-        }
-
-        /// <summary>Returns a <see cref="TimeSpan"/> that represents a specified number of milliseconds.</summary>
-        /// <param name="milliseconds">milliseconds for this timespan</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        public static TimeSpan ToMilliseconds(this double milliseconds)
-        {
-            return TimeSpan.FromMilliseconds(milliseconds);
-        }
-
-        /// <summary>
-        /// Returns a <see cref="TimeSpan"/> that represents a specified number of days.
-        /// </summary>
-        /// <param name="days">Number of days, accurate to the milliseconds.</param>
-        /// <returns>A <see cref="TimeSpan"/> that represents a value.</returns>
-        public static TimeSpan ToDays(this double days)
-        {
-            return TimeSpan.FromDays(days);
-        }
-
         #endregion
 
         #region String
@@ -358,16 +205,6 @@ namespace SmartStore
             }
 
             return convertedValue;
-        }
-
-        public static string[] ToArray(this string value)
-        {
-            return value.ToArray(new char[] { ',' });
-        }
-
-        public static string[] ToArray(this string value, params char[] separator)
-        {
-            return value.Trim().Split(separator, StringSplitOptions.RemoveEmptyEntries);
         }
 
         public static int ToInt(this string value, int defaultValue = 0)
@@ -450,25 +287,6 @@ namespace SmartStore
 			return null;
 		}
 
-        public static Guid ToGuid(this string value)
-        {
-            if ((!String.IsNullOrEmpty(value)) && (value.Trim().Length == 22))
-            {
-                string encoded = string.Concat(value.Trim().Replace("-", "+").Replace("_", "/"), "==");
-
-                byte[] base64 = System.Convert.FromBase64String(encoded);
-
-                return new Guid(base64);
-            }
-
-            return Guid.Empty;
-        }
-
-        public static byte[] ToByteArray(this string value)
-        {
-            return Encoding.Default.GetBytes(value);
-        }
-
         [DebuggerStepThrough]
         public static Version ToVersion(this string value, Version defaultVersion = null)
         {
@@ -481,12 +299,6 @@ namespace SmartStore
                 return defaultVersion ?? new Version("1.0");
             }
         }
-
-        #endregion
-
-        #region DateTime
-
-        // [...]
 
         #endregion
 
@@ -556,19 +368,13 @@ namespace SmartStore
             return new MemoryStream(bytes);
         }
 
-        public static string AsString(this byte[] bytes)
-        {
-            return Encoding.Default.GetString(bytes);
-        }
-
-              
-        /// <summary>
-        /// Computes the MD5 hash of a byte array
-        /// </summary>
-        /// <param name="value">The byte array to compute the hash for</param>
-        /// <returns>The hash value</returns>
-        //[DebuggerStepThrough]
-        public static string Hash(this byte[] value, bool toBase64 = false)
+		/// <summary>
+		/// Computes the MD5 hash of a byte array
+		/// </summary>
+		/// <param name="value">The byte array to compute the hash for</param>
+		/// <returns>The hash value</returns>
+		[DebuggerStepThrough]
+		public static string Hash(this byte[] value, bool toBase64 = false)
         {
             Guard.ArgumentNotNull(value, "value");
 

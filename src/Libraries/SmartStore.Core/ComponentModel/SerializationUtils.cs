@@ -35,7 +35,6 @@ using System;
 using System.IO;
 using System.Text;
 //using System.Reflection;
-using Fasterflect;
 
 using System.Xml;
 using System.Xml.Serialization;
@@ -419,17 +418,17 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         public static string ObjectToString(object instance, string separator, ObjectToStringTypes type)
         {
-            var fi = instance.GetType().Fields();
+            var fi = instance.GetType().GetFields();
 
             string output = string.Empty;
 
             if (type == ObjectToStringTypes.Properties || type == ObjectToStringTypes.PropertiesAndFields)
             {
-                foreach (var property in instance.GetType().Properties())
+                foreach (var property in instance.GetType().GetProperties())
                 {
                     try
                     {
-                        output += property.Name + ":" + instance.GetPropertyValue(property.Name).ToString() + separator;
+                        output += property.Name + ":" + property.GetValue(instance, null).ToString() + separator;
                     }
                     catch
                     {
@@ -444,7 +443,7 @@ namespace SmartStore.ComponentModel
                 {
                     try
                     {
-                        output = output + field.Name + ": " + instance.GetFieldValue(field.Name).ToString() + separator;
+                        output = output + field.Name + ": " + field.GetValue(instance).ToString() + separator;
                     }
                     catch
                     {

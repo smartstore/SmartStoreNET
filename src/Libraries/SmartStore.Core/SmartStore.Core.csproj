@@ -77,10 +77,6 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.6.1.3\lib\net45\EntityFramework.SqlServer.dll</HintPath>
     </Reference>
-    <Reference Include="Fasterflect, Version=2.1.3.0, Culture=neutral, PublicKeyToken=38d18473284c1ca7, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\fasterflect.2.1.3\lib\net40\Fasterflect.dll</HintPath>
-    </Reference>
     <Reference Include="Microsoft.Web.Infrastructure, Version=1.0.0.0, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL">
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
@@ -153,7 +149,7 @@
     <Compile Include="Caching\StaticCache.cs" />
     <Compile Include="Caching\ICache.cs" />
     <Compile Include="Collections\LazyMultimap.cs" />
-    <Compile Include="Collections\QuerystringBuilder.cs" />
+    <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
@@ -183,7 +179,7 @@
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeProvider.cs" />
     <Compile Include="Infrastructure\DependencyManagement\ILifetimeScopeAccessor.cs" />
     <Compile Include="ITransient.cs" />
-    <Compile Include="Infrastructure\MostRecentlyUsedList.cs" />
+    <Compile Include="Collections\MostRecentlyUsedList.cs" />
     <Compile Include="Localization\LocalizationHelper.cs" />
     <Compile Include="Plugins\IConfigurable.cs" />
     <Compile Include="Plugins\Providers\DependentWidgetsAttribute.cs" />
@@ -354,7 +350,6 @@
     <Compile Include="Extensions\StreamExtensions.cs" />
     <Compile Include="Extensions\LinqExtensions.cs" />
     <Compile Include="Extensions\StringExtensions.cs" />
-    <Compile Include="Extensions\TypeDescriptorExtensions.cs" />
     <Compile Include="Extensions\TypeExtensions.cs" />
     <Compile Include="Extensions\XmlNodeExtensions.cs" />
     <Compile Include="Fakes\Extensions.cs" />
@@ -435,23 +430,17 @@
     <Compile Include="Domain\Security\SecuritySettings.cs" />
     <Compile Include="Domain\Shipping\ShippingStatus.cs" />
     <Compile Include="Domain\StoreInformationSettings.cs" />
-    <Compile Include="Financial\Currency.cs" />
-    <Compile Include="Financial\Money.cs" />
     <Compile Include="GenericComparer.cs" />
     <Compile Include="Data\IRepository.cs" />
     <Compile Include="IHideObjectMembers.cs" />
     <Compile Include="Infrastructure\ComparableObject.cs" />
-    <Compile Include="Infrastructure\DateRange.cs" />
     <Compile Include="Infrastructure\DisposableObject.cs" />
-    <Compile Include="Infrastructure\EnumFriendlyNameAttribute.cs" />
     <Compile Include="Infrastructure\Error.cs" />
     <Compile Include="Infrastructure\Guard.cs" />
     <Compile Include="Infrastructure\ICloneable.cs" />
     <Compile Include="Infrastructure\IOrdered.cs" />
     <Compile Include="Infrastructure\IStartupTask.cs" />
-    <Compile Include="Infrastructure\Misc.cs" />
     <Compile Include="Infrastructure\RegularExpressions.cs" />
-    <Compile Include="Infrastructure\ValueObject.cs" />
     <Compile Include="IWebHelper.cs" />
     <Compile Include="Domain\Security\DefaultPermissionRecord.cs" />
     <Compile Include="Domain\Security\PermissionRecord.cs" />
@@ -566,18 +555,16 @@
     <Compile Include="Themes\ThemeVariableInfo.cs" />
     <Compile Include="Themes\ThemeVariableType.cs" />
     <Compile Include="Utilities\ActionDisposable.cs" />
-    <Compile Include="Utilities\CollectionHelper.cs" />
-    <Compile Include="Utilities\DateTimeConvert.cs" />
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\FileDownloadManager.cs" />
     <Compile Include="Utilities\FileSystemHelper.cs" />
     <Compile Include="Utilities\Inflector.cs" />
-    <Compile Include="Extensions\JsonExtensions.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
+    <Compile Include="Utilities\Reflection\FastProperty.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />

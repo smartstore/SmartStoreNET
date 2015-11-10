@@ -88,7 +88,7 @@ namespace SmartStore.Web.Framework.UI
         {
             Guard.ArgumentNotNull(() => rendererType);
             Guard.Implements<ComponentRenderer<TComponent>>(rendererType);
-            var renderer = TypeHelper.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
+            var renderer = Activator.CreateInstance(rendererType) as ComponentRenderer<TComponent>;
             if (renderer != null)
             {
                 this.Renderer = renderer;
@@ -104,7 +104,7 @@ namespace SmartStore.Web.Framework.UI
 
         public virtual TBuilder HtmlAttributes(object attributes)
         {
-            return this.HtmlAttributes(CollectionHelper.ObjectToDictionary(attributes));
+            return this.HtmlAttributes(CommonHelper.ObjectToDictionary(attributes));
         }
 
         public virtual TBuilder HtmlAttributes(IDictionary<string, object> attributes)

@@ -17,7 +17,7 @@ namespace SmartStore
 		}
 
 		/// <summary>
-		/// Calculates the tax (percental) from a gross and a net value.
+		/// Calculates the tax (percentage) from a gross and a net value.
 		/// </summary>
 		/// <param name="inclTax">Gross value</param>
 		/// <param name="exclTax">Net value</param>

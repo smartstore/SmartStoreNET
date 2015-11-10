@@ -75,6 +75,7 @@ using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Web.Framework
 {
@@ -327,12 +328,14 @@ namespace SmartStore.Web.Framework
 			if (querySettingsProperty == null)
 				return;
 
+			var fastProperty = new FastProperty(querySettingsProperty);
+
 			registration.Activated += (sender, e) =>
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
 					var querySettings = e.Context.Resolve<DbQuerySettings>();
-					querySettingsProperty.SetValue(e.Instance, querySettings, null);
+					fastProperty.SetValue(e.Instance, querySettings);
 				}
 			};
 		}
@@ -390,18 +393,17 @@ namespace SmartStore.Web.Framework
 					})
 					.Where(x => x.PropertyType == typeof(ILogger)) // must be a logger
 					.Where(x => x.IndexParameters.Count() == 0) // must not be an indexer
-					.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)); //must have get/set, or only set
+					.Where(x => x.Accessors.Length != 1 || x.Accessors[0].ReturnType == typeof(void)) //must have get/set, or only set
+					.Select(x => new FastProperty(x.PropertyInfo));
 
 				// Return an array of actions that resolve a logger and assign the property
-				foreach (var entry in loggerProperties)
+				foreach (var prop in loggerProperties)
 				{
-					var propertyInfo = entry.PropertyInfo;
-
 					yield return (ctx, instance) =>
 					{
 						string component = componentType.ToString();
 						var logger = ctx.Resolve<ILogger>();
-						propertyInfo.SetValue(instance, logger, null);
+						prop.SetValue(instance, logger);
 					};
 				}
 			}
@@ -433,12 +435,14 @@ namespace SmartStore.Web.Framework
 			if (userProperty == null)
 				return;
 
+			var fastProperty = new FastProperty(userProperty);
+
 			registration.Activated += (sender, e) =>
 			{
 				if (DataSettings.DatabaseIsInstalled())
 				{
 					Localizer localizer = e.Context.Resolve<IText>().Get;
-					userProperty.SetValue(e.Instance, localizer, null);
+					fastProperty.SetValue(e.Instance, localizer);
 				}
 			};
 		}
@@ -1016,16 +1020,16 @@ namespace SmartStore.Web.Framework
             var ts = service as TypedService;
             if (ts != null && typeof(ISettings).IsAssignableFrom(ts.ServiceType))
             {
-                //var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
-                //yield return (IComponentRegistration)buildMethod.Invoke(null, null);
+				var buildMethod = BuildMethod.MakeGenericMethod(ts.ServiceType);
+				yield return (IComponentRegistration)buildMethod.Invoke(null, null);
 
-				// Perf with Fasterflect
-				yield return (IComponentRegistration)Fasterflect.TryInvokeWithValuesExtensions.TryCallMethodWithValues(
-					typeof(SettingsSource),
-					null, 
-					"BuildRegistration", 
-					new Type[] { ts.ServiceType }, 
-					BindingFlags.Static | BindingFlags.NonPublic);
+				//// Perf with Fasterflect
+				//yield return (IComponentRegistration)Fasterflect.TryInvokeWithValuesExtensions.TryCallMethodWithValues(
+				//	typeof(SettingsSource),
+				//	null, 
+				//	"BuildRegistration", 
+				//	new Type[] { ts.ServiceType }, 
+				//	BindingFlags.Static | BindingFlags.NonPublic);
             }
         }
 

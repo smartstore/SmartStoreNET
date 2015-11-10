@@ -6,10 +6,8 @@ using System.Reflection;
 
 namespace SmartStore
 {
-
     public static class LinqExtensions
     {
-
         public static PropertyInfo ExtractPropertyInfo(this LambdaExpression propertyAccessor)
         {
             return propertyAccessor.ExtractMemberInfo() as PropertyInfo;

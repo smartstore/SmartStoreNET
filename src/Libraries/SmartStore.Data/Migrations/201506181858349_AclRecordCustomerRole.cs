@@ -141,8 +141,17 @@ namespace SmartStore.Data.Migrations
             builder.AddOrUpdate("Account.Fields.CustomerNumber",
                 "Customer number",
                 "Kundennummer");
-            
 
+            builder.AddOrUpdate("Admin.Configuration.Settings.Tax.VatRequired",
+                "Customers must enter a VATIN",
+                "Kunden müssen eine Steuernummer angeben",
+                "Specifies whether Customers must enter a VAT identification number.",
+                "Bestimmt ob Kunden bei der  Registrierung eine Steuernummer angeben müssen.");
+
+            builder.AddOrUpdate("Account.Fields.Vat.Required",
+                "Please enter your VATIN",
+                "Bitte geben Sie Ihre Steuernummer an");
+            
         }
     }
 }

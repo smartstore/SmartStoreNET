@@ -230,21 +230,6 @@ namespace SmartStore.Web.Framework
 			return MvcHtmlString.Create(result.ToString());
 		}
 
-        public static MvcHtmlString RequiredHint(this HtmlHelper helper, string additionalText = null)
-        {
-            // Create tag builder
-            var builder = new TagBuilder("span");
-            builder.AddCssClass("required");
-            var innerText = "*";
-            //add additinal text if specified
-            if (!String.IsNullOrEmpty(additionalText))
-                innerText += " " + additionalText;
-            builder.SetInnerText(innerText);
-            // Render tag
-            return MvcHtmlString.Create(builder.ToString());
-        }
-
-
         public static string FieldNameFor<T, TResult>(this HtmlHelper<T> html, Expression<Func<T, TResult>> expression)
         {
             return html.ViewData.TemplateInfo.GetFullHtmlFieldName(ExpressionHelper.GetExpressionText(expression));
@@ -382,7 +367,7 @@ namespace SmartStore.Web.Framework
             IDictionary<string, object> attrs = null;
             if (htmlAttributes != null)
             {
-                attrs = CollectionHelper.ObjectToDictionary(htmlAttributes);
+                attrs = CommonHelper.ObjectToDictionary(htmlAttributes);
             }
 
             return htmlHelper.DropDownListForEnum(expression, attrs, optionLabel);

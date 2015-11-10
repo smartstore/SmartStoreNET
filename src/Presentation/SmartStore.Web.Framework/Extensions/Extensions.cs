@@ -130,7 +130,7 @@ namespace SmartStore.Web.Framework
                 // The Entity Framework provider demands OrderBy before calling Skip.
                 SortDescriptor sortDescriptor = new SortDescriptor
                 {
-                    Member = queryable.ElementType.FirstSortableProperty()
+                    Member = GetFirstSortableProperty(queryable.ElementType)
                 };
                 command.SortDescriptors.Add(sortDescriptor);
                 temporarySortDescriptors.Add(sortDescriptor);
@@ -169,14 +169,9 @@ namespace SmartStore.Web.Framework
             return provider.GetType().FullName == "System.Data.Objects.ELinq.ObjectQueryProvider";
         }
 
-        public static bool IsLinqToObjectsProvider(this IQueryProvider provider)
+        private static string GetFirstSortableProperty(Type type)
         {
-            return provider.GetType().FullName.Contains("EnumerableQuery");
-        }
-
-        public static string FirstSortableProperty(this Type type)
-        {
-            PropertyInfo firstSortableProperty = type.GetProperties().Where(property => property.PropertyType.IsPredefinedType()).FirstOrDefault();
+            PropertyInfo firstSortableProperty = type.GetProperties().Where(property => property.PropertyType.IsPredefinedSimpleType()).FirstOrDefault();
 
             if (firstSortableProperty == null)
             {
@@ -186,46 +181,21 @@ namespace SmartStore.Web.Framework
             return firstSortableProperty.Name;
         }
 
-        internal static bool IsPredefinedType(this Type type)
-        {
-            return PredefinedTypes.Any(t => t == type);
-        }
-
-        public static readonly Type[] PredefinedTypes = {
-            typeof(Object),
-            typeof(Boolean),
-            typeof(Char),
-            typeof(String),
-            typeof(SByte),
-            typeof(Byte),
-            typeof(Int16),
-            typeof(UInt16),
-            typeof(Int32),
-            typeof(UInt32),
-            typeof(Int64),
-            typeof(UInt64),
-            typeof(Single),
-            typeof(Double),
-            typeof(Decimal),
-            typeof(DateTime),
-            typeof(TimeSpan),
-            typeof(Guid),
-            typeof(Math),
-            typeof(Convert)
-        };
-
         public static GridBoundColumnBuilder<T> Centered<T>(this GridBoundColumnBuilder<T> columnBuilder) where T:class
         {
             return columnBuilder.HtmlAttributes(new { align = "center" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
         }
+
         public static GridTemplateColumnBuilder<T> Centered<T>(this GridTemplateColumnBuilder<T> columnBuilder) where T : class
         {
             return columnBuilder.HtmlAttributes(new { align = "center" }).HeaderHtmlAttributes(new { style = "text-align:center;" });
         }
+
 		public static GridBoundColumnBuilder<T> RightAlign<T>(this GridBoundColumnBuilder<T> columnBuilder) where T : class
 		{
 			return columnBuilder.HtmlAttributes(new { style = "text-align:right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" });
 		}
+
 		public static GridTemplateColumnBuilder<T> RightAlign<T>(this GridTemplateColumnBuilder<T> columnBuilder) where T : class
 		{
 			return columnBuilder.HtmlAttributes(new { style = "text-align:right;" }).HeaderHtmlAttributes(new { style = "text-align:right;" });

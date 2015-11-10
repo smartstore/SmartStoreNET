@@ -45,6 +45,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Pdf;
 using Telerik.Web.Mvc;
+using SmartStore.Collections;
 
 namespace SmartStore.Admin.Controllers
 {

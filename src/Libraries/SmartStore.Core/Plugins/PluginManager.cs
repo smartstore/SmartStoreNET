@@ -178,7 +178,6 @@ namespace SmartStore.Core.Plugins
                 }
 
                 IncompatiblePlugins = incompatiblePlugins.AsReadOnly();
-
             }
         }
 

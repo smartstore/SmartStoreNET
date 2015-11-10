@@ -59,12 +59,14 @@
             $('#pnlEuVatAllowVATExemption').show();
             $('#pnlEuVatUseWebService').show();
             $('#pnlEuVatEmailAdminWhenNewVATSubmitted').show();
+            $('#pnlVatRequired').show();
         }
         else {
             $('#pnlEuVatShopCountry').hide();
             $('#pnlEuVatAllowVATExemption').hide();
             $('#pnlEuVatUseWebService').hide();
             $('#pnlEuVatEmailAdminWhenNewVATSubmitted').hide();
+            $('#pnlVatRequired').hide();
         }
     }
 </script>
@@ -325,5 +327,15 @@
                 @Html.ValidationMessageFor(model => model.EuVatEmailAdminWhenNewVatSubmitted)
             </td>
         </tr>
+        <tr id="pnlVatRequired">
+            <td class="adminTitle">
+                @Html.SmartLabelFor(model => model.VatRequired)
+            </td>
+            <td class="adminData">
+                @Html.SettingEditorFor(model => model.VatRequired)
+                @Html.ValidationMessageFor(model => model.VatRequired)
+            </td>
+        </tr>
+        
     </table>
 }

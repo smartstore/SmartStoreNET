@@ -137,5 +137,10 @@ namespace SmartStore.Core.Domain.Tax
         /// Gets or sets a value indicating whether we should notify a store owner when a new VAT number is submitted
         /// </summary>
         public bool EuVatEmailAdminWhenNewVatSubmitted { get; set; }
+
+        /// <summary>
+        /// Gets or sets a value indicating whether a VAT-ID is required
+        /// </summary>
+        public bool VatRequired { get; set; }
     }
 }

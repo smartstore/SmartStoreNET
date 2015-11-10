@@ -241,10 +241,19 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("StoreClosed",
 				"We'll be back.",
 				"Wir sind bald wieder da.");
-
 			builder.AddOrUpdate("StoreClosed.Hint",
 				"We're busy updating our online store for you and will be back soon.",
 				"Wir aktualisieren gerade das Angebot in unserem Online-Shop. Die Seite ist demnächst wieder verfügbar.");
+
+			builder.AddOrUpdate("Admin.System.SystemInfo.UsedMemorySize",
+				"Used memory (RAM)",
+				"Benutzter Speicher (RAM)");
+			builder.AddOrUpdate("Admin.System.SystemInfo.GarbageCollect",
+				"Collect",
+				"Aufräumen");
+			builder.AddOrUpdate("Admin.System.SystemInfo.GarbageCollectSuccessful",
+				"The memory has been successfully cleaned up.",
+				"Der Arbeitsspeicher wurde erfolgreich aufgeräumt.");
 		}
     }
 }

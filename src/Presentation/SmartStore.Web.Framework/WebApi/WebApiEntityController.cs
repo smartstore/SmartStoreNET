@@ -16,6 +16,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using System.Collections.Generic;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -77,7 +78,7 @@ namespace SmartStore.Web.Framework.WebApi
 			if (entity == null)
 				return Request.CreateErrorResponse(HttpStatusCode.NotFound, WebApiGlobal.Error.EntityNotFound.FormatInvariant(key));
 
-			PropertyInfo pi = null;
+			FastProperty prop = null;
 			string propertyName = null;
 			var lastSegment = odataPath.Segments.Last();
 			var propertySegment = (lastSegment as PropertyAccessPathSegment);
@@ -88,14 +89,14 @@ namespace SmartStore.Web.Framework.WebApi
 				propertyName = propertySegment.PropertyName;
 
 			if (propertyName.HasValue())
-				pi = entity.GetType().GetProperty(propertyName);
+				prop = FastProperty.GetProperty(entity.GetType(), propertyName);
 
-			if (pi == null)
+			if (prop == null)
 				return UnmappedGetProperty(entity, propertyName ?? "");
 
-			var propertyValue = pi.GetValue(entity, null);
+			var propertyValue = prop.GetValue(entity);
 
-			return Request.CreateResponse(HttpStatusCode.OK, pi.PropertyType, propertyValue);
+			return Request.CreateResponse(HttpStatusCode.OK, prop.Property.PropertyType, propertyValue);
 		}
 
 		protected virtual internal HttpResponseMessage UnmappedGetProperty(TEntity entity, string propertyName)
@@ -465,17 +466,17 @@ namespace SmartStore.Web.Framework.WebApi
 
 					if (propertyName.HasValue() && queryValue.HasValue())
 					{
-						var pi = entity.GetType().GetProperty(propertyName);
-						if (pi != null)
+						var prop = FastProperty.GetProperty(entity.GetType(), propertyName);
+						if (prop != null)
 						{
-							var propertyValue = pi.GetValue(entity, null);
+							var propertyValue = prop.GetValue(entity);
 							if (propertyValue == null)
 							{
 								object value = FulfillPropertyOn(entity, propertyName, queryValue);
 
 								if (value != null)		// there's no requirement to set a property value of null
 								{
-									pi.SetValue(entity, value);
+									prop.SetValue(entity, value);
 								}
 							}
 						}

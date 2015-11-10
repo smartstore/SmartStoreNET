@@ -561,6 +561,7 @@
     <Compile Include="Utilities\Inflector.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
+    <Compile Include="Utilities\Reflection\FastActivator.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />

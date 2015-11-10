@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Utilities;
 
 namespace SmartStore.Admin.Models.Common
 {
@@ -43,12 +44,22 @@ namespace SmartStore.Admin.Models.Common
         public IList<LoadedAssembly> LoadedAssemblies { get; set; }
 
 		[SmartResourceDisplayName("Admin.System.SystemInfo.DatabaseSize")]
-		public double DatabaseSize { get; set; }
+		public long DatabaseSize { get; set; }
 		public string DatabaseSizeString
 		{
 			get
 			{
-				return (DatabaseSize == 0.0 ? "" : "{0:0.00} MB".FormatWith(DatabaseSize));
+				return (DatabaseSize == 0 ? "" : Prettifier.BytesToString(DatabaseSize));
+			}
+		}
+
+		[SmartResourceDisplayName("Admin.System.SystemInfo.UsedMemorySize")]
+		public long UsedMemorySize { get; set; }
+		public string UsedMemorySizeString
+		{
+			get
+			{
+				return Prettifier.BytesToString(UsedMemorySize);
 			}
 		}
 

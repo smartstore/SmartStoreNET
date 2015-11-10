@@ -19,7 +19,7 @@ using SmartStore.Services.Tax;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
-	internal partial class DataExporter : IDataExporter
+	public partial class DataExporter : IDataExporter
 	{
 		private static readonly ReaderWriterLockSlim _rwLock = new ReaderWriterLockSlim();
 

@@ -32,8 +32,11 @@ namespace SmartStore.Services.DataExchange
 		/// Export data to a file
 		/// </summary>
 		/// <param name="context">Export execution context</param>
-		public virtual void Execute(IExportExecuteContext context)
+		protected abstract void Export(IExportExecuteContext context);
+
+		public void Execute(IExportExecuteContext context)
 		{
+			Export(context);
 		}
 
 		/// <summary>

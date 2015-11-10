@@ -18,6 +18,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
         public new void Setup()
         {
             _customerSettings = new CustomerSettings();
+			_taxSettings = new TaxSettings();
             _validator = new RegisterValidator(_localizationService, _customerSettings, _taxSettings);
         }
         

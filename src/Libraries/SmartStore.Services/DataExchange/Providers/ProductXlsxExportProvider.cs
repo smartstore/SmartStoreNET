@@ -173,7 +173,7 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "XLSX"; }
 		}
 
-		public override void Execute(IExportExecuteContext context)
+		protected override void Export(IExportExecuteContext context)
 		{
 			using (var xlPackage = new ExcelPackage(context.DataStream))
 			{

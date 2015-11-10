@@ -26,7 +26,7 @@ using SmartStore.Services.Seo;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
-	internal partial class DataExporter
+	public partial class DataExporter
 	{
 		private void PrepareProductDescription(DataExportTaskContext ctx, dynamic dynObject, Product product)
 		{
@@ -184,18 +184,18 @@ namespace SmartStore.Services.DataExchange.Internal
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
 			ToQuantityUnit(ctx, dynObject, product.QuantityUnitId);
 
-			if (ctx.Supports(ExportFeature.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
+			if (ctx.Supports(ExportFeatures.UsesSkuAsMpnFallback) && product.ManufacturerPartNumber.IsEmpty())
 			{
 				dynObject.ManufacturerPartNumber = product.Sku;
 			}
 
-			if (ctx.Supports(ExportFeature.OffersShippingTimeFallback))
+			if (ctx.Supports(ExportFeatures.OffersShippingTimeFallback))
 			{
 				dynamic deliveryTime = dynObject.DeliveryTime;
 				dynObject._ShippingTime = (deliveryTime == null ? ctx.Projection.ShippingTime : deliveryTime.Name);
 			}
 
-			if (ctx.Supports(ExportFeature.OffersShippingCostsFallback))
+			if (ctx.Supports(ExportFeatures.OffersShippingCostsFallback))
 			{
 				dynObject._FreeShippingThreshold = ctx.Projection.FreeShippingThreshold;
 
@@ -205,7 +205,7 @@ namespace SmartStore.Services.DataExchange.Internal
 					dynObject._ShippingCosts = ctx.Projection.ShippingCosts;
 			}
 
-			if (ctx.Supports(ExportFeature.UsesOldPrice))
+			if (ctx.Supports(ExportFeatures.UsesOldPrice))
 			{
 				if (product.OldPrice != decimal.Zero && product.OldPrice != (decimal)dynObject.Price && !(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				{
@@ -225,7 +225,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				}
 			}
 
-			if (ctx.Supports(ExportFeature.UsesSpecialPrice))
+			if (ctx.Supports(ExportFeatures.UsesSpecialPrice))
 			{
 				dynObject._SpecialPrice = null;
 				dynObject._RegularPrice = null;   // price if a special price would not exist
@@ -738,7 +738,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
 
-			if (ctx.Supports(ExportFeature.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
+			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);  // perf preview (it's a compromise)
@@ -912,12 +912,12 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			#region more attribute controlled data
 
-			if (ctx.Supports(ExportFeature.CanProjectDescription))
+			if (ctx.Supports(ExportFeatures.CanProjectDescription))
 			{
 				PrepareProductDescription(ctx, dynObject, product);
 			}
 
-			if (ctx.Supports(ExportFeature.OffersBrandFallback))
+			if (ctx.Supports(ExportFeatures.OffersBrandFallback))
 			{
 				string brand = null;
 				var productManus = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
@@ -931,7 +931,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				dynObject._Brand = brand;
 			}
 
-			if (ctx.Supports(ExportFeature.CanIncludeMainPicture))
+			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
 					dynObject._MainPictureUrl = _pictureService.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);

@@ -30,7 +30,7 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "CSV"; }
 		}
 
-		public override void Execute(IExportExecuteContext context)
+		protected override void Export(IExportExecuteContext context)
 		{
 			using (var writer = new StreamWriter(context.DataStream, Encoding.UTF8, 1024, true))
 			{

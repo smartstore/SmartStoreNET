@@ -1,5 +1,5 @@
-﻿
-using System;
+﻿using System;
+
 namespace SmartStore.Core.Domain.DataExchange
 {
 	/// <summary>
@@ -63,7 +63,7 @@ namespace SmartStore.Core.Domain.DataExchange
 	/// Controls data processing and projection items supported by an export provider
 	/// </summary>
 	[Flags]
-	public enum ExportFeature
+	public enum ExportFeatures
 	{
 		None = 0,
 

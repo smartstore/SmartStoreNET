@@ -32,7 +32,7 @@ namespace SmartStore.Services.DataExchange.Providers
 			get { return "XML"; }
 		}
 
-		public override void Execute(IExportExecuteContext context)
+		protected override void Export(IExportExecuteContext context)
 		{
 			var invariantCulture = CultureInfo.InvariantCulture;
 

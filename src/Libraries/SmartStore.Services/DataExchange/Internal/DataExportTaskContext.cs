@@ -79,7 +79,7 @@ namespace SmartStore.Services.DataExchange.Internal
 		public ExportProfile Profile { get; private set; }
 		public Provider<IExportProvider> Provider { get; private set; }
 
-		public bool Supports(ExportFeature feature)
+		public bool Supports(ExportFeatures feature)
 		{
 			return (!IsPreview && Provider.Metadata.ExportFeature.HasFlag(feature));
 		}

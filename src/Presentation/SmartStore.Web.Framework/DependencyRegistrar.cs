@@ -867,7 +867,7 @@ namespace SmartStore.Web.Framework
 			return false;
 		}
 
-		private ExportFeature GetExportFeature(Type type)
+		private ExportFeatures GetExportFeature(Type type)
 		{
 			var attr = type.GetAttribute<ExportFeaturesAttribute>(false);
 
@@ -876,7 +876,7 @@ namespace SmartStore.Web.Framework
 				return attr.Features;
 			}
 
-			return ExportFeature.None;
+			return ExportFeatures.None;
 		}
 
 		private Tuple<string/*Name*/, string/*Description*/> GetFriendlyName(Type type, PluginDescriptor descriptor)

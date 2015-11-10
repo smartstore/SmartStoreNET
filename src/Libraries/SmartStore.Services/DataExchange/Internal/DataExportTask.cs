@@ -4,7 +4,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
-	internal partial class DataExportTask : ITask
+	public partial class DataExportTask : ITask
 	{
 		private readonly IDataExporter _exporter;
 		private readonly IExportProfileService _exportProfileService;

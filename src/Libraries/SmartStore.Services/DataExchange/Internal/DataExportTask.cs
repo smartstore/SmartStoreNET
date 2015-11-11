@@ -4,6 +4,7 @@ using SmartStore.Services.Tasks;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
+	// note: namespace persisted in ScheduleTask.Type
 	public partial class DataExportTask : ITask
 	{
 		private readonly IDataExporter _exporter;

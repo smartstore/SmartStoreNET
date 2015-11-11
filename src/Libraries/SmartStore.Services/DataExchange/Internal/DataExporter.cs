@@ -903,8 +903,9 @@ namespace SmartStore.Services.DataExchange.Internal
 						}
 					}
 
-					// TODO: lazyLoading: false. It requires IDbContextExtensions::Load/QueryFor for properties internally mapped by EF
-					using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: false, validateOnSave: false, forceNoTracking: true))
+					// TODO: lazyLoading: false, proxyCreation: false possible? how to identify all properties of all data levels of all entities
+					// that require manual resolving for now and for future? fragile, susceptible to faults (e.g. price calculation)...
+					using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
@@ -1100,7 +1101,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			var pageIndex = (request.CustomData.ContainsKey("PageIndex") ? (int)request.CustomData["PageIndex"] : 0);
 			var totalRecords = (request.CustomData.ContainsKey("TotalRecords") ? (int)request.CustomData["TotalRecords"] : 0);
 
-			var result = new List<dynamic>();
+			var resultData = new List<dynamic>();
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 
 			var ctx = new DataExporterContext(request, cancellation.Token, null, true);
@@ -1120,7 +1121,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 					while (segmenter.ReadNextSegment())
 					{
-						result.AddRange(segmenter.CurrentSegment);
+						resultData.AddRange(segmenter.CurrentSegment);
 					}
 				}
 			}
@@ -1130,10 +1131,10 @@ namespace SmartStore.Services.DataExchange.Internal
 				_services.Notifier.Error(ctx.Result.LastError);
 			}
 
-			return result;
+			return resultData;
 		}
 
-		public long GetDataCount(DataExportRequest request)
+		public int GetDataCount(DataExportRequest request)
 		{
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 

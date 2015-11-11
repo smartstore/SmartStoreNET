@@ -2,11 +2,8 @@
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Net.Mime;
-using System.Text;
 using System.Web;
 using System.Web.Mvc;
-using Autofac;
 using SmartStore.Admin.Extensions;
 using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
@@ -21,12 +18,13 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
-using SmartStore.Services.DataExchange.ExportTask;
+using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
@@ -48,9 +46,10 @@ namespace SmartStore.Admin.Controllers
 		private readonly ILanguageService _languageService;
 		private readonly ICurrencyService _currencyService;
 		private readonly IEmailAccountService _emailAccountService;
-		private readonly IComponentContext _componentContext;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly DataExchangeSettings _dataExchangeSettings;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly IDataExporter _dataExporter;
 
 		public ExportController(
 			ICommonServices services,
@@ -63,9 +62,10 @@ namespace SmartStore.Admin.Controllers
 			ILanguageService languageService,
 			ICurrencyService currencyService,
 			IEmailAccountService emailAccountService,
-			IComponentContext componentContext,
 			IDateTimeHelper dateTimeHelper,
-			DataExchangeSettings dataExchangeSettings)
+			DataExchangeSettings dataExchangeSettings,
+			ITaskScheduler taskScheduler,
+			IDataExporter dataExporter)
 		{
 			_services = services;
 			_exportService = exportService;
@@ -77,9 +77,10 @@ namespace SmartStore.Admin.Controllers
 			_languageService = languageService;
 			_currencyService = currencyService;
 			_emailAccountService = emailAccountService;
-			_componentContext = componentContext;
 			_dateTimeHelper = dateTimeHelper;
 			_dataExchangeSettings = dataExchangeSettings;
+			_taskScheduler = taskScheduler;
+			_dataExporter = dataExporter;
 		}
 
 		#region Utilities
@@ -245,7 +246,7 @@ namespace SmartStore.Admin.Controllers
 					{
 						try
 						{
-							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, ExportProfileTask.PublicFolder);
+							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
 							var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
 
 							if (resultInfo != null && resultInfo.Files != null)
@@ -261,7 +262,7 @@ namespace SmartStore.Admin.Controllers
 											StoreId = store.Id,
 											StoreName = store.Name,
 											FileName = fileInfo.FileName,
-											FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), ExportProfileTask.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
+											FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), DataExporter.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
 										});
 									}
 								}
@@ -722,15 +723,15 @@ namespace SmartStore.Admin.Controllers
 
 			var provider = _exportService.LoadProvider(profile.ProviderSystemName);
 
-			var task = new ExportProfileTask();
-			var totalRecords = task.GetRecordCount(profile, provider, _componentContext);
+			var request = new DataExportRequest(profile, provider);
+			var totalRecords = _dataExporter.GetDataCount(request);
 
 			var model = new ExportPreviewModel
 			{
 				Id = profile.Id,
 				Name = profile.Name,
 				ThumbnailUrl = GetThumbnailUrl(provider),
-				GridPageSize = ExportProfileTask.PageSize,
+				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
 				TotalRecords = totalRecords,
 				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath())
@@ -751,25 +752,30 @@ namespace SmartStore.Admin.Controllers
 			{
 				var productModel = new List<ExportPreviewProductModel>();
 				var orderModel = new List<ExportPreviewOrderModel>();
-				var task = new ExportProfileTask();
 
-				Action<dynamic> previewData = x =>
+				var request = new DataExportRequest(profile, provider);
+				request.CustomData.Add("PageIndex", command.Page - 1);
+				request.CustomData.Add("TotalRecords", totalRecords);
+
+				var data = _dataExporter.Preview(request);
+
+				foreach (dynamic item in data)
 				{
 					if (provider.Value.EntityType == ExportEntityType.Product)
 					{
-						var product = x.Entity as Product;
+						var product = item.Entity as Product;
 						var pm = new ExportPreviewProductModel
 						{
-							Id = x.Id,
-							ProductTypeId = x.ProductTypeId,
+							Id = product.Id,
+							ProductTypeId = product.ProductTypeId,
 							ProductTypeName = product.GetProductTypeLabel(_services.Localization),
 							ProductTypeLabelHint = product.ProductTypeLabelHint,
-							Name = x.Name,
-							Sku = x.Sku,
-							Price = x.Price,
-							Published = x.Published,
-							StockQuantity = x.StockQuantity,
-							AdminComment = x.AdminComment
+							Name = item.Name,
+							Sku = item.Sku,
+							Price = item.Price,
+							Published = product.Published,
+							StockQuantity = product.StockQuantity,
+							AdminComment = item.AdminComment
 						};
 
 						productModel.Add(pm);
@@ -778,23 +784,21 @@ namespace SmartStore.Admin.Controllers
 					{
 						var om = new ExportPreviewOrderModel
 						{
-							Id = x.Id,
-							HasNewPaymentNotification = x.HasNewPaymentNotification,
-							OrderNumber = x.OrderNumber,
-							OrderStatus = x.OrderStatus,
-							PaymentStatus = x.PaymentStatus,
-							ShippingStatus = x.ShippingStatus,
-							CustomerEmail = x.Customer.Email,
-							StoreName = (x.Store == null ? "".NaIfEmpty() : x.Store.Name),
-							CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc),
-							OrderTotal = x.OrderTotal
+							Id = item.Id,
+							HasNewPaymentNotification = item.HasNewPaymentNotification,
+							OrderNumber = item.OrderNumber,
+							OrderStatus = item.OrderStatus,
+							PaymentStatus = item.PaymentStatus,
+							ShippingStatus = item.ShippingStatus,
+							CustomerEmail = item.Customer.Email,
+							StoreName = (item.Store == null ? "".NaIfEmpty() : item.Store.Name),
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(item.CreatedOnUtc, DateTimeKind.Utc),
+							OrderTotal = item.OrderTotal
 						};
 
 						orderModel.Add(om);
 					}
-				};
-
-				task.Preview(profile, provider, _componentContext, command.Page - 1, totalRecords, previewData);
+				}
 
 				var normalizedTotal = totalRecords;
 
@@ -831,12 +835,15 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
+			// TODO:
 			profile.CacheSelectedEntityIds(selectedIds);
 
-			var returnUrl = Url.Action("List", "Export", new { area = "admin" });
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
 
-			return RedirectToAction("RunJob", "ScheduleTask", new { area = "admin", id = profile.SchedulingTaskId, returnUrl = returnUrl });
-		}
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+
+			return RedirectToAction("List");
+        }
 
 		[ChildActionOnly]
 		public ActionResult InfoProfile(string systemName, string returnUrl)

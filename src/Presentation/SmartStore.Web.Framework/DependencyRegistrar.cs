@@ -76,6 +76,7 @@ using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Utilities.Reflection;
+using SmartStore.Services.DataExchange.Internal;
 
 namespace SmartStore.Web.Framework
 {
@@ -223,8 +224,9 @@ namespace SmartStore.Web.Framework
 			builder.RegisterType<SyncMappingService>().As<ISyncMappingService>().InstancePerRequest();
 
 			builder.RegisterType<ExportProfileService>().As<IExportProfileService>().InstancePerRequest();
+			builder.RegisterType<DataExporter>().As<IDataExporter>().InstancePerRequest();
 
-            builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
+			builder.RegisterType<MobileDeviceHelper>().As<IMobileDeviceHelper>().InstancePerRequest();
 			builder.RegisterType<UAParserUserAgent>().As<IUserAgent>().InstancePerRequest();
 			builder.RegisterType<WkHtmlToPdfConverter>().As<IPdfConverter>().InstancePerRequest();
 

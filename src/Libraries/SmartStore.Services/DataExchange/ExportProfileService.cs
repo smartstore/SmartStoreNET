@@ -10,6 +10,7 @@ using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.DataExchange.ExportTask;
+using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -91,7 +92,7 @@ namespace SmartStore.Services.DataExchange
 				task = new ScheduleTask
 				{
 					CronExpression = "0 */6 * * *",		// every six hours
-					Type = (new ExportProfileTask()).GetType().AssemblyQualifiedNameWithoutVersion(),
+					Type = typeof(DataExportTask).AssemblyQualifiedNameWithoutVersion(),
 					Enabled = false,
 					StopOnError = false,
 					IsHidden = true

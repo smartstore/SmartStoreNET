@@ -1,15 +1,19 @@
 ﻿using System;
+using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using Autofac;
 using Autofac.Builder;
 using SmartStore.Core.Caching;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {
     public class ContainerManager
     {
         private readonly IContainer _container;
+		private readonly ConcurrentDictionary<Type, FastActivator> _cachedActivators = new ConcurrentDictionary<Type, FastActivator>();
 
         public ContainerManager(IContainer container)
         {
@@ -61,29 +65,59 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public object ResolveUnregistered(Type type, ILifetimeScope scope = null)
         {
-            var constructors = type.GetConstructors();
+            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
             foreach (var constructor in constructors)
             {
-                try
-                {
-                    var parameters = constructor.GetParameters();
-                    var parameterInstances = new List<object>();
-                    foreach (var parameter in parameters)
-                    {
-                        var service = Resolve(parameter.ParameterType, scope);
-                        if (service == null)
-                            throw new SmartException("Unkown dependency");
-                        parameterInstances.Add(service);
-                    }
-                    return Activator.CreateInstance(type, parameterInstances.ToArray());
-                }
-                catch
-                {
-
-                }
+				object instance;
+				if (TryInvokeConstructor(constructor, out instance, scope))
+				{
+					return instance;
+				}
             }
+
             throw new SmartException("No contructor was found that had all the dependencies satisfied.");
         }
+
+		private FastActivator GetActivatorForUnregisteredService(Type serviceType)
+		{
+			FastActivator activator;
+			if (!_cachedActivators.TryGetValue(serviceType, out activator))
+			{
+
+			}
+
+			return activator;
+		}
+
+		private bool TryInvokeConstructor(ConstructorInfo constructor, out object instance, ILifetimeScope scope = null)
+		{
+			instance = null;
+
+			try
+			{
+				var parameters = constructor.GetParameters();
+				var parameterInstances = new List<object>();
+				
+                foreach (var parameter in parameters)
+				{
+					var service = Resolve(parameter.ParameterType, scope);
+					if (service == null)
+					{
+						return false;
+					}
+
+					parameterInstances.Add(service);
+				}
+
+				instance = constructor.Invoke(parameterInstances.ToArray());
+
+				return instance != null;
+			}
+			catch
+			{
+				return false;
+			}
+		}
 
 		public bool TryResolve(Type serviceType, ILifetimeScope scope, out object instance)
         {

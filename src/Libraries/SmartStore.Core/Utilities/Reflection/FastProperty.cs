@@ -16,17 +16,17 @@ namespace SmartStore.Utilities.Reflection
 		// Delegate type for a by-ref property getter
 		private delegate TValue ByRefFunc<TDeclaringType, TValue>(ref TDeclaringType arg);
 
-		private static readonly MethodInfo CallPropertyGetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetter));
-		private static readonly MethodInfo CallPropertyGetterByReferenceOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertyGetterByReference));
-		private static readonly MethodInfo CallNullSafePropertyGetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod(nameof(CallNullSafePropertyGetter));
-		private static readonly MethodInfo CallNullSafePropertyGetterByReferenceOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod(nameof(CallNullSafePropertyGetterByReference));
-		private static readonly MethodInfo CallPropertySetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod(nameof(CallPropertySetter));
+		private static readonly MethodInfo CallPropertyGetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod("CallPropertyGetter");
+		private static readonly MethodInfo CallPropertyGetterByReferenceOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod("CallPropertyGetterByReference");
+		private static readonly MethodInfo CallNullSafePropertyGetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod("CallNullSafePropertyGetter");
+		private static readonly MethodInfo CallNullSafePropertyGetterByReferenceOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod("CallNullSafePropertyGetterByReference");
+		private static readonly MethodInfo CallPropertySetterOpenGenericMethod = typeof(FastProperty).GetTypeInfo().GetDeclaredMethod("CallPropertySetter");
 
-		private static readonly ConcurrentDictionary<PropertyKey, FastProperty> SinglePropertiesCache = new ConcurrentDictionary<PropertyKey, FastProperty>();
+		private static readonly ConcurrentDictionary<PropertyKey, FastProperty> _singlePropertiesCache = new ConcurrentDictionary<PropertyKey, FastProperty>();
 
 		// Using an array rather than IEnumerable, as target will be called on the hot path numerous times.
-		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> PropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
-		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> VisiblePropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
+		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _propertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
+		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _visiblePropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
 
 		private Action<object, object> _valueSetter;
 
@@ -36,10 +36,7 @@ namespace SmartStore.Utilities.Reflection
 		/// </summary>
 		public FastProperty(PropertyInfo property)
 		{
-			if (property == null)
-			{
-				throw new ArgumentNullException(nameof(property));
-			}
+			Guard.ArgumentNotNull(() => property);
 
 			Property = property;
 			Name = property.Name;
@@ -49,7 +46,7 @@ namespace SmartStore.Utilities.Reflection
 		/// <summary>
 		/// Gets the backing <see cref="PropertyInfo"/>.
 		/// </summary>
-		public PropertyInfo Property { get; }
+		public PropertyInfo Property { get; private set; }
 
 		/// <summary>
 		/// Gets (or sets in derived types) the property name.
@@ -59,7 +56,7 @@ namespace SmartStore.Utilities.Reflection
 		/// <summary>
 		/// Gets the property value getter.
 		/// </summary>
-		public Func<object, object> ValueGetter { get; }
+		public Func<object, object> ValueGetter { get; private set; }
 
 		/// <summary>
 		/// Gets the property value setter.
@@ -119,7 +116,7 @@ namespace SmartStore.Utilities.Reflection
 		/// </returns>
 		public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetProperties(type, CreateInstance, PropertiesCache);
+			return (IReadOnlyDictionary<string, FastProperty>)GetProperties(type, CreateInstance, _propertiesCache);
 		}
 
 		/// <summary>
@@ -138,7 +135,7 @@ namespace SmartStore.Utilities.Reflection
 		/// </returns>
 		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(object instance)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(instance.GetType(), CreateInstance, PropertiesCache, VisiblePropertiesCache);
+			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(instance.GetType(), CreateInstance, _propertiesCache, _visiblePropertiesCache);
 		}
 
 		/// <summary>
@@ -157,7 +154,7 @@ namespace SmartStore.Utilities.Reflection
 		/// </returns>
 		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(Type type)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, CreateInstance, PropertiesCache, VisiblePropertiesCache);
+			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, CreateInstance, _propertiesCache, _visiblePropertiesCache);
 		}
 
 		public static FastProperty GetProperty(Type type, string propertyName, bool cacheAllProperties = false)
@@ -172,21 +169,21 @@ namespace SmartStore.Utilities.Reflection
 				return fastProperty;
 			}
 
-			if (PropertiesCache.TryGetValue(type, out allProperties))
+			if (_propertiesCache.TryGetValue(type, out allProperties))
 			{
 				allProperties.TryGetValue(propertyName, out fastProperty);
 				return fastProperty;
 			}
 
 			var key = new PropertyKey(type, propertyName);
-			if (!SinglePropertiesCache.TryGetValue(key, out fastProperty))
+			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
-				var pi = GetPropertyCandidates(type).Where(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
+				var pi = GetCandidateProperties(type).Where(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
 				//var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
 				if (pi != null)
 				{
 					fastProperty = CreateInstance(pi);
-					SinglePropertiesCache.TryAdd(key, fastProperty);
+					_singlePropertiesCache.TryAdd(key, fastProperty);
 				}
 			}
 
@@ -483,7 +480,11 @@ namespace SmartStore.Utilities.Reflection
 						break;
 					}
 
-					currentTypeInfo = currentTypeInfo.BaseType?.GetTypeInfo();
+					if (currentTypeInfo.BaseType != null) 
+					{
+						currentTypeInfo = currentTypeInfo.BaseType.GetTypeInfo();
+					}
+					
 				}
 
 				if (!ignoreProperty)
@@ -509,7 +510,7 @@ namespace SmartStore.Utilities.Reflection
 			IDictionary<string, FastProperty> fastProperties;
 			if (!cache.TryGetValue(type, out fastProperties))
 			{
-				var candidates = GetPropertyCandidates(type);
+				var candidates = GetCandidateProperties(type);
                 fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 				cache.TryAdd(type, fastProperties);
 			}
@@ -517,7 +518,7 @@ namespace SmartStore.Utilities.Reflection
 			return fastProperties;
 		}
 
-		private static IEnumerable<PropertyInfo> GetPropertyCandidates(Type type)
+		private static IEnumerable<PropertyInfo> GetCandidateProperties(Type type)
 		{
 			// We avoid loading indexed properties using the Where statement.
 			var properties = type.GetRuntimeProperties().Where(IsCandidateProperty);

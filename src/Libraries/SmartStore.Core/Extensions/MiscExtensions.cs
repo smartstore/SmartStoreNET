@@ -11,12 +11,12 @@ namespace SmartStore
 {   
     public static class MiscExtensions
     {
-		public static void Dump(this Exception exc) 
+		public static void Dump(this Exception exception) 
 		{
 			try 
 			{
-				exc.StackTrace.Dump();
-				exc.Message.Dump();
+				exception.StackTrace.Dump();
+				exception.Message.Dump();
 			}
 			catch { }
 		}

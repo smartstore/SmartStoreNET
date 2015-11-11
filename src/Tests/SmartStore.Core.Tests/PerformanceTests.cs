@@ -19,6 +19,7 @@ namespace SmartStore.Core.Tests
 
 			Chronometer.Measure(cycles, "Create Product NATIVE", i => new Product());
 			Chronometer.Measure(cycles, "Create Product Reflection", i => Activator.CreateInstance(typeof(Product)));
+			Chronometer.Measure(cycles, "Create Product FASTACTIVATOR", i => FastActivator.CreateInstance(typeof(Product)));
 
 			var list = new List<Product>();
 
@@ -43,15 +44,27 @@ namespace SmartStore.Core.Tests
 		public TestClass(IEnumerable<Product> param1)
 		{
 		}
-		public TestClass(int param1)
-		{
-		}
-		public TestClass(IEnumerable<Product> param1, int param2)
-		{
-		}
-		public TestClass(IEnumerable<Product> param1, int param2, string param3)
-		{
-		}
+		//public TestClass(int param1)
+		//{
+		//}
+		//public TestClass(IEnumerable<Product> param1, int param2)
+		//{
+		//}
+		//public TestClass(IEnumerable<Product> param1, int param2, string param3)
+		//{
+		//}
+		//public TestClass(DateTime param1)
+		//{
+		//}
+		//public TestClass(double param1)
+		//{
+		//}
+		//public TestClass(decimal param1)
+		//{
+		//}
+		//public TestClass(long param1)
+		//{
+		//}
 	}
 
 }

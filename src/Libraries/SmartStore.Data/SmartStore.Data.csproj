@@ -375,7 +375,6 @@
     <Compile Include="Extensions\DataReaderExtensions.cs" />
     <Compile Include="Extensions\DbContextExtensions.cs" />
     <Compile Include="Extensions\MiscExtensions.cs" />
-    <Compile Include="Extensions\SqlDataReaderExtensions.cs" />
     <Compile Include="Setup\DbMigrationException.cs" />
     <Compile Include="Setup\DbSeedingMigrator.cs" />
     <Compile Include="Setup\IDbMigrationExtensions.cs" />

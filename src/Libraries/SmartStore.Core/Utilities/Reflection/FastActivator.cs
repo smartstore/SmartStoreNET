@@ -131,7 +131,7 @@ namespace SmartStore.Utilities.Reflection
 		/// <returns>A reference to the newly created object.</returns>
 		public static object CreateInstance(Type type, params object[] args)
 		{
-			Guard.ArgumentNotNull(() => type);
+			Guard.ArgumentNotNull(type, "type");
 
 			if (args == null || args.Length == 0)
 			{
@@ -164,8 +164,8 @@ namespace SmartStore.Utilities.Reflection
 			{
 				return null;
 			}
-
-			if (activators.Length == 1)
+			
+            if (activators.Length == 1)
 			{
 				// this seems to be bad design, but it's on purpose for performance reasons.
 				// In nearly ALL cases there is only one constructor.
@@ -173,7 +173,11 @@ namespace SmartStore.Utilities.Reflection
 			}
 
 			var argTypes = args.Select(x => x.GetType()).ToArray();
-			var constructor = type.GetConstructor(BindingFlags.Instance | BindingFlags.CreateInstance | BindingFlags.Public, null, argTypes, null);
+			var constructor = type.GetConstructor(
+				BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly,
+				null,
+				argTypes,
+				null);
 
 			if (constructor != null)
 			{

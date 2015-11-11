@@ -70,7 +70,7 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 			if (!_cachedActivators.TryGetValue(type, out activator))
 			{
-				var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.CreateInstance | BindingFlags.Instance);
+				var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance | BindingFlags.DeclaredOnly);
 				foreach (var constructor in constructors)
 				{
 					var parameterTypes = constructor.GetParameters().Select(p => p.ParameterType).ToArray();

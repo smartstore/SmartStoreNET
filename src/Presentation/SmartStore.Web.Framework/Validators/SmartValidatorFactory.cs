@@ -24,8 +24,6 @@ namespace SmartStore.Web.Framework.Validators
 					string cacheKey = "FluentValidator.{0}".FormatInvariant(attribute.ValidatorType.ToString());
 					var result = requestCache.Get(cacheKey, () => 
 					{
-						System.Diagnostics.Debug.WriteLine("VAL: " + type.Name);
-
 						var instance = EngineContext.Current.ContainerManager.ResolveUnregistered(attribute.ValidatorType);
 						return instance as IValidator;
 					});

@@ -1,5 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Threading;
@@ -12,7 +11,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Plugins;
 using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Internal
@@ -28,21 +26,17 @@ namespace SmartStore.Services.DataExchange.Internal
 		public DataExporterContext(
 			DataExportRequest request,
 			CancellationToken cancellationToken,
-            ExportProfile profile,
-			Provider<IExportProvider> provider,
 			string selectedIds = null,
-			Action<dynamic> previewData = null)
+			bool isPreview = false)
 		{
 			Request = request;
 			CancellationToken = cancellationToken;
-			Profile = profile;
-			Provider = provider;
-			Filter = XmlHelper.Deserialize<ExportFilter>(profile.Filtering);
-			Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
+			Filter = XmlHelper.Deserialize<ExportFilter>(request.Profile.Filtering);
+			Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
 			EntityIdsSelected = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
-			PreviewData = previewData;
+			IsPreview = isPreview;
 
-			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(profile.FolderName));
+			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(request.Profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
 			Categories = new Dictionary<int, Category>();
@@ -60,7 +54,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			};
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
-			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(profile.Projection);
+			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
 		}
 
 		public List<int> EntityIdsSelected { get; private set; }
@@ -71,20 +65,13 @@ namespace SmartStore.Services.DataExchange.Internal
 		public string ProgressInfo { get; set; }
 		public IQueryable<Product> QueryProducts { get; set; }
 
-		public Action<dynamic> PreviewData { get; private set; }
-		public bool IsPreview
-		{
-			get { return PreviewData != null; }
-		}
-
 		public DataExportRequest Request { get; private set; }
 		public CancellationToken CancellationToken { get; private set; }
-        public ExportProfile Profile { get; private set; }
-		public Provider<IExportProvider> Provider { get; private set; }
+		public bool IsPreview { get; private set; }
 
 		public bool Supports(ExportFeatures feature)
 		{
-			return (!IsPreview && Provider.Metadata.ExportFeatures.HasFlag(feature));
+			return (!IsPreview && Request.Provider.Metadata.ExportFeatures.HasFlag(feature));
 		}
 
 		public ExportFilter Filter { get; private set; }
@@ -100,7 +87,7 @@ namespace SmartStore.Services.DataExchange.Internal
 		public string FolderContent { get; private set; }
 		public string ZipName
 		{
-			get { return Profile.FolderName + ".zip"; }
+			get { return Request.Profile.FolderName + ".zip"; }
 		}
 		public string ZipPath
 		{
@@ -113,7 +100,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 		public bool IsFileBasedExport
 		{
-			get { return Provider == null || Provider.Value == null || Provider.Value.FileExtension.HasValue(); }
+			get { return Request.Provider == null || Request.Provider.Value == null || Request.Provider.Value.FileExtension.HasValue(); }
 		}
 		public string[] GetDeploymentFiles(ExportDeployment deployment)
 		{

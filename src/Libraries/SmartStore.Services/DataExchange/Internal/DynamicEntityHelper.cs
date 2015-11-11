@@ -28,7 +28,7 @@ namespace SmartStore.Services.DataExchange.Internal
 {
 	public partial class DataExporter
 	{
-		private void PrepareProductDescription(DataExportTaskContext ctx, dynamic dynObject, Product product)
+		private void PrepareProductDescription(DataExporterContext ctx, dynamic dynObject, Product product)
 		{
 			try
 			{
@@ -118,25 +118,25 @@ namespace SmartStore.Services.DataExchange.Internal
 			catch { }
 		}
 
-		private decimal? ConvertPrice(DataExportTaskContext ctx, Product product, decimal? price)
+		private decimal? ConvertPrice(DataExporterContext ctx, Product product, decimal? price)
 		{
 			if (price.HasValue)
 			{
 				if (ctx.Projection.ConvertNetToGrossPrices)
 				{
 					decimal taxRate;
-					price = _taxService.GetProductPrice(product, price.Value, true, ctx.ContextCustomer, out taxRate);
+					price = _taxService.Value.GetProductPrice(product, price.Value, true, ctx.ContextCustomer, out taxRate);
 				}
 
 				if (price != decimal.Zero)
 				{
-					price = _currencyService.ConvertFromPrimaryStoreCurrency(price.Value, ctx.ContextCurrency, ctx.Store);
+					price = _currencyService.Value.ConvertFromPrimaryStoreCurrency(price.Value, ctx.ContextCurrency, ctx.Store);
 				}
 			}
 			return price;
 		}
 
-		private decimal CalculatePrice(DataExportTaskContext ctx, Product product, bool forAttributeCombination)
+		private decimal CalculatePrice(DataExporterContext ctx, Product product, bool forAttributeCombination)
 		{
 			decimal price = product.Price;
 
@@ -148,22 +148,22 @@ namespace SmartStore.Services.DataExchange.Internal
 				if (ctx.Projection.PriceType.Value == PriceDisplayType.LowestPrice)
 				{
 					bool displayFromMessage;
-					price = _priceCalculationService.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
+					price = _priceCalculationService.Value.GetLowestPrice(product, priceCalculationContext, out displayFromMessage);
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PreSelectedPrice)
 				{
-					price = _priceCalculationService.GetPreselectedPrice(product, priceCalculationContext);
+					price = _priceCalculationService.Value.GetPreselectedPrice(product, priceCalculationContext);
 				}
 				else if (ctx.Projection.PriceType.Value == PriceDisplayType.PriceWithoutDiscountsAndAttributes)
 				{
-					price = _priceCalculationService.GetFinalPrice(product, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, priceCalculationContext);
+					price = _priceCalculationService.Value.GetFinalPrice(product, null, ctx.ContextCustomer, decimal.Zero, false, 1, null, priceCalculationContext);
 				}
 			}
 
 			return ConvertPrice(ctx, product, price) ?? price;
 		}
 
-		private void MergeWithCombination(DataExportTaskContext ctx, dynamic dynObject, Product product, 
+		private void MergeWithCombination(DataExporterContext ctx, dynamic dynObject, Product product, 
 			ICollection<ProductVariantAttribute> productAttributes, ProductVariantAttributeCombination combination)
 		{
 			product.MergeWithCombination(combination);
@@ -172,13 +172,13 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			if (combination != null && ctx.Projection.AttributeCombinationValueMerging == ExportAttributeValueMerging.AppendAllValuesToName)
 			{
-				var values = _productAttributeParser.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
+				var values = _productAttributeParser.Value.ParseProductVariantAttributeValues(combination.AttributesXml, productAttributes, ctx.Projection.LanguageId ?? 0);
 
 				dynObject.Name = ((string)dynObject.Name).Grow(string.Join(", ", values), " ");
 			}
 
-			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter, _currencyService, _taxService,
-				_priceCalculationService, ctx.ContextCurrency, decimal.Zero, true);
+			dynObject._BasePriceInfo = product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
+				_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
 			// navigation properties
 			ToDeliveryTime(ctx, dynObject, product.DeliveryTimeId);
@@ -212,7 +212,7 @@ namespace SmartStore.Services.DataExchange.Internal
 					if (ctx.Projection.ConvertNetToGrossPrices)
 					{
 						decimal taxRate;
-						dynObject._OldPrice = _taxService.GetProductPrice(product, product.OldPrice, true, ctx.ContextCustomer, out taxRate);
+						dynObject._OldPrice = _taxService.Value.GetProductPrice(product, product.OldPrice, true, ctx.ContextCustomer, out taxRate);
 					}
 					else
 					{
@@ -232,7 +232,7 @@ namespace SmartStore.Services.DataExchange.Internal
 
 				if (!(product.ProductType == ProductType.BundledProduct && product.BundlePerItemPricing))
 				{
-					var specialPrice = _priceCalculationService.GetSpecialPrice(product);
+					var specialPrice = _priceCalculationService.Value.GetSpecialPrice(product);
 
 					dynObject._SpecialPrice = ConvertPrice(ctx, product, specialPrice);
 
@@ -248,7 +248,7 @@ namespace SmartStore.Services.DataExchange.Internal
 		}
 
 
-		private List<dynamic> GetLocalized<T>(DataExportTaskContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
+		private List<dynamic> GetLocalized<T>(DataExporterContext ctx, T entity, params Expression<Func<T, string>>[] keySelectors)
 			where T : BaseEntity, ILocalizedEntity
 		{
 			if (ctx.Languages.Count <= 1)
@@ -266,7 +266,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				// add SeName
 				if (isSlugSupported)
 				{
-					var value = _urlRecordService.GetActiveSlug(entity.Id, localeKeyGroup, language.Value.Id);
+					var value = _urlRecordService.Value.GetActiveSlug(entity.Id, localeKeyGroup, language.Value.Id);
 					if (value.HasValue())
 					{
 						dynamic exp = new HybridExpando();
@@ -283,7 +283,7 @@ namespace SmartStore.Services.DataExchange.Internal
 					var member = keySelector.Body as MemberExpression;
 					var propInfo = member.Member as PropertyInfo;
 					string localeKey = propInfo.Name;
-					var value = _localizedEntityService.GetLocalizedValue(language.Value.Id, entity.Id, localeKeyGroup, localeKey);
+					var value = _localizedEntityService.Value.GetLocalizedValue(language.Value.Id, entity.Id, localeKeyGroup, localeKey);
 
 					// we better not export empty values. the risk is to high that they are imported and unnecessary fill databases.
 					if (value.HasValue())
@@ -301,7 +301,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return (localized.Count == 0 ? null : localized);
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Currency currency)
+		private dynamic ToDynamic(DataExporterContext ctx, Currency currency)
 		{
 			if (currency == null)
 				return null;
@@ -314,7 +314,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Language language)
+		private dynamic ToDynamic(DataExporterContext ctx, Language language)
 		{
 			if (language == null)
 				return null;
@@ -323,7 +323,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Country country)
+		private dynamic ToDynamic(DataExporterContext ctx, Country country)
 		{
 			if (country == null)
 				return null;
@@ -336,7 +336,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Address address)
+		private dynamic ToDynamic(DataExporterContext ctx, Address address)
 		{
 			if (address == null)
 				return null;
@@ -362,7 +362,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, RewardPointsHistory points)
+		private dynamic ToDynamic(DataExporterContext ctx, RewardPointsHistory points)
 		{
 			if (points == null)
 				return null;
@@ -372,7 +372,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Customer customer)
+		private dynamic ToDynamic(DataExporterContext ctx, Customer customer)
 		{
 			if (customer == null)
 				return null;
@@ -393,7 +393,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Store store)
+		private dynamic ToDynamic(DataExporterContext ctx, Store store)
 		{
 			if (store == null)
 				return null;
@@ -406,7 +406,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, DeliveryTime deliveryTime)
+		private dynamic ToDynamic(DataExporterContext ctx, DeliveryTime deliveryTime)
 		{
 			if (deliveryTime == null)
 				return null;
@@ -419,7 +419,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private void ToDeliveryTime(DataExportTaskContext ctx, dynamic parent, int? deliveryTimeId)
+		private void ToDeliveryTime(DataExporterContext ctx, dynamic parent, int? deliveryTimeId)
 		{
 			if (ctx.DeliveryTimes != null)
 			{
@@ -430,7 +430,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			}
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, QuantityUnit quantityUnit)
+		private dynamic ToDynamic(DataExporterContext ctx, QuantityUnit quantityUnit)
 		{
 			if (quantityUnit == null)
 				return null;
@@ -447,7 +447,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private void ToQuantityUnit(DataExportTaskContext ctx, dynamic parent, int? quantityUnitId)
+		private void ToQuantityUnit(DataExporterContext ctx, dynamic parent, int? quantityUnitId)
 		{
 			if (ctx.QuantityUnits != null)
 			{
@@ -458,26 +458,26 @@ namespace SmartStore.Services.DataExchange.Internal
 			}
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
+		private dynamic ToDynamic(DataExporterContext ctx, Picture picture, int thumbPictureSize, int detailsPictureSize)
 		{
 			if (picture == null)
 				return null;
 
 			dynamic result = new DynamicEntity(picture);
 
-			result._ThumbImageUrl = _pictureService.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
-			result._ImageUrl = _pictureService.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
-			result._FullSizeImageUrl = _pictureService.GetPictureUrl(picture, 0, false, ctx.Store.Url);
+			result._ThumbImageUrl = _pictureService.Value.GetPictureUrl(picture, thumbPictureSize, false, ctx.Store.Url);
+			result._ImageUrl = _pictureService.Value.GetPictureUrl(picture, detailsPictureSize, false, ctx.Store.Url);
+			result._FullSizeImageUrl = _pictureService.Value.GetPictureUrl(picture, 0, false, ctx.Store.Url);
 
-			var relativeUrl = _pictureService.GetPictureUrl(picture);
+			var relativeUrl = _pictureService.Value.GetPictureUrl(picture);
 			result._FileName = relativeUrl.Substring(relativeUrl.LastIndexOf("/") + 1);
 
-			result._ThumbLocalPath = _pictureService.GetThumbLocalPath(picture);
+			result._ThumbLocalPath = _pictureService.Value.GetThumbLocalPath(picture);
 
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, ProductVariantAttribute pva)
+		private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttribute pva)
 		{
 			if (pva == null)
 				return null;
@@ -511,7 +511,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, ProductVariantAttributeCombination pvac)
+		private dynamic ToDynamic(DataExporterContext ctx, ProductVariantAttributeCombination pvac)
 		{
 			if (pvac == null)
 				return null;
@@ -524,7 +524,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Manufacturer manufacturer)
+		private dynamic ToDynamic(DataExporterContext ctx, Manufacturer manufacturer)
 		{
 			if (manufacturer == null)
 				return null;
@@ -550,7 +550,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Category category)
+		private dynamic ToDynamic(DataExporterContext ctx, Category category)
 		{
 			if (category == null)
 				return null;
@@ -580,7 +580,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Product product)
+		private dynamic ToDynamic(DataExporterContext ctx, Product product)
 		{
 			if (product == null)
 				return null;
@@ -619,7 +619,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Order order)
+		private dynamic ToDynamic(DataExporterContext ctx, Order order)
 		{
 			if (order == null)
 				return null;
@@ -642,7 +642,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, OrderItem orderItem)
+		private dynamic ToDynamic(DataExporterContext ctx, OrderItem orderItem)
 		{
 			if (orderItem == null)
 				return null;
@@ -654,7 +654,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Shipment shipment)
+		private dynamic ToDynamic(DataExporterContext ctx, Shipment shipment)
 		{
 			if (shipment == null)
 				return null;
@@ -673,7 +673,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, Discount discount)
+		private dynamic ToDynamic(DataExporterContext ctx, Discount discount)
 		{
 			if (discount == null)
 				return null;
@@ -683,7 +683,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, ProductSpecificationAttribute psa)
+		private dynamic ToDynamic(DataExporterContext ctx, ProductSpecificationAttribute psa)
 		{
 			if (psa == null)
 				return null;
@@ -709,7 +709,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, GenericAttribute genericAttribute)
+		private dynamic ToDynamic(DataExporterContext ctx, GenericAttribute genericAttribute)
 		{
 			if (genericAttribute == null)
 				return null;
@@ -719,7 +719,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExportTaskContext ctx, NewsLetterSubscription subscription)
+		private dynamic ToDynamic(DataExporterContext ctx, NewsLetterSubscription subscription)
 		{
 			if (subscription == null)
 				return null;
@@ -730,13 +730,13 @@ namespace SmartStore.Services.DataExchange.Internal
 		}
 
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, Product product)
+		private List<dynamic> Convert(DataExporterContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
 
 			var languageId = (ctx.Projection.LanguageId ?? 0);
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
-			var pictureSize = _mediaSettings.ProductDetailsPictureSize;
+			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
 
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
@@ -762,12 +762,12 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			if (ctx.Categories.Count > 0 && ctx.CategoryPathes.Count > 0)
 			{
-				dynObject._CategoryPath = _categoryService.GetCategoryPath(
+				dynObject._CategoryPath = _categoryService.Value.GetCategoryPath(
 					product,
 					null,
 					x => ctx.CategoryPathes.ContainsKey(x) ? ctx.CategoryPathes[x] : null,
 					(id, value) => ctx.CategoryPathes[id] = value,
-					x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.GetCategoryById(x),
+					x => ctx.Categories.ContainsKey(x) ? ctx.Categories[x] : _categoryService.Value.GetCategoryById(x),
 					productCategories.OrderBy(x => x.DisplayOrder).FirstOrDefault()
 				);
 			}
@@ -782,7 +782,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				{
 					dynamic dyn = new DynamicEntity(x);
 
-					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize);
+					dyn.Picture = ToDynamic(ctx, x.Picture, _mediaSettings.Value.ProductThumbPictureSize, pictureSize);
 
 					return dyn;
 				})
@@ -797,7 +797,7 @@ namespace SmartStore.Services.DataExchange.Internal
 					dyn.Manufacturer = ToDynamic(ctx, x.Manufacturer);
 
 					if (x.Manufacturer != null && x.Manufacturer.PictureId.HasValue)
-						dyn.Manufacturer.Picture = ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+						dyn.Manufacturer.Picture = ToDynamic(ctx, x.Manufacturer.Picture, _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
 					else
 						dyn.Manufacturer.Picture = null;
 
@@ -814,7 +814,7 @@ namespace SmartStore.Services.DataExchange.Internal
 					dyn.Category = ToDynamic(ctx, x.Category);
 
 					if (x.Category != null && x.Category.PictureId.HasValue)
-						dyn.Category.Picture = ToDynamic(ctx, x.Category.Picture, _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+						dyn.Category.Picture = ToDynamic(ctx, x.Category.Picture, _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
 
 					if (dynObject._CategoryName == null)
 						dynObject._CategoryName = (string)dyn.Category.Name;
@@ -839,7 +839,7 @@ namespace SmartStore.Services.DataExchange.Internal
 						var assignedPicture = productPictures.FirstOrDefault(y => y.PictureId == pictureId);
 						if (assignedPicture != null && assignedPicture.Picture != null)
 						{
-							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.ProductThumbPictureSize, pictureSize));
+							assignedPictures.Add(ToDynamic(ctx, assignedPicture.Picture, _mediaSettings.Value.ProductThumbPictureSize, pictureSize));
 						}
 					}
 
@@ -934,9 +934,9 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture))
 			{
 				if (productPictures != null && productPictures.Any())
-					dynObject._MainPictureUrl = _pictureService.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+					dynObject._MainPictureUrl = _pictureService.Value.GetPictureUrl(productPictures.First().Picture, ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
 				else
-					dynObject._MainPictureUrl = _pictureService.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
+					dynObject._MainPictureUrl = _pictureService.Value.GetDefaultPictureUrl(ctx.Projection.PictureSize, storeLocation: ctx.Store.Url);
 			}
 
 			#endregion
@@ -975,7 +975,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, Order order)
+		private List<dynamic> Convert(DataExporterContext ctx, Order order)
 		{
 			var result = new List<dynamic>();
 
@@ -1025,8 +1025,8 @@ namespace SmartStore.Services.DataExchange.Internal
 
 					dyn.Product._ProductTemplateViewPath = (productTemplate.Value == null ? "" : productTemplate.Value.ViewPath);
 
-					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter, _currencyService, _taxService,
-						_priceCalculationService, ctx.ContextCurrency, decimal.Zero, true);
+					dyn.Product._BasePriceInfo = e.Product.GetBasePriceInfo(_services.Localization, _priceFormatter.Value, _currencyService.Value, _taxService.Value,
+						_priceCalculationService.Value, ctx.ContextCurrency, decimal.Zero, true);
 
 					ToDeliveryTime(ctx, dyn.Product, e.Product.DeliveryTimeId);
 					ToQuantityUnit(ctx, dyn.Product, e.Product.QuantityUnitId);
@@ -1044,7 +1044,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, Manufacturer manufacturer)
+		private List<dynamic> Convert(DataExporterContext ctx, Manufacturer manufacturer)
 		{
 			var result = new List<dynamic>();
 
@@ -1057,7 +1057,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				var pictures = ctx.ManufacturerExportContext.Pictures.Load(manufacturer.PictureId.Value);
 
 				if (pictures.Count > 0)
-					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.ManufacturerThumbPictureSize, _mediaSettings.ManufacturerThumbPictureSize);
+					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.ManufacturerThumbPictureSize, _mediaSettings.Value.ManufacturerThumbPictureSize);
 			}
 
 			dynObject.ProductManufacturers = productManufacturers
@@ -1075,7 +1075,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, Category category)
+		private List<dynamic> Convert(DataExporterContext ctx, Category category)
 		{
 			var result = new List<dynamic>();
 
@@ -1088,7 +1088,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				var pictures = ctx.CategoryExportContext.Pictures.Load(category.PictureId.Value);
 
 				if (pictures.Count > 0)
-					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.CategoryThumbPictureSize, _mediaSettings.CategoryThumbPictureSize);
+					dynObject.Picture = ToDynamic(ctx, pictures.First(), _mediaSettings.Value.CategoryThumbPictureSize, _mediaSettings.Value.CategoryThumbPictureSize);
 			}
 
 			dynObject.ProductCategories = productCategories
@@ -1106,7 +1106,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, Customer customer)
+		private List<dynamic> Convert(DataExporterContext ctx, Customer customer)
 		{
 			var result = new List<dynamic>();
 
@@ -1142,7 +1142,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			return result;
 		}
 
-		private List<dynamic> Convert(DataExportTaskContext ctx, NewsLetterSubscription subscription)
+		private List<dynamic> Convert(DataExporterContext ctx, NewsLetterSubscription subscription)
 		{
 			var result = new List<dynamic>();
 

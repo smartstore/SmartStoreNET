@@ -37,10 +37,16 @@ namespace SmartStore.Services.DataExchange.Internal
 				throw new SmartException(T("Admin.Common.ProviderNotLoaded", profile.ProviderSystemName.NaIfEmpty()));
 
 			// build export request
-			var request = new DataExportRequest(profile);
-			request.ProgressSetter = delegate(int val, int max, string msg)
+			var request = new DataExportRequest(profile, provider);
+
+			request.ProgressValueSetter = delegate(int val, int max, string msg)
 			{
-				ctx.SetProgress(val, max, msg);
+				ctx.SetProgress(val, max, msg, true);
+			};
+
+			request.ProgressMessageSetter = delegate(string msg)
+			{
+				ctx.SetProgress(null, msg, true);
 			};
 
 			if (selectedEntityIds.HasValue())

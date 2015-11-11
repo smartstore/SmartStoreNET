@@ -6,7 +6,8 @@ using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
 {
-	public delegate void ProgressSetter(int value, int maximum, string message);
+	public delegate void ProgressValueSetter(int value, int maximum, string message);
+	public delegate void ProgressMessageSetter(string message);
 
 	public interface IDataExporter
 	{
@@ -23,29 +24,41 @@ namespace SmartStore.Services.DataExchange
 
 	public class DataExportRequest
 	{
-		private readonly static ProgressSetter _voidProgressSetter = DataExportRequest.SetProgress;
+		private readonly static ProgressValueSetter _voidProgressValueSetter = DataExportRequest.SetProgress;
+		private readonly static ProgressMessageSetter _voidProgressMessageSetter = DataExportRequest.SetProgress;
 
-		public DataExportRequest(ExportProfile profile)
+		public DataExportRequest(ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			Guard.ArgumentNotNull(() => profile);
+			Guard.ArgumentNotNull(() => provider);
+
+			Profile = profile;
+			Provider = provider;
+
+			ProgressValueSetter = _voidProgressValueSetter;
+			ProgressMessageSetter = _voidProgressMessageSetter;
 
 			CustomData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
-			ProgressSetter = _voidProgressSetter;
-			Profile = profile;
-        }
+		}
 
 		public ExportProfile Profile { get; private set; }
 
-		public Provider<IExportProvider> Provider { get; set; }
+		public Provider<IExportProvider> Provider { get; private set; }
 
 		public IEnumerable<int> EntitiesToExport { get; set; }
 
-		public ProgressSetter ProgressSetter { get; set; }
+		public ProgressValueSetter ProgressValueSetter { get; set; }
+		public ProgressMessageSetter ProgressMessageSetter { get; set; }
 
 		public IDictionary<string, object> CustomData { get; private set; }
 
 
 		private static void SetProgress(int val, int max, string msg)
+		{
+			// do nothing
+		}
+
+		private static void SetProgress(string msg)
 		{
 			// do nothing
 		}

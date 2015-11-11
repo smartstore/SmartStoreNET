@@ -19,12 +19,18 @@ namespace SmartStore.Utilities.Reflection
 
 			Constructor = constructorInfo;
 			Invoker = MakeFastInvoker(constructorInfo);
+			ParameterTypes = constructorInfo.GetParameters().Select(p => p.ParameterType).ToArray();
 		}
 
 		/// <summary>
-		/// Gets the backing <see cref="Constructor"/>.
+		/// Gets the backing <see cref="ConstructorInfo"/>.
 		/// </summary>
 		public ConstructorInfo Constructor { get; private set; }
+
+		/// <summary>
+		/// Gets the parameter types from the backing <see cref="ConstructorInfo"/>
+		/// </summary>
+		public Type[] ParameterTypes { get; private set; }
 
 		/// <summary>
 		/// Gets the constructor invoker.
@@ -47,27 +53,29 @@ namespace SmartStore.Utilities.Reflection
 		/// <returns>a fast invoker.</returns>
 		public static Func<object[], object> MakeFastInvoker(ConstructorInfo constructorInfo)
 		{
-			// parameters to execute
-			var parametersParameter = Expression.Parameter(typeof(object[]), "parameters");
+			var paramsInfo = constructorInfo.GetParameters();
 
-			// build parameter list
-			var parameterExpressions = new List<Expression>();
-			var paramInfos = constructorInfo.GetParameters();
-			for (int i = 0; i < paramInfos.Length; i++)
+			var parametersExpression = Expression.Parameter(typeof(object[]), "args");
+			var argumentsExpression = new Expression[paramsInfo.Length];
+
+			for (int paramIndex = 0; paramIndex < paramsInfo.Length; paramIndex++)
 			{
-				var valueObj = Expression.ArrayIndex(parametersParameter, Expression.Constant(i));
-				var valueCast = Expression.Convert(valueObj, paramInfos[i].ParameterType);
+				var indexExpression = Expression.Constant(paramIndex);
+				var parameterType = paramsInfo[paramIndex].ParameterType;
 
-				parameterExpressions.Add(valueCast);
+				var parameterIndexExpression = Expression.ArrayIndex(parametersExpression, indexExpression);
+				var convertExpression = Expression.Convert(parameterIndexExpression, parameterType);
+				argumentsExpression[paramIndex] = convertExpression;
+
+				if (!parameterType.GetTypeInfo().IsValueType)
+					continue;
+
+				var nullConditionExpression = Expression.Equal(parameterIndexExpression, Expression.Constant(null));
+				argumentsExpression[paramIndex] = Expression.Condition(nullConditionExpression, Expression.Default(parameterType), convertExpression);
 			}
 
-			// new T((T0)parameters[0], (T1)parameters[1], ...)
-			var instanceCreate = Expression.New(constructorInfo, parameterExpressions);
-
-			// (object)new T((T0)parameters[0], (T1)parameters[1], ...)
-			var instanceCreateCast = Expression.Convert(instanceCreate, typeof(object));
-
-			var lambda = Expression.Lambda<Func<object[], object>>(instanceCreateCast, parametersParameter);
+			var newExpression = Expression.New(constructorInfo, argumentsExpression);
+			var lambda = Expression.Lambda<Func<object[], object>>(newExpression, parametersExpression);
 
 			return lambda.Compile();
 		}

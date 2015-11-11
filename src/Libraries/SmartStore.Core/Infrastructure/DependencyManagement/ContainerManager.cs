@@ -65,53 +65,60 @@ namespace SmartStore.Core.Infrastructure.DependencyManagement
 
 		public object ResolveUnregistered(Type type, ILifetimeScope scope = null)
         {
-            var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.Instance);
-            foreach (var constructor in constructors)
-            {
-				object instance;
-				if (TryInvokeConstructor(constructor, out instance, scope))
+			FastActivator activator;
+			object[] parameterInstances = null;
+
+			if (!_cachedActivators.TryGetValue(type, out activator))
+			{
+				var constructors = type.GetConstructors(BindingFlags.Public | BindingFlags.CreateInstance | BindingFlags.Instance);
+				foreach (var constructor in constructors)
 				{
-					return instance;
+					var parameterTypes = constructor.GetParameters().Select(p => p.ParameterType).ToArray();
+					if (TryResolveAll(parameterTypes, out parameterInstances, scope))
+					{
+						activator = new FastActivator(constructor);
+						_cachedActivators.TryAdd(type, activator);
+						break;
+					}
 				}
-            }
+			}
+
+			if (activator != null)
+			{
+				if (parameterInstances == null)
+				{
+					TryResolveAll(activator.ParameterTypes, out parameterInstances, scope);
+                }
+				if (parameterInstances != null)
+				{
+					return activator.Activate(parameterInstances);
+				}
+			}
 
             throw new SmartException("No contructor was found that had all the dependencies satisfied.");
         }
 
-		private FastActivator GetActivatorForUnregisteredService(Type serviceType)
+		private bool TryResolveAll(Type[] types, out object[] instances, ILifetimeScope scope = null)
 		{
-			FastActivator activator;
-			if (!_cachedActivators.TryGetValue(serviceType, out activator))
-			{
-
-			}
-
-			return activator;
-		}
-
-		private bool TryInvokeConstructor(ConstructorInfo constructor, out object instance, ILifetimeScope scope = null)
-		{
-			instance = null;
+			instances = null;
 
 			try
 			{
-				var parameters = constructor.GetParameters();
-				var parameterInstances = new List<object>();
-				
-                foreach (var parameter in parameters)
+				var instances2 = new object[types.Length];
+
+				for (int i = 0; i < types.Length; i++)
 				{
-					var service = Resolve(parameter.ParameterType, scope);
+					var service = Resolve(types[i], scope);
 					if (service == null)
 					{
 						return false;
 					}
 
-					parameterInstances.Add(service);
+					instances2[i] = service;
 				}
 
-				instance = constructor.Invoke(parameterInstances.ToArray());
-
-				return instance != null;
+				instances = instances2;
+				return true;
 			}
 			catch
 			{

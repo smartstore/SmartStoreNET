@@ -828,6 +828,9 @@ namespace SmartStore.Admin.Controllers
 
 			_imageCache.Value.DeleteCachedImages();
 
+			// get rid of cached image metadata
+			_cache("static").Clear();
+
             return RedirectToAction("Maintenance");
         }
 

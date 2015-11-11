@@ -113,7 +113,7 @@ namespace SmartStore.Services.Tasks
 				query = qs.ToString();
 			}
 
-			CallEndpoint(_baseUrl + "/Execute/{0}{1}".FormatInvariant(scheduleTaskId, query));
+			CallEndpoint("{0}/Execute/{1}{2}".FormatInvariant(_baseUrl, scheduleTaskId, query));
         }
 
 		private void Elapsed(object sender, System.Timers.ElapsedEventArgs e)

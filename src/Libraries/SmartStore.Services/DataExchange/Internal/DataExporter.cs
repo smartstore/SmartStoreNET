@@ -1061,6 +1061,11 @@ namespace SmartStore.Services.DataExchange.Internal
 		{
 			var ctx = new DataExporterContext(request, cancellationToken);
 
+			if (request.EntitiesToExport != null)
+			{
+				ctx.EntityIdsSelected.AddRange(request.EntitiesToExport);
+			}
+
 			ExportCoreOuter(ctx);
 
 			if (ctx.Result != null && ctx.Result.Succeeded && ctx.Result.Files.Count > 0)
@@ -1068,7 +1073,6 @@ namespace SmartStore.Services.DataExchange.Internal
 				string prefix = null;
 				string suffix = null;
 				var extension = Path.GetExtension(ctx.Result.Files.First().FileName);
-				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count());
 
 				if (request.Provider.Value.EntityType == ExportEntityType.Product)
 					prefix = T("Admin.Catalog.Products");
@@ -1084,6 +1088,8 @@ namespace SmartStore.Services.DataExchange.Internal
 					prefix = T("Admin.Promotions.NewsLetterSubscriptions");
 				else
 					prefix = request.Provider.Value.EntityType.ToString();
+
+				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count());
 
 				if (selectedEntityCount == 0)
 					suffix = T("Common.All");
@@ -1104,7 +1110,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			var resultData = new List<dynamic>();
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 
-			var ctx = new DataExporterContext(request, cancellation.Token, null, true);
+			var ctx = new DataExporterContext(request, cancellation.Token, true);
 
 			var unused = Init(ctx, totalRecords);
 
@@ -1138,7 +1144,7 @@ namespace SmartStore.Services.DataExchange.Internal
 		{
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 
-			var ctx = new DataExporterContext(request, cancellation.Token, null, true);
+			var ctx = new DataExporterContext(request, cancellation.Token, true);
 
 			var unused = Init(ctx);
 

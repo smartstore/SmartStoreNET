@@ -26,19 +26,18 @@ namespace SmartStore.Services.DataExchange.Internal
 		public DataExporterContext(
 			DataExportRequest request,
 			CancellationToken cancellationToken,
-			string selectedIds = null,
 			bool isPreview = false)
 		{
 			Request = request;
 			CancellationToken = cancellationToken;
 			Filter = XmlHelper.Deserialize<ExportFilter>(request.Profile.Filtering);
 			Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
-			EntityIdsSelected = selectedIds.SplitSafe(",").Select(x => x.ToInt()).ToList();
 			IsPreview = isPreview;
 
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(request.Profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
+			EntityIdsSelected = new List<int>();
 			Categories = new Dictionary<int, Category>();
 			CategoryPathes = new Dictionary<int, string>();
 			Countries = new Dictionary<int, Country>();

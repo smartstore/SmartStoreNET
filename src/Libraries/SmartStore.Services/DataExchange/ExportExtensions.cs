@@ -2,8 +2,6 @@
 using System.Globalization;
 using System.IO;
 using System.Text;
-using System.Web;
-using System.Web.Caching;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
@@ -95,32 +93,6 @@ namespace SmartStore.Services.DataExchange
 				.Truncate(maxFileNameLength);
 
 			return result;
-		}
-
-		/// <summary>
-		/// Gets the cache key for selected entity identifiers
-		/// </summary>
-		/// <param name="profile">Export profile</param>
-		/// <returns>Cache key for selected entity identifiers</returns>
-		public static string GetSelectedEntityIdsCacheKey(this ExportProfile profile)
-		{
-			// do not use profile.Id because it can be 0
-			return "ExportProfile_SelectedEntityIds_" + profile.ProviderSystemName;
-		}
-
-		/// <summary>
-		/// Caches selected entity identifiers to be considered during following export
-		/// </summary>
-		/// <param name="profile">Export profile</param>
-		/// <param name="selectedIds">Comma separated entity identifiers</param>
-		public static void CacheSelectedEntityIds(this ExportProfile profile, string selectedIds)
-		{
-			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
-
-			if (selectedIds.HasValue())
-				HttpRuntime.Cache.Add(selectedIdsCacheKey, selectedIds, null, DateTime.UtcNow.AddMinutes(5), Cache.NoSlidingExpiration, CacheItemPriority.Normal, null);
-			else
-				HttpRuntime.Cache.Remove(selectedIdsCacheKey);
 		}
 	}
 }

@@ -18,7 +18,6 @@
 
 <form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
 	<input type="hidden" name="Id" value="" />
-	<input type="hidden" name="ExportAll" value="true" />
 </form>
 
 @if(Model.Count > 0)

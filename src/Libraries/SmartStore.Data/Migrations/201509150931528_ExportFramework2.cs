@@ -56,6 +56,10 @@ namespace SmartStore.Data.Migrations
 				"Cannot load the provider {0}.",
 				"Der Provider {0} konnte nicht geladen werden.");
 
+			builder.AddOrUpdate("Admin.Common.NoEntriesSelected",
+				"No entries have been selected.",
+				"Es wurden keine Einträge ausgewählt.");
+
 			builder.AddOrUpdate("ActivityLog.EditPaymentMethod",
 				"Edited payment method '{0}' ({1})",
 				"Zahlungsart '{0}' ({1}) bearbeitet");

@@ -27,11 +27,6 @@ namespace SmartStore.Services.DataExchange.Internal
 			var profileId = ctx.ScheduleTask.Alias.ToInt();
 			var profile = _exportProfileService.GetExportProfileById(profileId);
 
-			// TODO: find a better way to transmit selected entity ids (e.g. new TaskExecutionContext.Parameters property)
-			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
-			var selectedEntityIds = HttpRuntime.Cache[selectedIdsCacheKey] as string;
-			HttpRuntime.Cache.Remove(selectedIdsCacheKey);
-
 			// load provider
 			var provider = _exportProfileService.LoadProvider(profile.ProviderSystemName);
 			if (provider == null)
@@ -50,10 +45,10 @@ namespace SmartStore.Services.DataExchange.Internal
 				ctx.SetProgress(null, msg, true);
 			};
 
-			if (selectedEntityIds.HasValue())
+			if (ctx.Parameters.ContainsKey("SelectedIds"))
 			{
-				request.EntitiesToExport = selectedEntityIds.ToIntArray();
-            }
+				request.EntitiesToExport = ctx.Parameters["SelectedIds"].ToIntArray();
+			}
 
 			// process!
 			_exporter.Export(request, ctx.CancellationToken);

@@ -16,7 +16,6 @@
 		<form id="ProfileExportForm" method="POST" action="@Url.Action("Execute", "Export", new { area = "Admin" })">
 			<input type="hidden" name="Id" value="@Model.Id" />
 			<input type="hidden" name="SelectedIds" value="" />
-			<input type="hidden" name="ExportAll" value="false" />
 
 			@if (Model.LogFileExists)
 			{
@@ -42,8 +41,13 @@
 			e.preventDefault();
 			var form = $('#ProfileExportForm'),
 				exportAll = $(this).attr('name') === 'ExportAll';
+
+			if (!exportAll && selectedIds.length === 0) {
+				EventBroker.publish("message", { title: '@T("Admin.Common.NoEntriesSelected")', type: 'warning' });
+				return false;
+			}
+
 			form.find('[name=SelectedIds]').val(exportAll ? '' : selectedIds.join(','));
-			form.find('[name=ExportAll]').val(exportAll.toString());
 			form.submit();
 			return false;
 		});

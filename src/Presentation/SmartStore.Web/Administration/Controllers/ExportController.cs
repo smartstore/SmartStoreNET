@@ -826,7 +826,7 @@ namespace SmartStore.Admin.Controllers
 		}
 
 		[HttpPost]
-		public ActionResult Execute(int id, string selectedIds, bool exportAll)
+		public ActionResult Execute(int id, string selectedIds)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
@@ -835,10 +835,15 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			// TODO:
-			profile.CacheSelectedEntityIds(selectedIds);
+			Dictionary<string, string> taskParams = null;
 
-			_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
+			if (selectedIds.HasValue())
+			{
+				taskParams = new Dictionary<string, string>();
+				taskParams.Add("SelectedIds", selectedIds);
+			}
+
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
 			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
 

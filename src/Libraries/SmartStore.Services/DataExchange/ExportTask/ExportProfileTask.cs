@@ -2872,7 +2872,7 @@ namespace SmartStore.Services.DataExchange.ExportTask
 			var profileId = taskContext.ScheduleTask.Alias.ToInt();
 			var profile = _exportProfileService.Value.GetExportProfileById(profileId);
 
-			var selectedIdsCacheKey = profile.GetSelectedEntityIdsCacheKey();
+			var selectedIdsCacheKey = "ExportProfile_SelectedEntityIds_" + profile.ProviderSystemName;
 			var selectedEntityIds = HttpRuntime.Cache[selectedIdsCacheKey] as string;
 
 			var provider = _exportProfileService.Value.LoadProvider(profile.ProviderSystemName);

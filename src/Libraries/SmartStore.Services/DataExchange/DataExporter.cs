@@ -1074,21 +1074,22 @@ namespace SmartStore.Services.DataExchange
 				string prefix = null;
 				string suffix = null;
 				var extension = Path.GetExtension(ctx.Result.Files.First().FileName);
+				var provider = request.Provider.Value;
 
-				if (request.Provider.Value.EntityType == ExportEntityType.Product)
+				if (provider.EntityType == ExportEntityType.Product)
 					prefix = T("Admin.Catalog.Products");
-				else if (request.Provider.Value.EntityType == ExportEntityType.Order)
+				else if (provider.EntityType == ExportEntityType.Order)
 					prefix = T("Admin.Orders");
-				else if (request.Provider.Value.EntityType == ExportEntityType.Category)
+				else if (provider.EntityType == ExportEntityType.Category)
 					prefix = T("Admin.Catalog.Categories");
-				else if (request.Provider.Value.EntityType == ExportEntityType.Manufacturer)
+				else if (provider.EntityType == ExportEntityType.Manufacturer)
 					prefix = T("Admin.Catalog.Manufacturers");
-				else if (request.Provider.Value.EntityType == ExportEntityType.Customer)
+				else if (provider.EntityType == ExportEntityType.Customer)
 					prefix = T("Admin.Customers");
-				else if (request.Provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+				else if (provider.EntityType == ExportEntityType.NewsLetterSubscription)
 					prefix = T("Admin.Promotions.NewsLetterSubscriptions");
 				else
-					prefix = request.Provider.Value.EntityType.ToString();
+					prefix = provider.EntityType.ToString();
 
 				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count);
 

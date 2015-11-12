@@ -21,6 +21,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.DataExchange.Events;
 using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
@@ -973,6 +974,14 @@ namespace SmartStore.Services.DataExchange
 				result.Add(dynObject);
 			}
 
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.Product,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
+
 			return result;
 		}
 
@@ -1042,6 +1051,14 @@ namespace SmartStore.Services.DataExchange
 
 			result.Add(dynObject);
 
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.Order,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
+
 			return result;
 		}
 
@@ -1073,13 +1090,21 @@ namespace SmartStore.Services.DataExchange
 
 			result.Add(dynObject);
 
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.Manufacturer,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
+
 			return result;
 		}
 
 		private List<dynamic> Convert(DataExporterContext ctx, Category category)
 		{
 			var result = new List<dynamic>();
-
+			
 			var productCategories = ctx.CategoryExportContext.ProductCategories.Load(category.Id);
 
 			dynamic dynObject = ToDynamic(ctx, category);
@@ -1103,6 +1128,14 @@ namespace SmartStore.Services.DataExchange
 				.ToList();
 
 			result.Add(dynObject);
+
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.Category,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
 
 			return result;
 		}
@@ -1140,16 +1173,31 @@ namespace SmartStore.Services.DataExchange
 
 			result.Add(dynObject);
 
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.Customer,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
+
 			return result;
 		}
 
 		private List<dynamic> Convert(DataExporterContext ctx, NewsLetterSubscription subscription)
 		{
 			var result = new List<dynamic>();
-
 			dynamic dynObject = ToDynamic(ctx, subscription);
-
 			result.Add(dynObject);
+
+			_services.EventPublisher.Publish(new RowExportingEvent
+			{
+				Row = dynObject,
+				EntityType = ExportEntityType.NewsLetterSubscription,
+				ExportRequest = ctx.Request,
+				ExecuteContext = ctx.ExecuteContext
+			});
+
 			return result;
 		}
 	}

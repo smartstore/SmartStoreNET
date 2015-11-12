@@ -754,10 +754,8 @@ namespace SmartStore.Admin.Controllers
 				var orderModel = new List<ExportPreviewOrderModel>();
 
 				var request = new DataExportRequest(profile, provider);
-				request.CustomData.Add("PageIndex", command.Page - 1);
-				request.CustomData.Add("TotalRecords", totalRecords);
 
-				var data = _dataExporter.Preview(request);
+				var data = _dataExporter.Preview(request, command.Page - 1, totalRecords);
 
 				foreach (dynamic item in data)
 				{

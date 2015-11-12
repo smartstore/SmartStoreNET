@@ -1,7 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
@@ -13,7 +15,7 @@ namespace SmartStore.Services.DataExchange
 	{
 		DataExportResult Export(DataExportRequest request, CancellationToken cancellationToken);
 
-		IList<dynamic> Preview(DataExportRequest request);
+		IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null);
 
 		int GetDataCount(DataExportRequest request);
 	}
@@ -35,6 +37,7 @@ namespace SmartStore.Services.DataExchange
 			ProgressValueSetter = _voidProgressValueSetter;
 			ProgressMessageSetter = _voidProgressMessageSetter;
 
+			EntitiesToExport = new List<int>();
 			CustomData = new Dictionary<string, object>(StringComparer.OrdinalIgnoreCase);
 		}
 
@@ -42,12 +45,14 @@ namespace SmartStore.Services.DataExchange
 
 		public Provider<IExportProvider> Provider { get; private set; }
 
-		public IEnumerable<int> EntitiesToExport { get; set; }
+		public IList<int> EntitiesToExport { get; set; }
 
 		public ProgressValueSetter ProgressValueSetter { get; set; }
 		public ProgressMessageSetter ProgressMessageSetter { get; set; }
 
 		public IDictionary<string, object> CustomData { get; private set; }
+
+		public IQueryable<Product> ProductQuery { get; set; }
 
 
 		private static void SetProgress(int val, int max, string msg)

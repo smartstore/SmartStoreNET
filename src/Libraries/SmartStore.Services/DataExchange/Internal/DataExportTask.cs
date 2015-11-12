@@ -1,4 +1,4 @@
-﻿using System.Web;
+﻿using System.Linq;
 using SmartStore.Core.Localization;
 using SmartStore.Services.Tasks;
 
@@ -47,7 +47,10 @@ namespace SmartStore.Services.DataExchange.Internal
 
 			if (ctx.Parameters.ContainsKey("SelectedIds"))
 			{
-				request.EntitiesToExport = ctx.Parameters["SelectedIds"].ToIntArray();
+				request.EntitiesToExport = ctx.Parameters["SelectedIds"]
+					.SplitSafe(",")
+					.Select(x => x.ToInt())
+					.ToList();
 			}
 
 			// process!

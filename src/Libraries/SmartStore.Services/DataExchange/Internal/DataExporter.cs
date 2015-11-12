@@ -380,12 +380,12 @@ namespace SmartStore.Services.DataExchange.Internal
 		{
 			IQueryable<Product> query = null;
 
-			if (ctx.QueryProducts == null)
+			if (ctx.Request.ProductQuery == null)
 			{
 				var searchContext = new ProductSearchContext
 				{
 					OrderBy = ProductSortingEnum.CreatedOn,
-					ProductIds = ctx.EntityIdsSelected,
+					ProductIds = ctx.Request.EntitiesToExport,
 					StoreId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId),
 					VisibleIndividuallyOnly = true,
 					PriceMin = ctx.Filter.PriceMinimum,
@@ -421,7 +421,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			}
 			else
 			{
-				query = ctx.QueryProducts;
+				query = ctx.Request.ProductQuery;
 			}
 
 			if (skip > 0)
@@ -495,8 +495,8 @@ namespace SmartStore.Services.DataExchange.Internal
 				null,
 				null);
 
-			if (ctx.EntityIdsSelected.Count > 0)
-				query = query.Where(x => ctx.EntityIdsSelected.Contains(x.Id));
+			if (ctx.Request.EntitiesToExport.Count > 0)
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
@@ -610,10 +610,8 @@ namespace SmartStore.Services.DataExchange.Internal
 				.Expand(x => x.CustomerRoles)
 				.Where(x => !x.Deleted);
 
-			if (ctx.EntityIdsSelected.Count > 0)
-			{
-				query = query.Where(x => ctx.EntityIdsSelected.Contains(x.Id));
-			}
+			if (ctx.Request.EntitiesToExport.Count > 0)
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query.OrderByDescending(x => x.CreatedOnUtc);
 
@@ -890,6 +888,11 @@ namespace SmartStore.Services.DataExchange.Internal
 						throw new SmartException("Export aborted because the export provider is not valid");
 					}
 
+					foreach (var item in ctx.Request.CustomData)
+					{
+						ctx.ExecuteContext.CustomProperties.Add(item.Key, item.Value);
+					}
+
 					ctx.Log = logger;
 					ctx.ExecuteContext.Log = logger;
 					ctx.ProgressInfo = T("Admin.DataExchange.Export.ProgressInfo");
@@ -1025,12 +1028,14 @@ namespace SmartStore.Services.DataExchange.Internal
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
-						ctx.EntityIdsSelected.Clear();
 						ctx.ProductExportContext = null;
 						ctx.OrderExportContext = null;
 						ctx.ManufacturerExportContext = null;
 						ctx.CategoryExportContext = null;
 						ctx.CustomerExportContext = null;
+
+						ctx.Request.EntitiesToExport.Clear();
+						ctx.Request.CustomData.Clear();
 
 						ctx.ExecuteContext.CustomProperties.Clear();
 						ctx.ExecuteContext.Log = null;
@@ -1061,11 +1066,6 @@ namespace SmartStore.Services.DataExchange.Internal
 		{
 			var ctx = new DataExporterContext(request, cancellationToken);
 
-			if (request.EntitiesToExport != null)
-			{
-				ctx.EntityIdsSelected.AddRange(request.EntitiesToExport);
-			}
-
 			ExportCoreOuter(ctx);
 
 			if (ctx.Result != null && ctx.Result.Succeeded && ctx.Result.Files.Count > 0)
@@ -1089,7 +1089,7 @@ namespace SmartStore.Services.DataExchange.Internal
 				else
 					prefix = request.Provider.Value.EntityType.ToString();
 
-				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count());
+				var selectedEntityCount = (request.EntitiesToExport == null ? 0 : request.EntitiesToExport.Count);
 
 				if (selectedEntityCount == 0)
 					suffix = T("Common.All");
@@ -1102,11 +1102,8 @@ namespace SmartStore.Services.DataExchange.Internal
 			return ctx.Result;
 		}
 
-		public IList<dynamic> Preview(DataExportRequest request)
+		public IList<dynamic> Preview(DataExportRequest request, int pageIndex, int? totalRecords = null)
 		{
-			var pageIndex = (request.CustomData.ContainsKey("PageIndex") ? (int)request.CustomData["PageIndex"] : 0);
-			var totalRecords = (request.CustomData.ContainsKey("TotalRecords") ? (int)request.CustomData["TotalRecords"] : 0);
-
 			var resultData = new List<dynamic>();
 			var cancellation = new CancellationTokenSource(TimeSpan.FromMinutes(5.0));
 

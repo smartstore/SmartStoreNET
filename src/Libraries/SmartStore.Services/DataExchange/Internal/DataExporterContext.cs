@@ -1,6 +1,5 @@
 ﻿using System.Collections.Generic;
 using System.IO;
-using System.Linq;
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
@@ -37,7 +36,6 @@ namespace SmartStore.Services.DataExchange.Internal
 			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(request.Profile.FolderName));
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
-			EntityIdsSelected = new List<int>();
 			Categories = new Dictionary<int, Category>();
 			CategoryPathes = new Dictionary<int, string>();
 			Countries = new Dictionary<int, Country>();
@@ -56,13 +54,11 @@ namespace SmartStore.Services.DataExchange.Internal
 			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
 		}
 
-		public List<int> EntityIdsSelected { get; private set; }
 		public List<int> EntityIdsLoaded { get; set; }
 
 		public int RecordCount { get; set; }
 		public Dictionary<int, int> RecordsPerStore { get; set; }
 		public string ProgressInfo { get; set; }
-		public IQueryable<Product> QueryProducts { get; set; }
 
 		public DataExportRequest Request { get; private set; }
 		public CancellationToken CancellationToken { get; private set; }

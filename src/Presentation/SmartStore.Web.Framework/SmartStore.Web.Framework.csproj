@@ -232,12 +232,14 @@
     <Compile Include="Controllers\StoreIpAddressAttribute.cs" />
     <Compile Include="Controllers\UnitOfWorkAttribute.cs" />
     <Compile Include="Events\TabStripCreated.cs" />
+    <Compile Include="Extensions\HtmlSelectListExtensions.cs" />
     <Compile Include="Extensions\HttpExtensions.cs" />
     <Compile Include="Extensions\HttpSessionStateExtensions.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Controllers\HandleInstallFilter.cs" />
     <Compile Include="Extensions\PostedFileResult.cs" />
     <Compile Include="Extensions\RouteExtensions.cs" />
+    <Compile Include="Extensions\TelerikExtensions.cs" />
     <Compile Include="Mvc\ErrorMessageProvider.cs" />
     <Compile Include="Mvc\CompressAttribute.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
@@ -248,6 +250,7 @@
     <Compile Include="Pdf\PdfReceiptHeaderFooterModel.cs" />
     <Compile Include="Pdf\PdfHeaderFooterVariables.cs" />
     <Compile Include="Pdf\PdfResult.cs" />
+    <Compile Include="Plugins\PluginExtensions.cs" />
     <Compile Include="Plugins\PluginMediator.cs" />
     <Compile Include="Plugins\ProviderManager.cs" />
     <Compile Include="Seo\CanonicalHostNameAttribute.cs" />
@@ -308,7 +311,7 @@
     <Compile Include="Controllers\FormValueExistsAttribute.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Mvc\XmlDownloadResult.cs" />
-    <Compile Include="Extensions\Extensions.cs" />
+    <Compile Include="Extensions\DateTimeExtensions.cs" />
     <Compile Include="Extensions\HtmlExtensions.cs" />
     <Compile Include="Mvc\PictureResult.cs" />
     <Compile Include="Mvc\IModelAttribute.cs" />

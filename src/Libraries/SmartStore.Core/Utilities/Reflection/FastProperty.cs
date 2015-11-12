@@ -31,7 +31,7 @@ namespace SmartStore.Utilities.Reflection
 		private Action<object, object> _valueSetter;
 
 		/// <summary>
-		/// Initializes a fast <see cref="FastProperty"/>.
+		/// Initializes a <see cref="FastProperty"/>.
 		/// This constructor does not cache the helper. For caching, use <see cref="GetProperties(object)"/>.
 		/// </summary>
 		public FastProperty(PropertyInfo property)
@@ -100,7 +100,7 @@ namespace SmartStore.Utilities.Reflection
 		/// underlying type.
 		/// </summary>
 		/// <param name="instance">the instance to extract property accessors for.</param>
-		/// <returns>a cached array of all public property getters from the underlying type of target instance.
+		/// <returns>A cached array of all public property getters from the underlying type of target instance.
 		/// </returns>
 		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
 		{
@@ -111,8 +111,8 @@ namespace SmartStore.Utilities.Reflection
 		/// Creates and caches fast property helpers that expose getters for every public get property on the
 		/// specified type.
 		/// </summary>
-		/// <param name="type">the type to extract property accessors for.</param>
-		/// <returns>a cached array of all public property getters from the type of target instance.
+		/// <param name="type">The type to extract property accessors for.</param>
+		/// <returns>A cached array of all public property getters from the type of target instance.
 		/// </returns>
 		public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type)
 		{
@@ -337,7 +337,7 @@ namespace SmartStore.Utilities.Reflection
 		/// is returned.
 		/// </summary>
 		/// <remarks>
-		/// The implementation of PropertyHelper will cache the property accessors per-type. This is
+		/// The implementation of FastProperty will cache the property accessors per-type. This is
 		/// faster when the the same type is used multiple times with ObjectToDictionary.
 		/// </remarks>
 		public static IDictionary<string, object> ObjectToDictionary(object value, Func<string, string> keySelector = null)

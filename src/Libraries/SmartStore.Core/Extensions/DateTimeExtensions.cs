@@ -5,7 +5,6 @@ using TimeZone = System.TimeZoneInfo;
 
 namespace SmartStore
 {
-
     public static class DateTimeExtensions
     {
         private static readonly DateTime MinDate = new DateTime(1900, 1, 1);

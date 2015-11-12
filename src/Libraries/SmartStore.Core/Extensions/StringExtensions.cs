@@ -11,7 +11,6 @@ using System.Linq;
 
 namespace SmartStore
 {
-
     public static class StringExtensions
     {
         public const string CarriageReturnLineFeed = "\r\n";

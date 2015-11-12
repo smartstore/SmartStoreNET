@@ -21,10 +21,11 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
+using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange
 {
 	public partial class DataExporter
 	{

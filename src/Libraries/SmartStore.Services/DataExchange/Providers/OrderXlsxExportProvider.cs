@@ -12,8 +12,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports Excel formatted order data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreOrderXlsx")]
-	[FriendlyName("SmartStore Excel order export")]
-	[IsHidden(true)]
+	[FriendlyName("Order Excel Export")]
 	public class OrderXlsxExportProvider : ExportProviderBase
 	{
 		private string[] Properties

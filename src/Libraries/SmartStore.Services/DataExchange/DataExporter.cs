@@ -21,6 +21,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -33,7 +34,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Utilities.Threading;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange
 {
 	public partial class DataExporter : IDataExporter
 	{

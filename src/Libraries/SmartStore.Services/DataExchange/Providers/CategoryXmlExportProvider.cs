@@ -10,8 +10,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports XML formatted category data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreCategoryXml")]
-	[FriendlyName("SmartStore XML category export")]
-	[IsHidden(true)]
+	[FriendlyName("Category XML Export")]
 	public class CategoryXmlExportProvider : ExportProviderBase
 	{
 		public static string SystemName

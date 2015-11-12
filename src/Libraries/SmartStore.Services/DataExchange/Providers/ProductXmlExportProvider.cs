@@ -9,8 +9,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports XML formatted product data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreProductXml")]
-	[FriendlyName("SmartStore XML product export")]
-	[IsHidden(true)]
+	[FriendlyName("Product XML Export")]
 	public class ProductXmlExportProvider : ExportProviderBase
 	{
 		public static string SystemName

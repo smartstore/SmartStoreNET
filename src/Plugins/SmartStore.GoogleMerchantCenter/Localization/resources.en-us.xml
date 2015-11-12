@@ -9,7 +9,7 @@
     <Value>Google Merchant Center XML feed</Value>
   </LocaleResource>
   <LocaleResource Name="Plugins.Description.Feeds.GoogleMerchantCenterProductXml" AppendRootKey="false">
-    <Value>Allows you to export product data in the XML feed format of Google Merchant Center (GMC).</Value>
+    <Value>Allows to export product data in XML feed format of Google Merchant Center (GMC).</Value>
   </LocaleResource>
 
 	<LocaleResource Name="AdminInstruction">

@@ -366,6 +366,10 @@
     <Compile Include="Migrations\201509150931528_ExportFramework2.Designer.cs">
       <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
     </Compile>
+    <Compile Include="Migrations\201511121139009_ExportFramework3.cs" />
+    <Compile Include="Migrations\201511121139009_ExportFramework3.Designer.cs">
+      <DependentUpon>201511121139009_ExportFramework3.cs</DependentUpon>
+    </Compile>
     <Compile Include="Setup\Builder\PermissionMigrator.cs" />
     <Compile Include="Setup\Builder\SettingsBuilder.cs" />
     <Compile Include="Setup\Builder\SettingsMigrator.cs" />
@@ -686,6 +690,9 @@
     </EmbeddedResource>
     <EmbeddedResource Include="Migrations\201509150931528_ExportFramework2.resx">
       <DependentUpon>201509150931528_ExportFramework2.cs</DependentUpon>
+    </EmbeddedResource>
+    <EmbeddedResource Include="Migrations\201511121139009_ExportFramework3.resx">
+      <DependentUpon>201511121139009_ExportFramework3.cs</DependentUpon>
     </EmbeddedResource>
     <EmbeddedResource Include="Sql\Indexes.sql" />
     <EmbeddedResource Include="Sql\StoredProcedures.sql" />

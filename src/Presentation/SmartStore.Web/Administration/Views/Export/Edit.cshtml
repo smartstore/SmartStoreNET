@@ -35,9 +35,12 @@
 				<button type="submit" name="save" value="save-continue" class="btn">
 					@T("Admin.Common.SaveContinue")
 				</button>
-				<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
-					<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
-				</button>
+				@if (!Model.IsSystemProfile)
+				{
+					<button type="submit" name="export-profile-delete" id="export-profile-delete" value="export-profile-delete" class="btn btn-danger">
+						<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")
+					</button>
+				}
 			</div>
 		</div>
 
@@ -71,6 +74,22 @@
 			<td class="adminData">
 				@Html.EditorFor(x => x.Name)
 				@Html.ValidationMessageFor(x => x.Name)
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.SystemName)
+			</td>
+			<td class="adminData">
+				<div class="muted">@(Model.SystemName.NaIfEmpty())</div>
+			</td>
+		</tr>
+		<tr>
+			<td class="adminTitle">
+				@Html.SmartLabelFor(x => x.IsSystemProfile)
+			</td>
+			<td class="adminData">
+				@T(Model.IsSystemProfile ? "Admin.Common.Yes" : "Admin.Common.No")
 			</td>
 		</tr>
 		<tr>

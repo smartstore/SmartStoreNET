@@ -31,6 +31,7 @@
 				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.DataExchange.Export.EntityType")</th>
 				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
+				<th class="centered">@T("Admin.DataExchange.Export.IsSystemProfile")</th>
 				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 				<th>@T("Admin.Common.Actions")</th>
@@ -45,11 +46,19 @@
 					</td>
 					<td>
 						<a href="@Url.Action("Edit", new { id = profile.Id })">@profile.Name</a>
+						@if (profile.SystemName.HasValue())
+						{
+							<div class="muted">@profile.SystemName</div>
+						}
 					</td>
 					<td>
 						@if (profile.Provider.ConfigurationUrl.HasValue())
 						{
 							<a href="@profile.Provider.ConfigurationUrl">@profile.Provider.FriendlyName.NaIfEmpty()</a>
+						}
+						else
+						{
+							@profile.Provider.FriendlyName.NaIfEmpty()
 						}
 						<div class="muted">@profile.ProviderSystemName</div>
 					</td>
@@ -61,6 +70,9 @@
 					</td>
 					<td class="centered">
 						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
+					</td>
+					<td class="centered">
+						@Html.SymbolForBool(profile.IsSystemProfile)
 					</td>
 					<td>
 						<div class="last-run-info">

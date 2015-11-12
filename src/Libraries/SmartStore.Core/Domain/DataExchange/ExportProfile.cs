@@ -33,9 +33,19 @@ namespace SmartStore.Core.Domain
 		public string FileNamePattern { get; set; }
 
 		/// <summary>
+		/// The system name of the profile
+		/// </summary>
+		public string SystemName { get; set; }
+
+		/// <summary>
 		/// The system name of the export provider
 		/// </summary>
 		public string ProviderSystemName { get; set; }
+
+		/// <summary>
+		/// Whether the profile is an unremovable system profile
+		/// </summary>
+		public bool IsSystemProfile { get; set; }
 
 		/// <summary>
 		/// Whether the export profile is enabled

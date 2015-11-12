@@ -12,6 +12,7 @@ namespace SmartStore.Data.Mapping.DataExchange
 
 			this.Property(x => x.Name).IsRequired().HasMaxLength(100);
 			this.Property(x => x.FolderName).IsRequired().HasMaxLength(100);
+			this.Property(x => x.SystemName).HasMaxLength(400);
 			this.Property(x => x.ProviderSystemName).IsRequired().HasMaxLength(4000);
 			this.Property(x => x.Filtering).IsMaxLength();
 			this.Property(x => x.Projection).IsMaxLength();

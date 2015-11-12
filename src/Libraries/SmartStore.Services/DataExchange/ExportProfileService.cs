@@ -104,7 +104,7 @@ namespace SmartStore.Services.DataExchange
 				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
 			}
 
-			task.Name = string.Concat(name, " export task");
+			task.Name = string.Concat(name, " task");
 			
 			_scheduleTaskService.InsertTask(task);
 
@@ -196,6 +196,9 @@ namespace SmartStore.Services.DataExchange
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
+			if (profile.IsSystemProfile)
+				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.CannotDeleteSystemProfile"));
+
 			int scheduleTaskId = profile.SchedulingTaskId;
 			var folder = profile.GetExportFolder();
 
@@ -224,7 +227,8 @@ namespace SmartStore.Services.DataExchange
 			}
 
 			query = query
-				.OrderBy(x => x.ProviderSystemName)
+				.OrderBy(x => x.IsSystemProfile)
+				.ThenBy(x => x.ProviderSystemName)
 				.ThenBy(x => x.Name);
 
 			return query;

@@ -18,8 +18,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports Excel formatted product data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreProductXlsx")]
-	[FriendlyName("SmartStore Excel product export")]
-	[IsHidden(true)]
+	[FriendlyName("Product Excel Export")]
 	public class ProductXlsxExportProvider : ExportProviderBase
 	{
 		private readonly ILanguageService _languageService;

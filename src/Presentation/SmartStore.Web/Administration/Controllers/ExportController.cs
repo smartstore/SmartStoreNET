@@ -104,6 +104,8 @@ namespace SmartStore.Admin.Controllers
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
+			model.SystemName = profile.SystemName;
+			model.IsSystemProfile = profile.IsSystemProfile;
 			model.ProviderSystemName = profile.ProviderSystemName;
 			model.FolderName = profile.FolderName;
 			model.FileNamePattern = profile.FileNamePattern;

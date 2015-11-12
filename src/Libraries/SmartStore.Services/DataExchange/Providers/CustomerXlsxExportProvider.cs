@@ -14,8 +14,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports Excel formatted customer data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreCustomerXlsx")]
-	[FriendlyName("SmartStore Excel customer export")]
-	[IsHidden(true)]
+	[FriendlyName("Customer Excel Export")]
 	public class CustomerXlsxExportProvider : ExportProviderBase
 	{
 		private string[] Properties

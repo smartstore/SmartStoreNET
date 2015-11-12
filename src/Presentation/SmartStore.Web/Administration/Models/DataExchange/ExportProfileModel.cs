@@ -24,6 +24,12 @@ namespace SmartStore.Admin.Models.DataExchange
 		[SmartResourceDisplayName("Admin.DataExchange.Export.Name")]
 		public string Name { get; set; }
 
+		[SmartResourceDisplayName("Admin.DataExchange.Export.SystemName")]
+		public string SystemName { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.IsSystemProfile")]
+		public bool IsSystemProfile { get; set; }
+
 		[SmartResourceDisplayName("Admin.DataExchange.Export.ProviderSystemName")]
 		public string ProviderSystemName { get; set; }
 		public List<ProviderSelectItem> AvailableProviders { get; set; }

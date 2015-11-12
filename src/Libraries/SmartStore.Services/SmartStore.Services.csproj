@@ -168,9 +168,9 @@
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\ExportProviderBase.cs" />
-    <Compile Include="DataExchange\Internal\DataExporter.cs" />
+    <Compile Include="DataExchange\DataExporter.cs" />
     <Compile Include="DataExchange\Internal\DataExporterContext.cs" />
-    <Compile Include="DataExchange\Internal\DynamicEntityHelper.cs" />
+    <Compile Include="DataExchange\DynamicEntityHelper.cs" />
     <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />
@@ -198,7 +198,7 @@
     <Compile Include="DataExchange\ExportFeaturesAttribute.cs" />
     <Compile Include="DataExchange\ExportDataSegmenter.cs" />
     <Compile Include="DataExchange\_Pseudo\AdminController.cs" />
-    <Compile Include="DataExchange\Internal\DataExportTask.cs" />
+    <Compile Include="DataExchange\DataExportTask.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />
     <Compile Include="DataExchange\ExportProfileService.cs" />

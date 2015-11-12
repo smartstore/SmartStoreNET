@@ -11,8 +11,7 @@ namespace SmartStore.Services.DataExchange.Providers
 	/// Exports CSV formatted newsletter subscription data to a file
 	/// </summary>
 	[SystemName("Exports.SmartStoreNewsSubscriptionCsv")]
-	[FriendlyName("SmartStore CSV newsletter subscription export")]
-	[IsHidden(true)]
+	[FriendlyName("Newsletter Subscribers CSV Export")]
 	public class SubscriberCsvExportProvider : ExportProviderBase
 	{
 		public static string SystemName

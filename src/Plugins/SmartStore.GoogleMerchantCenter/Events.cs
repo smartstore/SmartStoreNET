@@ -5,12 +5,16 @@ using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Web.Framework.Events;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Services.DataExchange.Events;
+using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.GoogleMerchantCenter
 {
 	public class Events : 
 		IConsumer<TabStripCreated>,
-		IConsumer<ModelBoundEvent>
+		IConsumer<ModelBoundEvent>/*,
+		IConsumer<RowExportingEvent>*/
 	{
 		private readonly IGoogleFeedService _googleService;
 
@@ -18,7 +22,7 @@ namespace SmartStore.GoogleMerchantCenter
 		{
 			this._googleService = googleService;
 		}
-		
+
 		public void HandleEvent(TabStripCreated eventMessage)
 		{
 			if (eventMessage.TabStripName == "product-edit")
@@ -32,6 +36,30 @@ namespace SmartStore.GoogleMerchantCenter
 					.Ajax();
 			}
 		}
+
+		//public void HandleEvent(RowExportingEvent eventMessage)
+		//{
+		//	if (eventMessage.EntityType != ExportEntityType.Product)
+		//		return;
+
+		//	var row = eventMessage.Row;
+		//	var product = eventMessage.Row.Entity as Product;
+
+		//	if (product == null)
+		//		return;
+
+		//	var gmc = _googleService.GetGoogleProductRecord(product.Id);
+		//	if (gmc == null)
+		//		return;
+
+		//	row["_GMC_AgeGroup"] = gmc.AgeGroup;
+		//	row["_GMC_Color"] = gmc.Color;
+		//	row["_GMC_Gender"] = gmc.Gender;
+		//	row["_GMC_Size"] = gmc.Size;
+		//	row["_GMC_Taxonomy"] = gmc.Taxonomy;
+		//	row["_GMC_Material"] = gmc.Material;
+		//	row["_GMC_Pattern"] = gmc.Pattern;
+		//}
 
 		public void HandleEvent(ModelBoundEvent eventMessage)
 		{

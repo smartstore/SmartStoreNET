@@ -16,12 +16,6 @@ namespace SmartStore.Services.DataExchange.Internal
 {
 	internal class DataExporterContext
 	{
-		private ProductExportContext _productExportContext;
-		private OrderExportContext _orderExportContext;
-		private ManufacturerExportContext _manufacturerExportContext;
-		private CategoryExportContext _categoryExportContext;
-		private CustomerExportContext _customerExportContext;
-
 		public DataExporterContext(
 			DataExportRequest request,
 			CancellationToken cancellationToken,
@@ -120,79 +114,11 @@ namespace SmartStore.Services.DataExchange.Internal
 		public HashSet<string> NewsletterSubscriptions { get; set; }
 
 		// data loaded once per page
-		public ProductExportContext ProductExportContext
-		{
-			get
-			{
-				return _productExportContext;
-			}
-			set
-			{
-				if (_productExportContext != null)
-					_productExportContext.Clear();
-
-				_productExportContext = value;
-			}
-		}
-
-		public OrderExportContext OrderExportContext
-		{
-			get
-			{
-				return _orderExportContext;
-			}
-			set
-			{
-				if (_orderExportContext != null)
-					_orderExportContext.Clear();
-
-				_orderExportContext = value;
-			}
-		}
-
-		public ManufacturerExportContext ManufacturerExportContext
-		{
-			get
-			{
-				return _manufacturerExportContext;
-			}
-			set
-			{
-				if (_manufacturerExportContext != null)
-					_manufacturerExportContext.Clear();
-
-				_manufacturerExportContext = value;
-			}
-		}
-
-		public CategoryExportContext CategoryExportContext
-		{
-			get
-			{
-				return _categoryExportContext;
-			}
-			set
-			{
-				if (_categoryExportContext != null)
-					_categoryExportContext.Clear();
-
-				_categoryExportContext = value;
-			}
-		}
-		public CustomerExportContext CustomerExportContext
-		{
-			get
-			{
-				return _customerExportContext;
-			}
-			set
-			{
-				if (_customerExportContext != null)
-					_customerExportContext.Clear();
-
-				_customerExportContext = value;
-			}
-		}
+		public ProductExportContext ProductExportContext { get; set; }
+		public OrderExportContext OrderExportContext { get; set; }
+		public ManufacturerExportContext ManufacturerExportContext { get; set; }
+		public CategoryExportContext CategoryExportContext { get; set; }
+		public CustomerExportContext CustomerExportContext { get; set; }
 
 		public ExportExecuteContext ExecuteContext { get; set; }
 		public DataExportResult Result { get; set; }

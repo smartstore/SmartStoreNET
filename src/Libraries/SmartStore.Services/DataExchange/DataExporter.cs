@@ -8,6 +8,7 @@ using System.Threading;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
+using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
@@ -177,6 +178,50 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
+		private void DetachAllAndClear(DataExporterContext ctx)
+		{
+			try
+			{
+				_services.DbContext.DetachAll();
+			}
+			catch (Exception exception)
+			{
+				ctx.Log.Warning("Detaching all entities failed.", exception);
+			}
+
+			try
+			{
+				// now again attach what is globally required
+
+				_services.DbContext.Attach(ctx.Request.Profile);
+
+				_services.DbContext.Attach<Store>(ctx.Stores.Values);
+            }
+			catch (Exception exception)
+			{
+				ctx.Log.Warning("Re-attaching entities failed.", exception);
+			}
+
+			try
+			{
+				if (ctx.ProductExportContext != null)
+					ctx.ProductExportContext.Clear();
+
+				if (ctx.OrderExportContext != null)
+					ctx.OrderExportContext.Clear();
+
+				if (ctx.ManufacturerExportContext != null)
+					ctx.ManufacturerExportContext.Clear();
+
+				if (ctx.CategoryExportContext != null)
+					ctx.CategoryExportContext.Clear();
+
+				if (ctx.CustomerExportContext != null)
+					ctx.CustomerExportContext.Clear();
+			}
+			catch {	}
+		}
+
 		private IExportDataSegmenterProvider CreateSegmenter(DataExporterContext ctx, int pageIndex = 0)
 		{
 			var offset = ctx.Request.Profile.Offset + (pageIndex * PageSize);
@@ -335,11 +380,11 @@ namespace SmartStore.Services.DataExchange
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception exception)
 			{
 				ctx.ExecuteContext.Abort = ExportAbortion.Hard;
-				ctx.Log.Error("The provider failed at the {0} method: {1}".FormatInvariant(method, exc.ToAllMessages()), exc);
-				ctx.Result.LastError = exc.ToString();
+				ctx.Log.Error("The provider failed at the {0} method: {1}".FormatInvariant(method, exception.ToAllMessages()), exception);
+				ctx.Result.LastError = exception.ToString();
 			}
 			finally
 			{
@@ -875,6 +920,8 @@ namespace SmartStore.Services.DataExchange
 
 					ctx.ExecuteContext.ExtraDataStreams.Clear();
 				}
+
+				DetachAllAndClear(ctx);
 			}
 		}
 
@@ -985,10 +1032,10 @@ namespace SmartStore.Services.DataExchange
 							//				break;
 							//		}
 							//	}
-							//	catch (Exception exc)
+							//	catch (Exception exception)
 							//	{
 							//		logger.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
-							//			deployment.Name, deployment.DeploymentType.ToString(), exc.Message), exc);
+							//			deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
 							//	}
 							//}
 						}
@@ -999,10 +1046,10 @@ namespace SmartStore.Services.DataExchange
 						}
 					}
 				}
-				catch (Exception exc)
+				catch (Exception exception)
 				{
-					logger.Error(exc);
-					ctx.Result.LastError = exc.ToString();
+					logger.Error(exception);
+					ctx.Result.LastError = exception.ToString();
 				}
 				finally
 				{
@@ -1026,6 +1073,8 @@ namespace SmartStore.Services.DataExchange
 					}
 					catch { }
 
+					DetachAllAndClear(ctx);
+
 					try
 					{
 						ctx.NewsletterSubscriptions.Clear();
@@ -1036,11 +1085,6 @@ namespace SmartStore.Services.DataExchange
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
-						ctx.ProductExportContext = null;
-						ctx.OrderExportContext = null;
-						ctx.ManufacturerExportContext = null;
-						ctx.CategoryExportContext = null;
-						ctx.CustomerExportContext = null;
 
 						ctx.Request.EntitiesToExport.Clear();
 						ctx.Request.CustomData.Clear();
@@ -1138,6 +1182,8 @@ namespace SmartStore.Services.DataExchange
 						resultData.AddRange(segmenter.CurrentSegment);
 					}
 				}
+
+				DetachAllAndClear(ctx);
 			}
 
 			if (ctx.Result.LastError.HasValue())

@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;

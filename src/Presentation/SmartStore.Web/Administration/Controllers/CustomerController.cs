@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Web.ModelBinding;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Common;
 using SmartStore.Admin.Models.Customers;
@@ -24,6 +23,7 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
@@ -33,6 +33,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -42,7 +43,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class CustomerController : AdminControllerBase
     {
         #region Fields
@@ -81,12 +82,14 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly IExportProfileService _exportProfileService;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public CustomerController(ICustomerService customerService,
+		public CustomerController(ICustomerService customerService,
 			INewsLetterSubscriptionService newsLetterSubscriptionService,
             IGenericAttributeService genericAttributeService,
             ICustomerRegistrationService customerRegistrationService,
@@ -108,8 +111,10 @@ namespace SmartStore.Admin.Controllers
 			AddressSettings addressSettings, IStoreService storeService,
 			IEventPublisher eventPublisher,
 			PluginMediator pluginMediator,
-			IAffiliateService affiliateService)
-        {
+			IAffiliateService affiliateService,
+			ITaskScheduler taskScheduler,
+			IExportProfileService exportProfileService)
+		{
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
             this._genericAttributeService = genericAttributeService;
@@ -144,7 +149,9 @@ namespace SmartStore.Admin.Controllers
 			this._eventPublisher = eventPublisher;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
-        }
+			this._taskScheduler = taskScheduler;
+			this._exportProfileService = exportProfileService;
+		}
 
         #endregion
 
@@ -1755,44 +1762,54 @@ namespace SmartStore.Admin.Controllers
             return new JsonResult { Data = gridModel }; ;
         }
 
-        #endregion
+		#endregion
 
-        #region Export / Import
+		#region Export / Import
+
+		private ActionResult StartExport(string providerSystemName, string selectedIds)
+		{
+			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
+				return AccessDeniedView();
+
+			Dictionary<string, string> taskParams = null;
+
+			if (selectedIds.HasValue())
+			{
+				taskParams = new Dictionary<string, string>();
+				taskParams.Add("SelectedIds", selectedIds);
+			}
+
+			var profile = _exportProfileService.GetSystemExportProfile(providerSystemName);
+
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
+
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+
+			return RedirectToAction("List");
+		}
 
 		[Compress]
         public ActionResult ExportExcelAll()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-			return Export(CustomerXlsxExportProvider.SystemName, null);
+			return StartExport(CustomerXlsxExportProvider.SystemName, null);
         }
 
 		[Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-			return Export(CustomerXlsxExportProvider.SystemName, selectedIds);
+			return StartExport(CustomerXlsxExportProvider.SystemName, selectedIds);
         }
 
 		[Compress]
         public ActionResult ExportXmlAll()
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-			return Export(CustomerXmlExportProvider.SystemName, null);
+			return StartExport(CustomerXmlExportProvider.SystemName, null);
         }
 
 		[Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-                return AccessDeniedView();
-
-			return Export(CustomerXmlExportProvider.SystemName, selectedIds);
+			return StartExport(CustomerXmlExportProvider.SystemName, selectedIds);
         }
 
         #endregion

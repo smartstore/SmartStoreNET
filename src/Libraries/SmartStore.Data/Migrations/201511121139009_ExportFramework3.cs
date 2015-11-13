@@ -181,7 +181,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.CannotDeleteSystemProfile",
 				"Cannot delete a system export profile.",
 				"Ein System-Exportprofil kann nicht gelöscht werden.");
-        }
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.MissingSystemProfile",
+				"The system export profile {0} was not found.",
+				"Das System-Exportprofil {0} wurde nicht gefunden.");
+		}
 	}
 
 

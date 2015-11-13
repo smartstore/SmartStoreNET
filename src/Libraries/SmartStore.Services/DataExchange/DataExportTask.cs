@@ -22,8 +22,6 @@ namespace SmartStore.Services.DataExchange
 
 		public void Execute(TaskExecutionContext ctx)
 		{
-			// TODO: proper error handling
-
 			var profileId = ctx.ScheduleTask.Alias.ToInt();
 			var profile = _exportProfileService.GetExportProfileById(profileId);
 
@@ -55,8 +53,6 @@ namespace SmartStore.Services.DataExchange
 
 			// process!
 			_exporter.Export(request, ctx.CancellationToken);
-
-			ctx.CancellationToken.ThrowIfCancellationRequested();
 		}
 	}
 }

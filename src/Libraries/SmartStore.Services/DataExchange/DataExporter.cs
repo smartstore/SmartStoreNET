@@ -1108,6 +1108,8 @@ namespace SmartStore.Services.DataExchange
 				ctx.Result.DownloadFileName = string.Concat(prefix, "-", suffix).ToLower().ToValidFileName() + extension;
 			}
 
+			cancellationToken.ThrowIfCancellationRequested();
+
 			return ctx.Result;
 		}
 

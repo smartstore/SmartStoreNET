@@ -184,7 +184,6 @@
     <Compile Include="DataExchange\Internal\CategoryExportContext.cs" />
     <Compile Include="DataExchange\Internal\CustomerExportContext.cs" />
     <Compile Include="DataExchange\Internal\ManufacturerExportContext.cs" />
-    <Compile Include="DataExchange\Internal\DataExportTaskContext.cs" />
     <Compile Include="DataExchange\DataExportResult.cs" />
     <Compile Include="DataExchange\ExportXmlHelper.cs" />
     <Compile Include="DataExchange\IDataExporter.cs" />
@@ -195,10 +194,8 @@
     <Compile Include="DataExchange\Internal\ProductExportContext.cs" />
     <Compile Include="DataExchange\ExportExecuteContext.cs" />
     <Compile Include="DataExchange\ExportExtensions.cs" />
-    <Compile Include="DataExchange\ExportTask\ExportProfileTask.cs" />
     <Compile Include="DataExchange\ExportFeaturesAttribute.cs" />
     <Compile Include="DataExchange\ExportDataSegmenter.cs" />
-    <Compile Include="DataExchange\_Pseudo\AdminController.cs" />
     <Compile Include="DataExchange\DataExportTask.cs" />
     <Compile Include="Directory\QuantityUnitService.cs" />
     <Compile Include="Directory\IQuantityUnitService.cs" />

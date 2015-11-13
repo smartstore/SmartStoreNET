@@ -49,11 +49,18 @@ namespace SmartStore.Services.DataExchange
 		ExportProfile GetExportProfileById(int id);
 
 		/// <summary>
+		/// Gets system export profile by provider system name
+		/// </summary>
+		/// <param name="providerSystemName">Provider system name</param>
+		/// <returns></returns>
+		ExportProfile GetSystemExportProfile(string providerSystemName);
+
+		/// <summary>
 		/// Gets export profiles by provider system name
 		/// </summary>
-		/// <param name="systemName">Provider system name</param>
+		/// <param name="providerSystemName">Provider system name</param>
 		/// <returns>List of export profiles</returns>
-		IList<ExportProfile> GetExportProfilesBySystemName(string systemName);
+		IList<ExportProfile> GetExportProfilesBySystemName(string providerSystemName);
 
 
 		/// <summary>

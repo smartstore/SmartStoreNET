@@ -9,8 +9,6 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Tasks;
 using SmartStore.Core.Events;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.DataExchange.ExportTask;
-using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
@@ -217,9 +215,9 @@ namespace SmartStore.Services.DataExchange
 
 		public virtual IQueryable<ExportProfile> GetExportProfiles(bool? enabled = null)
 		{
-			var query =
-				from x in _exportProfileRepository.Table.Expand(x => x.ScheduleTask)
-				select x;
+			var query = _exportProfileRepository.Table
+				.Expand(x => x.ScheduleTask)
+				.Expand(x => x.Deployments);
 
 			if (enabled.HasValue)
 			{
@@ -247,15 +245,33 @@ namespace SmartStore.Services.DataExchange
 			return profile;
 		}
 
-		public virtual IList<ExportProfile> GetExportProfilesBySystemName(string systemName)
+		public virtual ExportProfile GetSystemExportProfile(string providerSystemName)
 		{
-			if (systemName.IsEmpty())
+			if (providerSystemName.IsEmpty())
+				return null;
+
+			var query = GetExportProfiles(true);
+
+			var profile = query
+				.Where(x => x.IsSystemProfile && x.ProviderSystemName == providerSystemName)
+				.FirstOrDefault();
+
+			// existence of an system profile is mandatory
+			if (profile == null)
+				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.MissingSystemProfile").FormatInvariant(providerSystemName.NaIfEmpty()));
+
+			return profile;
+		}
+
+		public virtual IList<ExportProfile> GetExportProfilesBySystemName(string providerSystemName)
+		{
+			if (providerSystemName.IsEmpty())
 				return new List<ExportProfile>();
 
 			var profiles = _exportProfileRepository.Table
 				.Expand(x => x.ScheduleTask)
 				.Expand(x => x.Deployments)
-				.Where(x => x.ProviderSystemName == systemName)
+				.Where(x => x.ProviderSystemName == providerSystemName)
 				.ToList();
 
 			return profiles;

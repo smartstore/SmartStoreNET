@@ -2,17 +2,18 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Catalog;
+using SmartStore.Collections;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Events;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Filter;
@@ -22,16 +23,16 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.UI;
-using SmartStore.Collections;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class CategoryController : AdminControllerBase
     {
         #region Fields
@@ -58,12 +59,14 @@ namespace SmartStore.Admin.Controllers
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
         private readonly IFilterService _filterService;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly IExportProfileService _exportProfileService;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
+		public CategoryController(ICategoryService categoryService, ICategoryTemplateService categoryTemplateService,
             IManufacturerService manufacturerService, IProductService productService, 
             ICustomerService customerService,
             IUrlRecordService urlRecordService, IPictureService pictureService, ILanguageService languageService,
@@ -75,7 +78,10 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
-            IEventPublisher eventPublisher, IFilterService filterService)
+            IEventPublisher eventPublisher, 
+			IFilterService filterService,
+			ITaskScheduler taskScheduler,
+			IExportProfileService exportProfileService)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -99,6 +105,8 @@ namespace SmartStore.Admin.Controllers
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
             this._filterService = filterService;
+			this._taskScheduler = taskScheduler;
+			this._exportProfileService = exportProfileService;
         }
 
         #endregion
@@ -760,8 +768,14 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			return Export(CategoryXmlExportProvider.SystemName, null);
-        }
+			var profile = _exportProfileService.GetSystemExportProfile(CategoryXmlExportProvider.SystemName);
+
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
+
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+
+			return RedirectToAction("List");
+		}
 
         #endregion
 

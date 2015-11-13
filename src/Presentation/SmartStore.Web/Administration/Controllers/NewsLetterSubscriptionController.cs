@@ -3,11 +3,13 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Common;
+using SmartStore.Services.DataExchange;
 using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
+using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
@@ -23,18 +25,24 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IStoreService _storeService;
+		private readonly ITaskScheduler _taskScheduler;
+		private readonly IExportProfileService _exportProfileService;
 
 		public NewsLetterSubscriptionController(INewsLetterSubscriptionService newsLetterSubscriptionService,
 			IDateTimeHelper dateTimeHelper,
             IPermissionService permissionService,
 			AdminAreaSettings adminAreaSettings,
-			IStoreService storeService)
+			IStoreService storeService,
+			ITaskScheduler taskScheduler,
+			IExportProfileService exportProfileService)
 		{
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
 			this._dateTimeHelper = dateTimeHelper;
             this._permissionService = permissionService;
             this._adminAreaSettings = adminAreaSettings;
 			this._storeService = storeService;
+			this._taskScheduler = taskScheduler;
+			this._exportProfileService = exportProfileService;
 		}
 
 		private void PrepareNewsLetterSubscriptionListModel(NewsLetterSubscriptionListModel model)
@@ -156,7 +164,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
                 return AccessDeniedView();
 
-			return Export(SubscriberCsvExportProvider.SystemName, null);
+			var profile = _exportProfileService.GetSystemExportProfile(SubscriberCsvExportProvider.SystemName);
+
+			_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
+
+			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+
+			return RedirectToAction("List");
 		}
 
         [HttpPost]

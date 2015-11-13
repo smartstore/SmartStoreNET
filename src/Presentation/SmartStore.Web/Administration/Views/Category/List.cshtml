@@ -65,13 +65,18 @@
 						columns.Bound(x => x.FullName);
 						columns.Bound(x => x.Alias);
                         columns.Bound(x => x.Published)
-                            .Width(100)
+                            .Width(160)
                             .Template(item => @Html.SymbolForBool(item.Published))
                             .ClientTemplate(@Html.SymbolForBool("Published"))
                             .Centered();
                         columns.Bound(x => x.DisplayOrder)
-                            .Width(100)
+                            .Width(160)
                             .Centered();
+						columns.Bound(x => x.LimitedToStores)
+							.Width(160)
+							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
+							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
+							.Centered();
                     })
                     .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
                     .DataBinding(dataBinding => dataBinding.Ajax().Select("List", "Category"))

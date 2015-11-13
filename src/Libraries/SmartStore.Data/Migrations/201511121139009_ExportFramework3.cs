@@ -86,6 +86,7 @@ namespace SmartStore.Data.Migrations
 				};
 
 				profile = profiles.Add(profile);
+				context.SaveChanges();
 
 				task.Alias = profile.Id.ToString();
 

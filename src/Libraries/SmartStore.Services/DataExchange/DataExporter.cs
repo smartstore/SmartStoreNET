@@ -540,6 +540,9 @@ namespace SmartStore.Services.DataExchange
 
 			var query = _manufacturerService.Value.GetManufacturers(showHidden, storeId);
 
+			if (ctx.Request.EntitiesToExport.Count > 0)
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
+
 			query = query.OrderBy(x => x.DisplayOrder);
 
 			if (skip > 0)
@@ -572,6 +575,9 @@ namespace SmartStore.Services.DataExchange
 			var storeId = (ctx.Request.Profile.PerStore ? ctx.Store.Id : ctx.Filter.StoreId);
 
 			var query = _categoryService.Value.GetCategories(null, showHidden, null, true, storeId);
+
+			if (ctx.Request.EntitiesToExport.Count > 0)
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query
 				.OrderBy(x => x.ParentCategoryId)
@@ -647,9 +653,10 @@ namespace SmartStore.Services.DataExchange
 			var query = _subscriptionRepository.Value.TableUntracked;
 
 			if (storeId > 0)
-			{
 				query = query.Where(x => x.StoreId == storeId);
-			}
+
+			if (ctx.Request.EntitiesToExport.Count > 0)
+				query = query.Where(x => ctx.Request.EntitiesToExport.Contains(x.Id));
 
 			query = query
 				.OrderBy(x => x.StoreId)

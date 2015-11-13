@@ -9,10 +9,13 @@ using SmartStore.Admin.Models.DataExchange;
 using SmartStore.Core;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
+using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
@@ -50,6 +53,7 @@ namespace SmartStore.Admin.Controllers
 		private readonly DataExchangeSettings _dataExchangeSettings;
 		private readonly ITaskScheduler _taskScheduler;
 		private readonly IDataExporter _dataExporter;
+		private readonly Lazy<CustomerSettings> _customerSettings;
 
 		public ExportController(
 			ICommonServices services,
@@ -65,7 +69,8 @@ namespace SmartStore.Admin.Controllers
 			IDateTimeHelper dateTimeHelper,
 			DataExchangeSettings dataExchangeSettings,
 			ITaskScheduler taskScheduler,
-			IDataExporter dataExporter)
+			IDataExporter dataExporter,
+			Lazy<CustomerSettings> customerSettings)
 		{
 			_services = services;
 			_exportService = exportService;
@@ -81,6 +86,7 @@ namespace SmartStore.Admin.Controllers
 			_dataExchangeSettings = dataExchangeSettings;
 			_taskScheduler = taskScheduler;
 			_dataExporter = dataExporter;
+			_customerSettings = customerSettings;
 		}
 
 		#region Utilities
@@ -736,7 +742,8 @@ namespace SmartStore.Admin.Controllers
 				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
 				TotalRecords = totalRecords,
-				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath())
+				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath()),
+				UsernamesEnabled = _customerSettings.Value.UsernamesEnabled
 			};
 
 			return View(model);
@@ -754,8 +761,20 @@ namespace SmartStore.Admin.Controllers
 			{
 				var productModel = new List<ExportPreviewProductModel>();
 				var orderModel = new List<ExportPreviewOrderModel>();
+				var categoryModel = new List<ExportPreviewCategoryModel>();
+				var manuModel = new List<ExportPreviewManufacturerModel>();
+				var customerModel = new List<ExportPreviewCustomerModel>();
+				var subscriberModel = new List<ExportPreviewNewsLetterSubscriptionModel>();
+
+				object gridData = null;
+				Dictionary<int, Category> allCategories = null;
+				IList<Store> allStores = null;
 
 				var request = new DataExportRequest(profile, provider);
+				var normalizedTotal = totalRecords;
+
+				if (profile.Limit > 0 && normalizedTotal > profile.Limit)
+					normalizedTotal = profile.Limit;
 
 				var data = _dataExporter.Preview(request, command.Page - 1, totalRecords);
 
@@ -764,7 +783,8 @@ namespace SmartStore.Admin.Controllers
 					if (provider.Value.EntityType == ExportEntityType.Product)
 					{
 						var product = item.Entity as Product;
-						var pm = new ExportPreviewProductModel
+
+						productModel.Add(new ExportPreviewProductModel
 						{
 							Id = product.Id,
 							ProductTypeId = product.ProductTypeId,
@@ -776,13 +796,11 @@ namespace SmartStore.Admin.Controllers
 							Published = product.Published,
 							StockQuantity = product.StockQuantity,
 							AdminComment = item.AdminComment
-						};
-
-						productModel.Add(pm);
+						});
 					}
 					else if (provider.Value.EntityType == ExportEntityType.Order)
 					{
-						var om = new ExportPreviewOrderModel
+						orderModel.Add(new ExportPreviewOrderModel
 						{
 							Id = item.Id,
 							HasNewPaymentNotification = item.HasNewPaymentNotification,
@@ -794,33 +812,105 @@ namespace SmartStore.Admin.Controllers
 							StoreName = (item.Store == null ? "".NaIfEmpty() : item.Store.Name),
 							CreatedOn = _dateTimeHelper.ConvertToUserTime(item.CreatedOnUtc, DateTimeKind.Utc),
 							OrderTotal = item.OrderTotal
-						};
-
-						orderModel.Add(om);
+						});
 					}
-				}
+					else if (provider.Value.EntityType == ExportEntityType.Category)
+					{
+						var category = item.Entity as Category;
 
-				var normalizedTotal = totalRecords;
+						if (allCategories == null)
+						{
+							allCategories = _categoryService.GetAllCategories(showHidden: true, applyNavigationFilters: false)
+								.ToDictionary(x => x.Id);
+						}
 
-				if (profile.Limit > 0 && normalizedTotal > profile.Limit)
-					normalizedTotal = profile.Limit;
+						categoryModel.Add(new ExportPreviewCategoryModel
+						{
+							Id = category.Id,
+							Breadcrumb = category.GetCategoryBreadCrumb(_categoryService, allCategories),
+							FullName = item.FullName,
+							Alias = item.Alias,
+							Published = category.Published,
+							DisplayOrder = category.DisplayOrder,
+							LimitedToStores = category.LimitedToStores
+						});
+                    }
+					else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
+					{
+						manuModel.Add(new ExportPreviewManufacturerModel
+						{
+							Id = item.Id,
+							Name = item.Name,
+							Published = item.Published,
+							DisplayOrder = item.DisplayOrder,
+							LimitedToStores = item.LimitedToStores
+						});
+					}
+					else if (provider.Value.EntityType == ExportEntityType.Customer)
+					{
+						var customer = item.Entity as Customer;
+						var customerRoles = item.CustomerRoles as List<dynamic>;
+						var customerRolesString = string.Join(", ", customerRoles.Select(x => x.Name));
+
+						customerModel.Add(new ExportPreviewCustomerModel
+						{
+							Id = customer.Id,
+							Active = customer.Active,
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(customer.CreatedOnUtc, DateTimeKind.Utc),
+							CustomerRoleNames = customerRolesString,
+							Email = customer.Email,
+							FullName = item._FullName,
+							LastActivityDate = _dateTimeHelper.ConvertToUserTime(customer.LastActivityDateUtc, DateTimeKind.Utc),
+							Username = customer.Username
+						});
+					}
+					else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+					{
+						var subscription = item.Entity as NewsLetterSubscription;
+
+						if (allStores == null)
+							allStores = _services.StoreService.GetAllStores();
+
+						var store = allStores.FirstOrDefault(x => x.Id == subscription.StoreId);
+
+						subscriberModel.Add(new ExportPreviewNewsLetterSubscriptionModel
+						{
+							Id = subscription.Id,
+							Active = subscription.Active,
+							CreatedOn = _dateTimeHelper.ConvertToUserTime(subscription.CreatedOnUtc, DateTimeKind.Utc),
+							Email = subscription.Email,
+							StoreName = (store == null ? "".NaIfEmpty() : store.Name)
+						});
+					}
+                }
 
 				if (provider.Value.EntityType == ExportEntityType.Product)
 				{
-					return new JsonResult
-					{
-						Data = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal }
-					};
+					gridData = new GridModel<ExportPreviewProductModel> { Data = productModel, Total = normalizedTotal };
+				}
+				else if (provider.Value.EntityType == ExportEntityType.Order)
+				{
+					gridData = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal };
+				}
+				else if (provider.Value.EntityType == ExportEntityType.Category)
+				{
+					gridData = new GridModel<ExportPreviewCategoryModel> { Data = categoryModel, Total = normalizedTotal };
+				}
+				else if (provider.Value.EntityType == ExportEntityType.Manufacturer)
+				{
+					gridData = new GridModel<ExportPreviewManufacturerModel> { Data = manuModel, Total = normalizedTotal };
+				}
+				else if (provider.Value.EntityType == ExportEntityType.Customer)
+				{
+					gridData = new GridModel<ExportPreviewCustomerModel> { Data = customerModel, Total = normalizedTotal };
+				}
+				else if (provider.Value.EntityType == ExportEntityType.NewsLetterSubscription)
+				{
+					gridData = new GridModel<ExportPreviewNewsLetterSubscriptionModel> { Data = subscriberModel, Total = normalizedTotal };
 				}
 
-				if (provider.Value.EntityType == ExportEntityType.Order)
-				{
-					return new JsonResult
-					{
-						Data = new GridModel<ExportPreviewOrderModel> { Data = orderModel, Total = normalizedTotal }
-					};
-				}
-			}
+				return new JsonResult { Data = gridData };
+            }
 
 			return new EmptyResult();
 		}

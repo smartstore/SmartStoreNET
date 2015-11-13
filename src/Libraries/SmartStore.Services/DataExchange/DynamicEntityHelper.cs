@@ -392,6 +392,8 @@ namespace SmartStore.Services.DataExchange
 			result._GenericAttributes = null;
 			result._HasNewsletterSubscription = false;
 
+			result._FullName = null;
+
 			return result;
 		}
 
@@ -1171,6 +1173,24 @@ namespace SmartStore.Services.DataExchange
 
 			dynObject._HasNewsletterSubscription = ctx.NewsletterSubscriptions.Contains(customer.Email, StringComparer.CurrentCultureIgnoreCase);
 
+			var attrFirstName = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.FirstName);
+			var attrLastName = genericAttributes.FirstOrDefault(x => x.Key == SystemCustomerAttributeNames.LastName);
+
+			string firstName = (attrFirstName == null ? "" : attrFirstName.Value);
+			string lastName = (attrLastName == null ? "" : attrLastName.Value);
+
+			if (firstName.IsEmpty() && lastName.IsEmpty())
+			{
+				var address = customer.Addresses.FirstOrDefault();
+				if (address != null)
+				{
+					firstName = address.FirstName;
+					lastName = address.LastName;
+				}
+			}
+
+			dynObject._FullName = firstName.Grow(lastName, " ");
+
 			result.Add(dynObject);
 
 			_services.EventPublisher.Publish(new RowExportingEvent
@@ -1197,6 +1217,7 @@ namespace SmartStore.Services.DataExchange
 				ExportRequest = ctx.Request,
 				ExecuteContext = ctx.ExecuteContext
 			});
+
 
 			return result;
 		}

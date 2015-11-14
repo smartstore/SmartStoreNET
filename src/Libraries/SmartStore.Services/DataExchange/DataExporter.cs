@@ -1075,6 +1075,7 @@ namespace SmartStore.Services.DataExchange
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
+						ctx.PropertiesCache.Clear();
 
 						ctx.Request.CustomData.Clear();
 

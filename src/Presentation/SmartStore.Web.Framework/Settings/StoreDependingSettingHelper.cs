@@ -1,12 +1,11 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Localization;
 using SmartStore.Utilities.Reflection;
+using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Settings
 {
@@ -96,6 +95,7 @@ namespace SmartStore.Web.Framework.Settings
 			}
 		}
 
+		// DRY?
         public void GetOverrideKeysLocalized(object settings, object model, int storeId, ISettingService settingService, bool isRootModel = true, ILocalizedModelLocal localized = null, int? index = null)
 		{
 			if (storeId <= 0)
@@ -107,8 +107,9 @@ namespace SmartStore.Web.Framework.Settings
 
 			var settingName = settings.GetType().Name;
             var properties = localized.GetType().GetProperties();
+			var localizedEntityService = EngineContext.Current.Resolve<ILocalizedEntityService>();
 
-            var modelType = model.GetType();
+			var modelType = model.GetType();
 
 			foreach (var prop in properties)
 			{
@@ -120,8 +121,7 @@ namespace SmartStore.Web.Framework.Settings
 
                 var key = "Locales[" + index.ToString() + "]." + name;
 
-                var leService = EngineContext.Current.Resolve<ILocalizedEntityService>();
-                var resultStr = leService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
+                var resultStr = localizedEntityService.GetLocalizedValue(localized.LanguageId, 0, settingName, name);
 
                 if (!String.IsNullOrEmpty(resultStr))
 					data.OverrideSettingKeys.Add(key);
@@ -158,7 +158,8 @@ namespace SmartStore.Web.Framework.Settings
 			}
 		}
 
-        public void UpdateLocalizedSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized)
+		// DRY?
+		public void UpdateLocalizedSettings(object settings, FormCollection form, int storeId, ISettingService settingService, ILocalizedModelLocal localized)
         {
             var settingName = settings.GetType().Name;
             var properties = FastProperty.GetProperties(localized.GetType()).Values;

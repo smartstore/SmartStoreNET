@@ -207,7 +207,7 @@ namespace SmartStore.Services.Security
 							if (customerRole == null)
 							{
 								//new role (save it)
-								customerRole = new CustomerRole()
+								customerRole = new CustomerRole
 								{
 									Name = defaultPermission.CustomerRoleSystemName,
 									Active = true,

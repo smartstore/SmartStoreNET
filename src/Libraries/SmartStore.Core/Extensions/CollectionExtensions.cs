@@ -7,10 +7,8 @@ using System.Web.Routing;
 
 namespace SmartStore
 {
-    
     public static class CollectionExtensions
     {
-
         public static void AddRange<T>(this ICollection<T> initial, IEnumerable<T> other)
         {
             if (other == null)
@@ -31,7 +29,5 @@ namespace SmartStore
         {
             return (source == null || source.Count == 0);
         }
-
     }
-
 }

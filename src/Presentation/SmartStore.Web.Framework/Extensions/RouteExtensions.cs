@@ -11,7 +11,6 @@ namespace SmartStore
 {
 	public static class RouteExtensions
 	{
-
 		public static string GetAreaName(this RouteData routeData)
 		{
 			object obj2;
@@ -47,6 +46,14 @@ namespace SmartStore
 			string action = routeData.GetRequiredString("action");
 
 			return "{0}{1}.{2}".FormatInvariant(area.HasValue() ? area + "." : "", controller, action);
+		}
+
+		public static bool IsRouteEqual(this RouteData routeData, string controller, string action)
+		{
+			if (routeData == null)
+				return false;
+
+			return routeData.GetRequiredString("controller").IsCaseInsensitiveEqual(controller) && routeData.GetRequiredString("action").IsCaseInsensitiveEqual(action);
 		}
 
 	}

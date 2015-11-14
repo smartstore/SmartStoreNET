@@ -211,7 +211,7 @@ namespace SmartStore.Services.Shipping
 				// shipping method filtering
 				filterRequest.ShippingMethod = s;
 
-				if (allFilters.Any(x => x.FilterOutShippingMethod(filterRequest)))
+				if (allFilters.Any(x => x.IsExcluded(filterRequest)))
 					return false;
 
 				// shipping method core restrictions

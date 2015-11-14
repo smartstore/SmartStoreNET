@@ -11,12 +11,12 @@ namespace SmartStore
 {   
     public static class MiscExtensions
     {
-		public static void Dump(this Exception exc) 
+		public static void Dump(this Exception exception) 
 		{
 			try 
 			{
-				exc.StackTrace.Dump();
-				exc.Message.Dump();
+				exception.StackTrace.Dump();
+				exception.Message.Dump();
 			}
 			catch { }
 		}
@@ -46,26 +46,6 @@ namespace SmartStore
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalSeconds);
 		}
 
-		public static bool HasColumn(this DataView dv, string columnName) 
-        {
-			dv.RowFilter = "ColumnName='" + columnName + "'";
-			return dv.Count > 0;
-		}
-
-		public static string GetDataType(this DataTable dt, string columnName) 
-        {
-			dt.DefaultView.RowFilter = "ColumnName='" + columnName + "'";
-			return dt.Rows[0]["DataType"].ToString();
-		}
-
-		public static int CountExecute(this OleDbConnection conn, string sqlCount) 
-        {
-			using (OleDbCommand cmd = new OleDbCommand(sqlCount, conn)) 
-            {
-				return (int)cmd.ExecuteScalar();
-			}
-		}
-
 		public static object SafeConvert(this TypeConverter converter, string value) 
         {
 			try 
@@ -79,6 +59,7 @@ namespace SmartStore
             {
 				exc.Dump();
 			}
+
 			return null;
 		}
 
@@ -126,14 +107,6 @@ namespace SmartStore
 			}
 
 			return defaultValue;
-		}
-
-		public static bool IsRouteEqual(this RouteData routeData, string controller, string action)
-		{
-			if (routeData == null)
-				return false;
-
-			return routeData.GetRequiredString("controller").IsCaseInsensitiveEqual(controller) && routeData.GetRequiredString("action").IsCaseInsensitiveEqual(action);
 		}
 
 		/// <summary>

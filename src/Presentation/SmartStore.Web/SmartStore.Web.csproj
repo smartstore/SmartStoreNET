@@ -63,21 +63,21 @@
     <PlatformTarget>AnyCPU</PlatformTarget>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="AjaxMin, Version=5.8.5172.27703, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\AjaxMin.5.8.5172.27710\lib\net40\AjaxMin.dll</HintPath>
+    <Reference Include="AjaxMin, Version=5.14.5506.26196, Culture=neutral, PublicKeyToken=21ef50ce11b5d80f, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\AjaxMin.5.14.5506.26202\lib\net40\AjaxMin.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Antlr3.Runtime, Version=3.5.0.2, Culture=neutral, PublicKeyToken=eb42632606e9261f, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\Antlr.3.5.0.2\lib\Antlr3.Runtime.dll</HintPath>
     </Reference>
-    <Reference Include="Autofac, Version=3.4.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="BundleTransformer.Core, Version=1.8.23.0, Culture=neutral, PublicKeyToken=973c344c93aac60d, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -106,20 +106,21 @@
       <SpecificVersion>False</SpecificVersion>
       <HintPath>..\..\packages\EntityFramework.SqlServerCompact.6.1.3\lib\net45\EntityFramework.SqlServerCompact.dll</HintPath>
     </Reference>
-    <Reference Include="FluentValidation, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\FluentValidation.5.0.0.1\lib\Net40\FluentValidation.dll</HintPath>
+    <Reference Include="FluentValidation, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.5.6.2.0\lib\Net45\FluentValidation.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="FluentValidation.Mvc, Version=5.0.0.1, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\FluentValidation.MVC4.5.0.0.1\lib\Net40\FluentValidation.Mvc.dll</HintPath>
+    <Reference Include="FluentValidation.Mvc, Version=5.6.2.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\FluentValidation.MVC5.5.6.2.0\lib\Net45\FluentValidation.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.1.3.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.1.3\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Core, Version=1.2.4.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Core.1.2.4\lib\net40\JavaScriptEngineSwitcher.Core.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="JavaScriptEngineSwitcher.Msie">
-      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.1.1.4\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+    <Reference Include="JavaScriptEngineSwitcher.Msie, Version=1.2.11.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\JavaScriptEngineSwitcher.Msie.1.2.11\lib\net40\JavaScriptEngineSwitcher.Msie.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="JavaScriptEngineSwitcher.V8, Version=1.1.1.0, Culture=neutral, PublicKeyToken=c608b2a8cc9e4472, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -129,8 +130,9 @@
       <Private>True</Private>
       <HintPath>..\..\packages\Microsoft.Web.Infrastructure.1.0.0.0\lib\net40\Microsoft.Web.Infrastructure.dll</HintPath>
     </Reference>
-    <Reference Include="MsieJavaScriptEngine">
-      <HintPath>..\..\packages\MsieJavaScriptEngine.1.4.2\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+    <Reference Include="MsieJavaScriptEngine, Version=1.5.6.0, Culture=neutral, PublicKeyToken=a3a2846a37ac0d3e, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\MsieJavaScriptEngine.1.5.6\lib\net40\MsieJavaScriptEngine.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Newtonsoft.Json, Version=6.0.0.0, Culture=neutral, PublicKeyToken=30ad4fe6b2a6aeed, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>

@@ -12,7 +12,7 @@ namespace SmartStore.Web.MVC.Tests.Public.Validators.Customer
     {
         private RegisterValidator _validator;
         private CustomerSettings _customerSettings;
-        private TaxSettings _taxSettings;
+        private TaxSettings _taxSettings = new TaxSettings();
         
         [SetUp]
         public new void Setup()

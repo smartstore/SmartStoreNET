@@ -7,7 +7,6 @@ using System.Diagnostics;
 
 namespace SmartStore
 {
-
     public static class TypeExtensions
     {
         private static Type[] s_predefinedTypes;

@@ -6,8 +6,7 @@ using System.Web;
 using System.Web.Security;
 
 namespace SmartStore
-{
-    
+{  
     public static class HttpExtensions
     {
         private const string HTTP_CLUSTER_VAR = "HTTP_CLUSTER_HTTPS";

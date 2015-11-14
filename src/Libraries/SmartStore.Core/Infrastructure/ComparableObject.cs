@@ -4,6 +4,9 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 using System.ComponentModel;
+using SmartStore.Utilities.Reflection;
+using SmartStore.Utilities;
+using System.Collections.Concurrent;
 
 namespace SmartStore
 {
@@ -13,26 +16,9 @@ namespace SmartStore
     [Serializable]
     public abstract class ComparableObject
     {
-        /// <summary>
-        /// To help ensure hashcode uniqueness, a carefully selected random number multiplier
-        /// is used within the calculation.  Goodrich and Tamassia's Data Structures and
-        /// Algorithms in Java asserts that 31, 33, 37, 39 and 41 will produce the fewest number
-        /// of collissions.  See http://computinglife.wordpress.com/2008/11/20/why-do-hash-functions-use-prime-numbers/
-        /// for more information.
-        /// </summary>
-        protected const int HashMultiplier = 31;
+        private readonly HashSet<string> _extraSignatureProperties = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
 
-        private readonly List<PropertyInfo> _extraSignatureProperties = new List<PropertyInfo>();
-
-        /// <summary>
-        /// This static member caches the domain signature properties to avoid looking them up for
-        /// each instance of the same type.
-        ///
-        /// A description of the ThreadStatic attribute may be found at
-        /// http://www.dotnetjunkies.com/WebLog/chris.taylor/archive/2005/08/18/132026.aspx
-        /// </summary>
-        [ThreadStatic]
-        private static IDictionary<Type, IEnumerable<PropertyInfo>> s_signatureProperties;
+		private static readonly ConcurrentDictionary<Type, string[]> _signaturePropertyNames = new ConcurrentDictionary<Type, string[]>();
 
         public override bool Equals(object obj)
         {
@@ -58,21 +44,23 @@ namespace SmartStore
                 var signatureProperties = GetSignatureProperties();
                 Type t = this.GetType();
 
-                // It's possible for two objects to return the same hash code based on
-                // identically valued properties, even if they're of two different types,
-                // so we include the object's type in the hash calculation
-                int hashCode = t.GetHashCode();
+				var combiner = HashCodeCombiner.Start();
 
-                foreach (var pi in signatureProperties)
+				// It's possible for two objects to return the same hash code based on
+				// identically valued properties, even if they're of two different types,
+				// so we include the object's type in the hash calculation
+				combiner.Add(t.GetHashCode());
+
+                foreach (var prop in signatureProperties)
                 {
-                    object value = pi.GetValue(this);
+                    object value = prop.GetValue(this);
 
                     if (value != null)
-                        hashCode = (hashCode * HashMultiplier) ^ value.GetHashCode();
+						combiner.Add(value.GetHashCode());
                 }
 
                 if (signatureProperties.Any())
-                    return hashCode;
+                    return combiner.CombinedHash;
 
                 // If no properties were flagged as being part of the signature of the object,
                 // then simply return the hashcode of the base object as the hashcode.
@@ -121,56 +109,46 @@ namespace SmartStore
 
         /// <summary>
         /// </summary>
-        public IEnumerable<PropertyInfo> GetSignatureProperties()
+        public IEnumerable<FastProperty> GetSignatureProperties()
         {
-            IEnumerable<PropertyInfo> properties;
+			var type = GetType();
+			var propertyNames = GetSignaturePropertyNamesCore();
 
-            // Init the signaturePropertiesDictionary here due to reasons described at
-            // http://blogs.msdn.com/jfoscoding/archive/2006/07/18/670497.aspx
-            if (s_signatureProperties == null)
-                s_signatureProperties = new Dictionary<Type, IEnumerable<PropertyInfo>>();
-
-			var t = GetType();
-
-            if (s_signatureProperties.TryGetValue(t, out properties))
-                return properties;
-
-            return (s_signatureProperties[t] = GetSignaturePropertiesCore());
+			foreach (var name in propertyNames)
+			{
+				var fastProperty = FastProperty.GetProperty(type, name);
+				if (fastProperty != null)
+				{
+					yield return fastProperty;
+				}
+			}
         }
 
         /// <summary>
         /// Enforces the template method pattern to have child objects determine which specific
         /// properties should and should not be included in the object signature comparison.
         /// </summary>
-        protected virtual IEnumerable<PropertyInfo> GetSignaturePropertiesCore()
+        protected virtual string[] GetSignaturePropertyNamesCore()
         {
-            Type t = this.GetType();
-            //var properties = TypeDescriptor.GetProvider(t).GetTypeDescriptor(t)
-            //                               .GetPropertiesWith<ObjectSignatureAttribute>();
+            Type type = this.GetType();
+			string[] names;
 
-            //if (_extraSignatureProperties.Count > 0)
-            //{
-            //    properties = properties.Union(_extraSignatureProperties);
-            //}
+			if (!_signaturePropertyNames.TryGetValue(type, out names))
+			{
+				names = type.GetProperties(BindingFlags.Public | BindingFlags.Instance)
+					.Where(p => Attribute.IsDefined(p, typeof(ObjectSignatureAttribute), true))
+					.Select(p => p.Name)
+					.ToArray();
 
-            //return new PropertyDescriptorCollection(properties.ToArray(), true);
+				_signaturePropertyNames.TryAdd(type, names);
+			}
 
-            var properties = t.GetProperties()
-                            .Where(p => Attribute.IsDefined(p, typeof(ObjectSignatureAttribute), true));
+			if (_extraSignatureProperties.Count == 0)
+			{
+				return names;
+			}
 
-            return properties.Union(_extraSignatureProperties).ToList();
-        }
-
-        /// <summary>
-        /// Adds an extra property to the type specific signature properties list.
-        /// </summary>
-        /// <param name="propertyInfo">The property to add.</param>
-        /// <remarks>Both lists are <c>unioned</c>, so
-        /// that no duplicates can occur within the global descriptor collection.</remarks>
-        protected void RegisterSignatureProperty(PropertyInfo propertyInfo)
-        {
-            Guard.ArgumentNotNull(() => propertyInfo);
-            _extraSignatureProperties.Add(propertyInfo);
+            return names.Union(_extraSignatureProperties).ToArray();
         }
 
         /// <summary>
@@ -183,13 +161,7 @@ namespace SmartStore
         {
             Guard.ArgumentNotEmpty(() => propertyName);
 
-            Type t = GetType();
-
-            var pi = t.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance);
-            if (pi == null)
-                throw Error.Argument("propertyName", "Could not find property '{0}' on type '{1}'.", propertyName, t);
-
-            RegisterSignatureProperty(pi);
+			_extraSignatureProperties.Add(propertyName);
         }
 
     }
@@ -212,7 +184,7 @@ namespace SmartStore
         {
             Guard.ArgumentNotNull(() => expression);
 
-            base.RegisterSignatureProperty(expression.ExtractPropertyInfo());
+            base.RegisterSignatureProperty(expression.ExtractPropertyInfo().Name);
         }
 
         public virtual bool Equals(T other)

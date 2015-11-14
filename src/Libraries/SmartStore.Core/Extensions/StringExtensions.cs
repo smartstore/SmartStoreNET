@@ -11,7 +11,6 @@ using System.Linq;
 
 namespace SmartStore
 {
-
     public static class StringExtensions
     {
         public const string CarriageReturnLineFeed = "\r\n";
@@ -511,7 +510,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         public static string EncodeJsString(this string value, char delimiter, bool appendDelimiters)
         {
-            StringBuilder sb = new StringBuilder(value?.Length ?? 16);
+            StringBuilder sb = new StringBuilder(value != null ? value.Length : 16);
             using (StringWriter w = new StringWriter(sb, CultureInfo.InvariantCulture))
             {
                 EncodeJsString(w, value, delimiter, appendDelimiters);

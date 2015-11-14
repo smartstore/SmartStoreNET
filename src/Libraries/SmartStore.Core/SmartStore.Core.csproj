@@ -62,12 +62,13 @@
     <CodeAnalysisRuleSet>MinimumRecommendedRules.ruleset</CodeAnalysisRuleSet>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="Autofac">
-      <HintPath>..\..\packages\Autofac.3.4.1\lib\net40\Autofac.dll</HintPath>
+    <Reference Include="Autofac, Version=3.5.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\Autofac.3.5.2\lib\net40\Autofac.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Autofac.Integration.Mvc, Version=3.3.0.0, Culture=neutral, PublicKeyToken=17863af14b0044da, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\..\packages\Autofac.Mvc5.3.3.1\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <HintPath>..\..\packages\Autofac.Mvc5.3.3.4\lib\net45\Autofac.Integration.Mvc.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="EntityFramework, Version=6.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089, processorArchitecture=MSIL">
       <SpecificVersion>False</SpecificVersion>
@@ -557,9 +558,11 @@
     <Compile Include="Utilities\DictionaryConverter.cs" />
     <Compile Include="Utilities\FileDownloadManager.cs" />
     <Compile Include="Utilities\FileSystemHelper.cs" />
+    <Compile Include="Utilities\HashCodeCombiner.cs" />
     <Compile Include="Utilities\Inflector.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
+    <Compile Include="Utilities\Reflection\FastActivator.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
@@ -584,6 +587,7 @@
     <Compile Include="Packaging\Updater\AppUpdater.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="app.config" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

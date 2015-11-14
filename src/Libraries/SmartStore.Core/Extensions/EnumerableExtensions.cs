@@ -170,7 +170,7 @@ namespace SmartStore
 		/// <summary>
 		/// Builds an URL query string
 		/// </summary>
-		/// <param name="nvc">Namer value collection</param>
+		/// <param name="nvc">Name value collection</param>
 		/// <param name="encoding">Encoding type. Can be null.</param>
 		/// <param name="encode">Whether to encode keys and values</param>
 		/// <returns>The query string without leading a question mark</returns>

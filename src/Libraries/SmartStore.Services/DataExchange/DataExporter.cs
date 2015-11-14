@@ -8,7 +8,6 @@ using System.Threading;
 using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
@@ -44,6 +43,7 @@ namespace SmartStore.Services.DataExchange
 		#region Dependencies
 
 		private readonly ICommonServices _services;
+		private readonly IDbContext _dbContext;
 		private readonly Lazy<IPriceFormatter> _priceFormatter;
 		private readonly Lazy<IDateTimeHelper> _dateTimeHelper;
 		private readonly Lazy<IExportProfileService> _exportProfileService;
@@ -73,13 +73,15 @@ namespace SmartStore.Services.DataExchange
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
+		private readonly Lazy<IRepository<Order>> _orderRepository;
 
 		private Lazy<DataExchangeSettings> _dataExchangeSettings;
 		private Lazy<MediaSettings> _mediaSettings;
 
 		public DataExporter(
 			ICommonServices services,
-			Lazy<IPriceFormatter> priceFormatter,
+			IDbContext dbContext,
+            Lazy<IPriceFormatter> priceFormatter,
 			Lazy<IDateTimeHelper> dateTimeHelper,
 			Lazy<IExportProfileService> exportProfileService,
 			Lazy<ILocalizedEntityService> localizedEntityService,
@@ -107,12 +109,14 @@ namespace SmartStore.Services.DataExchange
 			Lazy<IQuantityUnitService> quantityUnitService,
 			Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
-			Lazy<DataExchangeSettings> dataExchangeSettings,
+			Lazy<IRepository<Order>> orderRepository,
+            Lazy<DataExchangeSettings> dataExchangeSettings,
 			Lazy<MediaSettings> mediaSettings)
 		{
+			_services = services;
+			_dbContext = dbContext;
 			_priceFormatter = priceFormatter;
 			_dateTimeHelper = dateTimeHelper;
-			_services = services;
 			_exportProfileService = exportProfileService;
 			_localizedEntityService = localizedEntityService;
 			_languageService = languageService;
@@ -140,6 +144,7 @@ namespace SmartStore.Services.DataExchange
 
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
+			_orderRepository = orderRepository;
 
 			_dataExchangeSettings = dataExchangeSettings;
 			_mediaSettings = mediaSettings;
@@ -155,34 +160,42 @@ namespace SmartStore.Services.DataExchange
 
 		private void SetProgress(DataExporterContext ctx, int loadedRecords)
 		{
-			if (!ctx.IsPreview && loadedRecords > 0)
+			try
 			{
-				int totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
+				if (!ctx.IsPreview && loadedRecords > 0)
+				{
+					int totalRecords = ctx.RecordsPerStore.Sum(x => x.Value);
 
-				if (ctx.Request.Profile.Limit > 0 && totalRecords > ctx.Request.Profile.Limit)
-					totalRecords = ctx.Request.Profile.Limit;
+					if (ctx.Request.Profile.Limit > 0 && totalRecords > ctx.Request.Profile.Limit)
+						totalRecords = ctx.Request.Profile.Limit;
 
-				ctx.RecordCount = Math.Min(ctx.RecordCount + loadedRecords, totalRecords);
+					ctx.RecordCount = Math.Min(ctx.RecordCount + loadedRecords, totalRecords);
 
-				var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
+					var msg = ctx.ProgressInfo.FormatInvariant(ctx.RecordCount, totalRecords);
 
-				ctx.Request.ProgressValueSetter.Invoke(ctx.RecordCount, totalRecords, msg);
-            }
+					ctx.Request.ProgressValueSetter.Invoke(ctx.RecordCount, totalRecords, msg);
+				}
+			}
+			catch { }
 		}
 
 		private void SetProgress(DataExporterContext ctx, string message)
 		{
-			if (!ctx.IsPreview && message.HasValue())
+			try
 			{
-				ctx.Request.ProgressMessageSetter.Invoke(message);
+				if (!ctx.IsPreview && message.HasValue())
+				{
+					ctx.Request.ProgressMessageSetter.Invoke(message);
+				}
 			}
+			catch { }
 		}
 
-		private void DetachAllAndClear(DataExporterContext ctx)
+		private void DetachAllEntitiesAndClear(DataExporterContext ctx)
 		{
 			try
 			{
-				_services.DbContext.DetachAll();
+				_dbContext.DetachAll();
 			}
 			catch (Exception exception)
 			{
@@ -193,9 +206,9 @@ namespace SmartStore.Services.DataExchange
 			{
 				// now again attach what is globally required
 
-				_services.DbContext.Attach(ctx.Request.Profile);
+				_dbContext.Attach(ctx.Request.Profile);
 
-				_services.DbContext.Attach<Store>(ctx.Stores.Values);
+				_dbContext.Attach<Store>(ctx.Stores.Values);
             }
 			catch (Exception exception)
 			{
@@ -481,6 +494,8 @@ namespace SmartStore.Services.DataExchange
 
 		private List<Product> GetProducts(DataExporterContext ctx, int skip)
 		{
+			// we use ctx.EntityIdsPerSegment to avoid exporting products multiple times per segment\file (cause of associated products).
+
 			var result = new List<Product>();
 
 			var products = GetProductQuery(ctx, skip, PageSize).ToList();
@@ -489,7 +504,11 @@ namespace SmartStore.Services.DataExchange
 			{
 				if (product.ProductType == ProductType.SimpleProduct || product.ProductType == ProductType.BundledProduct)
 				{
-					result.Add(product);
+					if (!ctx.EntityIdsPerSegment.Contains(product.Id))
+					{
+						result.Add(product);
+						ctx.EntityIdsPerSegment.Add(product.Id);
+					}
 				}
 				else if (product.ProductType == ProductType.GroupedProduct)
 				{
@@ -506,23 +525,25 @@ namespace SmartStore.Services.DataExchange
 
 						foreach (var associatedProduct in _productService.Value.SearchProducts(associatedSearchContext))
 						{
-							result.Add(associatedProduct);
+							if (!ctx.EntityIdsPerSegment.Contains(associatedProduct.Id))
+							{
+								result.Add(associatedProduct);
+								ctx.EntityIdsPerSegment.Add(associatedProduct.Id);
+							}
 						}
 					}
 					else
 					{
-						result.Add(product);
+						if (!ctx.EntityIdsPerSegment.Contains(product.Id))
+						{
+							result.Add(product);
+							ctx.EntityIdsPerSegment.Add(product.Id);
+						}
 					}
 				}
 			}
 
-			try
-			{
-				SetProgress(ctx, products.Count);
-
-				_services.DbContext.DetachEntities(result);
-			}
-			catch { }
+			SetProgress(ctx, products.Count);
 
 			return result;
 		}
@@ -561,19 +582,10 @@ namespace SmartStore.Services.DataExchange
 
 			if (ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
-				ctx.EntityIdsLoaded = ctx.EntityIdsLoaded
-					.Union(orders.Select(x => x.Id))
-					.Distinct()
-					.ToList();
+				ctx.SetLoadedEntityIds(orders.Select(x => x.Id));
 			}
 
-			try
-			{
-				SetProgress(ctx, orders.Count);
-
-				_services.DbContext.DetachEntities<Order>(orders);
-			}
-			catch { }
+			SetProgress(ctx, orders.Count);
 
 			return orders;
 		}
@@ -603,13 +615,7 @@ namespace SmartStore.Services.DataExchange
 		{
 			var manus = GetManufacturerQuery(ctx, skip, PageSize).ToList();
 
-			try
-			{
-				SetProgress(ctx, manus.Count);
-
-				_services.DbContext.DetachEntities<Manufacturer>(manus);
-			}
-			catch { }
+			SetProgress(ctx, manus.Count);
 
 			return manus;
 		}
@@ -641,13 +647,7 @@ namespace SmartStore.Services.DataExchange
 		{
 			var categories = GetCategoryQuery(ctx, skip, PageSize).ToList();
 
-			try
-			{
-				SetProgress(ctx, categories.Count);
-
-				_services.DbContext.DetachEntities<Category>(categories);
-			}
-			catch { }
+			SetProgress(ctx, categories.Count);
 
 			return categories;
 		}
@@ -680,13 +680,7 @@ namespace SmartStore.Services.DataExchange
 		{
 			var customers = GetCustomerQuery(ctx, skip, PageSize).ToList();
 
-			try
-			{
-				SetProgress(ctx, customers.Count);
-
-				_services.DbContext.DetachEntities<Customer>(customers);
-			}
-			catch { }
+			SetProgress(ctx, customers.Count);
 
 			return customers;
 		}
@@ -720,13 +714,7 @@ namespace SmartStore.Services.DataExchange
 		{
 			var subscriptions = GetNewsLetterSubscriptionQuery(ctx, skip, PageSize).ToList();
 
-			try
-			{
-				SetProgress(ctx, subscriptions.Count);
-
-				_services.DbContext.DetachEntities<NewsLetterSubscription>(subscriptions);
-			}
-			catch { }
+			SetProgress(ctx, subscriptions.Count);
 
 			return subscriptions;
 		}
@@ -898,11 +886,15 @@ namespace SmartStore.Services.DataExchange
 						}
 					}
 
+					ctx.EntityIdsPerSegment.Clear();
+
 					if (ctx.ExecuteContext.IsMaxFailures)
 						ctx.Log.Warning("Export aborted. The maximum number of failures has been reached");
 
 					if (ctx.CancellationToken.IsCancellationRequested)
 						ctx.Log.Warning("Export aborted. A cancellation has been requested");
+
+					DetachAllEntitiesAndClear(ctx);
 				}
 
 				if (ctx.ExecuteContext.Abort != ExportAbortion.Hard)
@@ -920,8 +912,6 @@ namespace SmartStore.Services.DataExchange
 
 					ctx.ExecuteContext.ExtraDataStreams.Clear();
 				}
-
-				DetachAllAndClear(ctx);
 			}
 		}
 
@@ -963,7 +953,7 @@ namespace SmartStore.Services.DataExchange
 
 					// TODO: lazyLoading: false, proxyCreation: false possible? how to identify all properties of all data levels of all entities
 					// that require manual resolving for now and for future? fragile, susceptible to faults (e.g. price calculation)...
-					using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
+					using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
 						ctx.DeliveryTimes = _deliveryTimeService.Value.GetAllDeliveryTimes().ToDictionary(x => x.Id);
 						ctx.QuantityUnits = _quantityUnitService.Value.GetAllQuantityUnits().ToDictionary(x => x.Id);
@@ -1073,7 +1063,7 @@ namespace SmartStore.Services.DataExchange
 					}
 					catch { }
 
-					DetachAllAndClear(ctx);
+					DetachAllEntitiesAndClear(ctx);
 
 					try
 					{
@@ -1086,7 +1076,6 @@ namespace SmartStore.Services.DataExchange
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
 
-						ctx.Request.EntitiesToExport.Clear();
 						ctx.Request.CustomData.Clear();
 
 						ctx.ExecuteContext.CustomProperties.Clear();
@@ -1099,6 +1088,42 @@ namespace SmartStore.Services.DataExchange
 
 			if (ctx.IsPreview || ctx.ExecuteContext.Abort == ExportAbortion.Hard)
 				return;
+
+			// post process order entities
+			if (ctx.EntityIdsLoaded.Count > 0 && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
+			{
+				using (var logger = new TraceLogger(ctx.LogPath))
+				{
+					try
+					{
+						int? orderStatusId = null;
+
+						if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Processing)
+							orderStatusId = (int)OrderStatus.Processing;
+						else if (ctx.Projection.OrderStatusChange == ExportOrderStatusChange.Complete)
+							orderStatusId = (int)OrderStatus.Complete;
+
+						using (var scope = new DbContextScope(_dbContext, false, null, false, false, false, false))
+						{
+							foreach (var chunk in ctx.EntityIdsLoaded.Chunk())
+							{
+								var entities = _orderRepository.Value.Table.Where(x => chunk.Contains(x.Id)).ToList();
+
+								entities.ForEach(x => x.OrderStatusId = (orderStatusId ?? x.OrderStatusId));
+
+								_dbContext.SaveChanges();
+							}
+						}
+
+						logger.Information("Updated order status for {0} order(s).".FormatInvariant(ctx.EntityIdsLoaded.Count()));
+					}
+					catch (Exception exc)
+					{
+						logger.Error(exc);
+						ctx.Result.LastError = exc.ToString();
+					}
+				}
+			}
 		}
 
 		/// <summary>
@@ -1183,7 +1208,7 @@ namespace SmartStore.Services.DataExchange
 					}
 				}
 
-				DetachAllAndClear(ctx);
+				DetachAllEntitiesAndClear(ctx);
 			}
 
 			if (ctx.Result.LastError.HasValue())

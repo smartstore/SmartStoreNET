@@ -152,6 +152,7 @@
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="Data\BaseEntityExtensions.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />

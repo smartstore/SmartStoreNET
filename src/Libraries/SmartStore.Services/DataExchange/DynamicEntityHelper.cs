@@ -734,7 +734,7 @@ namespace SmartStore.Services.DataExchange
 		}
 
 
-		private List<dynamic> Convert(DataExporterContext ctx, Product product)
+        private List<dynamic> Convert(DataExporterContext ctx, Product product)
 		{
 			var result = new List<dynamic>();
 
@@ -952,20 +952,9 @@ namespace SmartStore.Services.DataExchange
 				// We are reduced to somewhat compound data here.
 
 				foreach (var combination in productAttributeCombinations.Where(x => x.IsActive))
-				{
-					// TODO: Das ist nocht nicht zu Ende gedacht, wegen MergeWithCombination etc.
-					//var clone = new ExpandoObject();
-					//clone.Merge((IDictionary<string, object>)dynObject);
-					//matterOfDataMerging(clone, combination);
-					//result.Add(clone);
-
-					// TODO: das hier ist besser. Aber ein Product-Klon muss immer noch erstellt werden.
-					//var clone = new DynamicEntity((DynamicEntity)dynObject);
-					//matterOfDataMerging(clone, combination);
-					//result.Add(clone);
-
-					var productClone = product.Clone();
-					var dyn = new DynamicEntity(productClone);
+				{					
+					var productClone = product.ShallowCopy();
+                    var dyn = new DynamicEntity(productClone);
 					MergeWithCombination(ctx, dyn, productClone, productAttributes, combination);
 					result.Add(dyn);
 				}

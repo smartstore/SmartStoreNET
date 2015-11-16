@@ -44,6 +44,9 @@ namespace SmartStore.Services.DataExchange.Internal
 				_productManufacturers.Clear();
 			if (_pictures != null)
 				_pictures.Clear();
+
+			_manufacturerIds.Clear();
+			_pictureIds.Clear();
 		}
 
 		public LazyMultimap<ProductManufacturer> ProductManufacturers

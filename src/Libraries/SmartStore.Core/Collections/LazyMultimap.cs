@@ -111,5 +111,14 @@ namespace SmartStore.Collections
 				_collect.Add(key);
 			}
 		}
+
+		public override void Clear()
+		{
+			_loaded.Clear();
+			_collect.Clear();
+			_roundTripCount = 0;
+
+			base.Clear();
+		}
 	}
 }

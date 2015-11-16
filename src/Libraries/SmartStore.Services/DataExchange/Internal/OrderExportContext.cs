@@ -71,6 +71,10 @@ namespace SmartStore.Services.DataExchange.Internal
 				_orderItems.Clear();
 			if (_shipments != null)
 				_shipments.Clear();
+
+			_orderIds.Clear();
+			_customerIds.Clear();
+			_addressIds.Clear();
 		}
 
 		public LazyMultimap<Customer> Customers

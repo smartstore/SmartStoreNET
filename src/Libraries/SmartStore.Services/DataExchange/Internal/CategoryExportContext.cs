@@ -44,6 +44,9 @@ namespace SmartStore.Services.DataExchange.Internal
 				_productCategories.Clear();
 			if (_pictures != null)
 				_pictures.Clear();
+
+			_categoryIds.Clear();
+			_pictureIds.Clear();
 		}
 
 		public LazyMultimap<ProductCategory> ProductCategories

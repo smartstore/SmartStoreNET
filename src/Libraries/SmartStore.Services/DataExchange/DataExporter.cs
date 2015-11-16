@@ -1090,6 +1090,7 @@ namespace SmartStore.Services.DataExchange
 						ctx.NewsletterSubscriptions.Clear();
 						ctx.ProductTemplates.Clear();
 						ctx.Countries.Clear();
+						ctx.Languages.Clear();
 						ctx.Stores.Clear();
 						ctx.QuantityUnits.Clear();
 						ctx.DeliveryTimes.Clear();

@@ -72,6 +72,8 @@ namespace SmartStore.Services.DataExchange.Internal
 			if (_productBundleItems != null)
 				_productBundleItems.Clear();
 
+			_productIdsBundleItems.Clear();
+
 			base.Clear();
 		}
 

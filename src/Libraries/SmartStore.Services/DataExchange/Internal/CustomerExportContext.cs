@@ -35,6 +35,8 @@ namespace SmartStore.Services.DataExchange.Internal
 		{
 			if (_genericAttributes != null)
 				_genericAttributes.Clear();
+
+			_customerIds.Clear();
 		}
 
 		public LazyMultimap<GenericAttribute> GenericAttributes

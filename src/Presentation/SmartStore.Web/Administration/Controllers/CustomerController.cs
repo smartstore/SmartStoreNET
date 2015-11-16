@@ -1781,9 +1781,16 @@ namespace SmartStore.Admin.Controllers
 
 			var profile = _exportProfileService.GetSystemExportProfile(providerSystemName);
 
-			_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
+			if (profile == null)
+			{
+				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", providerSystemName));
+			}
+			else
+			{
+				_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
 
-			NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
+			}
 
 			return RedirectToAction("List");
 		}

@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Domain;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
 namespace SmartStore.Services.DataExchange
@@ -17,10 +18,29 @@ namespace SmartStore.Services.DataExchange
 		/// <summary>
 		/// Inserts an export profile
 		/// </summary>
-		/// <param name="provider">Export provider</param>
+		/// <param name="providerSystemName">Provider system name</param>
+		/// <param name="name">The name of the profile</param>
+		/// <param name="fileExtension">File extension supported by provider</param>
+		/// <param name="features">Features supportde by provider</param>
+		/// <param name="isSystemProfile">Whether the new profile is a system profile</param>
 		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
 		/// <returns>New export profile</returns>
-		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, int cloneFromProfileId = 0);
+		ExportProfile InsertExportProfile(
+			string providerSystemName,
+			string name,
+			string fileExtension,
+			ExportFeatures features,
+			bool isSystemProfile = false,
+			int cloneFromProfileId = 0);
+
+		/// <summary>
+		/// Inserts an export profile
+		/// </summary>
+		/// <param name="provider">Export provider</param>
+		/// <param name="isSystemProfile">Whether the new profile is a system profile</param>
+		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
+		/// <returns>New export profile</returns>
+		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, bool isSystemProfile = false, int cloneFromProfileId = 0);
 
 		/// <summary>
 		/// Updates an export profile
@@ -32,7 +52,8 @@ namespace SmartStore.Services.DataExchange
 		/// Deletes an export profile
 		/// </summary>
 		/// <param name="profile">Export profile</param>
-		void DeleteExportProfile(ExportProfile profile);
+		/// <param name="force">Whether to delete system profiles</param>
+		void DeleteExportProfile(ExportProfile profile, bool force = false);
 
 		/// <summary>
 		/// Get queryable export profiles

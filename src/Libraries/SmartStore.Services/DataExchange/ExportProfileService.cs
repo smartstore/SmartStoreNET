@@ -73,23 +73,30 @@ namespace SmartStore.Services.DataExchange
 			return profile;
 		}
 
-		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, int cloneFromProfileId = 0)
+		public virtual ExportProfile InsertExportProfile(
+			string providerSystemName,
+			string name,
+			string fileExtension,
+			ExportFeatures features,
+			bool isSystemProfile = false,
+			int cloneFromProfileId = 0)
 		{
-			if (provider == null)
-				throw new ArgumentNullException("provider");
+			Guard.ArgumentNotEmpty(() => providerSystemName);
+
+			if (name.IsEmpty())
+				name = providerSystemName;
 
 			var cloneProfile = GetExportProfileById(cloneFromProfileId);
-			
+
 			ScheduleTask task = null;
 			ExportProfile profile = null;
-			var name = provider.GetName(_localizationService);
 			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
-			
+
 			if (cloneProfile == null)
 			{
 				task = new ScheduleTask
 				{
-					CronExpression = "0 */6 * * *",		// every six hours
+					CronExpression = "0 */6 * * *",     // every six hours
 					Type = typeof(DataExportTask).AssemblyQualifiedNameWithoutVersion(),
 					Enabled = false,
 					StopOnError = false,
@@ -103,41 +110,53 @@ namespace SmartStore.Services.DataExchange
 			}
 
 			task.Name = string.Concat(name, " task");
-			
+
 			_scheduleTaskService.InsertTask(task);
 
 			if (cloneProfile == null)
 			{
-				// what we do here is to preset typical settings for feed creation
-				// but on the other hand they may be untypical for generic data export\exchange
-				var projection = new ExportProjection
-				{
-					RemoveCriticalCharacters = true,
-					CriticalCharacters = "¼,½,¾",
-					PriceType = PriceDisplayType.PreSelectedPrice,
-					NoGroupedProducts = (provider.Metadata.ExportFeatures.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false)
-				};
-
-				var filter = new ExportFilter
-				{
-					IsPublished = true
-				};
-
 				profile = new ExportProfile
 				{
-					FileNamePattern = _defaultFileNamePattern,
-					Filtering = XmlHelper.Serialize<ExportFilter>(filter),
-					Projection = XmlHelper.Serialize<ExportProjection>(projection)
+					FileNamePattern = _defaultFileNamePattern
 				};
+
+				if (isSystemProfile)
+				{
+					profile.Enabled = true;
+					profile.PerStore = false;
+					profile.CreateZipArchive = false;
+					profile.Cleanup = false;
+				}
+				else
+				{
+					// what we do here is to preset typical settings for feed creation
+					// but on the other hand they may be untypical for generic data export\exchange
+					var projection = new ExportProjection
+					{
+						RemoveCriticalCharacters = true,
+						CriticalCharacters = "¼,½,¾",
+						PriceType = PriceDisplayType.PreSelectedPrice,
+						NoGroupedProducts = (features.HasFlag(ExportFeatures.CanOmitGroupedProducts) ? true : false)
+					};
+
+					var filter = new ExportFilter
+					{
+						IsPublished = true
+					};
+
+					profile.Projection = XmlHelper.Serialize<ExportProjection>(projection);
+					profile.Filtering = XmlHelper.Serialize<ExportFilter>(filter);
+				}
 			}
 			else
 			{
-				profile = cloneProfile.Clone();				
+				profile = cloneProfile.Clone();
 			}
 
+			profile.IsSystemProfile = isSystemProfile;
 			profile.Name = name;
 			profile.FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength);
-			profile.ProviderSystemName = provider.Metadata.SystemName;
+			profile.ProviderSystemName = providerSystemName;
 			profile.SchedulingTaskId = task.Id;
 
 			_exportProfileRepository.Insert(profile);
@@ -145,11 +164,11 @@ namespace SmartStore.Services.DataExchange
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
 
-			if (provider.Value.FileExtension.HasValue())
+			if (fileExtension.HasValue() && !isSystemProfile)
 			{
 				if (cloneProfile == null)
 				{
-					if (provider.Metadata.ExportFeatures.HasFlag(ExportFeatures.CreatesInitialPublicDeployment))
+					if (features.HasFlag(ExportFeatures.CreatesInitialPublicDeployment))
 					{
 						profile.Deployments.Add(new ExportDeployment
 						{
@@ -179,6 +198,21 @@ namespace SmartStore.Services.DataExchange
 			return profile;
 		}
 
+		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, bool isSystemProfile = false, int cloneFromProfileId = 0)
+		{
+			Guard.ArgumentNotNull(() => provider);
+
+			var profile = InsertExportProfile(
+				provider.Metadata.SystemName,
+				provider.GetName(_localizationService),
+				provider.Value.FileExtension,
+				provider.Metadata.ExportFeatures,
+				isSystemProfile,
+				cloneFromProfileId);
+
+			return profile;
+		}
+
 		public virtual void UpdateExportProfile(ExportProfile profile)
 		{
 			if (profile == null)
@@ -189,12 +223,12 @@ namespace SmartStore.Services.DataExchange
 			_eventPublisher.EntityUpdated(profile);
 		}
 
-		public virtual void DeleteExportProfile(ExportProfile profile)
+		public virtual void DeleteExportProfile(ExportProfile profile, bool force = false)
 		{
 			if (profile == null)
 				throw new ArgumentNullException("profile");
 
-			if (profile.IsSystemProfile)
+			if (!force && profile.IsSystemProfile)
 				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.CannotDeleteSystemProfile"));
 
 			int scheduleTaskId = profile.SchedulingTaskId;
@@ -255,10 +289,6 @@ namespace SmartStore.Services.DataExchange
 			var profile = query
 				.Where(x => x.IsSystemProfile && x.ProviderSystemName == providerSystemName)
 				.FirstOrDefault();
-
-			// existence of an system profile is mandatory
-			if (profile == null)
-				throw new SmartException(_localizationService.GetResource("Admin.DataExchange.Export.MissingSystemProfile").FormatInvariant(providerSystemName.NaIfEmpty()));
 
 			return profile;
 		}

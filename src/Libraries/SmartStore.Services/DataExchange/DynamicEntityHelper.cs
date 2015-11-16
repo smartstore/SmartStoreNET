@@ -540,7 +540,9 @@ namespace SmartStore.Services.DataExchange
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, Product product, ICollection<ProductVariantAttributeCombination> combinations, ProductVariantAttributeCombination combination)
+		private dynamic ToDynamic(DataExporterContext ctx, Product product,
+			ICollection<ProductVariantAttributeCombination> combinations,
+			ProductVariantAttributeCombination combination)
 		{
 			product.MergeWithCombination(combination);
 
@@ -993,7 +995,7 @@ namespace SmartStore.Services.DataExchange
                 result.Add(dynObject);
 			}
 
-			if (result.Count > 0)
+			if (result.Any())
 			{
 				_services.EventPublisher.Publish(new RowExportingEvent
 				{

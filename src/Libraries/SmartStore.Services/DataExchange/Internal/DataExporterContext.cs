@@ -5,7 +5,6 @@ using System.Linq;
 using System.Reflection;
 using System.Threading;
 using SmartStore.Core;
-using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
@@ -115,16 +114,6 @@ namespace SmartStore.Services.DataExchange.Internal
 		public bool IsFileBasedExport
 		{
 			get { return Request.Provider == null || Request.Provider.Value == null || Request.Provider.Value.FileExtension.HasValue(); }
-		}
-		public string[] GetDeploymentFiles(ExportDeployment deployment)
-		{
-			if (!IsFileBasedExport)
-				return new string[0];
-
-			if (deployment.CreateZip)
-				return new string[] { ZipPath };
-
-			return System.IO.Directory.GetFiles(FolderContent, "*.*", SearchOption.AllDirectories);
 		}
 
 		// data loaded once per export

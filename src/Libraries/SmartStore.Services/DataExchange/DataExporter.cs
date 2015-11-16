@@ -16,11 +16,13 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
+using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Deployment;
 using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
@@ -70,6 +72,7 @@ namespace SmartStore.Services.DataExchange
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
+		private readonly Lazy<ITypeFinder> _typeFinder;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -107,7 +110,8 @@ namespace SmartStore.Services.DataExchange
 			Lazy<IEmailSender> emailSender,
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
-			Lazy<IRepository<Customer>> customerRepository,
+			Lazy<ITypeFinder> typeFinder,
+            Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
             Lazy<DataExchangeSettings> dataExchangeSettings,
@@ -141,6 +145,7 @@ namespace SmartStore.Services.DataExchange
 			_emailSender = emailSender;
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
+			_typeFinder = typeFinder;
 
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
@@ -409,6 +414,44 @@ namespace SmartStore.Services.DataExchange
 			}
 
 			return (ctx.ExecuteContext.Abort != ExportAbortion.Hard);
+		}
+
+		private void Deploy(DataExporterContext ctx)
+		{
+			var containerManager = EngineContext.Current.ContainerManager;
+			var allFiles = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
+
+			var publishers = _typeFinder.Value.FindClassesOfType<IFilePublisher>(ignoreInactivePlugins: true)
+				.Select(x => containerManager.ResolveUnregistered(x) as IFilePublisher)
+				.ToList();
+
+			var context = new ExportDeploymentContext
+			{
+				Log = ctx.Log,
+				FolderContent = ctx.FolderContent,
+				ZipPath = ctx.ZipPath
+			};
+
+			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
+			{
+				if (deployment.CreateZip)
+					context.DeploymentFiles = new string[] { ctx.ZipPath };
+				else
+					context.DeploymentFiles = allFiles;
+
+				foreach (var publisher in publishers.Where(x => x.DeploymentType == deployment.DeploymentType))
+				{
+					try
+					{
+						publisher.Publish(context, deployment);
+					}
+					catch (Exception exception)
+					{
+						ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
+							deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
+					}
+				}
+			}
 		}
 
 		private void SendCompletionEmail(DataExporterContext ctx)
@@ -999,35 +1042,12 @@ namespace SmartStore.Services.DataExchange
 								ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
 							}
 
-							SetProgress(ctx, T("Common.Deployment"));
+							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
+							{
+								SetProgress(ctx, T("Common.Deployment"));
 
-							// TODO: deployment
-							//foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
-							//{
-							//	try
-							//	{
-							//		switch (deployment.DeploymentType)
-							//		{
-							//			case ExportDeploymentType.FileSystem:
-							//				DeployFileSystem(ctx, deployment);
-							//				break;
-							//			case ExportDeploymentType.Email:
-							//				DeployEmail(ctx, deployment);
-							//				break;
-							//			case ExportDeploymentType.Http:
-							//				DeployHttp(ctx, deployment);
-							//				break;
-							//			case ExportDeploymentType.Ftp:
-							//				DeployFtp(ctx, deployment);
-							//				break;
-							//		}
-							//	}
-							//	catch (Exception exception)
-							//	{
-							//		logger.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
-							//			deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
-							//	}
-							//}
+								Deploy(ctx);
+							}
 						}
 
 						if (ctx.Request.Profile.EmailAccountId != 0 && ctx.Request.Profile.CompletedEmailAddresses.HasValue())

@@ -1,18 +1,25 @@
 ﻿using SmartStore.Core.Domain;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using SmartStore.Core.Domain.DataExchange;
+using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Deployment
 {
 	public interface IFilePublisher
 	{
-		void Publish(DataExportResult result, ExportDeployment deployment);
+		ExportDeploymentType DeploymentType { get; }
+
+		void Publish(ExportDeploymentContext context, ExportDeployment deployment);
     }
 
-	/*
-		Implement without IoC: HttpFilePublisher, EmailFilePublisher, FtpFilePublisher, FileSystemFilePublisher
-	*/
+
+	public class ExportDeploymentContext
+	{
+		public TraceLogger Log { get; set; }
+
+		public string[] DeploymentFiles { get; set; }
+
+		public string FolderContent { get; set; }
+
+		public string ZipPath { get; set; }
+	}
 }

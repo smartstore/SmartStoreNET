@@ -166,6 +166,10 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="DataExchange\Deployment\EmailFilePublisher.cs" />
+    <Compile Include="DataExchange\Deployment\FileSystemFilePublisher.cs" />
+    <Compile Include="DataExchange\Deployment\FtpFilePublisher.cs" />
+    <Compile Include="DataExchange\Deployment\HttpFilePublisher.cs" />
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\Events\RowExportingEvent.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />

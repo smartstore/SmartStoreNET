@@ -383,7 +383,7 @@ namespace SmartStore.Services.DataExchange
 						ctx.Request.Provider.Value.OnExecuted(ctx.ExecuteContext);
 					}
 
-					if (ctx.IsFileBasedExport && path.HasValue())
+					if (ctx.IsFileBasedExport && path.HasValue() && ctx.ExecuteContext.DataStream.Length > 0)
 					{
 						if (!ctx.ExecuteContext.DataStream.CanSeek)
 							ctx.Log.Warning("Data stream seems to be closed!");

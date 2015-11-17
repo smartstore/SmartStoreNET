@@ -167,5 +167,10 @@ namespace SmartStore
 			}
 		}
 
+		public static void AttachRange<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities) where TEntity : BaseEntity
+		{
+			entities.Each(x => ctx.Attach(x));
+		}
+
 	}
 }

@@ -540,7 +540,9 @@ namespace SmartStore.Services.DataExchange
 			return result;
 		}
 
-		private dynamic ToDynamic(DataExporterContext ctx, Product product,
+		private dynamic ToDynamic(
+			DataExporterContext ctx, 
+			Product product,
 			ICollection<ProductVariantAttributeCombination> combinations,
 			ProductVariantAttributeCombination combination)
 		{
@@ -655,7 +657,7 @@ namespace SmartStore.Services.DataExchange
 				.Select(x => ToDynamic(ctx, x))
 				.ToList();
 
-			dynObject.ProductAttributeCombinations = combinations
+			dynObject.ProductAttributeCombinations = (combinations ?? Enumerable.Empty<ProductVariantAttributeCombination>())
 				.Select(x =>
 				{
 					dynamic dyn = ToDynamic(ctx, x);
@@ -948,13 +950,20 @@ namespace SmartStore.Services.DataExchange
 		{
 			var result = new List<dynamic>();
 
-			var combinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
+			var hasAttributeCombinations = false;
 
-			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
+			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct)
+			{
+				hasAttributeCombinations = _dbContext.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Where(c => c.IsActive).Any();
+			}
+
+			if (hasAttributeCombinations)
 			{
 				var productType = typeof(Product);
 				var productValues = new Dictionary<string, object>();
 
+				// TODO: work with Entry().CurrentValues instead of Reflection.
+				// First attach the object, determine all values and detach again.
 				var properties = FastProperty.GetProperties(product.GetUnproxiedType())
 					.Values
 					.Where(x => x.Property.CanRead && x.Property.CanWrite);
@@ -965,7 +974,9 @@ namespace SmartStore.Services.DataExchange
 					productValues.Add(property.Name, property.GetValue(product));
 				}
 
-				foreach (var combination in combinations.Where(x => x.IsActive))
+				var combinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
+
+				foreach (var combination in combinations)
 				{
 					var productClone = new Product();
 
@@ -980,7 +991,7 @@ namespace SmartStore.Services.DataExchange
 			}
 			else
 			{
-				var dynObject = ToDynamic(ctx, product, combinations, null);
+				var dynObject = ToDynamic(ctx, product, null, null);
                 result.Add(dynObject);
 			}
 

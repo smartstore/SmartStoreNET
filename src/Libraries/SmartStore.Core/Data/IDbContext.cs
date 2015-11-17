@@ -87,12 +87,20 @@ namespace SmartStore.Core.Data
         /// <returns><c>true</c> when the entity is attched already, <c>false</c> otherwise</returns>
         bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
-        /// <summary>
-        /// Detaches an entity from the current object context if it's attached
-        /// </summary>
-        /// <typeparam name="TEntity">Type of entity</typeparam>
-        /// <param name="entity">The entity instance to detach</param>
-        void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
+		/// <summary>
+		/// Attaches an entity to the context or returns an already attached entity (if it was already attached)
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <returns>Attached entity</returns>
+		TEntity Attach<TEntity>(TEntity entity) where TEntity : BaseEntity;
+
+		/// <summary>
+		/// Detaches an entity from the current object context if it's attached
+		/// </summary>
+		/// <typeparam name="TEntity">Type of entity</typeparam>
+		/// <param name="entity">The entity instance to detach</param>
+		void DetachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity;
 
 		/// <summary>
 		/// Detaches all entities of type <c>TEntity</c> from the current object context

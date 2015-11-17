@@ -211,11 +211,8 @@ namespace SmartStore.Services.DataExchange
 			try
 			{
 				// now again attach what is globally required
-				var dataContextBase = _dbContext as ObjectContextBase;
-
-				dataContextBase.AttachEntity(ctx.Request.Profile);
-
-				dataContextBase.AttachEntities(ctx.Stores.Values);
+				_dbContext.Attach(ctx.Request.Profile);
+				_dbContext.AttachRange(ctx.Stores.Values);
             }
 			catch (Exception exception)
 			{
@@ -439,24 +436,27 @@ namespace SmartStore.Services.DataExchange
 
 				try
 				{
+					IFilePublisher publisher = null;
+
 					if (deployment.DeploymentType == ExportDeploymentType.Email)
 					{
-						var publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
-						publisher.Publish(context, deployment);
+						publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
 					}
 					else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
 					{
-						var publisher = new FileSystemFilePublisher();
-						publisher.Publish(context, deployment);
+						publisher = new FileSystemFilePublisher();
 					}
 					else if (deployment.DeploymentType == ExportDeploymentType.Ftp)
 					{
-						var publisher = new FtpFilePublisher();
-						publisher.Publish(context, deployment);
+						publisher = new FtpFilePublisher();
 					}
 					else if (deployment.DeploymentType == ExportDeploymentType.Http)
 					{
-						var publisher = new HttpFilePublisher();
+						publisher = new HttpFilePublisher();
+					}
+
+					if (publisher != null)
+					{
 						publisher.Publish(context, deployment);
 					}
 				}

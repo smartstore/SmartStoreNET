@@ -191,7 +191,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntity(result[i]);
+						result[i] = Attach(result[i]);
 					}
 				}
 			}
@@ -224,7 +224,7 @@ namespace SmartStore.Data
 				{
 					for (int i = 0; i < result.Count; i++)
 					{
-						result[i] = AttachEntity(result[i]);
+						result[i] = Attach(result[i]);
 					}
 				}
 				// close up the reader, we're done saving results
@@ -336,13 +336,14 @@ namespace SmartStore.Data
 			// be aware of the entity state. you cannot get modified properties for detached entities.
 			if (entry.State != System.Data.Entity.EntityState.Detached)
 			{
-				var modifiedPropertyNames = from p in entry.CurrentValues.PropertyNames
-											where entry.Property(p).IsModified
-											select p;
+				var modifiedProperties = from p in entry.CurrentValues.PropertyNames
+										 let prop = entry.Property(p)
+										 where prop.IsModified
+										 select prop;
 
-				foreach (var name in modifiedPropertyNames)
+				foreach (var prop in modifiedProperties)
 				{
-					props.Add(name, entry.Property(name).OriginalValue);
+					props.Add(prop.Name, prop.OriginalValue);
 				}
 			}
 
@@ -495,8 +496,9 @@ namespace SmartStore.Data
 			return s_isSqlServer2012OrHigher.Value;
 		}
 
-		private TEntity Attach<TEntity>(DbSet<TEntity> dbSet, TEntity entity) where TEntity : BaseEntity
-		{
+		public TEntity Attach<TEntity>(TEntity entity) where TEntity : BaseEntity
+        {
+			var dbSet = Set<TEntity>();
 			var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
 
 			if (alreadyAttached == null)
@@ -506,27 +508,6 @@ namespace SmartStore.Data
 			}
 
 			return alreadyAttached;
-		}
-
-		/// <summary>
-		/// Attach an entity to the context or return an already attached entity (if it was already attached)
-		/// </summary>
-		/// <typeparam name="TEntity">TEntity</typeparam>
-		/// <param name="entity">Entity</param>
-		/// <returns>Attached entity</returns>
-		public TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
-        {
-			// little hack here until Entity Framework really supports stored procedures
-			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
-
-			return Attach(Set<TEntity>(), entity);
-        }
-
-		public void AttachEntities<TEntity>(IEnumerable<TEntity> entities) where TEntity : BaseEntity
-		{
-			var dbSet = Set<TEntity>();
-
-			entities.Each(entity =>	Attach(dbSet, entity));
 		}
 
 		public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity

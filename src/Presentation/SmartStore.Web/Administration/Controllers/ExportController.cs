@@ -460,7 +460,7 @@ namespace SmartStore.Admin.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
 				return AccessDeniedView();
 
-			var providers = _exportService.LoadAllExportProviders().ToList();
+			var providers = _exportService.LoadAllExportProviders(0, false).ToList();
 			var profiles = _exportService.GetExportProfiles().ToList();
 			var model = new List<ExportProfileModel>();
 

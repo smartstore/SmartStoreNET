@@ -47,32 +47,6 @@ namespace SmartStore.Services.DataExchange
 
 		#region Export profiles
 
-		public virtual ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider)
-		{
-			var name = provider.GetName(_localizationService);
-			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
-
-			var profile = new ExportProfile
-			{
-				Id = 0,
-				Name = name,
-				FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength),
-				FileNamePattern = _defaultFileNamePattern,
-				ProviderSystemName = provider.Metadata.SystemName,
-				Enabled = true,
-				SchedulingTaskId = 0,
-				PerStore = false,
-				CreateZipArchive = false,
-				Cleanup = false,
-				ScheduleTask = null,	// volatile schedule task impossible cause of database accesses by core
-				Deployments = new List<ExportDeployment>()
-			};
-
-			// profile.Projection and profile.Filtering should be null here
-
-			return profile;
-		}
-
 		public virtual ExportProfile InsertExportProfile(
 			string providerSystemName,
 			string name,
@@ -90,7 +64,6 @@ namespace SmartStore.Services.DataExchange
 
 			ScheduleTask task = null;
 			ExportProfile profile = null;
-			var seoName = SeoHelper.GetSeName(name, true, false).Replace("/", "").Replace("-", "");
 
 			if (cloneProfile == null)
 			{
@@ -155,9 +128,18 @@ namespace SmartStore.Services.DataExchange
 
 			profile.IsSystemProfile = isSystemProfile;
 			profile.Name = name;
-			profile.FolderName = seoName.ToValidPath().Truncate(_dataExchangeSettings.MaxFileNameLength);
 			profile.ProviderSystemName = providerSystemName;
 			profile.SchedulingTaskId = task.Id;
+
+			var folderName = providerSystemName
+				.Replace("Exports.", "")
+				.Replace("Feeds.", "")
+				.Replace("/", "")
+				.Replace("-", "");
+
+			profile.FolderName = SeoHelper.GetSeName(folderName, true, false)
+				.ToValidPath()
+				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
 			_exportProfileRepository.Insert(profile);
 

@@ -9,13 +9,6 @@ namespace SmartStore.Services.DataExchange
 	public interface IExportProfileService
 	{
 		/// <summary>
-		/// Creates a volatile export profile
-		/// </summary>
-		/// <param name="provider">Export provider</param>
-		/// <returns>New export profile</returns>
-		ExportProfile CreateVolatileProfile(Provider<IExportProvider> provider);
-
-		/// <summary>
 		/// Inserts an export profile
 		/// </summary>
 		/// <param name="providerSystemName">Provider system name</param>

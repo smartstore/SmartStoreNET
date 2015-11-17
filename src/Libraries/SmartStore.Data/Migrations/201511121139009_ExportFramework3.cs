@@ -7,6 +7,8 @@ namespace SmartStore.Data.Migrations
 	using Core.Domain;
 	using System.Linq;
 	using Utilities;
+	using Core.Domain.Security;
+	using Core.Domain.Customers;
 
 	public partial class ExportFramework3 : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
 	{
@@ -30,6 +32,16 @@ namespace SmartStore.Data.Migrations
 		public void Seed(SmartObjectContext context)
 		{
 			context.MigrateLocaleResources(MigrateLocaleResources);
+
+			var permissionMigrator = new PermissionMigrator(context);
+
+			permissionMigrator.AddPermission(new PermissionRecord
+			{
+				Name = "Admin area. Manage Url Records",
+				SystemName = "ManageUrlRecords",
+				Category = "Standard"
+			}, new string[] { SystemCustomerRoleNames.Administrators });
+
 
 			var systemProfilesInfos = new List<SystemProfileInfo>
 			{

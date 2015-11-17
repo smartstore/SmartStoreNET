@@ -14,7 +14,6 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-	// TODO: add new permisssion record "ManageUrlRecords"
 	[AdminAuthorize]
 	public class UrlRecordController : AdminControllerBase
 	{
@@ -82,7 +81,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult List(string entityName, int? entityId)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			var model = new UrlRecordListModel
@@ -106,7 +105,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, GridAction(EnableCustomBinding = true)]
 		public ActionResult List(GridCommand command, UrlRecordListModel model)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			var allLanguages = _languageService.GetAllLanguages(true);
@@ -152,7 +151,7 @@ namespace SmartStore.Admin.Controllers
 
 		public ActionResult Edit(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			var urlRecord = _urlRecordService.GetUrlRecordById(id);
@@ -168,7 +167,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
 		public ActionResult Edit(UrlRecordModel model, bool continueEditing)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			var urlRecord = _urlRecordService.GetUrlRecordById(model.Id);
@@ -206,7 +205,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost, ActionName("Delete")]
 		public ActionResult DeleteConfirmed(int id)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			var urlRecord = _urlRecordService.GetUrlRecordById(id);
@@ -231,7 +230,7 @@ namespace SmartStore.Admin.Controllers
 		[HttpPost]
 		public ActionResult DeleteSelected(ICollection<int> selectedIds)
 		{
-			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageMaintenance))
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageUrlRecords))
 				return AccessDeniedView();
 
 			if (selectedIds != null)

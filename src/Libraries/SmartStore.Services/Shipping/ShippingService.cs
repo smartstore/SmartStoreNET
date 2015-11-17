@@ -22,9 +22,12 @@ namespace SmartStore.Services.Shipping
 {
     public partial class ShippingService : IShippingService
     {
-        #region Fields
+		#region Fields
 
-        private readonly IRepository<ShippingMethod> _shippingMethodRepository;
+		private readonly static object _lock = new object();
+		private static IList<Type> _shippingMethodFilterTypes = null;
+
+		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
         private readonly ICacheManager _cacheManager;
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
@@ -461,10 +464,24 @@ namespace SmartStore.Services.Shipping
 
 		public virtual IList<IShippingMethodFilter> GetAllShippingMethodFilters()
 		{
-			return _typeFinder.FindClassesOfType<IShippingMethodFilter>(ignoreInactivePlugins: true)
+			if (_shippingMethodFilterTypes == null)
+			{
+				lock (_lock)
+				{
+					if (_shippingMethodFilterTypes == null)
+					{
+						_shippingMethodFilterTypes = _typeFinder.FindClassesOfType<IShippingMethodFilter>(ignoreInactivePlugins: true)
+							.ToList();
+					}
+				}
+            }
+
+			var shippingMethodFilters = _shippingMethodFilterTypes
 				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IShippingMethodFilter)
 				.ToList();
-		}
+
+			return shippingMethodFilters;
+        }
 
         #endregion
 

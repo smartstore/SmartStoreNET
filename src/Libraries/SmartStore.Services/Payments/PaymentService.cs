@@ -25,10 +25,13 @@ namespace SmartStore.Services.Payments
 		#region Constants
 		
 		private const string PAYMENTMETHOD_ALL_KEY = "SmartStore.paymentmethod.all";
-		
+
 		#endregion
 
-        #region Fields
+		#region Fields
+
+		private readonly static object _lock = new object();
+		private static IList<Type> _paymentMethodFilterTypes = null;
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
         private readonly PaymentSettings _paymentSettings;
@@ -722,11 +725,25 @@ namespace SmartStore.Services.Payments
 
 		public virtual IList<IPaymentMethodFilter> GetAllPaymentMethodFilters()
 		{
-			return _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
+			if (_paymentMethodFilterTypes == null)
+			{
+				lock (_lock)
+				{
+					if (_paymentMethodFilterTypes == null)
+					{
+						_paymentMethodFilterTypes = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
+							.ToList();
+					}
+				}
+			}
+
+			var paymentMethodFilters = _paymentMethodFilterTypes
 				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter)
 				.ToList();
+
+			return paymentMethodFilters;
 		}
 
-        #endregion
-    }
+		#endregion
+	}
 }

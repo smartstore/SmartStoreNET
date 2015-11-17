@@ -50,7 +50,7 @@ namespace SmartStore.Services.Security
         public static readonly PermissionRecord UploadPictures = new PermissionRecord { Name = "Admin area. Upload Pictures", SystemName = "UploadPictures", Category = "Configuration" };
         public static readonly PermissionRecord ManageScheduleTasks = new PermissionRecord { Name = "Admin area. Manage Schedule Tasks", SystemName = "ManageScheduleTasks", Category = "Configuration" };
 		public static readonly PermissionRecord ManageExports = new PermissionRecord { Name = "Admin area. Manage Exports", SystemName = "ManageExports", Category = "Configuration" };
-		public static readonly PermissionRecord ManageUrlRecords = new PermissionRecord { Name = "Admin area. Manage Url Records", SystemName = "ManageUrlRecords", Category = "Standard" };
+		public static readonly PermissionRecord ManageUrlRecords = new PermissionRecord { Name = "Admin area. Manage Url Records", SystemName = "ManageUrlRecords", Category = "Configuration" };
 
 		//public store permissions
 		public static readonly PermissionRecord DisplayPrices = new PermissionRecord { Name = "Public store. Display Prices", SystemName = "DisplayPrices", Category = "PublicStore" };

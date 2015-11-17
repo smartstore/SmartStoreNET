@@ -39,7 +39,7 @@ namespace SmartStore.Data.Migrations
 			{
 				Name = "Admin area. Manage Url Records",
 				SystemName = "ManageUrlRecords",
-				Category = "Standard"
+				Category = "Configuration"
 			}, new string[] { SystemCustomerRoleNames.Administrators });
 
 

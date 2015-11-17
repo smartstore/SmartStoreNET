@@ -1,13 +1,10 @@
 ﻿using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Deployment
 {
 	public interface IFilePublisher
 	{
-		ExportDeploymentType DeploymentType { get; }
-
 		void Publish(ExportDeploymentContext context, ExportDeployment deployment);
     }
 

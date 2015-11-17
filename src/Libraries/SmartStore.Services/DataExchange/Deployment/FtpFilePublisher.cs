@@ -3,21 +3,12 @@ using System.IO;
 using System.Linq;
 using System.Net;
 using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.DataExchange.Deployment
 {
 	public class FtpFilePublisher : IFilePublisher
 	{
-		public ExportDeploymentType DeploymentType
-		{
-			get
-			{
-				return ExportDeploymentType.Ftp;
-			}
-		}
-
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			var bytesRead = 0;

@@ -19,6 +19,7 @@ using SmartStore.Core.Email;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
+using SmartStore.Data;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -69,10 +70,10 @@ namespace SmartStore.Services.DataExchange
         private readonly Lazy<IShipmentService> _shipmentService;
 		private readonly Lazy<IGenericAttributeService> _genericAttributeService;
 		private readonly Lazy<IEmailAccountService> _emailAccountService;
+		private readonly Lazy<IQueuedEmailService> _queuedEmailService;
 		private readonly Lazy<IEmailSender> _emailSender;
 		private readonly Lazy<IDeliveryTimeService> _deliveryTimeService;
 		private readonly Lazy<IQuantityUnitService> _quantityUnitService;
-		private readonly Lazy<ITypeFinder> _typeFinder;
 
 		private readonly Lazy<IRepository<Customer>>_customerRepository;
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
@@ -107,10 +108,10 @@ namespace SmartStore.Services.DataExchange
 			Lazy<IShipmentService> shipmentService,
 			Lazy<IGenericAttributeService> genericAttributeService,
 			Lazy<IEmailAccountService> emailAccountService,
-			Lazy<IEmailSender> emailSender,
+			Lazy<IQueuedEmailService> queuedEmailService,
+            Lazy<IEmailSender> emailSender,
 			Lazy<IDeliveryTimeService> deliveryTimeService,
 			Lazy<IQuantityUnitService> quantityUnitService,
-			Lazy<ITypeFinder> typeFinder,
             Lazy<IRepository<Customer>> customerRepository,
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
@@ -142,10 +143,10 @@ namespace SmartStore.Services.DataExchange
 			_shipmentService = shipmentService;
 			_genericAttributeService = genericAttributeService;
 			_emailAccountService = emailAccountService;
+			_queuedEmailService = queuedEmailService;
 			_emailSender = emailSender;
 			_deliveryTimeService = deliveryTimeService;
 			_quantityUnitService = quantityUnitService;
-			_typeFinder = typeFinder;
 
 			_customerRepository = customerRepository;
 			_subscriptionRepository = subscriptionRepository;
@@ -210,10 +211,11 @@ namespace SmartStore.Services.DataExchange
 			try
 			{
 				// now again attach what is globally required
+				var dataContextBase = _dbContext as ObjectContextBase;
 
-				_dbContext.Attach(ctx.Request.Profile);
+				dataContextBase.AttachEntity(ctx.Request.Profile);
 
-				_dbContext.Attach<Store>(ctx.Stores.Values);
+				dataContextBase.AttachEntities(ctx.Stores.Values);
             }
 			catch (Exception exception)
 			{
@@ -421,10 +423,6 @@ namespace SmartStore.Services.DataExchange
 			var containerManager = EngineContext.Current.ContainerManager;
 			var allFiles = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
 
-			var publishers = _typeFinder.Value.FindClassesOfType<IFilePublisher>(ignoreInactivePlugins: true)
-				.Select(x => containerManager.ResolveUnregistered(x) as IFilePublisher)
-				.ToList();
-
 			var context = new ExportDeploymentContext
 			{
 				Log = ctx.Log,
@@ -439,17 +437,33 @@ namespace SmartStore.Services.DataExchange
 				else
 					context.DeploymentFiles = allFiles;
 
-				foreach (var publisher in publishers.Where(x => x.DeploymentType == deployment.DeploymentType))
+				try
 				{
-					try
+					if (deployment.DeploymentType == ExportDeploymentType.Email)
 					{
+						var publisher = new EmailFilePublisher(_emailAccountService.Value, _queuedEmailService.Value);
 						publisher.Publish(context, deployment);
 					}
-					catch (Exception exception)
+					else if (deployment.DeploymentType == ExportDeploymentType.FileSystem)
 					{
-						ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
-							deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
+						var publisher = new FileSystemFilePublisher();
+						publisher.Publish(context, deployment);
 					}
+					else if (deployment.DeploymentType == ExportDeploymentType.Ftp)
+					{
+						var publisher = new FtpFilePublisher();
+						publisher.Publish(context, deployment);
+					}
+					else if (deployment.DeploymentType == ExportDeploymentType.Http)
+					{
+						var publisher = new HttpFilePublisher();
+						publisher.Publish(context, deployment);
+					}
+				}
+				catch (Exception exception)
+				{
+					ctx.Log.Error("Deployment \"{0}\" of type {1} failed: {2}".FormatInvariant(
+						deployment.Name, deployment.DeploymentType.ToString(), exception.Message), exception);
 				}
 			}
 		}
@@ -1096,7 +1110,6 @@ namespace SmartStore.Services.DataExchange
 						ctx.DeliveryTimes.Clear();
 						ctx.CategoryPathes.Clear();
 						ctx.Categories.Clear();
-						ctx.PropertiesCache.Clear();
 
 						ctx.Request.CustomData.Clear();
 

@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.ComponentModel.DataAnnotations.Schema;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -26,6 +25,7 @@ using SmartStore.Services.DataExchange.Events;
 using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
+using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.DataExchange
 {
@@ -953,28 +953,17 @@ namespace SmartStore.Services.DataExchange
 			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
 			{
 				var productType = typeof(Product);
-				IEnumerable<PropertyInfo> properties = null;
 				var productValues = new Dictionary<string, object>();
 
-				// fetch all cloneable product properties once per export
-				if (ctx.PropertiesCache.ContainsKey(productType))
-				{
-					properties = ctx.PropertiesCache[productType];
-				}
-				else
-				{
-					properties = productType
-						.GetProperties()
-						.Where(x => x.CanRead && x.CanWrite && 0 == x.GetCustomAttributes(typeof(NotMappedAttribute), true).Length);
-
-					ctx.PropertiesCache.Add(productType, properties);
-                }
+				var properties = FastProperty.GetProperties(product.GetUnproxiedType())
+					.Values
+					.Where(x => x.Property.CanRead && x.Property.CanWrite);
 
 				// fetch all property values once per product
 				foreach (var property in properties)
 				{
-					productValues.Add(property.Name, property.GetValue(product, null));
-                }
+					productValues.Add(property.Name, property.GetValue(product));
+				}
 
 				foreach (var combination in combinations.Where(x => x.IsActive))
 				{
@@ -982,7 +971,7 @@ namespace SmartStore.Services.DataExchange
 
 					foreach (var property in properties)
 					{
-						property.SetValue(productClone, productValues[property.Name], null);
+						property.SetValue(productClone, productValues[property.Name]);
 					}
 
 					var dynObject = ToDynamic(ctx, productClone, combinations, combination);

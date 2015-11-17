@@ -1,8 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using System.Reflection;
 using System.Threading;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
@@ -41,7 +39,6 @@ namespace SmartStore.Services.DataExchange.Internal
 			RecordsPerStore = new Dictionary<int, int>();
 			EntityIdsLoaded = new List<int>();
 			EntityIdsPerSegment = new List<int>();
-			PropertiesCache = new Dictionary<Type, IEnumerable<PropertyInfo>>();
 
 			Result = new DataExportResult
 			{
@@ -68,11 +65,6 @@ namespace SmartStore.Services.DataExchange.Internal
 		/// All entity identifiers per segment (to avoid exporting products multiple times)
 		/// </summary>
 		public List<int> EntityIdsPerSegment { get; set; }
-
-		/// <summary>
-		/// For faster reflection
-		/// </summary>
-		public Dictionary<Type, IEnumerable<PropertyInfo>> PropertiesCache { get; set; }
 
 		public int RecordCount { get; set; }
 		public Dictionary<int, int> RecordsPerStore { get; set; }

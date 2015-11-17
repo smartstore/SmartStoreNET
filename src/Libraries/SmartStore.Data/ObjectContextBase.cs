@@ -2,27 +2,26 @@ using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Data.Common;
-using System.Data.SqlClient;
 using System.Data.Entity;
 using System.Data.Entity.Infrastructure;
 using System.Data.Entity.Validation;
+using System.Data.SqlClient;
 using System.Linq;
-using System.Linq.Expressions;
 using System.Text;
 using System.Text.RegularExpressions;
 using System.Threading.Tasks;
+using Microsoft.SqlServer.Management.Common;
+using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
-using Microsoft.SqlServer.Management.Common;
-using Microsoft.SqlServer.Management.Smo;
 using SmartStore.Core.Events;
 
 namespace SmartStore.Data
 {
-    /// <summary>
-    /// Object context
-    /// </summary>
+	/// <summary>
+	/// Object context
+	/// </summary>
 	[DbConfigurationType(typeof(SmartDbConfiguration))]
     public abstract class ObjectContextBase : DbContext, IDbContext
     {
@@ -496,32 +495,41 @@ namespace SmartStore.Data
 			return s_isSqlServer2012OrHigher.Value;
 		}
 
-        /// <summary>
-        /// Attach an entity to the context or return an already attached entity (if it was already attached)
-        /// </summary>
-        /// <typeparam name="TEntity">TEntity</typeparam>
-        /// <param name="entity">Entity</param>
-        /// <returns>Attached entity</returns>
-        protected virtual TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity, new()
-        {
-			// little hack here until Entity Framework really supports stored procedures
-			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
-			var dbSet = Set<TEntity>();
-			var alreadyAttached = dbSet.Local.Where(x => x.Id == entity.Id).FirstOrDefault();
+		private TEntity Attach<TEntity>(DbSet<TEntity> dbSet, TEntity entity) where TEntity : BaseEntity
+		{
+			var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
+
 			if (alreadyAttached == null)
 			{
-				// attach new entity
 				dbSet.Attach(entity);
 				return entity;
 			}
-			else
-			{
-				// entity is already loaded.
-				return alreadyAttached;
-			}
+
+			return alreadyAttached;
+		}
+
+		/// <summary>
+		/// Attach an entity to the context or return an already attached entity (if it was already attached)
+		/// </summary>
+		/// <typeparam name="TEntity">TEntity</typeparam>
+		/// <param name="entity">Entity</param>
+		/// <returns>Attached entity</returns>
+		public TEntity AttachEntity<TEntity>(TEntity entity) where TEntity : BaseEntity
+        {
+			// little hack here until Entity Framework really supports stored procedures
+			// otherwise, navigation properties of loaded entities are not loaded until an entity is attached to the context
+
+			return Attach(Set<TEntity>(), entity);
         }
 
-        public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
+		public void AttachEntities<TEntity>(IEnumerable<TEntity> entities) where TEntity : BaseEntity
+		{
+			var dbSet = Set<TEntity>();
+
+			entities.Each(entity =>	Attach(dbSet, entity));
+		}
+
+		public bool IsAttached<TEntity>(TEntity entity) where TEntity : BaseEntity
         {
 			if (entity != null)
 			{

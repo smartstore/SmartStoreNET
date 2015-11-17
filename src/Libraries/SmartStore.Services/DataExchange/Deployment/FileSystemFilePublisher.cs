@@ -1,7 +1,6 @@
 ﻿using System.IO;
 using System.Web;
 using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 using SmartStore.Utilities;
 
@@ -9,14 +8,6 @@ namespace SmartStore.Services.DataExchange.Deployment
 {
 	public class FileSystemFilePublisher : IFilePublisher
 	{
-		public ExportDeploymentType DeploymentType
-		{
-			get
-			{
-				return ExportDeploymentType.FileSystem;
-			}
-		}
-
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			string folderDestination = null;

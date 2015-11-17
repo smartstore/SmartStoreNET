@@ -10,14 +10,6 @@ namespace SmartStore.Services.DataExchange.Deployment
 {
 	public class HttpFilePublisher : IFilePublisher
 	{
-		public ExportDeploymentType DeploymentType
-		{
-			get
-			{
-				return ExportDeploymentType.Http;
-			}
-		}
-
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)
 		{
 			var succeeded = 0;

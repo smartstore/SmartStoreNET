@@ -2,7 +2,6 @@
 using System.IO;
 using System.Linq;
 using SmartStore.Core.Domain;
-using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Email;
 using SmartStore.Core.Infrastructure;
@@ -14,12 +13,15 @@ namespace SmartStore.Services.DataExchange.Deployment
 {
 	public class EmailFilePublisher : IFilePublisher
 	{
-		public ExportDeploymentType DeploymentType
+		private IEmailAccountService _emailAccountService;
+		private IQueuedEmailService _queuedEmailService;
+
+		public EmailFilePublisher(
+			IEmailAccountService emailAccountService,
+			IQueuedEmailService queuedEmailService)
 		{
-			get
-			{
-				return ExportDeploymentType.Email;
-			}
+			_emailAccountService = emailAccountService;
+			_queuedEmailService = queuedEmailService;
 		}
 
 		public virtual void Publish(ExportDeploymentContext context, ExportDeployment deployment)

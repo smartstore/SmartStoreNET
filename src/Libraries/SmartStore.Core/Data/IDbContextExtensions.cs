@@ -28,34 +28,6 @@ namespace SmartStore
 			entities.Each(x => ctx.DetachEntity(x));
 		}
 
-		public static void Attach<TEntity>(this IDbContext ctx, TEntity entity) where TEntity : BaseEntity
-		{
-			var dbSet = ctx.Set<TEntity>();
-			var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
-
-			if (alreadyAttached == null)
-			{
-				dbSet.Attach(entity);
-			}
-		}
-
-		public static void Attach<TEntity>(this IDbContext ctx, IEnumerable<TEntity> entities) where TEntity : BaseEntity
-		{
-			Guard.ArgumentNotNull(() => ctx);
-
-			var dbSet = ctx.Set<TEntity>();
-
-			entities.Each(entity =>
-			{
-				var alreadyAttached = dbSet.Local.FirstOrDefault(x => x.Id == entity.Id);
-
-				if (alreadyAttached == null)
-				{
-					dbSet.Attach(entity);
-				}
-			});
-		}
-
 		/// <summary>
 		/// Changes the object state to unchanged
 		/// </summary>

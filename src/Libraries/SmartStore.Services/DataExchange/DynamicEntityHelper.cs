@@ -950,14 +950,9 @@ namespace SmartStore.Services.DataExchange
 		{
 			var result = new List<dynamic>();
 
-			var hasAttributeCombinations = false;
+			var combinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
 
-			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct)
-			{
-				hasAttributeCombinations = _dbContext.QueryForCollection(product, (Product p) => p.ProductVariantAttributeCombinations).Where(c => c.IsActive).Any();
-			}
-
-			if (hasAttributeCombinations)
+			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
 			{
 				var productType = typeof(Product);
 				var productValues = new Dictionary<string, object>();
@@ -974,9 +969,7 @@ namespace SmartStore.Services.DataExchange
 					productValues.Add(property.Name, property.GetValue(product));
 				}
 
-				var combinations = ctx.ProductExportContext.AttributeCombinations.Load(product.Id);
-
-				foreach (var combination in combinations)
+				foreach (var combination in combinations.Where(x => x.IsActive))
 				{
 					var productClone = new Product();
 
@@ -991,8 +984,8 @@ namespace SmartStore.Services.DataExchange
 			}
 			else
 			{
-				var dynObject = ToDynamic(ctx, product, null, null);
-                result.Add(dynObject);
+				var dynObject = ToDynamic(ctx, product, combinations, null);
+				result.Add(dynObject);
 			}
 
 			if (result.Any())

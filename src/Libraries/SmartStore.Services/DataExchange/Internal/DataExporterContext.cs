@@ -10,7 +10,6 @@ using SmartStore.Core.Domain.Directory;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.DataExchange.Internal
 {
@@ -27,7 +26,7 @@ namespace SmartStore.Services.DataExchange.Internal
 			Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
 			IsPreview = isPreview;
 
-			FolderContent = FileSystemHelper.TempDir(@"Profile\Export\{0}\Content".FormatInvariant(request.Profile.FolderName));
+			FolderContent = request.Profile.GetExportFolder(true, true);
 			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
 			Categories = new Dictionary<int, Category>();

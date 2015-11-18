@@ -42,9 +42,13 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="profile">Export profile</param>
 		/// <returns>Folder path</returns>
-		public static string GetExportFolder(this ExportProfile profile, bool content = false)
+		public static string GetExportFolder(this ExportProfile profile, bool content = false, bool create = false)
 		{
-			var path = Path.Combine(FileSystemHelper.TempDir(), @"Profile\Export\{0}{1}".FormatInvariant(profile.FolderName, content ? @"\Content" : ""));
+			var path = CommonHelper.MapPath(string.Concat("~/App_Data/ExportProfiles/", profile.FolderName, content ? "/Content" : ""));
+
+			if (create && !System.IO.Directory.Exists(path))
+				System.IO.Directory.CreateDirectory(path);
+
 			return path;
 		}
 

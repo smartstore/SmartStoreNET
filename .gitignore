@@ -200,6 +200,7 @@ Kopie von*
 /build
 /src/Presentation/SmartStore.Web/Plugins
 /src/Presentation/SmartStore.Web/App_Data/_temp/
+/src/Presentation/SmartStore.Web/App_Data/ExportProfiles/
 /src/Presentation/SmartStore.Web/App_Data/Settings.txt
 /src/Presentation/SmartStore.Web/App_Data/InstalledPlugins.txt
 /src/Presentation/SmartStore.Web/App_Data/Licenses.lic

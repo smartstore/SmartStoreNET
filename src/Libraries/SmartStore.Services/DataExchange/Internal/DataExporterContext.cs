@@ -1,5 +1,4 @@
 ﻿using System.Collections.Generic;
-using System.IO;
 using System.Linq;
 using System.Threading;
 using SmartStore.Core;
@@ -27,7 +26,6 @@ namespace SmartStore.Services.DataExchange.Internal
 			IsPreview = isPreview;
 
 			FolderContent = request.Profile.GetExportFolder(true, true);
-			FolderRoot = System.IO.Directory.GetParent(FolderContent).FullName;
 
 			Categories = new Dictionary<int, Category>();
 			CategoryPathes = new Dictionary<int, string>();
@@ -87,20 +85,7 @@ namespace SmartStore.Services.DataExchange.Internal
 		public TraceLogger Log { get; set; }
 		public Store Store { get; set; }
 
-		public string FolderRoot { get; private set; }
 		public string FolderContent { get; private set; }
-		public string ZipName
-		{
-			get { return Request.Profile.FolderName + ".zip"; }
-		}
-		public string ZipPath
-		{
-			get { return Path.Combine(FolderRoot, ZipName); }
-		}
-		public string LogPath
-		{
-			get { return Path.Combine(FolderRoot, "log.txt"); }
-		}
 
 		public bool IsFileBasedExport
 		{

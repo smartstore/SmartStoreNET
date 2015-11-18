@@ -535,6 +535,8 @@
     <Content Include="Views\UrlRecord\Edit.cshtml" />
     <Content Include="Views\UrlRecord\_CreateOrUpdate.cshtml" />
     <Content Include="Views\UrlRecord\NamesPerEntity.cshtml" />
+    <Content Include="Views\Export\ProfileFileCount.cshtml" />
+    <Content Include="Views\Export\ProfileFileDetails.cshtml" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Content\admin.less" />

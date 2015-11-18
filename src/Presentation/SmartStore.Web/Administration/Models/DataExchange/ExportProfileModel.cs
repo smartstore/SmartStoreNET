@@ -95,6 +95,8 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		public ScheduleTaskModel TaskModel { get; set; }
 
+		public ExportProfileDetailsModel Details { get; set; }
+
 		public class ProviderModel
 		{
 			public string ConfigPartialViewName { get; set; }
@@ -150,6 +152,24 @@ namespace SmartStore.Admin.Models.DataExchange
 			public string FriendlyName { get; set; }
 			public string ImageUrl { get; set; }
 			public string Description { get; set; }
+		}
+	}
+
+
+	public partial class ExportProfileDetailsModel : EntityModelBase
+	{
+		[SmartResourceDisplayName("Admin.DataExchange.Export.ExportFiles")]
+		public List<string> ExportFiles { get; set; }
+
+		public string ZipPath { get; set; }
+
+		[SmartResourceDisplayName("Admin.DataExchange.Export.ExportFiles")]
+		public int ExportFileCount
+		{
+			get
+			{
+				return (ExportFiles.Count + (ZipPath.HasValue() ? 1 : 0));
+			}
 		}
 	}
 }

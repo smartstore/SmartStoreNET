@@ -27,11 +27,12 @@
 			<tr>
 				<th class="centered">@T("Common.Image")</th>
 				<th>@T("Admin.DataExchange.Export.Name")</th>
+				<th class="centered">@T("Admin.DataExchange.Export.IsSystemProfile")</th>
 				<th>@T("Common.Provider")</th>
 				<th class="centered">@T("Common.Enabled")</th>
 				<th>@T("Admin.DataExchange.Export.EntityType")</th>
 				<th class="centered">@T("Admin.DataExchange.Export.FileExtension")</th>
-				<th class="centered">@T("Admin.DataExchange.Export.IsSystemProfile")</th>
+				<th class="centered">@T("Admin.DataExchange.Export.ExportFiles")</th>
 				<th>@T("Admin.System.ScheduleTasks.LastStart")</th>
 				<th>@T("Admin.System.ScheduleTasks.NextRun")</th>
 				<th>@T("Admin.Common.Actions")</th>
@@ -40,7 +41,7 @@
 		<tbody>
 			@foreach (var profile in Model)
 			{
-				<tr data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
+				<tr data-profile-id="@profile.Id" data-task-id="@profile.ScheduleTaskId" class="@(profile.Enabled ? "" : "disabled")">
 					<td class="centered">
 						<img src="@profile.Provider.ThumbnailUrl" alt="@profile.Provider.FriendlyName" />
 					</td>
@@ -50,6 +51,9 @@
 						{
 							<div class="muted">@profile.SystemName</div>
 						}
+					</td>
+					<td class="centered">
+						@Html.SymbolForBool(profile.IsSystemProfile)
 					</td>
 					<td>
 						@if (profile.Provider.ConfigurationUrl.HasValue())
@@ -71,8 +75,8 @@
 					<td class="centered">
 						@Html.IconForFileExtension(profile.Provider.FileExtension, true)
 					</td>
-					<td class="centered">
-						@Html.SymbolForBool(profile.IsSystemProfile)
+					<td id="ExportFileCount@(profile.Id)" class="centered">
+						@Html.Partial("ProfileFileCount", profile.Details)
 					</td>
 					<td>
 						<div class="last-run-info">
@@ -123,6 +127,17 @@ else
 	<div class="modal-ask-delete hide">@T("Admin.Common.DeleteConfirmation")</div>
 	<div class="modal-footer">
 		<button class="btn btn-primary">@T("Common.OK")</button>
+		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
+	</div>
+</div>
+
+<div id="export-profile-file-dialog" class="modal hide fade" tabindex="-1">
+	<div class="modal-header">
+		<button type="button" class="close" data-dismiss="modal"><b>x</b></button>
+		<h4 class="caption">@T("Admin.DataExchange.Export.ExportFiles")</h4>
+	</div>
+	<div class="modal-body"></div>
+	<div class="modal-footer">
 		<button class="btn" data-dismiss="modal">@T("Common.Cancel")</button>
 	</div>
 </div>
@@ -179,6 +194,27 @@ else
 			});
 
 			dialog.modal('show');
+			return false;
+		});
+
+		// show profile file dialog
+		$(document).on('click', '.export-file-count', function (e) {
+			e.preventDefault();
+			var fileDialog = $('#export-profile-file-dialog'),
+				id = $(this).closest('tr').attr('data-profile-id');
+
+			fileDialog.find('.modal-body').empty();
+
+			$({}).doAjax({
+				type: 'GET',
+				url: '@Url.Action("ProfileFileDetails")?profileId=' + id,
+				smallIcon: fileDialog.find('.modal-body'),
+				callbackSuccess: function (response) {
+					fileDialog.find('.modal-body').html(response);
+				}
+			});
+
+			fileDialog.modal('show');
 			return false;
 		});
 
@@ -295,10 +331,13 @@ else
 				tr.find('.next-run-info').addClass('hide');
 			},
 			onTaskCompleted: function (taskId, el) {
-				var tr = el.closest('tr');
+				var tr = el.closest('tr'),
+					profileId = tr.attr('data-profile-id');
+
 				tr.find('.btn-run-task').removeClass('hide');
 				tr.find('.btn-cancel-task').addClass('hide');
 				tr.find('.btn-log').removeClass('hide');
+
 				$.ajax({
 					cache: false,
 					global: false,
@@ -309,6 +348,10 @@ else
 						tr.find('.next-run-info').html(data.nextRunHtml).removeClass("hide");
 						tr.find('.last-run-info').html(data.lastRunHtml);
 					}
+				});
+
+				$.get('@Url.Action("ProfileListDetails")?profileId=' + profileId, function (response) {
+					$('#ExportFileCount' + profileId).html(response.exportFileCount || '');
 				});
 			}
 		});

@@ -16,12 +16,12 @@ using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
+using SmartStore.Core.IO;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
-using SmartStore.Services.DataExchange.Internal;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -106,6 +106,20 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
+		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile)
+		{
+			var zipPath = profile.GetExportZipPath();
+
+			var model = new ExportProfileDetailsModel
+			{
+				Id = profile.Id,
+				ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null),
+                ExportFiles = profile.GetExportFiles()
+			};
+
+			return model;
+        }
+
 		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
 			model.Id = profile.Id;
@@ -120,12 +134,14 @@ namespace SmartStore.Admin.Controllers
 			model.ScheduleTaskName = profile.ScheduleTask.Name.NaIfEmpty();
 			model.IsTaskRunning = profile.ScheduleTask.IsRunning;
 			model.IsTaskEnabled = profile.ScheduleTask.Enabled;
-			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath());
+			model.LogFileExists = System.IO.File.Exists(profile.GetExportLogPath());
 			model.HasActiveProvider = (provider != null);
 			model.FileNamePatternDescriptions = T("Admin.DataExchange.Export.FileNamePatternDescriptions").Text.SplitSafe(";");
 
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
+
+			model.Details = PrepareProfileDetailsModel(profile);
 
 			if (provider != null)
 			{
@@ -145,7 +161,7 @@ namespace SmartStore.Admin.Controllers
 				model.Provider.EntityTypeName = provider.Value.EntityType.GetLocalizedEnum(_services.Localization, _services.WorkContext);
 				model.Provider.FileExtension = provider.Value.FileExtension;
 			}
-		}
+        }
 
 		private void PrepareProfileModelForEdit(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
 		{
@@ -478,6 +494,41 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
+		public ActionResult ProfileListDetails(int profileId)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			{
+				var profile = _exportService.GetExportProfileById(profileId);
+				if (profile != null)
+				{
+					var model = PrepareProfileDetailsModel(profile);
+
+					return Json(new
+					{
+						exportFileCount = this.RenderPartialViewToString("ProfileFileCount", model)
+                    }, JsonRequestBehavior.AllowGet);
+				}
+			}
+
+			return new EmptyResult();
+        }
+
+		public ActionResult ProfileFileDetails(int profileId)
+		{
+			if (_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+			{
+				var profile = _exportService.GetExportProfileById(profileId);
+				if (profile != null)
+				{
+					var model = PrepareProfileDetailsModel(profile);
+
+					return PartialView(model);
+				}
+			}
+
+			return new EmptyResult();
+		}
+
 		public ActionResult Create()
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
@@ -742,7 +793,7 @@ namespace SmartStore.Admin.Controllers
 				GridPageSize = DataExporter.PageSize,
 				EntityType = provider.Value.EntityType,
 				TotalRecords = totalRecords,
-				LogFileExists = System.IO.File.Exists(profile.GetExportLogFilePath()),
+				LogFileExists = System.IO.File.Exists(profile.GetExportLogPath()),
 				UsernamesEnabled = _customerSettings.Value.UsernamesEnabled
 			};
 
@@ -979,11 +1030,33 @@ namespace SmartStore.Admin.Controllers
 			if (profile == null)
 				return RedirectToAction("List");
 
-			var path = profile.GetExportLogFilePath();
+			var path = profile.GetExportLogPath();
 			var stream = new FileStream(path, FileMode.Open);
 
 			var result = new FileStreamResult(stream, "text/plain; charset=utf-8");
 			result.FileDownloadName = profile.Name.ToValidFileName() + "-log.txt";
+
+			return result;
+		}
+
+		public ActionResult DownloadExportFile(int id, string name)
+		{
+			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageExports))
+				return AccessDeniedView();
+
+			var profile = _exportService.GetExportProfileById(id);
+			if (profile == null)
+				return RedirectToAction("List");
+
+			var path = Path.Combine(profile.GetExportFolder(true), name);
+
+            if (!System.IO.File.Exists(path))
+				path = Path.Combine(profile.GetExportFolder(false), name);
+
+			var stream = new FileStream(path, FileMode.Open);
+
+			var result = new FileStreamResult(stream, MimeTypes.MapNameToMimeType(path));
+			result.FileDownloadName = Path.GetFileName(path);
 
 			return result;
 		}

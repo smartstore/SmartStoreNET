@@ -415,22 +415,21 @@ namespace SmartStore.Services.DataExchange
 			return (ctx.ExecuteContext.Abort != ExportAbortion.Hard);
 		}
 
-		private void Deploy(DataExporterContext ctx)
+		private void Deploy(DataExporterContext ctx, string zipPath)
 		{
-			var containerManager = EngineContext.Current.ContainerManager;
 			var allFiles = System.IO.Directory.GetFiles(ctx.FolderContent, "*.*", SearchOption.AllDirectories);
 
 			var context = new ExportDeploymentContext
 			{
 				Log = ctx.Log,
 				FolderContent = ctx.FolderContent,
-				ZipPath = ctx.ZipPath
+				ZipPath = zipPath
 			};
 
 			foreach (var deployment in ctx.Request.Profile.Deployments.OrderBy(x => x.DeploymentTypeId).Where(x => x.Enabled))
 			{
 				if (deployment.CreateZip)
-					context.DeploymentFiles = new string[] { ctx.ZipPath };
+					context.DeploymentFiles = new string[] { zipPath };
 				else
 					context.DeploymentFiles = allFiles;
 
@@ -977,11 +976,14 @@ namespace SmartStore.Services.DataExchange
 			if (ctx.Request.Profile == null || !ctx.Request.Profile.Enabled)
 				return;
 
-			FileSystemHelper.Delete(ctx.LogPath);
-			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
-			FileSystemHelper.Delete(ctx.ZipPath);
+			var logPath = ctx.Request.Profile.GetExportLogPath();
+			var zipPath = ctx.Request.Profile.GetExportZipPath();
 
-			using (var logger = new TraceLogger(ctx.LogPath))
+            FileSystemHelper.Delete(logPath);
+			FileSystemHelper.Delete(zipPath);
+			FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
+
+			using (var logger = new TraceLogger(logPath))
 			{
 				try
 				{
@@ -1053,14 +1055,14 @@ namespace SmartStore.Services.DataExchange
 						{
 							if (ctx.Request.Profile.CreateZipArchive || ctx.Request.Profile.Deployments.Any(x => x.Enabled && x.CreateZip))
 							{
-								ZipFile.CreateFromDirectory(ctx.FolderContent, ctx.ZipPath, CompressionLevel.Fastest, true);
+								ZipFile.CreateFromDirectory(ctx.FolderContent, zipPath, CompressionLevel.Fastest, true);
 							}
 
 							if (ctx.Request.Profile.Deployments.Any(x => x.Enabled))
 							{
 								SetProgress(ctx, T("Common.Deployment"));
 
-								Deploy(ctx);
+								Deploy(ctx, zipPath);
 							}
 						}
 
@@ -1127,7 +1129,7 @@ namespace SmartStore.Services.DataExchange
 			// post process order entities
 			if (ctx.EntityIdsLoaded.Count > 0 && ctx.Request.Provider.Value.EntityType == ExportEntityType.Order && ctx.Projection.OrderStatusChange != ExportOrderStatusChange.None)
 			{
-				using (var logger = new TraceLogger(ctx.LogPath))
+				using (var logger = new TraceLogger(logPath))
 				{
 					try
 					{

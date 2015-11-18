@@ -1,0 +1,23 @@
+﻿@using SmartStore.Admin.Models.DataExchange;
+@using SmartStore.Web.Framework;
+@model ExportProfileDetailsModel
+@{
+	Layout = null;
+}
+@helper FileDownloadLink(string path, string fileName)
+{
+	<div>
+		@Html.IconForFileExtension(Path.GetExtension(fileName), false)
+		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
+	</div>
+}
+@if (Model.ZipPath.HasValue())
+{
+	<p>
+		@FileDownloadLink(Model.ZipPath, Path.GetFileName(Model.ZipPath))
+	</p>
+}
+@foreach (var path in Model.ExportFiles)
+{
+	@FileDownloadLink(path, Path.GetFileName(path))
+}

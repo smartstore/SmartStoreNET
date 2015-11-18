@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
+using System.Linq;
 using System.Text;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Stores;
@@ -57,11 +59,39 @@ namespace SmartStore.Services.DataExchange
 		/// </summary>
 		/// <param name="profile">Export profile</param>
 		/// <returns>Log file path</returns>
-		public static string GetExportLogFilePath(this ExportProfile profile)
+		public static string GetExportLogPath(this ExportProfile profile)
 		{
-			var path = Path.Combine(profile.GetExportFolder(), "log.txt");
-			return path;
+			return Path.Combine(profile.GetExportFolder(), "log.txt");
 		}
+
+		/// <summary>
+		/// Gets the ZIP path for a profile
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <returns>ZIP file path</returns>
+		public static string GetExportZipPath(this ExportProfile profile)
+		{
+			return Path.Combine(profile.GetExportFolder(), profile.FolderName + ".zip");
+		}
+
+		/// <summary>
+		/// Gets existing export files for an export profile
+		/// </summary>
+		/// <param name="profile">Export profile</param>
+		/// <returns>List of file names</returns>
+		public static List<string> GetExportFiles(this ExportProfile profile)
+		{
+			var exportFolder = profile.GetExportFolder(true);
+
+			if (System.IO.Directory.Exists(exportFolder))
+			{
+				return System.IO.Directory.EnumerateFiles(exportFolder, "*", SearchOption.TopDirectoryOnly)
+					.OrderBy(x => x)
+					.ToList();
+			}
+
+			return new List<string>();
+        }
 
 		/// <summary>
 		/// Resolves the file name pattern for an export profile

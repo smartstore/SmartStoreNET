@@ -197,7 +197,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.MissingSystemProfile",
 				"The system export profile {0} was not found.",
 				"Das System-Exportprofil {0} wurde nicht gefunden.");
-		}
+
+			builder.AddOrUpdate("Admin.DataExchange.Export.ExportFiles",
+				"Export files",
+				"Exportdateien");
+        }
 	}
 
 

@@ -21,7 +21,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
-using SmartStore.Services.DataExchange.Export.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -911,25 +910,25 @@ namespace SmartStore.Admin.Controllers
 		[Compress]
         public ActionResult ExportXmlAll()
         {
-			return StartExport(OrderXmlExportProvider.SystemName, null);
+			return StartExport("OrderXmlExportProvider.SystemName", null);
         }
 
 		[HttpPost, Compress]
         public ActionResult ExportXmlSelected(string selectedIds)
         {
-			return StartExport(OrderXmlExportProvider.SystemName, selectedIds);
+			return StartExport("OrderXmlExportProvider.SystemName", selectedIds);
         }
 
 		[Compress]
 	    public ActionResult ExportExcelAll()
         {
-			return StartExport(OrderXlsxExportProvider.SystemName, null);
+			return StartExport("OrderXlsxExportProvider.SystemName", null);
         }
 
 		[HttpPost, Compress]
         public ActionResult ExportExcelSelected(string selectedIds)
         {
-			return StartExport(OrderXlsxExportProvider.SystemName, selectedIds);
+			return StartExport("OrderXlsxExportProvider.SystemName", selectedIds);
         }
 
 		public ActionResult ExportPdf(bool all, string selectedIds = null)

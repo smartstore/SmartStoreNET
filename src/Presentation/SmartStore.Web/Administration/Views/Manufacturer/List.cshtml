@@ -3,7 +3,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.Catalog.Manufacturers").Text;
 }
 <div class="section-header">
@@ -12,14 +11,18 @@
         @T("Admin.Catalog.Manufacturers")
     </div>
     <div class="options">
+		@Html.Widget("admin_button_toolbar_before")
+
         <a href="@Url.Action("Create")" class="btn btn-primary">
 			<i class="fa fa-plus"></i>
 			@T("Admin.Common.AddNew")
 		</a>
-        <a href="@Url.Action("ExportXml")" class="btn">
+        @*<a href="@Url.Action("ExportXml")" class="btn">
 			<i class="fa fa-arrow-circle-o-down"></i>
 			@T("Admin.Common.ExportToXml")
-		</a>
+		</a>*@
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
 <table width="100%">

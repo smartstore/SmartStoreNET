@@ -15,10 +15,13 @@
             @T("Admin.Customers.Customers")
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
 			<a href="@Url.Action("Create")" class="btn btn-primary">
 				<i class="fa fa-plus"></i> @T("Admin.Common.AddNew")
 			</a>
-			<div class="btn-group">
+
+			@*<div class="btn-group">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					@T("Common.Export")
 					<span class="fa fa-caret-down"></span>
@@ -50,7 +53,9 @@
 						</a>
 					</li>
 				</ul>
-			</div>
+			</div>*@
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     <table width="100%">

@@ -17,13 +17,35 @@
             @T("Admin.Orders")
         </div>
         <div class="options">
-			<div class="btn-group pull-right">
+			@Html.Widget("admin_button_toolbar_before")
+
+			<div class="btn-group">
+				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
+					@T("Admin.Common.Export.PDF")
+					<span class="fa fa-caret-down"></span>
+				</a>
+				<ul class="dropdown-menu pull-right">
+					<li>
+						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", "Order", new { all = false })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>
+							@T("Admin.Common.ExportToPdf.Selected")
+						</a>
+					</li>
+					<li>
+						<a href="@Url.Action("ExportPdf", new { all = true })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>
+							@T("Admin.Common.ExportToPdf.All")
+						</a>
+					</li>
+				</ul>
+			</div>
+
+			@*<div class="btn-group pull-right">
 				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
 					@T("Common.Export")
 					<span class="fa fa-caret-down"></span>
 				</a>
 				<ul class="dropdown-menu">
-					@Html.Widget("admin_menu_exportorders_top")
 					<li>
 						<a href="@Url.Action("ExportXmlAll")">
 							<i class="fa fa-fw fa-code"></i>
@@ -61,9 +83,10 @@
 							@T("Admin.Common.ExportToPdf.Selected")
 						</a>
 					</li>
-					@Html.Widget("admin_menu_exportorders_bottom")
 				</ul>
-			</div>
+			</div>*@
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     <table style="width: 100%">

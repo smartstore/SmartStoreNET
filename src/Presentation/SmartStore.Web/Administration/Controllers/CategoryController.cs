@@ -14,7 +14,6 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Export;
-using SmartStore.Services.DataExchange.Export.Providers;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Helpers;
@@ -768,11 +767,11 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-			var profile = _exportProfileService.GetSystemExportProfile(CategoryXmlExportProvider.SystemName);
+			var profile = _exportProfileService.GetSystemExportProfile("CategoryXmlExportProvider.SystemName");
 
 			if (profile == null)
 			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", CategoryXmlExportProvider.SystemName));
+				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", "CategoryXmlExportProvider.SystemName"));
 			}
 			else
 			{

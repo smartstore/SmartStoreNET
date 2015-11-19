@@ -9,9 +9,13 @@
         @T("Admin.Catalog.Categories.Manage") @Html.ActionLink("(" + T("Admin.Catalog.Categories.SwitchToTreeView") + ")", "Tree")
     </div>
     <div class="options">
-        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn">
+		@Html.Widget("admin_button_toolbar_before")
+
+        @*<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn">
 			<i class="fa fa-arrow-circle-o-down"></i> @T("Admin.Common.ExportToXml")
-		</a>
+		</a>*@
+
+		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
 <table>

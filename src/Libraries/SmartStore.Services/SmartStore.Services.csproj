@@ -177,15 +177,6 @@
     <Compile Include="DataExchange\DataExporter.cs" />
     <Compile Include="DataExchange\Internal\DataExporterContext.cs" />
     <Compile Include="DataExchange\DynamicEntityHelper.cs" />
-    <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\CustomerXlsxExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\OrderXlsxExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\ManufacturerXmlExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\ProductXlsxExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\ProductXmlExportProvider.cs" />
-    <Compile Include="DataExchange\Providers\OrderXmlExportProvider.cs" />
     <Compile Include="DataExchange\Internal\CategoryExportContext.cs" />
     <Compile Include="DataExchange\Internal\CustomerExportContext.cs" />
     <Compile Include="DataExchange\Internal\ManufacturerExportContext.cs" />

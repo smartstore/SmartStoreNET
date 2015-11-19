@@ -109,6 +109,8 @@ namespace SmartStore.Data.Migrations
 
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
+			builder.AddOrUpdate("Admin.Common.Export.PDF", "PDF Export", "PDF Export");
+
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.NewsLetterSubscription",
 				"Newsletter Subscribers",
 				"Newsletter Abonnenten");

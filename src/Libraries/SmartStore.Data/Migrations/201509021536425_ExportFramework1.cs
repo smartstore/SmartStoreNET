@@ -90,8 +90,8 @@ namespace SmartStore.Data.Migrations
 				"Export von Profile \"{0}\" ist abgeschlossen");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.CompletedEmail.Body",
-				"This is an automatic notification of store \"{0}\" about a recent data export. You can disable the sending of this message in the details of the export profile.",
-				"Dies ist eine automatische Benachrichtung von Shop \"{0}\" über einen erfolgten Datenexport. Sie können den Versand dieser Mitteilung in den Details des Exportprofils deaktivieren.");
+				"This is an automatic notification of store \"{0}\" about a recent data export.",
+				"Dies ist eine automatische Benachrichtung von Shop \"{0}\" über einen erfolgten Datenexport.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.FolderName",
 				"Folder name",

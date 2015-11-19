@@ -9,6 +9,7 @@ using System.Web;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Media;
@@ -16,10 +17,8 @@ using SmartStore.Core.Domain.Messages;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Email;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
-using SmartStore.Data;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
@@ -79,8 +78,9 @@ namespace SmartStore.Services.DataExchange
 		private readonly Lazy<IRepository<NewsLetterSubscription>> _subscriptionRepository;
 		private readonly Lazy<IRepository<Order>> _orderRepository;
 
-		private Lazy<DataExchangeSettings> _dataExchangeSettings;
-		private Lazy<MediaSettings> _mediaSettings;
+		private readonly Lazy<DataExchangeSettings> _dataExchangeSettings;
+		private readonly Lazy<MediaSettings> _mediaSettings;
+		private readonly Lazy<ContactDataSettings> _contactDataSettings;
 
 		public DataExporter(
 			ICommonServices services,
@@ -116,7 +116,8 @@ namespace SmartStore.Services.DataExchange
 			Lazy<IRepository<NewsLetterSubscription>> subscriptionRepository,
 			Lazy<IRepository<Order>> orderRepository,
             Lazy<DataExchangeSettings> dataExchangeSettings,
-			Lazy<MediaSettings> mediaSettings)
+			Lazy<MediaSettings> mediaSettings,
+			Lazy<ContactDataSettings> contactDataSettings)
 		{
 			_services = services;
 			_dbContext = dbContext;
@@ -154,6 +155,7 @@ namespace SmartStore.Services.DataExchange
 
 			_dataExchangeSettings = dataExchangeSettings;
 			_mediaSettings = mediaSettings;
+			_contactDataSettings = contactDataSettings;
 
 			T = NullLocalizer.Instance;
 		}
@@ -467,24 +469,77 @@ namespace SmartStore.Services.DataExchange
 			}
 		}
 
-		private void SendCompletionEmail(DataExporterContext ctx)
+		private void SendCompletionEmail(DataExporterContext ctx, string zipPath)
 		{
-			var emailAccount = _emailAccountService.Value.GetEmailAccountById(ctx.Request.Profile.EmailAccountId);
+			var	emailAccount = _emailAccountService.Value.GetEmailAccountById(ctx.Request.Profile.EmailAccountId);
+
+			if (emailAccount == null)
+				emailAccount = _emailAccountService.Value.GetDefaultEmailAccount();
+
+			var downloadUrl = "{0}Admin/Export/DownloadExportFile/{1}?name=".FormatInvariant(_services.WebHelper.GetStoreLocation(false), ctx.Request.Profile.Id);
+
+			var languageId = ctx.Projection.LanguageId ?? 0;
 			var smtpContext = new SmtpContext(emailAccount);
 			var message = new EmailMessage();
 
 			var storeInfo = "{0} ({1})".FormatInvariant(ctx.Store.Name, ctx.Store.Url);
+			var intro =_services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Body", languageId).FormatInvariant(storeInfo);
+			var body = new StringBuilder(intro);
 
-			message.To.AddRange(ctx.Request.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
+			if (ctx.Result.LastError.HasValue())
+			{
+				body.AppendFormat("<p>{0}</p>", ctx.Result.LastError);
+			}
+
+			if (ctx.IsFileBasedExport && File.Exists(zipPath))
+			{
+				var fileName = Path.GetFileName(zipPath);
+				body.AppendFormat("<p><a href='{0}' download>{1}</a></p>", downloadUrl + HttpUtility.UrlDecode(fileName), fileName);
+			}
+
+			if (ctx.IsFileBasedExport && ctx.Result.Files.Count > 0)
+			{
+				body.Append("<p>");
+				foreach (var file in ctx.Result.Files)
+				{
+					body.AppendFormat("<div><a href='{0}' download>{1}</a></div>", downloadUrl + HttpUtility.UrlDecode(file.FileName), file.FileName);
+				}
+				body.Append("</p>");
+			}
+
 			message.From = new EmailAddress(emailAccount.Email, emailAccount.DisplayName);
 
-			message.Subject = _services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Subject", ctx.Projection.LanguageId ?? 0)
+			if (ctx.Request.Profile.CompletedEmailAddresses.HasValue())
+				message.To.AddRange(ctx.Request.Profile.CompletedEmailAddresses.SplitSafe(",").Where(x => x.IsEmail()).Select(x => new EmailAddress(x)));
+
+			if (message.To.Count == 0 && _contactDataSettings.Value.WebmasterEmailAddress.HasValue())
+				message.To.Add(new EmailAddress(_contactDataSettings.Value.WebmasterEmailAddress));
+
+			if (message.To.Count == 0 && _contactDataSettings.Value.CompanyEmailAddress.HasValue())
+				message.To.Add(new EmailAddress(_contactDataSettings.Value.CompanyEmailAddress));
+
+			if (message.To.Count == 0)
+				message.To.Add(new EmailAddress(emailAccount.Email, emailAccount.DisplayName));
+
+			message.Subject = _services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Subject", languageId)
 				.FormatInvariant(ctx.Request.Profile.Name);
 
-			message.Body = _services.Localization.GetResource("Admin.DataExchange.Export.CompletedEmail.Body", ctx.Projection.LanguageId ?? 0)
-				.FormatInvariant(storeInfo);
+			message.Body = body.ToString();
 
 			_emailSender.Value.SendEmail(smtpContext, message);
+
+			//_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
+			//{
+			//	From = emailAccount.Email,
+			//	FromName = emailAccount.DisplayName,
+			//	To = message.To.First().Address,
+			//	Subject = message.Subject,
+			//	Body = message.Body,
+			//	CreatedOnUtc = DateTime.UtcNow,
+			//	EmailAccountId = emailAccount.Id,
+			//	SendManually = true
+			//});
+			//_dbContext.SaveChanges();
 		}
 
 		#endregion
@@ -1068,7 +1123,11 @@ namespace SmartStore.Services.DataExchange
 
 						if (ctx.Request.Profile.EmailAccountId != 0 && ctx.Request.Profile.CompletedEmailAddresses.HasValue())
 						{
-							SendCompletionEmail(ctx);
+							SendCompletionEmail(ctx, zipPath);
+						}
+						else if (ctx.Request.Profile.IsSystemProfile)
+						{
+							SendCompletionEmail(ctx, zipPath);
 						}
 					}
 				}

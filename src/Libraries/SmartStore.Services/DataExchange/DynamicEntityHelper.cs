@@ -22,13 +22,12 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Html;
 using SmartStore.Services.Catalog;
-using SmartStore.Services.DataExchange.Events;
-using SmartStore.Services.DataExchange.Internal;
+using SmartStore.Services.DataExchange.Export.Events;
+using SmartStore.Services.DataExchange.Export.Internal;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Seo;
-using SmartStore.Utilities.Reflection;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public partial class DataExporter
 	{
@@ -981,31 +980,6 @@ namespace SmartStore.Services.DataExchange
 					var dynObject = ToDynamic(ctx, productClone, combinations, combination);
 					result.Add(dynObject);
 				}
-
-				// TODO: work with Entry().CurrentValues instead of Reflection.
-				// First attach the object, determine all values and detach again.
-				//var properties = FastProperty.GetProperties(product.GetUnproxiedType())
-				//	.Values
-				//	.Where(x => x.Property.CanRead && x.Property.CanWrite);
-
-				//// fetch all property values once per product
-				//foreach (var property in properties)
-				//{
-				//	productValues.Add(property.Name, property.GetValue(product));
-				//}
-
-				//foreach (var combination in combinations.Where(x => x.IsActive))
-				//{
-				//	var clone = new Product();
-
-				//	foreach (var property in properties)
-				//	{
-				//		property.SetValue(clone, productValues[property.Name]);
-				//	}
-
-				//	var dynObject = ToDynamic(ctx, clone, combinations, combination);
-				//	result.Add(dynObject);
-				//}
 			}
 			else
 			{

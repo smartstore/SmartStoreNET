@@ -14,6 +14,7 @@ using SmartStore.Core.Caching;
 using SmartStore.Core.Configuration;
 using SmartStore.Core.Data;
 using SmartStore.Core.Data.Hooks;
+using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Email;
 using SmartStore.Core.Events;
 using SmartStore.Core.Fakes;
@@ -39,6 +40,7 @@ using SmartStore.Services.Common;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange;
+using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
@@ -64,6 +66,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Services.Themes;
 using SmartStore.Services.Topics;
 using SmartStore.Utilities;
+using SmartStore.Utilities.Reflection;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc.Bundles;
@@ -74,9 +77,6 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
-using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Utilities.Reflection;
-using SmartStore.Services.DataExchange.Internal;
 
 namespace SmartStore.Web.Framework
 {

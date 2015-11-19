@@ -6,7 +6,7 @@ using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public delegate void ProgressValueSetter(int value, int maximum, string message);
 	public delegate void ProgressMessageSetter(string message);

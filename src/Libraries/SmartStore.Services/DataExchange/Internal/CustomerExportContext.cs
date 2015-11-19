@@ -5,7 +5,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange.Export.Internal
 {
 	public class CustomerExportContext
 	{

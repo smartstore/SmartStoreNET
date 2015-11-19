@@ -1,7 +1,7 @@
 ﻿using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public partial interface IExportProvider : IProvider, IUserEditable
 	{

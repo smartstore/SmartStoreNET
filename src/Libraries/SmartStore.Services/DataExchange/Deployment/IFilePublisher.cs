@@ -1,7 +1,7 @@
 ﻿using SmartStore.Core.Domain;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Services.DataExchange.Deployment
+namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public interface IFilePublisher
 	{

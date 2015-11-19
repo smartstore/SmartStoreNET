@@ -2,7 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Core;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public interface IExportDataSegmenterConsumer
 	{

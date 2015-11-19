@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.Providers
+namespace SmartStore.Services.DataExchange.Export.Providers
 {
 	/// <summary>
 	/// Exports Excel formatted order data to a file

@@ -875,7 +875,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				appPath + @"Content\files\exportimport\",
 				appPath + @"Exchange\",
-				appPath + @"App_Data\_temp\Profile\Export\"
+				appPath + @"App_Data\ExportProfiles\"
 			};
 
 			foreach (var path in paths)

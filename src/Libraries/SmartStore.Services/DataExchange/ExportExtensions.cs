@@ -10,7 +10,7 @@ using SmartStore.Core.Plugins;
 using SmartStore.Services.Localization;
 using SmartStore.Utilities;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public static class ExportExtensions
 	{

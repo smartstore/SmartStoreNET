@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Common;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Providers;
 using SmartStore.GoogleMerchantCenter.Services;
-using SmartStore.Services.DataExchange;
+using SmartStore.Services.DataExchange.Export;
 using SmartStore.Web.Framework.Controllers;
 using Telerik.Web.Mvc;
 

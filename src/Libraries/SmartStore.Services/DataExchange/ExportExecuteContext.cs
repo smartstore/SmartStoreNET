@@ -5,7 +5,7 @@ using System.Threading;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public interface IExportExecuteContext
 	{

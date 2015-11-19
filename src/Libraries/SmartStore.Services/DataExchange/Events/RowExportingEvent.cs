@@ -1,11 +1,6 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using SmartStore.Core.Domain.DataExchange;
+﻿using SmartStore.Core.Domain.DataExchange;
 
-namespace SmartStore.Services.DataExchange.Events
+namespace SmartStore.Services.DataExchange.Export.Events
 {
 	// TODO: Another event message must be implemented, say 'ColumnsBuildingEvent'
 	// The consumer of this event (most likely a plugin) could push a list of specific column headers

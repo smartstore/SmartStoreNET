@@ -7,7 +7,7 @@ using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.Providers
+namespace SmartStore.Services.DataExchange.Export.Providers
 {
 	/// <summary>
 	/// Exports XML formatted order data to a file

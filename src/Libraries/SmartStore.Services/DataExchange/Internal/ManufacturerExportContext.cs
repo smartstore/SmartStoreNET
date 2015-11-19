@@ -5,7 +5,7 @@ using SmartStore.Collections;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Media;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange.Export.Internal
 {
 	internal class ManufacturerExportContext
 	{

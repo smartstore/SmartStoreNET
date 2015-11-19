@@ -9,7 +9,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
-using SmartStore.Services.DataExchange;
+using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 
 namespace SmartStore.GoogleMerchantCenter.Providers

@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Discounts;
 using SmartStore.Services.Catalog;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange.Export.Internal
 {
 	internal class ProductExportContext : PriceCalculationContext
 	{

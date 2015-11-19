@@ -5,9 +5,6 @@ using SmartStore.GoogleMerchantCenter.Models;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Web.Framework.Events;
 using SmartStore.Web.Framework.Mvc;
-using SmartStore.Services.DataExchange.Events;
-using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Core.Domain.Catalog;
 
 namespace SmartStore.GoogleMerchantCenter
 {

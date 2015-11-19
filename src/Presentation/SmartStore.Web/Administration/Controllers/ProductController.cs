@@ -28,8 +28,8 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange;
-using SmartStore.Services.DataExchange.Providers;
+using SmartStore.Services.DataExchange.Export;
+using SmartStore.Services.DataExchange.Export.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.ExportImport;
@@ -51,7 +51,7 @@ using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
 {
-    [AdminAuthorize]
+	[AdminAuthorize]
     public partial class ProductController : AdminControllerBase
     {
         #region Fields

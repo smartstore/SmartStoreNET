@@ -5,7 +5,7 @@ using System.Net;
 using SmartStore.Core.Domain;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Services.DataExchange.Deployment
+namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class FtpFilePublisher : IFilePublisher
 	{

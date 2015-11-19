@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	/// <summary>
 	/// Serves information about export provider specific configuration

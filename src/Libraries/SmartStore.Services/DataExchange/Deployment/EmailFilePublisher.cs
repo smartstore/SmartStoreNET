@@ -9,7 +9,7 @@ using SmartStore.Core.IO;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Messages;
 
-namespace SmartStore.Services.DataExchange.Deployment
+namespace SmartStore.Services.DataExchange.Export.Deployment
 {
 	public class EmailFilePublisher : IFilePublisher
 	{

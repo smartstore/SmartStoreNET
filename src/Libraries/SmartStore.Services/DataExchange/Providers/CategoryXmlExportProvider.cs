@@ -4,7 +4,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 
-namespace SmartStore.Services.DataExchange.Providers
+namespace SmartStore.Services.DataExchange.Export.Providers
 {
 	/// <summary>
 	/// Exports XML formatted category data to a file

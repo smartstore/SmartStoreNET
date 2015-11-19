@@ -12,7 +12,7 @@ using SmartStore.Services.Catalog;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Stores;
 
-namespace SmartStore.Services.DataExchange.Providers
+namespace SmartStore.Services.DataExchange.Export.Providers
 {
 	/// <summary>
 	/// Exports Excel formatted product data to a file

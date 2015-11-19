@@ -8,7 +8,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Customers;
 
-namespace SmartStore.Services.DataExchange.Providers
+namespace SmartStore.Services.DataExchange.Export.Providers
 {
 	/// <summary>
 	/// Exports Excel formatted customer data to a file

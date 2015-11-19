@@ -10,7 +10,7 @@ using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange.Export.Internal
 {
 	internal class DataExporterContext
 	{

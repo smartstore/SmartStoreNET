@@ -1,7 +1,7 @@
 ﻿using System.Collections.Generic;
 using SmartStore.ComponentModel;
 
-namespace SmartStore.Services.DataExchange.Internal
+namespace SmartStore.Services.DataExchange.Export.Internal
 {
 	internal class DynamicEntity : HybridExpando
 	{

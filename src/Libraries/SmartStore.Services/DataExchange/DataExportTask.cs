@@ -2,7 +2,7 @@
 using SmartStore.Core.Localization;
 using SmartStore.Services.Tasks;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	// note: namespace persisted in ScheduleTask.Type
 	public partial class DataExportTask : ITask

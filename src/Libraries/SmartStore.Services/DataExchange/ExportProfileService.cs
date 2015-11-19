@@ -13,7 +13,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Tasks;
 using SmartStore.Utilities;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public partial class ExportProfileService : IExportProfileService
 	{

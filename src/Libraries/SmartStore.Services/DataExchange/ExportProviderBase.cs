@@ -1,6 +1,6 @@
 ﻿using SmartStore.Core.Domain.DataExchange;
 
-namespace SmartStore.Services.DataExchange
+namespace SmartStore.Services.DataExchange.Export
 {
 	public abstract class ExportProviderBase : IExportProvider
 	{

@@ -10,8 +10,8 @@ namespace SmartStore.Services.ExportImport
     /// </summary>
     public interface IImportManager
     {
-		ImportResult ImportProductsFromExcel(
-			Stream stream,
+		ImportResult ImportProducts(
+			IDataTable table,
 			CancellationToken cancellationToken,
 			IProgress<ImportProgressInfo> progress = null);
 
@@ -25,9 +25,9 @@ namespace SmartStore.Services.ExportImport
 
 	public static class IImportManagerExtensions
 	{
-		public static ImportResult ImportProductsFromExcel(this IImportManager importManager, Stream stream)
+		public static ImportResult ImportProducts(this IImportManager manager, IDataTable table)
 		{
-			return importManager.ImportProductsFromExcel(stream, CancellationToken.None);
+			return manager.ImportProducts(table, CancellationToken.None);
 		}
 	}
 }

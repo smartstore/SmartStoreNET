@@ -10,7 +10,17 @@ namespace SmartStore
 {
 	public static class StreamExtensions
 	{
-        public static bool ToFile(this Stream srcStream, string path) 
+		public static StreamReader ToStreamReader(this Stream stream, bool leaveOpen)
+		{
+			return new StreamReader(stream, Encoding.UTF8, true, 0x400, leaveOpen);
+		}
+
+		public static StreamReader ToStreamReader(this Stream stream, Encoding encoding, bool detectEncoding, int bufferSize, bool leaveOpen)
+		{
+			return new StreamReader(stream, encoding, detectEncoding, bufferSize, leaveOpen);
+		}
+
+		public static bool ToFile(this Stream srcStream, string path) 
         {
 			if (srcStream == null)
 				return false;

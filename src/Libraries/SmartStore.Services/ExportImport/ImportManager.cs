@@ -138,12 +138,12 @@ namespace SmartStore.Services.ExportImport
 		/// Import products from XLSX file
 		/// </summary>
 		/// <param name="stream">Stream</param>
-		public virtual ImportResult ImportProductsFromExcel(
-			Stream stream,
+		public virtual ImportResult ImportProducts(
+			IDataTable table,
 			CancellationToken cancellationToken,
 			IProgress<ImportProgressInfo> progress = null)
 		{
-			Guard.ArgumentNotNull(() => stream);
+			Guard.ArgumentNotNull(() => table);
 
 			var result = new ImportResult();
 			int saved = 0;
@@ -153,135 +153,134 @@ namespace SmartStore.Services.ExportImport
 
 			using (var scope = new DbContextScope(ctx: _rsProduct.Context, autoDetectChanges: false, proxyCreation: false, validateOnSave: false))
 			{
-                try { 
-				    using (var segmenter = new DataSegmenter<Product>(stream))
-				    {
-					    result.TotalRecords = segmenter.TotalRows;
+                try {
+					var segmenter = new ImportDataSegmenter<Product>(table);
 
-					    while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
-					    {
-						    var batch = segmenter.CurrentBatch;
+					result.TotalRecords = segmenter.TotalRows;
 
-						    // Perf: detach all entities
-						    _rsProduct.Context.DetachAll(false);
+					while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
+					{
+						var batch = segmenter.CurrentBatch;
 
-						    // Update progress for calling thread
-						    if (progress != null)
-						    {
-							    progress.Report(new ImportProgressInfo
-							    {
-								    TotalRecords = result.TotalRecords,
-								    TotalProcessed = segmenter.CurrentSegmentFirstRowIndex - 1,
-								    NewRecords = result.NewRecords,
-								    ModifiedRecords = result.ModifiedRecords,
-								    ElapsedTime = DateTime.UtcNow - result.StartDateUtc,
-								    TotalWarnings = result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
-								    TotalErrors = result.Messages.Count(x => x.MessageType == ImportMessageType.Error),
-							    });
-						    }
+						// Perf: detach all entities
+						_rsProduct.Context.DetachAll(false);
 
-						    // ===========================================================================
-						    // 1.) Import products
-						    // ===========================================================================
-						    try
-						    {
-							    saved = ProcessProducts(batch, result);
-						    }
-						    catch (Exception ex)
-						    {
-							    result.AddError(ex, segmenter.CurrentSegment, "ProcessProducts");
-						    }
+						// Update progress for calling thread
+						if (progress != null)
+						{
+							progress.Report(new ImportProgressInfo
+							{
+								TotalRecords = result.TotalRecords,
+								TotalProcessed = segmenter.CurrentSegmentFirstRowIndex - 1,
+								NewRecords = result.NewRecords,
+								ModifiedRecords = result.ModifiedRecords,
+								ElapsedTime = DateTime.UtcNow - result.StartDateUtc,
+								TotalWarnings = result.Messages.Count(x => x.MessageType == ImportMessageType.Warning),
+								TotalErrors = result.Messages.Count(x => x.MessageType == ImportMessageType.Error),
+							});
+						}
 
-						    // reduce batch to saved (valid) products.
-						    // No need to perform import operations on errored products.
-						    batch = batch.Where(x => x.Entity != null && !x.IsTransient).AsReadOnly();
+						// ===========================================================================
+						// 1.) Import products
+						// ===========================================================================
+						try
+						{
+							saved = ProcessProducts(batch, result);
+						}
+						catch (Exception ex)
+						{
+							result.AddError(ex, segmenter.CurrentSegment, "ProcessProducts");
+						}
 
-						    // update result object
-						    result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
-						    result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
+						// reduce batch to saved (valid) products.
+						// No need to perform import operations on errored products.
+						batch = batch.Where(x => x.Entity != null && !x.IsTransient).ToArray();
 
-						    // ===========================================================================
-						    // 2.) Import SEO Slugs
-						    // IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
-						    //            as Slugs are going to be validated against existing ones in DB.
-						    // ===========================================================================
-						    if (batch.Any(x => x.IsNew || (x.ContainsKey("SeName") || x.NameChanged)))
-						    {
-							    try
-							    {
-								    _rsProduct.Context.AutoDetectChangesEnabled = true;
-								    ProcessSlugs(batch, result);
-							    }
-							    catch (Exception ex)
-							    {
-								    result.AddError(ex, segmenter.CurrentSegment, "ProcessSeoSlugs");
-							    }
-							    finally
-							    {
-								    _rsProduct.Context.AutoDetectChangesEnabled = false;
-							    }
-						    }
+						// update result object
+						result.NewRecords += batch.Count(x => x.IsNew && !x.IsTransient);
+						result.ModifiedRecords += batch.Count(x => !x.IsNew && !x.IsTransient);
 
-						    // ===========================================================================
-						    // 3.) Import Localizations
-						    // ===========================================================================
-						    try
-						    {
-							    ProcessLocalizations(batch, result);
-						    }
-						    catch (Exception ex)
-						    {
-							    result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
-						    }
+						// ===========================================================================
+						// 2.) Import SEO Slugs
+						// IMPORTANT: Unlike with Products AutoCommitEnabled must be TRUE,
+						//            as Slugs are going to be validated against existing ones in DB.
+						// ===========================================================================
+						if (table.HasColumn("SeName") || batch.Any(x => x.IsNew || x.NameChanged))
+						{
+							try
+							{
+								_rsProduct.Context.AutoDetectChangesEnabled = true;
+								ProcessSlugs(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex, segmenter.CurrentSegment, "ProcessSeoSlugs");
+							}
+							finally
+							{
+								_rsProduct.Context.AutoDetectChangesEnabled = false;
+							}
+						}
 
-						    // ===========================================================================
-						    // 4.) Import product category mappings
-						    // ===========================================================================
-						    if (batch.Any(x => x.ContainsKey("CategoryIds")))
-						    {
-							    try
-							    {
-								    ProcessProductCategories(batch, result);
-							    }
-							    catch (Exception ex)
-							    {
-								    result.AddError(ex, segmenter.CurrentSegment, "ProcessProductCategories");
-							    }
-						    }
+						// ===========================================================================
+						// 3.) Import Localizations
+						// ===========================================================================
+						try
+						{
+							ProcessLocalizations(batch, result);
+						}
+						catch (Exception ex)
+						{
+							result.AddError(ex, segmenter.CurrentSegment, "ProcessLocalizations");
+						}
 
-						    // ===========================================================================
-						    // 5.) Import product manufacturer mappings
-						    // ===========================================================================
-						    if (batch.Any(x => x.ContainsKey("ManufacturerIds")))
-						    {
-							    try
-							    {
-								    ProcessProductManufacturers(batch, result);
-							    }
-							    catch (Exception ex)
-							    {
-								    result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
-							    }
-						    }
+						// ===========================================================================
+						// 4.) Import product category mappings
+						// ===========================================================================
+						if (table.HasColumn("CategoryIds"))
+						{
+							try
+							{
+								ProcessProductCategories(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex, segmenter.CurrentSegment, "ProcessProductCategories");
+							}
+						}
+
+						// ===========================================================================
+						// 5.) Import product manufacturer mappings
+						// ===========================================================================
+						if (table.HasColumn("ManufacturerIds"))
+						{
+							try
+							{
+								ProcessProductManufacturers(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex, segmenter.CurrentSegment, "ProcessProductManufacturers");
+							}
+						}
                         
 
-						    // ===========================================================================
-						    // 6.) Import product picture mappings
-						    // ===========================================================================
-						    if (batch.Any(x => x.ContainsKey("Picture1") || x.ContainsKey("Picture2") || x.ContainsKey("Picture3")))
-						    {
-							    try
-							    {
-								    ProcessProductPictures(batch, result);
-							    }
-							    catch (Exception ex)
-							    {
-								    result.AddError(ex, segmenter.CurrentSegment, "ProcessProductPictures");
-							    }
-						    }
+						// ===========================================================================
+						// 6.) Import product picture mappings
+						// ===========================================================================
+						if (table.HasColumn("Picture1") || table.HasColumn("Picture2") || table.HasColumn("Picture3"))
+						{
+							try
+							{
+								ProcessProductPictures(batch, result);
+							}
+							catch (Exception ex)
+							{
+								result.AddError(ex, segmenter.CurrentSegment, "ProcessProductPictures");
+							}
+						}
 
-					    }
-				    }
+					}
                 }
                 catch (Exception ex)
                 {
@@ -300,7 +299,7 @@ namespace SmartStore.Services.ExportImport
 			return result;
 		}
 
-		private int ProcessProducts(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private int ProcessProducts(ImportRow<Product>[] batch, ImportResult result)
 		{
 			_rsProduct.AutoCommitEnabled = true;
 
@@ -309,27 +308,25 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
-				if (row.Count == 0)
-					continue;
-
 				Product product = null;
 
 				object key;
+				var dataRow = row.DataRow;
 
 				// try get by int ID
-				if (row.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
+				if (dataRow.TryGetValue("Id", out key) && key.ToString().ToInt() > 0)
 				{
 					product = _productService.GetProductById(key.ToString().ToInt());
 				}
 
 				// try get by SKU
-				if (product == null && row.TryGetValue("SKU", out key))
+				if (product == null && dataRow.TryGetValue("SKU", out key))
 				{
 					product = _productService.GetProductBySku(key.ToString());
 				}
 
 				// try get by GTIN
-				if (product == null && row.TryGetValue("Gtin", out key))
+				if (product == null && dataRow.TryGetValue("Gtin", out key))
 				{
 					product = _productService.GetProductByGtin(key.ToString());
 				}
@@ -337,7 +334,7 @@ namespace SmartStore.Services.ExportImport
 				if (product == null)
 				{
 					// a Name is required with new products.
-					if (!row.ContainsKey("Name")) 
+					if (!row.HasDataColumn("Name")) 
 					{
 						result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
@@ -345,11 +342,11 @@ namespace SmartStore.Services.ExportImport
 					product = new Product();
 				}
 
-				row.Initialize(product, row["Name"].ToString());
+				row.Initialize(product, row.GetDataValue<string>("Name"));
 
 				if (!row.IsNew)
 				{
-					if (!product.Name.Equals(row["Name"].ToString(), StringComparison.OrdinalIgnoreCase))
+					if (!product.Name.Equals(row.GetDataValue<string>("Name"), StringComparison.OrdinalIgnoreCase))
 					{
 						// Perf: use this later for SeName updates.
 						row.NameChanged = true;
@@ -417,8 +414,8 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.OldPrice);
 				row.SetProperty(result, product, (x) => x.ProductCost);
 				row.SetProperty(result, product, (x) => x.SpecialPrice);
-				row.SetProperty(result, product, (x) => x.SpecialPriceStartDateTimeUtc, null, OADateToUtcDate);
-				row.SetProperty(result, product, (x) => x.SpecialPriceEndDateTimeUtc, null, OADateToUtcDate);
+				row.SetProperty(result, product, (x) => x.SpecialPriceStartDateTimeUtc);
+				row.SetProperty(result, product, (x) => x.SpecialPriceEndDateTimeUtc);
 				row.SetProperty(result, product, (x) => x.CustomerEntersPrice);
 				row.SetProperty(result, product, (x) => x.MinimumCustomerEnteredPrice);
 				row.SetProperty(result, product, (x) => x.MaximumCustomerEnteredPrice, 1000);
@@ -436,19 +433,17 @@ namespace SmartStore.Services.ExportImport
 				row.SetProperty(result, product, (x) => x.BundlePerItemShipping);
 				row.SetProperty(result, product, (x) => x.BundlePerItemShoppingCart);
 				row.SetProperty(result, product, (x) => x.BundleTitleText);
-                row.SetProperty(result, product, (x) => x.AvailableStartDateTimeUtc, null, OADateToUtcDate);
-                row.SetProperty(result, product, (x) => x.AvailableEndDateTimeUtc, null, OADateToUtcDate);
+                row.SetProperty(result, product, (x) => x.AvailableStartDateTimeUtc);
+                row.SetProperty(result, product, (x) => x.AvailableEndDateTimeUtc);
                 row.SetProperty(result, product, (x) => x.LimitedToStores);
 
-                string storeIds = row.GetValue<string>("StoreIds");
-                if (storeIds.HasValue()) 
+                var storeIds = row.GetDataValue<List<int>>("StoreIds");
+                if (storeIds != null && storeIds.Any()) 
                 {
-                    _storeMappingService.SaveStoreMappings(product,
-                        row["StoreIds"].ToString()
-                        .Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())).ToArray());
+                    _storeMappingService.SaveStoreMappings(product, storeIds.ToArray());
                 }
 
-				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow, OADateToUtcDate);
+				row.SetProperty(result, product, (x) => x.CreatedOnUtc, DateTime.UtcNow);
 
 				product.UpdatedOnUtc = DateTime.UtcNow;
 
@@ -476,7 +471,7 @@ namespace SmartStore.Services.ExportImport
 			return num;
 		}
 
-		private int ProcessSlugs(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private int ProcessSlugs(ImportRow<Product>[] batch, ImportResult result)
 		{
 			var slugMap = new Dictionary<string, UrlRecord>(100);
 			Func<string, UrlRecord> slugLookup = ((s) => {
@@ -491,11 +486,11 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
-				if (row.IsNew || row.NameChanged || row.ContainsKey("SeName"))
+				if (row.IsNew || row.NameChanged || row.HasDataColumn("SeName"))
 				{
 					try
 					{
-						string seName = row.GetValue<string>("SeName");
+						string seName = row.GetDataValue<string>("SeName");
 						seName = row.Entity.ValidateSeName(seName, row.Entity.Name, true, _urlRecordService, _seoSettings, extraSlugLookup: slugLookup);
 
 						UrlRecord urlRecord = null;
@@ -535,7 +530,7 @@ namespace SmartStore.Services.ExportImport
 			return _rsUrlRecord.Context.SaveChanges();
 		}
 
-        private int ProcessLocalizations(ICollection<ImportRow<Product>> batch, ImportResult result)
+        private int ProcessLocalizations(ImportRow<Product>[] batch, ImportResult result)
         {
             //_rsProductManufacturer.AutoCommitEnabled = false;
 
@@ -560,9 +555,9 @@ namespace SmartStore.Services.ExportImport
 
                 foreach (var lang in languages)
                 {
-                    string localizedName = row.GetValue<string>("Name[" + lang.UniqueSeoCode + "]");
-                    string localizedShortDescription = row.GetValue<string>("ShortDescription[" + lang.UniqueSeoCode + "]");
-                    string localizedFullDescription = row.GetValue<string>("FullDescription[" + lang.UniqueSeoCode + "]");
+                    string localizedName = row.GetDataValue<string>("Name[" + lang.UniqueSeoCode + "]");
+                    string localizedShortDescription = row.GetDataValue<string>("ShortDescription[" + lang.UniqueSeoCode + "]");
+                    string localizedFullDescription = row.GetDataValue<string>("FullDescription[" + lang.UniqueSeoCode + "]");
 
                     if (localizedName.HasValue())
                     {
@@ -589,8 +584,7 @@ namespace SmartStore.Services.ExportImport
 			return num;
         }
 
-
-		private int ProcessProductCategories(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private int ProcessProductCategories(ImportRow<Product>[] batch, ImportResult result)
 		{
 			_rsProductCategory.AutoCommitEnabled = false;
 
@@ -598,12 +592,12 @@ namespace SmartStore.Services.ExportImport
 			
 			foreach (var row in batch)
 			{
-				string categoryIds = row.GetValue<string>("CategoryIds");
-				if (categoryIds.HasValue())
+				var categoryIds = row.GetDataValue<List<int>>("CategoryIds");
+				if (categoryIds != null && categoryIds.Any())
 				{
 					try
 					{
-						foreach (var id in categoryIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
+						foreach (var id in categoryIds)
 						{
 							if (_rsProductCategory.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.CategoryId == id).FirstOrDefault() == null)
 							{
@@ -641,7 +635,7 @@ namespace SmartStore.Services.ExportImport
 			return num;
 		}
 
-		private int ProcessProductManufacturers(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private int ProcessProductManufacturers(ImportRow<Product>[] batch, ImportResult result)
 		{
 			_rsProductManufacturer.AutoCommitEnabled = false;
 
@@ -649,12 +643,12 @@ namespace SmartStore.Services.ExportImport
 
 			foreach (var row in batch)
 			{
-				string manufacturerIds = row.GetValue<string>("ManufacturerIds");
-				if (manufacturerIds.HasValue())
+				var manufacturerIds = row.GetDataValue<List<int>>("ManufacturerIds");
+				if (manufacturerIds != null && manufacturerIds.Any())
 				{
 					try
 					{
-						foreach (var id in manufacturerIds.Split(new char[] { ';' }, StringSplitOptions.RemoveEmptyEntries).Select(x => Convert.ToInt32(x.Trim())))
+						foreach (var id in manufacturerIds)
 						{
 							if (_rsProductManufacturer.TableUntracked.Where(x => x.ProductId == row.Entity.Id && x.ManufacturerId == id).FirstOrDefault() == null)
 							{
@@ -692,7 +686,7 @@ namespace SmartStore.Services.ExportImport
 			return num;
 		}
         
-		private void ProcessProductPictures(ICollection<ImportRow<Product>> batch, ImportResult result)
+		private void ProcessProductPictures(ImportRow<Product>[] batch, ImportResult result)
 		{
 			// true, cause pictures must be saved and assigned an id
 			// prior adding a mapping.
@@ -705,9 +699,9 @@ namespace SmartStore.Services.ExportImport
 			{
 				var pictures = new string[] 
 				{
- 					row.GetValue<string>("Picture1"),
-					row.GetValue<string>("Picture2"),
-					row.GetValue<string>("Picture3")
+ 					row.GetDataValue<string>("Picture1"),
+					row.GetDataValue<string>("Picture2"),
+					row.GetDataValue<string>("Picture3")
 				};
 
 				int i = 0;
@@ -757,16 +751,16 @@ namespace SmartStore.Services.ExportImport
 				_eventPublisher.EntityInserted(lastInserted);
 		}
 
-		private DateTime? OADateToUtcDate(object value)
-		{
-			double oaDate;
-			if (CommonHelper.TryConvert<double>(value, out oaDate) && oaDate != 0)
-			{
-				return DateTime.FromOADate(Convert.ToDouble(oaDate));
-			}
+		//private DateTime? OADateToUtcDate(object value)
+		//{
+		//	double oaDate;
+		//	if (CommonHelper.TryConvert<double>(value, out oaDate) && oaDate != 0)
+		//	{
+		//		return DateTime.FromOADate(Convert.ToDouble(oaDate));
+		//	}
 
-			return null;
-		}
+		//	return null;
+		//}
 
 
 		private int? ZeroToNull(object value)

@@ -152,6 +152,19 @@
     <Compile Include="Collections\LazyMultimap.cs" />
     <Compile Include="Collections\Querystring.cs" />
     <Compile Include="Collections\TopologicalSorter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\BooleanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\EnumerableConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\NullableConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ProductBundleDataConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ShippingOptionConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TimeSpanConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\DateTimeConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\ITypeConverter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterAdapter.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterBase.cs" />
+    <Compile Include="ComponentModel\TypeConversion\TypeConverterFactory.cs" />
+    <Compile Include="Data\DataTable\IDataTable.cs" />
+    <Compile Include="Data\DataTable\LightweightDataTable.cs" />
     <Compile Include="Data\IDbContextExtensions.cs" />
     <Compile Include="Data\ITransaction.cs" />
     <Compile Include="Domain\Catalog\PriceDisplayType.cs" />
@@ -369,7 +382,6 @@
     <Compile Include="Themes\ThemeFolderData.cs" />
     <Compile Include="Themes\ThemeTouchedEvent.cs" />
     <Compile Include="Utilities\CommonHelper.cs" />
-    <Compile Include="ComponentModel\GenericListTypeConverter.cs" />
     <Compile Include="Configuration\ISettings.cs" />
     <Compile Include="Domain\Affiliates\Affiliate.cs" />
     <Compile Include="Domain\Blogs\BlogSettings.cs" />
@@ -561,6 +573,7 @@
     <Compile Include="Utilities\FileSystemHelper.cs" />
     <Compile Include="Utilities\HashCodeCombiner.cs" />
     <Compile Include="Utilities\Inflector.cs" />
+    <Compile Include="Utilities\ObjectDumper.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
     <Compile Include="Utilities\Reflection\FastActivator.cs" />

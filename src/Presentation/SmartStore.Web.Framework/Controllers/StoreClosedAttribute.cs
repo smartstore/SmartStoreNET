@@ -22,7 +22,7 @@ namespace SmartStore.Web.Framework.Controllers
 			new Tuple<string, string>("SmartStore.Web.Controllers.CommonController", "SetLanguage")
 		};
 
-		public ILocalizationService Localizer { get; set; }
+		public Lazy<ILocalizationService> Localizer { get; set; }
 		public Lazy<INotifier> Notifier { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<StoreInformationSettings> StoreInformationSettings { get; set; }
@@ -66,8 +66,8 @@ namespace SmartStore.Web.Framework.Controllers
 					if (request.IsAjaxRequest())
 					{
 						var storeClosedMessage = "{0} {1}".FormatCurrentUI(
-							Localizer.GetResource("StoreClosed", 0, false),
-							Localizer.GetResource("StoreClosed.Hint", 0, false));
+							Localizer.Value.GetResource("StoreClosed", 0, false),
+							Localizer.Value.GetResource("StoreClosed.Hint", 0, false));
 						Notifier.Value.Error(storeClosedMessage);
 
 						//filterContext.Result = new ContentResult { Content = "", ContentType = "text/html" };

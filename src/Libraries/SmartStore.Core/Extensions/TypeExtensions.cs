@@ -342,9 +342,10 @@ namespace SmartStore
                 return typeof(IEnumerable<>).MakeGenericType(seqType.GetElementType());
             if (seqType.IsGenericType)
             {
-                foreach (Type arg in seqType.GetGenericArguments())
+				var args = seqType.GetGenericArguments();
+                foreach (var arg in args)
                 {
-                    Type ienum = typeof(IEnumerable<>).MakeGenericType(arg);
+                    var ienum = typeof(IEnumerable<>).MakeGenericType(arg);
                     if (ienum.IsAssignableFrom(seqType))
                         return ienum;
                 }

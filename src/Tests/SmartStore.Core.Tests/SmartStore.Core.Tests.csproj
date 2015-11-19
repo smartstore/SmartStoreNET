@@ -84,16 +84,13 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="ComponentModel\ExpandoTests.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="TopologicSortTests.cs" />
     <Compile Include="WildcardTests.cs" />
-    <Compile Include="Domain\Shipping\ShippingOptionListTypeConverterTests.cs" />
     <Compile Include="Domain\Stores\StoreExtensionsTests.cs" />
     <Compile Include="Infrastructure\DependencyManagement\AutofacTests.cs" />
     <Compile Include="ConversionTests.cs" />
     <Compile Include="WebHelperTests.cs" />
-    <Compile Include="ComponentModel\GenericListTypeConverterTests.cs" />
     <Compile Include="ExtensionsTests.cs" />
     <Compile Include="Domain\Blogs\BlogPostTests.cs" />
     <Compile Include="Domain\Common\AddressTests.cs" />
@@ -101,7 +98,6 @@
     <Compile Include="Domain\EntityEqualityTests.cs" />
     <Compile Include="Domain\Orders\RecurringPaymentTests.cs" />
     <Compile Include="Domain\Orders\GiftCardTests.cs" />
-    <Compile Include="Domain\Shipping\ShippingOptionTypeConverterTests.cs" />
     <Compile Include="Fakes\FakeTypeFinder.cs" />
     <Compile Include="FileSystemStorageProviderTests.cs" />
     <Compile Include="Infrastructure\SingletonTests.cs" />
@@ -115,6 +111,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <Folder Include="ComponentModel\" />
     <Folder Include="Infrastructure\DependencyManagement\Services\" />
   </ItemGroup>
   <ItemGroup>

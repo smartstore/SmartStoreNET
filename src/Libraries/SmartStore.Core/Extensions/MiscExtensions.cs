@@ -46,33 +46,6 @@ namespace SmartStore
 			return "{0:0.0}".FormatWith(TimeSpan.FromMilliseconds(watch.ElapsedMilliseconds).TotalSeconds);
 		}
 
-		public static object SafeConvert(this TypeConverter converter, string value) 
-        {
-			try 
-            {
-				if (converter != null && value.HasValue() && converter.CanConvertFrom(typeof(string))) 
-                {
-					return converter.ConvertFromString(value);
-				}
-			}
-			catch (Exception exc) 
-            {
-				exc.Dump();
-			}
-
-			return null;
-		}
-
-		public static bool IsEqual(this TypeConverter converter, string value, object compareWith) 
-        {
-			object convertedObject = converter.SafeConvert(value);
-
-			if (convertedObject != null && compareWith != null)
-				return convertedObject.Equals(compareWith);
-
-			return false;
-		}
-
         public static bool IsNullOrDefault<T>(this T? value) where T : struct
         {
             return default(T).Equals(value.GetValueOrDefault());

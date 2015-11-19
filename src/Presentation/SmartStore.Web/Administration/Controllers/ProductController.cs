@@ -46,6 +46,9 @@ using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Pdf;
 using Telerik.Web.Mvc;
 using SmartStore.Collections;
+using System.Data;
+using SmartStore.Services.DataExchange.Csv;
+using SmartStore.Services.DataExchange.Excel;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -3044,11 +3047,32 @@ namespace SmartStore.Admin.Controllers
 
 			try
 			{
-				var file = Request.Files["importexcelfile"];
+				var file = Request.Files["importfile"];
 				if (file != null && file.ContentLength > 0)
 				{
-					var stream = new MemoryStream();
-					file.InputStream.CopyTo(stream);
+					var fileExt = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+
+					IDataReader dataReader = null;
+
+					switch (fileExt)
+					{
+						case ".xlsx":
+							dataReader = new ExcelDataReader(file.InputStream, true);
+							break;
+						default:
+							dataReader = new CsvDataReader(new StreamReader(file.InputStream));
+							break;
+					}
+					
+					if (dataReader == null)
+					{
+						NotifyError("Posted file is not compatible"); // TODO Loc
+					}
+
+					var table = LightweightDataTable.FromDataReader(dataReader);
+
+					dataReader.Dispose();
+					dataReader = null;
 
 					var options = TaskCreationOptions.LongRunning;
 					var cts = new CancellationTokenSource();
@@ -3065,7 +3089,7 @@ namespace SmartStore.Admin.Controllers
 						{
 							AsyncState.Current.SetCancelTokenSource<ImportProgressInfo>(cts);
 							var importManager = c.Resolve<IImportManager>();
-							var result = importManager.ImportProductsFromExcel(stream, ct, progress);
+							var result = importManager.ImportProducts(table, ct, progress);
 
 							// Saving the result enables us to show a report for last import.
 							AsyncState.Current.Set(result, neverExpires: true);

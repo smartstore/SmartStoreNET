@@ -1,7 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics;
-using System.Reflection;
 using NUnit.Framework;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
@@ -16,7 +14,7 @@ namespace SmartStore.Core.Tests
 		public void InstantiatePerfTest()
 		{
 			int cycles = 500000;
-
+			
 			Chronometer.Measure(cycles, "Create Product NATIVE", i => new Product());
 			Chronometer.Measure(cycles, "Create Product Reflection", i => Activator.CreateInstance(typeof(Product)));
 			Chronometer.Measure(cycles, "Create Product FASTACTIVATOR", i => FastActivator.CreateInstance(typeof(Product)));
@@ -44,27 +42,27 @@ namespace SmartStore.Core.Tests
 		public TestClass(IEnumerable<Product> param1)
 		{
 		}
-		//public TestClass(int param1)
-		//{
-		//}
-		//public TestClass(IEnumerable<Product> param1, int param2)
-		//{
-		//}
-		//public TestClass(IEnumerable<Product> param1, int param2, string param3)
-		//{
-		//}
-		//public TestClass(DateTime param1)
-		//{
-		//}
-		//public TestClass(double param1)
-		//{
-		//}
-		//public TestClass(decimal param1)
-		//{
-		//}
-		//public TestClass(long param1)
-		//{
-		//}
+		public TestClass(int param1)
+		{
+		}
+		public TestClass(IEnumerable<Product> param1, int param2)
+		{
+		}
+		public TestClass(IEnumerable<Product> param1, int param2, string param3)
+		{
+		}
+		public TestClass(DateTime param1)
+		{
+		}
+		public TestClass(double param1)
+		{
+		}
+		public TestClass(decimal param1)
+		{
+		}
+		public TestClass(long param1)
+		{
+		}
 	}
 
 }

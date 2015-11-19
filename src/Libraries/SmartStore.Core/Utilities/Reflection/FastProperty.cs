@@ -6,10 +6,26 @@ using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.Linq;
+using System.Linq.Expressions;
 using System.Reflection;
 
 namespace SmartStore.Utilities.Reflection
 {
+	public enum PropertyCachingStrategy
+	{
+		/// <summary>
+		/// Don't cache FastProperty instances
+		/// </summary>
+		Uncached,
+		/// <summary>
+		/// Always cache FastProperty instances
+		/// </summary>
+		Cached,
+		/// <summary>
+		/// Always cache FastProperty instances. PLUS cache all other properties of the declaring type.
+		/// </summary>
+		EagerCached
+	}
 
 	public class FastProperty
 	{
@@ -29,6 +45,8 @@ namespace SmartStore.Utilities.Reflection
 		private static readonly ConcurrentDictionary<Type, IDictionary<string, FastProperty>> _visiblePropertiesCache = new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
 
 		private Action<object, object> _valueSetter;
+		private bool? _isPublicSettable;
+		private bool? _isSequenceType;
 
 		/// <summary>
 		/// Initializes a <see cref="FastProperty"/>.
@@ -58,6 +76,30 @@ namespace SmartStore.Utilities.Reflection
 		/// </summary>
 		public Func<object, object> ValueGetter { get; private set; }
 
+		public bool IsPublicSettable
+		{
+			get
+			{
+				if (!_isPublicSettable.HasValue)
+				{
+					_isPublicSettable = Property.CanWrite && Property.GetSetMethod(false) != null;
+				}
+				return _isPublicSettable.Value;
+            }
+		}
+
+		public bool IsSequenceType
+		{
+			get
+			{
+				if (!_isSequenceType.HasValue)
+				{
+					_isSequenceType = Property.PropertyType.IsSubClass(typeof(IEnumerable<>));
+				}
+				return _isSequenceType.Value;
+			}
+		}
+
 		/// <summary>
 		/// Gets the property value setter.
 		/// </summary>
@@ -83,7 +125,7 @@ namespace SmartStore.Utilities.Reflection
 		public object GetValue(object instance)
 		{
 			return ValueGetter(instance);
-		}
+        }
 
 		/// <summary>
 		/// Sets the property value for the specified <paramref name="instance" />.
@@ -102,7 +144,7 @@ namespace SmartStore.Utilities.Reflection
 		/// <param name="instance">the instance to extract property accessors for.</param>
 		/// <returns>A cached array of all public property getters from the underlying type of target instance.
 		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance)
+		public static IReadOnlyDictionary<string, FastProperty> GetProperties(object instance, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
 			return GetProperties(instance.GetType());
 		}
@@ -114,9 +156,11 @@ namespace SmartStore.Utilities.Reflection
 		/// <param name="type">The type to extract property accessors for.</param>
 		/// <returns>A cached array of all public property getters from the type of target instance.
 		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type)
+		public static IReadOnlyDictionary<string, FastProperty> GetProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetProperties(type, CreateInstance, _propertiesCache);
+			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
+
+			return (IReadOnlyDictionary<string, FastProperty>)GetProperties(type, CreateInstance, propertiesCache);
 		}
 
 		/// <summary>
@@ -133,9 +177,12 @@ namespace SmartStore.Utilities.Reflection
 		/// <returns>
 		/// A cached array of all public property getters from the instance's type.
 		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(object instance)
+		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(object instance, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(instance.GetType(), CreateInstance, _propertiesCache, _visiblePropertiesCache);
+			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
+			var visiblePropertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _visiblePropertiesCache : CreateVolatileCache();
+
+			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(instance.GetType(), CreateInstance, propertiesCache, visiblePropertiesCache);
 		}
 
 		/// <summary>
@@ -152,42 +199,103 @@ namespace SmartStore.Utilities.Reflection
 		/// <returns>
 		/// A cached array of all public property getters from the type.
 		/// </returns>
-		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(Type type)
+		public static IReadOnlyDictionary<string, FastProperty> GetVisibleProperties(Type type, PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, CreateInstance, _propertiesCache, _visiblePropertiesCache);
+			var propertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _propertiesCache : CreateVolatileCache();
+			var visiblePropertiesCache = cachingStrategy > PropertyCachingStrategy.Uncached ? _visiblePropertiesCache : CreateVolatileCache();
+
+			return (IReadOnlyDictionary<string, FastProperty>)GetVisibleProperties(type, CreateInstance, propertiesCache, visiblePropertiesCache);
 		}
 
-		public static FastProperty GetProperty(Type type, string propertyName, bool cacheAllProperties = false)
+		public static FastProperty GetProperty<T>(
+			T type, 
+			Expression<Func<T, object>> property, 
+			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
+			return GetProperty(typeof(T), property.ExtractPropertyInfo(), cachingStrategy);
+		}
+
+		public static FastProperty GetProperty(
+			Type type, 
+			string propertyName, 
+			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+		{
+			Guard.ArgumentNotNull(() => type);
+			Guard.ArgumentNotEmpty(() => propertyName);
+
 			FastProperty fastProperty = null;
-			IDictionary<string, FastProperty> allProperties;
 
-			if (cacheAllProperties)
+			if (TryGetCachedProperty(type, propertyName, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
 			{
-				allProperties = (IDictionary<string, FastProperty>)GetProperties(type);
-				allProperties.TryGetValue(propertyName, out fastProperty);
-				return fastProperty;
-			}
-
-			if (_propertiesCache.TryGetValue(type, out allProperties))
-			{
-				allProperties.TryGetValue(propertyName, out fastProperty);
 				return fastProperty;
 			}
 
 			var key = new PropertyKey(type, propertyName);
 			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
-				var pi = GetCandidateProperties(type).Where(p => p.Name.Equals(propertyName, StringComparison.OrdinalIgnoreCase)).FirstOrDefault();
-				//var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Instance | BindingFlags.IgnoreCase);
+				var pi = type.GetProperty(propertyName, BindingFlags.GetProperty | BindingFlags.IgnoreCase);
 				if (pi != null)
 				{
 					fastProperty = CreateInstance(pi);
+					if (cachingStrategy > PropertyCachingStrategy.Uncached)
+					{
+						_singlePropertiesCache.TryAdd(key, fastProperty);
+					}
+				}
+			}
+
+			return fastProperty;
+		}
+
+		public static FastProperty GetProperty(
+			Type type,
+			PropertyInfo propertyInfo,
+			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
+		{
+			Guard.ArgumentNotNull(() => type);
+			Guard.ArgumentNotNull(() => propertyInfo);
+
+			FastProperty fastProperty = null;
+
+			if (TryGetCachedProperty(type, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
+			{
+				return fastProperty;
+			}
+
+			var key = new PropertyKey(type, propertyInfo.Name);
+			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
+			{
+				fastProperty = CreateInstance(propertyInfo);
+				if (cachingStrategy > PropertyCachingStrategy.Uncached)
+				{
 					_singlePropertiesCache.TryAdd(key, fastProperty);
 				}
 			}
 
 			return fastProperty;
+		}
+
+		private static bool TryGetCachedProperty(
+			Type type,
+			string propertyName,
+			bool eagerCached,
+			out FastProperty fastProperty)
+		{
+			fastProperty = null;
+			IDictionary<string, FastProperty> allProperties;
+
+			if (eagerCached)
+			{
+				allProperties = (IDictionary<string, FastProperty>)GetProperties(type);
+				allProperties.TryGetValue(propertyName, out fastProperty);
+			}
+
+			if (fastProperty == null && _propertiesCache.TryGetValue(type, out allProperties))
+			{
+				allProperties.TryGetValue(propertyName, out fastProperty);
+			}
+
+			return fastProperty != null;
 		}
 
 		/// <summary>
@@ -541,6 +649,11 @@ namespace SmartStore.Utilities.Reflection
 				property.GetMethod != null &&
 				property.GetMethod.IsPublic &&
 				!property.GetMethod.IsStatic;
+		}
+
+		private static ConcurrentDictionary<Type, IDictionary<string, FastProperty>> CreateVolatileCache()
+		{
+			return new ConcurrentDictionary<Type, IDictionary<string, FastProperty>>();
 		}
 
 		class PropertyKey : Tuple<Type, string>

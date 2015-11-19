@@ -13,7 +13,7 @@ using System.Web.Compilation;
 using System.Web.Hosting;
 using Microsoft.Web.Infrastructure;
 using Microsoft.Web.Infrastructure.DynamicModuleHelper;
-using SmartStore.Core.ComponentModel;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure.DependencyManagement;
 using SmartStore.Core.Plugins;
 using SmartStore.Core.Packaging;

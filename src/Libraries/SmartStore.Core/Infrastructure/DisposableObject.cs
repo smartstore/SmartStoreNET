@@ -8,18 +8,18 @@ namespace SmartStore
 
     public abstract class DisposableObject : IDisposable
     {
-        private bool _disposed = false;
+        private bool _isDisposed = false;
 
         public virtual bool IsDisposed
         {
             [DebuggerStepThrough]
-            get { return _disposed; }
+            get { return _isDisposed; }
         }
 
         [DebuggerStepThrough]
         protected void CheckDisposed()
         {
-            if (IsDisposed)
+            if (_isDisposed)
             {
                 throw Error.ObjectDisposed(GetType().FullName);
             }
@@ -28,7 +28,7 @@ namespace SmartStore
         [DebuggerStepThrough]
         protected void CheckDisposed(string errorMessage)
         {
-            if (IsDisposed)
+            if (_isDisposed)
             {
                 throw Error.ObjectDisposed(GetType().FullName, errorMessage);
             }
@@ -37,17 +37,20 @@ namespace SmartStore
         [DebuggerStepThrough]
         public void Dispose()
         {
-            Dispose(true);
-            GC.SuppressFinalize(this);
+			if (!_isDisposed)
+			{
+				Dispose(true);
+				GC.SuppressFinalize(this);
+			}
         }
 
         protected void Dispose(bool disposing)
         {
-            if (!_disposed)
+            if (!_isDisposed)
             {
                 OnDispose(disposing);
             }
-            _disposed = true;
+            _isDisposed = true;
         }
 
         protected abstract void OnDispose(bool disposing);

@@ -89,6 +89,10 @@
       <HintPath>..\..\packages\ImageResizer.Plugins.PrettyGifs.4.0.4\lib\net45\ImageResizer.Plugins.PrettyGifs.dll</HintPath>
       <Private>True</Private>
     </Reference>
+    <Reference Include="LumenWorks.Framework.IO, Version=3.9.0.0, Culture=neutral, PublicKeyToken=5ad3ea2f85776344, processorArchitecture=MSIL">
+      <HintPath>..\..\packages\LumenWorksCsvReader.3.9\lib\net20\LumenWorks.Framework.IO.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
     <Reference Include="MaxMind.GeoIP">
       <HintPath>..\..\packages\MaxMind.GeoIP.2.1.17\lib\net35\MaxMind.GeoIP.dll</HintPath>
     </Reference>
@@ -166,7 +170,11 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="DataExchange\Csv\CsvConfiguration.cs" />
+    <Compile Include="DataExchange\Csv\CsvDataReader.cs" />
+    <Compile Include="DataExchange\Csv\CsvWriter.cs" />
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
+    <Compile Include="DataExchange\Excel\ExcelDataReader.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
     <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
@@ -201,6 +209,8 @@
     <Compile Include="DataExchange\ExportProfileService.cs" />
     <Compile Include="DataExchange\IExportProvider.cs" />
     <Compile Include="DataExchange\IExportProfileService.cs" />
+    <Compile Include="ExportImport\ImportDataSegmenter.cs" />
+    <Compile Include="ExportImport\ImportRow.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />

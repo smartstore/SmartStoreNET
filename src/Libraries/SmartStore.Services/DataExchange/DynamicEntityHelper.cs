@@ -552,17 +552,23 @@ namespace SmartStore.Services.DataExchange
 			var languageId = (ctx.Projection.LanguageId ?? 0);
 			var productTemplate = ctx.ProductTemplates.FirstOrDefault(x => x.Key == product.ProductTemplateId);
 			var pictureSize = _mediaSettings.Value.ProductDetailsPictureSize;
+			int[] pictureIds = (combination == null ? new int[0] : combination.GetAssignedPictureIds());
 
 			if (ctx.Supports(ExportFeatures.CanIncludeMainPicture) && ctx.Projection.PictureSize > 0)
 				pictureSize = ctx.Projection.PictureSize;
 
 			var perfLoadId = (ctx.IsPreview ? 0 : product.Id);  // perf preview (it's a compromise)
-			var productPictures = ctx.ProductExportContext.ProductPictures.Load(perfLoadId);
+			IEnumerable<ProductPicture> productPictures = ctx.ProductExportContext.ProductPictures.Load(perfLoadId);
 			var productManufacturers = ctx.ProductExportContext.ProductManufacturers.Load(perfLoadId);
 			var productCategories = ctx.ProductExportContext.ProductCategories.Load(product.Id);
 			var productAttributes = ctx.ProductExportContext.Attributes.Load(product.Id);
 			var productTags = ctx.ProductExportContext.ProductTags.Load(product.Id);
 			var specificationAttributes = ctx.ProductExportContext.ProductSpecificationAttributes.Load(product.Id);
+
+			if (pictureIds.Length > 0)
+			{
+				productPictures = productPictures.Where(x => pictureIds.Contains(x.PictureId));
+			}
 
 			dynamic dynObject = ToDynamic(ctx, product);
 

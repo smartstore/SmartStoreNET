@@ -111,7 +111,6 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <Folder Include="ComponentModel\" />
     <Folder Include="Infrastructure\DependencyManagement\Services\" />
   </ItemGroup>
   <ItemGroup>

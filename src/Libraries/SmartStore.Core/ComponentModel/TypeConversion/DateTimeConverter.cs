@@ -26,7 +26,9 @@ namespace SmartStore.ComponentModel
 
 		public override bool CanConvertTo(Type type)
 		{
-			return type == typeof(string) 
+			return type == typeof(string)
+				|| type == typeof(long)
+				|| type == typeof(double)
 				|| type == typeof(DateTimeOffset) 
 				|| type == typeof(TimeSpan)
 				|| base.CanConvertTo(type);
@@ -57,7 +59,7 @@ namespace SmartStore.ComponentModel
 				}
 
 				double dbl;
-				if (double.TryParse(str, NumberStyles.None, culture, out dbl))
+				if (double.TryParse(str, NumberStyles.AllowDecimalPoint, culture, out dbl))
 				{
 					return DateTime.FromOADate(dbl);
 				}
@@ -88,6 +90,16 @@ namespace SmartStore.ComponentModel
 			if (to == typeof(TimeSpan))
 			{
 				return new TimeSpan(time.Ticks);
+			}
+
+			if (to == typeof(double))
+			{
+				return time.ToOADate();
+			}
+
+			if (to == typeof(long))
+			{
+				return time.ToUnixTime();
 			}
 
 			return base.ConvertTo(culture, format, value, to);

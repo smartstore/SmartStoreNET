@@ -149,27 +149,33 @@ namespace SmartStore.Services.DataExchange.Csv
 			_currentRow.Clear();
 		}
 
-		private void WriteRow(string[] row)
+		public string CurrentRawValue()
+		{
+			var row = string.Join(Configuration.Delimiter.ToString(), _currentRow);
+			return row;
+		}
+
+		private void WriteRow(string[] fields)
 		{
 			CheckDisposed();
 
-			if (row.Length == 0)
+			if (fields.Length == 0)
 			{
 				throw new SmartException("Cannot write an empty row to the CSV file.");
 			}
 
 			if (!_fieldCount.HasValue)
 			{
-				_fieldCount = row.Length;
+				_fieldCount = fields.Length;
 			}
 
-			if (_fieldCount.Value != row.Length)
+			if (_fieldCount.Value != fields.Length)
 			{
 				throw new SmartException("The field count of the current row does not match the previous row's field count.");
 			}
 
-			var rowString = string.Join(Configuration.Delimiter.ToString(), row);
-			_writer.WriteLine(rowString);
+			var row = string.Join(Configuration.Delimiter.ToString(), fields);
+			_writer.WriteLine(row);
 		}
 
 		protected override void OnDispose(bool disposing)

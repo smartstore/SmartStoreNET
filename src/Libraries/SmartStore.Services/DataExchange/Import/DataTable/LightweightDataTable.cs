@@ -267,6 +267,7 @@ namespace SmartStore.Services.DataExchange.Import
 			return _table.Columns.Select(x => x.Name);
 		}
 
+
 		public override bool TryGetMember(GetMemberBinder binder, out object result)
 		{
 			result = null;

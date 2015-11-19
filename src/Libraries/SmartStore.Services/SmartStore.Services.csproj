@@ -170,6 +170,7 @@
     <Compile Include="Common\TempFileCleanupTask.cs" />
     <Compile Include="Common\UAParserUserAgent.cs" />
     <Compile Include="Customers\CustomerRegisteredEvent.cs" />
+    <Compile Include="DataExchange\ColumnMap.cs" />
     <Compile Include="DataExchange\Csv\CsvConfiguration.cs" />
     <Compile Include="DataExchange\Csv\CsvDataReader.cs" />
     <Compile Include="DataExchange\Csv\CsvWriter.cs" />

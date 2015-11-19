@@ -16,6 +16,8 @@ namespace SmartStore.Services.DataExchange.Import
 		private ImportRow<T>[] _currentBatch;
 		private IPageable _pageable;
 		private bool _bof;
+		private CultureInfo _culture;
+		private ColumnMap _columnMap;
 
 		public ImportDataSegmenter(IDataTable table)
 		{
@@ -25,13 +27,32 @@ namespace SmartStore.Services.DataExchange.Import
 
 			_bof = true;
 			_pageable = new PagedList(0, BATCHSIZE, table.Rows.Count);
-			Culture = CultureInfo.InvariantCulture;
-		}
+			_culture = CultureInfo.InvariantCulture;
+			_columnMap = new ColumnMap();
+        }
 
 		public CultureInfo Culture
 		{
-			get;
-			set;
+			get
+			{
+				return _culture;
+			}
+			set
+			{
+				_culture = value ?? CultureInfo.InvariantCulture;
+			}
+		}
+
+		public ColumnMap ColumnMap
+		{
+			get
+			{
+				return _columnMap;
+			}
+			set
+			{
+				_columnMap = value ?? new ColumnMap();
+			}
 		}
 
 		public int TotalRows
@@ -62,6 +83,16 @@ namespace SmartStore.Services.DataExchange.Import
 		public int BatchSize
 		{
 			get { return BATCHSIZE; }
+		}
+
+		public bool HasDataColumn(string name)
+		{
+			return _table.HasColumn(_columnMap.GetMappedName(name));
+		}
+
+		public bool HasDataColumn(string name, string index)
+		{
+			return _table.HasColumn(_columnMap.GetMappedName(name, index));
 		}
 
 		public void Reset()
@@ -103,10 +134,10 @@ namespace SmartStore.Services.DataExchange.Import
 			{
 				if (_currentBatch == null)
 				{
-					_currentBatch = new ImportRow<T>[BATCHSIZE];
-
 					int start = _pageable.FirstItemIndex - 1;
 					int end = _pageable.LastItemIndex - 1;
+
+					_currentBatch = new ImportRow<T>[(end - start) + 1];
 
 					// Determine values per row
 					int i = 0;

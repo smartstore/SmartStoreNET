@@ -157,6 +157,8 @@ namespace SmartStore.Services.DataExchange.Import
                 try {
 					var segmenter = new ImportDataSegmenter<Product>(table);
 
+					segmenter.Culture = CultureInfo.CurrentUICulture;
+
 					result.TotalRecords = segmenter.TotalRows;
 
 					while (segmenter.ReadNextBatch() && !cancellationToken.IsCancellationRequested)
@@ -335,7 +337,7 @@ namespace SmartStore.Services.DataExchange.Import
 				if (product == null)
 				{
 					// a Name is required with new products.
-					if (!row.HasDataColumn("Name")) 
+					if (!row.Segmenter.HasDataColumn("Name")) 
 					{
 						result.AddError("The 'Name' field is required for new products. Skipping row.", row.GetRowInfo(), "Name");
 						continue;
@@ -343,11 +345,13 @@ namespace SmartStore.Services.DataExchange.Import
 					product = new Product();
 				}
 
-				row.Initialize(product, row.GetDataValue<string>("Name"));
+				string name = row.GetDataValue<string>("Name");
+
+				row.Initialize(product, name);
 
 				if (!row.IsNew)
 				{
-					if (!product.Name.Equals(row.GetDataValue<string>("Name"), StringComparison.OrdinalIgnoreCase))
+					if (!product.Name.Equals(name, StringComparison.OrdinalIgnoreCase))
 					{
 						// Perf: use this later for SeName updates.
 						row.NameChanged = true;
@@ -487,7 +491,7 @@ namespace SmartStore.Services.DataExchange.Import
 
 			foreach (var row in batch)
 			{
-				if (row.IsNew || row.NameChanged || row.HasDataColumn("SeName"))
+				if (row.IsNew || row.NameChanged || row.Segmenter.HasDataColumn("SeName"))
 				{
 					try
 					{
@@ -556,9 +560,9 @@ namespace SmartStore.Services.DataExchange.Import
 
                 foreach (var lang in languages)
                 {
-                    string localizedName = row.GetDataValue<string>("Name[" + lang.UniqueSeoCode + "]");
-                    string localizedShortDescription = row.GetDataValue<string>("ShortDescription[" + lang.UniqueSeoCode + "]");
-                    string localizedFullDescription = row.GetDataValue<string>("FullDescription[" + lang.UniqueSeoCode + "]");
+                    string localizedName = row.GetDataValue<string>("Name", lang.UniqueSeoCode);
+                    string localizedShortDescription = row.GetDataValue<string>("ShortDescription", lang.UniqueSeoCode);
+                    string localizedFullDescription = row.GetDataValue<string>("FullDescription", lang.UniqueSeoCode);
 
                     if (localizedName.HasValue())
                     {

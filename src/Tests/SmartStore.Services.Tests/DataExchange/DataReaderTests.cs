@@ -53,18 +53,22 @@ namespace SmartStore.Services.Tests.DataExchange
 		{
 			IDataTable dataTable;
 
-			//using (var csv = new CsvDataReader(new StreamReader("D:\\products-10000.csv")))
-			//{
-			//	dataTable = LightweightDataTable.FromDataReader(csv, 100, 500);
-			//}
-
-			using (var fileStream = new FileStream("D:\\products-10000.xlsx", FileMode.Open, FileAccess.Read))
+			using (var csv = new CsvDataReader(new StreamReader("D:\\csvwriter-1-7-0001-elmarshopinfocsvfeed.csv")))
 			{
-				using (var excel = new ExcelDataReader(fileStream, true))
-				{
-					dataTable = LightweightDataTable.FromDataReader(excel);
-				}
+				dataTable = LightweightDataTable.FromDataReader(csv);
+				//foreach (var r in dataTable.Rows)
+				//{
+				//	ObjectDumper.ToConsole(r);
+				//}
 			}
+
+			//using (var fileStream = new FileStream("D:\\products-10000.xlsx", FileMode.Open, FileAccess.Read))
+			//{
+			//	using (var excel = new ExcelDataReader(fileStream, true))
+			//	{
+			//		dataTable = LightweightDataTable.FromDataReader(excel);
+			//	}
+			//}
 
 			Console.WriteLine("TotalRows: " + dataTable.Rows.Count);
 

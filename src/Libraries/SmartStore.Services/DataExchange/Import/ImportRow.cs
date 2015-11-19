@@ -60,9 +60,9 @@ namespace SmartStore.Services.DataExchange.Import
 			get { return _row; }
 		}
 
-		public bool HasDataColumn(string name)
+		public ImportDataSegmenter<T> Segmenter
 		{
-			return _row.Table.HasColumn(name);
+			get { return _segmenter; }
 		}
 
 		public T Entity
@@ -88,8 +88,13 @@ namespace SmartStore.Services.DataExchange.Import
 
 		public TProp GetDataValue<TProp>(string columnName)
 		{
+			return GetDataValue<TProp>(columnName, null);
+		}
+
+		public TProp GetDataValue<TProp>(string columnName, string index)
+		{
 			object value;
-			if (_row.TryGetValue(columnName, out value))
+			if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(columnName, index), out value))
 			{
 				return value.Convert<TProp>(_segmenter.Culture);
 			}
@@ -115,7 +120,7 @@ namespace SmartStore.Services.DataExchange.Import
 				var fastProp = FastProperty.GetProperty(target.GetUnproxiedType(), propName, PropertyCachingStrategy.EagerCached);
 
 				object value;
-				if (_row.TryGetValue(propName, out value))
+				if (_row.TryGetValue(_segmenter.ColumnMap.GetMappedName(propName), out value))
 				{
 					// source contains field value. Set it.
 					TProp converted;

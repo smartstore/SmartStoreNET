@@ -30,7 +30,6 @@ using SmartStore.Services.Customers;
 using SmartStore.Services.DataExchange.Providers;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
@@ -49,6 +48,7 @@ using SmartStore.Collections;
 using System.Data;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Excel;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -3048,31 +3048,19 @@ namespace SmartStore.Admin.Controllers
 			try
 			{
 				var file = Request.Files["importfile"];
-				if (file != null && file.ContentLength > 0)
+				if (file != null)
 				{
-					var fileExt = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+					IDataTable table = null;
 
-					IDataReader dataReader = null;
-
-					switch (fileExt)
+					try
 					{
-						case ".xlsx":
-							dataReader = new ExcelDataReader(file.InputStream, true);
-							break;
-						default:
-							dataReader = new CsvDataReader(new StreamReader(file.InputStream));
-							break;
+						table = LightweightDataTable.FromPostedFile(file);
 					}
-					
-					if (dataReader == null)
+					catch (Exception ex)
 					{
-						NotifyError("Posted file is not compatible"); // TODO Loc
+						NotifyError(ex);
+						return RedirectToAction("List");
 					}
-
-					var table = LightweightDataTable.FromDataReader(dataReader);
-
-					dataReader.Dispose();
-					dataReader = null;
 
 					var options = TaskCreationOptions.LongRunning;
 					var cts = new CancellationTokenSource();

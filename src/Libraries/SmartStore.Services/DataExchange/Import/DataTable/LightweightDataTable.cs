@@ -5,12 +5,15 @@ using System.Data;
 using System.Data.Common;
 using System.Dynamic;
 using System.Globalization;
+using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Web;
+using SmartStore.Services.DataExchange.Csv;
+using SmartStore.Services.DataExchange.Excel;
 
-namespace SmartStore.Core.Data
+namespace SmartStore.Services.DataExchange.Import
 {
 	public class LightweightDataTable : IDataTable
 	{
@@ -71,6 +74,70 @@ namespace SmartStore.Core.Data
 			get
 			{
 				return _rows;
+			}
+		}
+
+		public static IDataTable FromPostedFile(
+			HttpPostedFileBase file,
+			int skip = 0,
+			int take = int.MaxValue)
+		{
+			return FromPostedFile(file, new CsvConfiguration(), skip, take);
+		}
+
+		public static IDataTable FromPostedFile(
+			HttpPostedFileBase file,
+			CsvConfiguration configuration,
+			int skip = 0,
+			int take = int.MaxValue)
+		{
+			Guard.ArgumentNotNull(() => file);
+			Guard.ArgumentNotNull(() => configuration);
+
+			if (file.ContentLength == 0)
+			{
+				throw Error.Argument("file", "The posted file '{0}' does not contain any data.".FormatInvariant(file.FileName)); // TODO Loc
+			}
+
+			IDataReader dataReader = null;
+
+			try
+			{
+				var fileExt = System.IO.Path.GetExtension(file.FileName).ToLowerInvariant();
+
+				switch (fileExt)
+				{
+					case ".xlsx":
+						dataReader = new ExcelDataReader(file.InputStream, true); // TODO: let the user specify if excel file has headers
+						break;
+					default:
+						dataReader = new CsvDataReader(new StreamReader(file.InputStream), configuration);
+						break;
+				}
+
+				var table = LightweightDataTable.FromDataReader(dataReader);
+
+				if (table.Columns.Count == 0 || table.Rows.Count == 0)
+				{
+					throw Error.InvalidOperation("file", "The posted file '{0}' does not contain any columns or data rows.".FormatInvariant(file.FileName)); // TODO Loc
+				}
+
+				return table;
+			}
+			catch
+			{
+				throw;
+			}
+			finally
+			{
+				if (dataReader != null)
+				{
+					if (!dataReader.IsClosed)
+					{
+						dataReader.Dispose();
+					}
+					dataReader = null;
+				}
 			}
 		}
 

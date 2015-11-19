@@ -4,12 +4,10 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
-using System.Threading.Tasks;
 using SmartStore.Core;
-using SmartStore.Core.Data;
 using SmartStore.Utilities.Reflection;
 
-namespace SmartStore.Services.ExportImport
+namespace SmartStore.Services.DataExchange.Import
 {
 	public class ImportRow<T> where T : BaseEntity
 	{
@@ -20,10 +18,12 @@ namespace SmartStore.Services.ExportImport
 		private bool _isNew;
 		private ImportRowInfo _rowInfo;
 
+		private readonly ImportDataSegmenter<T> _segmenter;
 		private readonly IDataRow _row;
 
-		public ImportRow(IDataRow row, int position)
+		public ImportRow(ImportDataSegmenter<T> parent, IDataRow row, int position)
 		{
+			_segmenter = parent;
 			_row = row;
 			_position = position;
 		}
@@ -91,7 +91,7 @@ namespace SmartStore.Services.ExportImport
 			object value;
 			if (_row.TryGetValue(columnName, out value))
 			{
-				return value.Convert<TProp>(CultureInfo.CurrentCulture);
+				return value.Convert<TProp>(_segmenter.Culture);
 			}
 
 			return default(TProp);
@@ -102,7 +102,7 @@ namespace SmartStore.Services.ExportImport
 			T target,
 			Expression<Func<T, TProp>> prop,
 			TProp defaultValue = default(TProp),
-			Func<object, TProp> converter = null)
+			Func<object, CultureInfo, TProp> converter = null)
 		{
 			// TBD: (MC) do not check for perf reason?
 			//CheckInitialized();
@@ -121,7 +121,7 @@ namespace SmartStore.Services.ExportImport
 					TProp converted;
 					if (converter != null)
 					{
-						converted = converter(value);
+						converted = converter(value, _segmenter.Culture);
 					}
 					else
 					{
@@ -132,7 +132,7 @@ namespace SmartStore.Services.ExportImport
 						}
 						else
 						{
-							converted = value.Convert<TProp>();
+							converted = value.Convert<TProp>(_segmenter.Culture);
 						}
 					}
 

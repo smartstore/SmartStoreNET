@@ -176,6 +176,12 @@
     <Compile Include="DataExchange\Deployment\IFilePublisher.cs" />
     <Compile Include="DataExchange\Excel\ExcelDataReader.cs" />
     <Compile Include="DataExchange\ExportConfigurationInfo.cs" />
+    <Compile Include="DataExchange\Import\DataTable\IDataTable.cs" />
+    <Compile Include="DataExchange\Import\DataTable\LightweightDataTable.cs" />
+    <Compile Include="DataExchange\Import\ImportMessage.cs" />
+    <Compile Include="DataExchange\Import\ImportModeFlags.cs" />
+    <Compile Include="DataExchange\Import\ImportProgressInfo.cs" />
+    <Compile Include="DataExchange\Import\ImportResult.cs" />
     <Compile Include="DataExchange\Providers\SubscriberCsvExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CustomerXmlExportProvider.cs" />
     <Compile Include="DataExchange\Providers\CategoryXmlExportProvider.cs" />
@@ -209,8 +215,8 @@
     <Compile Include="DataExchange\ExportProfileService.cs" />
     <Compile Include="DataExchange\IExportProvider.cs" />
     <Compile Include="DataExchange\IExportProfileService.cs" />
-    <Compile Include="ExportImport\ImportDataSegmenter.cs" />
-    <Compile Include="ExportImport\ImportRow.cs" />
+    <Compile Include="DataExchange\Import\ImportDataSegmenter.cs" />
+    <Compile Include="DataExchange\Import\ImportRow.cs" />
     <Compile Include="Hooks\SlugSupportedPostDeleteHook.cs" />
     <Compile Include="Hooks\StoreMappingEntityPostDeleteHook.cs" />
     <Compile Include="Media\MediaExtensions.cs" />
@@ -310,7 +316,6 @@
     <Compile Include="Directory\DeliveryTimeService.cs" />
     <Compile Include="Events\EventPublisher.cs" />
     <Compile Include="Events\DefaultConsumerFactory.cs" />
-    <Compile Include="ExportImport\DataSegmenter.cs" />
     <Compile Include="Extensions\NameValueCollectionExtensions.cs" />
     <Compile Include="Filter\FilterCriteria.cs" />
     <Compile Include="Filter\FilterExtensions.cs" />
@@ -344,7 +349,7 @@
     <Compile Include="Discounts\DiscountService.cs" />
     <Compile Include="Discounts\IDiscountRequirementRule.cs" />
     <Compile Include="Discounts\IDiscountService.cs" />
-    <Compile Include="ExportImport\ImportManager.cs" />
+    <Compile Include="DataExchange\Import\ImportManager.cs" />
     <Compile Include="Authentication\FormsAuthenticationService.cs" />
     <Compile Include="Forums\ForumService.cs" />
     <Compile Include="Forums\IForumService.cs" />
@@ -363,7 +368,7 @@
     <Compile Include="Customers\ICustomerService.cs" />
     <Compile Include="Directory\IMeasureService.cs" />
     <Compile Include="Directory\IStateProvinceService.cs" />
-    <Compile Include="ExportImport\IImportManager.cs" />
+    <Compile Include="DataExchange\Import\IImportManager.cs" />
     <Compile Include="Localization\LocalizationExtentions.cs" />
     <Compile Include="Directory\MeasureService.cs" />
     <Compile Include="Logging\CustomerActivityService.cs" />

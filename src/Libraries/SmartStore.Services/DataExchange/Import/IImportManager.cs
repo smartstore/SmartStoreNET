@@ -1,9 +1,7 @@
 ﻿using System;
-using System.IO;
 using System.Threading;
-using SmartStore.Core.Data;
 
-namespace SmartStore.Services.ExportImport
+namespace SmartStore.Services.DataExchange.Import
 {
     /// <summary>
     /// Import manager interface

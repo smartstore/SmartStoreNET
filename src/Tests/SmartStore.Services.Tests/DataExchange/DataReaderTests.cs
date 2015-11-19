@@ -11,6 +11,7 @@ using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Utilities;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Excel;
+using SmartStore.Services.DataExchange.Import;
 using SmartStore.Tests;
 using SmartStore.Utilities;
 

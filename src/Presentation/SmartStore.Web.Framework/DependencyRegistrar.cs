@@ -42,7 +42,6 @@ using SmartStore.Services.DataExchange;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Events;
-using SmartStore.Services.ExportImport;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
@@ -76,6 +75,7 @@ using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Utilities.Reflection;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Web.Framework
 {

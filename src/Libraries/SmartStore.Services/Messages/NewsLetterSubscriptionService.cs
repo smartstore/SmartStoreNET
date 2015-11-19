@@ -5,9 +5,9 @@ using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Messages;
-using SmartStore.Data;
 using SmartStore.Core.Events;
 using SmartStore.Services.Stores;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Messages
 {

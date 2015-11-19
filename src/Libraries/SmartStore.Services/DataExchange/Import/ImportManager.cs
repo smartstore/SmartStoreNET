@@ -19,8 +19,9 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Stores;
 using SmartStore.Core.Domain.Stores;
 using SmartStore.Core;
+using System.Globalization;
 
-namespace SmartStore.Services.ExportImport
+namespace SmartStore.Services.DataExchange.Import
 {
     /// <summary>
     /// Import manager
@@ -751,22 +752,10 @@ namespace SmartStore.Services.ExportImport
 				_eventPublisher.EntityInserted(lastInserted);
 		}
 
-		//private DateTime? OADateToUtcDate(object value)
-		//{
-		//	double oaDate;
-		//	if (CommonHelper.TryConvert<double>(value, out oaDate) && oaDate != 0)
-		//	{
-		//		return DateTime.FromOADate(Convert.ToDouble(oaDate));
-		//	}
-
-		//	return null;
-		//}
-
-
-		private int? ZeroToNull(object value)
+		private int? ZeroToNull(object value, CultureInfo culture)
 		{
 			int result;
-			if (CommonHelper.TryConvert<int>(value, out result) && result > 0)
+			if (CommonHelper.TryConvert<int>(value, culture, out result) && result > 0)
 			{
 				return result;
 			}

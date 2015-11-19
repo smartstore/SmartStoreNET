@@ -1,24 +1,19 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
+using System.Globalization;
 using System.IO;
 using System.Linq;
-using System.Linq.Expressions;
-using System.Reflection;
-using System.Text;
-using OfficeOpenXml;
 using SmartStore.Core;
-using SmartStore.Core.Data;
-using SmartStore.Utilities.Reflection;
 
-namespace SmartStore.Services.ExportImport
+namespace SmartStore.Services.DataExchange.Import
 {
 	public class ImportDataSegmenter<T> where T : BaseEntity
 	{
 		private const int BATCHSIZE = 100;
 
 		private IDataTable _table;
-		private IList<ImportRow<T>> _currentBatch;
+		private ImportRow<T>[] _currentBatch;
 		private IPageable _pageable;
 		private bool _bof;
 
@@ -30,6 +25,13 @@ namespace SmartStore.Services.ExportImport
 
 			_bof = true;
 			_pageable = new PagedList(0, BATCHSIZE, table.Rows.Count);
+			Culture = CultureInfo.InvariantCulture;
+		}
+
+		public CultureInfo Culture
+		{
+			get;
+			set;
 		}
 
 		public int TotalRows
@@ -66,7 +68,6 @@ namespace SmartStore.Services.ExportImport
 		{
 			if (_pageable.PageIndex != 0 && _currentBatch != null)
 			{
-				_currentBatch.Clear();
 				_currentBatch = null;
 			}
 			_bof = true;
@@ -77,7 +78,6 @@ namespace SmartStore.Services.ExportImport
 		{
 			if (_currentBatch != null)
 			{
-				_currentBatch.Clear();
 				_currentBatch = null;
 			}
 
@@ -103,19 +103,21 @@ namespace SmartStore.Services.ExportImport
 			{
 				if (_currentBatch == null)
 				{
-					_currentBatch = new List<ImportRow<T>>();
+					_currentBatch = new ImportRow<T>[BATCHSIZE];
 
-					int start = _pageable.FirstItemIndex;
-					int end = _pageable.LastItemIndex;
+					int start = _pageable.FirstItemIndex - 1;
+					int end = _pageable.LastItemIndex - 1;
 
 					// Determine values per row
+					int i = 0;
 					for (int r = start; r <= end; r++)
 					{
-						_currentBatch.Add(new ImportRow<T>(_table.Rows[r], r));
+						_currentBatch[i] = new ImportRow<T>(this, _table.Rows[r], r);
+						i++;
 					}
 				}
 
-				return _currentBatch.ToArray();
+				return _currentBatch;
 			}
 		}
 	}

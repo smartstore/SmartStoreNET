@@ -1,9 +1,8 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 
-namespace SmartStore.Core.Data
+namespace SmartStore.Services.DataExchange.Import
 {
 	
 	public class ImportResult

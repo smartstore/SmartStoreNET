@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Data.Entity;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -954,33 +955,51 @@ namespace SmartStore.Services.DataExchange
 
 			if (!ctx.IsPreview && ctx.Projection.AttributeCombinationAsProduct && combinations.Where(x => x.IsActive).Count() > 0)
 			{
-				var productType = typeof(Product);
-				var productValues = new Dictionary<string, object>();
+				//var productType = typeof(Product);
+				//var productValues = new Dictionary<string, object>();
+				var dbContext = _dbContext as DbContext;
 
-				// TODO: work with Entry().CurrentValues instead of Reflection.
-				// First attach the object, determine all values and detach again.
-				var properties = FastProperty.GetProperties(product.GetUnproxiedType())
-					.Values
-					.Where(x => x.Property.CanRead && x.Property.CanWrite);
+				_dbContext.Attach(product);
 
-				// fetch all property values once per product
-				foreach (var property in properties)
-				{
-					productValues.Add(property.Name, property.GetValue(product));
-				}
+				var entry = dbContext.Entry(product);
+
+				// the returned object is not the entity and is not being tracked by the context.
+				// it also does not have any relationships set to other objects.
+				// CurrentValues only includes database (thus primitive) values.
+				var productClone = entry.CurrentValues.ToObject() as Product;
+
+				_dbContext.DetachEntity(product);
 
 				foreach (var combination in combinations.Where(x => x.IsActive))
 				{
-					var productClone = new Product();
-
-					foreach (var property in properties)
-					{
-						property.SetValue(productClone, productValues[property.Name]);
-					}
-
 					var dynObject = ToDynamic(ctx, productClone, combinations, combination);
 					result.Add(dynObject);
 				}
+
+				// TODO: work with Entry().CurrentValues instead of Reflection.
+				// First attach the object, determine all values and detach again.
+				//var properties = FastProperty.GetProperties(product.GetUnproxiedType())
+				//	.Values
+				//	.Where(x => x.Property.CanRead && x.Property.CanWrite);
+
+				//// fetch all property values once per product
+				//foreach (var property in properties)
+				//{
+				//	productValues.Add(property.Name, property.GetValue(product));
+				//}
+
+				//foreach (var combination in combinations.Where(x => x.IsActive))
+				//{
+				//	var clone = new Product();
+
+				//	foreach (var property in properties)
+				//	{
+				//		property.SetValue(clone, productValues[property.Name]);
+				//	}
+
+				//	var dynObject = ToDynamic(ctx, clone, combinations, combination);
+				//	result.Add(dynObject);
+				//}
 			}
 			else
 			{

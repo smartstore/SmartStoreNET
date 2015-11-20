@@ -25,11 +25,6 @@ namespace SmartStore.Services.DataExchange
 			Guard.ArgumentNotEmpty(() => sourceName);
 			Guard.ArgumentNotEmpty(() => mappedName);
 
-			if (index.HasValue())
-			{
-				sourceName += String.Concat("[", index, "]");
-			}
-
 			_map[CreateName(sourceName, index)] = mappedName;
 		}
 

@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Newtonsoft.Json;
 
 namespace SmartStore.Services.DataExchange.Csv
 {
@@ -101,6 +102,9 @@ namespace SmartStore.Services.DataExchange.Csv
 			get { return _escape; }
 			set
 			{
+				if (value == _escape)
+					return;
+
 				if (new char[] { '\n', '\r', '\0' }.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid escape char.".FormatInvariant(value));
@@ -124,6 +128,9 @@ namespace SmartStore.Services.DataExchange.Csv
 			get { return _delimiter; }
 			set
 			{
+				if (value == _delimiter)
+					return;
+
 				if (new char[] { '\n', '\r', '\0' }.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid delimiter char.".FormatInvariant(value));
@@ -148,6 +155,9 @@ namespace SmartStore.Services.DataExchange.Csv
 			get { return _quote; }
 			set
 			{
+				if (value == _quote)
+					return;
+
 				if (new char[] { '\n', '\r', '\0' }.Contains(value))
 				{
 					throw new SmartException("'{0}' is not a valid quote char.".FormatInvariant(value));
@@ -166,6 +176,7 @@ namespace SmartStore.Services.DataExchange.Csv
 		/// <summary>
 		/// Gets the concatenation of escape and quote char
 		/// </summary>
+		[JsonIgnore]
 		public string QuoteString
 		{
 			get

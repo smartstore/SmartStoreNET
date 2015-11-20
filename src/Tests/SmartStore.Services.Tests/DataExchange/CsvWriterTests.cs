@@ -1,25 +1,18 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Data;
-using System.Diagnostics;
-using System.Globalization;
 using System.IO;
 using System.Linq;
 using System.Text;
 using NUnit.Framework;
-using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Utilities;
 using SmartStore.Services.DataExchange.Csv;
-using SmartStore.Services.DataExchange.Excel;
-using SmartStore.Tests;
-using SmartStore.Utilities;
 
 namespace SmartStore.Services.Tests.DataExchange
 {
 	[TestFixture]
 	public class CsvWriterTests
 	{
-		[Test]
+        [Test]
 		public void CanWriteValidCsv()
 		{
 			var sb = new StringBuilder();

@@ -1,7 +1,6 @@
 ﻿@model ProductModel
 @using Telerik.Web.Mvc.UI;
 @{
-	//page title
 	ViewBag.Title = T("Admin.Catalog.Products.EditProductDetails").Text;
 }
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "product-form" })) {
@@ -14,6 +13,8 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Catalog.Products.BackToList"))</a>
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
 			<button type="submit" name="preview" value="preview" onclick="javascript:OpenWindow('@Model.ProductUrl', 1000, 600, true); return false;" class="btn">
                 <i class="fa fa-eye"></i>
                 @T("Admin.Common.Preview")
@@ -32,6 +33,8 @@
 				<i class="fa fa-trash-o"></i>
 				@T("Admin.Common.Delete")
 			</button>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

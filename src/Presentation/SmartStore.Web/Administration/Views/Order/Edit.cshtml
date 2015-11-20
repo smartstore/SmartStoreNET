@@ -13,6 +13,8 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Orders.BackToList"))</a>
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <a href="@Url.Action("Print", new { orderId = Model.Id, pdf = false })" target="print" class="btn print-order-button" rel="nofollow">
                 <i class="fa fa-print"></i>
                 @T("Order.Print")
@@ -29,6 +31,8 @@
 				@T("Admin.Common.Delete")
 			</button>
             <input type="submit" id="btnRefreshPage" name="btnRefreshPage" style="display: none" />
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     

@@ -1,6 +1,5 @@
 ﻿@model CustomerModel
 @{
-    //page title
     ViewBag.Title = T("Admin.Customers.Customers.EditCustomerDetails").Text;
 }
 @using Telerik.Web.Mvc.UI
@@ -12,6 +11,8 @@
 			<a href='@Url.Action("List")'>(@T("Admin.Customers.Customers.BackToList"))</a>			
         </div>
         <div class="options">
+			@Html.Widget("admin_button_toolbar_before")
+
             <button type="submit" name="save" value="save" class="btn btn-primary"><i class="fa fa-check"></i>&nbsp;@T("Admin.Common.Save")</button>
             <button type="submit" name="save" value="save-continue" class="btn">@T("Admin.Common.SaveContinue")</button>
 
@@ -22,6 +23,8 @@
 				<i class="fa fa-envelope"></i>&nbsp;@T("Admin.Customers.Customers.SendPM")
 			</a>
             <button type="submit" name="customer-delete" id="customer-delete" class="btn btn-danger"><i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete")</button>
+
+			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
     @Html.Partial("_CreateOrUpdate", Model)

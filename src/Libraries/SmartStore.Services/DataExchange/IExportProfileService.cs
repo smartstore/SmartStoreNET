@@ -16,6 +16,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <param name="fileExtension">File extension supported by provider</param>
 		/// <param name="features">Features supportde by provider</param>
 		/// <param name="isSystemProfile">Whether the new profile is a system profile</param>
+		/// <param name="profileSystemName">Profile system name</param>
 		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
 		/// <returns>New export profile</returns>
 		ExportProfile InsertExportProfile(
@@ -24,6 +25,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string fileExtension,
 			ExportFeatures features,
 			bool isSystemProfile = false,
+			string profileSystemName = null,
 			int cloneFromProfileId = 0);
 
 		/// <summary>
@@ -31,9 +33,14 @@ namespace SmartStore.Services.DataExchange.Export
 		/// </summary>
 		/// <param name="provider">Export provider</param>
 		/// <param name="isSystemProfile">Whether the new profile is a system profile</param>
+		/// <param name="profileSystemName">Profile system name</param>
 		/// <param name="cloneFromProfileId">Identifier of a profile the settings should be copied from</param>
 		/// <returns>New export profile</returns>
-		ExportProfile InsertExportProfile(Provider<IExportProvider> provider, bool isSystemProfile = false, int cloneFromProfileId = 0);
+		ExportProfile InsertExportProfile(
+			Provider<IExportProvider> provider,
+			bool isSystemProfile = false,
+			string profileSystemName = null,
+			int cloneFromProfileId = 0);
 
 		/// <summary>
 		/// Updates an export profile

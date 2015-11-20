@@ -586,7 +586,7 @@ namespace SmartStore.Admin.Controllers
 				var provider = _exportService.LoadProvider(model.ProviderSystemName);
 				if (provider != null)
 				{
-					var profile = _exportService.InsertExportProfile(provider, false, model.CloneProfileId ?? 0);
+					var profile = _exportService.InsertExportProfile(provider, false, null, model.CloneProfileId ?? 0);
 
 					return RedirectToAction("Edit", new { id = profile.Id });
 				}

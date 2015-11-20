@@ -53,6 +53,7 @@ namespace SmartStore.Services.DataExchange.Export
 			string fileExtension,
 			ExportFeatures features,
 			bool isSystemProfile = false,
+			string profileSystemName = null,
 			int cloneFromProfileId = 0)
 		{
 			Guard.ArgumentNotEmpty(() => providerSystemName);
@@ -82,7 +83,7 @@ namespace SmartStore.Services.DataExchange.Export
 				task.LastEndUtc = task.LastStartUtc = task.LastSuccessUtc = null;
 			}
 
-			task.Name = string.Concat(name, " task");
+			task.Name = string.Concat(name, " Task");
 
 			_scheduleTaskService.InsertTask(task);
 
@@ -131,17 +132,23 @@ namespace SmartStore.Services.DataExchange.Export
 			profile.ProviderSystemName = providerSystemName;
 			profile.SchedulingTaskId = task.Id;
 
-			var folderName = providerSystemName
+			var cleanedSystemName = providerSystemName
 				.Replace("Exports.", "")
 				.Replace("Feeds.", "")
 				.Replace("/", "")
 				.Replace("-", "");
 
-			profile.FolderName = SeoHelper.GetSeName(folderName, true, false)
+			profile.FolderName = SeoHelper.GetSeName(cleanedSystemName, true, false)
 				.ToValidPath()
 				.Truncate(_dataExchangeSettings.MaxFileNameLength);
 
+			if (profileSystemName.IsEmpty() && isSystemProfile)
+				profile.SystemName = cleanedSystemName;
+			else
+				profile.SystemName = profileSystemName;
+
 			_exportProfileRepository.Insert(profile);
+
 
 			task.Alias = profile.Id.ToString();
 			_scheduleTaskService.UpdateTask(task);
@@ -180,7 +187,11 @@ namespace SmartStore.Services.DataExchange.Export
 			return profile;
 		}
 
-		public virtual ExportProfile InsertExportProfile(Provider<IExportProvider> provider, bool isSystemProfile = false, int cloneFromProfileId = 0)
+		public virtual ExportProfile InsertExportProfile(
+			Provider<IExportProvider> provider,
+			bool isSystemProfile = false,
+			string profileSystemName = null,
+			int cloneFromProfileId = 0)
 		{
 			Guard.ArgumentNotNull(() => provider);
 
@@ -190,6 +201,7 @@ namespace SmartStore.Services.DataExchange.Export
 				provider.Value.FileExtension,
 				provider.Metadata.ExportFeatures,
 				isSystemProfile,
+				profileSystemName,
 				cloneFromProfileId);
 
 			return profile;

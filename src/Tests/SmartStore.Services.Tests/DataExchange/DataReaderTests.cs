@@ -5,6 +5,8 @@ using System.Diagnostics;
 using System.Globalization;
 using System.IO;
 using System.Linq;
+using System.Reflection;
+using System.Text;
 using NUnit.Framework;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
@@ -20,10 +22,15 @@ namespace SmartStore.Services.Tests.DataExchange
 	[TestFixture]
 	public class DataReaderTests
 	{
+		private Stream GetFileStream(string fileName)
+		{
+			return typeof(DataReaderTests).Assembly.GetManifestResourceStream("SmartStore.Services.Tests.DataExchange.Files.{0}".FormatInvariant(fileName));
+		}
+
 		[Test]
 		public void CsvReaderThrowsIfNotInitialized()
 		{
-			using (var csv = new CsvDataReader(new StreamReader("D:\\products-10000.csv")))
+			using (var csv = new CsvDataReader(new StreamReader(GetFileStream("testdata.csv"))))
 			{
 				ExceptionAssert.Throws<InvalidOperationException>(() => { var value = csv["Name"]; });
 			}
@@ -32,138 +39,73 @@ namespace SmartStore.Services.Tests.DataExchange
 		[Test]
 		public void ExcelReaderThrowsIfNotInitialized()
 		{
-			using (var excel = new ExcelDataReader(new FileStream("D:\\products-10000.xlsx", FileMode.Open, FileAccess.Read), true))
+			using (var excel = new ExcelDataReader(GetFileStream("testdata.xlsx"), true))
 			{
 				ExceptionAssert.Throws<InvalidOperationException>(() => { var value = excel["Name"]; });
 			}
 		}
 
 		[Test]
-		public void DataReaderPerfTest()
+		public void CanReadExcel()
 		{
-			int cycles = 1;
+			IDataTable table;
 
-			////Chronometer.Measure(cycles, "ReadCsv", i => ReadCsv());
-			//Chronometer.Measure(cycles, "ReadExcel", i => ReadExcel());
-
-			Chronometer.Measure(cycles, "CreateDataTableFromReader", i => CreateDataTableFromReader());
-		}
-
-		private void CreateDataTableFromReader()
-		{
-			IDataTable dataTable;
-
-			using (var csv = new CsvDataReader(new StreamReader("D:\\csvwriter-1-7-0001-elmarshopinfocsvfeed.csv")))
+			using (var excel = new ExcelDataReader(GetFileStream("testdata.xlsx"), true))
 			{
-				dataTable = LightweightDataTable.FromDataReader(csv);
-				//foreach (var r in dataTable.Rows)
-				//{
-				//	ObjectDumper.ToConsole(r);
-				//}
+				table = LightweightDataTable.FromDataReader(excel);
 			}
 
-			//using (var fileStream = new FileStream("D:\\products-10000.xlsx", FileMode.Open, FileAccess.Read))
-			//{
-			//	using (var excel = new ExcelDataReader(fileStream, true))
-			//	{
-			//		dataTable = LightweightDataTable.FromDataReader(excel);
-			//	}
-			//}
-
-			Console.WriteLine("TotalRows: " + dataTable.Rows.Count);
-
-			dynamic lastRow = dataTable.Rows.Last();
-			var row = (IDataRow)lastRow;
-
-			//ObjectDumper.ToConsole(row["AllowCustomerReviews"].Convert<bool>());
-			ObjectDumper.ToConsole(lastRow);
-			ObjectDumper.ToConsole(dataTable.Columns);
+			VerifyDataTable(table);
 		}
 
-		private void ReadCsv()
+		[Test]
+		public void CanReadCsv()
 		{
-			var memBefore = Process.GetCurrentProcess().PrivateMemorySize64;
-			long memDuring = 0;
-			int rows = 0;
+			IDataTable table;
 
-			using (var fileStream = new FileStream("D:\\products-10000.csv", FileMode.Open, FileAccess.Read))
+			using (var csv = new CsvDataReader(new StreamReader(GetFileStream("testdata.csv"), Encoding.UTF8)))
 			{
-				// determine total row count
-				using (var csv = new CsvDataReader(fileStream.ToStreamReader(true)))
-				{
-					while (csv.Read())
-					{
-						rows++;
-					}
-				}
-
-				// actually read rows
-				fileStream.Seek(0, SeekOrigin.Begin);
-				using (var csv = new CsvDataReader(fileStream.ToStreamReader(true)))
-				{
-					var reader = csv as IDataReader;
-
-					ObjectDumper.ToConsole(reader.GetSchemaTable());
-
-					var fields = csv.GetFieldHeaders().Reverse().ToArray();
-
-					while (csv.Read())
-					{
-						ReadRow(csv, fields, System.Convert.ToInt16(csv.CurrentRowIndex));
-					}
-					memDuring = Process.GetCurrentProcess().PrivateMemorySize64;
-				}
+				table = LightweightDataTable.FromDataReader(csv);
 			}
 
-			var memAfter = Process.GetCurrentProcess().PrivateMemorySize64;
-
-			Console.WriteLine("Read Lines: {0}, MemBefore: {1}, MemDuring: {2}, MemAfter: {3}",
-				rows,
-				Prettifier.BytesToString(memBefore),
-				Prettifier.BytesToString(memDuring),
-				Prettifier.BytesToString(memAfter));
+			VerifyDataTable(table);
 		}
 
-		private void ReadExcel()
+		private void VerifyDataTable(IDataTable table)
 		{
-			var memBefore = Process.GetCurrentProcess().PrivateMemorySize64;
-			long memDuring = 0;
-			int rows = 0;
+			Assert.AreEqual(12, table.Columns.Count, "Columns Count");
+			Assert.AreEqual(10, table.Rows.Count, "Rows Count");
 
-			using (var fileStream = new FileStream("D:\\products-100.xlsx", FileMode.Open, FileAccess.Read))
-			{
-				using (var excel = new ExcelDataReader(fileStream, true))
-				{
-					var reader = excel as IDataReader;
-					rows = excel.TotalRows;
+			var cols = table.Columns;
 
-					ObjectDumper.ToConsole(reader.GetSchemaTable());
+			Assert.AreEqual("Id", cols[0].Name);
+			Assert.AreEqual("Sku", cols[1].Name);
+			Assert.AreEqual("Name", cols[2].Name);
+			Assert.AreEqual("Description", cols[3].Name);
+			Assert.AreEqual("Bool", cols[4].Name);
+			Assert.AreEqual("Date", cols[5].Name);
+			Assert.AreEqual("OADate", cols[6].Name);
+			Assert.AreEqual("UnixDate", cols[7].Name);
+			Assert.AreEqual("Int", cols[8].Name);
+			Assert.AreEqual("Double", cols[9].Name);
+			Assert.AreEqual("Guid", cols[10].Name);
+			Assert.AreEqual("IntList", cols[11].Name);
 
-					var fields = excel.GetColumnHeaders().Reverse().ToArray();
+			var rows = table.Rows;
 
-					while (excel.Read())
-					{
-						ReadRow(excel, fields, excel.CurrentRowIndex);
-					}
-					memDuring = Process.GetCurrentProcess().PrivateMemorySize64;
-				}
-			}
+			rows[3]["Sku"].ShouldEqual("SKU 4");
+			rows[1]["Name"].ShouldEqual("äöü");
+			rows[7]["Description"].ShouldEqual("Description 8");
+			rows[0]["Bool"].Convert<bool>().ShouldBeTrue();
+			rows[5]["Bool"].Convert<bool>().ShouldBeTrue();
+			rows[6]["Bool"].Convert<bool>().ShouldBeFalse();
+			rows[3]["Double"].Convert<double>().ShouldEqual(9999.765);
+			rows[0]["OADate"].Convert<DateTime>().ShouldEqual(DateTime.FromOADate(rows[0]["OADate"].Convert<double>()));
+			rows[3]["Guid"].Convert<Guid>().ShouldEqual(Guid.Parse("77866957-eec3-4b35-950f-10d1699ac46d"));
 
-			var memAfter = Process.GetCurrentProcess().PrivateMemorySize64;
-
-			Console.WriteLine("Read Lines: {0}, MemBefore: {1}, MemDuring: {2}, MemAfter: {3}",
-				rows,
-				Prettifier.BytesToString(memBefore),
-				Prettifier.BytesToString(memDuring),
-				Prettifier.BytesToString(memAfter));
-		}
-
-		private void ReadRow(IDataReader reader, string[] fields, int row)
-		{
-			foreach (var field in fields)
-			{
-				var value = reader[field].Convert<string>();
-			}
+			rows[0]["IntList"].Convert<List<int>>().ShouldSequenceEqual(new List<int> { 1, 2, 3, 4 });
+			rows[1]["IntList"].Convert<List<short>>().ShouldSequenceEqual(new List<short> { 1, 2, 3, 4 });
+			rows[5]["IntList"].Convert<List<double>>().ShouldSequenceEqual(new List<double> { 1, 2, 3, 4 });
 		}
 	}
 

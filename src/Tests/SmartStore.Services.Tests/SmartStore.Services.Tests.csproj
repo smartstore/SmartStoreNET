@@ -148,6 +148,8 @@
   <ItemGroup>
     <None Include="App.config" />
     <EmbeddedResource Include="Messages\Attachment.pdf" />
+    <EmbeddedResource Include="DataExchange\Files\testdata.xlsx" />
+    <EmbeddedResource Include="DataExchange\Files\testdata.csv" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup />

@@ -17,70 +17,12 @@
 			@Html.Widget("admin_button_toolbar_before")
 
             <a href="@Url.Action("Create")" class="btn btn-primary">
-                <i class="fa fa-plus"></i>
-                @T("Admin.Common.AddNew")
+                <i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")
             </a>
 
 			<button type="submit" id="delete-selected" class="btn btn-danger">
-				<i class="fa fa-trash-o"></i>
-				@T("Admin.Common.Delete.Selected")
+				<i class="fa fa-trash-o"></i>&nbsp;@T("Admin.Common.Delete.Selected")
 			</button>
-
-            @*<div class="btn-group" style="vertical-align: middle">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					@T("Common.Export")
-					<span class="fa fa-caret-down"></span>
-				</a>
-                <ul class="dropdown-menu export-catalog">
-					<li>
-                        <a href="@Url.Action("ExportXmlAll")">
-                            <i class="fa fa-fw fa-code"></i>
-                            @T("Admin.Common.ExportToXml.All")
-                        </a>
-                    </li>
-                    <li>
-                        <a href="@Url.Action("ExportExcelAll")">
-                            <i class="fa fa-fw fa-file-excel-o"></i>
-                            @T("Admin.Common.ExportToExcel.All")
-                        </a>
-                    </li>
-
-                    @if (Model.DisplayPdfExport)
-                    {
-                        <li>
-                            <a href="@Url.Action("ExportPdf", new { all = true })">
-                                <i class="fa fa-fw fa-file-pdf-o"></i>
-                                @T("Admin.Common.ExportToPdf.All")
-                            </a>
-                        </li>
-                    }
-
-                    <li class="divider"></li>
-
-                    <li>
-                        <a id="exportxml-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected")">
-                            <i class="fa fa-fw fa-code"></i>
-                            @T("Admin.Common.ExportToXml.Selected")
-                        </a>
-                    </li>
-                    <li>
-                        <a id="exportexcel-selected" href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected")">
-                            <i class="fa fa-fw fa-file-excel-o"></i>
-                            @T("Admin.Common.ExportToExcel.Selected")
-                        </a>
-                    </li>
-
-                    @if (Model.DisplayPdfExport)
-                    {
-                        <li>
-                            <a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", new { all = false })">
-                                <i class="fa fa-fw fa-file-pdf-o"></i>
-                                @T("Admin.Common.ExportToPdf.Selected")
-                            </a>
-                        </li>
-                    }
-                </ul>
-            </div>*@
 
             <a id="importexcel" href="#importexcel-window" class="btn" role="button">
 				<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
@@ -95,15 +37,13 @@
 					</a>
 					<ul class="dropdown-menu pull-right">
 						<li>
-							<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", new { all = false })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>
-								@T("Admin.Common.ExportToPdf.Selected")
+							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
+								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 							</a>
 						</li>
 						<li>
-							<a href="@Url.Action("ExportPdf", new { all = true })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>
-								@T("Admin.Common.ExportToPdf.All")
+							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
+								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 							</a>
 						</li>
 					</ul>
@@ -320,13 +260,19 @@
         		$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
         	}).trigger('change');
 
-        	// export selected to pdf, xml, xls...
-        	$('a.export-form-post').click(function (e) {
+        	// export products to pdf
+        	$('a.pdf-export-button').click(function (e) {
         		e.preventDefault();
-        		var form = $('#ProductExportForm');
-        		form.find('[name=selectedIds]').val(selectedIds.join(','));
-        		form.attr('action', $(this).data('url'));
-        		form.submit();
+
+        		if (confirm('@T("Admin.Common.AskToProceed")')) {
+        			var form = '<form id="ProductPdfExportForm" action="' + $(this).data('url') + '" method="post">';
+        			form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+        			form += '</form>';
+
+        			$('body').append(form);
+        			$('#ProductPdfExportForm').submit();
+        		}
+
         		return false;
         	});
 
@@ -443,10 +389,6 @@
         .Visible(false)
         .Render();
 }
-
-<form id="ProductExportForm" method="POST" action="#">
-	<input type="hidden" id="selectedIds" name="selectedIds" value="" />
-</form>
 
 <script type="text/javascript">
     $(document).ready(function () {

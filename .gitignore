@@ -220,3 +220,11 @@ Kopie von*
 src/SmartStoreNET.Packager.sln
 Log.txt
 .vs/
+#######
+##  SVN
+#######
+.svn
+#########
+##  other
+#########
+Reference

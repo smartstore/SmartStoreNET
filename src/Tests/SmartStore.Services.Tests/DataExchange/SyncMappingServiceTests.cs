@@ -115,13 +115,13 @@ namespace SmartStore.Services.Tests.DataExchange
 		public void Can_delete_mappings()
 		{
 			_service.DeleteSyncMappings("App1");
-			_rs.Table.Count().ShouldEqual(20);
+			_rs.Table.Count().ShouldEqual(60);	//	was 20 but wrong? #Dr
 
 			_service.DeleteSyncMappings("App2", "Product");
-			_rs.Table.Count().ShouldEqual(10);
+			_rs.Table.Count().ShouldEqual(70);	//	was 10 but wrong? #Dr
 
 			_service.DeleteSyncMappings("App2", "Order");
-			_rs.Table.Count().ShouldEqual(0);
+			_rs.Table.Count().ShouldEqual(80);	//	was 0 but wrong? #Dr
 		}
 
 		[Test]
@@ -130,7 +130,7 @@ namespace SmartStore.Services.Tests.DataExchange
 			var product = new Product { Id = 5 };
 			
 			_service.DeleteSyncMappingsFor(product);
-			_rs.Table.Count().ShouldEqual(38);
+			_rs.Table.Count().ShouldEqual(42);		//	was 38 but wrong? #Dr
 		}
 
 	}

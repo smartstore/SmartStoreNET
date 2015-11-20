@@ -123,6 +123,8 @@ namespace SmartStore.Services.Payments
 					if (allFilters == null)
 						allFilters = GetAllPaymentMethodFilters();
 
+					if (allFilters == null)
+						return false;
 					filterRequest.PaymentMethod = p;
 
 					if (allFilters.Any(x => x.IsExcluded(filterRequest)))
@@ -722,9 +724,11 @@ namespace SmartStore.Services.Payments
 
 		public virtual IList<IPaymentMethodFilter> GetAllPaymentMethodFilters()
 		{
-			return _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true)
-				.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter)
-				.ToList();
+			var Classes  = _typeFinder.FindClassesOfType<IPaymentMethodFilter>(ignoreInactivePlugins: true);
+			if (Classes == null) {
+				return null;
+			}
+			return Classes.Select(x => EngineContext.Current.ContainerManager.ResolveUnregistered(x) as IPaymentMethodFilter).ToList();
 		}
 
         #endregion

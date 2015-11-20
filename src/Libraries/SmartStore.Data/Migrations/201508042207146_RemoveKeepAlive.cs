@@ -1,15 +1,18 @@
 namespace SmartStore.Data.Migrations
 {
-    using System;
-    using System.Data.Entity.Migrations;
+	using System;
+	using System.Data.Entity.Migrations;
+	using SmartStore.Core.Data;
 	using SmartStore.Data.Setup;
 
 	public partial class RemoveKeepAlive : DbMigration, ILocaleResourcesProvider, IDataSeeder<SmartObjectContext>
     {
         public override void Up()
         {
-			Sql("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Services.Common.KeepAliveTask, SmartStore.Services'");
-        }
+			  if (DataSettings.Current.IsSqlServer) {	//	Not works 4 SQLCE
+				  Sql("DELETE FROM [dbo].[ScheduleTask] WHERE [Type] = 'SmartStore.Services.Common.KeepAliveTask, SmartStore.Services'");
+			  }
+		  }
         
         public override void Down()
         {

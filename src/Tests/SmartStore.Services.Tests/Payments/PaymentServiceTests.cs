@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using NUnit.Framework;
 using Rhino.Mocks;
@@ -41,7 +42,9 @@ namespace SmartStore.Services.Tests.Payments
 			_currencyService = MockRepository.GenerateMock<ICurrencyService>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
 			_orderTotalCalculationService = MockRepository.GenerateMock<IOrderTotalCalculationService>();
+
 			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
+			_typeFinder.Expect(x => x.FindClassesOfType((Type)null, null, true)).IgnoreArguments().Return(Enumerable.Empty<Type>()).Repeat.Any();
 
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();

@@ -10,6 +10,8 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Services.DataExchange;
 using SmartStore.Tests;
+using Rhino.Mocks;
+using SmartStore.Core;
 
 namespace SmartStore.Services.Tests.DataExchange
 {
@@ -48,6 +50,13 @@ namespace SmartStore.Services.Tests.DataExchange
 				new int[] { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10 },
 				new string[] { "e1", "e2", "e3", "e4", "e5", "e6", "e7", "e8", "e9", "e10"}
 			);
+
+			int i = 1;
+			foreach (var m in _rs.Table)
+			{
+				m.Id = i;
+				i++;
+			}
 		}
 
 		[Test]
@@ -114,6 +123,8 @@ namespace SmartStore.Services.Tests.DataExchange
 		[Test]
 		public void Can_delete_mappings()
 		{
+			_rs.Table.Count().ShouldEqual(40);
+
 			_service.DeleteSyncMappings("App1");
 			_rs.Table.Count().ShouldEqual(20);
 

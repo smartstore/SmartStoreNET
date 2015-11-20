@@ -16,12 +16,12 @@ namespace SmartStore.Tests
 	public class TestDbSet<TEntity> : DbSet<TEntity>, IQueryable, IEnumerable<TEntity>, IDbAsyncEnumerable<TEntity>
 		where TEntity : BaseEntity, new() 
 	{
-		ObservableCollection<TEntity> _data;
+		HashSet<TEntity> _data;
 		IQueryable _query;
 
 		public TestDbSet()
 		{
-			_data = new ObservableCollection<TEntity>();
+			_data = new HashSet<TEntity>();
 			_query = _data.AsQueryable();
 		}
 
@@ -65,7 +65,7 @@ namespace SmartStore.Tests
 
 		public override TEntity Create()
 		{
-			return Activator.CreateInstance<TEntity>();
+			return new TEntity();
 		}
 
 		public override TDerivedEntity Create<TDerivedEntity>()
@@ -75,7 +75,7 @@ namespace SmartStore.Tests
 
 		public override ObservableCollection<TEntity> Local
 		{
-			get { return _data; }
+			get { return new ObservableCollection<TEntity>(_data); }
 		}
 
 		Type IQueryable.ElementType

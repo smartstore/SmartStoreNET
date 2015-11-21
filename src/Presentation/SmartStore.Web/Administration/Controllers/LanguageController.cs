@@ -10,6 +10,7 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Plugins;
+using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;

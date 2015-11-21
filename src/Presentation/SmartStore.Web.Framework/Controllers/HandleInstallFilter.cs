@@ -11,7 +11,6 @@ namespace SmartStore.Web.Framework.Controllers
     
     public class HandleInstallFilter : IActionFilter
     {
-
         public void OnActionExecuting(ActionExecutingContext filterContext)
         {
             var controllerName = filterContext.ActionDescriptor.ControllerDescriptor.ControllerName;

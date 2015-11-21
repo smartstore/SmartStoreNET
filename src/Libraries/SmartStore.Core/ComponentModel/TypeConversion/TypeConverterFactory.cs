@@ -1,0 +1,117 @@
+﻿using System;
+using System.Collections.Concurrent;
+using System.Collections.Generic;
+using System.ComponentModel;
+using SmartStore.Core.Domain.Catalog;
+using SmartStore.Core.Domain.Shipping;
+
+namespace SmartStore.ComponentModel
+{
+	public static class TypeConverterFactory
+	{
+		private static readonly ConcurrentDictionary<Type, ITypeConverter> _typeConverters = new ConcurrentDictionary<Type, ITypeConverter>();
+
+		static TypeConverterFactory()
+		{
+			CreateDefaultConverters();
+		}
+
+		private static void CreateDefaultConverters()
+		{
+			_typeConverters.TryAdd(typeof(DateTime), new DateTimeConverter());
+			_typeConverters.TryAdd(typeof(TimeSpan), new TimeSpanConverter());
+			_typeConverters.TryAdd(typeof(bool), new BooleanConverter(
+				new string[] { "yes", "y", "on", "wahr" },
+				new string[] { "no", "n", "off", "falsch" }));
+
+			ITypeConverter converter = new ShippingOptionConverter(true);
+			_typeConverters.TryAdd(typeof(IList<ShippingOption>), converter);
+			_typeConverters.TryAdd(typeof(List<ShippingOption>), converter);
+			_typeConverters.TryAdd(typeof(ShippingOption), new ShippingOptionConverter(false));
+
+			converter = new ProductBundleDataConverter(true);
+			_typeConverters.TryAdd(typeof(IList<ProductBundleItemOrderData>), converter);
+			_typeConverters.TryAdd(typeof(List<ProductBundleItemOrderData>), converter);
+			_typeConverters.TryAdd(typeof(ProductBundleItemOrderData), new ProductBundleDataConverter(false));
+		}
+
+		public static void RegisterConverter<T>(ITypeConverter typeConverter)
+		{
+			RegisterConverter(typeof(T), typeConverter);
+		}
+
+		public static void RegisterConverter(Type type, ITypeConverter typeConverter)
+		{
+			Guard.ArgumentNotNull(() => type);
+			Guard.ArgumentNotNull(() => typeConverter);
+
+			_typeConverters.TryAdd(type, typeConverter);
+        }
+
+		public static ITypeConverter RemoveConverter<T>(ITypeConverter typeConverter)
+		{
+			return RemoveConverter(typeof(T));
+		}
+
+		public static ITypeConverter RemoveConverter(Type type)
+		{
+			Guard.ArgumentNotNull(() => type);
+
+			ITypeConverter converter = null;
+			_typeConverters.TryRemove(type, out converter);
+			return converter;
+		}
+
+		public static ITypeConverter GetConverter<T>()
+		{
+			return GetConverter(typeof(T));
+		}
+
+		public static ITypeConverter GetConverter(object component)
+		{
+			Guard.ArgumentNotNull(() => component);
+
+			return GetConverter(component.GetType());
+		}
+
+		public static ITypeConverter GetConverter(Type type)
+		{
+			Guard.ArgumentNotNull(() => type);
+
+			ITypeConverter converter;
+			if (_typeConverters.TryGetValue(type, out converter))
+			{
+				return converter;
+			}
+			
+			var isGenericType = type.IsGenericType;
+			if (isGenericType)
+			{
+				var definition = type.GetGenericTypeDefinition();
+
+				// Nullables
+				if (definition == typeof(Nullable<>))
+				{
+					converter = new NullableConverter(type);
+					RegisterConverter(type, converter);
+					return converter;
+				}
+
+				// Sequence types
+				var genericArgs = type.GetGenericArguments();
+				var isEnumerable = genericArgs.Length == 1 && type.IsSubClass(typeof(IEnumerable<>));
+				if (isEnumerable)
+				{
+					converter = (ITypeConverter)Activator.CreateInstance(typeof(EnumerableConverter<>).MakeGenericType(genericArgs[0]), type);
+					RegisterConverter(type, converter);
+					return converter;
+				}
+			}
+
+			// default fallback
+			converter = new TypeConverterAdapter(TypeDescriptor.GetConverter(type));
+			RegisterConverter(type, converter);
+			return converter;
+		}
+	}
+}

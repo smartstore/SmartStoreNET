@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
 
-namespace SmartStore.Core.Data
+namespace SmartStore.Services.DataExchange.Import
 {
 	
 	public class ImportMessage

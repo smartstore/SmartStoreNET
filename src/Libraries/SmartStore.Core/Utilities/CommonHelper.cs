@@ -177,11 +177,6 @@ namespace SmartStore.Utilities
 				key => key.Replace("_", "-"));
 		}
 
-		public static TypeConverter GetTypeConverter(Type type)
-		{
-			return ConversionExtensions.GetTypeConverter(type);
-		}
-
 		/// <summary>
 		/// Gets a setting from the application's <c>web.config</c> <c>appSettings</c> node
 		/// </summary>

@@ -7,10 +7,8 @@ using System.Xml;
 
 namespace SmartStore.Utilities
 {
-
     public static class Prettifier
     {
-
         public static string BytesToString(long bytes)
         {
             double result = bytes;

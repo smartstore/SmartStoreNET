@@ -118,8 +118,6 @@ namespace SmartStore.Services.DataExchange
 		{
 			Guard.ArgumentNotEmpty(() => contextName);
 
-			Expression<Func<SyncMapping, bool>> expression = (x) => x.ContextName == contextName;
-
 			if (entityName.HasValue())
 			{
 				_syncMappingsRepository.DeleteAll(x => x.ContextName == contextName && x.EntityName == entityName);

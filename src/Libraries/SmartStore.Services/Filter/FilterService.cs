@@ -5,6 +5,7 @@ using System.Linq;
 using System.Linq.Dynamic;
 using System.Text;
 using Newtonsoft.Json;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Infrastructure;
@@ -81,7 +82,7 @@ namespace SmartStore.Services.Filter
 
 			Type t = Type.GetType("System.{0}".FormatWith(ValidateValue(type, _defaultType)));
 
-			var result = CommonHelper.GetTypeConverter(t).ConvertFromString(null, CultureInfo.InvariantCulture, value);
+			var result = TypeConverterFactory.GetConverter(t).ConvertFrom(CultureInfo.InvariantCulture, value);
 
 			return result;
 		}

@@ -550,6 +550,7 @@ namespace SmartStore.Data
 
 		public void ChangeState<TEntity>(TEntity entity, System.Data.Entity.EntityState newState) where TEntity : BaseEntity
 		{
+			Console.WriteLine("ChangeState ORIGINAL");
 			this.Entry(entity).State = newState;
 		}
 

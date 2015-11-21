@@ -1,4 +1,7 @@
-﻿using SmartStore.Core.Infrastructure;
+﻿using SmartStore.ComponentModel;
+using SmartStore.Core.Infrastructure;
+using SmartStore.Services.DataExchange;
+using SmartStore.Services.DataExchange.Csv;
 
 namespace SmartStore.Admin.Infrastructure
 {
@@ -6,11 +9,9 @@ namespace SmartStore.Admin.Infrastructure
     {
         public void Execute()
         {
-            // codehint: sm-delete (Telerik internal localization works better for whatever reason)
-            ////set localization service for telerik
-            //Telerik.Web.Mvc.Infrastructure.DI.Current.Register(
-            //    () => EngineContext.Current.Resolve<Telerik.Web.Mvc.Infrastructure.ILocalizationServiceFactory>());
-        }
+			TypeConverterFactory.RegisterConverter<CsvConfiguration>(new CsvConfigurationConverter());
+			TypeConverterFactory.RegisterConverter<ColumnMapConverter>(new ColumnMapConverter());
+		}
 
         public int Order
         {

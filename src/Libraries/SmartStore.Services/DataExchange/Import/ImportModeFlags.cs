@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace SmartStore.Core.Data
+namespace SmartStore.Services.DataExchange.Import
 {
     
     [Flags]

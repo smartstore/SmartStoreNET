@@ -227,7 +227,7 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool GetProperty(object instance, string name, out object result)
         {
-			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, true) : null;
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
 			if (fastProp != null)
 			{
 				result = fastProp.GetValue(instance ?? this);
@@ -247,7 +247,7 @@ namespace SmartStore.ComponentModel
         /// <returns></returns>
         protected bool SetProperty(object instance, string name, object value)
         {
-			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, true) : null;
+			var fastProp = _instanceType != null ? FastProperty.GetProperty(_instanceType, name, PropertyCachingStrategy.EagerCached) : null;
 			if (fastProp != null)
 			{
 				fastProp.SetValue(instance ?? this, value);

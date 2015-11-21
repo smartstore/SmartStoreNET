@@ -51,7 +51,9 @@ namespace SmartStore.Core.Data
 			entity.Id = id;
 
 			rs.Attach(entity);
-			rs.Context.ChangeState(entity, System.Data.Entity.EntityState.Deleted);
+
+			// must downcast 'cause of Rhino mocks stub  
+			rs.Context.ChangeState((BaseEntity)entity, System.Data.Entity.EntityState.Deleted);
         }
 
 		public static void DeleteRange<T>(this IRepository<T> rs, IEnumerable<int> ids) where T : BaseEntity

@@ -5,20 +5,15 @@ using SmartStore.Core;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-//using Fasterflect;
 using System.Xml;
-using SmartStore.Core.Data;
 using SmartStore.Utilities;
-using System.Collections.Concurrent;
-using SmartStore.Core.ComponentModel;
 using SmartStore.Utilities.Reflection;
+using SmartStore.Services.DataExchange.Import;
 
 namespace SmartStore.Services.Localization
 {
     public static class LocalizationExtentions
     {
-		//private static readonly ConcurrentDictionary<LambdaExpression, object> _compiledExpressions = new ConcurrentDictionary<LambdaExpression, object>(); // --> MEM LEAK
-		
 		/// <summary>
         /// Get localized property of an entity
         /// </summary>

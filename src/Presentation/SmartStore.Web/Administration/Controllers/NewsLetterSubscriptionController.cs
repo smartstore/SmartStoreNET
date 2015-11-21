@@ -3,15 +3,12 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Messages;
 using SmartStore.Core.Domain.Common;
-using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -24,24 +21,18 @@ namespace SmartStore.Admin.Controllers
         private readonly IPermissionService _permissionService;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IStoreService _storeService;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly IExportProfileService _exportProfileService;
 
 		public NewsLetterSubscriptionController(INewsLetterSubscriptionService newsLetterSubscriptionService,
 			IDateTimeHelper dateTimeHelper,
             IPermissionService permissionService,
 			AdminAreaSettings adminAreaSettings,
-			IStoreService storeService,
-			ITaskScheduler taskScheduler,
-			IExportProfileService exportProfileService)
+			IStoreService storeService)
 		{
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
 			this._dateTimeHelper = dateTimeHelper;
             this._permissionService = permissionService;
             this._adminAreaSettings = adminAreaSettings;
 			this._storeService = storeService;
-			this._taskScheduler = taskScheduler;
-			this._exportProfileService = exportProfileService;
 		}
 
 		private void PrepareNewsLetterSubscriptionListModel(NewsLetterSubscriptionListModel model)
@@ -156,28 +147,6 @@ namespace SmartStore.Admin.Controllers
 
 			return SubscriptionList(command, listModel);
         }
-
-		[Compress]
-		public ActionResult ExportCsv()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageNewsletterSubscribers))
-                return AccessDeniedView();
-
-			var profile = _exportProfileService.GetSystemExportProfile("SubscriberCsvExportProvider.SystemName");
-
-			if (profile == null)
-			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", "SubscriberCsvExportProvider.SystemName"));
-			}
-			else
-			{
-				_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
-
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
-			return RedirectToAction("List");
-		}
 
         [HttpPost]
         public ActionResult ImportCsv(FormCollection form)

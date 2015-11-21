@@ -1,7 +1,5 @@
 ﻿@model OrderListModel
-           
 @using Telerik.Web.Mvc.UI
-
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     var hideProfitReport = false;
@@ -26,65 +24,17 @@
 				</a>
 				<ul class="dropdown-menu pull-right">
 					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", "Order", new { all = false })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.Selected")
+						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 						</a>
 					</li>
 					<li>
-						<a href="@Url.Action("ExportPdf", new { all = true })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.All")
+						<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
+							<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 						</a>
 					</li>
 				</ul>
 			</div>
-
-			@*<div class="btn-group pull-right">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					@T("Common.Export")
-					<span class="fa fa-caret-down"></span>
-				</a>
-				<ul class="dropdown-menu">
-					<li>
-						<a href="@Url.Action("ExportXmlAll")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.All")
-						</a>
-					</li>
-					<li>
-						<a href="@Url.Action("ExportExcelAll")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.All")
-						</a>
-					</li>
-					<li>
-						<a href="@Url.Action("ExportPdf", new { all = true })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.All")
-						</a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportXmlSelected", "Order")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.Selected")
-						</a>
-					</li>				
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportExcelSelected", "Order")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.Selected")
-						</a>
-					</li>					
-					<li>
-						<a href="javascript:void(0)" class="export-form-post" data-url="@Url.Action("ExportPdf", "Order", new { all = false })">
-							<i class="fa fa-fw fa-file-pdf-o"></i>
-							@T("Admin.Common.ExportToPdf.Selected")
-						</a>
-					</li>
-				</ul>
-			</div>*@
 
 			@Html.Widget("admin_button_toolbar_after")
         </div>
@@ -250,7 +200,7 @@
     </table>
     
     <script type="text/javascript">
-
+		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
         var selectedIds = [];
         var reportAggregates = "";
 
@@ -268,15 +218,21 @@
                 return false;
             });
 
-			// export selected to pdf, xml, xls...
-        	$('a.export-form-post').click(function (e) {
-        		e.preventDefault();
-        		var form = $('#OrderExportForm');
-        		form.find('[name=selectedIds]').val(selectedIds.join(','));
-        		form.attr('action', $(this).attr('data-url'));
-        		form.submit();
-        		return false;
-        	});
+        	// export products to pdf
+            $('a.pdf-export-button').click(function (e) {
+            	e.preventDefault();
+
+            	if (confirm('@T("Admin.Common.AskToProceed")')) {
+            		var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
+            		form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
+            		form += '</form>';
+
+            		$('body').append(form);
+            		$('#PdfExportForm').submit();
+            	}
+
+            	return false;
+            });
             
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();
@@ -366,7 +322,3 @@
         }
    </script>   
 }
-
-<form id="OrderExportForm" method="POST" action="#">
-	<input type="hidden" id="selectedIds" name="selectedIds" value="" />
-</form>

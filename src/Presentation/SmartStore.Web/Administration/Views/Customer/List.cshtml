@@ -4,7 +4,6 @@
 @{
     var gridPageSize = EngineContext.Current.Resolve<SmartStore.Core.Domain.Common.AdminAreaSettings>().GridPageSize;
     
-    //page title
     ViewBag.Title = T("Admin.Customers.Customers").Text;
 }
 @using (Html.BeginForm())
@@ -21,44 +20,11 @@
 				<i class="fa fa-plus"></i> @T("Admin.Common.AddNew")
 			</a>
 
-			@*<div class="btn-group">
-				<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-					@T("Common.Export")
-					<span class="fa fa-caret-down"></span>
-				</a>
-				<ul class="dropdown-menu pull-right">
-					<li>
-						<a href="@Url.Action("ExportXmlAll")">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.All")
-						</a>
-					</li>
-					<li>
-						<a href="@Url.Action("ExportExcelAll")">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.All")
-						</a>
-					</li>
-					<li class="divider"></li>
-					<li>
-						<a href="javascript:void(0)" id="exportxml-selected">
-							<i class="fa fa-fw fa-code"></i>
-							@T("Admin.Common.ExportToXml.Selected")
-						</a>
-					</li>
-					<li>
-						<a href="javascript:void(0)" id="exportexcel-selected">
-							<i class="fa fa-fw fa-file-excel-o"></i>
-							@T("Admin.Common.ExportToExcel.Selected")
-						</a>
-					</li>
-				</ul>
-			</div>*@
-
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
-    <table width="100%">
+
+    <table class="adminContent">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.SearchCustomerRoleIds)
@@ -120,18 +86,17 @@
                 </td>
                 <td class="adminData">
                     @{
-            var monthOfBirthValues = new List<SelectListItem>();
-            //monthOfBirthValues.Add(new SelectListItem() { Text = T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text, Value = "0" });
-            for (int i = 1; i <= 12; i++)
-            {
-                monthOfBirthValues.Add(new SelectListItem() { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
-            }
-            var dayOfBirthValues = new List<SelectListItem>();
-            //dayOfBirthValues.Add(new SelectListItem() { Text = T("Admin.Customers.Customers.List.SearchDateOfBirth.Day").Text, Value = "0" });
-            for (int i = 1; i <= 31; i++)
-            {
-                dayOfBirthValues.Add(new SelectListItem() { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
-            }
+						var monthOfBirthValues = new List<SelectListItem>();
+						for (int i = 1; i <= 12; i++)
+						{
+							monthOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
+						}
+
+						var dayOfBirthValues = new List<SelectListItem>();
+						for (int i = 1; i <= 31; i++)
+						{
+							dayOfBirthValues.Add(new SelectListItem { Text = i.ToString(CultureInfo.InvariantCulture), Value = i.ToString(CultureInfo.InvariantCulture) });
+						}
                     }
                     @Html.DropDownListFor(model => Model.SearchMonthOfBirth, monthOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Month").Text, new { @class = "autowidth" })
                     @Html.DropDownListFor(model => Model.SearchDayOfBirth, dayOfBirthValues, T("Admin.Customers.Customers.List.SearchDateOfBirth.Day").Text, new { @class = "autowidth" })
@@ -181,8 +146,9 @@
             </td>
         </tr>
     </table>
-    <p>
-    </p>
+
+    <p></p>
+
     <table class="adminContent">
         <tr>
             <td>
@@ -234,7 +200,7 @@
     </table>
     
     <script type="text/javascript">
-
+		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
         var selectedIds = [];
 
         $(document).ready(function () {
@@ -288,22 +254,6 @@
                     $("#search-customers").click();
                     return false;
                 }
-            });
-
-            //"Export Excel selected" button
-            $('#exportexcel-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportExcelSelected", "Customer"))?selectedIds=' + selectedIds.join(","));
-                return false;
-            });
-
-            //"Export XML selected" button
-            $('#exportxml-selected').click(function (e) {
-                e.preventDefault();
-                //redirect to required URL
-                setLocation('@(Url.Action("ExportXmlSelected", "Customer"))?selectedIds=' + selectedIds.join(","));
-                return false;
             });
 
             $('#mastercheckbox').click(function () {

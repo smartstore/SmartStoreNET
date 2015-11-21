@@ -23,7 +23,6 @@ using SmartStore.Services.Authentication.External;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Forums;
 using SmartStore.Services.Helpers;
@@ -32,7 +31,6 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -81,8 +79,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IEventPublisher _eventPublisher;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly IExportProfileService _exportProfileService;
 
 		#endregion
 
@@ -110,9 +106,7 @@ namespace SmartStore.Admin.Controllers
 			AddressSettings addressSettings, IStoreService storeService,
 			IEventPublisher eventPublisher,
 			PluginMediator pluginMediator,
-			IAffiliateService affiliateService,
-			ITaskScheduler taskScheduler,
-			IExportProfileService exportProfileService)
+			IAffiliateService affiliateService)
 		{
             this._customerService = customerService;
 			this._newsLetterSubscriptionService = newsLetterSubscriptionService;
@@ -148,8 +142,6 @@ namespace SmartStore.Admin.Controllers
 			this._eventPublisher = eventPublisher;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
-			this._taskScheduler = taskScheduler;
-			this._exportProfileService = exportProfileService;
 		}
 
         #endregion
@@ -1762,62 +1754,5 @@ namespace SmartStore.Admin.Controllers
         }
 
 		#endregion
-
-		#region Export / Import
-
-		private ActionResult StartExport(string providerSystemName, string selectedIds)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageCustomers))
-				return AccessDeniedView();
-
-			Dictionary<string, string> taskParams = null;
-
-			if (selectedIds.HasValue())
-			{
-				taskParams = new Dictionary<string, string>();
-				taskParams.Add("SelectedIds", selectedIds);
-			}
-
-			var profile = _exportProfileService.GetSystemExportProfile(providerSystemName);
-
-			if (profile == null)
-			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", providerSystemName));
-			}
-			else
-			{
-				_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
-
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
-			return RedirectToAction("List");
-		}
-
-		[Compress]
-        public ActionResult ExportExcelAll()
-        {
-			return StartExport("CustomerXlsxExportProvider.SystemName", null);
-        }
-
-		[Compress]
-        public ActionResult ExportExcelSelected(string selectedIds)
-        {
-			return StartExport("CustomerXlsxExportProvider.SystemName", selectedIds);
-        }
-
-		[Compress]
-        public ActionResult ExportXmlAll()
-        {
-			return StartExport("CustomerXmlExportProvider.SystemName", null);
-        }
-
-		[Compress]
-        public ActionResult ExportXmlSelected(string selectedIds)
-        {
-			return StartExport("CustomerXmlExportProvider.SystemName", selectedIds);
-        }
-
-        #endregion
     }
 }

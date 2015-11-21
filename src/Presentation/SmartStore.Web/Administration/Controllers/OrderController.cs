@@ -20,7 +20,6 @@ using SmartStore.Services.Affiliates;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
@@ -32,7 +31,6 @@ using SmartStore.Services.Pdf;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
@@ -81,8 +79,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly ICustomerService _customerService;
 		private readonly PluginMediator _pluginMediator;
 		private readonly IAffiliateService _affiliateService;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly IExportProfileService _exportProfileService;
 
 		private readonly CatalogSettings _catalogSettings;
         private readonly CurrencySettings _currencySettings;
@@ -122,8 +118,6 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			PluginMediator pluginMediator,
 			IAffiliateService affiliateService,
-			ITaskScheduler taskScheduler,
-			IExportProfileService exportProfileService,
             CatalogSettings catalogSettings, CurrencySettings currencySettings, TaxSettings taxSettings,
             MeasureSettings measureSettings, PdfSettings pdfSettings, AddressSettings addressSettings,
             IPdfConverter pdfConverter, ICommonServices services, Lazy<IPictureService> pictureService)
@@ -161,8 +155,6 @@ namespace SmartStore.Admin.Controllers
 			this._customerService = customerService;
 			this._pluginMediator = pluginMediator;
 			this._affiliateService = affiliateService;
-			this._taskScheduler = taskScheduler;
-			this._exportProfileService = exportProfileService;
 
 			this._catalogSettings = catalogSettings;
             this._currencySettings = currencySettings;
@@ -878,59 +870,7 @@ namespace SmartStore.Admin.Controllers
 
 		#region Export / Import
 
-		private ActionResult StartExport(string providerSystemName, string selectedIds)
-		{
-			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
-				return AccessDeniedView();
-
-			Dictionary<string, string> taskParams = null;
-
-			if (selectedIds.HasValue())
-			{
-				taskParams = new Dictionary<string, string>();
-				taskParams.Add("SelectedIds", selectedIds);
-			}
-
-			var profile = _exportProfileService.GetSystemExportProfile(providerSystemName);
-
-			if (profile == null)
-			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", providerSystemName));
-			}
-			else
-			{
-				_taskScheduler.RunSingleTask(profile.SchedulingTaskId, taskParams);
-
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
-			return RedirectToAction("List");
-		}
-
-		[Compress]
-        public ActionResult ExportXmlAll()
-        {
-			return StartExport("OrderXmlExportProvider.SystemName", null);
-        }
-
 		[HttpPost, Compress]
-        public ActionResult ExportXmlSelected(string selectedIds)
-        {
-			return StartExport("OrderXmlExportProvider.SystemName", selectedIds);
-        }
-
-		[Compress]
-	    public ActionResult ExportExcelAll()
-        {
-			return StartExport("OrderXlsxExportProvider.SystemName", null);
-        }
-
-		[HttpPost, Compress]
-        public ActionResult ExportExcelSelected(string selectedIds)
-        {
-			return StartExport("OrderXlsxExportProvider.SystemName", selectedIds);
-        }
-
 		public ActionResult ExportPdf(bool all, string selectedIds = null)
 		{
 			if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
@@ -939,6 +879,7 @@ namespace SmartStore.Admin.Controllers
 			if (!all && selectedIds.IsEmpty())
 			{
 				NotifyInfo(_localizationService.GetResource("Admin.Common.ExportNoData"));
+
 				return RedirectToAction("List");
 			}
 

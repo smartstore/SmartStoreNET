@@ -37,13 +37,13 @@
 					</a>
 					<ul class="dropdown-menu pull-right">
 						<li>
-							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
+							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
+								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
 							</a>
 						</li>
 						<li>
-							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
+							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
+								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
 							</a>
 						</li>
 					</ul>
@@ -217,7 +217,7 @@
     </table>
     
     <script type="text/javascript">
-
+		@*used by widget SmartStore.DataExport::ExportButtonsGeneral.cshtml*@
         var selectedIds = [];
 
         $(document).ready(function () {
@@ -265,12 +265,12 @@
         		e.preventDefault();
 
         		if (confirm('@T("Admin.Common.AskToProceed")')) {
-        			var form = '<form id="ProductPdfExportForm" action="' + $(this).data('url') + '" method="post">';
+        			var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
         			form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
         			form += '</form>';
 
         			$('body').append(form);
-        			$('#ProductPdfExportForm').submit();
+        			$('#PdfExportForm').submit();
         		}
 
         		return false;

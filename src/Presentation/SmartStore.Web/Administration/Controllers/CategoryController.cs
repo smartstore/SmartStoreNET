@@ -13,7 +13,6 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
-using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Filter;
 using SmartStore.Services.Helpers;
@@ -22,7 +21,6 @@ using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
@@ -58,8 +56,6 @@ namespace SmartStore.Admin.Controllers
         private readonly CatalogSettings _catalogSettings;
 		private readonly IEventPublisher _eventPublisher;
         private readonly IFilterService _filterService;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly IExportProfileService _exportProfileService;
 
 		#endregion
 
@@ -78,9 +74,7 @@ namespace SmartStore.Admin.Controllers
 			AdminAreaSettings adminAreaSettings,
             CatalogSettings catalogSettings,
             IEventPublisher eventPublisher, 
-			IFilterService filterService,
-			ITaskScheduler taskScheduler,
-			IExportProfileService exportProfileService)
+			IFilterService filterService)
         {
             this._categoryService = categoryService;
             this._categoryTemplateService = categoryTemplateService;
@@ -104,8 +98,6 @@ namespace SmartStore.Admin.Controllers
             this._catalogSettings = catalogSettings;
 			this._eventPublisher = eventPublisher;
             this._filterService = filterService;
-			this._taskScheduler = taskScheduler;
-			this._exportProfileService = exportProfileService;
         }
 
         #endregion
@@ -756,32 +748,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
 
-
-        #endregion
-
-        #region Export / Import
-
-		[Compress]
-        public ActionResult ExportXml()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-			var profile = _exportProfileService.GetSystemExportProfile("CategoryXmlExportProvider.SystemName");
-
-			if (profile == null)
-			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", "CategoryXmlExportProvider.SystemName"));
-			}
-			else
-			{
-				_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
-
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
-			return RedirectToAction("List");
-		}
 
         #endregion
 

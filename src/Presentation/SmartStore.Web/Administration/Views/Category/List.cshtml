@@ -11,13 +11,12 @@
     <div class="options">
 		@Html.Widget("admin_button_toolbar_before")
 
-        @*<a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a> <a href="@Url.Action("ExportXml")" class="btn">
-			<i class="fa fa-arrow-circle-o-down"></i> @T("Admin.Common.ExportToXml")
-		</a>*@
+        <a href="@Url.Action("Create")" class="btn btn-primary"><i class="fa fa-plus"></i>&nbsp;@T("Admin.Common.AddNew")</a>
 
 		@Html.Widget("admin_button_toolbar_after")
     </div>
 </div>
+
 <table>
     <tr>
         <td class="adminTitle">
@@ -52,7 +51,9 @@
         </td>
     </tr>
 </table>
+
 <p></p>
+
 <table class="adminContent">
     <tr>
         <td>
@@ -89,6 +90,7 @@
         </td>
     </tr>
 </table>
+
 <script type="text/javascript">
     $(document).ready(function () {
         //search button

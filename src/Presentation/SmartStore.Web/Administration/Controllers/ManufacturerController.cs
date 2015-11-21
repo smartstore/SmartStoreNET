@@ -10,17 +10,14 @@ using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Logging;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
-using SmartStore.Services.DataExchange.Export;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
-using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers
@@ -47,8 +44,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDateTimeHelper _dateTimeHelper;
         private readonly AdminAreaSettings _adminAreaSettings;
         private readonly CatalogSettings _catalogSettings;
-		private readonly ITaskScheduler _taskScheduler;
-		private readonly IExportProfileService _exportProfileService;
 
 		#endregion
 
@@ -63,9 +58,7 @@ namespace SmartStore.Admin.Controllers
             ICustomerActivityService customerActivityService, IPermissionService permissionService,
 			IDateTimeHelper dateTimeHelper,
             AdminAreaSettings adminAreaSettings,
-			CatalogSettings catalogSettings,
-			ITaskScheduler taskScheduler,
-			IExportProfileService exportProfileService)
+			CatalogSettings catalogSettings)
         {
             this._categoryService = categoryService;
             this._manufacturerTemplateService = manufacturerTemplateService;
@@ -84,8 +77,6 @@ namespace SmartStore.Admin.Controllers
 			this._dateTimeHelper = dateTimeHelper;
             this._adminAreaSettings = adminAreaSettings;
             this._catalogSettings = catalogSettings;
-			this._taskScheduler = taskScheduler;
-			this._exportProfileService = exportProfileService;
 		}
 
         #endregion
@@ -442,32 +433,6 @@ namespace SmartStore.Admin.Controllers
             return RedirectToAction("List");
         }
         
-        #endregion
-
-        #region Export / Import
-
-		[Compress]
-        public ActionResult ExportXml()
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-			var profile = _exportProfileService.GetSystemExportProfile("ManufacturerXmlExportProvider.SystemName");
-
-			if (profile == null)
-			{
-				NotifyError(T("Admin.DataExchange.Export.MissingSystemProfile", "ManufacturerXmlExportProvider.SystemName"));
-			}
-			else
-			{
-				_taskScheduler.RunSingleTask(profile.SchedulingTaskId);
-
-				NotifyInfo(T("Admin.System.ScheduleTasks.RunNow.Progress"));
-			}
-
-			return RedirectToAction("List");
-		}
-
         #endregion
 
         #region Products

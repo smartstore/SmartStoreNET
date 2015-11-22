@@ -36,7 +36,7 @@ namespace SmartStore.Services.Filter
 				string valueLeft, valueRight;
 				criteria.Value.SplitToPair(out valueLeft, out valueRight, "~");
 
-				if (criteria.Entity == FilterService.ShortcutPrice)
+				if (criteria.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice))
 					return "{0} - {1}".FormatInvariant(FormatPrice(valueLeft), FormatPrice(valueRight));
 
 				return "{0} - {1}".FormatInvariant(valueLeft, valueRight);
@@ -44,7 +44,7 @@ namespace SmartStore.Services.Filter
 
 			var value = (criteria.ValueLocalized.HasValue() ? criteria.ValueLocalized : criteria.Value);
 
-			if (criteria.Entity == FilterService.ShortcutPrice)
+			if (criteria.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice))
 				value = FormatPrice(criteria.Value);
 
 			if (criteria.Operator == FilterOperator.Unequal)
@@ -161,7 +161,7 @@ namespace SmartStore.Services.Filter
 					if (criteriaAdd != null)
 						criterias.Add(criteriaAdd);
 					else
-						criterias.RemoveAll(c => c.Entity == criteriaRemove.Entity && c.Name == criteriaRemove.Name && c.Value == criteriaRemove.Value);
+						criterias.RemoveAll(c => c.Entity.IsCaseInsensitiveEqual(criteriaRemove.Entity) && c.Name.IsCaseInsensitiveEqual(criteriaRemove.Name) && c.Value.IsCaseInsensitiveEqual(criteriaRemove.Value));
 
 					if (criterias.Count > 0)
 						url = "{0}&filter={1}".FormatInvariant(url, HttpUtility.UrlEncode(JsonConvert.SerializeObject(criterias)));
@@ -179,7 +179,10 @@ namespace SmartStore.Services.Filter
 		{
 			if (criteria != null && context.Criteria != null)
 			{
-				return (context.Criteria.FirstOrDefault(c => c.Entity == criteria.Entity && c.Name == criteria.Name && c.Value == criteria.Value && !c.IsInactive) != null);
+				var foundCriteria = context.Criteria.FirstOrDefault(c => !c.IsInactive && 
+					c.Entity.IsCaseInsensitiveEqual(criteria.Entity) && c.Name.IsCaseInsensitiveEqual(criteria.Name) && c.Value.IsCaseInsensitiveEqual(criteria.Value));
+
+				return (foundCriteria != null);
 			}
 			return false;
 		}

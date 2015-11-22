@@ -20,7 +20,7 @@ namespace SmartStore.Web.Controllers
 
 		private bool IsShowAllText(ICollection<FilterCriteria> criteriaGroup)
 		{
-			if (criteriaGroup.Any(c => c.Entity == FilterService.ShortcutPrice))
+			if (criteriaGroup.Any(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice)))
 				return false;
 
 			return (criteriaGroup.Count >= _catalogSettings.MaxFilterItemsToDisplay || criteriaGroup.Any(c => !c.IsInactive));

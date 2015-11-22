@@ -407,14 +407,14 @@
                 </td>
             </tr>
         }
-        @if (Model.Id > 0 && !String.IsNullOrEmpty(Model.LastVisitedPage))
+        @if (Model.Id > 0 && Model.LastVisitedPage.HasValue())
         {
             <tr>
                 <td class="adminTitle">
                     @Html.SmartLabelFor(model => model.LastVisitedPage)
                 </td>
                 <td class="adminData">
-                    @Html.DisplayFor(model => model.LastVisitedPage)
+					<a href="@Model.LastVisitedPage">@Model.LastVisitedPage.Truncate(128, "...")</a>
                 </td>
             </tr>
         }

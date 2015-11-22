@@ -283,6 +283,7 @@ namespace SmartStore.Web.Controllers
 					products, 
 					prepareColorAttributes: true,
 					prepareManufacturers: command.ViewMode.IsCaseInsensitiveEqual("list")).ToList();
+
                 model.PagingFilteringContext.LoadPagedList(products);
             }
             else

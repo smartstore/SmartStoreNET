@@ -80,7 +80,7 @@ namespace SmartStore.Services.Filter
 			//if (curlyBracketFormatting)
 			//	return value.FormatWith("\"{0}\"", value.Replace("\"", "\"\""));
 
-			Type t = Type.GetType("System.{0}".FormatWith(ValidateValue(type, _defaultType)));
+			Type t = Type.GetType("System.{0}".FormatInvariant(ValidateValue(type, _defaultType)));
 
 			var result = TypeConverterFactory.GetConverter(t).ConvertFrom(CultureInfo.InvariantCulture, value);
 
@@ -89,7 +89,7 @@ namespace SmartStore.Services.Filter
 
 		private bool IsShortcut(FilterSql context, FilterCriteria itm, ref int index)
 		{
-			if (itm.Entity == ShortcutPrice)
+			if (itm.Entity.IsCaseInsensitiveEqual(ShortcutPrice))
 			{
 				// TODO: where clause of special price not correct. product can appear in price and in special price range.
 
@@ -120,7 +120,7 @@ namespace SmartStore.Services.Filter
 					context.Values.Add(DateTime.UtcNow);
 				}
 			}
-			else if (itm.Entity == ShortcutSpecAttribute)
+			else if (itm.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))
 			{
 				context.WhereClause.AppendFormat("SpecificationAttributeOptionId {0} {1}", itm.Operator == null ? "=" : itm.Operator.ToString(), FormatParameterIndex(ref index));
 
@@ -371,7 +371,7 @@ namespace SmartStore.Services.Filter
 
 			int languageId = _services.WorkContext.WorkingLanguage.Id;
 
-			foreach (var criteria in context.Criteria.Where(x => x.Entity == ShortcutSpecAttribute))
+			foreach (var criteria in context.Criteria.Where(x => x.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute)))
 			{
 				if (criteria.PId.HasValue)
 					criteria.NameLocalized = _localizedEntityService.GetLocalizedValue(languageId, criteria.PId.Value, "SpecificationAttribute", "Name");
@@ -472,13 +472,13 @@ namespace SmartStore.Services.Filter
 			var query = AllProducts(context.CategoryIds);
 
 			// prices
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == ShortcutPrice))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity.IsCaseInsensitiveEqual(ShortcutPrice)))
 			{
 				query = query.Where(sql.WhereClause.ToString(), sql.Values.ToArray());
 			}
 
 			// manufacturer
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity == "Manufacturer"))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && c.Entity.IsCaseInsensitiveEqual("Manufacturer")))
 			{
 				var pmq =
 					from p in query
@@ -492,7 +492,7 @@ namespace SmartStore.Services.Filter
 			}
 
 			// specification attribute
-			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity == "SpecificationAttributeOption" || c.Entity == ShortcutSpecAttribute)))
+			if (ToWhereClause(sql, context.Criteria, c => !c.IsInactive && (c.Entity.IsCaseInsensitiveEqual("SpecificationAttributeOption") || c.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))))
 			{
 				//var saq = (
 				//	from p in query
@@ -502,7 +502,7 @@ namespace SmartStore.Services.Filter
 				//query = saq.Select(sa => sa.Product);
 
 				int countSameNameAttributes = sql.Criteria
-					.Where(c => c.Entity == ShortcutSpecAttribute)
+					.Where(c => c.Entity.IsCaseInsensitiveEqual(ShortcutSpecAttribute))
 					.GroupBy(c => c.Name)
 					.Count();
 
@@ -557,10 +557,10 @@ namespace SmartStore.Services.Filter
 
 		public virtual void ProductFilterable(FilterProductContext context)
 		{
-			if (context.Criteria.FirstOrDefault(c => c.Entity == FilterService.ShortcutPrice) == null)
+			if (context.Criteria.FirstOrDefault(c => c.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice)) == null)
 				context.Criteria.AddRange(ProductFilterablePrices(context));
 
-			if (context.Criteria.FirstOrDefault(c => c.Name == "Name" && c.Entity == "Manufacturer") == null)
+			if (context.Criteria.FirstOrDefault(c => c.Name.IsCaseInsensitiveEqual("Name") && c.Entity.IsCaseInsensitiveEqual("Manufacturer")) == null)
 				context.Criteria.AddRange(ProductFilterableManufacturer(context));
 
 			context.Criteria.AddRange(ProductFilterableSpecAttributes(context));
@@ -573,13 +573,13 @@ namespace SmartStore.Services.Filter
 
 			if (criteriaMultiSelect != null)
 			{
-				context.Criteria.RemoveAll(c => c.Name == criteriaMultiSelect.Name && c.Entity == criteriaMultiSelect.Entity);
+				context.Criteria.RemoveAll(c => c.Name.IsCaseInsensitiveEqual(criteriaMultiSelect.Name) && c.Entity.IsCaseInsensitiveEqual(criteriaMultiSelect.Entity));
 
-				if (criteriaMultiSelect.Name == "Name" && criteriaMultiSelect.Entity == "Manufacturer")
+				if (criteriaMultiSelect.Name.IsCaseInsensitiveEqual("Name") && criteriaMultiSelect.Entity.IsCaseInsensitiveEqual("Manufacturer"))
 					inactive = ProductFilterableManufacturer(context, true);
-				else if (criteriaMultiSelect.Entity == FilterService.ShortcutPrice)
+				else if (criteriaMultiSelect.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutPrice))
 					inactive = ProductFilterablePrices(context);
-				else if (criteriaMultiSelect.Entity == FilterService.ShortcutSpecAttribute)
+				else if (criteriaMultiSelect.Entity.IsCaseInsensitiveEqual(FilterService.ShortcutSpecAttribute))
 					inactive = ProductFilterableSpecAttributes(context, criteriaMultiSelect.Name);
 			}
 

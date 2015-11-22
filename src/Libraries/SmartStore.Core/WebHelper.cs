@@ -99,7 +99,7 @@ namespace SmartStore.Core
 				}
             }
 
-            return url.ToLowerInvariant();
+            return url;
         }
 
         public virtual bool IsCurrentConnectionSecured()
@@ -239,7 +239,7 @@ namespace SmartStore.Core
             }
 
 			// cache results for request
-			result = result.EnsureEndsWith("/").ToLowerInvariant();
+			result = result.EnsureEndsWith("/");
 			if (useSsl)
 			{
 				_storeHostSsl = result;
@@ -288,7 +288,7 @@ namespace SmartStore.Core
                 result += "/";
             }
 
-            return result.ToLowerInvariant();
+            return result;
         }
         
         public virtual bool IsStaticResource(HttpRequest request)
@@ -316,9 +316,8 @@ namespace SmartStore.Core
         
         public virtual string ModifyQueryString(string url, string queryStringModification, string anchor)
         {
-			// TODO: routine should not return a query string in lowercase (unless the caller is telling him to do so).
-			url = url.EmptyNull().ToLower();
-			queryStringModification = queryStringModification.EmptyNull().ToLower();
+			url = url.EmptyNull();
+			queryStringModification = queryStringModification.EmptyNull();
 
 			string curAnchor = null;
 
@@ -338,13 +337,19 @@ namespace SmartStore.Core
 				current.Add(nv, modify[nv], true);
 			}
 
-			var result = "{0}{1}{2}".FormatCurrent(parts[0], current.ToString(), anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor.ToLower()) : "#" + anchor.ToLower());
+			var result = string.Concat(
+				parts[0],
+				current.ToString(),
+				anchor.NullEmpty() == null ? (curAnchor == null ? "" : "#" + curAnchor) : "#" + anchor
+			);
+
 			return result;
         }
 
         public virtual string RemoveQueryString(string url, string queryString)
         {
-			var parts = url.EmptyNull().ToLower().Split(new[] { '?' });
+			var parts = url.SplitSafe("?");
+
 			var current = new QueryString(parts.Length == 2 ? parts[1] : "");
 
 			if (current.Count > 0 && queryString.HasValue())
@@ -352,13 +357,14 @@ namespace SmartStore.Core
 				current.Remove(queryString);
 			}
 
-			var result = "{0}{1}".FormatCurrent(parts[0], current.ToString());
+			var result = string.Concat(parts[0], current.ToString());
 			return result;
         }
         
         public virtual T QueryString<T>(string name)
         {
             string queryParam = null;
+
             if (_httpContext != null && _httpContext.Request.QueryString[name] != null)
                 queryParam = _httpContext.Request.QueryString[name];
 

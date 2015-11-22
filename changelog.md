@@ -1,4 +1,4 @@
-# Release Notes
+﻿# Release Notes
 
 ## SmartStore.NET 2.5
 
@@ -57,7 +57,8 @@
 * #767 Remove assignments to a grouped product if the grouped product is deleted
 * #773 Reduce number of guest records created by search engine requests
 * #791 Preselected attributes or attribute combinations should always be appended as querystring to product page links
-* Simplified managing of SEO names
+* Simplified handling of SEO names
+* URLs are not converted to lower case anymore
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin
@@ -72,6 +73,7 @@
 * #776 Preview: Manufacturer and Product in Multi Store
 * #755 Some methods still loading all products in one go
 * #796 Selected specification in product filter mask is displayed with default language (not localized)
+* #805 Product filter is reset if 'product sorting' or 'view mode' or 'amount of displayed products per page' is changed
 
 
 ## SmartStore.NET 2.2.2

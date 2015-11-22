@@ -46,7 +46,7 @@ namespace SmartStore.Services.Filter
 		{
 			get
 			{
-				if (Entity == "Manufacturer" && !Name.Contains('.'))
+				if (Entity.IsCaseInsensitiveEqual("Manufacturer") && !Name.Contains('.'))
 					return "{0}.{1}".FormatInvariant(Entity, Name);
 
 				return Name;
@@ -76,19 +76,6 @@ namespace SmartStore.Services.Filter
 			}
 
 			return compare;
-
-
-			//int compare = 0;
-
-			//if (this.Name.HasValue() && filter.Name.HasValue())
-			//	compare = string.Compare(this.Name, filter.Name, true);
-			//else
-			//	compare = string.Compare(this.Entity, filter.Entity, true);
-
-			//if (compare != 0)
-			//	return compare;
-
-			//return string.Compare(this.Value, filter.Value, true);
 		}
 
 		public override string ToString()

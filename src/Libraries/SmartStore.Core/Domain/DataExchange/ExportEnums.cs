@@ -120,7 +120,12 @@ namespace SmartStore.Core.Domain.DataExchange
 		/// <summary>
 		/// Whether to get the calculated special and regular price (ignoring special offers)
 		/// </summary>
-		UsesSpecialPrice = 1 << 11
+		UsesSpecialPrice = 1 << 11,
+
+		/// <summary>
+		/// Whether to not automatically send a completion email
+		/// </summary>
+		CanOmitCompletionMail = 1 << 12
 	}
 
 	/// <summary>

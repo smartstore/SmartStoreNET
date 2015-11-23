@@ -527,18 +527,18 @@ namespace SmartStore.Services.DataExchange.Export
 			message.Body = body.ToString();
 
 #if DEBUG
-			//_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
-			//{
-			//	From = emailAccount.Email,
-			//	FromName = emailAccount.DisplayName,
-			//	To = message.To.First().Address,
-			//	Subject = message.Subject,
-			//	Body = message.Body,
-			//	CreatedOnUtc = DateTime.UtcNow,
-			//	EmailAccountId = emailAccount.Id,
-			//	SendManually = true
-			//});
-			//_dbContext.SaveChanges();
+			_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
+			{
+				From = emailAccount.Email,
+				FromName = emailAccount.DisplayName,
+				To = message.To.First().Address,
+				Subject = message.Subject,
+				Body = message.Body,
+				CreatedOnUtc = DateTime.UtcNow,
+				EmailAccountId = emailAccount.Id,
+				SendManually = true
+			});
+			_dbContext.SaveChanges();
 #else
         _emailSender.Value.SendEmail(smtpContext, message);
 #endif
@@ -1067,7 +1067,7 @@ namespace SmartStore.Services.DataExchange.Export
 						}
 					}
 
-					// TODO: lazyLoading: false, proxyCreation: false possible? how to identify all properties of all data levels of all entities
+					// lazyLoading: false, proxyCreation: false impossible. how to identify all properties of all data levels of all entities
 					// that require manual resolving for now and for future? fragile, susceptible to faults (e.g. price calculation)...
 					using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, proxyCreation: true, validateOnSave: false, forceNoTracking: true))
 					{
@@ -1127,7 +1127,7 @@ namespace SmartStore.Services.DataExchange.Export
 						{
 							SendCompletionEmail(ctx, zipPath);
 						}
-						else if (ctx.Request.Profile.IsSystemProfile)
+						else if (ctx.Request.Profile.IsSystemProfile && !ctx.Supports(ExportFeatures.CanOmitCompletionMail))
 						{
 							SendCompletionEmail(ctx, zipPath);
 						}

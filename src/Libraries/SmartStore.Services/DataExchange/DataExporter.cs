@@ -527,18 +527,18 @@ namespace SmartStore.Services.DataExchange.Export
 			message.Body = body.ToString();
 
 #if DEBUG
-			_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
-			{
-				From = emailAccount.Email,
-				FromName = emailAccount.DisplayName,
-				To = message.To.First().Address,
-				Subject = message.Subject,
-				Body = message.Body,
-				CreatedOnUtc = DateTime.UtcNow,
-				EmailAccountId = emailAccount.Id,
-				SendManually = true
-			});
-			_dbContext.SaveChanges();
+			//_queuedEmailService.Value.InsertQueuedEmail(new QueuedEmail
+			//{
+			//	From = emailAccount.Email,
+			//	FromName = emailAccount.DisplayName,
+			//	To = message.To.First().Address,
+			//	Subject = message.Subject,
+			//	Body = message.Body,
+			//	CreatedOnUtc = DateTime.UtcNow,
+			//	EmailAccountId = emailAccount.Id,
+			//	SendManually = true
+			//});
+			//_dbContext.SaveChanges();
 #else
         _emailSender.Value.SendEmail(smtpContext, message);
 #endif

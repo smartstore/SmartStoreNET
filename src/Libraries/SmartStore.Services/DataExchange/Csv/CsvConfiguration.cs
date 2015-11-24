@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using Newtonsoft.Json;
 
 namespace SmartStore.Services.DataExchange.Csv
@@ -81,6 +78,23 @@ namespace SmartStore.Services.DataExchange.Csv
 		internal char[] QuotableChars
 		{
 			get { return _quotableChars; }
+		}
+
+		/// <summary>
+		/// Gets an Excel friendly configuration where the result can be directly edited by Excel
+		/// </summary>
+		public static CsvConfiguration ExcelFriendlyConfiguration
+		{
+			get
+			{
+				return new CsvConfiguration
+				{
+					Delimiter = ';',
+					Quote = '"',
+					Escape = '"',
+					SupportsMultiline = false
+				};
+			}
 		}
 
 		/// <summary>

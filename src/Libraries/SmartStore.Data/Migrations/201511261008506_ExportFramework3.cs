@@ -94,6 +94,7 @@ namespace SmartStore.Data.Migrations
 				"Es wurden keine Möglichkeiten zur Einschränkung von Versandarten gefunden.");
 
 
+
 			builder.Delete(
 				"Admin.Configuration.Payment.Methods.ExcludedCustomerRole",
 				"Admin.Configuration.Payment.Methods.ExcludedShippingMethod",
@@ -102,7 +103,12 @@ namespace SmartStore.Data.Migrations
 				"Admin.Configuration.Payment.Methods.MaximumOrderAmount",
 				"Admin.Configuration.Restrictions.AmountRestrictionContext",
 				"Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.SubtotalAmount",
-				"Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.TotalAmount"
+				"Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.TotalAmount",
+				"Enums.SmartStore.Core.Domain.Common.CountryRestrictionContextType.BillingAddress",
+				"Enums.SmartStore.Core.Domain.Common.CountryRestrictionContextType.ShippingAddress",
+				"Admin.Configuration.Shipping.Methods.ExcludedCustomerRole",
+				"Admin.Configuration.Shipping.Methods.ExcludedCountry",
+				"Admin.Configuration.Restrictions.CountryExclusionContext"
 			);
 		}
 	}

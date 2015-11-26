@@ -4,7 +4,6 @@ using System.Web;
 using NUnit.Framework;
 using Rhino.Mocks;
 using SmartStore.Core;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -26,14 +25,13 @@ using SmartStore.Services.Discounts;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Payments;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
 using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Orders
 {
-    [TestFixture]
+	[TestFixture]
     public class OrderTotalCalculationServiceTests : ServiceTest
     {
         IWorkContext _workContext;
@@ -79,7 +77,6 @@ namespace SmartStore.Services.Tests.Orders
 			_storeContext.Expect(x => x.CurrentStore).Return(_store);
 			
             var pluginFinder = new PluginFinder();
-            var cacheManager = new NullCache();
 
 			_shoppingCartSettings = new ShoppingCartSettings();
 			_catalogSettings = new CatalogSettings();
@@ -105,7 +102,7 @@ namespace SmartStore.Services.Tests.Orders
             _shippingMethodRepository = MockRepository.GenerateMock<IRepository<ShippingMethod>>();
             _logger = new NullLogger();
 
-            _shippingService = new ShippingService(cacheManager,
+            _shippingService = new ShippingService(
                 _shippingMethodRepository,
                 _logger,
                 _productAttributeParser,
@@ -113,8 +110,9 @@ namespace SmartStore.Services.Tests.Orders
                 _checkoutAttributeParser,
 				_genericAttributeService,
                 _localizationService,
-                _shippingSettings, pluginFinder,
-                _eventPublisher, _shoppingCartSettings,
+                _shippingSettings,
+                _eventPublisher,
+				_shoppingCartSettings,
 				_settingService,
 				this.ProviderManager,
 				_typeFinder);

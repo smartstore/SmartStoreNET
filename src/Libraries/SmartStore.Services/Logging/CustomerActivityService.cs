@@ -1,6 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Collections.Concurrent;
+using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core;
 using SmartStore.Core.Caching;
@@ -8,15 +8,14 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
 using SmartStore.Core.Domain.Logging;
-using SmartStore.Data;
 using SmartStore.Core.Logging;
 
 namespace SmartStore.Services.Logging
 {
-    /// <summary>
-    /// Customer activity service
-    /// </summary>
-    public class CustomerActivityService : ICustomerActivityService
+	/// <summary>
+	/// Customer activity service
+	/// </summary>
+	public class CustomerActivityService : ICustomerActivityService
     {
         #region Fields
 
@@ -30,9 +29,10 @@ namespace SmartStore.Services.Logging
         private readonly IDbContext _dbContext;
         private readonly IDataProvider _dataProvider;
         private readonly CommonSettings _commonSettings;
-        // codehint: sm-add
+
         private readonly static object s_lock = new object();
         private readonly static ConcurrentDictionary<string, ActivityLogType> s_logTypes = new ConcurrentDictionary<string, ActivityLogType>();
+
         #endregion
 
         #region Ctor

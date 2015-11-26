@@ -30,6 +30,6 @@ namespace SmartStore.Services.Shipping
 		/// <summary>
 		/// Shipping method request
 		/// </summary>
-		public GetShippingOptionRequest Request { get; set; }
+		public GetShippingOptionRequest Option { get; set; }
 	}
 }

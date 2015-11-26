@@ -2,9 +2,7 @@
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Admin.Models.Payments;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Logging;
 using SmartStore.Core.Plugins;
 using SmartStore.Services;
 using SmartStore.Services.Customers;
@@ -13,7 +11,6 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Payments;
 using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
-using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
@@ -35,7 +32,6 @@ namespace SmartStore.Admin.Controllers
 		private readonly IShippingService _shippingService;
 		private readonly ICountryService _countryService;
 		private readonly ILocalizedEntityService _localizedEntityService;
-		private readonly ICustomerActivityService _customerActivityService;
 
 		#endregion
 
@@ -51,8 +47,7 @@ namespace SmartStore.Admin.Controllers
 			ICustomerService customerService,
 			IShippingService shippingService,
 			ICountryService countryService,
-			ILocalizedEntityService localizedEntityService,
-			ICustomerActivityService customerActivityService)
+			ILocalizedEntityService localizedEntityService)
 		{
 			this._services = services;
             this._paymentService = paymentService;
@@ -64,7 +59,6 @@ namespace SmartStore.Admin.Controllers
 			this._shippingService = shippingService;
 			this._countryService = countryService;
 			this._localizedEntityService = localizedEntityService;
-			this._customerActivityService = customerActivityService;
 		}
 
 		#endregion
@@ -206,10 +200,7 @@ namespace SmartStore.Admin.Controllers
 
 			_services.EventPublisher.Publish(new ModelBoundEvent(model, paymentMethod, form));
 
-			_customerActivityService.InsertActivity("EditPaymentMethod", _services.Localization.GetResource("ActivityLog.EditPaymentMethod"), 
-				model.FriendlyName.NaIfEmpty(), model.SystemName);
-
-			NotifySuccess(_services.Localization.GetResource("Admin.Common.DataEditSuccess"));
+			NotifySuccess(T("Admin.Common.DataEditSuccess"));
 
 			return (continueEditing ?
 				RedirectToAction("Edit", "Payment", new { systemName = systemName }) :

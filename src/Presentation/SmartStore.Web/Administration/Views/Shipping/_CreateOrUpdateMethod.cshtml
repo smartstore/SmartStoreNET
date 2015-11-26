@@ -87,45 +87,14 @@
 
 @helper TabRestrictions()
 {
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.Configuration.Shipping.Methods.RestrictionNote"))
-	</div>
+	if (Model.FilterConfigurationUrls.Count == 0)
+	{
+		<div class="alert alert-info">
+			@T("Admin.Configuration.Shipping.Methods.RestrictionNote")
+		</div>
+	}
 
 	<div>
-		<table class="adminContent">
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ExcludedCustomerRoleIds)
-				</td>
-				<td class="adminData">
-					@Html.ListBoxFor(model => model.ExcludedCustomerRoleIds,
-						new MultiSelectList(Model.AvailableCustomerRoles, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
-					@Html.ValidationMessageFor(model => model.ExcludedCustomerRoleIds)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.ExcludedCountryIds)
-				</td>
-				<td class="adminData">
-					@Html.ListBoxFor(model => model.ExcludedCountryIds,
-						new MultiSelectList(Model.AvailableCountries, "Value", "Text"),
-						new { multiple = "multiple", @class = "control-xlarge" })
-					@Html.ValidationMessageFor(model => model.ExcludedCountryIds)
-				</td>
-			</tr>
-			<tr>
-				<td class="adminTitle">
-					@Html.SmartLabelFor(model => model.CountryExclusionContext)
-				</td>
-				<td class="adminData">
-					@Html.DropDownListFor(model => model.CountryExclusionContext, Model.AvailableCountryExclusionContextTypes)
-					@Html.ValidationMessageFor(model => model.CountryExclusionContext)
-				</td>
-			</tr>
-		</table>
-
 		<div id="FilterOutShippingMethodContainer"></div>
 	</div>
 }
@@ -136,7 +105,7 @@
 			i = 0;
 
 		if (configUrls.length > 0) {
-			getFilterConfiguration(configUrls[i], $('#FilterOutShippingMethodContainer'));
+			getFilterConfiguration(configUrls[0], $('#FilterOutShippingMethodContainer'));
 		}
 
 		function getFilterConfiguration(url, container) {

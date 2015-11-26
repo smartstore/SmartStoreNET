@@ -1,7 +1,6 @@
 using System;
 using System.Collections.Generic;
 using System.Linq;
-using SmartStore.Core.Caching;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -20,7 +19,7 @@ using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Shipping
 {
-    public partial class ShippingService : IShippingService
+	public partial class ShippingService : IShippingService
     {
 		#region Fields
 
@@ -28,7 +27,6 @@ namespace SmartStore.Services.Shipping
 		private static IList<Type> _shippingMethodFilterTypes = null;
 
 		private readonly IRepository<ShippingMethod> _shippingMethodRepository;
-        private readonly ICacheManager _cacheManager;
         private readonly ILogger _logger;
         private readonly IProductAttributeParser _productAttributeParser;
 		private readonly IProductService _productService;
@@ -36,7 +34,6 @@ namespace SmartStore.Services.Shipping
 		private readonly IGenericAttributeService _genericAttributeService;
         private readonly ILocalizationService _localizationService;
         private readonly ShippingSettings _shippingSettings;
-        private readonly IPluginFinder _pluginFinder;
         private readonly IEventPublisher _eventPublisher;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly ISettingService _settingService;
@@ -63,7 +60,7 @@ namespace SmartStore.Services.Shipping
         /// <param name="eventPublisher">Event published</param>
         /// <param name="shoppingCartSettings">Shopping cart settings</param>
 		/// <param name="settingService">Setting service</param>
-        public ShippingService(ICacheManager cacheManager, 
+        public ShippingService(
             IRepository<ShippingMethod> shippingMethodRepository,
             ILogger logger,
             IProductAttributeParser productAttributeParser,
@@ -72,14 +69,12 @@ namespace SmartStore.Services.Shipping
 			IGenericAttributeService genericAttributeService,
             ILocalizationService localizationService,
             ShippingSettings shippingSettings,
-            IPluginFinder pluginFinder,
             IEventPublisher eventPublisher,
             ShoppingCartSettings shoppingCartSettings,
 			ISettingService settingService,
 			IProviderManager providerManager,
 			ITypeFinder typeFinder)
         {
-            this._cacheManager = cacheManager;
             this._shippingMethodRepository = shippingMethodRepository;
             this._logger = logger;
             this._productAttributeParser = productAttributeParser;
@@ -88,7 +83,6 @@ namespace SmartStore.Services.Shipping
 			this._genericAttributeService = genericAttributeService;
             this._localizationService = localizationService;
             this._shippingSettings = shippingSettings;
-            this._pluginFinder = pluginFinder;
             this._eventPublisher = eventPublisher;
             this._shoppingCartSettings = shoppingCartSettings;
 			this._settingService = settingService;
@@ -194,8 +188,6 @@ namespace SmartStore.Services.Shipping
 
 		public virtual IList<ShippingMethod> GetAllShippingMethods(GetShippingOptionRequest request = null)
         {
-			List<int> customerRoleIds = null;
-
 			var query =
 				from sm in _shippingMethodRepository.Table
 				orderby sm.DisplayOrder
@@ -206,41 +198,19 @@ namespace SmartStore.Services.Shipping
 			if (request == null)
 				return allMethods;
 
-			var allFilters = GetAllShippingMethodFilters();
-			var filterRequest = new ShippingFilterRequest {	Request = request };
+			IList<IShippingMethodFilter> allFilters = null;
+			var filterRequest = new ShippingFilterRequest {	Option = request };
 
 			var activeShippingMethods = allMethods.Where(s =>
 			{
 				// shipping method filtering
+				if (allFilters == null)
+					allFilters = GetAllShippingMethodFilters();
+
 				filterRequest.ShippingMethod = s;
 
 				if (allFilters.Any(x => x.IsExcluded(filterRequest)))
 					return false;
-
-				// shipping method core restrictions
-				if (request.Customer != null)
-				{
-					// method restricted by customer role id?
-					var excludedRoleIds = s.ExcludedCustomerRoleIds.ToIntArray();
-					if (excludedRoleIds.Any())
-					{
-						if (customerRoleIds == null)
-							customerRoleIds = request.Customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
-
-						if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
-							return false;
-					}
-
-					// method restricted by country of selected billing or shipping address?
-					int countryId = 0;
-					if (s.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
-						countryId = (request.Customer.ShippingAddress != null ? (request.Customer.ShippingAddress.CountryId ?? 0) : 0);
-					else
-						countryId = (request.Customer.BillingAddress != null ? (request.Customer.BillingAddress.CountryId ?? 0) : 0);
-
-					if (countryId != 0 && s.CountryRestrictionExists(countryId))
-						return false;
-				}
 
 				return true;
 			});

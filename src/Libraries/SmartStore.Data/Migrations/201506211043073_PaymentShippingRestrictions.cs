@@ -79,36 +79,6 @@ namespace SmartStore.Data.Migrations
 				"Die Sitemap für den Shop ist nicht erreichbar.");
 
 
-
-			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.ExcludedCustomerRole",
-				"Customer roles",
-				"Kundengruppen",
-				"Specifies customer roles for which the shipping method should not be offered.",
-				"Legt Kundengruppen fest, für die die Versandart nicht angeboten werden soll.");
-
-			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.ExcludedCountry",
-				"Countries",
-				"Länder",
-				"Specifies countries for which the shipping method should not be offered.",
-				"Legt Länder fest, für die die Versandart nicht angeboten werden soll.");
-
-
-			builder.AddOrUpdate("Admin.Configuration.Restrictions.CountryExclusionContext",
-				"Countries related to",
-				"Länder beziehen sich auf",
-				"Specifies the address to which the selected countries are related to.",
-				"Legt die Adresse fest, auf den sich die gewählten Länder beziehen.");
-
-
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Common.CountryRestrictionContextType.BillingAddress",
-				"Billing address",
-				"Rechnungsadresse");
-
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Common.CountryRestrictionContextType.ShippingAddress",
-				"Shipping address",
-				"Versandadresse");
-
-
 			builder.Delete("Admin.Configuration.Shipping.Restrictions.Updated");
 			builder.Delete("Admin.Configuration.Shipping.Restrictions.Description");
 			builder.Delete("Admin.Configuration.Shipping.Restrictions.Country");

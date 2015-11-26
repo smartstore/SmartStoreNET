@@ -1,9 +1,8 @@
-﻿@using SmartStore.Core.Domain.Payments;
-
-@model PaymentMethodEditModel
-
+﻿@model PaymentMethodEditModel
 @{
 	ViewBag.Title = T("Common.Edit").Text + " - " + Model.FriendlyName;
+
+	Html.AddScriptParts(true, "~/Scripts/2012.2.607/telerik.common.min.js");
 }
 
 @using (Html.BeginForm(null, null, FormMethod.Post, new { id = "payment-method-form" }))
@@ -108,9 +107,12 @@
 
 @helper TabRestrictions()
 {
-	<div class="alert alert-info">
-		@Html.Raw(T("Admin.Configuration.Payment.Methods.RestrictionNote"))
-	</div>
+	if (Model.FilterConfigurationUrls.Count == 0)
+	{
+		<div class="alert alert-info">
+			@T("Admin.Configuration.Payment.Methods.RestrictionNote")
+		</div>
+	}
 
 	<div>
 		<div id="FilterOutPaymentMethodContainer"></div>
@@ -123,7 +125,7 @@
 			i = 0;
 
 		if (configUrls.length > 0) {
-			getFilterConfiguration(configUrls[i], $('#FilterOutPaymentMethodContainer'));
+			getFilterConfiguration(configUrls[0], $('#FilterOutPaymentMethodContainer'));
 		}
 
 		function getFilterConfiguration(url, container) {

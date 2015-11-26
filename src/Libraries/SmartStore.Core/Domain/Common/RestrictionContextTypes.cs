@@ -6,10 +6,4 @@ namespace SmartStore.Core.Domain.Common
 		BillingAddress = 0,
 		ShippingAddress
 	}
-
-	public enum AmountRestrictionContextType
-	{
-		SubtotalAmount = 0,
-		TotalAmount
-	}
 }

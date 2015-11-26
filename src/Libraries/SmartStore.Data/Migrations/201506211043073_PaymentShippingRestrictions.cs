@@ -79,17 +79,6 @@ namespace SmartStore.Data.Migrations
 				"Die Sitemap für den Shop ist nicht erreichbar.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
-				"Select features for which you do <b>not</b> want to offer this payment method.",
-				"Wählen Sie Merkmale, bei denen Sie diese Zahlungsmethode <b>nicht</b> anbieten möchten.");
-
-			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.RestrictionNote",
-				"Select features for which you do <b>not</b> want to offer this shipping method.",
-				"Wählen Sie Merkmale, bei denen Sie diese Versandart <b>nicht</b> anbieten möchten.");
-
-
-
-
 
 			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.ExcludedCustomerRole",
 				"Customer roles",

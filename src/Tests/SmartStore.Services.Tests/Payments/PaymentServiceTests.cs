@@ -7,25 +7,20 @@ using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
-using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
-using SmartStore.Services.Orders;
 using SmartStore.Services.Payments;
 using SmartStore.Tests;
 
 namespace SmartStore.Services.Tests.Payments
 {
-    [TestFixture]
+	[TestFixture]
     public class PaymentServiceTests : ServiceTest
     {
 		IRepository<PaymentMethod> _paymentMethodRepository;
         PaymentSettings _paymentSettings;
         ShoppingCartSettings _shoppingCartSettings;
         IPaymentService _paymentService;
-		ICurrencyService _currencyService;
 		ICommonServices _services;
-		IOrderTotalCalculationService _orderTotalCalculationService;
 		ITypeFinder _typeFinder;
         
         [SetUp]
@@ -35,13 +30,9 @@ namespace SmartStore.Services.Tests.Payments
             _paymentSettings.ActivePaymentMethodSystemNames = new List<string>();
             _paymentSettings.ActivePaymentMethodSystemNames.Add("Payments.TestMethod");
 
-            var pluginFinder = new PluginFinder();
-
             _shoppingCartSettings = new ShoppingCartSettings();
 			_paymentMethodRepository = MockRepository.GenerateMock<IRepository<PaymentMethod>>();
-			_currencyService = MockRepository.GenerateMock<ICurrencyService>();
 			_services = MockRepository.GenerateMock<ICommonServices>();
-			_orderTotalCalculationService = MockRepository.GenerateMock<IOrderTotalCalculationService>();
 
 			_typeFinder = MockRepository.GenerateMock<ITypeFinder>();
 			_typeFinder.Expect(x => x.FindClassesOfType((Type)null, null, true)).IgnoreArguments().Return(Enumerable.Empty<Type>()).Repeat.Any();
@@ -49,8 +40,8 @@ namespace SmartStore.Services.Tests.Payments
 			var localizationService = MockRepository.GenerateMock<ILocalizationService>();
 			localizationService.Expect(ls => ls.GetResource(null)).IgnoreArguments().Return("NotSupported").Repeat.Any();
 
-			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, pluginFinder, _shoppingCartSettings, 
-				this.ProviderManager, _currencyService, _services, _orderTotalCalculationService, _typeFinder);
+			_paymentService = new PaymentService(_paymentMethodRepository, _paymentSettings, _shoppingCartSettings, 
+				this.ProviderManager, _services, _typeFinder);
         }
 
         [Test]

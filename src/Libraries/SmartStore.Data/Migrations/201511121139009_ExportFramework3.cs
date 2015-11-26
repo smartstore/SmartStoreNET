@@ -69,6 +69,18 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.ExportFiles",
 				"Export files",
 				"Exportdateien");
-        }
+
+
+			builder.Delete(
+				"Admin.Configuration.Payment.Methods.ExcludedCustomerRole",
+				"Admin.Configuration.Payment.Methods.ExcludedShippingMethod",
+				"Admin.Configuration.Payment.Methods.ExcludedCountry",
+				"Admin.Configuration.Payment.Methods.MinimumOrderAmount",
+				"Admin.Configuration.Payment.Methods.MaximumOrderAmount",
+				"Admin.Configuration.Restrictions.AmountRestrictionContext",
+				"Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.SubtotalAmount",
+				"Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.TotalAmount"
+			);
+		}
 	}
 }

@@ -1,13 +1,10 @@
-﻿using System.Web.Mvc;
-using System.Web.Routing;
-using SmartStore.Core;
-using SmartStore.Services.Payments;
+﻿using SmartStore.Core;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Payments
 {
-    public class PaymentMethodModel : ProviderModel, IActivatable
+	public class PaymentMethodModel : ProviderModel, IActivatable
     {
         public bool IsActive { get; set; }
 

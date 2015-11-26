@@ -73,33 +73,7 @@ namespace SmartStore.Admin.Controllers
 
 		private void PreparePaymentMethodEditModel(PaymentMethodEditModel model, PaymentMethod paymentMethod)
 		{
-			var customerRoles = _customerService.GetAllCustomerRoles(true);
-			var shippingMethods = _shippingService.GetAllShippingMethods();
-			var countries = _countryService.GetAllCountries(true);
 			var allFilters = _paymentService.GetAllPaymentMethodFilters();
-
-			model.AvailableCustomerRoles = new List<SelectListItem>();
-			model.AvailableShippingMethods = new List<SelectListItem>();
-			model.AvailableCountries = new List<SelectListItem>();
-
-			model.AvailableCountryExclusionContextTypes = CountryRestrictionContextType.BillingAddress.ToSelectList(false).ToList();
-			model.AvailableAmountRestrictionContextTypes = AmountRestrictionContextType.SubtotalAmount.ToSelectList(false).ToList();
-
-			foreach (var role in customerRoles.OrderBy(x => x.Name))
-			{
-				model.AvailableCustomerRoles.Add(new SelectListItem { Text = role.Name, Value = role.Id.ToString() });
-			}
-
-			foreach (var shippingMethod in shippingMethods.OrderBy(x => x.Name))
-			{
-				model.AvailableShippingMethods.Add(new SelectListItem { Text = shippingMethod.GetLocalized(x => x.Name), Value = shippingMethod.Id.ToString() });
-			}
-
-			foreach (var country in countries.OrderBy(x => x.Name))
-			{
-				model.AvailableCountries.Add(new SelectListItem { Text = country.GetLocalized(x => x.Name), Value = country.Id.ToString() });
-			}
-
 
 			model.FilterConfigurationUrls = allFilters
 				.Select(x => "'" + x.GetConfigurationUrl(model.SystemName) + "'")
@@ -109,16 +83,6 @@ namespace SmartStore.Admin.Controllers
 			if (paymentMethod != null)
 			{
 				model.Id = paymentMethod.Id;
-				model.ExcludedCustomerRoleIds = paymentMethod.ExcludedCustomerRoleIds.SplitSafe(",");
-				model.ExcludedShippingMethodIds = paymentMethod.ExcludedShippingMethodIds.SplitSafe(",");
-				model.ExcludedCountryIds = paymentMethod.ExcludedCountryIds.SplitSafe(",");
-
-				model.MinimumOrderAmount = paymentMethod.MinimumOrderAmount;
-				model.MaximumOrderAmount = paymentMethod.MaximumOrderAmount;
-
-				model.CountryExclusionContext = paymentMethod.CountryExclusionContext;
-				model.AmountRestrictionContext = paymentMethod.AmountRestrictionContext;
-
 				model.FullDescription = paymentMethod.FullDescription;
 			}
 		}
@@ -224,16 +188,6 @@ namespace SmartStore.Admin.Controllers
 
 			if (paymentMethod == null)
 				paymentMethod = new PaymentMethod { PaymentMethodSystemName = systemName };
-
-			paymentMethod.ExcludedCustomerRoleIds = Request.Form["ExcludedCustomerRoleIds"];
-			paymentMethod.ExcludedShippingMethodIds = Request.Form["ExcludedShippingMethodIds"];
-			paymentMethod.ExcludedCountryIds = Request.Form["ExcludedCountryIds"];
-
-			paymentMethod.MinimumOrderAmount = model.MinimumOrderAmount;
-			paymentMethod.MaximumOrderAmount = model.MaximumOrderAmount;
-
-			paymentMethod.CountryExclusionContext = model.CountryExclusionContext;
-			paymentMethod.AmountRestrictionContext = model.AmountRestrictionContext;
 
 			paymentMethod.FullDescription = model.FullDescription;
 

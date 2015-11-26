@@ -88,35 +88,7 @@ namespace SmartStore.Data.Migrations
 				"Wählen Sie Merkmale, bei denen Sie diese Versandart <b>nicht</b> anbieten möchten.");
 
 
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.ExcludedCustomerRole",
-				"Customer roles",
-				"Kundengruppen",
-				"Specifies customer roles for which the payment method should not be offered.",
-				"Legt Kundengruppen fest, für die die Zahlungsmethode nicht angeboten werden soll.");
 
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.ExcludedShippingMethod",
-				"Shipping method",
-				"Versandarten",
-				"Specifies shipping methods for which the payment method should not be offered.",
-				"Legt Versandarten fest, für die die Zahlungsmethode nicht angeboten werden soll.");
-
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.ExcludedCountry",
-				"Countries",
-				"Länder",
-				"Specifies countries for which the payment method should not be offered.",
-				"Legt Länder fest, für die die Zahlungsmethode nicht angeboten werden soll.");
-
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.MinimumOrderAmount",
-				"Minimum order amount",
-				"Mindestbestellwert",
-				"Specifies the minimum order amount from which on the payment method should be offered.",
-				"Legt den Mindestbestellwert fest, ab dem die Zahlungsmethode angeboten werden soll.");
-
-			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.MaximumOrderAmount",
-				"Maximum amount",
-				"Maximalbestellwert",
-				"Specifies the maximum order amount up to which the payment methods should be offered.",
-				"Legt den maximalen Bestellwert fest, bis zu dem die Zahlungsmethode angeboten werden soll.");
 
 
 			builder.AddOrUpdate("Admin.Configuration.Shipping.Methods.ExcludedCustomerRole",
@@ -131,12 +103,6 @@ namespace SmartStore.Data.Migrations
 				"Specifies countries for which the shipping method should not be offered.",
 				"Legt Länder fest, für die die Versandart nicht angeboten werden soll.");
 
-
-			builder.AddOrUpdate("Admin.Configuration.Restrictions.AmountRestrictionContext",
-				"Amount related to",
-				"Betrag bezieht sich auf",
-				"Specifies the amount to which the minimum and maximum order amounts are related to.",
-				"Legt den Betrag fest, auf den sich die Mindest- und Maximalbestellwerte beziehen.");
 
 			builder.AddOrUpdate("Admin.Configuration.Restrictions.CountryExclusionContext",
 				"Countries related to",
@@ -153,13 +119,6 @@ namespace SmartStore.Data.Migrations
 				"Shipping address",
 				"Versandadresse");
 
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.SubtotalAmount",
-				"Subtotal",
-				"Zwischensumme");
-
-			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.Common.AmountRestrictionContextType.TotalAmount",
-				"Order total",
-				"Gesamtsumme");
 
 			builder.Delete("Admin.Configuration.Shipping.Restrictions.Updated");
 			builder.Delete("Admin.Configuration.Shipping.Restrictions.Description");

@@ -2,25 +2,19 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Common;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Discounts;
 using SmartStore.Core.Domain.Orders;
 using SmartStore.Core.Domain.Payments;
-using SmartStore.Core.Domain.Shipping;
 using SmartStore.Core.Events;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
-using SmartStore.Services.Common;
-using SmartStore.Services.Directory;
-using SmartStore.Services.Orders;
 
 namespace SmartStore.Services.Payments
 {
-    /// <summary>
-    /// Payment service
-    /// </summary>
-    public partial class PaymentService : IPaymentService
+	/// <summary>
+	/// Payment service
+	/// </summary>
+	public partial class PaymentService : IPaymentService
     {
 		#region Constants
 		
@@ -35,12 +29,9 @@ namespace SmartStore.Services.Payments
 
 		private readonly IRepository<PaymentMethod> _paymentMethodRepository;
         private readonly PaymentSettings _paymentSettings;
-        private readonly IPluginFinder _pluginFinder;
         private readonly ShoppingCartSettings _shoppingCartSettings;
 		private readonly IProviderManager _providerManager;
-		private readonly ICurrencyService _currencyService;
 		private readonly ICommonServices _services;
-		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		private readonly ITypeFinder _typeFinder;
 
         #endregion
@@ -57,23 +48,17 @@ namespace SmartStore.Services.Payments
         public PaymentService(
 			IRepository<PaymentMethod> paymentMethodRepository,
 			PaymentSettings paymentSettings, 
-			IPluginFinder pluginFinder,
             ShoppingCartSettings shoppingCartSettings,
 			IProviderManager providerManager,
-			ICurrencyService currencyService,
 			ICommonServices services,
-			IOrderTotalCalculationService orderTotalCalculationService,
 			ITypeFinder typeFinder)
         {
-			this._paymentMethodRepository = paymentMethodRepository;
-            this._paymentSettings = paymentSettings;
-            this._pluginFinder = pluginFinder;
-            this._shoppingCartSettings = shoppingCartSettings;
-			this._providerManager = providerManager;
-			this._currencyService = currencyService;
-			this._services = services;
-			this._orderTotalCalculationService = orderTotalCalculationService;
-			this._typeFinder = typeFinder;
+			_paymentMethodRepository = paymentMethodRepository;
+            _paymentSettings = paymentSettings;
+            _shoppingCartSettings = shoppingCartSettings;
+			_providerManager = providerManager;
+			_services = services;
+			_typeFinder = typeFinder;
         }
 
         #endregion
@@ -96,11 +81,6 @@ namespace SmartStore.Services.Payments
 			PaymentMethodType[] types = null,
 			bool provideFallbackMethod = true)
         {
-			List<int> customerRoleIds = null;
-			int? selectedShippingMethodId = null;
-			decimal? orderSubTotal = null;
-			decimal? orderTotal = null;
-			IList<PaymentMethod> allMethods = null;
 			IList<IPaymentMethodFilter> allFilters = null;
 			IEnumerable<Provider<IPaymentMethod>> allProviders = null;
 
@@ -130,97 +110,6 @@ namespace SmartStore.Services.Payments
 
 					if (allFilters.Any(x => x.IsExcluded(filterRequest)))
 						return false;
-
-					// payment method core restrictions
-					if (customer != null)
-					{
-						if (allMethods == null)
-							allMethods = GetAllPaymentMethods();
-
-						var method = allMethods.FirstOrDefault(x => x.PaymentMethodSystemName.IsCaseInsensitiveEqual(p.Metadata.SystemName));
-						if (method != null)
-						{
-							// method restricted by customer role id?
-							var excludedRoleIds = method.ExcludedCustomerRoleIds.ToIntArray();
-							if (excludedRoleIds.Any())
-							{
-								if (customerRoleIds == null)
-									customerRoleIds = customer.CustomerRoles.Where(r => r.Active).Select(r => r.Id).ToList();
-
-								if (customerRoleIds != null && !customerRoleIds.Except(excludedRoleIds).Any())
-									return false;
-							}
-
-							// method restricted by selected shipping method?
-							var excludedShippingMethodIds = method.ExcludedShippingMethodIds.ToIntArray();
-							if (excludedShippingMethodIds.Any())
-							{
-								if (!selectedShippingMethodId.HasValue)
-								{
-									var selectedShipping = customer.GetAttribute<ShippingOption>(SystemCustomerAttributeNames.SelectedShippingOption, storeId);
-									selectedShippingMethodId = (selectedShipping == null ? 0 : selectedShipping.ShippingMethodId);
-								}
-
-								if ((selectedShippingMethodId ?? 0) != 0 && excludedShippingMethodIds.Contains(selectedShippingMethodId.Value))
-									return false;
-							}
-
-							// method restricted by country of selected billing or shipping address?
-							var excludedCountryIds = method.ExcludedCountryIds.ToIntArray();
-							if (excludedCountryIds.Any())
-							{
-								int countryId = 0;
-								if (method.CountryExclusionContext == CountryRestrictionContextType.ShippingAddress)
-									countryId = (customer.ShippingAddress != null ? (customer.ShippingAddress.CountryId ?? 0) : 0);
-								else
-									countryId = (customer.BillingAddress != null ? (customer.BillingAddress.CountryId ?? 0) : 0);
-
-								if (countryId != 0 && excludedCountryIds.Contains(countryId))
-									return false;
-							}
-
-							// method restricted by min\max order amount?
-							if ((method.MinimumOrderAmount.HasValue || method.MaximumOrderAmount.HasValue) && cart != null)
-							{
-								decimal compareAmount = decimal.Zero;
-
-								if (method.AmountRestrictionContext == AmountRestrictionContextType.SubtotalAmount)
-								{
-									if (!orderSubTotal.HasValue)
-									{
-										decimal orderSubTotalDiscountAmountBase = decimal.Zero;
-										Discount orderSubTotalAppliedDiscount = null;
-										decimal subTotalWithoutDiscountBase = decimal.Zero;
-										decimal subTotalWithDiscountBase = decimal.Zero;
-
-										_orderTotalCalculationService.GetShoppingCartSubTotal(cart, out orderSubTotalDiscountAmountBase, out orderSubTotalAppliedDiscount,
-											out subTotalWithoutDiscountBase, out subTotalWithDiscountBase);
-
-										orderSubTotal = _currencyService.ConvertFromPrimaryStoreCurrency(subTotalWithoutDiscountBase, _services.WorkContext.WorkingCurrency);
-									}
-
-									compareAmount = orderSubTotal.Value;
-								}
-								else if (method.AmountRestrictionContext == AmountRestrictionContextType.TotalAmount)
-								{
-									if (!orderTotal.HasValue)
-									{
-										orderTotal = _orderTotalCalculationService.GetShoppingCartTotal(cart) ?? decimal.Zero;
-
-										orderTotal = _currencyService.ConvertFromPrimaryStoreCurrency(orderTotal.Value, _services.WorkContext.WorkingCurrency);
-									}
-
-									compareAmount = orderTotal.Value;
-								}
-
-								if (method.MinimumOrderAmount.HasValue && compareAmount < method.MinimumOrderAmount.Value)
-									return false;
-
-								if (method.MaximumOrderAmount.HasValue && compareAmount > method.MaximumOrderAmount.Value)
-									return false;
-							}
-						}
-					}
 
 					return true;
 				});

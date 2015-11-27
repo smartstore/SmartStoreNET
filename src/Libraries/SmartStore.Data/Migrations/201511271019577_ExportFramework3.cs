@@ -88,6 +88,14 @@ namespace SmartStore.Data.Migrations
 				"Export files",
 				"Exportdateien");
 
+			builder.AddOrUpdate("Admin.Common.ExportToCsv.All",
+				"Export to CSV (all)",
+				"Alles als CSV exportieren");
+
+			builder.AddOrUpdate("Admin.Common.ExportToCsv.Selected",
+				"Export to CSV (selected)",
+				"Nur Ausgewählte nach CSV exportieren");
+
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
 				"There were no possibilities found to restrict payment methods.",

@@ -173,7 +173,6 @@
     <Compile Include="Domain\DataExchange\ExportDeployment.cs" />
     <Compile Include="Domain\DataExchange\ExportProjection.cs" />
     <Compile Include="Domain\Directory\QuantityUnit.cs" />
-    <Compile Include="Domain\Common\RestrictionContextTypes.cs" />
     <Compile Include="Domain\DataExchange\ExportEnums.cs" />
     <Compile Include="Domain\DataExchange\ExportFilter.cs" />
     <Compile Include="Domain\DataExchange\ExportProfile.cs" />

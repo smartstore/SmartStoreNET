@@ -395,9 +395,7 @@ namespace SmartStore.Admin.Infrastructure
                 .ForMember(dest => dest.Locales, mo => mo.Ignore())
 				.ForMember(dest => dest.FilterConfigurationUrls, mo => mo.Ignore());
 			Mapper.CreateMap<ShippingMethodModel, ShippingMethod>()
-				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore())
-				.ForMember(dest => dest.ExcludedCustomerRoleIds, mo => mo.Ignore())
-				.ForMember(dest => dest.CountryExclusionContextId, mo => mo.Ignore());
+				.ForMember(dest => dest.RestrictedCountries, mo => mo.Ignore());
             //plugins
             Mapper.CreateMap<PluginDescriptor, PluginModel>()
                 .ForMember(dest => dest.ConfigurationUrl, mo => mo.Ignore())

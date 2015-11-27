@@ -18,10 +18,14 @@ namespace SmartStore.Data.Migrations
             DropColumn("dbo.PaymentMethod", "MinimumOrderAmount");
             DropColumn("dbo.PaymentMethod", "MaximumOrderAmount");
             DropColumn("dbo.PaymentMethod", "AmountRestrictionContextId");
+            DropColumn("dbo.ShippingMethod", "ExcludedCustomerRoleIds");
+            DropColumn("dbo.ShippingMethod", "CountryExclusionContextId");
         }
         
         public override void Down()
         {
+            AddColumn("dbo.ShippingMethod", "CountryExclusionContextId", c => c.Int(nullable: false));
+            AddColumn("dbo.ShippingMethod", "ExcludedCustomerRoleIds", c => c.String(maxLength: 500));
             AddColumn("dbo.PaymentMethod", "AmountRestrictionContextId", c => c.Int(nullable: false));
             AddColumn("dbo.PaymentMethod", "MaximumOrderAmount", c => c.Decimal(precision: 18, scale: 4));
             AddColumn("dbo.PaymentMethod", "MinimumOrderAmount", c => c.Decimal(precision: 18, scale: 4));

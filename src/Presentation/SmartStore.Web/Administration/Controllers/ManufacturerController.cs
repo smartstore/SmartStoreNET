@@ -241,14 +241,12 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var model = new ManufacturerListModel();
-            var manufacturers = _manufacturerService.GetAllManufacturers(null, 0, _adminAreaSettings.GridPageSize, true);
-            model.Manufacturers = new GridModel<ManufacturerModel>
-            {
-                Data = manufacturers.Select(x => x.ToModel()),
-                Total = manufacturers.TotalCount
-            };
-            return View(model);
+			var model = new ManufacturerListModel
+			{
+				GridPageSize = _adminAreaSettings.GridPageSize
+			};
+
+			return View(model);
         }
 
         [HttpPost, GridAction(EnableCustomBinding = true)]
@@ -257,13 +255,14 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
                 return AccessDeniedView();
 
-            var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchManufacturerName,
-                command.Page - 1, command.PageSize, true);
+            var manufacturers = _manufacturerService.GetAllManufacturers(model.SearchManufacturerName, command.Page - 1, command.PageSize, true);
+
             var gridModel = new GridModel<ManufacturerModel>
             {
                 Data = manufacturers.Select(x => x.ToModel()),
                 Total = manufacturers.TotalCount
             };
+
             return new JsonResult
             {
                 Data = gridModel

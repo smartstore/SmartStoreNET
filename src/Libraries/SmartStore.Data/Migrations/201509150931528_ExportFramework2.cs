@@ -249,6 +249,10 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.SystemInfo.GarbageCollectSuccessful",
 				"The memory has been successfully cleaned up.",
 				"Der Arbeitsspeicher wurde erfolgreich aufgeräumt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.NoConfigurationRequired",
+				"Theme requires no configuration",
+				"Theme benötigt keine Konfiguration");
 		}
     }
 }

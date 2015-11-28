@@ -67,9 +67,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var customers = _customerService.GetAllCustomers(null, null, null, null, null,
-                null, null, 0, 0, null, null, null, true, ShoppingCartType.ShoppingCart,
-                command.Page - 1, command.PageSize);
+            var customerInfo =
+                new CustomerInformation.Builder().SetDayOfBirth(0)
+                    .SetMonthOfBirth(0)
+                    .SetSct(ShoppingCartType.ShoppingCart)
+                    .SetPageIndex(command.Page - 1)
+                    .SetPageSize(command.PageSize).Build();
+            var customers = _customerService.GetAllCustomers(customerInfo);
 
             var gridModel = new GridModel<ShoppingCartModel>
             {
@@ -146,9 +150,13 @@ namespace SmartStore.Admin.Controllers
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageOrders))
                 return AccessDeniedView();
 
-            var customers = _customerService.GetAllCustomers(null, null, null, null, null,
-                null, null, 0, 0, null, null, null, 
-                true, ShoppingCartType.Wishlist, command.Page - 1, command.PageSize);
+            var customerInfo =
+                new CustomerInformation.Builder().SetDayOfBirth(0)
+                    .SetMonthOfBirth(0)
+                    .SetSct(ShoppingCartType.Wishlist)
+                    .SetPageIndex(command.Page - 1)
+                    .SetPageSize(command.PageSize).Build();
+            var customers = _customerService.GetAllCustomers(customerInfo);
 
             var gridModel = new GridModel<ShoppingCartModel>
             {

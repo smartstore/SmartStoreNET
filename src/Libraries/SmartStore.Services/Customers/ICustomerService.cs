@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using SmartStore.Core;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Customers;
-using SmartStore.Core.Domain.Orders;
 
 namespace SmartStore.Services.Customers
 {
@@ -17,28 +16,8 @@ namespace SmartStore.Services.Customers
         /// <summary>
         /// Gets all customers
         /// </summary>
-        /// <param name="registrationFrom">Customer registration from; null to load all customers</param>
-        /// <param name="registrationTo">Customer registration to; null to load all customers</param>
-        /// <param name="customerRoleIds">A list of customer role identifiers to filter by (at least one match); pass null or empty list in order to load all customers; </param>
-        /// <param name="email">Email; null to load all customers</param>
-        /// <param name="username">Username; null to load all customers</param>
-        /// <param name="firstName">First name; null to load all customers</param>
-        /// <param name="lastName">Last name; null to load all customers</param>
-        /// <param name="dayOfBirth">Day of birth; 0 to load all customers</param>
-        /// <param name="monthOfBirth">Month of birth; 0 to load all customers</param>
-        /// <param name="company">Company; null to load all customers</param>
-        /// <param name="phone">Phone; null to load all customers</param>
-        /// <param name="zipPostalCode">Phone; null to load all customers</param>
-        /// <param name="loadOnlyWithShoppingCart">Value indicating whther to load customers only with shopping cart</param>
-        /// <param name="sct">Value indicating what shopping cart type to filter; userd when 'loadOnlyWithShoppingCart' param is 'true'</param>
-        /// <param name="pageIndex">Page index</param>
-        /// <param name="pageSize">Page size</param>
         /// <returns>Customer collection</returns>
-        IPagedList<Customer> GetAllCustomers(DateTime? registrationFrom,
-           DateTime? registrationTo, int[] customerRoleIds, string email, string username,
-           string firstName, string lastName, int dayOfBirth, int monthOfBirth,
-           string company, string phone, string zipPostalCode,
-           bool loadOnlyWithShoppingCart, ShoppingCartType? sct, int pageIndex, int pageSize);
+        IPagedList<Customer> GetAllCustomers(CustomerInformation customer);
 
         /// <summary>
         /// Gets all customers by affiliate identifier

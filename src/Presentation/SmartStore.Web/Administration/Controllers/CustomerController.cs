@@ -386,9 +386,14 @@ namespace SmartStore.Admin.Controllers
                 AvailableCustomerRoles = _customerService.GetAllCustomerRoles(true).Select(cr => cr.ToModel()).ToList(),
                 SearchCustomerRoleIds = defaultRoleIds,
             };
-            var customers = _customerService.GetAllCustomers(null, null, defaultRoleIds, null,
-                null, null, null, 0, 0, null, null, null,
-                false, null, 0, _adminAreaSettings.GridPageSize);
+
+            var customerInfo =
+                new CustomerInformation.Builder().SetCustomerRoleIds(defaultRoleIds).SetDayOfBirth(0)
+                    .SetMonthOfBirth(0)
+                    .SetLoadOnlyWithShoppingCart(false)
+                    .SetPageIndex(0)
+                    .SetPageSize(_adminAreaSettings.GridPageSize).Build();
+            var customers = _customerService.GetAllCustomers(customerInfo);
             //customer list
             listModel.Customers = new GridModel<CustomerModel>
             {
@@ -412,12 +417,22 @@ namespace SmartStore.Admin.Controllers
             if (!String.IsNullOrWhiteSpace(model.SearchMonthOfBirth))
                 searchMonthOfBirth = Convert.ToInt32(model.SearchMonthOfBirth);
 
-            var customers = _customerService.GetAllCustomers(null, null,
-                searchCustomerRoleIds, model.SearchEmail, model.SearchUsername,
-                model.SearchFirstName, model.SearchLastName,
-                searchDayOfBirth, searchMonthOfBirth,
-                model.SearchCompany, model.SearchPhone, model.SearchZipPostalCode,
-                false, null, command.Page - 1, command.PageSize);
+            var customerInfo =
+                new CustomerInformation.Builder().SetCustomerRoleIds(searchCustomerRoleIds)
+                    .SetDayOfBirth(searchDayOfBirth)
+                    .SetMonthOfBirth(searchMonthOfBirth)
+                    .SetEmail(model.SearchEmail)
+                    .SetUsername(model.SearchUsername)
+                    .SetFirstName(model.SearchFirstName)
+                    .SetLastName(model.SearchLastName)
+                    .SetMonthOfBirth(0)
+                    .SetCompany(model.SearchCompany)
+                    .SetPhone(model.SearchPhone)
+                    .SetZipPostalCode(model.SearchZipPostalCode)
+                    .SetLoadOnlyWithShoppingCart(false)
+                    .SetPageIndex(command.Page - 1)
+                    .SetPageSize(command.PageSize).Build();
+            var customers = _customerService.GetAllCustomers(customerInfo);
             var gridModel = new GridModel<CustomerModel>
             {
                 Data = customers.Select(PrepareCustomerModelForList),
@@ -1736,9 +1751,14 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
+                var customerInfo =
+                new CustomerInformation.Builder()
+                    .SetDayOfBirth(0)
+                    .SetMonthOfBirth(0)
+                    .SetLoadOnlyWithShoppingCart(false)
+                    .SetPageIndex(0)
+                    .SetPageSize(int.MaxValue).Build();
+                var customers = _customerService.GetAllCustomers(customerInfo);
 
                 byte[] bytes = null;
                 using (var stream = new MemoryStream())
@@ -1786,9 +1806,13 @@ namespace SmartStore.Admin.Controllers
 
             try
             {
-                var customers = _customerService.GetAllCustomers(null, null, null, null,
-                    null, null, null, 0, 0, null, null, null, 
-                    false, null, 0, int.MaxValue);
+                var customerInfo =
+                    new CustomerInformation.Builder()
+                        .SetDayOfBirth(0)
+                        .SetMonthOfBirth(0)
+                        .SetPageIndex(0)
+                        .SetPageSize(int.MaxValue).Build();
+                var customers = _customerService.GetAllCustomers(customerInfo);
                 
                 var xml = _exportManager.ExportCustomersToXml(customers);
                 return new XmlDownloadResult(xml, "customers.xml");

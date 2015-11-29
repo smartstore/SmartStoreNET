@@ -96,7 +96,11 @@ namespace SmartStore.Services.Tests.Customers
             _customerService = new CustomerService(new NullCache(), _customerRepo, null,
             _genericAttributeRepo, null, null, null);
         }
-
+        
+        /// <summary>
+        /// The test verifies if the CustomerInformation class is working properly when querying a list of customer (long parameter list)
+        /// It also verifies if the long method still works properly when querying by different attributes. 
+        /// </summary>
         [Test]
         public void TestGetCustomerWithQuery()
         {

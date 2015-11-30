@@ -18,6 +18,8 @@ namespace SmartStore.Web.Models.ShoppingCart
 
         public bool Enabled { get; set; }
 
+		public string ShippingInfoUrl { get; set; }
+
         public IList<ShippingOptionModel> ShippingOptions { get; set; }
 
         public IList<string> Warnings { get; set; }

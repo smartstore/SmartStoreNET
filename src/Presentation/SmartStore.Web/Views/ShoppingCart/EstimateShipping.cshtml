@@ -80,7 +80,7 @@
                 </div>
             </div>
 
-            <div class="shipping-options" style="border: 0;">
+            <div class="shipping-options">
                 @if (Model.ShippingOptions.Any())
                 {
                     <div>
@@ -107,10 +107,13 @@
                     </div>
                 }
             </div>
-        </div>
 
-        <div class="well well-small hide"> <!-- TODO: (mc) temporarily hidden, wrong resource key! -->
-            @Html.Raw(String.Format(T("ShoppingCart.ShippingInfoLink"), Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })))
+			@if (Model.ShippingInfoUrl.HasValue())
+			{
+				<div>
+					@Html.Raw(T("ShoppingCart.ShippingInfoLink", Model.ShippingInfoUrl))
+				</div>
+			}
         </div>
     </div>
 }

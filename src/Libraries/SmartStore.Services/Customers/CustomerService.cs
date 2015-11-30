@@ -82,6 +82,7 @@ namespace SmartStore.Services.Customers
 
         #region Customers
         
+        //Will change
         public virtual IPagedList<Customer> GetAllCustomers(DateTime? registrationFrom,
             DateTime? registrationTo, int[] customerRoleIds, string email, string username,
             string firstName, string lastName, int dayOfBirth, int monthOfBirth,

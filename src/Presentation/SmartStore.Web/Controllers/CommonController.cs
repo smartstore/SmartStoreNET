@@ -4,8 +4,8 @@ using System.Drawing;
 using System.Globalization;
 using System.Linq;
 using System.Text;
-using System.Web;
 using System.Web.Mvc;
+using SmartStore.Core.Domain;
 using SmartStore.Core.Domain.Blogs;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Core.Domain.Common;
@@ -41,15 +41,16 @@ using SmartStore.Web.Framework.Themes;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Infrastructure.Cache;
 using SmartStore.Web.Models.Common;
-using SmartStore.Core.Domain;
 
 namespace SmartStore.Web.Controllers
 {
-    public partial class CommonController : PublicControllerBase
+	public partial class CommonController : PublicControllerBase
     {
-        #region Fields
+		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
-        private readonly ITopicService _topicService;
+		#region Fields
+
+		private readonly ITopicService _topicService;
         private readonly Lazy<ILanguageService> _languageService;
         private readonly Lazy<ICurrencyService> _currencyService;
         private readonly IThemeContext _themeContext;
@@ -58,8 +59,6 @@ namespace SmartStore.Web.Controllers
         private readonly Lazy<IGenericAttributeService> _genericAttributeService;
         private readonly Lazy<IMobileDeviceHelper> _mobileDeviceHelper;
 		private readonly Lazy<ICompareProductsService> _compareProductsService;
-
-		private readonly static string[] s_hints = new string[] { "Shopsystem", "Onlineshop Software", "Shopsoftware", "E-Commerce Solution" };
 
 		private readonly StoreInformationSettings _storeInfoSettings;
 		private readonly CustomerSettings _customerSettings;
@@ -72,6 +71,7 @@ namespace SmartStore.Web.Controllers
         private readonly ForumSettings _forumSettings;
         private readonly LocalizationSettings _localizationSettings;
 		private readonly Lazy<SecuritySettings> _securitySettings;
+		private readonly Lazy<SocialSettings> _socialSettings;
 		private readonly IOrderTotalCalculationService _orderTotalCalculationService;
 		
         private readonly IPriceFormatter _priceFormatter;
@@ -104,7 +104,8 @@ namespace SmartStore.Web.Controllers
 			ForumSettings forumSettings,
             LocalizationSettings localizationSettings, 
 			Lazy<SecuritySettings> securitySettings,
-            IOrderTotalCalculationService orderTotalCalculationService, 
+			Lazy<SocialSettings> socialSettings,
+			IOrderTotalCalculationService orderTotalCalculationService, 
 			IPriceFormatter priceFormatter,
             ThemeSettings themeSettings, 
 			IPageAssetsBuilder pageAssetsBuilder,
@@ -131,6 +132,7 @@ namespace SmartStore.Web.Controllers
             this._forumSettings = forumSettings;
             this._localizationSettings = localizationSettings;
 			this._securitySettings = securitySettings;
+			this._socialSettings = socialSettings;
 
             this._orderTotalCalculationService = orderTotalCalculationService;
             this._priceFormatter = priceFormatter;
@@ -592,12 +594,11 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Footer()
         {
-			string taxInfo = (_services.WorkContext.GetTaxDisplayTypeFor(_services.WorkContext.CurrentCustomer, _services.StoreContext.CurrentStore.Id) == TaxDisplayType.IncludingTax)
-                ? T("Tax.InclVAT") 
-                : T("Tax.ExclVAT");
-
-            string shippingInfoLink = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
 			var store = _services.StoreContext.CurrentStore;
+			var allTopics = _topicService.GetAllTopics(store.Id);
+			var taxDisplayType = _services.WorkContext.GetTaxDisplayTypeFor(_services.WorkContext.CurrentCustomer, store.Id);
+
+			var taxInfo = T(taxDisplayType == TaxDisplayType.IncludingTax ? "Tax.InclVAT" : "Tax.ExclVAT");
 
 			var availableStoreThemes = !_themeSettings.AllowCustomerToSelectTheme ? new List<StoreThemeModel>() : _themeRegistry.Value.GetThemeManifests()
                 .Where(x => !x.MobileTheme)
@@ -614,13 +615,32 @@ namespace SmartStore.Web.Controllers
             var model = new FooterModel
             {
 				StoreName = store.Name,
-				LegalInfo = T("Tax.LegalInfoFooter", taxInfo, shippingInfoLink),
                 ShowLegalInfo = _taxSettings.ShowLegalHintsInFooter,
                 ShowThemeSelector = availableStoreThemes.Count > 1,          
                 BlogEnabled = _blogSettings.Enabled,                          
                 ForumEnabled = _forumSettings.ForumsEnabled,
                 HideNewsletterBlock = _customerSettings.HideNewsletterBlock,
             };
+
+			model.TopicPageUrls = allTopics
+				.Where(x => !x.RenderAsWidget)
+				.GroupBy(x => x.SystemName)
+				.ToDictionary(x => x.Key.EmptyNull().ToLower(), x =>
+				{
+					if (x.Key.IsCaseInsensitiveEqual("contactus"))
+						return Url.RouteUrl("ContactUs");
+
+					return Url.RouteUrl("Topic", new { SystemName = x.Key });
+				});
+
+			if (model.TopicPageUrls.ContainsKey("shippinginfo"))
+			{
+				model.LegalInfo = T("Tax.LegalInfoFooter", taxInfo, model.TopicPageUrls["shippinginfo"]);
+			}
+			else
+			{
+				model.LegalInfo = T("Tax.LegalInfoFooter2", taxInfo);
+			}
 
 			var hint = _services.Settings.GetSettingByKey<string>("Rnd_SmCopyrightHint", string.Empty, store.Id);
 			if (hint.IsEmpty())
@@ -629,30 +649,15 @@ namespace SmartStore.Web.Controllers
 				_services.Settings.SetSetting<string>("Rnd_SmCopyrightHint", hint, store.Id);
 			}
 
-            var topics = new string[] { "paymentinfo", "imprint", "disclaimer" };
-            foreach (var t in topics)
-            {
-				//load by store
-				var topic = _topicService.GetTopicBySystemName(t, store.Id);
-				if (topic == null)
-					//not found. let's find topic assigned to all stores
-					topic = _topicService.GetTopicBySystemName(t, 0);
+            model.ShowSocialLinks = _socialSettings.Value.ShowSocialLinksInFooter;
+            model.FacebookLink = _socialSettings.Value.FacebookLink;
+            model.GooglePlusLink = _socialSettings.Value.GooglePlusLink;
+            model.TwitterLink = _socialSettings.Value.TwitterLink;
+            model.PinterestLink = _socialSettings.Value.PinterestLink;
+            model.YoutubeLink = _socialSettings.Value.YoutubeLink;
 
-                if (topic != null)
-                {
-                    model.Topics.Add(t, topic.Title);
-                }
-            }
-
-            var socialSettings = EngineContext.Current.Resolve<SocialSettings>();
-
-            model.ShowSocialLinks = socialSettings.ShowSocialLinksInFooter;
-            model.FacebookLink = socialSettings.FacebookLink;
-            model.GooglePlusLink = socialSettings.GooglePlusLink;
-            model.TwitterLink = socialSettings.TwitterLink;
-            model.PinterestLink = socialSettings.PinterestLink;
-            model.YoutubeLink = socialSettings.YoutubeLink;
-			model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}".FormatCurrent(hint, DateTime.Now.Year);
+			model.SmartStoreHint = "<a href='http://www.smartstore.com/net' class='sm-hint' target='_blank'><strong>{0}</strong></a> by SmartStore AG &copy; {1}"
+				.FormatCurrent(hint, DateTime.Now.Year);
 
             return PartialView(model);
         }
@@ -660,6 +665,7 @@ namespace SmartStore.Web.Controllers
         [ChildActionOnly]
         public ActionResult Menu()
         {
+			var store = _services.StoreContext.CurrentStore;
 			var customer = _services.WorkContext.CurrentCustomer;
 
             var model = new MenuModel
@@ -674,7 +680,8 @@ namespace SmartStore.Web.Controllers
 				IsCustomerImpersonated = _services.WorkContext.OriginalCustomerIfImpersonated != null,
                 IsAuthenticated = customer.IsRegistered(),
 				DisplayAdminLink = _services.Permissions.Authorize(StandardPermissionProvider.AccessAdminPanel),
-            };
+				HasContactUsPage = (_topicService.GetTopicBySystemName("ContactUs", store.Id) != null)
+			};
 
             return PartialView(model);
         }

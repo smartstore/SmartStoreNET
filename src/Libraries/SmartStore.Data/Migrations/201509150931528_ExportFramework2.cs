@@ -253,6 +253,11 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Configuration.Themes.NoConfigurationRequired",
 				"Theme requires no configuration",
 				"Theme benötigt keine Konfiguration");
+
+
+			builder.AddOrUpdate("Tax.LegalInfoFooter2",
+				"* All prices {0}, plus shipping",
+				"* Alle Preise {0}, zzgl. Versandkosten");
 		}
     }
 }

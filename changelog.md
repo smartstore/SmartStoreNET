@@ -74,6 +74,7 @@
 * #755 Some methods still loading all products in one go
 * #796 Selected specification in product filter mask is displayed with default language (not localized)
 * #805 Product filter is reset if 'product sorting' or 'view mode' or 'amount of displayed products per page' is changed
+* Hide link to a topic page if it is limited to stores
 
 
 ## SmartStore.NET 2.2.2

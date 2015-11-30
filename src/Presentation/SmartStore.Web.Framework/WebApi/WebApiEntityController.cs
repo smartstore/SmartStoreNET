@@ -165,6 +165,11 @@ namespace SmartStore.Web.Framework.WebApi
 			set;
 		}
 
+		public virtual ICountryService CountryService { get; set; }
+		public virtual IStateProvinceService StateProvinceService { get; set; }
+		public virtual ILanguageService LanguageService { get; set; }
+		public virtual ICurrencyService CurrencyService { get; set; }
+
 		public override IQueryable<TEntity> Get()
 		{
 			if (!ModelState.IsValid)
@@ -430,19 +435,19 @@ namespace SmartStore.Web.Framework.WebApi
 		{
 			if (propertyName.IsCaseInsensitiveEqual("Country"))
 			{
-				return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
+				return CountryService.GetCountryByTwoOrThreeLetterIsoCode(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
 			{
-				return EngineContext.Current.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
+				return StateProvinceService.GetStateProvinceByAbbreviation(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Language"))
 			{
-				return EngineContext.Current.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
+				return LanguageService.GetLanguageByCulture(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Currency"))
 			{
-				return EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
+				return CurrencyService.GetCurrencyByCode(queryValue);
 			}
 			return null;
 		}
@@ -466,7 +471,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 					if (propertyName.HasValue() && queryValue.HasValue())
 					{
-						var prop = FastProperty.GetProperty(entity.GetType(), propertyName);
+						var prop = FastProperty.GetProperty(entity.GetType(), propertyName, PropertyCachingStrategy.EagerCached);
 						if (prop != null)
 						{
 							var propertyValue = prop.GetValue(entity);

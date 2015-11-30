@@ -657,7 +657,13 @@ namespace SmartStore.Web.Framework
 			var repoProperty = FindRepositoryProperty(type, implementingType.GetGenericArguments()[0]);
 			var serviceProperty = FindServiceProperty(type, implementingType.GetGenericArguments()[1]);
 
-			if (repoProperty != null || serviceProperty != null)
+			var countryServiceProperty = type.GetProperty("CountryService", typeof(ICountryService));
+			var stateProvinceServiceProperty = type.GetProperty("StateProvinceService", typeof(IStateProvinceService));
+			var languageServiceProperty = type.GetProperty("LanguageService", typeof(ILanguageService));
+			var currencyServiceProperty = type.GetProperty("CurrencyService", typeof(ICurrencyService));
+
+			if (repoProperty != null || serviceProperty != null ||
+				countryServiceProperty != null || stateProvinceServiceProperty != null || languageServiceProperty != null || currencyServiceProperty != null)
 			{
 				registration.Activated += (sender, e) =>
 				{
@@ -671,6 +677,30 @@ namespace SmartStore.Web.Framework
 					{
 						var service = e.Context.Resolve(serviceProperty.PropertyType);
 						serviceProperty.SetValue(e.Instance, service, null);
+					}
+
+					if (countryServiceProperty != null)
+					{
+						var service = e.Context.Resolve(typeof(ICountryService));
+						countryServiceProperty.SetValue(e.Instance, service, null);
+					}
+
+					if (stateProvinceServiceProperty != null)
+					{
+						var service = e.Context.Resolve(typeof(IStateProvinceService));
+						stateProvinceServiceProperty.SetValue(e.Instance, service, null);
+					}
+
+					if (languageServiceProperty != null)
+					{
+						var service = e.Context.Resolve(typeof(ILanguageService));
+						languageServiceProperty.SetValue(e.Instance, service, null);
+					}
+
+					if (currencyServiceProperty != null)
+					{
+						var service = e.Context.Resolve(typeof(ICurrencyService));
+						currencyServiceProperty.SetValue(e.Instance, service, null);
 					}
 				};
 			}

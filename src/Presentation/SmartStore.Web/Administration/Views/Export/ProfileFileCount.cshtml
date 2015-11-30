@@ -3,11 +3,4 @@
 @{
 	Layout = null;
 }
-@if (Model.ExportFileCount == 0)
-{
-	<span class="muted">0</span>
-}
-else
-{
-	<a href="javascript:void(0)" class="export-file-count">@Model.ExportFileCount</a>
-}
+<a href="javascript:void(0)" class="export-file-count">@Model.ExportFileCount</a>

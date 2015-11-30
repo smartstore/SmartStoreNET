@@ -1135,7 +1135,7 @@ namespace SmartStore.Services.DataExchange.Export
 				}
 				catch (Exception exception)
 				{
-					logger.Error(exception);
+					logger.ErrorsAll(exception);
 					ctx.Result.LastError = exception.ToString();
 				}
 				finally
@@ -1149,7 +1149,10 @@ namespace SmartStore.Services.DataExchange.Export
 							_exportProfileService.Value.UpdateExportProfile(ctx.Request.Profile);
 						}
 					}
-					catch { }
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
 
 					try
 					{
@@ -1158,7 +1161,10 @@ namespace SmartStore.Services.DataExchange.Export
 							FileSystemHelper.ClearDirectory(ctx.FolderContent, false);
 						}
 					}
-					catch { }
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
 
 					DetachAllEntitiesAndClear(ctx);
 
@@ -1180,7 +1186,10 @@ namespace SmartStore.Services.DataExchange.Export
 						ctx.ExecuteContext.Log = null;
 						ctx.Log = null;
 					}
-					catch { }
+					catch (Exception exception)
+					{
+						logger.ErrorsAll(exception);
+					}
 				}
 			}
 
@@ -1215,10 +1224,10 @@ namespace SmartStore.Services.DataExchange.Export
 
 						logger.Information("Updated order status for {0} order(s).".FormatInvariant(ctx.EntityIdsLoaded.Count()));
 					}
-					catch (Exception exc)
+					catch (Exception exception)
 					{
-						logger.Error(exc);
-						ctx.Result.LastError = exc.ToString();
+						logger.ErrorsAll(exception);
+						ctx.Result.LastError = exception.ToString();
 					}
 				}
 			}

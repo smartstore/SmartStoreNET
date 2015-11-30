@@ -29,7 +29,7 @@ namespace SmartStore.Services.DataExchange.Export
 		/// <summary>
 		/// Files created by last export
 		/// </summary>
-		public IList<ExportFileInfo> Files { get; set; }
+		public List<ExportFileInfo> Files { get; set; }
 
 		/// <summary>
 		/// The path of the folder with the export files

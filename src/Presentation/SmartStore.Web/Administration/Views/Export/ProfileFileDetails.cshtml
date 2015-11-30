@@ -11,13 +11,35 @@
 		<a href="@Url.Action("DownloadExportFile", new { id = Model.Id, name = fileName })" download>@fileName</a>
 	</div>
 }
-@if (Model.ZipPath.HasValue())
+@if (Model.ExportFiles.Count == 0)
 {
-	<p>
-		@FileDownloadLink(Model.ZipPath, Path.GetFileName(Model.ZipPath))
-	</p>
+	<div class="alert alert-info">@T("Admin.Common.NoTempFilesFound")</div>
 }
-@foreach (var path in Model.ExportFiles)
+else
 {
-	@FileDownloadLink(path, Path.GetFileName(path))
+	<h4>@T("Admin.Common.TemporaryFiles")</h4>
+	if (Model.ZipPath.HasValue())
+	{
+		<div style="margin-bottom: 4px;">@FileDownloadLink(Model.ZipPath, Path.GetFileName(Model.ZipPath))</div>
+	}
+
+	foreach (var path in Model.ExportFiles)
+	{
+		@FileDownloadLink(path, Path.GetFileName(path))
+	}
+}
+@if (Model.PublicFiles.Count > 0)
+{
+	<p>&nbsp;</p>
+	<h4>@T("Admin.Common.PublicFiles")</h4>
+
+	foreach (var grp in Model.PublicFiles.OrderBy(x => x.StoreId).GroupBy(x => x.StoreId))
+	{
+		<p></p>
+		<div>@(grp.First().StoreName):</div>
+		foreach (var file in grp)
+		{
+			<div><a href="@file.FileUrl" download>@file.FileUrl</a></div>
+		}
+	}
 }

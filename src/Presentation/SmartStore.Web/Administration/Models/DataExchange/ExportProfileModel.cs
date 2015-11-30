@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
 using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Tasks;
@@ -82,7 +81,6 @@ namespace SmartStore.Admin.Models.DataExchange
 
 		[SmartResourceDisplayName("Admin.DataExchange.Export.CloneProfile")]
 		public int? CloneProfileId { get; set; }
-		//public List<SelectListItem> AvailableProfiles { get; set; }
 		public List<ProviderSelectItem> AvailableProfiles { get; set; }
 
 		public ProviderModel Provider { get; set; }
@@ -170,6 +168,16 @@ namespace SmartStore.Admin.Models.DataExchange
 			{
 				return (ExportFiles.Count + (ZipPath.HasValue() ? 1 : 0));
 			}
+		}
+
+		public List<PublicFile> PublicFiles { get; set;	}
+
+		public class PublicFile
+		{
+			public int StoreId { get; set; }
+			public string StoreName { get; set; }
+			public string FileName { get; set; }
+			public string FileUrl { get; set; }
 		}
 	}
 }

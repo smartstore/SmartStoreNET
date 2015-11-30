@@ -59,6 +59,12 @@ namespace SmartStore.Data.Migrations
 		public void MigrateLocaleResources(LocaleResourcesBuilder builder)
 		{
 			builder.AddOrUpdate("Admin.Common.Export.PDF", "PDF Export", "PDF Export");
+			builder.AddOrUpdate("Admin.Common.TemporaryFiles", "Temporary files", "Temporäre Dateien");
+			builder.AddOrUpdate("Admin.Common.PublicFiles", "Public files", "Öffentliche Dateien");
+
+			builder.AddOrUpdate("Admin.Common.NoTempFilesFound",
+				"No temporary files were found.",
+				"Es wurden keine temporären Dateien gefunden.");
 
 			builder.AddOrUpdate("Enums.SmartStore.Core.Domain.DataExchange.ExportEntityType.NewsLetterSubscription",
 				"Newsletter Subscribers",

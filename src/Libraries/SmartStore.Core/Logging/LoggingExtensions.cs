@@ -37,7 +37,17 @@ namespace SmartStore.Core.Logging
 			FilteredLog(logger, LogLevel.Error, exception.ToAllMessages(), exception, customer);
 		}
 
-        private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
+		public static void ErrorsAll(this ILogger logger, Exception exception, Customer customer = null)
+		{
+			while (exception != null)
+			{
+				FilteredLog(logger, LogLevel.Error, exception.Message, exception, customer);
+
+				exception = exception.InnerException;
+			}
+		}
+
+		private static void FilteredLog(ILogger logger, LogLevel level, string message, Exception exception = null, Customer customer = null)
         {
             // don't log thread abort exception
             if ((exception != null) && (exception is System.Threading.ThreadAbortException))

@@ -106,21 +106,56 @@ namespace SmartStore.Admin.Controllers
 			return url;
 		}
 
-		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile)
+		private ExportProfileDetailsModel PrepareProfileDetailsModel(ExportProfile profile, bool forEdit)
 		{
-			var zipPath = profile.GetExportZipPath();
-
 			var model = new ExportProfileDetailsModel
 			{
 				Id = profile.Id,
-				ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null),
-                ExportFiles = profile.GetExportFiles()
+				PublicFiles = new List<ExportProfileDetailsModel.PublicFile>()
 			};
+
+			try
+			{
+				var zipPath = profile.GetExportZipPath();
+
+				model.ZipPath = (System.IO.File.Exists(zipPath) ? zipPath : null);
+				model.ExportFiles = profile.GetExportFiles();
+
+				if (forEdit && profile.Deployments.Any(x => x.IsPublic && x.DeploymentType == ExportDeploymentType.FileSystem))
+				{
+					var allStores = _services.StoreService.GetAllStores();
+					var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
+					var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
+
+					if (resultInfo != null && resultInfo.Files != null)
+					{
+						foreach (var fileInfo in resultInfo.Files)
+						{
+							if (System.IO.File.Exists(Path.Combine(publicFolder, fileInfo.FileName)) && !model.PublicFiles.Any(x => x.FileName == fileInfo.FileName))
+							{
+								var store = allStores.FirstOrDefault(y => y.Id == fileInfo.StoreId) ?? _services.StoreContext.CurrentStore;
+
+								model.PublicFiles.Add(new ExportProfileDetailsModel.PublicFile
+								{
+									StoreId = store.Id,
+									StoreName = store.Name,
+									FileName = fileInfo.FileName,
+									FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), DataExporter.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
+								});
+							}
+						}
+					}
+				}
+			}
+			catch (Exception exception)
+			{
+				NotifyError(exception);
+			}
 
 			return model;
         }
 
-		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider)
+		private void PrepareProfileModel(ExportProfileModel model, ExportProfile profile, Provider<IExportProvider> provider, bool forEdit)
 		{
 			model.Id = profile.Id;
 			model.Name = profile.Name;
@@ -141,7 +176,7 @@ namespace SmartStore.Admin.Controllers
 			model.Provider = new ExportProfileModel.ProviderModel();
 			model.Provider.ThumbnailUrl = GetThumbnailUrl(provider);
 
-			model.Details = PrepareProfileDetailsModel(profile);
+			model.Details = PrepareProfileDetailsModel(profile, forEdit);
 
 			if (provider != null)
 			{
@@ -266,37 +301,7 @@ namespace SmartStore.Admin.Controllers
 				{
 					var deploymentModel = PrepareDeploymentModel(x, null, false);
 
-					if (x.IsPublic)
-					{
-						try
-						{
-							var publicFolder = Path.Combine(HttpRuntime.AppDomainAppPath, DataExporter.PublicFolder);
-							var resultInfo = XmlHelper.Deserialize<DataExportResult>(profile.ResultInfo);
-
-							if (resultInfo != null && resultInfo.Files != null)
-							{
-								foreach (var fileInfo in resultInfo.Files)
-								{
-									if (System.IO.File.Exists(Path.Combine(publicFolder, fileInfo.FileName)) && !deploymentModel.PublicFiles.Any(y => y.FileName == fileInfo.FileName))
-									{
-										var store = allStores.FirstOrDefault(y => y.Id == fileInfo.StoreId) ?? _services.StoreContext.CurrentStore;
-
-										deploymentModel.PublicFiles.Add(new ExportDeploymentModel.PublicFile
-										{
-											StoreId = store.Id,
-											StoreName = store.Name,
-											FileName = fileInfo.FileName,
-											FileUrl = string.Concat(store.Url.EnsureEndsWith("/"), DataExporter.PublicFolder.EnsureEndsWith("/"), fileInfo.FileName)
-										});
-									}
-								}
-							}
-						}
-						catch (Exception exc)
-						{
-							exc.Dump();
-						}
-					}
+					deploymentModel.ProfileDetails = PrepareProfileDetailsModel(profile, true);
 
 					return deploymentModel;
 				})
@@ -402,8 +407,7 @@ namespace SmartStore.Admin.Controllers
 				EmailSubject = deployment.EmailSubject,
 				EmailAccountId = deployment.EmailAccountId,
 				PassiveMode = deployment.PassiveMode,
-				UseSsl = deployment.UseSsl,
-				PublicFiles = new List<ExportDeploymentModel.PublicFile>()
+				UseSsl = deployment.UseSsl
 			};
 
 			if (forEdit)
@@ -484,7 +488,7 @@ namespace SmartStore.Admin.Controllers
 			{
 				var profileModel = new ExportProfileModel();
 
-				PrepareProfileModel(profileModel, profile, providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName));
+				PrepareProfileModel(profileModel, profile, providers.FirstOrDefault(x => x.Metadata.SystemName == profile.ProviderSystemName), false);
 
 				profileModel.TaskModel = profile.ScheduleTask.ToScheduleTaskModel(_services.Localization, _dateTimeHelper, Url);
 
@@ -501,7 +505,7 @@ namespace SmartStore.Admin.Controllers
 				var profile = _exportService.GetExportProfileById(profileId);
 				if (profile != null)
 				{
-					var model = PrepareProfileDetailsModel(profile);
+					var model = PrepareProfileDetailsModel(profile, false);
 
 					return Json(new
 					{
@@ -520,7 +524,7 @@ namespace SmartStore.Admin.Controllers
 				var profile = _exportService.GetExportProfileById(profileId);
 				if (profile != null)
 				{
-					var model = PrepareProfileDetailsModel(profile);
+					var model = PrepareProfileDetailsModel(profile, true);
 
 					return PartialView(model);
 				}
@@ -610,7 +614,7 @@ namespace SmartStore.Admin.Controllers
 
 			var model = new ExportProfileModel();
 
-			PrepareProfileModel(model, profile, provider);
+			PrepareProfileModel(model, profile, provider, true);
 			PrepareProfileModelForEdit(model, profile, provider);
 
 			return View(model);
@@ -631,7 +635,7 @@ namespace SmartStore.Admin.Controllers
 
 			if (!ModelState.IsValid)
 			{
-				PrepareProfileModel(model, profile, provider);
+				PrepareProfileModel(model, profile, provider, true);
 				PrepareProfileModelForEdit(model, profile, provider);
 				return View(model);
 			}

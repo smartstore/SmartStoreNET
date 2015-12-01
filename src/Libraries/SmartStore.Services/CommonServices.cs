@@ -10,11 +10,13 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
 
 namespace SmartStore.Services
 {
 	public class CommonServices : ICommonServices
 	{
+		private readonly IComponentContext _container;
 		private readonly Lazy<ICacheManager> _cache;
 		private readonly Lazy<IDbContext> _dbContext;
 		private readonly Lazy<IStoreContext> _storeContext;
@@ -29,7 +31,8 @@ namespace SmartStore.Services
 		private readonly Lazy<IStoreService> _storeService;
 		
 		public CommonServices(
-			Func<string, Lazy<ICacheManager>> cache,
+			IComponentContext container,
+            Func<string, Lazy<ICacheManager>> cache,
 			Lazy<IDbContext> dbContext,
 			Lazy<IStoreContext> storeContext,
 			Lazy<IWebHelper> webHelper,
@@ -42,6 +45,7 @@ namespace SmartStore.Services
 			Lazy<ISettingService> settings,
 			Lazy<IStoreService> storeService)
 		{
+			this._container = container;
 			this._cache = cache("static");
 			this._dbContext = dbContext;
 			this._storeContext = storeContext;
@@ -55,7 +59,15 @@ namespace SmartStore.Services
 			this._settings = settings;
 			this._storeService = storeService;
 		}
-		
+
+		public IComponentContext Container
+		{
+			get
+			{
+				return _container;
+			}
+		}
+
 		public ICacheManager Cache
 		{
 			get

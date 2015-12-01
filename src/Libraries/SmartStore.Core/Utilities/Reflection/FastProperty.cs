@@ -16,15 +16,15 @@ namespace SmartStore.Utilities.Reflection
 		/// <summary>
 		/// Don't cache FastProperty instances
 		/// </summary>
-		Uncached,
+		Uncached = 0,
 		/// <summary>
 		/// Always cache FastProperty instances
 		/// </summary>
-		Cached,
+		Cached = 1,
 		/// <summary>
 		/// Always cache FastProperty instances. PLUS cache all other properties of the declaring type.
 		/// </summary>
-		EagerCached
+		EagerCached = 2
 	}
 
 	public class FastProperty
@@ -85,7 +85,7 @@ namespace SmartStore.Utilities.Reflection
 					_isPublicSettable = Property.CanWrite && Property.GetSetMethod(false) != null;
 				}
 				return _isPublicSettable.Value;
-            }
+			}
 		}
 
 		public bool IsSequenceType
@@ -125,7 +125,7 @@ namespace SmartStore.Utilities.Reflection
 		public object GetValue(object instance)
 		{
 			return ValueGetter(instance);
-        }
+		}
 
 		/// <summary>
 		/// Sets the property value for the specified <paramref name="instance" />.
@@ -208,16 +208,15 @@ namespace SmartStore.Utilities.Reflection
 		}
 
 		public static FastProperty GetProperty<T>(
-			T type, 
-			Expression<Func<T, object>> property, 
+			Expression<Func<T, object>> property,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			return GetProperty(typeof(T), property.ExtractPropertyInfo(), cachingStrategy);
+			return GetProperty(property.ExtractPropertyInfo(), cachingStrategy);
 		}
 
 		public static FastProperty GetProperty(
-			Type type, 
-			string propertyName, 
+			Type type,
+			string propertyName,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
 			Guard.ArgumentNotNull(() => type);
@@ -233,7 +232,7 @@ namespace SmartStore.Utilities.Reflection
 			var key = new PropertyKey(type, propertyName);
 			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
-				var pi = type.GetProperty(propertyName, BindingFlags.GetProperty | BindingFlags.IgnoreCase);
+				var pi = type.GetProperty(propertyName, BindingFlags.Public | BindingFlags.Static | BindingFlags.Instance | BindingFlags.IgnoreCase);
 				if (pi != null)
 				{
 					fastProperty = CreateInstance(pi);
@@ -248,21 +247,19 @@ namespace SmartStore.Utilities.Reflection
 		}
 
 		public static FastProperty GetProperty(
-			Type type,
 			PropertyInfo propertyInfo,
 			PropertyCachingStrategy cachingStrategy = PropertyCachingStrategy.Cached)
 		{
-			Guard.ArgumentNotNull(() => type);
 			Guard.ArgumentNotNull(() => propertyInfo);
 
 			FastProperty fastProperty = null;
 
-			if (TryGetCachedProperty(type, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
+			if (TryGetCachedProperty(propertyInfo.ReflectedType, propertyInfo.Name, cachingStrategy == PropertyCachingStrategy.EagerCached, out fastProperty))
 			{
 				return fastProperty;
 			}
 
-			var key = new PropertyKey(type, propertyInfo.Name);
+			var key = new PropertyKey(propertyInfo.ReflectedType, propertyInfo.Name);
 			if (!_singlePropertiesCache.TryGetValue(key, out fastProperty))
 			{
 				fastProperty = CreateInstance(propertyInfo);
@@ -588,11 +585,11 @@ namespace SmartStore.Utilities.Reflection
 						break;
 					}
 
-					if (currentTypeInfo.BaseType != null) 
+					if (currentTypeInfo.BaseType != null)
 					{
 						currentTypeInfo = currentTypeInfo.BaseType.GetTypeInfo();
 					}
-					
+
 				}
 
 				if (!ignoreProperty)
@@ -619,7 +616,7 @@ namespace SmartStore.Utilities.Reflection
 			if (!cache.TryGetValue(type, out fastProperties))
 			{
 				var candidates = GetCandidateProperties(type);
-                fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
+				fastProperties = candidates.Select(p => createPropertyHelper(p)).ToDictionary(x => x.Name, StringComparer.OrdinalIgnoreCase);
 				cache.TryAdd(type, fastProperties);
 			}
 

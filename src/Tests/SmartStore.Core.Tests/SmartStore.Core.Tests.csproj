@@ -84,6 +84,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="FastPropertyTests.cs" />
     <Compile Include="PerformanceTests.cs" />
     <Compile Include="TopologicSortTests.cs" />
     <Compile Include="WildcardTests.cs" />

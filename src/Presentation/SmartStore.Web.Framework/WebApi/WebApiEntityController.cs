@@ -89,7 +89,7 @@ namespace SmartStore.Web.Framework.WebApi
 				propertyName = propertySegment.PropertyName;
 
 			if (propertyName.HasValue())
-				prop = FastProperty.GetProperty(entity.GetType(), propertyName, PropertyCachingStrategy.EagerCached);
+				prop = FastProperty.GetProperty(entity.GetType(), propertyName);
 
 			if (prop == null)
 				return UnmappedGetProperty(entity, propertyName ?? "");
@@ -471,7 +471,7 @@ namespace SmartStore.Web.Framework.WebApi
 
 					if (propertyName.HasValue() && queryValue.HasValue())
 					{
-						var prop = FastProperty.GetProperty(entity.GetType(), propertyName, PropertyCachingStrategy.EagerCached);
+						var prop = FastProperty.GetProperty(entity.GetType(), propertyName);
 						if (prop != null)
 						{
 							var propertyValue = prop.GetValue(entity);

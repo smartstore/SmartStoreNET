@@ -321,7 +321,7 @@ namespace SmartStore.Services.Localization
 
 			if (String.IsNullOrEmpty(result) && returnDefaultValue)
 			{
-				var fastProp = FastProperty.GetProperty(descriptor.GetType(), propertyName, PropertyCachingStrategy.EagerCached);
+				var fastProp = FastProperty.GetProperty(descriptor.GetType(), propertyName);
 				if (fastProp != null)
 				{
 					result = fastProp.GetValue(descriptor) as string;

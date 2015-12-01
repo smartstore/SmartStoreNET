@@ -466,7 +466,7 @@ namespace SmartStore.Services.Configuration
 
 			string key = typeof(T).Name + "." + propInfo.Name;
 			// Duck typing is not supported in C#. That's why we're using dynamic type
-			var fastProp = FastProperty.GetProperty(settings.GetType(), propInfo, PropertyCachingStrategy.EagerCached);
+			var fastProp = FastProperty.GetProperty(propInfo, PropertyCachingStrategy.EagerCached);
 			dynamic value = fastProp.GetValue(settings);
 
 			SetSetting(key, value ?? "", storeId, false);

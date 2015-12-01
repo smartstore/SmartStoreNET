@@ -570,11 +570,11 @@
     <Compile Include="Utilities\ObjectDumper.cs" />
     <Compile Include="Utilities\Prettifier.cs" />
     <Compile Include="Utilities\Range.cs" />
-    <Compile Include="Utilities\Reflection\FastActivator.cs" />
+    <Compile Include="ComponentModel\FastActivator.cs" />
     <Compile Include="Utilities\SeoHelper.cs" />
     <Compile Include="Utilities\SmartSyndicationFeed.cs" />
     <Compile Include="Utilities\StringTokenizer.cs" />
-    <Compile Include="Utilities\Reflection\FastProperty.cs" />
+    <Compile Include="ComponentModel\FastProperty.cs" />
     <Compile Include="Utilities\Threading\LockExtensions.cs" />
     <Compile Include="Utilities\Threading\ReadLockDisposable.cs" />
     <Compile Include="Utilities\Threading\UpgradeableReadLockDisposable.cs" />

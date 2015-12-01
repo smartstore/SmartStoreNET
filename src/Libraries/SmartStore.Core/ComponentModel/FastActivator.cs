@@ -1,13 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Reflection;
-using System.Threading.Tasks;
 using System.Linq.Expressions;
 using System.Collections.Concurrent;
 
-namespace SmartStore.Utilities.Reflection
+namespace SmartStore.ComponentModel
 {
 	public class FastActivator
 	{

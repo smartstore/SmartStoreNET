@@ -9,7 +9,7 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
 
-namespace SmartStore.Utilities.Reflection
+namespace SmartStore.ComponentModel
 {
 	public enum PropertyCachingStrategy
 	{

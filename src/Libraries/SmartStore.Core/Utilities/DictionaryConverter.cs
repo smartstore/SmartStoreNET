@@ -5,7 +5,7 @@ using System.Text;
 using System.Collections;
 using System.Reflection;
 using System.Runtime.Serialization;
-using SmartStore.Utilities.Reflection;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Utilities
 {

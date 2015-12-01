@@ -2,11 +2,11 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Web.Mvc;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Web.Framework.Settings
 {

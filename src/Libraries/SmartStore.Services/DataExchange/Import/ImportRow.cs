@@ -4,8 +4,8 @@ using System.Globalization;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
+using SmartStore.ComponentModel;
 using SmartStore.Core;
-using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Services.DataExchange.Import
 {

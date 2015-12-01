@@ -1,9 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
 using NUnit.Framework;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Domain.Catalog;
 using SmartStore.Tests;
-using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Core.Tests
 {

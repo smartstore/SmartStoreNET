@@ -14,9 +14,9 @@ using SmartStore.Core.Data;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using System.Collections.Generic;
-using SmartStore.Utilities.Reflection;
 using SmartStore.Services;
 using Autofac;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework.WebApi
 {

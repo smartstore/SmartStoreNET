@@ -74,8 +74,8 @@ using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;
 using Module = Autofac.Module;
 using SmartStore.Core.Domain.DataExchange;
-using SmartStore.Utilities.Reflection;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework
 {

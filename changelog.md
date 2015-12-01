@@ -51,6 +51,7 @@
 * #62 free shipping info on product detail page
 * Display base price in CompactProductBox
 * Automatically redirect to referrer after login
+* #826 Image gallery: the viewport height was fixed to 300 px, but now respects MediaSettings > ImageSize.
 * #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
 * Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
 * #778 Web-API: Increase MaxExpansionDepth for using expand pathes

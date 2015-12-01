@@ -1,21 +1,20 @@
-set MSBuildPath=%windir%\Microsoft.NET\Framework\v4.0.30319\MSBuild.exe
+FOR %%b in (
+       "%VS140COMNTOOLS%..\..\VC\vcvarsall.bat"
+       "%ProgramFiles(x86)%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat"
+       "%ProgramFiles%\Microsoft Visual Studio 14.0\VC\vcvarsall.bat" 
 
-@IF NOT EXIST %MSBuildPath% @ECHO COULDN'T FIND MSBUILD: %MSBuildPath% (Is .NET 4 installed?) 
-ELSE GOTO END
+       "%VS120COMNTOOLS%..\..\VC\vcvarsall.bat"
+       "%ProgramFiles(x86)%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat"
+       "%ProgramFiles%\Microsoft Visual Studio 12.0\VC\vcvarsall.bat" 
+    ) do (
+    if exist %%b ( 
+       call %%b x86
+       goto build
+    )
+)
+  
+echo "Unable to detect suitable environment. Build may not succeed."
 
-:CheckOS
-IF EXIST "%PROGRAMFILES(X86)%" (GOTO 64BIT) ELSE (GOTO 32BIT)
+:build
 
-:64BIT
-echo 64-bit...
-set MSBuildPath="%ProgramFiles(x86)%\MSBuild\12.0\Bin\MSBuild.exe"
-GOTO END
-
-:32BIT
-echo 32-bit...
-set MSBuildPath="%ProgramFiles%\MSBuild\12.0\Bin\MSBuild.exe"
-GOTO END
-
-:END
-
-%MSBuildPath% SmartStoreNET.proj /p:DebugSymbols=false /p:DebugType=None /P:SlnName=SmartStoreNET /maxcpucount %*
+msbuild SmartStoreNET.proj /p:DebugSymbols=false /p:DebugType=None /P:SlnName=SmartStoreNET /maxcpucount %*

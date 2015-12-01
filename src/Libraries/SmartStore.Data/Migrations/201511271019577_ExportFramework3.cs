@@ -94,14 +94,6 @@ namespace SmartStore.Data.Migrations
 				"Export files",
 				"Exportdateien");
 
-			builder.AddOrUpdate("Admin.Common.ExportToCsv.All",
-				"Export to CSV (all)",
-				"Alles als CSV exportieren");
-
-			builder.AddOrUpdate("Admin.Common.ExportToCsv.Selected",
-				"Export to CSV (selected)",
-				"Nur Ausgewählte nach CSV exportieren");
-
 
 			builder.AddOrUpdate("Admin.Configuration.Payment.Methods.RestrictionNote",
 				"There were no possibilities found to restrict payment methods.",
@@ -126,7 +118,12 @@ namespace SmartStore.Data.Migrations
 				"Enums.SmartStore.Core.Domain.Common.CountryRestrictionContextType.ShippingAddress",
 				"Admin.Configuration.Shipping.Methods.ExcludedCustomerRole",
 				"Admin.Configuration.Shipping.Methods.ExcludedCountry",
-				"Admin.Configuration.Restrictions.CountryExclusionContext"
+				"Admin.Configuration.Restrictions.CountryExclusionContext",
+				"Admin.Common.ExportToXml.All",
+				"Admin.Common.ExportToXml.Selected",
+				"Admin.Common.ExportToCsv.All",
+				"Admin.Common.ExportToCsv.Selected",
+				"Admin.Common.ExportToCsv"
 			);
 		}
 	}

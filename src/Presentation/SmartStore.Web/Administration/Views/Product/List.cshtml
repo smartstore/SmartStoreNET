@@ -197,60 +197,66 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<ProductModel>()
-                    .Name("products-grid")
-                    .Columns(columns =>
-                    {
-                        columns.Bound(x => x.Id)
-                            .Filterable(false)
-                            .Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
-                            .ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
-                            .Title("<input id='mastercheckbox' type='checkbox'/>")
-                            .Width(50)
-                            .HtmlAttributes(new { style = "text-align:center" })
-                            .HeaderHtmlAttributes(new { style = "text-align:center" });
+					.Name("products-grid")
+					.Columns(columns =>
+					{
+						columns.Bound(x => x.Id)
+							.Filterable(false)
+							.Sortable(false)
+							.Template(x => string.Format("<input type='checkbox' name='checkedRecords' value='{0}' class='checkboxGroups'/>", x.Id))
+							.ClientTemplate("<input type='checkbox' name='checkedRecords' value='<#= Id #>' class='checkboxGroups'/>")
+							.Title("<input id='mastercheckbox' type='checkbox'/>")
+							.Width(50)
+							.HtmlAttributes(new { style = "text-align:center" })
+							.HeaderHtmlAttributes(new { style = "text-align:center" });
 
-                        if (Model.DisplayProductPictures)
-                        {
-                            columns.Bound(x => x.PictureThumbnailUrl)
-                                .Width(50)
-                                .Template(
+						if (Model.DisplayProductPictures)
+						{
+							columns.Bound(x => x.PictureThumbnailUrl)
+								.Sortable(false)
+								.Width(50)
+								.Template(
                                     @<text>
                                         <img alt="@item.Id" src="@item.PictureThumbnailUrl" @Html.Attr("class", "zoomable-thumb", !item.NoThumb) />
                                     </text>
-                                )
-                                .ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
-                        }
-                        columns.Bound(x => x.Name)
+								)
+								.ClientTemplate("<img alt='<#= Id #>' src='<#= PictureThumbnailUrl #>' <# if (!NoThumb) {#> class='zoomable-thumb' <# } #> />");
+						}
+						columns.Bound(x => x.Name)
 							.Template(x => @Html.LabeledProductName(x.Id, x.Name, x.ProductTypeName, x.ProductTypeLabelHint))
 							.ClientTemplate(@Html.LabeledProductName("Id", "Name"));
-                        columns.Bound(x => x.Sku);
-                        columns.Bound(x => x.Price)
+						columns.Bound(x => x.Sku)
+							.Sortable(false);
+						columns.Bound(x => x.Price)
 							.Format("{0:0.00}")
 							.RightAlign();
-                        columns.Bound(x => x.StockQuantity)
+						columns.Bound(x => x.StockQuantity)
+							.Sortable(false)
 							.Centered();
 						columns.Bound(x => x.LimitedToStores)
+							.Sortable(false)
 							.Template(item => @Html.SymbolForBool(item.LimitedToStores))
 							.ClientTemplate(@Html.SymbolForBool("LimitedToStores"))
 							.Hidden(Model.StoreCount <= 1)
 							.Centered();
-						columns.Bound(x => x.UpdatedOn);
-                        columns.Bound(x => x.Published)
-                            .Width(100)
-                            .Template(item => @Html.SymbolForBool(item.Published))
-                            .ClientTemplate(@Html.SymbolForBool("Published"))
-                            .Centered();
-                        columns.Bound(x => x.Id)
-                            .Width(50)
-                            .Centered()
-                            .Template(x => Html.ActionLink(T("Admin.Common.Edit").Text, "Edit", new { id = x.Id }))
-                            .ClientTemplate("<a href=\"Edit/<#= Id #>\">" + T("Admin.Common.Edit").Text + "</a>")
-                            .Title(T("Admin.Common.Edit").Text);
-                    })
-                    .Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
-                    .DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
-                    .ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
-                    .EnableCustomBinding(true)
+						columns.Bound(x => x.CreatedOn);
+						columns.Bound(x => x.UpdatedOn)
+							.Sortable(false);
+						columns.Bound(x => x.Published)
+							.Sortable(false)
+							.Template(item => @Html.SymbolForBool(item.Published))
+							.ClientTemplate(@Html.SymbolForBool("Published"))
+							.Centered();
+					})
+					.Sortable(x =>
+					{
+						x.AllowUnsort(true);
+						x.SortMode(GridSortMode.SingleColumn);
+					})
+					.Pageable(settings => settings.PageSize(Model.GridPageSize).Position(GridPagerPosition.Both))
+					.DataBinding(dataBinding => dataBinding.Ajax().Select("ProductList", "Product"))
+					.ClientEvents(events => events.OnDataBinding("productsGrid_onDataBinding").OnDataBound("productsGrid_onDataBound"))
+					.EnableCustomBinding(true)
 					.PreserveGridState())
             </td>
         </tr>

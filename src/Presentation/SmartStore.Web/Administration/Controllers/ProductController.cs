@@ -49,6 +49,7 @@ using System.Data;
 using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Excel;
 using SmartStore.Services.DataExchange.Import;
+using System.ComponentModel;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -947,6 +948,23 @@ namespace SmartStore.Admin.Controllers
 			if (model.SearchCategoryId > 0)
 				searchContext.CategoryIds.Add(model.SearchCategoryId);
 
+			if (command.SortDescriptors != null && command.SortDescriptors.Count > 0)
+			{
+				var sort = command.SortDescriptors.First();
+				if (sort.Member == "Name")
+				{
+					searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.NameAsc : ProductSortingEnum.NameDesc);
+				}
+				else if (sort.Member == "Price")
+				{
+					searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.PriceAsc : ProductSortingEnum.PriceDesc);
+				}
+				else if (sort.Member == "CreatedOn")
+				{
+					searchContext.OrderBy = (sort.SortDirection == ListSortDirection.Ascending ? ProductSortingEnum.CreatedOnAsc : ProductSortingEnum.CreatedOn);
+				}
+			}
+
             var products = _productService.SearchProducts(searchContext);
 
             gridModel.Data = products.Select(x =>
@@ -957,8 +975,9 @@ namespace SmartStore.Admin.Controllers
 
 				productModel.ProductTypeName = x.GetProductTypeLabel(_localizationService);
 				productModel.UpdatedOn = _dateTimeHelper.ConvertToUserTime(x.UpdatedOnUtc, DateTimeKind.Utc);
+				productModel.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
 
-                return productModel;
+				return productModel;
             });
 
             gridModel.Total = products.TotalCount;

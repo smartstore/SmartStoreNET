@@ -60,6 +60,7 @@
 * #791 Preselected attributes or attribute combinations should always be appended as querystring to product page links
 * Simplified handling of SEO names
 * URLs are not converted to lower case anymore
+* Product grid sortable by name, price and created on
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin

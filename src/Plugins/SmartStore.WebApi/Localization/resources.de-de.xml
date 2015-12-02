@@ -1,5 +1,5 @@
 ﻿<Language Name="Deutsch" IsDefault="true" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Api.WebApi" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.WebApi" AppendRootKey="false">
     <Value>Web-API</Value>
   </LocaleResource>
 	<LocaleResource Name="AdminInstruction">

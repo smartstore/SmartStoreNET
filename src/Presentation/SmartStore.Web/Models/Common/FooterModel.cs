@@ -5,11 +5,6 @@ namespace SmartStore.Web.Models.Common
 {
     public partial class FooterModel : ModelBase
     {
-        public FooterModel()
-        {
-            Topics = new Dictionary<string, string>();
-        }
-
         public string StoreName { get; set; }
 
         public string LegalInfo { get; set; }
@@ -20,7 +15,6 @@ namespace SmartStore.Web.Models.Common
         public bool HideNewsletterBlock { get; set; }
         public bool BlogEnabled { get; set; }
         public bool ForumEnabled { get; set; }
-        public Dictionary<string, string> Topics { get; set; }
 
         public bool ShowSocialLinks { get; set; }
         public string FacebookLink { get; set; }
@@ -28,5 +22,7 @@ namespace SmartStore.Web.Models.Common
         public string TwitterLink { get; set; }
         public string PinterestLink { get; set; }
         public string YoutubeLink { get; set; }
-    }
+
+		public Dictionary<string, string> TopicPageUrls { get; set; }
+	}
 }

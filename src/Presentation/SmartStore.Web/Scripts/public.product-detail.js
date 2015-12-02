@@ -160,6 +160,8 @@
 			var self  = this;
 			var opts = this.options;
 
+			console.log(opts.galleryHeight);
+
 			gallery = $('#pd-gallery').smartGallery({
 			    height: opts.galleryHeight,
 				enableDescription: opts.showImageDescription,

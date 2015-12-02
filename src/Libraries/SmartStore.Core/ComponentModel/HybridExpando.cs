@@ -37,7 +37,6 @@ using System.Linq;
 using System.Dynamic;
 using System.Reflection;
 using System.Collections;
-using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.ComponentModel
 {

@@ -51,6 +51,7 @@
 * #62 free shipping info on product detail page
 * Display base price in CompactProductBox
 * Automatically redirect to referrer after login
+* #826 Image gallery: the viewport height was fixed to 300 px, but now respects MediaSettings > ImageSize.
 * #249 Make UI editor for 'SeoSettings.ExtraRobotsDisallows'
 * Debitoor: Customer VAT number not transmitted anymore because it appears on the Debitoor invoice.
 * #778 Web-API: Increase MaxExpansionDepth for using expand pathes
@@ -59,6 +60,7 @@
 * #791 Preselected attributes or attribute combinations should always be appended as querystring to product page links
 * Simplified handling of SEO names
 * URLs are not converted to lower case anymore
+* Product grid sortable by name, price and created on
 
 ### Bugfixes
 * #523 Redirecting to payment provider performed by core instead of plugin
@@ -74,6 +76,7 @@
 * #755 Some methods still loading all products in one go
 * #796 Selected specification in product filter mask is displayed with default language (not localized)
 * #805 Product filter is reset if 'product sorting' or 'view mode' or 'amount of displayed products per page' is changed
+* Hide link to a topic page if it is limited to stores
 
 
 ## SmartStore.NET 2.2.2

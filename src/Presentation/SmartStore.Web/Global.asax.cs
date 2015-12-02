@@ -115,7 +115,7 @@ namespace SmartStore.Web
 					HostingEnvironment.RegisterVirtualPathProvider(new PluginDebugViewVirtualPathProvider());
 				}
 
-                // Install filter
+                // "throw-away" filter for task scheduler initialization (the filter removes itself when processed)
                 GlobalFilters.Filters.Add(new InitializeSchedulerFilter());
 			}
 			else

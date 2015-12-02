@@ -16,5 +16,7 @@ namespace SmartStore.Web.Models.Common
         public bool DisplayAdminLink { get; set; }
         public bool IsCustomerImpersonated { get; set; }
         public string CustomerEmailUsername { get; set; }
-    }
+
+		public bool HasContactUsPage { get; set; }
+	}
 }

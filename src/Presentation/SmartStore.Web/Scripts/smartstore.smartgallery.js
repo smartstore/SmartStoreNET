@@ -88,6 +88,10 @@
 			
 			this.imageWrapperWidth = this.imageWrapper.width();
 			this.imageWrapperHeight = opts.height || 300;
+
+			if (this.imageWrapperHeight > 300) {
+				this.imageWrapper.css({ height: this.imageWrapperHeight + 'px' })
+			}
 			
 			this.navDisplayWidth = this.nav.width();
 			this.currentIndex = 0;

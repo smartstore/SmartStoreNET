@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
-using System.ComponentModel;
-using SmartStore.Utilities.Reflection;
 using SmartStore.Utilities;
 using System.Collections.Concurrent;
+using SmartStore.ComponentModel;
 
 namespace SmartStore
 {

@@ -3,7 +3,6 @@
 //using NUnit.Framework;
 //using SmartStore.Core.Domain.Catalog;
 //using SmartStore.Tests;
-//using SmartStore.Utilities.Reflection;
 
 //namespace SmartStore.Core.Tests
 //{

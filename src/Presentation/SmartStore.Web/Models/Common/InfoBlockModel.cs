@@ -1,4 +1,5 @@
-﻿using SmartStore.Web.Framework.Mvc;
+﻿using System.Collections.Generic;
+using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Models.Common
 {
@@ -11,5 +12,7 @@ namespace SmartStore.Web.Models.Common
         public bool SitemapEnabled { get; set; }
         public bool ForumEnabled { get; set; }
         public bool AllowPrivateMessages { get; set; }
-    }
+
+		public Dictionary<string, string> TopicPageUrls { get; set; }
+	}
 }

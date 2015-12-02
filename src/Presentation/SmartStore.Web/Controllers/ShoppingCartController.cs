@@ -32,6 +32,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Shipping;
 using SmartStore.Services.Tax;
+using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -90,12 +91,13 @@ namespace SmartStore.Web.Controllers
         private readonly AddressSettings _addressSettings;
 		private readonly PluginMediator _pluginMediator;
         private readonly IQuantityUnitService _quantityUnitService;
+		private readonly Lazy<ITopicService> _topicService;
 
-        #endregion
+		#endregion
 
-        #region Constructors
+		#region Constructors
 
-        public ShoppingCartController(IProductService productService,
+		public ShoppingCartController(IProductService productService,
 			IWorkContext workContext, IStoreContext storeContext,
             IShoppingCartService shoppingCartService, IPictureService pictureService,
             ILocalizationService localizationService, 
@@ -120,7 +122,8 @@ namespace SmartStore.Web.Controllers
             ShippingSettings shippingSettings, TaxSettings taxSettings,
             CaptchaSettings captchaSettings, AddressSettings addressSettings,
 			HttpContextBase httpContext, PluginMediator pluginMediator,
-            IQuantityUnitService quantityUnitService)
+            IQuantityUnitService quantityUnitService,
+			Lazy<ITopicService> topicService)
         {
             this._productService = productService;
             this._workContext = workContext;
@@ -166,6 +169,7 @@ namespace SmartStore.Web.Controllers
             this._addressSettings = addressSettings;
 			this._pluginMediator = pluginMediator;
             this._quantityUnitService = quantityUnitService;
+			this._topicService = topicService;
         }
 
         #endregion
@@ -1832,7 +1836,8 @@ namespace SmartStore.Web.Controllers
         [FormValueRequired("estimateshipping")]
         public ActionResult GetEstimateShipping(EstimateShippingModel shippingModel, FormCollection form)
         {
-			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, _storeContext.CurrentStore.Id);
+			var store = _storeContext.CurrentStore;
+			var cart = _workContext.CurrentCustomer.GetCartItems(ShoppingCartType.ShoppingCart, store.Id);
 
             //parse and save checkout attributes
             ParseAndSaveCheckoutAttributes(cart, form);
@@ -1841,11 +1846,17 @@ namespace SmartStore.Web.Controllers
             model.EstimateShipping.CountryId = shippingModel.CountryId;
             model.EstimateShipping.StateProvinceId = shippingModel.StateProvinceId;
             model.EstimateShipping.ZipPostalCode = shippingModel.ZipPostalCode;
+
             PrepareShoppingCartModel(model, cart, setEstimateShippingDefaultAddress: false);
 
             if (cart.RequiresShipping())
             {
-                var address = new Address()
+				if (_topicService.Value.GetTopicBySystemName("ShippingInfo", store.Id) != null)
+				{
+					model.EstimateShipping.ShippingInfoUrl = Url.RouteUrl("Topic", new { SystemName = "shippinginfo" });
+				}
+
+                var address = new Address
                 {
                     CountryId = shippingModel.CountryId,
                     Country = shippingModel.CountryId.HasValue ? _countryService.GetCountryById(shippingModel.CountryId.Value) : null,
@@ -1853,12 +1864,15 @@ namespace SmartStore.Web.Controllers
                     StateProvince = shippingModel.StateProvinceId.HasValue ? _stateProvinceService.GetStateProvinceById(shippingModel.StateProvinceId.Value) : null,
                     ZipPostalCode = shippingModel.ZipPostalCode,
                 };
-				GetShippingOptionResponse getShippingOptionResponse = _shippingService
-					 .GetShippingOptions(cart, address, "", _storeContext.CurrentStore.Id);
+
+				var getShippingOptionResponse = _shippingService.GetShippingOptions(cart, address, "", store.Id);
+
                 if (!getShippingOptionResponse.Success)
                 {
-                    foreach (var error in getShippingOptionResponse.Errors)
-                        model.EstimateShipping.Warnings.Add(error);
+					foreach (var error in getShippingOptionResponse.Errors)
+					{
+						model.EstimateShipping.Warnings.Add(error);
+					}
                 }
                 else
                 {
@@ -1868,13 +1882,13 @@ namespace SmartStore.Web.Controllers
 
                         foreach (var shippingOption in getShippingOptionResponse.ShippingOptions)
                         {
-                            var soModel = new EstimateShippingModel.ShippingOptionModel()
+                            var soModel = new EstimateShippingModel.ShippingOptionModel
                             {
 								ShippingMethodId = shippingOption.ShippingMethodId,
                                 Name = shippingOption.Name,
-                                Description = shippingOption.Description,
-
+                                Description = shippingOption.Description
                             };
+
                             //calculate discounted and taxed rate
                             Discount appliedDiscount = null;
                             decimal shippingTotal = _orderTotalCalculationService.AdjustShippingRate(
@@ -1883,12 +1897,13 @@ namespace SmartStore.Web.Controllers
                             decimal rateBase = _taxService.GetShippingPrice(shippingTotal, _workContext.CurrentCustomer);
                             decimal rate = _currencyService.ConvertFromPrimaryStoreCurrency(rateBase, _workContext.WorkingCurrency);
                             soModel.Price = _priceFormatter.FormatShippingPrice(rate, false /*true*/);
+
                             model.EstimateShipping.ShippingOptions.Add(soModel);
                         }
                     }
                     else
                     {
-                       model.EstimateShipping.Warnings.Add(_localizationService.GetResource("Checkout.ShippingIsNotAllowed"));
+                       model.EstimateShipping.Warnings.Add(T("Checkout.ShippingIsNotAllowed"));
                     }
                 }
             }

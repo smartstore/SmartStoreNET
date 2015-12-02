@@ -5,18 +5,18 @@ using System.Linq;
 using System.Linq.Expressions;
 using System.Net;
 using System.Net.Http;
-using System.Reflection;
 using System.Web.Http;
 using System.Web.Http.OData;
 using System.Web.Http.OData.Routing;
 using System.Data.Entity;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Localization;
 using System.Collections.Generic;
-using SmartStore.Utilities.Reflection;
+using SmartStore.Services;
+using Autofac;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Web.Framework.WebApi
 {
@@ -137,16 +137,6 @@ namespace SmartStore.Web.Framework.WebApi
 			return base.HandleUnmappedRequest(odataPath);
 		}
 
-		//protected virtual IRepository<TEntity> CreateRepository()
-		//{
-		//	var repository = EngineContext.Current.Resolve<IRepository<TEntity>>();
-
-		//	// false means not resolving navigation properties (related entities)
-		//	repository.Context.ProxyCreationEnabled = false;
-
-		//	return repository;
-		//}
-
 		/// <summary>
 		/// Auto injected by Autofac
 		/// </summary>
@@ -165,11 +155,20 @@ namespace SmartStore.Web.Framework.WebApi
 			set;
 		}
 
+		/// <summary>
+		/// Auto injected by Autofac
+		/// </summary>
+		public virtual ICommonServices Services
+		{
+			get;
+			set;
+		}
+
 		public override IQueryable<TEntity> Get()
 		{
 			if (!ModelState.IsValid)
 				throw this.ExceptionInvalidModelState();
-
+			
 			return this.GetEntitySet();
 		}
 
@@ -428,22 +427,25 @@ namespace SmartStore.Web.Framework.WebApi
 
 		protected internal virtual object FulfillPropertyOn(TEntity entity, string propertyName, string queryValue)
 		{
+			var container = Services.Container;
+
 			if (propertyName.IsCaseInsensitiveEqual("Country"))
 			{
-				return EngineContext.Current.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
+				return container.Resolve<ICountryService>().GetCountryByTwoOrThreeLetterIsoCode(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("StateProvince"))
 			{
-				return EngineContext.Current.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
+				return container.Resolve<IStateProvinceService>().GetStateProvinceByAbbreviation(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Language"))
 			{
-				return EngineContext.Current.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
+				return container.Resolve<ILanguageService>().GetLanguageByCulture(queryValue);
 			}
 			else if (propertyName.IsCaseInsensitiveEqual("Currency"))
 			{
-				return EngineContext.Current.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
+				return container.Resolve<ICurrencyService>().GetCurrencyByCode(queryValue);
 			}
+
 			return null;
 		}
 
@@ -474,7 +476,8 @@ namespace SmartStore.Web.Framework.WebApi
 							{
 								object value = FulfillPropertyOn(entity, propertyName, queryValue);
 
-								if (value != null)		// there's no requirement to set a property value of null
+								// there's no requirement to set a property value of null
+								if (value != null) 
 								{
 									prop.SetValue(entity, value);
 								}
@@ -483,10 +486,11 @@ namespace SmartStore.Web.Framework.WebApi
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				throw this.ExceptionUnprocessableEntity(exc.Message);
+				throw this.ExceptionUnprocessableEntity(ex.Message);
 			}
+
 			return entity;
 		}
 	}

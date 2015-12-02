@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Security.Cryptography;
 using System.Text;
+using System.Web;
 
 namespace SmartStore.Web.Framework.WebApi.Security
 {
@@ -79,19 +80,32 @@ namespace SmartStore.Web.Framework.WebApi.Security
 		/// ISO-8601 UTC timestamp including milliseconds (e.g. 2013-09-23T09:24:43.5395441Z)\n
 		/// Public-Key
 		/// </summary>
-		public string CreateMessageRepresentation(WebApiRequestContext context, string contentMd5Hash, string timestamp)
+		public string CreateMessageRepresentation(WebApiRequestContext context, string contentMd5Hash, string timestamp, bool queryStringDecode = false)
 		{
 			if (context == null || !context.IsValid)
 				return null;
 
-			string result = string.Join(_delimiterRepresentation,
+			var url = context.Url;
+
+			if (queryStringDecode)
+			{
+				var uri = new Uri(url);
+
+				if (uri.Query != null && uri.Query.Length > 0)
+				{
+					url = string.Concat(uri.GetLeftPart(UriPartial.Path), HttpUtility.UrlDecode(uri.Query));
+				}
+			}
+
+			var result = string.Join(_delimiterRepresentation,
 				context.HttpMethod.ToLower(),
 				contentMd5Hash ?? "",
 				context.HttpAcceptType.ToLower(),
-				context.Url.ToLower(),
+				url.ToLower(),
 				timestamp,
 				context.PublicKey.ToLower()
 			);
+
 			return result;
 		}
 

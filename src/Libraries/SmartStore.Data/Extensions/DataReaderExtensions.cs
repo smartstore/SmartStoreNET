@@ -5,8 +5,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Reflection;
 using System.Linq;
-using SmartStore.Utilities.Reflection;
 using System.Dynamic;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Data
 {

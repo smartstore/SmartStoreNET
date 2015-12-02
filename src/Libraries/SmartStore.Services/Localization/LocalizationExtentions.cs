@@ -7,8 +7,8 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Plugins;
 using System.Xml;
 using SmartStore.Utilities;
-using SmartStore.Utilities.Reflection;
 using SmartStore.Services.DataExchange.Import;
+using SmartStore.ComponentModel;
 
 namespace SmartStore.Services.Localization
 {

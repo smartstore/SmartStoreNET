@@ -237,9 +237,9 @@ namespace SmartStore.Services.Tasks
 			{
 				try
 				{
-					var baseTime = _dateTimeHelper.ConvertToUserTime(DateTime.UtcNow);
+					var baseTime = DateTime.UtcNow;
 					var next = CronExpression.GetNextSchedule(task.CronExpression, baseTime);
-					return _dateTimeHelper.ConvertToUtcTime(next);
+					return next;
 				}
 				catch { }
 			}

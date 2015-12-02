@@ -10,12 +10,17 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Security;
 using SmartStore.Services.Configuration;
 using SmartStore.Services.Stores;
+using Autofac;
 
 namespace SmartStore.Services
-{
-	
+{	
 	public interface ICommonServices
 	{
+		IComponentContext Container
+		{
+			get;
+		}
+
 		ICacheManager Cache 
 		{ 
 			get;
@@ -76,5 +81,4 @@ namespace SmartStore.Services
 			get;
 		}
 	}
-
 }

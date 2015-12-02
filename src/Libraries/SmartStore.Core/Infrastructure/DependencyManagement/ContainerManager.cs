@@ -5,8 +5,8 @@ using System.Linq;
 using System.Reflection;
 using Autofac;
 using Autofac.Builder;
+using SmartStore.ComponentModel;
 using SmartStore.Core.Caching;
-using SmartStore.Utilities.Reflection;
 
 namespace SmartStore.Core.Infrastructure.DependencyManagement
 {

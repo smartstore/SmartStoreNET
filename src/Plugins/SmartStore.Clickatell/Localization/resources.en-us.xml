@@ -1,5 +1,5 @@
 ﻿<Language Name="English" IsDefault="false" IsRightToLeft="false">
-  <LocaleResource Name="Plugins.FriendlyName.Mobile.SMS.Clickatell" AppendRootKey="false">
+  <LocaleResource Name="Plugins.FriendlyName.SmartStore.Clickatell" AppendRootKey="false">
     <Value>Clickatell SMS Provider</Value>
   </LocaleResource>
   <LocaleResource Name="AdminInstruction">

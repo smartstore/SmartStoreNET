@@ -52,28 +52,45 @@
                     <nav class="footer-quicklinks service span12 first-col">
                         <h4>@T("Footer.Service")</h4>
                         <ul class="unstyled">
-                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "shippinginfo" })">@T("ShippingReturns")</a></li>
-                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "privacyinfo" })">@T("PrivacyNotice")</a></li>
-                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "conditionsofuse" })">@T("ConditionsOfUse")</a></li>
-                            @if (Model.Topics.ContainsKey("paymentinfo"))
-                            {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "paymentinfo" })">@T("Paymentinfo")</a></li>
-                            }
+							@if (Model.TopicPageUrls.ContainsKey("shippinginfo"))
+							{
+								<li><a href="@Model.TopicPageUrls["shippinginfo"]">@T("ShippingReturns")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("privacyinfo"))
+							{
+								<li><a href="@Model.TopicPageUrls["privacyinfo"]">@T("PrivacyNotice")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("conditionsofuse"))
+							{
+								<li><a href="@Model.TopicPageUrls["conditionsofuse"]">@T("ConditionsOfUse")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("paymentinfo"))
+							{
+								<li><a href="@Model.TopicPageUrls["paymentinfo"]">@T("Paymentinfo")</a></li>
+							}
                         </ul>
                     </nav>
 
                     <nav class="footer-quicklinks company span12 first-col">
                         <h4>@T("Footer.Company")</h4>
                         <ul class="unstyled">
-                            <li><a href="@Url.RouteUrl("ContactUs")">@T("ContactUs")</a> </li>
-                            <li><a href="@Url.RouteUrl("Topic", new { SystemName = "aboutus" })">@T("AboutUs")</a></li>
-                            @if (Model.Topics.ContainsKey("imprint")) {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "imprint" })">@T("Imprint")</a></li>
-                            }
-                            @if (Model.Topics.ContainsKey("disclaimer"))
-                            {
-                                <li><a href="@Url.RouteUrl("Topic", new { SystemName = "disclaimer" })">@T("Disclaimer")</a></li>
-                            }
+							@if (Model.TopicPageUrls.ContainsKey("contactus"))
+							{
+								<li><a href="@Model.TopicPageUrls["contactus"]">@T("ContactUs")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("aboutus"))
+							{
+								<li><a href="@Model.TopicPageUrls["aboutus"]">@T("AboutUs")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("imprint"))
+							{
+								<li><a href="@Model.TopicPageUrls["imprint"]">@T("Imprint")</a></li>
+							}
+							@if (Model.TopicPageUrls.ContainsKey("disclaimer"))
+							{
+								<li><a href="@Model.TopicPageUrls["disclaimer"]">@T("Disclaimer")</a></li>
+							}
+
                             @if (Model.BlogEnabled)
                             {
                                 <li><a href="@Url.RouteUrl("Blog")">@T("Blog")</a></li>

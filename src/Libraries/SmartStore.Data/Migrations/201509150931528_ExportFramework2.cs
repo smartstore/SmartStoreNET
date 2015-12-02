@@ -254,6 +254,23 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.System.SystemInfo.GarbageCollectSuccessful",
 				"The memory has been successfully cleaned up.",
 				"Der Arbeitsspeicher wurde erfolgreich aufgeräumt.");
+
+			builder.AddOrUpdate("Admin.Configuration.Themes.NoConfigurationRequired",
+				"Theme requires no configuration",
+				"Theme benötigt keine Konfiguration");
+
+
+			builder.AddOrUpdate("Tax.LegalInfoFooter2",
+				"* All prices {0}, plus shipping",
+				"* Alle Preise {0}, zzgl. Versandkosten");
+
+			builder.AddOrUpdate("Tax.LegalInfoProductDetail2",
+				"{0} {1} {2}plus shipping",
+				"{0} {1} {2} zzgl. Versandkosten");
+
+			builder.AddOrUpdate("ShoppingCart.ShippingInfoLink",
+				"For a complete listing of all shipping costs please click <a href=\"{0}\">here</a>.",
+				"Eine vollständige Liste aller Versandkosten finden Sie <a href=\"{0}\">hier</a>.");
 		}
     }
 }

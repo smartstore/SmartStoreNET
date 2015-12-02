@@ -3,7 +3,7 @@ namespace SmartStore.Core.Domain.Orders
     /// <summary>
     /// Represents an order status enumeration
     /// </summary>
-    public enum OrderStatus : int
+    public enum OrderStatus
     {
         /// <summary>
         /// Pending

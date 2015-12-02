@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Text;
@@ -77,6 +78,7 @@ namespace SmartStore.Core.Data
 		/// <remarks>
 		/// This method turns off auto detection, validation and hooking.
 		/// </remarks>
+		[SuppressMessage("ReSharper", "UnusedVariable")]
 		public static int DeleteAll<T>(this IRepository<T> rs, Expression<Func<T, bool>> predicate = null, bool cascade = false) where T : BaseEntity
 		{
 			var count = 0;

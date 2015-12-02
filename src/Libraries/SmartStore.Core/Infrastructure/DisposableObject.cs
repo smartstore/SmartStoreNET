@@ -8,7 +8,7 @@ namespace SmartStore
 
     public abstract class DisposableObject : IDisposable
     {
-        private bool _isDisposed = false;
+        private bool _isDisposed;
 
         public virtual bool IsDisposed
         {

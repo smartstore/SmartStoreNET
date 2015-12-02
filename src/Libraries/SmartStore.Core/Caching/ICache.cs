@@ -26,7 +26,7 @@ namespace SmartStore.Core.Caching
 		/// Adds the cache item with the specified key
 		/// </summary>
 		/// <param name="key">Key</param>
-		/// <param name="data">Data</param>
+		/// <param name="value">Data</param>
 		/// <param name="cacheTime">Cache time in minutes</param>
 		void Set(string key, object value, int? cacheTime);
 

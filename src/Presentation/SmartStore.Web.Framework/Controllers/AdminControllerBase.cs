@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Core;
@@ -69,6 +70,7 @@ namespace SmartStore.Web.Framework.Controllers
         /// Access denied view
         /// </summary>
         /// <returns>Access denied view</returns>
+        [SuppressMessage("ReSharper", "Mvc.AreaNotResolved")]
         protected ActionResult AccessDeniedView()
         {
             return RedirectToAction("AccessDenied", "Security", new { pageUrl = this.Request.RawUrl, area = "Admin" });

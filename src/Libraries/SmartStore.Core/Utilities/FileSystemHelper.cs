@@ -14,7 +14,7 @@ namespace SmartStore.Utilities
 		/// <param name="subDirectory">Name of a sub directory to be created and returned (optional)</param>
 		public static string TempDir(string subDirectory = null)
 		{
-			string path = CommonHelper.GetAppSetting<string>("sm:TempDirectory", "~/App_Data/_temp");
+			string path = CommonHelper.GetAppSetting("sm:TempDirectory", "~/App_Data/_temp");
 			path = CommonHelper.MapPath(path);
 
 			if (!Directory.Exists(path))
@@ -38,26 +38,25 @@ namespace SmartStore.Utilities
 		{
 			try
 			{
-				string dir = FileSystemHelper.TempDir();
+				var dir = TempDir();
 
 				if (Directory.Exists(dir))
 				{
-					FileInfo fi;
 					var oldestDate = DateTime.Now.Subtract(new TimeSpan(0, 5, 0, 0));
 					var files = Directory.EnumerateFiles(dir);
 
 					foreach (string file in files)
 					{
-						fi = new FileInfo(file);
+						var fi = new FileInfo(file);
 
-						if (fi != null && fi.LastWriteTime < oldestDate)
-							FileSystemHelper.Delete(file);
+						if (fi.LastWriteTime < oldestDate)
+							Delete(file);
 					}
 				}
 			}
-			catch (Exception exc)
+			catch (Exception ex)
 			{
-				exc.Dump();
+				ex.Dump();
 			}
 		}
 
@@ -84,6 +83,7 @@ namespace SmartStore.Utilities
 				result = false;
 				exc.Dump();
 			}
+
 			return result;
 		}
 

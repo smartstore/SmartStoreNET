@@ -1,5 +1,4 @@
 ﻿using System;
-using System.Collections;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Collections.Specialized;
@@ -8,10 +7,12 @@ using System.Text;
 using System.Web;
 using SmartStore.Collections;
 using System.Diagnostics;
+using System.Diagnostics.CodeAnalysis;
 
 namespace SmartStore
 {
-    public static class EnumerableExtensions
+	[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	public static class EnumerableExtensions
 	{
 		#region Nested classes
 
@@ -19,15 +20,16 @@ namespace SmartStore
 		{
 			private static ReadOnlyCollection<T> defaultCollection;
 
+			[SuppressMessage("ReSharper", "ConvertIfStatementToNullCoalescingExpression")]
 			internal static ReadOnlyCollection<T> Empty
 			{
 				get
 				{
-					if (EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection == null)
+					if (defaultCollection == null)
 					{
-						EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection = new ReadOnlyCollection<T>(new T[0]);
+						defaultCollection = new ReadOnlyCollection<T>(new T[0]);
 					}
-					return EnumerableExtensions.DefaultReadOnlyCollection<T>.defaultCollection;
+					return defaultCollection;
 				}
 			}
 		}

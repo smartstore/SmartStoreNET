@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.IO;
 using System.Text;
@@ -8,6 +9,7 @@ using SmartStore.Core.Domain.Shipping;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
 	public class ShippingOptionConverter : TypeConverterBase
 	{
 		private readonly bool _forList;

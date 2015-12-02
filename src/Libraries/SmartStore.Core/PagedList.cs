@@ -4,7 +4,6 @@ using System.Linq;
 
 namespace SmartStore.Core
 {
-    
     public abstract class PagedListBase : IPageable
     {
 
@@ -32,10 +31,10 @@ namespace SmartStore.Core
         // only here for compat reasons with nc
         public void LoadPagedList<T>(IPagedList<T> pagedList)
         {
-            this.Init(pagedList as IPageable);
+            this.Init(pagedList);
         }
 
-        public virtual void Init(IPageable pageable)
+        public void Init(IPageable pageable)
         {
             Guard.ArgumentNotNull(pageable, "pageable");
 

@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.IO;
 using System.Linq;
 using System.Web.Hosting;
@@ -12,9 +13,10 @@ namespace SmartStore.Core.IO.Media
         private readonly string _storagePath;
         private readonly string _publicPath;
 
-        public FileSystemStorageProvider(FileSystemSettings settings)
+	    [SuppressMessage("ReSharper", "PossibleNullReferenceException")]
+	    public FileSystemStorageProvider(FileSystemSettings settings)
         {
-            string mediaPath = CommonHelper.MapPath("~/Media/", false);
+            var mediaPath = CommonHelper.MapPath("~/Media/", false);
             _storagePath = Path.Combine(mediaPath, settings.DirectoryName);
 
             var appPath = "";
@@ -29,11 +31,13 @@ namespace SmartStore.Core.IO.Media
             _publicPath = appPath + "Media/" + settings.DirectoryName + "/";
         }
 
-        string Map(string path) {
+        private string Map(string path)
+		{
             return string.IsNullOrEmpty(path) ? _storagePath : Path.Combine(_storagePath, path);
         }
 
-        static string Fix(string path) {
+        static string Fix(string path)
+		{
             return string.IsNullOrEmpty(path)
                        ? ""
                        : Path.DirectorySeparatorChar != '/'

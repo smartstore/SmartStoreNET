@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -18,7 +19,8 @@ namespace SmartStore
             return propertyAccessor.ExtractMemberInfo() as FieldInfo;
         }
 
-        public static MemberInfo ExtractMemberInfo(this LambdaExpression propertyAccessor)
+	    [SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
+	    public static MemberInfo ExtractMemberInfo(this LambdaExpression propertyAccessor)
         {
             Guard.ArgumentNotNull(() => propertyAccessor);
 

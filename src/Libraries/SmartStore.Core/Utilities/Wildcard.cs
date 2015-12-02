@@ -75,14 +75,14 @@ namespace SmartStore.Utilities
         {
             m_isForward = true;
             //escape and beginning
-            pattern = "^" + Regex.Escape(pattern);
+            pattern = "^" + Escape(pattern);
             //replace * with .*
             pattern = pattern.Replace("\\*", ".*");
             //$ is for end position and replace ? with a .
             pattern = pattern.Replace("\\?", ".") + "$";
 
             //convert the number ranges into regular expression
-            Regex re = new Regex("[0-9]+-[0-9]+");
+            var re = new Regex("[0-9]+-[0-9]+");
             MatchCollection collection = re.Matches(pattern);
             foreach (Match match in collection)
             {

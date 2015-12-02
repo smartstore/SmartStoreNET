@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.ComponentModel;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -8,6 +9,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "CanBeReplacedWithTryCastAndCheckForNull")]
 	public class DateTimeConverter : TypeConverterBase
 	{
 		public DateTimeConverter()

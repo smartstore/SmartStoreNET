@@ -168,8 +168,6 @@ namespace SmartStore.Utilities
 		{
 			Guard.ArgumentNotNull(() => obj);
 
-			Type t = obj.GetType();
-
 			return FastProperty.ObjectToDictionary(
 				obj,
 				key => key.Replace("_", "-"));

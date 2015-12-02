@@ -1,7 +1,7 @@
 ﻿
 namespace SmartStore.Core.Domain.Customers 
 { 
-    public enum PasswordFormat : int
+    public enum PasswordFormat
     {
         Clear = 0,
         Hashed = 1,

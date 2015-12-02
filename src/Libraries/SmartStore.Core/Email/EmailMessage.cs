@@ -2,15 +2,9 @@
 using System.Collections.Generic;
 using System.Collections.Specialized;
 using System.Net.Mail;
-using System.Net.Mime;
-using System.Xml.Serialization;
-using System.Linq;
 using System.IO;
 using System.Text;
-using System.Xml;
-using System.Web;
 using System.Net;
-using System.Threading.Tasks;
 
 namespace SmartStore.Core.Email
 {
@@ -80,11 +74,11 @@ namespace SmartStore.Core.Email
 
         public async void BodyFromFile(string filePathOrUrl)
         {
-            StreamReader sr = null;
+            StreamReader sr;
 
             if (filePathOrUrl.ToLower().StartsWith("http"))
             {
-                WebClient wc = new WebClient();
+                var wc = new WebClient();
                 sr = new StreamReader(await wc.OpenReadTaskAsync(filePathOrUrl));
             }
             else

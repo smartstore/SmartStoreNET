@@ -85,7 +85,7 @@ namespace SmartStore.Utilities
 			client.DefaultRequestHeaders.CacheControl.NoCache = true;
 			client.DefaultRequestHeaders.Add("Connection", "Keep-alive");
 
-			if (context.Timeout != null)
+			if (context.Timeout.TotalMilliseconds > 0 && context.Timeout != Timeout.InfiniteTimeSpan)
 				client.Timeout = context.Timeout;
 
 			IEnumerable<Task> downloadTasksQuery =

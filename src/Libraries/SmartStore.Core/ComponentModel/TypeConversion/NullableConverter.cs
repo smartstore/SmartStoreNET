@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Globalization;
 using System.Linq;
 using System.Text;
@@ -7,6 +8,7 @@ using System.Threading.Tasks;
 
 namespace SmartStore.ComponentModel
 {
+	[SuppressMessage("ReSharper", "TryCastAlwaysSucceeds")]
 	public class NullableConverter : TypeConverterBase
 	{
 		private readonly bool _underlyingTypeIsConvertible;
@@ -91,7 +93,7 @@ namespace SmartStore.ComponentModel
 			if (_underlyingTypeIsConvertible && !(value is string) && value is IConvertible)
 			{
 				// num > num?
-				return System.Convert.ChangeType(value, UnderlyingType, culture);
+				return Convert.ChangeType(value, UnderlyingType, culture);
 			}
 
 			return UnderlyingTypeConverter.ConvertFrom(culture, value);

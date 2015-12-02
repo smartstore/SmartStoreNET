@@ -70,7 +70,7 @@ namespace SmartStore.Core.Data
 		/// <summary>
 		/// Marks the changes of existing entities to be saved to the store.
 		/// </summary>
-		/// <param name="entity">A list of entity instances that should be updated in the database.</param>
+		/// <param name="entities">A list of entity instances that should be updated in the database.</param>
 		/// <remarks>Implementors should delegate this to the current <see cref="IDbContext" /></remarks>
 		void UpdateRange(IEnumerable<T> entities);
 

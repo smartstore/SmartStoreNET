@@ -61,6 +61,7 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.Common.Export.PDF", "PDF Export", "PDF Export");
 			builder.AddOrUpdate("Admin.Common.TemporaryFiles", "Temporary files", "Temporäre Dateien");
 			builder.AddOrUpdate("Admin.Common.PublicFiles", "Public files", "Öffentliche Dateien");
+			builder.AddOrUpdate("Admin.Common.Of", "of", "von");
 
 			builder.AddOrUpdate("Admin.Common.NoTempFilesFound",
 				"No temporary files were found.",

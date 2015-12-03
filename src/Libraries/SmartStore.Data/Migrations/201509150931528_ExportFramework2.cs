@@ -130,8 +130,8 @@ namespace SmartStore.Data.Migrations
 			builder.AddOrUpdate("Admin.DataExchange.Export.Projection.NoGroupedProducts",
 				"Do not export grouped products",
 				"Keine Gruppenprodukte exportieren",
-				"Specifies whether to export grouped products. If this option is deactivated, then the associated products will be deactivated.",
-				"Legt fest, ob Gruppenprodukte exportiert werden sollen. Ist diese Option deaktiviert, so werden die zur Gruppe gehörenden Produkte exportiert.");
+				"Specifies whether to export grouped products. If this option is activated, then the associated products will be exported.",
+				"Legt fest, ob Gruppenprodukte exportiert werden sollen. Ist diese Option aktiviert, so werden die zur Gruppe gehörenden Produkte exportiert.");
 
 			builder.AddOrUpdate("Admin.DataExchange.Export.NoFiltering",
 				"There is no filtering available.",

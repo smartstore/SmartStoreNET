@@ -1828,7 +1828,7 @@ namespace SmartStore.Services.Catalog
 		public virtual Multimap<int, ProductPicture> GetProductPicturesByProductIds(int[] productIds)
 		{
 			var query = 
-				from pp in _productPictureRepository.TableUntracked
+				from pp in _productPictureRepository.TableUntracked.Expand(x => x.Picture)
 				where productIds.Contains(pp.ProductId)
 				select pp;
 

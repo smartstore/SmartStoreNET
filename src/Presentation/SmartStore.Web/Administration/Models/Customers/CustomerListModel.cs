@@ -1,6 +1,7 @@
 ﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 

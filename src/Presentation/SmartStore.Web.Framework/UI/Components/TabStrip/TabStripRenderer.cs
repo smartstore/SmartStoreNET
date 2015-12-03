@@ -6,6 +6,7 @@ using System.Text;
 using System.Web.UI;
 using System.Web.Mvc;
 using System.Web.Routing;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.UI

@@ -5,6 +5,7 @@ using SmartStore.Admin.Validators.Shipping;
 using SmartStore.Core.Domain.Common;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Shipping

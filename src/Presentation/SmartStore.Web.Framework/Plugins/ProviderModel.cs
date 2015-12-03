@@ -4,6 +4,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Plugins;
 using SmartStore.Services.Payments;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.Plugins

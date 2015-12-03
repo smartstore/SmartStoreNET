@@ -29,6 +29,7 @@ using Telerik.Web.Mvc;
 using Telerik.Web.Mvc.UI;
 using SmartStore.Collections;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers

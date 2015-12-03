@@ -5,6 +5,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Models.Stores;
 using SmartStore.Admin.Validators.Messages;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Messages

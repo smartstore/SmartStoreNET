@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using SmartStore.Collections;
+﻿using SmartStore.Collections;
 using SmartStore.Web.Framework.UI;
 
 namespace SmartStore.Web.Models.Catalog

@@ -4,9 +4,9 @@ using SmartStore.Web.Models.Common;
 
 namespace SmartStore.Web.Models.Checkout
 {
-    public partial class CheckoutBillingAddressModel : ModelBase
+    public partial class CheckoutBillingAddressModel2 : ModelBase
     {
-        public CheckoutBillingAddressModel()
+        public CheckoutBillingAddressModel2()
         {
             ExistingAddresses = new List<AddressModel>();
             NewAddress = new AddressModel();

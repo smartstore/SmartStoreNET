@@ -1,4 +1,4 @@
-﻿namespace SmartStore.Web.Framework.Mvc
+﻿namespace SmartStore.Web.Framework.Modelling
 {
     public interface IModelAttribute
     {

@@ -7,6 +7,7 @@ using SmartStore.Admin.Models.Tasks;
 using SmartStore.Admin.Validators.DataExchange;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange

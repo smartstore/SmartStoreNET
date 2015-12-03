@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework.UI

@@ -19,6 +19,7 @@ using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.Settings;
 using SmartStore.Utilities;
 using SmartStore.Core.Domain.Catalog;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework
 {

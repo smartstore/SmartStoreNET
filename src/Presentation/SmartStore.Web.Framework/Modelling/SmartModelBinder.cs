@@ -1,17 +1,12 @@
 ﻿using System;
-using System.Linq;
-using System.Collections;
 using System.Collections.Generic;
-using System.Web;
+using System.Linq;
 using System.Web.Mvc;
-using System.ComponentModel;
-using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
     public class SmartModelBinder : DefaultModelBinder
     {
-
         public override object BindModel(ControllerContext controllerContext, ModelBindingContext bindingContext)
         {
 			var modelType = bindingContext.ModelType;
@@ -33,12 +28,7 @@ namespace SmartStore.Web.Framework.Mvc
 
 		private CustomPropertiesDictionary BindCustomPropertiesDictioary(ControllerContext controllerContext, ModelBindingContext bindingContext)
 		{
-			var model = bindingContext.Model as CustomPropertiesDictionary;
-
-			if (model == null)
-			{
-				model = new CustomPropertiesDictionary();
-			}
+			var model = bindingContext.Model as CustomPropertiesDictionary ?? new CustomPropertiesDictionary();
 
 			var keys = GetValueProviderKeys(controllerContext, bindingContext.ModelName + "[");
 			if (keys.Count == 0)
@@ -52,7 +42,7 @@ namespace SmartStore.Web.Framework.Mvc
 				if (keyName == null || model.ContainsKey(keyName))
 					continue;
 
-				var valueBinder = Binders.DefaultBinder;
+				var valueBinder = this.Binders.DefaultBinder;
 
 				var subPropertyName = GetSubPropertyName(key);
 				if (subPropertyName.IsCaseInsensitiveEqual("__Type__"))
@@ -76,7 +66,7 @@ namespace SmartStore.Web.Framework.Mvc
 					// Is Complex type
 					var modelName = key.Substring(0, key.Length - subPropertyName.Length - 1);
 					var valueType = GetValueType(keys, modelName, bindingContext.ValueProvider);
-					valueBinder = Binders.GetBinder(valueType);
+					valueBinder = this.Binders.GetBinder(valueType);
 					var complexBindingContext = new ModelBindingContext
 					{
 						ModelMetadata = ModelMetadataProviders.Current.GetMetadataForType(null, valueType),

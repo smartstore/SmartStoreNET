@@ -3,7 +3,7 @@ using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
     public class XmlDownloadResult : ActionResult
     {

@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Stores;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Stores

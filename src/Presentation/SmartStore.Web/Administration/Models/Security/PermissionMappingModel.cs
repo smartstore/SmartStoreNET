@@ -1,5 +1,6 @@
 ﻿using System.Collections.Generic;
 using SmartStore.Admin.Models.Customers;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Security

@@ -4,6 +4,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Customers;
 using SmartStore.Core.Domain.Tax;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Customers

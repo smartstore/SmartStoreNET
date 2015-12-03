@@ -1,21 +1,16 @@
-﻿using System;
-using System.Reflection;
-using System.Collections.Generic;
-using System.ComponentModel;
+﻿using System.Collections.Generic;
 using System.Web.Mvc;
 using AutoMapper;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
-	
 	public sealed class CustomPropertiesDictionary : Dictionary<string, object>
 	{
 	}
-	
 
 	public abstract partial class ModelBase
     {
-        public ModelBase()
+        protected ModelBase()
         {
 			this.CustomProperties = new CustomPropertiesDictionary();
         }

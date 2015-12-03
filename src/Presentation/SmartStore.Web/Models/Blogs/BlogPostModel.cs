@@ -1,7 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
 using FluentValidation.Attributes;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Validators.Blogs;
 
 namespace SmartStore.Web.Models.Blogs

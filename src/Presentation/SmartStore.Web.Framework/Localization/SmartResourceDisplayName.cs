@@ -3,6 +3,7 @@ using System.Runtime.CompilerServices;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Web.Framework

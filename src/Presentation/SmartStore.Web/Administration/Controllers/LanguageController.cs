@@ -17,6 +17,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Filters;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;

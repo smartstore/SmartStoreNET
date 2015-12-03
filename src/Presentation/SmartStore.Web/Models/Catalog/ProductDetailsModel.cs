@@ -2,9 +2,8 @@
 using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Domain.Catalog;
-using SmartStore.Core.Domain.Directory;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Models.Media;
 

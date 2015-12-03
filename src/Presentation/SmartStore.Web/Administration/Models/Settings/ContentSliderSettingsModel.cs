@@ -11,6 +11,7 @@ using Telerik.Web.Mvc;
 using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.ContentSlider;
 using SmartStore.Admin.Models.Stores;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.ContentSlider
 {

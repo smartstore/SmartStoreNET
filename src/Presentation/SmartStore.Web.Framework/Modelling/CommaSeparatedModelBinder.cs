@@ -5,7 +5,7 @@ using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
     public class CommaSeparatedModelBinder : DefaultModelBinder
     {

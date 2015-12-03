@@ -1,6 +1,7 @@
 ﻿using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Mvc;
 using System;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.WebApi.Models
 {

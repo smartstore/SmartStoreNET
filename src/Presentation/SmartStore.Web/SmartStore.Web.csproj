@@ -339,6 +339,7 @@
     <Compile Include="Models\Catalog\ManufacturerModel.cs" />
     <Compile Include="Models\Catalog\ManufacturerNavigationModel.cs" />
     <Compile Include="Models\Catalog\ProductDetailsModel.cs" />
+    <Compile Include="Models\CheckoutBillingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutShippingAddressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutProgressModel.cs" />
     <Compile Include="Models\Checkout\CheckoutBillingAddressModel.cs" />

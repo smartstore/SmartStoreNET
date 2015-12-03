@@ -1,6 +1,7 @@
 ﻿using System;
 using System.Web.Mvc;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Logging

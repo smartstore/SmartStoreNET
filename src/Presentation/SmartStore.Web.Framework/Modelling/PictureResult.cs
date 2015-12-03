@@ -4,7 +4,7 @@ using SmartStore.Core.Domain.Media;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Media;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
     public class PictureResult : FileStreamResult
     {

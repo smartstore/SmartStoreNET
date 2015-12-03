@@ -1,8 +1,10 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Core;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Web.Framework.Mvc
 {
@@ -13,8 +15,8 @@ namespace SmartStore.Web.Framework.Mvc
     /// </summary>
     public class SmartMetadataProvider : CachedDataAnnotationsModelMetadataProvider
     {
-
-		protected override CachedDataAnnotationsModelMetadata CreateMetadataPrototype(IEnumerable<Attribute> attributes, Type containerType, Type modelType, string propertyName)
+	    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	    protected override CachedDataAnnotationsModelMetadata CreateMetadataPrototype(IEnumerable<Attribute> attributes, Type containerType, Type modelType, string propertyName)
 		{
 			var metadata = base.CreateMetadataPrototype(attributes, containerType, modelType, propertyName);
 			var attrs = attributes.OfType<IModelAttribute>().ToList();

@@ -9,6 +9,7 @@ using SmartStore.Admin.Validators.Settings;
 using FluentValidation.Attributes;
 using SmartStore.Core.Domain.Localization;
 using System.Collections;
+using SmartStore.Web.Framework.Modelling;
 
 namespace SmartStore.Admin.Models.Settings
 {

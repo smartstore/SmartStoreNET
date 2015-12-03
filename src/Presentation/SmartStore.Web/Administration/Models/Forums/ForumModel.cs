@@ -5,6 +5,7 @@ using FluentValidation.Attributes;
 using SmartStore.Admin.Validators.Forums;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Forums

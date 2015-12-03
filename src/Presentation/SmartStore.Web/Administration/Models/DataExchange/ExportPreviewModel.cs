@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Web.Framework;
+using SmartStore.Web.Framework.Modelling;
 using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.DataExchange

@@ -1,6 +1,6 @@
 ﻿using System.Web.Optimization;
 
-namespace SmartStore.Web.Framework.Mvc.Bundles
+namespace SmartStore.Web.Framework.Bundling
 {
     public interface IBundleProvider
     {

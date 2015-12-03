@@ -1,6 +1,6 @@
 ﻿using System.Web.Routing;
 
-namespace SmartStore.Web.Framework.Mvc.Routes
+namespace SmartStore.Web.Framework.Routing
 {
     public interface IRoutePublisher
     {

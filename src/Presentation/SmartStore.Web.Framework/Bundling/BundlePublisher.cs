@@ -3,9 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Optimization;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
 
-namespace SmartStore.Web.Framework.Mvc.Bundles
+namespace SmartStore.Web.Framework.Bundling
 {
     public class BundlePublisher : IBundlePublisher
     {

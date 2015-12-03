@@ -65,8 +65,6 @@ using SmartStore.Services.Topics;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Mvc.Bundles;
-using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
@@ -76,6 +74,8 @@ using Module = Autofac.Module;
 using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.ComponentModel;
+using SmartStore.Web.Framework.Bundling;
+using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Framework
 {

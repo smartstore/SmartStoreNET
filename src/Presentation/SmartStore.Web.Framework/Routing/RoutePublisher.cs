@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web.Routing;
 using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Plugins;
-using SmartStore.Web.Framework.Localization;
 
-namespace SmartStore.Web.Framework.Mvc.Routes
+namespace SmartStore.Web.Framework.Routing
 {
     public class RoutePublisher : IRoutePublisher
     {

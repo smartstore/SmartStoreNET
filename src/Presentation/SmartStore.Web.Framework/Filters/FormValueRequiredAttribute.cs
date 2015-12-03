@@ -1,11 +1,11 @@
 ﻿using System;
-using System.Linq;
+using System.Collections.Specialized;
 using System.Diagnostics;
+using System.Linq;
 using System.Reflection;
 using System.Web.Mvc;
-using System.Collections.Specialized;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
     
 	public class FormValueRequiredAttribute : ActionMethodSelectorAttribute

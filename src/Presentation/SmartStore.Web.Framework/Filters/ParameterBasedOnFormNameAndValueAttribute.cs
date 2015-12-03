@@ -1,6 +1,6 @@
 ﻿using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
     public class ParameterBasedOnFormNameAndValueAttribute : FilterAttribute, IActionFilter
     {

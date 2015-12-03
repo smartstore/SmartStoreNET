@@ -66,7 +66,7 @@ namespace SmartStore.Web.Framework.Mvc
 		{
 			get
 			{
-				return ProviderType.Equals(typeof(IPaymentMethod));
+				return ProviderType == typeof(IPaymentMethod);
 			}
 		}
 	}

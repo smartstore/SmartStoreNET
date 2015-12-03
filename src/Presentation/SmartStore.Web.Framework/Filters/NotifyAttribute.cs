@@ -1,16 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using System.Web;
-using System.Web.Http.Controllers;
 using System.Web.Mvc;
-using SmartStore.Collections;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
 
 	[AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = false)]

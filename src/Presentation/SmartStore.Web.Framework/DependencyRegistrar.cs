@@ -75,6 +75,7 @@ using SmartStore.Core.Domain.DataExchange;
 using SmartStore.Services.DataExchange.Import;
 using SmartStore.ComponentModel;
 using SmartStore.Web.Framework.Bundling;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Routing;
 
 namespace SmartStore.Web.Framework

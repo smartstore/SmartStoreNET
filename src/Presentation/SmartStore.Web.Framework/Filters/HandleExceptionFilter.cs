@@ -1,20 +1,17 @@
 ﻿using System;
-using System.Linq;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
+using System.Runtime.InteropServices;
+using System.Security;
+using System.Threading;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Logging;
-using SmartStore.Core.Localization;
-using System.Threading;
-using System.Security;
-using System.Runtime.InteropServices;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
 
 	public class HandleExceptionFilter : IActionFilter

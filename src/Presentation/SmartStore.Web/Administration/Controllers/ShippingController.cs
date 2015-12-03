@@ -12,6 +12,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -245,7 +246,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult CreateMethod(ShippingMethodModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))
@@ -292,7 +293,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditMethod(ShippingMethodModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageShippingSettings))

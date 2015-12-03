@@ -21,6 +21,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Theming;
@@ -204,7 +205,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Configure(string theme, int storeId, IDictionary<string, object> values, bool continueEditing)
         {
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageThemes))

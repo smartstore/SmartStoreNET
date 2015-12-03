@@ -9,6 +9,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Stores;
 using SmartStore.Services.Topics;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
@@ -177,7 +178,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult Create(TopicModel model, bool continueEditing)
         {
             if (!_permissionService.Authorize(StandardPermissionProvider.ManageTopics))
@@ -233,7 +234,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [ValidateInput(false)]
         public ActionResult Edit(TopicModel model, bool continueEditing, FormCollection form)
         {

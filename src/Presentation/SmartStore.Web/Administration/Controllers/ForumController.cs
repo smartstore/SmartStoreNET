@@ -11,6 +11,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
@@ -150,7 +151,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult CreateForumGroup(ForumGroupModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
@@ -202,7 +203,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult CreateForum(ForumModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
@@ -261,7 +262,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditForumGroup(ForumGroupModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))
@@ -323,7 +324,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         public ActionResult EditForum(ForumModel model, bool continueEditing)
         {
             if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageForums))

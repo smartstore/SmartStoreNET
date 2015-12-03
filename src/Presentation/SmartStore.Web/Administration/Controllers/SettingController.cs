@@ -33,6 +33,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;

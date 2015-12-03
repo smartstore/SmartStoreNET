@@ -12,6 +12,7 @@ using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Theming

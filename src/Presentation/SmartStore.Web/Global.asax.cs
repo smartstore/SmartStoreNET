@@ -13,6 +13,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Bundling;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Routing;

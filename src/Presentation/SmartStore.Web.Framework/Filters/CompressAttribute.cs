@@ -2,7 +2,7 @@
 using System.Web;
 using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Filters
 {
 	public class CompressAttribute : ActionFilterAttribute
 	{

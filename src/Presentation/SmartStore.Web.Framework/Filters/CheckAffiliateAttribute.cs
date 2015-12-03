@@ -2,15 +2,13 @@
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Affiliates;
 using SmartStore.Services.Customers;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
     public class CheckAffiliateAttribute : ActionFilterAttribute
     {
-
 		public Lazy<IAffiliateService> AffiliateService { get; set; }
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ICustomerService> CustomerService { get; set; }

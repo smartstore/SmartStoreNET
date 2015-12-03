@@ -3,10 +3,9 @@ using System.Collections.Generic;
 using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Security;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
     public class PublicStoreAllowNavigationAttribute : ActionFilterAttribute
     {

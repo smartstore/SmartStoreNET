@@ -30,6 +30,7 @@ using SmartStore.Services.Seo;
 using SmartStore.Services.Tax;
 using SmartStore.Utilities;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI.Captcha;

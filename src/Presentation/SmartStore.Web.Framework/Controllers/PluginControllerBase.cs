@@ -6,7 +6,6 @@ using SmartStore.Core.Infrastructure;
 
 namespace SmartStore.Web.Framework.Controllers
 {
-
     public abstract partial class PluginControllerBase : SmartController
     {
 		///// <summary>

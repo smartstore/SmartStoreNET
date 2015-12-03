@@ -36,6 +36,7 @@ using SmartStore.Services.Stores;
 using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -440,7 +441,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Create(CustomerModel model, bool continueEditing, FormCollection form)
@@ -703,7 +704,7 @@ namespace SmartStore.Admin.Controllers
             return View(model);
         }
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
 		[ValidateInput(false)]
         public ActionResult Edit(CustomerModel model, bool continueEditing, FormCollection form)

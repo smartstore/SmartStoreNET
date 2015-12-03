@@ -11,6 +11,7 @@ using SmartStore.Services.Localization;
 using SmartStore.Services.Security;
 using SmartStore.Services.Tasks;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
@@ -179,7 +180,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[ValidateAntiForgeryToken]
 		public ActionResult Edit(ScheduleTaskModel model, bool continueEditing, string returnUrl = null)
 		{

@@ -1,22 +1,15 @@
-﻿using Autofac;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
 using System.Web.Mvc;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Data;
 using SmartStore.Core.Data;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
-
     [AttributeUsage(AttributeTargets.Class | AttributeTargets.Method, Inherited = true, AllowMultiple = true)]
     public class UnitOfWorkAttribute : ActionFilterAttribute
     {
 
         public UnitOfWorkAttribute() 
-            : this(null, Int32.MaxValue)
+            : this(null, int.MaxValue)
         {
         }
 
@@ -26,7 +19,7 @@ namespace SmartStore.Web.Framework.Controllers
         }
 
         public UnitOfWorkAttribute(string alias)
-            : this(alias, Int32.MaxValue)
+            : this(alias, int.MaxValue)
         {
         }
 

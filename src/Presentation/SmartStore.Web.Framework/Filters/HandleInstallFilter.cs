@@ -1,12 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Web.Mvc;
+﻿using System.Web.Mvc;
 using System.Web.Routing;
-using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Filters
 {
     
     public class HandleInstallFilter : IActionFilter

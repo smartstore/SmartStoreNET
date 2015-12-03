@@ -1,4 +1,5 @@
 ﻿using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Seo;
@@ -10,7 +11,7 @@ namespace SmartStore.Web.Framework.Controllers
     [StoreIpAddress]
     [StoreLastVisitedPage]
     [CheckAffiliate]
-    [StoreClosedAttribute]
+    [StoreClosed]
     [PublicStoreAllowNavigation]
     [LanguageSeoCode]
     [RequireHttpsByConfigAttribute(SslRequirement.Retain)]

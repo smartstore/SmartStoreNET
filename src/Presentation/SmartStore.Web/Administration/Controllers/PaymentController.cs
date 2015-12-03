@@ -15,6 +15,7 @@ using SmartStore.Services.Security;
 using SmartStore.Services.Shipping;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
@@ -208,7 +209,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ValidateInput(false), ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ValidateInput(false), ParameterBasedOnFormName("save-continue", "continueEditing")]
 		public ActionResult Edit(string systemName, bool continueEditing, PaymentMethodEditModel model, FormCollection form)
 		{
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManagePaymentMethods))

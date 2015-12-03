@@ -28,6 +28,7 @@ using SmartStore.Services.Messages;
 using SmartStore.Services.Security;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Filters;
 using SmartStore.Web.Framework.Plugins;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.UI;
@@ -555,7 +556,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-        [HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+        [HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
         [FormValueRequired("save", "save-continue")]
         public ActionResult Edit(ExportProfileModel model, bool continueEditing)
 		{
@@ -925,7 +926,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult CreateDeployment(ExportDeploymentModel model, bool continueEditing, ExportDeploymentType deploymentType)
 		{
@@ -968,7 +969,7 @@ namespace SmartStore.Admin.Controllers
 			return View(model);
 		}
 
-		[HttpPost, ParameterBasedOnFormNameAttribute("save-continue", "continueEditing")]
+		[HttpPost, ParameterBasedOnFormName("save-continue", "continueEditing")]
 		[FormValueRequired("save", "save-continue")]
 		public ActionResult EditDeployment(ExportDeploymentModel model, bool continueEditing)
 		{

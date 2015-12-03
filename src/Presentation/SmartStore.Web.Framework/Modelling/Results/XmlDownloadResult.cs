@@ -3,6 +3,7 @@ using System.Web.Mvc;
 using System.Xml;
 using SmartStore.Utilities;
 
+// ReSharper disable once CheckNamespace
 namespace SmartStore.Web.Framework.Modelling
 {
     public class XmlDownloadResult : ActionResult

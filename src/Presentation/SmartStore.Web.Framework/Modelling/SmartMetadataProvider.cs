@@ -3,10 +3,8 @@ using System.Collections.Generic;
 using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Mvc;
-using SmartStore.Core;
-using SmartStore.Web.Framework.Modelling;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Modelling
 {
     /// <summary>
 	/// This MetadataProvider adds some functionality on top of the default CachedDataAnnotationsModelMetadataProvider.
@@ -16,6 +14,7 @@ namespace SmartStore.Web.Framework.Mvc
     public class SmartMetadataProvider : CachedDataAnnotationsModelMetadataProvider
     {
 	    [SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
+	    [SuppressMessage("ReSharper", "SuspiciousTypeConversion.Global")]
 	    protected override CachedDataAnnotationsModelMetadata CreateMetadataPrototype(IEnumerable<Attribute> attributes, Type containerType, Type modelType, string propertyName)
 		{
 			var metadata = base.CreateMetadataPrototype(attributes, containerType, modelType, propertyName);

@@ -2,6 +2,7 @@
 using System.Web.Mvc;
 using System.Xml;
 
+// ReSharper disable once CheckNamespace
 namespace SmartStore.Web.Framework.Modelling
 {
     public class RssActionResult : ActionResult

@@ -21,10 +21,10 @@ using SmartStore.Services.Localization;
 
 namespace SmartStore.Services.Customers
 {
-    /// <summary>
-    /// Customer service
-    /// </summary>
-    public partial class CustomerService : ICustomerService
+	/// <summary>
+	/// Customer service
+	/// </summary>
+	public partial class CustomerService : ICustomerService
     {
         #region Constants
 
@@ -44,7 +44,6 @@ namespace SmartStore.Services.Customers
         private readonly ICacheManager _cacheManager;
         private readonly IEventPublisher _eventPublisher;
 		private readonly RewardPointsSettings _rewardPointsSettings;
-		private readonly IWebHelper _webHelper;
 
         #endregion
 
@@ -57,8 +56,7 @@ namespace SmartStore.Services.Customers
 			IRepository<RewardPointsHistory> rewardPointsHistoryRepository,
             IGenericAttributeService genericAttributeService,
             IEventPublisher eventPublisher,
-			RewardPointsSettings rewardPointsSettings,
-			IWebHelper webHelper)
+			RewardPointsSettings rewardPointsSettings)
         {
             this._cacheManager = cacheManager;
             this._customerRepository = customerRepository;
@@ -68,7 +66,6 @@ namespace SmartStore.Services.Customers
             this._genericAttributeService = genericAttributeService;
             this._eventPublisher = eventPublisher;
 			this._rewardPointsSettings = rewardPointsSettings;
-			this._webHelper = webHelper;
 
 			T = NullLocalizer.Instance;
         }
@@ -349,21 +346,7 @@ namespace SmartStore.Services.Customers
 
         public virtual Customer InsertGuestCustomer()
         {
-			var ip = _webHelper.GetCurrentIpAddress();
-
-			if (ip.HasValue())
-			{
-				var existingCustomer = _customerRepository.Table
-					.Where(x => !x.Deleted && x.Active && !x.IsSystemAccount && x.LastIpAddress == ip && x.CustomerRoles.Any(y => y.Active && y.SystemName == SystemCustomerRoleNames.Guests))
-					.FirstOrDefault();
-
-				if (existingCustomer != null)
-				{
-					return existingCustomer;
-				}
-			}
-
-            var customer = new Customer
+			var customer = new Customer
             {
                 CustomerGuid = Guid.NewGuid(),
                 Active = true,

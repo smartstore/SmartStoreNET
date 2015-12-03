@@ -185,11 +185,7 @@ namespace SmartStore.Web.Framework
                         if (Guid.TryParse(customerCookie.Value, out customerGuid))
                         {
                             var customerByCookie = _customerService.GetCustomerByGuid(customerGuid);
-                            if (customerByCookie != null &&
-                                //this customer (from cookie) should not be registered
-                                !customerByCookie.IsRegistered() &&
-								//it should not be a built-in 'search engine' customer account
-								!customerByCookie.IsSearchEngineAccount())
+                            if (customerByCookie != null && !customerByCookie.IsRegistered())
                                 customer = customerByCookie;
                         }
                     }

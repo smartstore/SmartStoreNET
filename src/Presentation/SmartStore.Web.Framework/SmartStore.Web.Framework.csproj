@@ -321,7 +321,7 @@
     <Compile Include="Modelling\DeleteConfirmationModel.cs" />
     <Compile Include="Routing\IRouteProvider.cs" />
     <Compile Include="Routing\IRoutePublisher.cs" />
-    <Compile Include="Mvc\SmartDependencyResolver.cs" />
+    <Compile Include="SmartDependencyResolver.cs" />
     <Compile Include="Routing\RoutePublisher.cs" />
     <Compile Include="Modelling\SmartMetadataProvider.cs" />
     <Compile Include="Modelling\SmartModelBinder.cs" />

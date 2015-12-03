@@ -1,5 +1,4 @@
 ﻿using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Localization;
 using System;
 ﻿using System.Collections.Generic;

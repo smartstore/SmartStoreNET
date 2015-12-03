@@ -1,7 +1,6 @@
 ﻿using System;
 using SmartStore.AmazonPay.Services;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.AmazonPay.Models
 {

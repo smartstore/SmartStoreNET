@@ -3,7 +3,6 @@ using System.Web.Mvc;
 using SmartStore.OfflinePayment.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.OfflinePayment.Models
 { 

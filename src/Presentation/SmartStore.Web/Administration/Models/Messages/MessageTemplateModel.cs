@@ -8,7 +8,6 @@ using SmartStore.Collections;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.Admin.Models.Messages
 {

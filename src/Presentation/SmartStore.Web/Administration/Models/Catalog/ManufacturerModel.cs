@@ -8,7 +8,6 @@ using SmartStore.Admin.Validators.Catalog;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Mvc;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Models.Catalog

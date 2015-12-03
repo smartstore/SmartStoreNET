@@ -1,7 +1,6 @@
 ﻿using System.Web.Mvc;
 using System.Web.Routing;
 using SmartStore.Web.Framework;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Models.Tax

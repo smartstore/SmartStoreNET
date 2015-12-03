@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Web.Mvc;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework
 {
     public class SmartDependencyResolver : IDependencyResolver
     {

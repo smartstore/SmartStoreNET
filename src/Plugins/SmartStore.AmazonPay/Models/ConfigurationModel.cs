@@ -4,7 +4,6 @@ using SmartStore.AmazonPay.Services;
 using SmartStore.AmazonPay.Settings;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Modelling;
-using SmartStore.Web.Framework.Mvc;
 
 namespace SmartStore.AmazonPay.Models
 {

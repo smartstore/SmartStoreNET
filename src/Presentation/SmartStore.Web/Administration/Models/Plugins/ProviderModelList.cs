@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Web;
 using System.Web.Mvc;
-using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Plugins;
 
 namespace SmartStore.Admin.Models.Plugins

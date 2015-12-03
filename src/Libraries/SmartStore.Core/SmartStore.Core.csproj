@@ -184,6 +184,7 @@
     <Compile Include="Extensions\DecimalExtensions.cs" />
     <Compile Include="Data\IQueryableExtensions.cs" />
     <Compile Include="Extensions\XPathExtensions.cs" />
+    <Compile Include="Fakes\FakeController.cs" />
     <Compile Include="IActivatable.cs" />
     <Compile Include="Infrastructure\ContextState.cs" />
     <Compile Include="Infrastructure\DependencyManagement\DefaultLifetimeScopeAccessor.cs" />

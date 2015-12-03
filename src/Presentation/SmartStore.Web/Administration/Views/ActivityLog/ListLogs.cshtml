@@ -21,7 +21,7 @@
     </div>
     <p>
     </p>
-    <table width="100%">
+    <table style="width: 100%">
         <tr>
             <td class="adminTitle">
                 @Html.SmartLabelFor(model => model.CreatedOnFrom)
@@ -71,34 +71,34 @@
         <tr>
             <td>
                 @(Html.Telerik().Grid<ActivityLogModel>()
-                        .Name("activityLog-grid")
-                        .DataKeys(x =>
-                        {
-                            x.Add(y => y.Id).RouteKey("Id");
-                        })
-                        .ClientEvents(events => events.OnDataBinding("onDataBinding"))
-                        .Columns(columns =>
-                        {
-                            columns.Bound(x => x.ActivityLogTypeName);
-                            columns.Bound(x => x.CustomerId)
-                                .Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
-                                .ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
-                            columns.Bound(x => x.Comment);                        
-                            columns.Bound(x => x.CreatedOn)
+						.Name("activityLog-grid")
+						.DataKeys(x =>
+						{
+							x.Add(y => y.Id).RouteKey("Id");
+						})
+						.ClientEvents(events => events.OnDataBinding("onDataBinding"))
+						.Columns(columns =>
+						{
+							columns.Bound(x => x.ActivityLogTypeName);
+							columns.Bound(x => x.CustomerId)
+								.Template(x => Html.ActionLink(x.CustomerEmail, "Edit", "Customer", new { id = x.CustomerId }, new { }))
+								.ClientTemplate("<a href=\"" + @Url.Content("~/Admin/Customer/Edit/") + "<#= CustomerId #>\"><#= CustomerEmail #></a>");
+							columns.Bound(x => x.Comment);
+							columns.Bound(x => x.CreatedOn)
 								.Width(180);
-                            columns.Command(commands =>
-                            {
-                                commands.Delete().Localize(T);
-                            }).Width(90);
-                        })
-                        .Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
-                        .DataBinding(dataBinding =>
-                        {
-                            dataBinding.Ajax().Select("ListLogs", "ActivityLog")
-                                .Delete("AcivityLogDelete", "ActivityLog");
-                        })
+							columns.Command(commands =>
+							{
+								commands.Delete().Localize(T);
+							}).Width(90);
+						})
+						.Pageable(settings => settings.PageSize(gridPageSize).Position(GridPagerPosition.Both))
+						.DataBinding(dataBinding =>
+						{
+							dataBinding.Ajax().Select("ListLogs", "ActivityLog")
+								.Delete("AcivityLogDelete", "ActivityLog");
+						})
 						.PreserveGridState()
-                        .EnableCustomBinding(true))
+						.EnableCustomBinding(true))
             </td>
         </tr>
     </table>

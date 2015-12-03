@@ -56,11 +56,11 @@ namespace SmartStore.Admin.Controllers
         [HttpPost, GridAction(EnableCustomBinding = true)]
         public ActionResult ListTypes(GridCommand command)
         {
-            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel());
+            var activityLogTypeModel = _customerActivityService.GetAllActivityTypes().Select(x => x.ToModel()).ToList();
             var gridModel = new GridModel<ActivityLogTypeModel>
             {
                 Data = activityLogTypeModel,
-                Total = activityLogTypeModel.Count()
+                Total = activityLogTypeModel.Count
             };
             return new JsonResult
             {
@@ -81,11 +81,12 @@ namespace SmartStore.Admin.Controllers
                 if (Int32.TryParse(key,out id))
                 {
                     var activityType = _customerActivityService.GetActivityTypeById(id);
-                    activityType.Enabled = formCollection["checkBox_"+key].Equals("false") ? false : true;
+                    activityType.Enabled = !formCollection["checkBox_" + key].Equals("false");
                     _customerActivityService.UpdateActivityType(activityType);
                 }
 
             }
+
             NotifySuccess(_localizationService.GetResource("Admin.Configuration.ActivityLog.ActivityLogType.Updated"));
             return RedirectToAction("ListTypes");
         }
@@ -109,15 +110,13 @@ namespace SmartStore.Admin.Controllers
 
             foreach (var at in _customerActivityService.GetAllActivityTypes()
                 .OrderBy(x=>x.Name)
-                .Select(x =>
+                .Select(x => new SelectListItem
                 {
-                    return new SelectListItem()
-                    {
-                        Value = x.Id.ToString(),
-                        Text = x.Name
-                    };
+	                Value = x.Id.ToString(),
+	                Text = x.Name
                 }))
                 activityLogSearchModel.ActivityLogType.Add(at);
+
             return View(activityLogSearchModel);
         }
 
@@ -137,8 +136,8 @@ namespace SmartStore.Admin.Controllers
                 Data = activityLog.Select(x =>
                 {
                     var m = x.ToModel();
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
-                    return m;
+                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc).ToString("G");
+					return m;
                     
                 }),
                 Total = activityLog.TotalCount

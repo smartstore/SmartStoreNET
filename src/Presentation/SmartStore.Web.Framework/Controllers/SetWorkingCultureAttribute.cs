@@ -16,7 +16,6 @@ namespace SmartStore.Web.Framework.Controllers
     /// </summary>
     public class SetWorkingCultureAttribute : FilterAttribute, IAuthorizationFilter
     {
-
 		public Lazy<IWorkContext> WorkContext { get; set; }
 
         public void OnAuthorization(AuthorizationContext filterContext)
@@ -47,6 +46,7 @@ namespace SmartStore.Web.Framework.Controllers
             {
                 culture = new CultureInfo("en-US");
             }
+
             Thread.CurrentThread.CurrentCulture = culture;
             Thread.CurrentThread.CurrentUICulture = culture;
         }

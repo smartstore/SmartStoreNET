@@ -561,8 +561,7 @@ namespace SmartStore.Admin.Controllers
 				return AccessDeniedView();
 
 			var pluginDescriptor = _pluginFinder.GetPluginDescriptors()
-				.Where(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase))
-				.FirstOrDefault();
+				.FirstOrDefault(x => x.SystemName.Equals(systemName, StringComparison.InvariantCultureIgnoreCase));
 
 			if (pluginDescriptor == null)
 			{

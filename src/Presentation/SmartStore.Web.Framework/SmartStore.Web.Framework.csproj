@@ -398,7 +398,6 @@
     <Compile Include="WebApi\WebApiExtension.cs" />
     <Compile Include="WebApi\WebApiSettings.cs" />
     <Compile Include="WebApi\WebApiStartupTask.cs" />
-    <Compile Include="WebServices\DelegatedMessageInspector.cs" />
     <Compile Include="WebStoreContext.cs" />
     <Compile Include="WebWorkContext.cs" />
   </ItemGroup>

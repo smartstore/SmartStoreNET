@@ -240,7 +240,7 @@
     <Compile Include="Extensions\PostedFileResult.cs" />
     <Compile Include="Extensions\RouteExtensions.cs" />
     <Compile Include="Extensions\TelerikExtensions.cs" />
-    <Compile Include="Mvc\ErrorMessageProvider.cs" />
+    <Compile Include="Localization\ErrorMessageProvider.cs" />
     <Compile Include="Filters\CompressAttribute.cs" />
     <Compile Include="Modelling\ModelBoundEvent.cs" />
     <Compile Include="Plugins\ProviderModel.cs" />

@@ -2,7 +2,7 @@
 using System.Globalization;
 using System.Web.ModelBinding;
 
-namespace SmartStore.Web.Framework.Mvc
+namespace SmartStore.Web.Framework.Localization
 {
 	public class ErrorMessageProvider
 	{

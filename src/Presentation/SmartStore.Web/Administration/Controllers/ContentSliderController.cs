@@ -11,6 +11,7 @@ using SmartStore.Services.Media;
 using SmartStore.Core.Domain.Localization;
 using SmartStore.Services.Stores;
 using SmartStore.Core;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.Admin.Controllers

@@ -14,6 +14,7 @@ using SmartStore.Services.Payments;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.OfflinePayment.Controllers

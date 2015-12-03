@@ -14,6 +14,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Services.Orders;
 using SmartStore.Services.Stores;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Settings;
 
 namespace SmartStore.GoogleAnalytics.Controllers

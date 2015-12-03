@@ -5,6 +5,7 @@ using System.Web.Mvc;
 using SmartStore.Core.Domain.Media;
 using SmartStore.Services.Media;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {

@@ -12,6 +12,7 @@ using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework;
 using Telerik.Web.Mvc;
 using System.Collections.Generic;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {

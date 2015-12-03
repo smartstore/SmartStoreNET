@@ -9,6 +9,7 @@ using SmartStore.GoogleMerchantCenter.Providers;
 using SmartStore.GoogleMerchantCenter.Services;
 using SmartStore.Services.DataExchange;
 using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Security;
 using Telerik.Web.Mvc;
 
 namespace SmartStore.GoogleMerchantCenter.Controllers

@@ -307,7 +307,7 @@
     <Compile Include="Localization\LocalizedRoute.cs" />
     <Compile Include="Localization\LocalizedRouteExtensions.cs" />
     <Compile Include="Mvc\ModelBase.cs" />
-    <Compile Include="Controllers\AdminAuthorizeAttribute.cs" />
+    <Compile Include="Security\AdminAuthorizeAttribute.cs" />
     <Compile Include="Controllers\FormValueExistsAttribute.cs" />
     <Compile Include="DependencyRegistrar.cs" />
     <Compile Include="Mvc\XmlDownloadResult.cs" />

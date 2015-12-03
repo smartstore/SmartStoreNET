@@ -50,6 +50,7 @@ using SmartStore.Services.DataExchange.Csv;
 using SmartStore.Services.DataExchange.Excel;
 using SmartStore.Services.DataExchange.Import;
 using System.ComponentModel;
+using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Admin.Controllers
 {

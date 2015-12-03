@@ -4,7 +4,7 @@ using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Services.Security;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Security
 {
     [AttributeUsage(AttributeTargets.Method | AttributeTargets.Class, Inherited=true, AllowMultiple=true)]
     public class AdminAuthorizeAttribute : FilterAttribute, IAuthorizationFilter

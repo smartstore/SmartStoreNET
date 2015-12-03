@@ -22,6 +22,7 @@ using SmartStore.Services.Themes;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
+using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Admin.Controllers

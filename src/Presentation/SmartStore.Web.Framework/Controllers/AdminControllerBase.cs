@@ -11,8 +11,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
 
 namespace SmartStore.Web.Framework.Controllers
-{
-	
+{	
 	[AdminThemed]
     [RequireHttpsByConfig(SslRequirement.Yes)]
     [AdminValidateIpAddress]

@@ -243,7 +243,7 @@
     <Compile Include="Mvc\ErrorMessageProvider.cs" />
     <Compile Include="Filters\CompressAttribute.cs" />
     <Compile Include="Mvc\ModelBoundEvent.cs" />
-    <Compile Include="Mvc\ProviderModel.cs" />
+    <Compile Include="Plugins\ProviderModel.cs" />
     <Compile Include="Pdf\Content\PdfRouteContent.cs" />
     <Compile Include="Pdf\Content\PdfPartialViewContent.cs" />
     <Compile Include="Pdf\Content\PdfViewContent.cs" />

@@ -148,7 +148,7 @@ namespace SmartStore.Web.Framework.Controllers
 			
 			using (var sw = new StringWriter())
 			{
-				ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindView(controller.ControllerContext, viewName.EmptyNull(), masterName.EmptyNull());
+				var viewResult = System.Web.Mvc.ViewEngines.Engines.FindView(controller.ControllerContext, viewName.EmptyNull(), masterName.EmptyNull());
 
 				ThrowIfViewNotFound(viewResult, viewName);
 

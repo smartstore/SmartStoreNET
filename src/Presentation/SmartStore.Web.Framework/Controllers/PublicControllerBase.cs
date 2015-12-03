@@ -1,4 +1,5 @@
 ﻿using SmartStore.Web.Framework.Controllers;
+using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
 using SmartStore.Web.Framework.Seo;
 
@@ -11,7 +12,7 @@ namespace SmartStore.Web.Framework.Controllers
     [CheckAffiliate]
     [StoreClosedAttribute]
     [PublicStoreAllowNavigation]
-    [LanguageSeoCodeAttribute]
+    [LanguageSeoCode]
     [RequireHttpsByConfigAttribute(SslRequirement.Retain)]
 	[CanonicalHostName]
     public abstract partial class PublicControllerBase : SmartController

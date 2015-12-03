@@ -5,11 +5,8 @@ using System.Web;
 using System.Web.Mvc;
 using SmartStore.Core;
 using SmartStore.Core.Data;
-using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Infrastructure;
-using SmartStore.Web.Framework.Localization;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Localization
 {
     /// <summary>
     /// Attribute which determines and sets the working culture

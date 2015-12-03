@@ -9,6 +9,7 @@ using SmartStore.Services.DataExchange.ExportTask;
 using SmartStore.Services.Localization;
 using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Security;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.Controllers
 {	

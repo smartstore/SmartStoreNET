@@ -1,8 +1,7 @@
 ﻿using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Theming
 {
-	
 	/// <summary>
 	/// Instructs the view engine to additionally search in the admin area for views.
 	/// </summary>
@@ -15,7 +14,6 @@ namespace SmartStore.Web.Framework.Controllers
 	/// </remarks>
 	public class AdminThemedAttribute : ActionFilterAttribute
 	{
-
 		public override void OnActionExecuting(ActionExecutingContext filterContext)
 		{
 			if (filterContext == null)

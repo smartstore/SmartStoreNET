@@ -217,7 +217,7 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\AdminControllerBase.cs" />
-    <Compile Include="Controllers\AdminThemedAttribute.cs" />
+    <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Controllers\HandleExceptionFilter.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
     <Compile Include="Controllers\PublicControllerBase.cs" />

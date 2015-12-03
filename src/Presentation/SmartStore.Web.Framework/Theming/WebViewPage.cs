@@ -13,13 +13,11 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Theming;
 
-namespace SmartStore.Web.Framework.ViewEngines.Razor
+namespace SmartStore.Web.Framework.Theming
 {
     public abstract class WebViewPage<TModel> : System.Web.Mvc.WebViewPage<TModel>
     {
-
 		private IText _text;
         private IWorkContext _workContext;
 
@@ -39,7 +37,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 				if (!_currentCategoryId.HasValue)
 				{
 					int id = 0;
-					var routeValues = Url.RequestContext.RouteData.Values;
+					var routeValues = this.Url.RequestContext.RouteData.Values;
 					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("category"))
 					{
 						id = Convert.ToInt32(routeValues["categoryId"].ToString());
@@ -57,7 +55,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             {
 				if (!_currentManufacturerId.HasValue)
 				{
-					var routeValues = Url.RequestContext.RouteData.Values;
+					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
 					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("catalog") && routeValues["action"].ToString().IsCaseInsensitiveEqual("manufacturer"))
 					{
@@ -76,7 +74,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             {
 				if (!_currentProductId.HasValue)
 				{
-					var routeValues = Url.RequestContext.RouteData.Values;
+					var routeValues = this.Url.RequestContext.RouteData.Values;
 					int id = 0;
 					if (routeValues["controller"].ToString().IsCaseInsensitiveEqual("product") && routeValues["action"].ToString().IsCaseInsensitiveEqual("productdetails"))
 					{
@@ -95,7 +93,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
             {
                 if (!_isHomePage.HasValue)
                 {
-                    var routeData = Url.RequestContext.RouteData;
+                    var routeData = this.Url.RequestContext.RouteData;
                     _isHomePage = routeData.GetRequiredString("controller").IsCaseInsensitiveEqual("Home") &&
                         routeData.GetRequiredString("action").IsCaseInsensitiveEqual("Index");
                 }
@@ -127,18 +125,18 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 				string key = NotifyAttribute.NotificationsKey;
 				IList<NotifyEntry> entries;
 				
-				if (TempData.ContainsKey(key))
+				if (this.TempData.ContainsKey(key))
 				{
-					entries = TempData[key] as IList<NotifyEntry>;
+					entries = this.TempData[key] as IList<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
 					}
 				}
 
-				if (ViewData.ContainsKey(key))
+				if (this.ViewData.ContainsKey(key))
 				{
-					entries = ViewData[key] as IList<NotifyEntry>;
+					entries = this.ViewData[key] as IList<NotifyEntry>;
 					if (entries != null)
 					{
 						result = result.Concat(entries);
@@ -194,7 +192,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
                                     var tagBuilder = new TagBuilder("div");
                                     tagBuilder.MergeAttributes(htmlAttributes);
 
-                                    var section = RenderSection(name, false);
+                                    var section = this.RenderSection(name, false);
                                     if (section != null)
                                     {
                                         tw.Write(tagBuilder.ToString(TagRenderMode.StartTag));
@@ -207,7 +205,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
 
         public HelperResult RenderSection(string sectionName, Func<object, HelperResult> defaultContent)
         {
-            return IsSectionDefined(sectionName) ? RenderSection(sectionName) : defaultContent(new object());
+            return this.IsSectionDefined(sectionName) ? this.RenderSection(sectionName) : defaultContent(new object());
         }
 
         public override string Layout
@@ -219,7 +217,7 @@ namespace SmartStore.Web.Framework.ViewEngines.Razor
                 if (!string.IsNullOrEmpty(layout))
                 {
                     var filename = System.IO.Path.GetFileNameWithoutExtension(layout);
-                    ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindView(ViewContext.Controller.ControllerContext, filename, "");
+                    ViewEngineResult viewResult = System.Web.Mvc.ViewEngines.Engines.FindView(this.ViewContext.Controller.ControllerContext, filename, "");
 
                     if (viewResult.View != null && viewResult.View is RazorView)
                     {

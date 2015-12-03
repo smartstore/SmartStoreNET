@@ -6,6 +6,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Localization;
 using SmartStore.Core.Logging;
 using SmartStore.Services;
+using SmartStore.Web.Framework.Localization;
 
 namespace SmartStore.Web.Framework.Controllers
 {

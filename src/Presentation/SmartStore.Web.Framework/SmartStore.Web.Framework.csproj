@@ -217,11 +217,11 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Controllers\HandleExceptionFilter.cs" />
     <Compile Include="Controllers\NotifyAttribute.cs" />
     <Compile Include="Controllers\PublicControllerBase.cs" />
-    <Compile Include="Controllers\SetWorkingCultureAttribute.cs" />
     <Compile Include="Controllers\PluginControllerBase.cs" />
     <Compile Include="Controllers\CheckAffiliateAttribute.cs" />
     <Compile Include="Controllers\ContollerExtensions.cs" />
@@ -259,6 +259,7 @@
     <Compile Include="Theming\ThemeFileResolver.cs" />
     <Compile Include="Theming\InheritedVirtualThemeFile.cs" />
     <Compile Include="Theming\TwoLevelViewLocationCache.cs" />
+    <Compile Include="Theming\WebViewPage.cs" />
     <Compile Include="UI\Components\Menu\AdminMenuProvider.cs" />
     <Compile Include="UI\Components\Menu\MenuPublisher.cs" />
     <Compile Include="UI\HtmlAttribute.cs" />
@@ -381,7 +382,6 @@
     <Compile Include="Extensions\UrlHelperExtensions.cs" />
     <Compile Include="Validators\ValidatorExtensions .cs" />
     <Compile Include="Validators\CreditCardPropertyValidator.cs" />
-    <Compile Include="ViewEngines\Razor\WebViewPage.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyResolver.cs" />
     <Compile Include="WebApi\AutofacWebApiDependencyScope.cs" />
     <Compile Include="WebApi\Configuration\IWebApiConfigurationProvider.cs" />

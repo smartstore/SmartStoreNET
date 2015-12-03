@@ -9,7 +9,7 @@ using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Common;
 using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
 	public abstract class ThemeableVirtualPathProviderViewEngine : BuildManagerViewEngine
 	{

@@ -68,7 +68,7 @@ using SmartStore.Web.Framework.Localization;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.UI;
 using SmartStore.Web.Framework.WebApi;
 using SmartStore.Web.Framework.WebApi.Configuration;

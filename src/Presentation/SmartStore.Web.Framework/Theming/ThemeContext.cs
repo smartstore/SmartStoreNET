@@ -6,7 +6,7 @@ using SmartStore.Core.Domain.Themes;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Common;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
     /// <summary>
     /// Theme context

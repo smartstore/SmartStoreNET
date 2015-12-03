@@ -1,14 +1,13 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Mvc;
 using SmartStore.Utilities;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
 	public class ThemeableRazorViewEngine : ThemeableVirtualPathProviderViewEngine
 	{
-
+		[SuppressMessage("ReSharper", "PossibleMultipleEnumeration")]
 		public ThemeableRazorViewEngine()
 		{
 			var areaBasePathsSetting = CommonHelper.GetAppSetting<string>("sm:AreaBasePaths", "~/Plugins/");

@@ -16,7 +16,7 @@ using SmartStore.Web.Framework.Mvc;
 using SmartStore.Web.Framework.Mvc.Bundles;
 using SmartStore.Web.Framework.Mvc.Routes;
 using SmartStore.Web.Framework.Plugins;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 using SmartStore.Web.Framework.Validators;
 
 

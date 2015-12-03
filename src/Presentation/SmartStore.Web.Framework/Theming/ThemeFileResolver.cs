@@ -8,9 +8,8 @@ using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Core.Themes;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
-
 	public interface IThemeFileResolver
 	{
 		InheritedThemeFileResult Resolve(string virtualPath);

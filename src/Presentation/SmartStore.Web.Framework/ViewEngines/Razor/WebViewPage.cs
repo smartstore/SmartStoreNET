@@ -13,7 +13,7 @@ using SmartStore.Core.Logging;
 using SmartStore.Core.Themes;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Localization;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Framework.ViewEngines.Razor
 {

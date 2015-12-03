@@ -1,7 +1,6 @@
 ﻿using System;
 using System.Web;
 using System.Web.Caching;
-using System.Web.SessionState;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Configuration;
 using BundleTransformer.Core.FileSystem;
@@ -10,9 +9,8 @@ using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
-
 	public class LessCssHttpHandler : BundleTransformer.Less.HttpHandlers.LessAssetHandlerBase 
     {
 		

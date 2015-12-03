@@ -1,13 +1,13 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Diagnostics.CodeAnalysis;
 using System.Linq;
 using System.Web.Optimization;
 using BundleTransformer.Core;
 using BundleTransformer.Core.Builders;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
-
     internal class SmartStyleBundle : Bundle
     {
         private bool _wasCached = false;
@@ -18,7 +18,8 @@ namespace SmartStore.Web.Framework.Themes
             : this(virtualPath, null)
         { }
 
-        public SmartStyleBundle(string virtualPath, string cdnPath)
+	    [SuppressMessage("ReSharper", "VirtualMemberCallInContructor")]
+	    public SmartStyleBundle(string virtualPath, string cdnPath)
             : base(virtualPath, cdnPath, new IBundleTransform[] { BundleTransformerContext.Current.GetCssTransformerInstance() })
         {
             Builder = new NullBuilder();

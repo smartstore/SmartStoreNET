@@ -1,25 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.Dynamic;
 using System.Linq;
 using System.Text;
 using System.Text.RegularExpressions;
-using SmartStore.Core;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Themes;
 
-namespace SmartStore.Web.Framework.Themes
-{
-    
+namespace SmartStore.Web.Framework.Theming
+{ 
     internal class ThemeVarsRepository
     {
         private static readonly Regex s_keyWhitelist = new Regex(@"^[a-zA-Z0-9_-]+$");
         private static readonly Regex s_valueWhitelist = new Regex(@"^[#@]?[a-zA-Z0-9""' _\.,-]*$");
-
-        public ThemeVarsRepository()
-        {
-        }
 
         public string GetVariablesAsLess(string themeName, int storeId)
         {

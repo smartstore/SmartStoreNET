@@ -4,9 +4,8 @@ using System.Web.WebPages;
 using SmartStore.Core;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
-	
 	public class LocalizedDisplayMode : DefaultDisplayMode
 	{
 		private readonly bool _enabled;

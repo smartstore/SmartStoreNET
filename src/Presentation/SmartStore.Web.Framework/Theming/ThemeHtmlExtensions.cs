@@ -12,9 +12,8 @@ using SmartStore.Services.Common;
 using SmartStore.Utilities;
 using SmartStore.Services.Localization;
 
-namespace SmartStore.Web.Framework.Themes
-{
-    
+namespace SmartStore.Web.Framework.Theming
+{ 
     public static class ThemeHtmlExtensions
     {
 

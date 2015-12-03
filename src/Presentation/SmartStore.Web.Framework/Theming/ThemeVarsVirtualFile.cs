@@ -1,13 +1,8 @@
-using System;
-using System.Collections.Generic;
 using System.IO;
-using System.Linq;
-using System.Reflection;
 using System.Text;
 using System.Web.Hosting;
-using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
     public class ThemeVarsVirtualFile : VirtualFile
     {

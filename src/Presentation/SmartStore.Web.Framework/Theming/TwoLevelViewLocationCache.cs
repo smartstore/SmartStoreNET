@@ -2,11 +2,11 @@
 using System.Web;
 using System.Web.Mvc;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
 	public class TwoLevelViewLocationCache : IViewLocationCache
 	{
-		private readonly static object s_key = new object();
+		private static readonly object s_key = new object();
 		private readonly IViewLocationCache _cache;
 
 		public TwoLevelViewLocationCache(IViewLocationCache cache)

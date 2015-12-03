@@ -1,5 +1,6 @@
 ﻿using SmartStore.Core.Themes;
-namespace SmartStore.Web.Framework.Themes
+
+namespace SmartStore.Web.Framework.Theming
 {
     /// <summary>
     /// Work context

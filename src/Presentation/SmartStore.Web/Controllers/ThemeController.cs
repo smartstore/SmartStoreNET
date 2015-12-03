@@ -3,7 +3,7 @@ using SmartStore.Core;
 using SmartStore.Core.Themes;
 using SmartStore.Services.Themes;
 using SmartStore.Web.Framework.Controllers;
-using SmartStore.Web.Framework.Themes;
+using SmartStore.Web.Framework.Theming;
 
 namespace SmartStore.Web.Controllers
 {

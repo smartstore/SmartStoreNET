@@ -7,7 +7,7 @@ using System.Web.Hosting;
 using SmartStore.Core.Caching;
 using SmartStore.Core.Infrastructure;
 
-namespace SmartStore.Web.Framework.Themes
+namespace SmartStore.Web.Framework.Theming
 {
     public class ThemingVirtualPathProvider : VirtualPathProvider
     {

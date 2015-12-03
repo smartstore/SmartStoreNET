@@ -2,22 +2,18 @@
 using System.Net;
 using System.Web;
 using System.Web.Mvc;
-using System.Web.Routing;
 using SmartStore.Core;
 using SmartStore.Core.Data;
 using SmartStore.Core.Domain.Localization;
-using SmartStore.Core.Infrastructure;
 using SmartStore.Services.Localization;
-using SmartStore.Web.Framework.Localization;
 
-namespace SmartStore.Web.Framework.Controllers
+namespace SmartStore.Web.Framework.Localization
 {
     /// <summary>
     /// Attribute which ensures that store URL contains a language SEO code if "SEO friendly URLs with multiple languages" setting is enabled
     /// </summary>
     public class LanguageSeoCodeAttribute : ActionFilterAttribute
     {
-
 		public Lazy<IWorkContext> WorkContext { get; set; }
 		public Lazy<ILanguageService> LanguageService { get; set; }
 		public Lazy<LocalizationSettings> LocalizationSettings { get; set; }

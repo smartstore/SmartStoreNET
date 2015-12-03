@@ -44,6 +44,11 @@ namespace SmartStore.Services.DataExchange.Export.Internal
 
 			ExecuteContext = new ExportExecuteContext(Result, CancellationToken, FolderContent);
 			ExecuteContext.Projection = XmlHelper.Deserialize<ExportProjection>(request.Profile.Projection);
+
+			if (!IsPreview)
+			{
+				ExecuteContext.ProgressMessageSetter = Request.ProgressMessageSetter;
+			}
 		}
 
 		/// <summary>

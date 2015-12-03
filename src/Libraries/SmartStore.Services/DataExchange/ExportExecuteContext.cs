@@ -123,6 +123,12 @@ namespace SmartStore.Services.DataExchange.Export
 		/// </summary>
 		/// <param name="exc">Exception</param>
 		void RecordException(Exception exc, int entityId);
+
+		/// <summary>
+		/// Allows to set a progress message
+		/// </summary>
+		/// <param name="message">Output message</param>
+		void SetProgressMessage(string message);
 	}
 
 
@@ -169,6 +175,7 @@ namespace SmartStore.Services.DataExchange.Export
 		public ExportProjection Projection { get; internal set; }
 
 		public ILogger Log { get; internal set; }
+		public ProgressMessageSetter ProgressMessageSetter { get; internal set; }
 
 		public ExportAbortion Abort
 		{
@@ -217,6 +224,14 @@ namespace SmartStore.Services.DataExchange.Export
 
 			if (IsMaxFailures)
 				_result.LastError = exc.ToString();
+		}
+
+		public void SetProgressMessage(string message)
+		{
+			if (ProgressMessageSetter != null && message.HasValue())
+			{
+				ProgressMessageSetter.Invoke(message);
+			}
 		}
 	}
 }

@@ -568,28 +568,36 @@ namespace SmartStore.Web.Controllers
 			if (!_services.Permissions.Authorize(StandardPermissionProvider.ManageOrders))
 				return new HttpUnauthorizedResult();
 
-			IList<Order> orders;
+			const int maxOrders = 500;
+			IList<Order> orders = null;
+			int totalCount = 0;
 
 			using (var scope = new DbContextScope(_services.DbContext, autoDetectChanges: false, forceNoTracking: true))
 			{
 				if (ids != null)
 				{
-					int[] intIds = ids.ToIntArray();
-					orders = _orderService.GetOrdersByIds(intIds);
+					orders = _orderService.GetOrdersByIds(ids.ToIntArray());
+					totalCount = orders.Count;
 				}
 				else
 				{
-					orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+					var pagedOrders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, 1);
+					totalCount = pagedOrders.TotalCount;
+
+					if (totalCount > 0 && totalCount <= maxOrders)
+					{
+						orders = _orderService.SearchOrders(0, 0, null, null, null, null, null, null, null, null, 0, int.MaxValue);
+					}
 				}
 			}
 
-			if (orders.Count == 0)
+			if (totalCount == 0)
 			{
 				NotifyInfo(T("Admin.Common.ExportNoData"));
 				return RedirectToReferrer();
 			}
 
-			if (orders.Count > 500)
+			if (totalCount > maxOrders)
 			{
 				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
 				return RedirectToReferrer();

@@ -28,28 +28,6 @@
 				<i class="fa fa-arrow-circle-o-up"></i>&nbsp;@T("Admin.Common.ImportFromExcel")
 			</a>
 
-			@if (Model.DisplayPdfExport)
-			{
-				<div class="btn-group">
-					<a class="btn dropdown-toggle" data-toggle="dropdown" href="#">
-						@T("Admin.Common.Export.PDF")
-						<span class="fa fa-caret-down"></span>
-					</a>
-					<ul class="dropdown-menu pull-right">
-						<li>
-							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = false })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.Selected")
-							</a>
-						</li>
-						<li>
-							<a href="javascript:void(0)" class="pdf-export-button" data-url="@Url.Action("ExportPdf", new { all = true })">
-								<i class="fa fa-fw fa-file-pdf-o"></i>&nbsp;@T("Admin.Common.ExportToPdf.All")
-							</a>
-						</li>
-					</ul>
-				</div>
-			}
-
 			@Html.Widget("admin_button_toolbar_after")
         </div>
     </div>
@@ -265,22 +243,6 @@
         	$('#SearchWithoutManufacturers').change(function () {
         		$('#SearchManufacturerIdContainer').toggle(_.isEmpty($(this).val()));
         	}).trigger('change');
-
-        	// export products to pdf
-        	$('a.pdf-export-button').click(function (e) {
-        		e.preventDefault();
-
-        		if (confirm('@T("Admin.Common.AskToProceed")')) {
-        			var form = '<form id="PdfExportForm" action="' + $(this).data('url') + '" method="post">';
-        			form += '<input type="hidden" name="selectedIds" value="' + selectedIds.join(',') + '" />';
-        			form += '</form>';
-
-        			$('body').append(form);
-        			$('#PdfExportForm').submit();
-        		}
-
-        		return false;
-        	});
 
             $('#mastercheckbox').click(function () {
                 $('.checkboxGroups').attr('checked', $(this).is(':checked')).change();

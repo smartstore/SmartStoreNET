@@ -1,12 +1,12 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.IO;
+using System.ComponentModel;
+using System.Data;
 using System.Linq;
 using System.Text;
 using System.Threading;
 using System.Threading.Tasks;
 using System.Web.Mvc;
-using System.Web.Routing;
 using Autofac;
 using Newtonsoft.Json;
 using SmartStore.Admin.Models.Catalog;
@@ -28,13 +28,13 @@ using SmartStore.Services;
 using SmartStore.Services.Catalog;
 using SmartStore.Services.Common;
 using SmartStore.Services.Customers;
+using SmartStore.Services.DataExchange.Import;
 using SmartStore.Services.Directory;
 using SmartStore.Services.Discounts;
 using SmartStore.Services.Helpers;
 using SmartStore.Services.Localization;
 using SmartStore.Services.Media;
 using SmartStore.Services.Orders;
-using SmartStore.Services.Pdf;
 using SmartStore.Services.Security;
 using SmartStore.Services.Seo;
 using SmartStore.Services.Stores;
@@ -42,13 +42,7 @@ using SmartStore.Services.Tax;
 using SmartStore.Web.Framework;
 using SmartStore.Web.Framework.Controllers;
 using SmartStore.Web.Framework.Mvc;
-using SmartStore.Web.Framework.Pdf;
 using Telerik.Web.Mvc;
-using System.Data;
-using SmartStore.Services.DataExchange.Csv;
-using SmartStore.Services.DataExchange.Excel;
-using SmartStore.Services.DataExchange.Import;
-using System.ComponentModel;
 
 namespace SmartStore.Admin.Controllers
 {
@@ -77,7 +71,6 @@ namespace SmartStore.Admin.Controllers
         private readonly IAclService _aclService;
 		private readonly IStoreService _storeService;
 		private readonly IStoreMappingService _storeMappingService;
-        private readonly PdfSettings _pdfSettings;
         private readonly AdminAreaSettings _adminAreaSettings;
 		private readonly IDateTimeHelper _dateTimeHelper;
 		private readonly IDiscountService _discountService;
@@ -91,15 +84,12 @@ namespace SmartStore.Admin.Controllers
 		private readonly IDownloadService _downloadService;
 		private readonly IDeliveryTimeService _deliveryTimesService;
         private readonly IQuantityUnitService _quantityUnitService;
-		private readonly ICurrencyService _currencyService;
-		private readonly CurrencySettings _currencySettings;
 		private readonly IMeasureService _measureService;
 		private readonly MeasureSettings _measureSettings;
 		private readonly IPriceFormatter _priceFormatter;
 		private readonly IDbContext _dbContext;
 		private readonly IEventPublisher _eventPublisher;
 		private readonly IGenericAttributeService _genericAttributeService;
-        private readonly IPdfConverter _pdfConverter;
         private readonly ICommonServices _services;
 		private readonly SeoSettings _seoSettings;
 
@@ -129,7 +119,6 @@ namespace SmartStore.Admin.Controllers
 			IAclService aclService,
 			IStoreService storeService,
 			IStoreMappingService storeMappingService,
-            PdfSettings pdfSettings,
 			AdminAreaSettings adminAreaSettings,
 			IDateTimeHelper dateTimeHelper,
 			IDiscountService discountService,
@@ -143,15 +132,12 @@ namespace SmartStore.Admin.Controllers
 			IDownloadService downloadService,
 			IDeliveryTimeService deliveryTimesService,
             IQuantityUnitService quantityUnitService,
-			ICurrencyService currencyService,
-			CurrencySettings currencySettings,
 			IMeasureService measureService,
 			MeasureSettings measureSettings,
 			IPriceFormatter priceFormatter,
 			IDbContext dbContext,
 			IEventPublisher eventPublisher,
 			IGenericAttributeService genericAttributeService,
-            IPdfConverter pdfConverter,
             ICommonServices services,
 			SeoSettings seoSettings)
 		{
@@ -175,7 +161,6 @@ namespace SmartStore.Admin.Controllers
             this._aclService = aclService;
 			this._storeService = storeService;
 			this._storeMappingService = storeMappingService;
-            this._pdfSettings = pdfSettings;
             this._adminAreaSettings = adminAreaSettings;
 			this._dateTimeHelper = dateTimeHelper;
 			this._discountService = discountService;
@@ -189,15 +174,12 @@ namespace SmartStore.Admin.Controllers
 			this._downloadService = downloadService;
 			this._deliveryTimesService = deliveryTimesService;
             this._quantityUnitService = quantityUnitService;
-			this._currencyService = currencyService;
-			this._currencySettings = currencySettings;
 			this._measureService = measureService;
 			this._measureSettings = measureSettings;
 			this._priceFormatter = priceFormatter;
 			this._dbContext = dbContext;
 			this._eventPublisher = eventPublisher;
 			this._genericAttributeService = genericAttributeService;
-            _pdfConverter = pdfConverter;
             _services = services;
 			_seoSettings = seoSettings;
 		}
@@ -893,7 +875,6 @@ namespace SmartStore.Admin.Controllers
 			var allStores = _storeService.GetAllStores();
 
             model.DisplayProductPictures = _adminAreaSettings.DisplayProductPictures;
-            model.DisplayPdfExport = _pdfSettings.Enabled;
 			model.GridPageSize = _adminAreaSettings.GridPageSize;
 			model.StoreCount = allStores.Count;
 
@@ -2810,217 +2791,7 @@ namespace SmartStore.Admin.Controllers
 
 		#endregion
 
-		#region Export / Import
-
-		[HttpPost, Compress]
-		public ActionResult ExportPdf(bool all, string selectedIds = null)
-        {
-            if (!_permissionService.Authorize(StandardPermissionProvider.ManageCatalog))
-                return AccessDeniedView();
-
-			if (!all && selectedIds.IsEmpty())
-			{
-				NotifyInfo(T("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			const int maxProducts = 500;
-			int totalCount = 0;
-            IPagedList<Product> products;
-
-			using (var scope = new DbContextScope(_dbContext, autoDetectChanges: false, forceNoTracking: true))
-			{
-				var searchContext = new ProductSearchContext
-				{
-					LanguageId = _workContext.WorkingLanguage.Id,
-					OrderBy = ProductSortingEnum.Position,
-					PageSize = 1,
-					ShowHidden = true
-				};
-
-				if (!all)
-				{
-					searchContext.ProductIds = selectedIds.ToIntArray().ToList();
-				}
-
-				products = _productService.SearchProducts(searchContext);
-
-				totalCount = products.TotalCount;
-
-				if (totalCount > 0 && totalCount <= maxProducts)
-				{
-					searchContext.PageSize = int.MaxValue;
-
-					products = _productService.SearchProducts(searchContext);
-				}
-			}
-
-			if (totalCount == 0)
-			{
-				NotifyInfo(T("Admin.Common.ExportNoData"));
-				return RedirectToAction("List");
-			}
-
-			if (totalCount > maxProducts)
-			{
-				NotifyWarning(T("Admin.Common.ExportToPdf.TooManyItems"));
-				return RedirectToAction("List");
-			}
-
-            var model = new PrintableProductsModel();
-            PreparePrintableProductsModel(model, products);
-
-			var settings = new PdfConvertSettings
-			{
-				Title = model.StoreName,
-				Size = _pdfSettings.LetterPageSizeEnabled ? PdfPageSize.Letter : PdfPageSize.A4,
-				Margins = new PdfPageMargins { Top = 30, Bottom = 15 },
-				Page = new PdfViewContent("PdfCatalog.Print", model, this.ControllerContext),
-				Header = new PdfRouteContent("PdfReceiptHeader", "Common", new RouteValueDictionary(new { area = "" }), this.ControllerContext),
-				HeaderOptions = new PdfHeaderFooterOptions { ShowLine = true },
-				Footer = new PdfPartialViewContent("PdfCatalog.Print.Footer", model, this.ControllerContext),
-			};
-
-			if (products.Count > 5)
-			{
-				settings.Cover = new PdfViewContent("PdfCatalog.Print.Cover", model, this.ControllerContext);
-				settings.TocOptions = new PdfTocOptions { Enabled = true, TocHeaderText = T("Admin.Common.ExportToPdf.TocTitle") };
-			}
-
-			return new PdfResult(_pdfConverter, settings) { FileName = "products.pdf" };
-        }
-
-        public IList<PrintableProductSpecificationModel> PrepareProductSpecificationModel(int productId)
-        {
-            var model = _specificationAttributeService.GetProductSpecificationAttributesByProductId(productId, null, true)
-                .Select(psa =>
-                {
-                    return new PrintableProductSpecificationModel()
-                    {
-                        SpecificationAttributeId = psa.SpecificationAttributeOption.SpecificationAttributeId,
-                        SpecificationAttributeName = psa.SpecificationAttributeOption.SpecificationAttribute.GetLocalized(x => x.Name),
-                        SpecificationAttributeOption = psa.SpecificationAttributeOption.GetLocalized(x => x.Name)
-                    };
-                }).ToList();
-            return model;
-        }
-
-        [NonAction]
-        protected void PreparePrintableProductsModel(PrintableProductsModel model, IList<Product> products)
-        {
-            var store = _services.StoreContext.CurrentStore;
-			
-            var companyInfoSettings = _services.Settings.LoadSetting<CompanyInformationSettings>(store.Id);
-            var contactSettings = _services.Settings.LoadSetting<ContactDataSettings>(store.Id);
-            var pdfSettings = _services.Settings.LoadSetting<PdfSettings>(store.Id);
-
-            model.StoreName = store.Name;
-            model.StoreUrl = store.Url;
-
-            var logoPicture = _pictureService.GetPictureById(pdfSettings.LogoPictureId);
-            if (logoPicture == null)
-            {
-                logoPicture = _pictureService.GetPictureById(store.LogoPictureId);
-            }
-
-            if (logoPicture != null)
-            {
-                model.PrintLogoUrl = _pictureService.GetPictureUrl(logoPicture, showDefaultPicture: false);
-            }
-
-            model.MerchantCompanyInfo = companyInfoSettings;
-            model.MerchantContactData = contactSettings;
-
-            string dimension = _measureService.GetMeasureDimensionById(_measureSettings.BaseDimensionId).Name;
-			string currencyCode = store.PrimaryStoreCurrency.CurrencyCode;
-
-            foreach (var product in products) 
-            {
-                var productModel = new PrintableProductModel();
-				
-                productModel.Name = product.GetLocalized(x => x.Name);
-                productModel.ShortDescription = product.GetLocalized(x => x.ShortDescription);
-                productModel.FullDescription = product.GetLocalized(x => x.FullDescription);
-
-                productModel.Sku = product.Sku;
-                productModel.Price = product.Price.ToString("0.00") + " " + currencyCode;
-                productModel.Weight = (product.Weight > 0) ? "{0} {1}".FormatCurrent(product.Weight.ToString("F2"), _measureService.GetMeasureWeightById(_measureSettings.BaseWeightId).Name) : ""; ;
-                productModel.Length = (product.Length > 0) ? "{0} {1}".FormatCurrent(product.Length.ToString("F2"), dimension) : "";
-                productModel.Width = (product.Width > 0) ? "{0} {1}".FormatCurrent(product.Width.ToString("F2"), dimension) : ""; 
-                productModel.Height = (product.Height > 0) ? "{0} {1}".FormatCurrent(product.Height.ToString("F2"), dimension) : "";
-
-                var manufacturers = _manufacturerService.GetProductManufacturersByProductId(product.Id).ToList();
-
-                productModel.SpecificationAttributes = PrepareProductSpecificationModel(product.Id);
-				productModel.Manufacturer = String.Join(", ", manufacturers.Select(x => x.Manufacturer.GetLocalized(y => y.Name)));
-
-				var pictures = _pictureService.GetPicturesByProductId(product.Id);
-				if (pictures.Count > 0)
-				{
-					productModel.PictureUrl = _pictureService.GetPictureUrl(pictures[0].Id, 0, false);
-				}
-
-                productModel.ProductType = product.ProductType;
-
-                if (product.ProductType == ProductType.GroupedProduct)
-                {
-                    var searchContext = new ProductSearchContext()
-                    {
-                        ParentGroupedProductId = product.Id,
-                        PageSize = int.MaxValue,
-                        ShowHidden = true
-                    };
-
-                    foreach (var associatedProduct in _productService.SearchProducts(searchContext))
-                    {
-                        var picture = associatedProduct.ProductPictures.FirstOrDefault();
-                        var pictureUrl = String.Empty;
-                        if (picture != null) 
-                        {
-                            pictureUrl = _pictureService.GetPictureUrl(picture.Picture, 75, false);
-                        }
-
-                        productModel.AssociatedProducts.Add(new PrintableProductModel
-                        {
-                            Name = associatedProduct.GetLocalized(x => x.Name),
-                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"), 
-                                associatedProduct.Price.ToString("0.00"), 
-                                currencyCode, 
-                                T("PDFProductCatalog.SKU"), 
-                                associatedProduct.Sku),
-                            PictureUrl = pictureUrl
-                        });
-                    }
-                }
-
-                if (product.ProductType == ProductType.BundledProduct)
-                {
-                    foreach (var bundledProduct in _productService.GetBundleItems(product.Id).Select(x => x.Item))
-                    {
-                        var picture = bundledProduct.Product.ProductPictures.FirstOrDefault();
-                        var pictureUrl = String.Empty;
-                        if (picture != null) 
-                        { 
-                            pictureUrl = _pictureService.GetPictureUrl(picture.Picture, 75, false);
-                        }
-
-                        productModel.BundledItems.Add(new PrintableProductModel()
-                        {
-                            Name = bundledProduct.Product.GetLocalized(x => x.Name),
-                            ShortDescription = "{0}: {1} {2}, {3}: {4}".FormatWith(T("PDFProductCatalog.Price"),
-                                bundledProduct.Product.Price.ToString("0.00"),
-                                currencyCode,
-                                T("PDFProductCatalog.SKU"),
-                                bundledProduct.Product.Sku),
-                            PictureUrl = pictureUrl
-                        });
-                    }
-                }
-
-                model.Products.Add(productModel);
-            }
-
-        }
+		#region Import
 
 		[HttpPost]
 		public ActionResult ImportExcel(FormCollection form)

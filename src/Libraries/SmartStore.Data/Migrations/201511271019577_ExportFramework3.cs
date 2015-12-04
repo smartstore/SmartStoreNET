@@ -124,7 +124,18 @@ namespace SmartStore.Data.Migrations
 				"Admin.Common.ExportToXml.Selected",
 				"Admin.Common.ExportToCsv.All",
 				"Admin.Common.ExportToCsv.Selected",
-				"Admin.Common.ExportToCsv"
+				"Admin.Common.ExportToCsv",
+				"Admin.Common.ExportToPdf.TocTitle",
+				"PDFProductCatalog.SKU",
+				"PDFProductCatalog.Price",
+				"PDFProductCatalog.Manufacturer",
+				"PDFProductCatalog.Weight",
+				"PDFProductCatalog.Length",
+				"PDFProductCatalog.Width",
+				"PDFProductCatalog.Height",
+				"PDFProductCatalog.SpecificationAttributes",
+				"PDFProductCatalog.BundledItems",
+				"PDFProductCatalog.AssociatedProducts"
 			);
 		}
 	}

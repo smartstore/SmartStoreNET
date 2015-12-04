@@ -95,7 +95,6 @@ namespace SmartStore.Web.Framework.Modelling
 
 			public override bool CanConvert(Type objectType)
 			{
-				//System.Diagnostics.Debug.WriteLine(objectType.Name);
 				return _innerConverter.CanConvert(objectType);
 			}
 
@@ -108,15 +107,22 @@ namespace SmartStore.Web.Framework.Modelling
 			{
 				if (value is DateTime)
 				{
-					value = DateTime.SpecifyKind((DateTime)value, DateTimeKind.Unspecified);
-					value = new DateTimeOffset((DateTime)value, _dateTimeHelper.CurrentTimeZone.BaseUtcOffset);				
+					var d = (DateTime)value;
+					if (d.Kind == DateTimeKind.Unspecified)
+					{
+						// when DateTime kind is "Unspecified", it was very likely converted from UTC to 
+						// SERVER*s preferred local time before (with DateTimeHelper.ConvertToUserTime()).
+						// While this works fine during server-time rendering, it can lead to wrong UTC offsets
+						// on the client (e.g. in AJAX mode Grids, where rendering is performed locally with JSON data).
+						// The issue occurs when the client's time zone is not the same as "CurrentTimeZone" (configured in the backend).
+						// To fix it, we have to convert the date back to UTC kind, but with the SERVER PREFERRED TIMEZONE
+						// in order to calculate with the correct UTC offset. Then it's up to the client to display the date
+						// in the CLIENT's time zone. Which is not perfect of course, because the same date would be displayed in the 
+						// "CurrentTimeZone" if rendered on server.
+						// But: it fixes the issue and is way better than converting all AJAXable dates to strings on the server.
+						value = _dateTimeHelper.ConvertToUtcTime(d, _dateTimeHelper.CurrentTimeZone);
+					}	
 				}
-
-				//var d = value as DateTime?;
-				//if (d != null)
-				//{
-				//	value = DateTime.SpecifyKind(d.Value, DateTimeKind.Local);
-				//}
 
 				_innerConverter.WriteJson(writer, value, serializer);
 			}

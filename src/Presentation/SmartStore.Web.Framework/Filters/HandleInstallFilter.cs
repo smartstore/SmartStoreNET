@@ -3,8 +3,7 @@ using System.Web.Routing;
 using SmartStore.Core.Data;
 
 namespace SmartStore.Web.Framework.Filters
-{
-    
+{ 
     public class HandleInstallFilter : IActionFilter
     {
         public void OnActionExecuting(ActionExecutingContext filterContext)

@@ -19,6 +19,6 @@ namespace SmartStore.Admin.Models.Logging
         public string Comment { get; set; }
 
         [SmartResourceDisplayName("Admin.Configuration.ActivityLog.ActivityLog.Fields.CreatedOn")]
-        public string CreatedOn { get; set; }
+        public DateTime CreatedOn { get; set; }
 	}
 }

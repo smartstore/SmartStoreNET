@@ -217,7 +217,9 @@
       <Link>Properties\AssemblyVersionInfo.cs</Link>
     </Compile>
     <Compile Include="Controllers\AdminControllerBase.cs" />
+    <Compile Include="Filters\JsonNetAttribute.cs" />
     <Compile Include="Localization\SetWorkingCultureAttribute.cs" />
+    <Compile Include="Modelling\Results\JsonNetResult.cs" />
     <Compile Include="Theming\AdminThemedAttribute.cs" />
     <Compile Include="Filters\HandleExceptionFilter.cs" />
     <Compile Include="Filters\NotifyAttribute.cs" />

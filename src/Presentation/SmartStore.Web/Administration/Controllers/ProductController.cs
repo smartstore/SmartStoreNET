@@ -984,10 +984,10 @@ namespace SmartStore.Admin.Controllers
 
             gridModel.Total = products.TotalCount;
 
-            return new JsonResult
-            {
-                Data = gridModel
-            };
+			return new JsonResult
+			{
+				Data = gridModel
+			};
         }
 
         [HttpPost, ActionName("List")]

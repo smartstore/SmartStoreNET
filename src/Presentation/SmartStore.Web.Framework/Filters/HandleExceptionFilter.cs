@@ -13,7 +13,6 @@ using SmartStore.Core.Logging;
 
 namespace SmartStore.Web.Framework.Filters
 {
-
 	public class HandleExceptionFilter : IActionFilter
     {
 		private readonly Lazy<ILogger> _logger;

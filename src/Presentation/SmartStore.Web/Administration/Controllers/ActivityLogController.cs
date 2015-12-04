@@ -137,7 +137,7 @@ namespace SmartStore.Admin.Controllers
                 Data = activityLog.Select(x =>
                 {
                     var m = x.ToModel();
-                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc).ToString("G");
+                    m.CreatedOn = _dateTimeHelper.ConvertToUserTime(x.CreatedOnUtc, DateTimeKind.Utc);
 					return m;
                     
                 }),
